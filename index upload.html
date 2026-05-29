@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>261Claims — Aviation Claims Defence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#0B1628;--navy2:#132033;--navy3:#1C2E44;
+  --blue:#2A6FDB;--blue-l:#3D84F5;--blue-faint:#EFF6FF;--blue-text:#1D4ED8;
+  --green:#1A7A4A;--green-l:#22A863;--green-faint:#E6F5EE;
+  --red:#C0392B;--red-faint:#FCF0EF;
+  --amber:#B45309;--amber-faint:#FEF3C7;
+  --border:#E2E8F0;--border2:#CBD5E1;--border-dark:#1E3350;
+  --text:#0F172A;--text2:#475569;--text3:#94A3B8;
+  --surface:#FFFFFF;--surface2:#F8FAFC;--surface3:#F1F5F9;
+  --font:'DM Sans',sans-serif;--mono:'DM Mono',monospace;
+  --r:8px;--r2:12px;--r3:16px;
+}
+html,body{height:100%;font-family:var(--font);font-size:14px;color:var(--text);background:var(--surface2)}
+
+/* ── Topbar — matches modules ── */
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px;height:54px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+.logo-mark{width:32px;height:32px;background:var(--navy);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px}
+.logo-name{font-size:15px;font-weight:500;letter-spacing:-0.02em;color:var(--navy)}
+.topbar-right{display:flex;align-items:center;gap:8px}
+.av-row{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--text2)}
+.av{width:28px;height:28px;border-radius:50%;background:var(--navy2);color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500}
+
+/* ── Page body ── */
+.page{max-width:900px;margin:0 auto;padding:32px 24px 60px}
+
+/* ── Welcome block ── */
+.welcome{background:var(--navy);border-radius:var(--r3);padding:32px 36px;margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap}
+.welcome-left{}
+.welcome-tag{font-size:10px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:8px}
+.welcome-title{font-size:22px;font-weight:500;color:#fff;letter-spacing:-0.02em;margin-bottom:6px}
+.welcome-sub{font-size:13px;color:rgba(255,255,255,0.5);line-height:1.5;max-width:400px}
+.welcome-right{flex-shrink:0}
+.btn-primary{font-size:13px;font-weight:500;padding:10px 20px;border-radius:var(--r);background:var(--blue);color:#fff;border:none;cursor:pointer;display:flex;align-items:center;gap:7px;text-decoration:none;transition:background 0.15s;font-family:var(--font)}
+.btn-primary:hover{background:var(--blue-l)}
+.btn-outline{font-size:13px;padding:10px 18px;border-radius:var(--r);background:transparent;color:rgba(255,255,255,0.7);border:1px solid rgba(255,255,255,0.15);cursor:pointer;display:flex;align-items:center;gap:7px;text-decoration:none;transition:all 0.15s;font-family:var(--font)}
+.btn-outline:hover{color:#fff;border-color:rgba(255,255,255,0.35)}
+
+/* ── Quick action cards ── */
+.section-label{font-size:10px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);margin-bottom:10px}
+.quick-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:24px}
+.quick-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:16px 18px;cursor:pointer;text-decoration:none;display:flex;align-items:center;gap:14px;transition:all 0.15s}
+.quick-card:hover{border-color:var(--border2);box-shadow:0 2px 12px rgba(0,0,0,0.05);transform:translateY(-1px)}
+.qc-icon{width:38px;height:38px;border-radius:var(--r);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+.qc-title{font-size:13px;font-weight:500;color:var(--text);margin-bottom:2px}
+.qc-sub{font-size:11px;color:var(--text3)}
+.qc-arrow{margin-left:auto;font-size:16px;color:var(--text3)}
+
+/* ── Pipeline / stage strip ── */
+.pipeline-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:18px 20px;margin-bottom:24px}
+.pipeline-strip{display:flex;align-items:center;gap:0;margin-top:12px}
+.ps-step{flex:1;display:flex;flex-direction:column;align-items:center;position:relative}
+.ps-step:not(:last-child)::after{content:'';position:absolute;top:13px;right:-50%;width:100%;height:1.5px;background:var(--border2);z-index:0}
+.ps-pip{width:28px;height:28px;border-radius:50%;border:1.5px solid var(--border2);background:var(--surface3);color:var(--text3);display:flex;align-items:center;justify-content:center;font-size:12px;position:relative;z-index:1}
+.ps-pip.live{background:var(--blue-faint);border-color:var(--blue);color:var(--blue-text)}
+.ps-pip.soon{opacity:0.5}
+.ps-label{font-size:10px;font-weight:500;margin-top:5px;text-align:center;color:var(--text3)}
+.ps-label.live{color:var(--blue-text)}
+.ps-badge{font-size:9px;font-weight:500;padding:1px 6px;border-radius:20px;margin-top:3px}
+.badge-live{background:var(--green-faint);color:var(--green)}
+.badge-soon{background:var(--surface3);color:var(--text3);border:1px solid var(--border)}
+
+/* ── Module list ── */
+.module-list{display:flex;flex-direction:column;gap:8px;margin-bottom:24px}
+.mod-row{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);display:flex;align-items:center;gap:14px;padding:14px 16px;text-decoration:none;transition:all 0.15s}
+.mod-row.live:hover{border-color:var(--border2);box-shadow:0 2px 8px rgba(0,0,0,0.04)}
+.mod-row.soon{opacity:0.5;cursor:default;pointer-events:none}
+.mod-row-icon{width:34px;height:34px;border-radius:var(--r);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.mod-row-num{font-size:10px;font-family:var(--mono);color:var(--text3);margin-bottom:1px}
+.mod-row-title{font-size:13px;font-weight:500;color:var(--text)}
+.mod-row-desc{font-size:11px;color:var(--text3);margin-top:1px}
+.mod-row-status{margin-left:auto;font-size:10px;font-weight:500;padding:2px 8px;border-radius:20px;flex-shrink:0}
+.mod-row-arrow{font-size:15px;color:var(--text3);margin-left:6px}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a href="index.html" class="logo">
+    <div class="logo-mark"><i class="ti ti-plane"></i></div>
+    <span class="logo-name">261Claims</span>
+  </a>
+  <div class="topbar-right">
+    <div class="av-row"><div class="av">SB</div><span>S. Booth</span></div>
+  </div>
+</div>
+
+<div class="page">
+
+  <!-- Welcome -->
+  <div class="welcome">
+    <div class="welcome-left">
+      <div class="welcome-tag">Aviation claims defence platform</div>
+      <div class="welcome-title">Good morning, Sarah.</div>
+      <div class="welcome-sub">Upload a letter of claim to get started, or pick up where you left off.</div>
+    </div>
+    <div class="welcome-right" style="display:flex;gap:8px;flex-wrap:wrap">
+      <a href="module1-intake.html" class="btn-primary"><i class="ti ti-file-upload"></i> Upload LOC</a>
+      <a href="module2-case-management.html" class="btn-outline"><i class="ti ti-briefcase"></i> Open cases</a>
+    </div>
+  </div>
+
+  <!-- Quick actions -->
+  <div class="section-label">Quick actions</div>
+  <div class="quick-grid">
+    <a href="module1-intake.html" class="quick-card">
+      <div class="qc-icon" style="background:var(--blue-faint);color:var(--blue-text)"><i class="ti ti-file-upload"></i></div>
+      <div>
+        <div class="qc-title">New intake</div>
+        <div class="qc-sub">Upload a letter of claim</div>
+      </div>
+      <i class="ti ti-arrow-right qc-arrow"></i>
+    </a>
+    <a href="module2-case-management.html" class="quick-card">
+      <div class="qc-icon" style="background:var(--surface3);color:var(--text2)"><i class="ti ti-layout-kanban"></i></div>
+      <div>
+        <div class="qc-title">Case management</div>
+        <div class="qc-sub">Progress an existing case</div>
+      </div>
+      <i class="ti ti-arrow-right qc-arrow"></i>
+    </a>
+  </div>
+
+  <!-- Pipeline -->
+  <div class="section-label">Claim lifecycle</div>
+  <div class="pipeline-card">
+    <div style="font-size:12px;color:var(--text2)">Every claim moves through five stages. Each stage must be completed before the next unlocks.</div>
+    <div class="pipeline-strip">
+      <div class="ps-step">
+        <div class="ps-pip live"><i class="ti ti-inbox" style="font-size:12px"></i></div>
+        <div class="ps-label live">Intake</div>
+        <div class="ps-badge badge-live">Live</div>
+      </div>
+      <div class="ps-step">
+        <div class="ps-pip live"><i class="ti ti-search" style="font-size:12px"></i></div>
+        <div class="ps-label live">Triage</div>
+        <div class="ps-badge badge-live">Live</div>
+      </div>
+      <div class="ps-step">
+        <div class="ps-pip soon"><i class="ti ti-folder" style="font-size:12px"></i></div>
+        <div class="ps-label">Evidence</div>
+        <div class="ps-badge badge-soon">Soon</div>
+      </div>
+      <div class="ps-step">
+        <div class="ps-pip soon"><i class="ti ti-shield" style="font-size:12px"></i></div>
+        <div class="ps-label">Defence</div>
+        <div class="ps-badge badge-soon">Soon</div>
+      </div>
+      <div class="ps-step">
+        <div class="ps-pip soon"><i class="ti ti-circle-check" style="font-size:12px"></i></div>
+        <div class="ps-label">Resolve</div>
+        <div class="ps-badge badge-soon">Soon</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modules -->
+  <div class="section-label">All modules</div>
+  <div class="module-list">
+
+    <a href="module1-intake.html" class="mod-row live">
+      <div class="mod-row-icon" style="background:var(--blue-faint);color:var(--blue-text)"><i class="ti ti-file-upload"></i></div>
+      <div>
+        <div class="mod-row-num">01</div>
+        <div class="mod-row-title">Case intake</div>
+        <div class="mod-row-desc">Upload LOC · AI extraction · Points of claim summary · Evidence readiness</div>
+      </div>
+      <span class="mod-row-status badge-live">Live</span>
+      <i class="ti ti-arrow-right mod-row-arrow"></i>
+    </a>
+
+    <a href="module2-case-management.html" class="mod-row live">
+      <div class="mod-row-icon" style="background:var(--surface3);color:var(--text2)"><i class="ti ti-layout-kanban"></i></div>
+      <div>
+        <div class="mod-row-num">02</div>
+        <div class="mod-row-title">Case management</div>
+        <div class="mod-row-desc">Stage lifecycle · Locked checklists · Document uploads · Audit trail</div>
+      </div>
+      <span class="mod-row-status badge-live">Live</span>
+      <i class="ti ti-arrow-right mod-row-arrow"></i>
+    </a>
+
+    <div class="mod-row soon">
+      <div class="mod-row-icon" style="background:var(--surface3);color:var(--text3)"><i class="ti ti-calendar-due"></i></div>
+      <div>
+        <div class="mod-row-num">03</div>
+        <div class="mod-row-title">CPR deadlines</div>
+        <div class="mod-row-desc">Auto deadline calculation · Escalating alerts · Portfolio deadline view</div>
+      </div>
+      <span class="mod-row-status badge-soon">Coming soon</span>
+    </div>
+
+    <div class="mod-row soon">
+      <div class="mod-row-icon" style="background:var(--surface3);color:var(--text3)"><i class="ti ti-folder-open"></i></div>
+      <div>
+        <div class="mod-row-num">04</div>
+        <div class="mod-row-title">Evidence management</div>
+        <div class="mod-row-desc">Point-by-point evidence tracking · Gap identification · Evidence library</div>
+      </div>
+      <span class="mod-row-status badge-soon">Coming soon</span>
+    </div>
+
+    <div class="mod-row soon">
+      <div class="mod-row-icon" style="background:var(--surface3);color:var(--text3)"><i class="ti ti-file-pencil"></i></div>
+      <div>
+        <div class="mod-row-num">05</div>
+        <div class="mod-row-title">Document drafting</div>
+        <div class="mod-row-desc">Template library · AI population · Counsel sign-off workflow</div>
+      </div>
+      <span class="mod-row-status badge-soon">Coming soon</span>
+    </div>
+
+    <div class="mod-row soon">
+      <div class="mod-row-icon" style="background:var(--surface3);color:var(--text3)"><i class="ti ti-chart-bar"></i></div>
+      <div>
+        <div class="mod-row-num">06</div>
+        <div class="mod-row-title">MI reporting</div>
+        <div class="mod-row-desc">Portfolio overview · Financial exposure · Outcome trends · Export</div>
+      </div>
+      <span class="mod-row-status badge-soon">Coming soon</span>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>
