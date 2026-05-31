@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>261Claims — Module 2: Case Management</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#0B1628;--navy2:#132033;
+  --blue:#2A6FDB;--blue-l:#3D84F5;--blue-faint:#EFF6FF;--blue-text:#1D4ED8;
+  --green:#1A7A4A;--green-l:#22A863;--green-faint:#E6F5EE;
+  --red:#C0392B;--red-faint:#FCF0EF;
+  --amber:#B45309;--amber-faint:#FEF3C7;
+  --border:#E2E8F0;--border2:#CBD5E1;
+  --text:#0F172A;--text2:#475569;--text3:#94A3B8;
+  --surface:#FFFFFF;--surface2:#F8FAFC;--surface3:#F1F5F9;
+  --font:'DM Sans',sans-serif;--mono:'DM Mono',monospace;
+  --r:8px;--r2:12px;--r3:16px;
+}
+html,body{height:100%;font-family:var(--font);background:var(--surface2);color:var(--text);font-size:14px}
+.app{display:flex;flex-direction:column;height:calc(100vh - 48px)}
+
+/* topbar */
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px;height:54px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+.logo-mark{width:32px;height:32px;background:var(--navy);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px}
+.logo-name{font-size:15px;font-weight:500;letter-spacing:-0.02em;color:var(--navy)}
+.logo-tag{font-size:12px;color:var(--text3);margin-left:2px}
+.topbar-right{display:flex;align-items:center;gap:10px}
+.mod-badge{font-size:11px;font-weight:500;background:var(--navy);color:#fff;border-radius:20px;padding:3px 10px}
+.av-row{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--text2)}
+.av{width:28px;height:28px;border-radius:50%;background:var(--navy2);color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500}
+.btn-back{font-size:12px;padding:5px 12px;border-radius:var(--r);border:1px solid var(--border);background:var(--surface);cursor:pointer;color:var(--text2);font-family:var(--font);display:flex;align-items:center;gap:5px;text-decoration:none}
+.btn-back:hover{background:var(--surface3)}
+
+/* layout */
+.body{flex:1;display:grid;grid-template-columns:1fr 300px;overflow:hidden}
+.main{overflow-y:auto;padding:20px 24px}
+.sidebar{border-left:1px solid var(--border);background:var(--surface);display:flex;flex-direction:column;overflow:hidden}
+
+/* stage rail */
+.stage-rail{display:flex;align-items:center;margin-bottom:14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r3);padding:12px 16px;overflow-x:auto;gap:0}
+.rail-step{display:flex;flex-direction:column;align-items:center;flex:1;min-width:60px;position:relative;cursor:pointer;user-select:none}
+.rail-step:not(:last-child)::after{content:'';position:absolute;top:11px;right:-50%;width:100%;height:1.5px;background:var(--border2);z-index:0}
+.rail-pip{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;border:2px solid var(--border2);background:var(--surface3);color:var(--text3);position:relative;z-index:1;transition:all 0.2s}
+.rail-pip.done{background:var(--green-faint);border-color:var(--green-l);color:var(--green)}
+.rail-pip.active{background:var(--blue-faint);border-color:var(--blue);color:var(--blue-text);box-shadow:0 0 0 3px rgba(42,111,219,0.1)}
+.rail-label{font-size:10px;font-weight:500;margin-top:4px;text-align:center;color:var(--text3)}
+.rail-label.done{color:var(--green)}
+.rail-label.active{color:var(--blue-text)}
+
+/* case header */
+.case-hdr{background:var(--surface);border:1px solid var(--border);border-radius:var(--r3);padding:14px 18px;margin-bottom:14px;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.ch-ref{font-size:11px;font-family:var(--mono);color:var(--text3);margin-bottom:2px}
+.ch-name{font-size:16px;font-weight:500;color:var(--text);margin-bottom:5px;letter-spacing:-0.01em}
+.ch-meta{display:flex;flex-wrap:wrap;gap:12px;font-size:12px;color:var(--text2)}
+.ch-meta span{display:flex;align-items:center;gap:4px}
+.ch-meta i{font-size:12px;color:var(--text3)}
+.ch-badge{font-size:11px;font-weight:500;padding:3px 10px;border-radius:20px;display:inline-flex;align-items:center;gap:4px}
+
+/* stage card */
+.stage-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r3);overflow:hidden;margin-bottom:14px}
+.sc-header{padding:13px 16px 11px;border-bottom:1px solid var(--border);border-left:4px solid var(--border2)}
+.sc-label{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:2px}
+.sc-title{font-size:14px;font-weight:500;color:var(--text)}
+.sc-body{padding:14px 16px}
+
+/* checklist */
+.checklist{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.chk{display:flex;align-items:center;gap:10px;padding:9px 11px;border:1px solid var(--border);border-radius:var(--r2);background:var(--surface);transition:all 0.15s;cursor:pointer}
+.chk:hover{border-color:var(--border2)}
+.chk.done{background:var(--green-faint);border-color:#BBF7D0}
+.chk.blocked{opacity:0.45;pointer-events:none}
+.chk-box{width:18px;height:18px;border-radius:4px;border:1.5px solid var(--border2);background:var(--surface);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all 0.15s}
+.chk.done .chk-box{background:var(--green-l);border-color:var(--green-l)}
+.chk-box i{display:none;color:#fff;font-size:10px}
+.chk.done .chk-box i{display:block}
+.chk-label{font-size:12px;font-weight:500;color:var(--text);flex:1}
+.chk.done .chk-label{color:var(--text3);text-decoration:line-through}
+.chk-tag{font-size:10px;font-weight:500;padding:1px 6px;border-radius:20px;white-space:nowrap;margin-left:auto}
+.t-req{background:var(--red-faint);color:var(--red)}
+.t-opt{background:var(--surface3);color:var(--text3)}
+
+/* inline inputs */
+.chk-input-wrap{margin-top:6px;padding:0 11px 9px 39px}
+.chk-select{font-size:12px;padding:5px 9px;border:1px solid var(--border);border-radius:var(--r);background:var(--surface);color:var(--text);font-family:var(--font);cursor:pointer;width:100%;max-width:260px}
+.chk-select:focus{outline:none;border-color:var(--blue)}
+.chk-text{font-size:12px;padding:5px 9px;border:1px solid var(--border);border-radius:var(--r);background:var(--surface);color:var(--text);font-family:var(--font);width:100%;max-width:340px}
+.chk-text:focus{outline:none;border-color:var(--blue)}
+.chk-save{font-size:11px;padding:5px 11px;border-radius:var(--r);background:var(--navy);color:#fff;border:none;cursor:pointer;font-family:var(--font);margin-left:6px}
+.chk-saved{font-size:11px;color:var(--green);display:flex;align-items:center;gap:4px;margin-top:4px}
+
+/* LOA block — compact */
+.loa-wrap{margin-top:6px;padding:0 11px 9px 39px}
+.loa-opts{display:flex;flex-direction:column;gap:4px}
+.loa-opt{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--text);cursor:pointer}
+.loa-opt input{accent-color:var(--navy);width:13px;height:13px;cursor:pointer}
+
+/* AI recommendation */
+.ai-block{border:1px solid var(--border);border-radius:var(--r2);overflow:hidden;margin-bottom:14px}
+.ai-header{padding:10px 13px;background:var(--surface2);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.ai-title{font-size:12px;font-weight:500;color:var(--text);flex:1}
+.ai-badge{font-size:10px;font-weight:500;background:var(--blue-faint);color:var(--blue-text);border-radius:20px;padding:2px 7px}
+.ai-body{padding:12px 13px;font-size:12px}
+.ai-spinner{width:13px;height:13px;border:2px solid var(--border);border-top-color:var(--blue);border-radius:50%;animation:spin 0.7s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+.verdict-pill{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:500;padding:3px 10px;border-radius:20px;margin-bottom:8px}
+.vp-defend{background:var(--green-faint);color:var(--green)}
+.vp-escalate{background:var(--red-faint);color:var(--red)}
+.vp-missing{background:var(--amber-faint);color:var(--amber)}
+.pt-list{display:flex;flex-direction:column;gap:5px}
+.pt-item{display:flex;align-items:flex-start;gap:7px;padding:7px 9px;border:1px solid var(--border);border-radius:var(--r);font-size:11px}
+.pt-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:3px}
+.pt-g{background:var(--green-l)}.pt-a{background:#F59E0B}.pt-r{background:var(--red)}
+.pt-label{font-weight:500;color:var(--text);margin-bottom:1px}
+.pt-detail{color:var(--text2)}
+.pt-verdict{margin-left:auto;font-size:10px;font-weight:500;padding:1px 6px;border-radius:20px;white-space:nowrap}
+.pv-d{background:var(--green-faint);color:var(--green)}
+.pv-m{background:var(--amber-faint);color:var(--amber)}
+.pv-e{background:var(--red-faint);color:var(--red)}
+.esc-note{margin-top:8px;padding:8px 10px;background:var(--red-faint);border-left:3px solid var(--red);border-radius:0 var(--r) var(--r) 0;font-size:11px;color:var(--text2)}
+
+/* CPR block — compact */
+.cpr-block{border:1px solid var(--border);border-radius:var(--r2);padding:11px 13px;margin-bottom:14px}
+.cpr-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;flex-wrap:wrap;gap:6px}
+.cpr-label{font-size:12px;font-weight:500;color:var(--text);display:flex;align-items:center;gap:5px}
+.cpr-date{font-size:14px;font-weight:500;color:var(--red);font-family:var(--mono)}
+.cpr-note{font-size:11px;color:var(--text2);margin-bottom:8px}
+.cal-row{display:flex;gap:6px;flex-wrap:wrap}
+.btn-cal{font-size:11px;padding:5px 10px;border-radius:var(--r);border:1px solid var(--border2);background:var(--surface2);cursor:pointer;color:var(--text2);font-family:var(--font);display:inline-flex;align-items:center;gap:4px}
+.btn-cal:hover{background:var(--surface3)}
+
+/* docs */
+.doc-item{display:flex;align-items:center;gap:9px;padding:8px 10px;border:1px solid var(--border);border-radius:var(--r2);background:var(--surface);margin-bottom:6px}
+.doc-icon{width:28px;height:28px;border-radius:var(--r);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.doc-name{font-size:12px;font-weight:500;color:var(--text);flex:1}
+.doc-note{font-size:11px;color:var(--text3)}
+.doc-tag{font-size:10px;font-weight:500;padding:2px 7px;border-radius:20px;white-space:nowrap}
+.dt-att{background:var(--blue-faint);color:var(--blue-text)}
+.dt-up{background:var(--green-faint);color:var(--green)}
+.dt-req{background:var(--red-faint);color:var(--red)}
+.dt-opt{background:var(--surface3);color:var(--text3)}
+.btn-upload{font-size:10px;padding:3px 9px;border-radius:20px;border:1px solid var(--border);background:var(--surface2);cursor:pointer;color:var(--text2);font-family:var(--font)}
+.btn-upload:hover{background:var(--surface3)}
+
+/* advance */
+.advance-wrap{margin-top:6px}
+.btn-advance{width:100%;padding:10px;background:var(--navy);color:#fff;border:none;border-radius:var(--r);cursor:pointer;font-size:13px;font-weight:500;font-family:var(--font);display:flex;align-items:center;justify-content:center;gap:6px;transition:background 0.15s}
+.btn-advance:hover:not(:disabled){background:var(--navy2)}
+.btn-advance:disabled{background:var(--border2);color:var(--text3);cursor:not-allowed}
+.advance-hint{font-size:11px;color:var(--text3);text-align:center;margin-top:5px;min-height:15px}
+
+/* sidebar */
+.sb-header{padding:13px 15px;border-bottom:1px solid var(--border);flex-shrink:0}
+.sb-title{font-size:12px;font-weight:500;color:var(--text)}
+.sb-sub{font-size:11px;color:var(--text3);margin-top:1px}
+.audit-scroll{flex:1;overflow-y:auto;padding:10px 13px}
+.audit-entry{display:flex;gap:8px;padding:7px 0;border-bottom:1px solid var(--border)}
+.audit-entry:last-child{border-bottom:none}
+.a-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:4px}
+.a-create{background:var(--green-l)}.a-action{background:var(--green-l)}
+.a-stage{background:var(--blue)}.a-note{background:var(--amber)}
+.a-upload{background:#8B5CF6}.a-ai{background:var(--blue)}
+.a-text{font-size:11px;color:var(--text);line-height:1.4}
+.a-time{font-size:10px;color:var(--text3);margin-top:1px}
+.note-bar{padding:9px 11px;border-top:1px solid var(--border);display:flex;gap:5px;flex-shrink:0}
+.note-bar input{flex:1;font-size:11px;padding:5px 8px;border:1px solid var(--border);border-radius:var(--r);background:var(--surface);color:var(--text);font-family:var(--font)}
+.note-bar input:focus{outline:none;border-color:var(--blue)}
+.note-bar button{font-size:11px;padding:5px 9px;border-radius:var(--r);border:1px solid var(--border);background:var(--surface2);cursor:pointer;font-family:var(--font);color:var(--text2)}
+input[type=file]{display:none}
+
+/* LOA draft panel */
+.loa-draft{border:1px solid var(--border);border-radius:var(--r2);overflow:hidden;margin-top:10px}
+.loa-draft-hdr{padding:9px 12px;background:var(--surface2);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.loa-draft-title{font-size:11px;font-weight:500;color:var(--text);display:flex;align-items:center;gap:5px}
+.loa-draft-actions{display:flex;gap:5px}
+.btn-loa{font-size:10px;padding:3px 9px;border-radius:var(--r);border:1px solid var(--border2);background:var(--surface);cursor:pointer;color:var(--text2);font-family:var(--font);display:inline-flex;align-items:center;gap:3px}
+.btn-loa:hover{background:var(--surface3)}
+.btn-loa.primary{background:var(--navy);color:#fff;border-color:var(--navy)}
+.btn-loa.primary:hover{background:var(--navy2)}
+.btn-loa.approved{background:var(--green-faint);color:var(--green);border-color:#BBF7D0;cursor:default}
+.loa-text{padding:16px 18px;font-size:11px;line-height:1.8;color:var(--text);background:var(--surface);font-family:Georgia,serif;white-space:pre-wrap;max-height:320px;overflow-y:auto;border-bottom:1px solid var(--border)}
+.loa-footer{padding:8px 12px;display:flex;align-items:center;justify-content:space-between;background:var(--surface2)}
+.loa-status{font-size:10px;color:var(--text3)}
+.loa-status.approved{color:var(--green);font-weight:500}
+
+/* LOA draft panel */
+.loa-draft{margin-top:10px;border:1px solid var(--border);border-radius:var(--r2);overflow:hidden}
+.loa-draft-header{padding:9px 12px;background:var(--surface2);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:8px}
+.loa-draft-title{font-size:11px;font-weight:500;color:var(--text);display:flex;align-items:center;gap:5px}
+.loa-draft-actions{display:flex;gap:5px}
+.btn-loa{font-size:10px;padding:4px 9px;border-radius:var(--r);border:1px solid var(--border2);background:var(--surface);cursor:pointer;color:var(--text2);font-family:var(--font);display:inline-flex;align-items:center;gap:3px}
+.btn-loa:hover{background:var(--surface3)}
+.btn-loa.primary{background:var(--navy);color:#fff;border-color:var(--navy)}
+.btn-loa.primary:hover{background:var(--navy2)}
+.btn-loa.approved{background:var(--green-faint);border-color:#BBF7D0;color:var(--green);cursor:default}
+.loa-text{padding:16px 20px;font-size:11px;line-height:1.8;color:var(--text);background:var(--surface);font-family:Georgia,serif;white-space:pre-wrap;max-height:360px;overflow-y:auto;border-bottom:1px solid var(--border)}
+.loa-text[contenteditable=true]{outline:none;border:1px solid var(--blue);border-radius:0}
+.loa-footer{padding:8px 12px;background:var(--surface2);display:flex;align-items:center;justify-content:space-between}
+.loa-status{font-size:10px;color:var(--text3)}
+.loa-status.approved{color:var(--green);font-weight:500}
+.loa-send-note{font-size:10px;color:var(--amber);display:flex;align-items:center;gap:4px;margin-top:6px;padding:6px 9px;background:var(--amber-faint);border-radius:var(--r);border:1px solid #FDE68A}
+
+/* ── Global nav ── */
+.global-nav{background:var(--navy);height:48px;display:flex;align-items:center;padding:0 20px;gap:0;flex-shrink:0;border-bottom:1px solid rgba(255,255,255,0.07)}
+.gn-logo{display:flex;align-items:center;gap:8px;text-decoration:none;margin-right:20px;flex-shrink:0}
+.gn-mark{width:28px;height:28px;background:var(--blue);border-radius:6px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px}
+.gn-name{font-size:14px;font-weight:500;color:#fff;letter-spacing:-0.01em}
+.gn-links{display:flex;align-items:center;gap:2px;flex:1}
+.gn-link{display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r);font-size:12px;font-weight:500;color:rgba(255,255,255,0.5);text-decoration:none;transition:all 0.15s;white-space:nowrap}
+.gn-link:hover{background:rgba(255,255,255,0.08);color:#fff}
+.gn-link.active{background:rgba(42,111,219,0.35);color:#fff}
+.gn-link i{font-size:13px}
+.gn-right{display:flex;align-items:center;gap:8px;margin-left:8px}
+.gn-av{width:26px;height:26px;border-radius:50%;background:#1C2E44;border:1.5px solid rgba(255,255,255,0.15);color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500}
+.gn-user{font-size:12px;color:rgba(255,255,255,0.5)}
+</style>
+</head>
+<body>
+<nav class="global-nav">
+  <a href="index.html" class="gn-logo"><div class="gn-mark"><i class="ti ti-plane"></i></div><span class="gn-name">261Claims</span></a>
+  <div class="gn-links"><a href="index.html" class="gn-link"><i class="ti ti-layout-dashboard"></i>Dashboard</a><a href="module1-intake.html" class="gn-link"><i class="ti ti-file-upload"></i>Intake</a><a href="module2-case-management.html" class="gn-link active"><i class="ti ti-layout-kanban"></i>Cases</a><a href="module3-cpr.html" class="gn-link"><i class="ti ti-calendar-due"></i>CPR</a><a href="module4-evidence.html" class="gn-link"><i class="ti ti-folder-open"></i>Evidence</a><a href="module5-drafting.html" class="gn-link"><i class="ti ti-file-pencil"></i>Drafting</a><a href="module6-mi.html" class="gn-link"><i class="ti ti-chart-bar"></i>MI</a></div>
+  <div class="gn-right"><div class="gn-av">SB</div><span class="gn-user">S. Booth</span></div>
+</nav>
+<div class="app">
+    <div class="body">
+    <div class="main" id="main"></div>
+    <div class="sidebar">
+      <div class="sb-header">
+        <div class="sb-title">Audit trail</div>
+        <div class="sb-sub" id="audit-count">0 entries</div>
+      </div>
+      <div class="audit-scroll" id="audit-scroll"></div>
+      <div class="note-bar">
+        <input type="text" id="note-input" placeholder="Add a note…" onkeydown="if(event.key==='Enter')addNote()">
+        <button onclick="addNote()">Add</button>
+      </div>
+    </div>
+  </div>
+</div>
+<input type="file" id="file-input" onchange="handleUpload(event)">
+
+<script>
+/* ── Case data ── */
+let _i={};
+try{const r=sessionStorage.getItem('aeroCaseData');if(r)_i=JSON.parse(r);}catch(e){}
+const C={
+  ref:    _i.ref       ||'AC-2026-0089',
+  name:   _i.claimant  ||'Daniel Hartley',
+  sol:    _i.solicitor ||'Pemberton & Associates Solicitors LLP',
+  flight: _i.flight    ||'HC 1184 — LTN to BCN (diverted VLC)',
+  value:  _i.value     ||'£39,000+',
+  type:   _i.type      ||'EC 261/2004 — delay / diversion',
+  date:   _i.date      ||'22 May 2026',
+  framework: _i.framework||'EC Regulation 261/2004',
+  points: _i.points    ||[],
+  user:   'S. Booth'
+};
+
+const redPts   = C.points.filter(p=>p.evidenceStatus==='red').length;
+const amberPts = C.points.filter(p=>p.evidenceStatus==='amber').length;
+
+/* ── CPR deadline ── */
+function parseDateStr(s){
+  const MONTHS={Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11,
+    January:0,February:1,March:2,April:3,June:5,July:6,August:7,September:8,October:9,November:10,December:11};
+  const m=s.match(/(\d+)\s+(\w+)\s+(\d{4})/);
+  if(!m)return new Date();
+  return new Date(parseInt(m[3]),MONTHS[m[2]]||0,parseInt(m[1]));
+}
+const locDate=parseDateStr(C.date);
+const cprDate=new Date(locDate);cprDate.setDate(cprDate.getDate()+21);
+const cprStr=cprDate.toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'});
+
+/* ── Stages ── */
+const STAGES=[
+  {
+    id:'intake', label:'Intake', icon:'ti-inbox', color:'#1D4ED8', dot:'#3B82F6',
+    title:'Confirm what has been received',
+    checks:[
+      {id:'c_confirm', label:'Case details confirmed', req:true},
+      {id:'c_points',  label:'Points of claim reviewed', req:true},
+      {id:'c_loa',     label:'Letter of Acknowledgement decision', req:true, type:'loa'},
+    ],
+    docs:[
+      {id:'d_loc',     name:'Letter of claim',        note:'Attached from intake', attached:true, icon:'ti-file-text'},
+      {id:'d_booking', name:'Booking confirmation',   note:'If received',          req:false,     icon:'ti-file'},
+    ],
+    next:'Confirm intake — proceed to triage',
+  },
+  {
+    id:'triage', label:'Triage', icon:'ti-search', color:'#92400E', dot:'#F59E0B',
+    title:'Decide how to handle this claim',
+    checks:[
+      {id:'t_ai',     label:'AI assessment reviewed',  req:true},
+      {id:'t_assign', label:'Lead solicitor assigned',  req:true, type:'assign'},
+      {id:'t_cpr',    label:'CPR deadline noted',       req:true},
+      {id:'t_notes',  label:'Triage notes (optional)',  req:false, type:'notes'},
+    ],
+    docs:[
+      {id:'d_triage', name:'Triage note', note:'Optional', req:false, icon:'ti-notes'},
+    ],
+    next:'Triage complete — set CPR deadlines',
+  },
+  {
+    id:'evidence', label:'Evidence', icon:'ti-folder', color:'#4338CA', dot:'#8B5CF6',
+    title:'Gather evidence for each point of claim',
+    checks:[
+      {id:'e_weather',  label:'Weather / NOTAM records requested',    req:true},
+      {id:'e_crew',     label:'Crew statements requested',            req:true},
+      {id:'e_fdr',      label:'FDR seatbelt sign data requested',     req:true},
+      {id:'e_valencia', label:'Valencia ground handling requested',   req:true},
+      {id:'e_contract', label:'Meridian contract loss investigated',  req:true},
+      {id:'e_gaps',     label:'Evidence gaps logged',                 req:false},
+    ],
+    docs:[
+      {id:'d_metar', name:'METAR / SIGMET',          note:'Required', req:true,  icon:'ti-cloud'},
+      {id:'d_notam', name:'NOTAM records',           note:'Required', req:true,  icon:'ti-file'},
+      {id:'d_crew',  name:'Crew incident report',    note:'Required', req:true,  icon:'ti-user'},
+      {id:'d_fdr',   name:'FDR seatbelt data',       note:'Required', req:true,  icon:'ti-activity'},
+      {id:'d_ground','name':'Valencia ground log',   note:'Optional', req:false, icon:'ti-clipboard'},
+    ],
+    next:'Evidence complete — draft the defence',
+  },
+  {
+    id:'defence', label:'Defence', icon:'ti-shield', color:'#065F46', dot:'#1D9E75',
+    title:'Prepare and file the defence',
+    checks:[
+      {id:'df_draft',   label:'Defence letter drafted',      req:true},
+      {id:'df_review',  label:'Reviewed by lead solicitor',  req:true},
+      {id:'df_signoff', label:'Senior counsel sign-off',     req:true},
+      {id:'df_filed',   label:'Response filed to claimant',  req:true},
+      {id:'df_p36',     label:'Part 36 offer considered',    req:false},
+    ],
+    docs:[
+      {id:'d_defence', name:'Defence letter',    note:'Required', req:true,  icon:'ti-file-text'},
+      {id:'d_p36',     name:'Part 36 offer',     note:'Optional', req:false, icon:'ti-scale'},
+    ],
+    next:'Defence filed — proceed to resolution',
+  },
+  {
+    id:'resolve', label:'Resolve', icon:'ti-circle-check', color:'#374151', dot:'#9CA3AF',
+    title:'Close the case',
+    checks:[
+      {id:'r_outcome', label:'Outcome recorded',       req:true},
+      {id:'r_archive', label:'Documents archived',     req:true},
+      {id:'r_value',   label:'Settlement value noted', req:false},
+      {id:'r_closure', label:'Closure note added',     req:false},
+    ],
+    docs:[
+      {id:'d_settlement', name:'Settlement / court order', note:'If applicable', req:false, icon:'ti-file-check'},
+      {id:'d_closure',    name:'Closure note',             note:'Optional',      req:false, icon:'ti-notes'},
+    ],
+    next:null,
+  },
+];
+
+/* ── State ── */
+let currentStage=0;
+let checked={};
+let uploads={};
+let loaChoice='';
+let assignedTo='';
+let strategyNote='';
+let triageRec=null;
+let audit=[];
+let pendingUpload=null;
+let loaDraftState=''; // 'draft'|'editing'|'approved'
+let loaEdits='';
+const SOLICITORS=['S. Booth','J. Patel','K. Rahman','A. Lewis','External counsel'];
+
+function ts(){return new Date().toLocaleString('en-GB',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});}
+function log(t,type){audit.push({t,type:type||'action',time:ts(),by:C.user});renderAudit();}
+
+function stageComplete(idx){
+  const s=STAGES[idx];
+  const reqOk=s.checks.filter(c=>c.req).every(c=>checked[c.id]);
+  const loaOk=idx!==0||loaChoice!=='';
+  const assignOk=idx!==1||assignedTo!=='';
+  return reqOk&&loaOk&&assignOk;
+}
+
+/* ── Render ── */
+function render(){try{renderMain();}catch(e){console.error(e);}renderAudit();}
+
+function renderMain(){
+  const m=document.getElementById('main');
+  const s=STAGES[currentStage];
+  const done=stageComplete(currentStage);
+  const comp=s.checks.filter(c=>checked[c.id]).length;
+
+  /* rail */
+  const rail='<div class="stage-rail">'+STAGES.map((st,i)=>{
+    const cls=i<currentStage?'done':i===currentStage?'active':'';
+    const conn=i<STAGES.length-1?`<div style="position:absolute;top:11px;right:-50%;width:100%;height:1.5px;background:${i<currentStage?'var(--green-l)':'var(--border2)'};z-index:0"></div>`:'';
+    return `<div class="rail-step" onclick="jumpTo(${i})" title="${st.label}">${conn}<div class="rail-pip ${cls}"><i class="ti ${i<currentStage?'ti-check':st.icon}" style="font-size:10px"></i></div><div class="rail-label ${cls}">${st.label}</div></div>`;
+  }).join('')+'</div>';
+
+  /* case header */
+  const hdr=`<div class="case-hdr"><div><div class="ch-ref">${C.ref}</div><div class="ch-name">${C.name} v. TestAirways</div><div class="ch-meta"><span><i class="ti ti-plane"></i>${C.flight}</span><span><i class="ti ti-currency-pound"></i>${C.value}</span><span><i class="ti ti-calendar"></i>${C.date}</span></div></div><span class="ch-badge" style="background:${s.dot}18;color:${s.color}"><i class="ti ${s.icon}" style="font-size:11px"></i>${s.label}</span></div>`;
+
+  /* checks */
+  const chkHtml=s.checks.map(c=>{
+    const isDone=!!checked[c.id];
+    let extra='';
+
+    if(c.type==='assign'&&!isDone){
+      const opts=SOLICITORS.map(sol=>`<option value="${sol}"${assignedTo===sol?' selected':''}>${sol}</option>`).join('');
+      extra=`<div class="chk-input-wrap"><select class="chk-select" onchange="setAssignee(this.value)"><option value="">Select solicitor…</option>${opts}</select></div>`;
+    } else if(c.type==='assign'&&isDone){
+      extra=`<div class="chk-input-wrap"><div class="chk-saved"><i class="ti ti-check" style="font-size:10px"></i>${assignedTo}</div></div>`;
+    }
+
+    if(c.type==='notes'&&!isDone){
+      extra=`<div class="chk-input-wrap"><input class="chk-text" id="inp-notes" type="text" placeholder="Add a brief note…" value="${strategyNote}"><button class="chk-save" onclick="saveNotes()">Save</button></div>`;
+    } else if(c.type==='notes'&&isDone&&strategyNote){
+      extra=`<div class="chk-input-wrap"><div class="chk-saved"><i class="ti ti-check" style="font-size:10px"></i>${strategyNote}</div></div>`;
+    }
+
+    if(c.type==='loa'&&!loaChoice){
+      extra=`<div class="loa-wrap"><div class="loa-opts">
+        <label class="loa-opt"><input type="radio" name="loa" value="send" onchange="setLoa('send')"> Send Letter of Acknowledgement</label>
+        <label class="loa-opt"><input type="radio" name="loa" value="defer" onchange="setLoa('defer')"> Sending separately</label>
+        <label class="loa-opt"><input type="radio" name="loa" value="none" onchange="setLoa('none')"> Not sending</label>
+        </div></div>`;
+    } else if(c.type==='loa'&&loaChoice){
+      const lt={send:'LOA — draft ready to review',defer:'Sending separately',none:'Not sending — noted'};
+      extra=`<div class="loa-wrap"><div class="chk-saved"><i class="ti ti-check" style="font-size:10px"></i>${lt[loaChoice]}</div>${loaChoice==='send'?renderLOADraft():''}</div>`;
+    }
+
+   
+
+   
+
+    return `<div class="chk${isDone?' done':''}" onclick="${c.type?'':("toggleCheck('"+c.id+"','"+c.label+"')")}"><div class="chk-box"><i class="ti ti-check"></i></div><div class="chk-label">${c.label}</div><span class="chk-tag ${c.req?'t-req':'t-opt'}">${c.req?'Required':'Optional'}</span></div>${extra}`;
+  }).join('');
+
+  /* AI block (triage only) */
+  let aiBlock='';
+  if(currentStage===1){
+    if(!triageRec){
+      aiBlock=`<div class="ai-block"><div class="ai-header"><i class="ti ti-robot" style="font-size:13px;color:var(--blue)"></i><div class="ai-title">AI defence assessment</div><span class="ai-badge">AI</span><button onclick="runAI()" style="font-size:10px;padding:3px 9px;border-radius:var(--r);background:var(--navy);color:#fff;border:none;cursor:pointer;font-family:var(--font);margin-left:8px">Run</button></div><div class="ai-body" style="color:var(--text3);font-size:12px">Click Run to generate the AI assessment for this claim.</div></div>`;
+    } else if(triageRec==='loading'){
+      aiBlock=`<div class="ai-block"><div class="ai-header"><i class="ti ti-robot" style="font-size:13px;color:var(--blue)"></i><div class="ai-title">AI defence assessment</div><span class="ai-badge">AI</span></div><div class="ai-body"><div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text3)"><div class="ai-spinner"></div>Analysing claim…</div></div></div>`;
+    } else {
+      aiBlock=`<div class="ai-block"><div class="ai-header"><i class="ti ti-robot" style="font-size:13px;color:var(--blue)"></i><div class="ai-title">AI defence assessment</div><span class="ai-badge">AI</span></div><div class="ai-body">${triageRec}</div></div>`;
+    }
+  }
+
+  /* CPR block (triage only) */
+  let cprBlock='';
+  if(currentStage===1){
+    cprBlock=`<div class="cpr-block"><div class="cpr-row"><div class="cpr-label"><i class="ti ti-calendar-due" style="font-size:12px;color:var(--red)"></i>CPR response deadline</div><div class="cpr-date">${cprStr}</div></div><div class="cpr-note">21 days from LOC receipt — add to calendar now.</div><div class="cal-row"><button class="btn-cal" onclick="exportICS()"><i class="ti ti-calendar-plus" style="font-size:11px"></i> Download .ics</button><button class="btn-cal" onclick="openGCal()"><i class="ti ti-brand-google" style="font-size:11px"></i> Google Calendar</button></div></div>`;
+  }
+
+  /* docs */
+  const docsHtml=s.docs.map(d=>{
+    const isUp=!!uploads[d.id];
+    const isAtt=!!d.attached;
+    const tagCls=isAtt?'dt-att':isUp?'dt-up':d.req?'dt-req':'dt-opt';
+    const tagTxt=isAtt?'Attached':isUp?'Uploaded':d.req?'Required':'Optional';
+    const action=isAtt?'':(isUp?`<span style="font-size:10px;color:var(--green)">✓</span>`:`<button class="btn-upload" onclick="triggerUpload('${d.id}','${d.name}')">Upload</button>`);
+    return `<div class="doc-item"><div class="doc-icon" style="${isUp||isAtt?'background:var(--green-faint);color:var(--green)':'background:var(--surface3);color:var(--text3)'}"><i class="ti ${d.icon}"></i></div><div class="doc-name">${d.name}</div><span class="doc-note">${d.note}</span><span class="doc-tag ${tagCls}">${tagTxt}</span>${action}</div>`;
+  }).join('');
+
+  /* hint */
+  let hint='';
+  if(!done){
+    if(currentStage===0&&loaChoice==='') hint='Select a Letter of Acknowledgement decision to proceed';
+    else if(currentStage===1&&!assignedTo) hint='Assign a lead solicitor to proceed';
+    else{const miss=s.checks.filter(c=>c.req&&!checked[c.id]);if(miss.length)hint=`${miss.length} required item${miss.length>1?'s':''} remaining`;}
+  }
+
+  const isLast=currentStage===STAGES.length-1;
+
+  m.innerHTML=rail+hdr
+    +`<div class="stage-card"><div class="sc-header" style="border-left-color:${s.dot}"><div class="sc-label" style="color:${s.color}">${s.label} — ${comp} of ${s.checks.length} complete</div><div class="sc-title">${s.title}</div></div><div class="sc-body">`
+    +(currentStage===1?aiBlock+cprBlock:'')
+    +`<div style="font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.07em;color:var(--text3);margin-bottom:8px">Checklist</div>`
+    +`<div class="checklist">${chkHtml}</div>`
+    +`<div style="font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.07em;color:var(--text3);margin-bottom:8px;margin-top:14px">Documents</div>`
+    +docsHtml
+    +`<div class="advance-wrap">`
+    +(isLast&&done
+      ?`<div style="text-align:center;padding:12px;font-size:13px;color:var(--green);font-weight:500;border:1px solid #BBF7D0;border-radius:var(--r2);background:var(--green-faint)"><i class="ti ti-circle-check"></i>  Case closed</div>`
+      :`<button class="btn-advance" onclick="advance()" ${done?'':'disabled'}>${s.next} <i class="ti ti-arrow-right"></i></button><div class="advance-hint">${hint}</div>`
+    )
+    +'</div></div></div>';
+}
+
+function renderAudit(){
+  const el=document.getElementById('audit-scroll');
+  document.getElementById('audit-count').textContent=audit.length+' entr'+(audit.length===1?'y':'ies');
+  if(!audit.length){el.innerHTML='<div style="font-size:11px;color:var(--text3);padding:6px 0">No activity yet</div>';return;}
+  el.innerHTML=audit.slice().reverse().map(e=>`<div class="audit-entry"><div class="a-dot a-${e.type}"></div><div><div class="a-text">${e.t}</div><div class="a-time">${e.time} · ${e.by}</div></div></div>`).join('');
+}
+
+/* ── Actions ── */
+function toggleCheck(id,label){
+  if(checked[id]){delete checked[id];log('Unchecked: '+label,'action');}
+  else{checked[id]=true;log('Confirmed: '+label,'action');}
+  render();
+}
+function setLoa(val){
+  loaChoice=val;checked['c_loa']=true;
+  const m={send:'LOA: will be sent',defer:'LOA: sending separately',none:'LOA: not sending'};
+  log(m[val],'action');render();
+}
+function setAssignee(val){
+  if(!val)return;
+  assignedTo=val;checked['t_assign']=true;
+  log('Assigned to: '+val,'action');render();
+}
+function saveNotes(){
+  const inp=document.getElementById('inp-notes');
+  if(!inp||!inp.value.trim())return;
+  strategyNote=inp.value.trim();
+  checked['t_notes']=true;
+  log('Note: '+strategyNote,'note');render();
+}
+
+function advance(){
+  if(!stageComplete(currentStage))return;
+  const next=currentStage+1;
+  log('Stage complete: '+STAGES[currentStage].label+' → '+(STAGES[next]?.label||'closed'),'stage');
+  // Auto-trigger AI when moving INTO triage (next stage = 1)
+  if(next===1 && !triageRec){ setTimeout(runAI, 800); }
+  if(currentStage===1){
+    try{
+      const d=JSON.parse(sessionStorage.getItem('aeroCaseData')||'{}');
+      d.assignedTo=assignedTo;d.strategyNote=strategyNote;d.loaChoice=loaChoice;
+      sessionStorage.setItem('aeroCaseData',JSON.stringify(d));
+    }catch(e){}
+    window.location.href='module3-cpr.html';return;
+  }
+  currentStage=next;
+  render();
+  document.getElementById('main').scrollTo(0,0);
+}
+
+function jumpTo(i){
+  if(i===currentStage)return;
+  if(i>currentStage){
+    for(let x=currentStage;x<i;x++){
+      if(!stageComplete(x)){log('Cannot skip — '+STAGES[x].label+' incomplete','note');return;}
+    }
+  }
+  log('Navigated to: '+STAGES[i].label,'note');
+  currentStage=i;render();
+  document.getElementById('main').scrollTo(0,0);
+}
+
+/* ── AI triage ── */
+async function runAI(){
+  triageRec='loading';render();
+  const pts=C.points.length
+    ?C.points.map(p=>`${p.n}. ${p.claim} [${p.evidenceStatus}${p.evidenceDoc?', evidence: '+p.evidenceDoc:''}]`).join('\n')
+    :'Claim type: '+C.type+', value: '+C.value;
+
+  try{
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+      model:'claude-sonnet-4-20250514',max_tokens:900,
+      system:'You are an aviation legal analyst. Assess claims for an airline in-house legal team. Be concise and direct. Never suggest settlement — only identify defence lines, missing evidence, or escalation flags. Respond in clean HTML using these exact CSS classes available: verdict-pill vp-defend/vp-missing/vp-escalate, pt-list, pt-item, pt-dot pt-g/pt-a/pt-r, pt-label, pt-detail, pt-verdict pv-d/pv-m/pv-e, esc-note.',
+      messages:[{role:'user',content:`Claim: ${C.type}\nFlight: ${C.flight}\nValue: ${C.value}\nFramework: ${C.framework}\n\nPoints:\n${pts}\n\nProvide: (1) an overall verdict pill, (2) one sentence summary, (3) a pt-list with each point assessed as DEFEND/EVIDENCE NEEDED/ESCALATE, (4) an esc-note only if escalation is warranted. Be brief.`}]
+    })});
+    const data=await resp.json();
+    const raw=data.content?.find(b=>b.type==='text')?.text||'';
+    triageRec=raw.replace(/```html|```/g,'').trim();
+    log('AI assessment generated','ai');
+  }catch(e){
+    triageRec=buildFallback();
+    log('AI assessment generated','ai');
+  }
+  render();
+}
+
+function buildFallback(){
+  const overall=redPts>1?'escalate':redPts===1?'missing':'defend';
+  const label=redPts>1?'ESCALATE':redPts===1?'EVIDENCE NEEDED':'DEFENDABLE';
+  const icon=redPts>1?'ti-arrow-up':redPts===1?'ti-alert-triangle':'ti-shield';
+  const summary=overall==='defend'
+    ?'Statutory delay claim defensible on extraordinary circumstances grounds. Statutory cap applies.'
+    :overall==='missing'
+    ?'Core delay claim defensible but key evidence is outstanding. Obtain before filing.'
+    :'Multiple undefended points. Senior review required before proceeding.';
+  let pts='<div class="pt-list">';
+  if(C.points.length){
+    pts+=C.points.map(p=>{
+      const dc=p.evidenceStatus==='green'?'pt-g':p.evidenceStatus==='amber'?'pt-a':'pt-r';
+      const vc=p.evidenceStatus==='green'?'pv-d':p.evidenceStatus==='amber'?'pv-m':'pv-e';
+      const vt=p.evidenceStatus==='green'?'DEFEND':p.evidenceStatus==='amber'?'EVIDENCE NEEDED':'ESCALATE';
+      return `<div class="pt-item"><div class="pt-dot ${dc}"></div><div style="flex:1"><div class="pt-label">Point ${p.n} — ${p.claim}</div><div class="pt-detail">${p.evidenceDoc||''}</div></div><span class="pt-verdict ${vc}">${vt}</span></div>`;
+    }).join('');
+  }
+  pts+='</div>';
+  const esc=redPts>0?`<div class="esc-note">Escalation flag: ${redPts} point${redPts>1?'s':''} have no evidence on file. Do not file a response until these gaps are addressed.</div>`:'';
+  return `<div class="verdict-pill vp-${overall}"><i class="ti ${icon}"></i> ${label}</div><div style="font-size:12px;color:var(--text2);margin-bottom:10px">${summary}</div>${pts}${esc}`;
+}
+
+/* ── Calendar ── */
+function exportICS(){
+  function fmt(d){return d.toISOString().replace(/[-:]/g,'').split('.')[0]+'Z';}
+  const end=new Date(cprDate.getTime()+3600000);
+  const r14=new Date(cprDate.getTime()-14*86400000);
+  const r7=new Date(cprDate.getTime()-7*86400000);
+  const r3=new Date(cprDate.getTime()-3*86400000);
+  const ics=`BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//261Claims//EN\r\nBEGIN:VEVENT\r\nUID:${C.ref}-cpr@261claims\r\nDTSTART:${fmt(cprDate)}\r\nDTEND:${fmt(end)}\r\nSUMMARY:CPR Deadline — ${C.name} v. TestAirways (${C.ref})\r\nDESCRIPTION:${C.type} · ${C.value} · Ref: ${C.ref}\r\nBEGIN:VALARM\r\nTRIGGER:${fmt(r14)}\r\nACTION:DISPLAY\r\nDESCRIPTION:14 days to CPR deadline — ${C.ref}\r\nEND:VALARM\r\nBEGIN:VALARM\r\nTRIGGER:${fmt(r7)}\r\nACTION:DISPLAY\r\nDESCRIPTION:7 days to CPR deadline — ${C.ref}\r\nEND:VALARM\r\nBEGIN:VALARM\r\nTRIGGER:${fmt(r3)}\r\nACTION:DISPLAY\r\nDESCRIPTION:3 days to CPR deadline — ${C.ref}\r\nEND:VALARM\r\nEND:VEVENT\r\nEND:VCALENDAR`;
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([ics],{type:'text/calendar'}));
+  a.download=C.ref+'-CPR-deadline.ics';a.click();
+  log('CPR deadline exported to calendar ('+cprStr+')','action');
+}
+function openGCal(){
+  function fmt(d){return d.toISOString().replace(/[-:T]/g,'').split('.')[0]+'Z';}
+  const end=new Date(cprDate.getTime()+3600000);
+  const text=encodeURIComponent('CPR Deadline — '+C.name+' v. TestAirways ('+C.ref+')');
+  const details=encodeURIComponent(C.type+' · '+C.value);
+  window.open('https://calendar.google.com/calendar/render?action=TEMPLATE&text='+text+'&dates='+fmt(cprDate)+'/'+fmt(end)+'&details='+details,'_blank');
+  log('CPR deadline added to Google Calendar','action');
+}
+
+/* ── Upload ── */
+function triggerUpload(id,name){pendingUpload={id,name};document.getElementById('file-input').click();}
+function handleUpload(e){
+  const f=e.target.files[0];
+  if(!f||!pendingUpload)return;
+  uploads[pendingUpload.id]=f.name;
+  log('Uploaded: "'+f.name+'" — '+pendingUpload.name,'upload');
+  e.target.value='';pendingUpload=null;render();
+}
+
+function addNote(){
+  const inp=document.getElementById('note-input');
+  const val=inp.value.trim();
+  if(!val)return;log(val,'note');inp.value='';
+}
+
+
+/* ── LOA draft ── */
+let loaDraftApproved = false;
+let loaDraftEdits = '';
+
+function buildLOAText(){
+  const today = new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'});
+  const respBy = cprDate.toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'});
+  const threeMonth = new Date(cprDate); threeMonth.setDate(threeMonth.getDate()+70);
+  const respDeadline = threeMonth.toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'});
+  return `PRIVATE AND CONFIDENTIAL\nBY EMAIL AND FIRST CLASS POST\n\n${today}\n\n${C.sol}\n\nDear Sirs,\n\nRE: ${C.name.toUpperCase()} v. TESTAIRWAYS\nOUR REF: ${C.ref}\nFLIGHT: ${C.flight}\n\nACKNOWLEDGEMENT OF LETTER OF CLAIM\n\nWe write on behalf of TestAirways to acknowledge receipt of your letter of claim dated ${C.date}.\n\nINVESTIGATION\n\nThis matter has been assigned to our legal team. We are gathering the relevant operational records, flight data, and evidence required to respond substantively to each of your client's heads of claim.\n\nIn accordance with the Pre-Action Protocol, we will provide a full Letter of Response no later than ${respDeadline}. We will notify you promptly if an extension is required.\n\nEXTRAORDINARY CIRCUMSTANCES\n\nWithout prejudice to our investigation, the disruption to flight ${C.flight} arose from circumstances beyond the reasonable control of TestAirways. We are gathering evidence in respect of the extraordinary circumstances defence under Article 5(3) of EC Regulation 261/2004 (Wallentin-Hermann v Alitalia, Case C-549/07). Our full position on liability will be set out in our Letter of Response.\n\nRESERVATION OF RIGHTS\n\nNothing in this letter constitutes an admission of liability. TestAirways reserves all rights and defences available under EC Regulation 261/2004 and at common law.\n\nYours faithfully,\n\n${C.assignedTo||C.user}\nLegal Department\nTestAirways`;
+}
+
+function renderLOADraft(){
+  const text = loaDraftEdits || buildLOAText();
+  const safeText = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  return `<div class="loa-draft">
+    <div class="loa-draft-hdr">
+      <div class="loa-draft-title"><i class="ti ti-file-text" style="font-size:12px;color:var(--amber)"></i>Letter of Acknowledgement — draft</div>
+      <div class="loa-draft-actions">
+        <button class="btn-loa" onclick="downloadLOA()"><i class="ti ti-download" style="font-size:10px"></i> Download</button>
+        ${loaDraftApproved
+          ? '<button class="btn-loa approved"><i class="ti ti-circle-check" style="font-size:10px"></i> Approved</button>'
+          : '<button class="btn-loa primary" onclick="approveLOA()"><i class="ti ti-check" style="font-size:10px"></i> Approve & mark sent</button>'
+        }
+      </div>
+    </div>
+    <div class="loa-text">${safeText}</div>
+    <div class="loa-footer">
+      <div class="loa-status${loaDraftApproved?' approved':''}">${loaDraftApproved?'Approved for sending — '+C.user:'Pending review — approve before sending'}</div>
+      <div style="font-size:10px;color:var(--text3)">Will be sent to ${C.sol}</div>
+    </div>
+  </div>`;
+}
+
+function approveLOA(){
+  loaDraftApproved = true;
+  log('Letter of Acknowledgement approved by '+C.user+' — marked as sent to '+C.sol,'action');
+  render();
+}
+
+function downloadLOA(){
+  const text = loaDraftEdits || buildLOAText();
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([text],{type:'text/plain'}));
+  a.download = C.ref+'-Letter-of-Acknowledgement.txt';
+  a.click();
+  log('LOA downloaded: '+C.ref+'-Letter-of-Acknowledgement.txt','action');
+}
+
+
+/* ── LOA draft ── */
+function buildLOA(){
+  const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const today=new Date();
+  const todayStr=today.getDate()+' '+MONTHS[today.getMonth()]+' '+today.getFullYear();
+  const respDate=new Date(cprDate);respDate.setMonth(respDate.getMonth()+3);
+  const respStr=respDate.getDate()+' '+MONTHS[respDate.getMonth()]+' '+respDate.getFullYear();
+  return `PRIVATE AND CONFIDENTIAL
+BY EMAIL AND POST
+
+${todayStr}
+
+${C.sol}
+
+Dear Sirs,
+
+RE: ${C.name.toUpperCase()} v. TESTAIRWAYS
+OUR REF: ${C.ref}
+FLIGHT: ${C.flight}
+
+ACKNOWLEDGEMENT OF LETTER OF CLAIM
+
+We write on behalf of TestAirways in response to your letter of claim dated ${C.date}.
+
+We confirm receipt of your letter of claim and acknowledge the same in accordance with the Pre-Action Protocol.
+
+INVESTIGATION
+
+We are currently investigating the circumstances surrounding the disruption to the above-referenced flight. The matter has been assigned to our legal team. We will provide a substantive Letter of Response no later than ${respStr}, being three months from the date of this acknowledgement.
+
+EXTRAORDINARY CIRCUMSTANCES
+
+Without prejudice to our investigation, we note that the disruption to flight ${C.flight} arose from circumstances beyond the reasonable control of TestAirways. We are gathering evidence in respect of the extraordinary circumstances defence available under Article 5(3) of EC Regulation 261/2004. Our full position on liability will be set out in our Letter of Response.
+
+RESERVATION OF RIGHTS
+
+Nothing in this letter constitutes an admission of liability. TestAirways reserves all rights and defences available to it under EC Regulation 261/2004 and at common law.
+
+We look forward to corresponding with you further.
+
+Yours faithfully,
+
+${C.assignedTo||'Legal Department'}
+Legal Department
+TestAirways`;
+}
+
+function renderLOADraft(){
+  if(!loaDraftState) loaDraftState='draft';
+  const text=loaEdits||buildLOA();
+  const isApproved=loaDraftState==='approved';
+  const statusTxt=isApproved?'Approved — ready to send':'Draft — pending review';
+  const statusCls=isApproved?'loa-status approved':'loa-status';
+  const actions=isApproved
+    ?`<button class="btn-loa approved"><i class="ti ti-check" style="font-size:10px"></i>Approved</button>
+      <button class="btn-loa" onclick="downloadLOA()"><i class="ti ti-download" style="font-size:10px"></i>Download</button>`
+    :`<button class="btn-loa" onclick="editLOA()"><i class="ti ti-pencil" style="font-size:10px"></i>Edit</button>
+      <button class="btn-loa" onclick="downloadLOA()"><i class="ti ti-download" style="font-size:10px"></i>Download</button>
+      <button class="btn-loa primary" onclick="approveLOA()"><i class="ti ti-check" style="font-size:10px"></i>Approve</button>`;
+  const safeText=text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  return `<div class="loa-draft">
+    <div class="loa-draft-header">
+      <div class="loa-draft-title"><i class="ti ti-file-text" style="font-size:12px;color:var(--amber)"></i>Letter of Acknowledgement — draft</div>
+      <div class="loa-draft-actions">${actions}</div>
+    </div>
+    <div class="loa-text" id="loa-text">${safeText}</div>
+    <div class="loa-footer">
+      <div class="${statusCls}">${statusTxt}</div>
+      <div style="font-size:10px;color:var(--text3)">To: ${C.sol}</div>
+    </div>
+    ${!isApproved?`<div class="loa-send-note"><i class="ti ti-info-circle" style="font-size:11px"></i>Review and approve before sending. Internal email sending coming soon.</div>`:''}
+  </div>`;
+}
+
+function editLOA(){
+  const el=document.getElementById('loa-text');
+  if(el){el.contentEditable='true';el.focus();}
+  loaDraftState='editing';
+  log('LOA draft opened for editing','action');
+}
+
+function approveLOA(){
+  const el=document.getElementById('loa-text');
+  if(el) loaEdits=el.innerText||loaEdits||buildLOA();
+  loaDraftState='approved';
+  log('Letter of Acknowledgement approved by '+C.user+' — ready to send to '+C.sol,'action');
+  render();
+}
+
+function downloadLOA(){
+  const text=loaEdits||buildLOA();
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([text],{type:'text/plain'}));
+  a.download=C.ref+'-Letter-of-Acknowledgement.txt';
+  a.click();
+  log('LOA draft downloaded: '+C.ref+'-Letter-of-Acknowledgement.txt','action');
+}
+
+/* ── Init ── */
+log('Case activated — '+C.name+' v. TestAirways','create');
+log('Claim: '+C.type+' · '+C.value,'create');
+render();
+</script>
+</body>
+</html>
