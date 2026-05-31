@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>261Claims — Module 4: Evidence Management</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#0B1628;--navy2:#132033;
+  --blue:#2A6FDB;--blue-faint:#EFF6FF;--blue-text:#1D4ED8;
+  --green:#1A7A4A;--green-l:#22A863;--green-faint:#E6F5EE;
+  --red:#C0392B;--red-faint:#FCF0EF;
+  --amber:#B45309;--amber-faint:#FEF3C7;
+  --purple:#4338CA;--purple-faint:#EEEDFE;
+  --border:#E2E8F0;--border2:#CBD5E1;
+  --text:#0F172A;--text2:#475569;--text3:#94A3B8;
+  --surface:#FFFFFF;--surface2:#F8FAFC;--surface3:#F1F5F9;
+  --font:'DM Sans',sans-serif;--mono:'DM Mono',monospace;
+  --r:8px;--r2:12px;--r3:16px;
+}
+html,body{height:100%;font-family:var(--font);background:var(--surface2);color:var(--text);font-size:14px}
+.app{display:flex;flex-direction:column;height:calc(100vh - 48px)}
+
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px;height:54px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+.logo-mark{width:32px;height:32px;background:var(--navy);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px}
+.logo-name{font-size:15px;font-weight:500;letter-spacing:-0.02em;color:var(--navy)}
+.logo-tag{font-size:12px;color:var(--text3);margin-left:2px}
+.topbar-right{display:flex;align-items:center;gap:10px}
+.mod-badge{font-size:11px;font-weight:500;background:var(--purple-faint);color:var(--purple);border-radius:20px;padding:3px 10px}
+.av-row{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--text2)}
+.av{width:28px;height:28px;border-radius:50%;background:var(--navy2);color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500}
+.btn-back{font-size:12px;padding:5px 12px;border-radius:var(--r);border:1px solid var(--border);background:var(--surface);cursor:pointer;color:var(--text2);font-family:var(--font);display:flex;align-items:center;gap:5px;text-decoration:none}
+.btn-back:hover{background:var(--surface3)}
+
+.body{flex:1;display:grid;grid-template-columns:1fr 300px;overflow:hidden}
+.main{overflow-y:auto;padding:20px 24px}
+.sidebar{border-left:1px solid var(--border);background:var(--surface);display:flex;flex-direction:column;overflow:hidden}
+
+/* case header */
+.case-hdr{background:var(--surface);border:1px solid var(--border);border-radius:var(--r3);padding:15px 18px;margin-bottom:14px;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.ch-ref{font-size:11px;font-family:var(--mono);color:var(--text3);margin-bottom:2px}
+.ch-name{font-size:16px;font-weight:500;color:var(--text);margin-bottom:5px;letter-spacing:-0.01em}
+.ch-meta{display:flex;flex-wrap:wrap;gap:12px;font-size:12px;color:var(--text2)}
+.ch-meta span{display:flex;align-items:center;gap:4px}
+.ch-meta i{font-size:12px;color:var(--text3)}
+.ch-right{display:flex;flex-direction:column;gap:5px;align-items:flex-end;flex-shrink:0}
+.status-pill{font-size:11px;font-weight:500;padding:3px 10px;border-radius:20px;display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
+
+/* collapsible card */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r3);margin-bottom:12px;overflow:hidden}
+.card-header{padding:12px 16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none}
+.card-header:hover{background:var(--surface2)}
+.card-header-left{display:flex;align-items:center;gap:9px}
+.card-icon{width:28px;height:28px;border-radius:var(--r);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.card-title{font-size:13px;font-weight:500;color:var(--text)}
+.card-sub{font-size:11px;color:var(--text3);margin-top:1px}
+.card-chevron{font-size:13px;color:var(--text3);transition:transform 0.2s;flex-shrink:0}
+.card-chevron.open{transform:rotate(180deg)}
+.card-body{padding:14px 16px;border-top:1px solid var(--border);display:none}
+.card-body.open{display:block}
+
+/* form */
+.fg2{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:9px}
+.fg3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;margin-bottom:9px}
+.fg4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:9px;margin-bottom:9px}
+.fl{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.06em;color:var(--text3);margin-bottom:3px}
+.fi{width:100%;font-size:12px;padding:6px 9px;border:1px solid var(--border);border-radius:var(--r);background:var(--surface);color:var(--text);font-family:var(--font)}
+.fi:focus{outline:none;border-color:var(--blue)}
+.fi.ai{background:var(--blue-faint);border-color:#BFDBFE;color:var(--blue-text)}
+.fs{width:100%;font-size:12px;padding:6px 9px;border:1px solid var(--border);border-radius:var(--r);background:var(--surface);color:var(--text);font-family:var(--font);cursor:pointer}
+.fs:focus{outline:none;border-color:var(--blue)}
+.fta{width:100%;font-size:12px;padding:7px 9px;border:1px solid var(--border);border-radius:var(--r);background:var(--surface);color:var(--text);font-family:var(--font);resize:vertical;min-height:60px;line-height:1.5}
+.fta:focus{outline:none;border-color:var(--blue)}
+.ai-tag{font-size:9px;font-weight:500;background:var(--blue-faint);color:var(--blue-text);border-radius:8px;padding:1px 5px;margin-left:3px;vertical-align:middle}
+.form-div{height:1px;background:var(--border);margin:12px 0}
+.form-sec{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.07em;color:var(--text3);margin-bottom:8px}
+.fdp-box{background:var(--surface2);border-radius:var(--r);padding:9px 12px;font-size:12px;color:var(--text2);display:flex;align-items:center;gap:8px;margin-top:6px}
+.fdp-val{font-weight:500;color:var(--text);font-family:var(--mono)}
+.fdp-warn{color:var(--red);font-weight:500}
+.btn-sm{font-size:11px;font-weight:500;padding:7px 14px;border-radius:var(--r);border:none;cursor:pointer;font-family:var(--font);display:inline-flex;align-items:center;gap:5px}
+.btn-navy{background:var(--navy);color:#fff}
+.btn-navy:hover{background:var(--navy2)}
+
+/* disruption type */
+.dt-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:5px}
+.dt-btn{padding:8px 5px;border:1px solid var(--border);border-radius:var(--r);cursor:pointer;text-align:center;font-size:10px;font-weight:500;color:var(--text2);background:var(--surface);transition:all 0.15s;font-family:var(--font);line-height:1.3}
+.dt-btn:hover{border-color:var(--border2);background:var(--surface3)}
+.dt-btn.primary-sel{background:var(--navy);border-color:var(--navy);color:#fff}
+.dt-btn.secondary-sel{background:var(--purple-faint);border-color:var(--purple);color:var(--purple)}
+.dt-btn i{display:block;font-size:15px;margin-bottom:4px}
+.dt-legend{display:flex;gap:12px;margin-top:8px;font-size:11px;color:var(--text2)}
+.dt-legend span{display:flex;align-items:center;gap:5px}
+.dt-swatch{width:10px;height:10px;border-radius:3px}
+.dt-mode-row{display:flex;gap:6px;margin-bottom:10px}
+.dt-mode-btn{font-size:11px;padding:4px 12px;border-radius:20px;border:1px solid var(--border);background:var(--surface);cursor:pointer;font-family:var(--font);color:var(--text2);transition:all 0.15s}
+.dt-mode-btn.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+
+/* verdict */
+.verdict{border-radius:var(--r2);padding:11px 14px;margin-bottom:12px;display:flex;align-items:flex-start;gap:10px}
+.verdict-defend{background:var(--green-faint);border:1px solid #BBF7D0}
+.verdict-incomplete{background:var(--surface3);border:1px solid var(--border2)}
+.verdict-icon{font-size:17px;flex-shrink:0;margin-top:1px}
+.verdict-title{font-size:13px;font-weight:500}
+.verdict-sub{font-size:11px;color:var(--text2);margin-top:2px;line-height:1.5}
+
+/* evidence tier */
+.ev-tier{margin-bottom:14px}
+.ev-tier-header{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r2);margin-bottom:8px}
+.ev-tier-left{display:flex;align-items:center;gap:8px}
+.ev-tier-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.ev-tier-title{font-size:12px;font-weight:500;color:var(--text)}
+.ev-tier-sub{font-size:11px;color:var(--text3);margin-top:1px}
+.ev-tier-right{display:flex;align-items:center;gap:8px}
+.ev-tier-count{font-size:11px;color:var(--text3)}
+.btn-pull{font-size:10px;font-weight:500;padding:4px 10px;border-radius:var(--r);border:1px solid var(--border2);background:var(--surface);cursor:pointer;font-family:var(--font);color:var(--text2);display:inline-flex;align-items:center;gap:4px;transition:all 0.15s}
+.btn-pull:hover{background:var(--surface3)}
+.btn-pull.pulling{background:var(--blue-faint);border-color:#BFDBFE;color:var(--blue-text);cursor:default}
+.btn-pull.pulled{background:var(--green-faint);border-color:#BBF7D0;color:var(--green);cursor:default}
+
+/* evidence item */
+.ev-item{border:1px solid var(--border);border-radius:var(--r2);margin-bottom:6px;background:var(--surface);overflow:hidden}
+.ev-item.ev-uploaded{border-color:#BBF7D0;background:#FAFFFE}
+.ev-item.ev-api{border-color:#BFDBFE;background:var(--blue-faint)}
+.ev-item.ev-pending{border-left:3px solid var(--blue)}
+.ev-row{display:flex;align-items:flex-start;gap:10px;padding:10px 12px}
+.ev-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:5px}
+.ev-d-green{background:var(--green-l)}
+.ev-d-amber{background:#F59E0B}
+.ev-d-red{background:var(--red)}
+.ev-d-blue{background:var(--blue)}
+.ev-d-grey{background:var(--border2)}
+.ev-info{flex:1;min-width:0}
+.ev-name{font-size:12px;font-weight:500;color:var(--text);margin-bottom:2px;display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.ev-why{font-size:11px;color:var(--text2);line-height:1.5;margin-bottom:4px}
+.ev-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.ev-source{font-size:10px;color:var(--text3);display:flex;align-items:center;gap:3px}
+.ev-source a{color:var(--blue-text);text-decoration:none}
+.ev-source a:hover{text-decoration:underline}
+.ev-api-pill{font-size:9px;font-weight:500;background:var(--blue-faint);color:var(--blue-text);border-radius:10px;padding:1px 6px;display:inline-flex;align-items:center;gap:3px}
+.ev-actions{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0}
+.ev-tag{font-size:10px;font-weight:500;padding:2px 7px;border-radius:20px;white-space:nowrap}
+.tag-key{background:var(--red-faint);color:var(--red)}
+.tag-sec{background:var(--amber-faint);color:var(--amber)}
+.tag-wide{background:var(--purple-faint);color:var(--purple)}
+.tag-up{background:var(--green-faint);color:var(--green)}
+.tag-api{background:var(--blue-faint);color:var(--blue-text)}
+.btn-ev{font-size:10px;padding:4px 9px;border-radius:var(--r);border:1px solid var(--border2);background:var(--surface2);cursor:pointer;color:var(--text2);font-family:var(--font);display:inline-flex;align-items:center;gap:3px;transition:background 0.15s;white-space:nowrap}
+.btn-ev:hover{background:var(--surface3)}
+.btn-ev.done{background:var(--green-faint);border-color:#BBF7D0;color:var(--green);cursor:default}
+.btn-ev.api-btn{background:var(--blue-faint);border-color:#BFDBFE;color:var(--blue-text);cursor:not-allowed}
+.ev-file{font-size:10px;color:var(--text3);font-family:var(--mono);padding:0 12px 8px 29px}
+.ev-api-note{font-size:10px;color:var(--blue-text);padding:0 12px 8px 29px;font-style:italic}
+
+/* empty */
+.ev-empty{text-align:center;padding:44px 20px;color:var(--text3)}
+.ev-empty i{font-size:32px;display:block;margin-bottom:10px;opacity:0.4}
+.ev-empty p{font-size:12px;line-height:1.6}
+
+/* progress */
+.prog-track{height:3px;background:var(--border);border-radius:2px;overflow:hidden;margin-bottom:10px}
+.prog-fill{height:100%;background:var(--green-l);transition:width 0.4s;border-radius:2px}
+.prog-stats{display:flex;gap:14px;margin-bottom:12px;flex-wrap:wrap}
+.prog-stat{font-size:12px;color:var(--text2);display:flex;align-items:center;gap:5px}
+.prog-stat strong{color:var(--text)}
+
+/* sidebar */
+.sb-header{padding:13px 15px;border-bottom:1px solid var(--border);flex-shrink:0}
+.sb-title{font-size:12px;font-weight:500;color:var(--text)}
+.sb-sub{font-size:11px;color:var(--text3);margin-top:1px}
+.audit-scroll{flex:1;overflow-y:auto;padding:10px 13px}
+.audit-entry{display:flex;gap:8px;padding:7px 0;border-bottom:1px solid var(--border)}
+.audit-entry:last-child{border-bottom:none}
+.a-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:4px}
+.a-create{background:var(--green-l)}.a-action{background:var(--green-l)}
+.a-upload{background:#8B5CF6}.a-note{background:var(--amber)}
+.a-save{background:var(--blue)}.a-pull{background:var(--blue)}
+.a-text{font-size:11px;color:var(--text);line-height:1.4}
+.a-time{font-size:10px;color:var(--text3);margin-top:1px}
+.note-bar{padding:9px 11px;border-top:1px solid var(--border);display:flex;gap:5px;flex-shrink:0}
+.note-bar input{flex:1;font-size:11px;padding:5px 8px;border:1px solid var(--border);border-radius:var(--r);background:var(--surface);color:var(--text);font-family:var(--font)}
+.note-bar input:focus{outline:none;border-color:var(--blue)}
+.note-bar button{font-size:11px;padding:5px 9px;border-radius:var(--r);border:1px solid var(--border);background:var(--surface2);cursor:pointer;font-family:var(--font);color:var(--text2)}
+input[type=file]{display:none}
+</style>
+</head>
+<body>
+<nav class="global-nav" style="background:var(--navy);height:48px;display:flex;align-items:center;padding:0 20px;gap:0;flex-shrink:0">
+  <a href="index.html" style="display:flex;align-items:center;gap:8px;text-decoration:none;margin-right:16px">
+    <div style="width:28px;height:28px;background:var(--blue);border-radius:6px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px"><i class="ti ti-plane"></i></div>
+    <span style="font-size:14px;font-weight:500;color:#fff">261Claims</span>
+  </a>
+  <div style="display:flex;align-items:center;gap:2px;flex:1">
+    <a href="index.html" style="display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r);font-size:12px;font-weight:500;color:rgba(255,255,255,0.5);text-decoration:none"><i class="ti ti-layout-dashboard"></i> Dashboard</a>
+    <a href="module1-intake.html" style="display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r);font-size:12px;font-weight:500;color:rgba(255,255,255,0.5);text-decoration:none"><i class="ti ti-file-upload"></i> Intake</a>
+    <a href="module2-case-management.html" style="display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r);font-size:12px;font-weight:500;color:rgba(255,255,255,0.5);text-decoration:none"><i class="ti ti-layout-kanban"></i> Cases</a>
+    <a href="module3-cpr.html" style="display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r);font-size:12px;font-weight:500;color:rgba(255,255,255,0.5);text-decoration:none"><i class="ti ti-calendar-due"></i> CPR</a>
+    <a href="module4-evidence.html" style="display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r);font-size:12px;font-weight:500;color:rgba(255,255,255,0.5);text-decoration:none"><i class="ti ti-folder-open"></i> Evidence</a>
+    <a href="module5-drafting.html" style="display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r);font-size:12px;font-weight:500;color:rgba(255,255,255,0.5);text-decoration:none"><i class="ti ti-file-pencil"></i> Drafting</a>
+    <a href="module6-mi.html" style="display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r);font-size:12px;font-weight:500;color:rgba(255,255,255,0.5);text-decoration:none"><i class="ti ti-chart-bar"></i> MI</a>
+  </div>
+  <a href="module4-evidence.html" style="font-size:11px;padding:5px 12px;border-radius:var(--r);border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.7);text-decoration:none;display:flex;align-items:center;gap:5px"><i class="ti ti-folder-open"></i> Back to Evidence</a>
+</nav>
+<div class="app">
+    <div class="body">
+    <div class="main" id="main"></div>
+    <div class="sidebar">
+      <div class="sb-header">
+        <div class="sb-title">Audit trail</div>
+        <div class="sb-sub" id="audit-count">0 entries</div>
+      </div>
+      <div class="audit-scroll" id="audit-scroll"></div>
+      <div class="note-bar">
+        <input type="text" id="note-input" placeholder="Add a note…" onkeydown="if(event.key==='Enter')addNote()">
+        <button onclick="addNote()">Add</button>
+      </div>
+    </div>
+  </div>
+</div>
+<input type="file" id="file-input" onchange="handleUpload(event)">
+
+<script>
+/* ── Case from sessionStorage ── */
+var _i={};
+try{var _r=sessionStorage.getItem('aeroCaseData');if(_r)_i=JSON.parse(_r);}catch(e){}
+var C={
+  ref:   _i.ref       ||'AC-2026-0089',
+  name:  _i.claimant  ||'Daniel Hartley',
+  sol:   _i.solicitor ||'Pemberton & Associates Solicitors LLP',
+  flight:_i.flight    ||'HC 1184 — LTN to BCN (diverted VLC)',
+  value: _i.value     ||'£39,000+',
+  type:  _i.type      ||'EC 261/2004 — delay / diversion',
+  date:  _i.date      ||'22 May 2026',
+  user:  'S. Booth'
+};
+
+/* ── Pre-fill from case ── */
+var fm=C.flight.match(/([A-Z]{2,3}\s?\d{3,4})/i);
+var am=C.flight.match(/([A-Z]{3})\s*(?:to|–|-|—)\s*([A-Z]{3})/i);
+var vm=C.value.match(/(\d+)/);
+
+/* ── Disruption types ── */
+var DT=[
+  {id:'ATC Restrictions',       icon:'ti-tower'},
+  {id:'Weather',                icon:'ti-cloud-storm'},
+  {id:'Airport/Runway Closure', icon:'ti-road-off'},
+  {id:'Airport System Failure', icon:'ti-server-off'},
+  {id:'Industrial Action',      icon:'ti-users-group'},
+  {id:'Technical Issues',       icon:'ti-tool'},
+  {id:'Birdstrike',             icon:'ti-feather'},
+  {id:'Lightning Strike',       icon:'ti-bolt'},
+  {id:'Ground Damage',          icon:'ti-forklift'},
+  {id:'Medical Emergency',      icon:'ti-ambulance'},
+  {id:'Disruptive Passenger',   icon:'ti-mood-angry'},
+  {id:'Natural Disaster',       icon:'ti-urgent'},
+  {id:'Security Alert',         icon:'ti-shield-exclamation'},
+  {id:'Passenger Welfare',      icon:'ti-heart-handshake'},
+  {id:'Political Unrest',       icon:'ti-flag'},
+];
+
+/* ── Evidence library ── */
+/* tier: K=key, S=secondary, W=wider */
+/* auto: API-ready pull (labelled, hollow) */
+var LIB={
+  /* ─ ALWAYS REQUIRED ─ */
+  tops:      {name:'TOPS — Flight Details & Legislation Report',  tier:'K', why:'Primary operational flight record. Confirms scheduled and actual times, delay codes, and the EC261 legislation evidence report. Central to every evidence pack.',                                               src:'Internal — TOPS',          link:null, auto:true,  api:'Auto-pull by flight number — TOPS API connection pending'},
+  disco:     {name:'DISCO — Disruption Record',                   tier:'K', why:'Operational disruption log. Records the sequence of events, decisions, and communications during the disruption. Core narrative source for every pack.',                                                           src:'Internal — DISCO',         link:null, auto:true,  api:'Auto-pull by flight number and date — DISCO API connection pending'},
+  aims:      {name:'AIMS — Crew Route & FDP Tables',              tier:'K', why:'Crew flight duty period data. Confirms planned and actual crew route, report time, max FDP, and whether duty limits were observed. Required on every pack.',                                                       src:'Internal — AIMS',          link:null, auto:true,  api:'Auto-pull by crew identifiers and date — AIMS API connection pending'},
+  safetynet: {name:'SafetyNet Reports',                           tier:'K', why:'Safety and operational event records. Required on every evidence pack and for all diversions regardless of disruption type.',                                                                                      src:'Internal — SafetyNet',     link:null, auto:true,  api:'Auto-pull by flight number — SafetyNet API connection pending'},
+  eurocontrol:{name:'Eurocontrol — ATFM Regulations & Flight Data',tier:'K',why:'Confirms ATC flow management slot restrictions and network-level disruption data. Central to any ATC or airspace extraordinary circumstances argument.',                                                          src:'Eurocontrol NOP',          link:'https://www.public.nm.eurocontrol.int/PUBPORTAL/gateway/spec/', auto:true, api:'Auto-pull by departure airport and date — Eurocontrol API connection pending'},
+  /* ─ SECONDARY ─ */
+  connected: {name:'Connected Portal — Flight Plans & Scratchpads',tier:'S', why:'Pre-departure flight planning documents. Shows crew awareness of conditions before departure and operational planning decisions.',                                                                               src:'Internal — Connected Portal',link:null,auto:true,  api:'Auto-pull by flight number — Connected Portal API connection pending'},
+  network_out:{name:'Network Outlook Brief',                       tier:'S', why:'Eurocontrol pre-departure network brief confirming anticipated disruptions across the network on the day of the flight.',                                                                                        src:'Eurocontrol NOP',          link:'https://www.public.nm.eurocontrol.int/PUBPORTAL/gateway/spec/', auto:true, api:'Auto-pull by date — Eurocontrol API connection pending'},
+  lido:      {name:'LIDO — Flight Plans & Fuel Figures',          tier:'S', why:'Aircraft flight planning data including fuel loads and routing. Demonstrates pre-departure operational planning.',                                                                                                 src:'Internal — LIDO',          link:null, auto:true,  api:'Auto-pull by flight number — LIDO API connection pending'},
+  hermes:    {name:'HERMES ACARS Messages',                       tier:'S', why:'Aircraft-to-operations communications during the flight. Provides the real-time operational picture during the disruption.',                                                                                     src:'Internal — HERMES',        link:null, auto:true,  api:'Auto-pull by flight number — HERMES API connection pending'},
+  max_ops:   {name:'MAX OPS — Passenger Communications',          tier:'S', why:'SMS and email notifications sent to passengers. Confirms duty of care obligations were met and passengers were kept informed.',                                                                                   src:'Internal — MAX OPS',       link:null, auto:true,  api:'Auto-pull by flight number — MAX OPS API connection pending'},
+  dpm:       {name:'DPM Notes',                                   tier:'S', why:'Disruption Planning Manager operational notes. Records decisions made and rationale for diversion, delay, or other operational action.',                                                                         src:'Internal — DPM',           link:null, auto:false, api:null},
+  internal_email:{name:'Internal Emails — Operations / Crewing',  tier:'S', why:'ICC alerts, diversion notifications, HOTAC and coach decisions. Confirms the operational picture and passenger care decisions taken during the disruption.',                                                     src:'Internal mailboxes',       link:null, auto:false, api:null},
+  ops_review:{name:'Daily Ops Review',                            tier:'S', why:'Operations centre daily summary. Provides the broader network context for the disruption on the day.',                                                                                                           src:'Internal — Operations',    link:null, auto:false, api:null},
+  flightradar:{name:'Flightradar24 — Flight Track',               tier:'S', why:'Flight tracking data confirming actual flight path, diversion point, and arrival time. Required for all diversions.',                                                                                           src:'Flightradar24',            link:'https://www.flightradar24.com', auto:true, api:'Auto-pull by flight number and date — Flightradar24 API connection pending'},
+  flightstats:{name:'FlightStats — Airport Delay Data',           tier:'S', why:'Airport-wide delay picture on the day. Demonstrates systemic disruption beyond this individual flight, supporting extraordinary circumstances.',                                                                  src:'FlightStats',              link:'https://www.flightstats.com/v2/airport-delays', auto:true, api:'Auto-pull by airport and date — FlightStats API connection pending'},
+  airport_web:{name:'Airport Statement / Travel Advisory',        tier:'S', why:'Official airport communications confirming operational disruption. Supports extraordinary circumstances where the cause originated at the airport.',                                                             src:'Affected airport website', link:null, auto:false, api:null},
+  /* ─ TYPE-SPECIFIC KEY ─ */
+  ogimet:    {name:'Ogimet — METAR & TAF Reports',                tier:'K', why:'Official meteorological aerodrome reports for the affected airport on the date of disruption. Primary evidence source for any weather extraordinary circumstances argument.',                                     src:'Ogimet',                   link:'https://www.ogimet.com', auto:true, api:'Auto-pull by airport ICAO and date — Ogimet API connection pending'},
+  met_office:{name:'Met Office — Daily Impact Hazard Forecast',   tier:'K', why:'Met Office hazard forecast confirming dangerous weather conditions. Supports extraordinary circumstances classification for weather disruptions.',                                                                 src:'Met Office',               link:'https://www.metoffice.gov.uk', auto:true, api:'Auto-pull by date and region — Met Office API connection pending'},
+  notam:     {name:'NOTAM Records',                               tier:'K', why:'Aerodrome notices confirming active restrictions. Essential for closure, runway, and industrial action claims.',                                                                                                 src:'NOTAM Search',             link:'https://notams.aim.faa.gov/notamSearch/nsapp.html#/', auto:true, api:'Auto-pull by airport ICAO and date — NOTAM API connection pending'},
+  lightning: {name:'Lightning Maps — Strike Records',             tier:'K', why:'Confirms lightning strike activity in the area at the time. Required for lightning strike and severe weather claims.',                                                                                           src:'Lightning Maps',           link:'https://www.lightningmaps.org/blitzortung/europe/index.php?lang=en', auto:true, api:'Auto-pull by location and time — Lightning Maps API connection pending'},
+  amos:      {name:'AMOS — Technical Event Record',               tier:'K', why:'Aircraft maintenance and technical log for the event. Confirms nature and extent of technical disruption. Required for birdstrike, lightning, ground damage, and technical claims.',                            src:'Internal — AMOS',          link:null, auto:true,  api:'Auto-pull by aircraft registration and date — AMOS API connection pending'},
+  wildfire:  {name:'EFFIS — Wildfire Map',                        tier:'K', why:'European wildfire mapping confirming active fire locations. Required for natural disaster claims involving fire or smoke disruption.',                                                                            src:'Copernicus EFFIS',         link:'https://forest-fire.emergency.copernicus.eu/apps/effis_current_situation/', auto:true, api:'Auto-pull by location and date — EFFIS API connection pending'},
+  /* ─ WIDER ─ */
+  case_studies:  {name:'Case Studies',                            tier:'W', why:'Precedent cases relevant to this disruption type. Provides legal context and supports the defence argument.',                                                                                                    src:'Evidence Information — 2. Case Studies', link:null, auto:false, api:null},
+  crew_docs:     {name:'Crew Regulatory Documents',               tier:'W', why:'Crew licensing, duty regulations, and operational standards documentation. Supports FDP and crew-related defence arguments.',                                                                                    src:'Evidence Information — 3. Crew',         link:null, auto:false, api:null},
+  eurocontrol_w: {name:'Eurocontrol Reference Documents',         tier:'W', why:'ATFCM user manuals, NOP guides, and regulatory frameworks. Establishes the ATC regulatory context for the defence.',                                                                                           src:'Evidence Information — 4. Eurocontrol',  link:null, auto:false, api:null},
+  weather_briefs:{name:'Weather Briefs & Phenomena Guides',       tier:'W', why:'Standard aviation weather documentation including phenomena explanations, decode guides, and meteorological reference material.',                                                                                src:'Evidence Information — 6. Weather Briefs',link:null,auto:false, api:null},
+  caa_docs:      {name:'CAA Documentation',                       tier:'W', why:'Civil Aviation Authority regulatory guidance relevant to the disruption type.',                                                                                                                                  src:'Evidence Information — 8. CAA',          link:null, auto:false, api:null},
+  ac_ops:        {name:'Aircraft Operations & Procedures',        tier:'W', why:'Standard operating procedures and aircraft operations manuals relevant to the disruption.',                                                                                                                     src:'Evidence Information — 10. Aircraft Operations and Procedures', link:null, auto:false, api:null},
+  airport_info:  {name:'Airport Information',                     tier:'W', why:'Airport-specific operational information, layout plans, and handling procedures relevant to the disruption location.',                                                                                          src:'Evidence Information — 11. Airport Information', link:null, auto:false, api:null},
+  witness_cases: {name:'Witness Cases & Judgements',              tier:'W', why:'Relevant court judgements and witness evidence from comparable cases. Provides legal precedent to support the defence.',                                                                                        src:'Evidence Information — 14. Witness Cases & Judgements', link:null, auto:false, api:null},
+  policies:      {name:'Airline Policies & Terms & Conditions',   tier:'W', why:'Applicable airline policies and T&Cs relevant to the claim. Supports contractual defence arguments.',                                                                                                          src:'Evidence Information — 15. eJ Policies & Ts&Cs', link:null, auto:false, api:null},
+  flight_plan:   {name:'Flight Planning Documentation',           tier:'W', why:'Standard flight planning reference material and procedures documentation.',                                                                                                                                     src:'Evidence Information — 16. Flight Planning', link:null, auto:false, api:null},
+  tech_docs:     {name:'Technical Reference Documents',           tier:'W', why:'Technical manuals and reference documents supporting engineering or maintenance-related defence arguments.',                                                                                                     src:'Evidence Information — 17. Tech',           link:null, auto:false, api:null},
+  overnight_docs:{name:'Overnight Delay Documentation',           tier:'W', why:'Standard documentation and precedents for overnight delay claims. Relevant where crew rest requirements caused extended delay.',                                                                                 src:'Evidence Information — 7. Overnight Delays', link:null, auto:false, api:null},
+  welfare_docs:  {name:'Welfare & Passenger Care Documentation',  tier:'W', why:'Documentation relating to passenger welfare obligations. Relevant to any Article 9 or passenger welfare allegation.',                                                                                          src:'Evidence Information — 9. Welfare',         link:null, auto:false, api:null},
+};
+
+/* ── Evidence matrix by disruption type ── */
+/* key / secondary / wider grouped per type */
+var MATRIX={
+  'ATC Restrictions':{
+    K:['tops','disco','aims','safetynet','eurocontrol','notam'],
+    S:['connected','network_out','lido','hermes','max_ops','dpm','internal_email','flightradar','flightstats','ops_review'],
+    W:['case_studies','eurocontrol_w','caa_docs','ac_ops','airport_info']
+  },
+  'Weather':{
+    K:['tops','disco','aims','safetynet','eurocontrol','ogimet','met_office','notam'],
+    S:['connected','network_out','lido','hermes','max_ops','dpm','internal_email','flightradar','flightstats','ops_review','airport_web'],
+    W:['case_studies','weather_briefs','eurocontrol_w','caa_docs','ac_ops','airport_info']
+  },
+  'Airport/Runway Closure':{
+    K:['tops','disco','aims','safetynet','eurocontrol','notam'],
+    S:['connected','network_out','lido','hermes','max_ops','dpm','internal_email','flightradar','flightstats','airport_web','ops_review'],
+    W:['case_studies','caa_docs','ac_ops','airport_info','flight_plan']
+  },
+  'Airport System Failure':{
+    K:['tops','disco','aims','safetynet','eurocontrol'],
+    S:['connected','network_out','lido','hermes','max_ops','dpm','internal_email','flightradar','flightstats','airport_web','ops_review'],
+    W:['case_studies','caa_docs','ac_ops','airport_info']
+  },
+  'Industrial Action':{
+    K:['tops','disco','aims','safetynet','eurocontrol','notam'],
+    S:['connected','network_out','lido','hermes','max_ops','dpm','internal_email','flightradar','airport_web','ops_review'],
+    W:['case_studies','caa_docs','policies','eurocontrol_w','airport_info']
+  },
+  'Technical Issues':{
+    K:['tops','disco','aims','safetynet','amos'],
+    S:['connected','lido','hermes','max_ops','dpm','internal_email','ops_review'],
+    W:['case_studies','tech_docs','ac_ops','caa_docs','witness_cases']
+  },
+  'Birdstrike':{
+    K:['tops','disco','aims','safetynet','amos','eurocontrol'],
+    S:['connected','lido','hermes','dpm','internal_email','flightradar','ops_review'],
+    W:['case_studies','tech_docs','ac_ops','caa_docs']
+  },
+  'Lightning Strike':{
+    K:['tops','disco','aims','safetynet','amos','ogimet','met_office','lightning'],
+    S:['connected','lido','hermes','max_ops','dpm','internal_email','flightradar','ops_review'],
+    W:['case_studies','weather_briefs','tech_docs','ac_ops','caa_docs']
+  },
+  'Ground Damage':{
+    K:['tops','disco','aims','safetynet','amos','eurocontrol'],
+    S:['connected','lido','hermes','max_ops','dpm','notam','internal_email','flightradar','ops_review'],
+    W:['case_studies','tech_docs','ac_ops','airport_info','caa_docs']
+  },
+  'Medical Emergency':{
+    K:['tops','disco','aims','safetynet','eurocontrol'],
+    S:['connected','lido','hermes','max_ops','dpm','internal_email','flightradar','ops_review'],
+    W:['case_studies','caa_docs','ac_ops','welfare_docs','witness_cases']
+  },
+  'Disruptive Passenger':{
+    K:['tops','disco','aims','safetynet','eurocontrol'],
+    S:['connected','lido','hermes','max_ops','dpm','internal_email','flightradar','ops_review'],
+    W:['case_studies','policies','caa_docs','welfare_docs','witness_cases']
+  },
+  'Natural Disaster':{
+    K:['tops','disco','aims','safetynet','eurocontrol','notam','wildfire'],
+    S:['connected','network_out','lido','hermes','max_ops','dpm','internal_email','flightradar','ops_review'],
+    W:['case_studies','weather_briefs','caa_docs','ac_ops','airport_info']
+  },
+  'Security Alert':{
+    K:['tops','disco','aims','safetynet','eurocontrol','notam'],
+    S:['connected','lido','hermes','max_ops','dpm','internal_email','flightradar','ops_review'],
+    W:['case_studies','caa_docs','policies','ac_ops','airport_info']
+  },
+  'Passenger Welfare':{
+    K:['tops','disco','aims','safetynet','eurocontrol'],
+    S:['connected','lido','hermes','max_ops','dpm','internal_email','ops_review'],
+    W:['case_studies','welfare_docs','policies','caa_docs','witness_cases']
+  },
+  'Political Unrest':{
+    K:['tops','disco','aims','safetynet','eurocontrol','notam'],
+    S:['connected','network_out','lido','hermes','max_ops','dpm','internal_email','ops_review'],
+    W:['case_studies','caa_docs','policies','eurocontrol_w','airport_info']
+  },
+  /* Overnight Delays secondary type */
+  'Crew Hours / Overnight Delay':{
+    K:['tops','disco','aims','safetynet'],
+    S:['connected','lido','hermes','max_ops','dpm','internal_email','ops_review'],
+    W:['overnight_docs','crew_docs','caa_docs','ac_ops','case_studies']
+  },
+};
+
+/* ── State ── */
+var primaryType='', secondaryType='', dtMode='primary';
+var uploads={}, pullState={};
+var summaryOpen=false;
+var audit=[];
+var pendingUpload=null;
+
+var D={
+  flightNum:fm?fm[1]:'', dep:am?am[1]:'', arr:am?am[2]:'',
+  cat:vm?(parseInt(vm[1])<=250?'A':parseInt(vm[1])<=400?'B':'C'):'',
+  std:'',sta:'',atd:'',ata:'',
+  acReg:'',crewBase:'',reportTime:'',lastLand:'',
+  maxFDP:'',plannedFDP:'',sectors:'',acPlan:'',
+  primaryCause:'',secondaryCause:'',summary:'',classification:'DEFEND'
+};
+
+function ts(){return new Date().toLocaleString('en-GB',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});}
+function log(t,type){audit.push({t:t,type:type||'action',time:ts(),by:C.user});renderAudit();}
+
+/* ── Build combined evidence list ── */
+function getList(tier){
+  var seen={}, list=[];
+  function add(ids){
+    if(!ids)return;
+    ids.forEach(function(id){
+      if(!seen[id]&&LIB[id]&&LIB[id].tier===tier){seen[id]=true;list.push(id);}
+    });
+  }
+  if(primaryType&&MATRIX[primaryType]){add(MATRIX[primaryType][tier]);}
+  if(secondaryType&&MATRIX[secondaryType]){add(MATRIX[secondaryType][tier]);}
+  return list;
+}
+
+/* ── Readiness ── */
+function getReadiness(){
+  var allIds=[], seen={};
+  ['K','S','W'].forEach(function(t){getList(t).forEach(function(id){if(!seen[id]){seen[id]=true;allIds.push(id);}});});
+  var total=allIds.length;
+  var up=allIds.filter(function(id){return uploads[id]||pullState[id]==='done';}).length;
+  return {total:total,up:up,pct:total?Math.round(up/total*100):0};
+}
+
+/* ── FDP calc ── */
+function calcBuffer(){
+  function m(s){if(!s)return null;var p=s.split(':');return p.length===2?parseInt(p[0])*60+parseInt(p[1]):null;}
+  var max=m(D.maxFDP), pl=m(D.plannedFDP);
+  if(max===null||pl===null)return null;
+  var buf=max-pl;
+  if(buf<0)return {val:null,breach:true,diff:Math.abs(buf)};
+  var h=Math.floor(buf/60),mn=buf%60;
+  return {val:(h<10?'0':'')+h+':'+(mn<10?'0':'')+mn,breach:false};
+}
+
+/* ── Verdict ── */
+function getVerdict(){
+  if(!primaryType)return null;
+  var r=getReadiness();
+  var keyList=getList('K');
+  var keyUp=keyList.filter(function(id){return uploads[id]||pullState[id]==='done';}).length;
+  if(keyUp===keyList.length&&keyList.length>0)
+    return {cls:'verdict-defend',icon:'ti-shield-check',col:'var(--green)',title:'Defendable',sub:'All key evidence is on file. This case is ready to proceed to defence drafting.'};
+  return {cls:'verdict-incomplete',icon:'ti-alert-triangle',col:'var(--amber)',title:'Evidence incomplete — cannot proceed to defence',sub:'Key evidence is outstanding. Upload or pull the required documents before this case can be defended.'};
+}
+
+/* ── Render ── */
+function render(){try{renderMain();}catch(e){console.error(e);}renderAudit();}
+
+function renderMain(){
+  var m=document.getElementById('main');
+  var r=getReadiness();
+  var ver=getVerdict();
+  var buf=calcBuffer();
+
+  /* case header */
+  var pBg=r.pct===100?'var(--green-faint)':r.pct>0?'var(--amber-faint)':'var(--surface3)';
+  var pCol=r.pct===100?'var(--green)':r.pct>0?'var(--amber)':'var(--text3)';
+  var pTxt=primaryType?(r.up+' / '+r.total+' documents'):'Select disruption type';
+  var hdr='<div class="case-hdr"><div class="ch-row">'
+    +'<div><div class="ch-ref">'+C.ref+'</div>'
+    +'<div class="ch-name">'+C.name+' v. TestAirways</div>'
+    +'<div class="ch-meta">'
+    +'<span><i class="ti ti-plane"></i>'+C.flight+'</span>'
+    +'<span><i class="ti ti-currency-pound"></i>'+C.value+'</span>'
+    +'<span><i class="ti ti-calendar"></i>'+C.date+'</span>'
+    +'</div></div>'
+    +'<div class="ch-right">'
+    +'<span class="status-pill" style="background:'+pBg+';color:'+pCol+'"><i class="ti ti-folder"></i>'+pTxt+'</span>'
+    +(primaryType?'<span class="status-pill" style="background:var(--surface3);color:var(--text2);font-size:10px"><i class="ti ti-tag"></i>'+D.classification+'</span>':'')
+    +'</div></div></div>';
+
+  /* disruption summary (collapsible) */
+  var bufHtml='';
+  if(buf){
+    if(buf.breach) bufHtml='<div class="fdp-box"><i class="ti ti-alert-triangle" style="color:var(--red)"></i><span class="fdp-warn">FDP BREACH — '+Math.floor(buf.diff/60)+'h '+(buf.diff%60)+'m over limit</span></div>';
+    else bufHtml='<div class="fdp-box"><i class="ti ti-calculator"></i>FDP buffer: <span class="fdp-val">'+buf.val+'</span></div>';
+  }
+
+  var summary='<div class="card">'
+    +'<div class="card-header" onclick="summaryOpen=!summaryOpen;render()">'
+    +'<div class="card-header-left">'
+    +'<div class="card-icon" style="background:var(--purple-faint);color:var(--purple)"><i class="ti ti-file-description"></i></div>'
+    +'<div><div class="card-title">Disruption summary</div>'
+    +'<div class="card-sub">Flight data, disruption record, and crew information</div>'
+    +'</div></div>'
+    +'<i class="ti ti-chevron-down card-chevron'+(summaryOpen?' open':'')+'"></i>'
+    +'</div>'
+    +'<div class="card-body'+(summaryOpen?' open':'')+'">'
+
+    +'<div class="form-sec">Flight information <span class="ai-tag">AI pre-filled where available</span></div>'
+    +'<div class="fg4">'
+    +'<div><div class="fl">Flight number</div><input class="fi'+(D.flightNum?' ai':'')+'" value="'+D.flightNum+'" placeholder="HC 307" onchange="D.flightNum=this.value"></div>'
+    +'<div><div class="fl">From</div><input class="fi'+(D.dep?' ai':'')+'" value="'+D.dep+'" placeholder="MAN" onchange="D.dep=this.value"></div>'
+    +'<div><div class="fl">To</div><input class="fi'+(D.arr?' ai':'')+'" value="'+D.arr+'" placeholder="AMS" onchange="D.arr=this.value"></div>'
+    +'<div><div class="fl">Category</div><select class="fs" onchange="D.cat=this.value">'
+    +'<option value="">Select…</option>'
+    +'<option value="A"'+(D.cat==='A'?' selected':'')+'>A — €250</option>'
+    +'<option value="B"'+(D.cat==='B'?' selected':'')+'>B — €400</option>'
+    +'<option value="C"'+(D.cat==='C'?' selected':'')+'>C — €600</option>'
+    +'</select></div>'
+    +'</div>'
+    +'<div class="fg4">'
+    +'<div><div class="fl">STD (Zulu)</div><input class="fi" value="'+D.std+'" placeholder="08:15Z" onchange="D.std=this.value"></div>'
+    +'<div><div class="fl">STA (Zulu)</div><input class="fi" value="'+D.sta+'" placeholder="10:45Z" onchange="D.sta=this.value"></div>'
+    +'<div><div class="fl">ATD (Zulu)</div><input class="fi" value="'+D.atd+'" placeholder="11:53Z" onchange="D.atd=this.value"></div>'
+    +'<div><div class="fl">ATA (Zulu)</div><input class="fi" value="'+D.ata+'" placeholder="14:21Z" onchange="D.ata=this.value"></div>'
+    +'</div>'
+    +'<div class="form-div"></div>'
+    +'<div class="form-sec">Disruption information — pulled from TOPS, DISCO &amp; AIMS on connection</div>'
+    +'<div class="fg2">'
+    +'<div><div class="fl">Primary cause</div><input class="fi" value="'+D.primaryCause+'" placeholder="e.g. ATC slot restriction at AMS" onchange="D.primaryCause=this.value"></div>'
+    +'<div><div class="fl">Secondary cause</div><input class="fi" value="'+D.secondaryCause+'" placeholder="e.g. Resulting crew FDP breach" onchange="D.secondaryCause=this.value"></div>'
+    +'</div>'
+    +'<div class="fg2">'
+    +'<div><div class="fl">Disruption summary</div><textarea class="fta" placeholder="Brief operational summary as it would appear in the evidence pack. When TOPS/DISCO/AIMS are connected, this will be auto-generated." onchange="D.summary=this.value">'+D.summary+'</textarea></div>'
+    +'<div><div class="fl">Classification</div><select class="fs" onchange="D.classification=this.value;render()">'
+    +'<option value="DEFEND"'+(D.classification==='DEFEND'?' selected':'')+'>DEFEND</option>'
+    +'<option value="INVESTIGATE"'+(D.classification==='INVESTIGATE'?' selected':'')+'>INVESTIGATE</option>'
+    +'<option value="ESCALATE"'+(D.classification==='ESCALATE'?' selected':'')+'>ESCALATE</option>'
+    +'</select></div>'
+    +'</div>'
+    +'<div class="form-div"></div>'
+    +'<div class="form-sec">Crew &amp; aircraft — pulled from AIMS on connection</div>'
+    +'<div class="fg4">'
+    +'<div><div class="fl">Aircraft reg</div><input class="fi" value="'+D.acReg+'" placeholder="G-XXXX" onchange="D.acReg=this.value"></div>'
+    +'<div><div class="fl">Crew base</div><input class="fi" value="'+D.crewBase+'" placeholder="MAN" onchange="D.crewBase=this.value"></div>'
+    +'<div><div class="fl">Report time (Z)</div><input class="fi" value="'+D.reportTime+'" placeholder="06:15Z" onchange="D.reportTime=this.value"></div>'
+    +'<div><div class="fl">Last land (Z)</div><input class="fi" value="'+D.lastLand+'" placeholder="22:40Z prev day" onchange="D.lastLand=this.value"></div>'
+    +'</div>'
+    +'<div class="fg4">'
+    +'<div><div class="fl">Max FDP</div><input class="fi" value="'+D.maxFDP+'" placeholder="13:00" onchange="D.maxFDP=this.value;render()"></div>'
+    +'<div><div class="fl">Planned FDP</div><input class="fi" value="'+D.plannedFDP+'" placeholder="09:30" onchange="D.plannedFDP=this.value;render()"></div>'
+    +'<div><div class="fl">Planned sectors</div><input class="fi" value="'+D.sectors+'" placeholder="2" onchange="D.sectors=this.value"></div>'
+    +'<div><div class="fl">Original aircraft</div><input class="fi" value="'+D.origAC+'" placeholder="G-XXXX" onchange="D.origAC=this.value"></div>'
+    +'</div>'
+    +bufHtml
+    +'<div style="margin-top:10px"><div class="fl">A/C plan — planned vs actual route</div>'
+    +'<textarea class="fta" style="min-height:46px" placeholder="Planned: HC307 MAN-AMS   Actual: HC307 MAN-AMS (delayed dep 11:53Z, arr 14:21Z)" onchange="D.acPlan=this.value">'+D.acPlan+'</textarea></div>'
+    +'<div style="margin-top:10px">'
+    +'<button class="btn-sm btn-navy" onclick="saveForm()"><i class="ti ti-device-floppy"></i> Save record</button>'
+    +'</div>'
+    +'</div></div>';
+
+  /* disruption type selector */
+  var dtBtns=DT.map(function(dt){
+    var cls='dt-btn';
+    if(dt.id===primaryType) cls+=' primary-sel';
+    else if(dt.id===secondaryType) cls+=' secondary-sel';
+    return '<button class="'+cls+'" onclick="selectType(\''+dt.id+'\')"><i class="ti '+dt.icon+'"></i>'+dt.id+'</button>';
+  }).join('');
+  /* Overnight as secondary-only option */
+  var ovBtn='<button class="dt-btn'+(secondaryType==='Crew Hours / Overnight Delay'?' secondary-sel':'')+'" onclick="selectType(\'Crew Hours / Overnight Delay\')"><i class="ti ti-moon"></i>Crew Hours / Overnight</button>';
+
+  var typeCard='<div class="card">'
+    +'<div class="card-header" style="cursor:default">'
+    +'<div class="card-header-left">'
+    +'<div class="card-icon" style="background:var(--surface3);color:var(--text2)"><i class="ti ti-list-check"></i></div>'
+    +'<div><div class="card-title">Disruption type</div>'
+    +'<div class="card-sub">'
+    +(primaryType?'Primary: <strong>'+primaryType+'</strong>':'Select primary disruption type')
+    +(secondaryType?' &nbsp;·&nbsp; Secondary: <strong>'+secondaryType+'</strong>':'')
+    +'</div></div></div>'
+    +'</div>'
+    +'<div class="card-body open">'
+    +'<div class="dt-mode-row">'
+    +'<button class="dt-mode-btn'+(dtMode==='primary'?' on':'')+'" onclick="dtMode=\'primary\';render()">Setting primary type</button>'
+    +'<button class="dt-mode-btn'+(dtMode==='secondary'?' on':'')+'" onclick="dtMode=\'secondary\';render()">Setting secondary type</button>'
+    +(secondaryType?'<button class="dt-mode-btn" onclick="secondaryType=\'\';render()" style="margin-left:auto;color:var(--red);border-color:var(--red)">Clear secondary</button>':'')
+    +'</div>'
+    +'<div class="dt-grid">'+dtBtns+ovBtn+'</div>'
+    +'<div class="dt-legend">'
+    +'<span><div class="dt-swatch" style="background:var(--navy)"></div>Primary</span>'
+    +'<span><div class="dt-swatch" style="background:var(--purple)"></div>Secondary</span>'
+    +'</div>'
+    +'</div></div>';
+
+  /* evidence section */
+  var evHtml='';
+  if(!primaryType){
+    evHtml='<div class="card"><div class="card-body open"><div class="ev-empty">'
+      +'<i class="ti ti-folder-open"></i>'
+      +'<p>Select a disruption type above.<br>The evidence checklist will generate automatically.</p>'
+      +'</div></div></div>';
+  } else {
+    var kList=getList('K'), sList=getList('S'), wList=getList('W');
+    var kUp=kList.filter(function(i){return uploads[i]||pullState[i]==='done';}).length;
+    var sUp=sList.filter(function(i){return uploads[i]||pullState[i]==='done';}).length;
+    var wUp=wList.filter(function(i){return uploads[i]||pullState[i]==='done';}).length;
+
+    function renderItem(id){
+      var item=LIB[id];
+      if(!item)return '';
+      var isUp=!!(uploads[id]||pullState[id]==='done');
+      var isPulling=pullState[id]==='pulling';
+      var dotCls=isUp?'ev-d-green':(item.auto?'ev-d-blue':'ev-d-amber');
+      var tierTag=item.tier==='K'?'<span class="ev-tag tag-key">Key</span>'
+                 :item.tier==='S'?'<span class="ev-tag tag-sec">Secondary</span>'
+                 :'<span class="ev-tag tag-wide">Wider</span>';
+      var upTag=isUp?'<span class="ev-tag tag-up"><i class="ti ti-check" style="font-size:9px"></i> On file</span>':'';
+      var srcHtml=item.link?('<a href="'+item.link+'" target="_blank" rel="noopener">'+item.src+' ↗</a>'):item.src;
+      var apiPill=item.auto?'<span class="ev-api-pill"><i class="ti ti-plug" style="font-size:9px"></i>API ready</span>':'';
+      var actionBtn='';
+      if(isUp) actionBtn='<button class="btn-ev done"><i class="ti ti-check"></i> On file</button>';
+      else if(isPulling) actionBtn='<button class="btn-ev api-btn"><i class="ti ti-loader-2" style="animation:spin 1s linear infinite"></i> Pulling…</button>';
+      else if(item.auto) actionBtn='<button class="btn-ev api-btn"><i class="ti ti-plug"></i> Auto — pending</button>';
+      else actionBtn='<button class="btn-ev" onclick="triggerUpload(\''+id+'\',\''+item.name.replace(/'/g,"\\'")+'\')"><i class="ti ti-upload"></i> Upload</button>';
+      var fileRow=uploads[id]?'<div class="ev-file">'+uploads[id]+'</div>':'';
+      var apiRow=(item.auto&&!isUp)?'<div class="ev-api-note">'+item.api+'</div>':'';
+      return '<div class="ev-item'+(isUp?' ev-uploaded':(item.auto?' ev-api':''))+'">'
+        +'<div class="ev-row">'
+        +'<div class="ev-dot '+dotCls+'"></div>'
+        +'<div class="ev-info">'
+        +'<div class="ev-name">'+item.name+tierTag+upTag+'</div>'
+        +'<div class="ev-why">'+item.why+'</div>'
+        +'<div class="ev-meta"><div class="ev-source"><i class="ti ti-database" style="font-size:10px"></i>'+srcHtml+'</div>'+apiPill+'</div>'
+        +'</div>'
+        +'<div class="ev-actions">'+actionBtn+'</div>'
+        +'</div>'
+        +fileRow+apiRow
+        +'</div>';
+    }
+
+    function tierBlock(tier,ids,label,dot,upCount,pullId){
+      var psState=pullState['_tier_'+pullId]||'';
+      var pullBtn='';
+      if(psState==='pulling') pullBtn='<button class="btn-pull pulling"><i class="ti ti-loader-2" style="animation:spin 1s linear infinite;font-size:11px"></i> Pulling…</button>';
+      else if(psState==='done') pullBtn='<button class="btn-pull pulled"><i class="ti ti-check" style="font-size:11px"></i> Pulled</button>';
+      else pullBtn='<button class="btn-pull" onclick="pullTier(\''+pullId+'\',\''+ids.join(',')+'\')"><i class="ti ti-cloud-download" style="font-size:11px"></i> Pull all</button>';
+      return '<div class="ev-tier">'
+        +'<div class="ev-tier-header">'
+        +'<div class="ev-tier-left">'
+        +'<div class="ev-tier-dot" style="background:'+dot+'"></div>'
+        +'<div><div class="ev-tier-title">'+label+'</div>'
+        +'<div class="ev-tier-sub">'+ids.length+' documents required · '+upCount+' on file</div>'
+        +'</div></div>'
+        +'<div class="ev-tier-right">'+pullBtn+'</div>'
+        +'</div>'
+        +ids.map(renderItem).join('')
+        +'</div>';
+    }
+
+    /* verdictHtml */
+    var vHtml='';
+    if(ver){
+      vHtml='<div class="verdict '+ver.cls+'"><i class="ti '+ver.icon+' verdict-icon" style="color:'+ver.col+'"></i>'
+        +'<div><div class="verdict-title" style="color:'+ver.col+'">'+ver.title+'</div>'
+        +'<div class="verdict-sub">'+ver.sub+'</div></div></div>';
+    }
+
+    evHtml='<div class="card">'
+      +'<div class="card-header" style="cursor:default">'
+      +'<div class="card-header-left">'
+      +'<div class="card-icon" style="background:var(--purple-faint);color:var(--purple)"><i class="ti ti-checklist"></i></div>'
+      +'<div><div class="card-title">Evidence checklist</div>'
+      +'<div class="card-sub">'+primaryType+(secondaryType?' + '+secondaryType:'')+'</div>'
+      +'</div></div>'
+      +'</div>'
+      +'<div class="card-body open">'
+      +'<div class="prog-track"><div class="prog-fill" style="width:'+r.pct+'%"></div></div>'
+      +'<div class="prog-stats">'
+      +'<div class="prog-stat"><strong style="color:var(--green)">'+r.up+'</strong> on file</div>'
+      +'<div class="prog-stat"><strong>'+(r.total-r.up)+'</strong> outstanding</div>'
+      +'<div class="prog-stat" style="margin-left:auto;font-weight:500">'+r.pct+'% complete</div>'
+      +'</div>'
+      +vHtml
+      +tierBlock('K',kList,'Key evidence — proves extraordinary circumstances','#C0392B',kUp,'k')
+      +tierBlock('S',sList,'Secondary evidence — supports and contextualises the defence','#F59E0B',sUp,'s')
+      +tierBlock('W',wList,'Wider evidence — standard aviation reference documents','#8B5CF6',wUp,'w')
+      +'</div></div>';
+  }
+
+  m.innerHTML=hdr+summary+typeCard+evHtml;
+}
+
+function renderAudit(){
+  var el=document.getElementById('audit-scroll');
+  document.getElementById('audit-count').textContent=audit.length+' entr'+(audit.length===1?'y':'ies');
+  if(!audit.length){el.innerHTML='<div style="font-size:11px;color:var(--text3);padding:6px 0">No activity yet</div>';return;}
+  el.innerHTML=audit.slice().reverse().map(function(e){
+    return '<div class="audit-entry"><div class="a-dot a-'+e.type+'"></div>'
+      +'<div><div class="a-text">'+e.t+'</div>'
+      +'<div class="a-time">'+e.time+' · '+e.by+'</div></div></div>';
+  }).join('');
+}
+
+/* ── Actions ── */
+function selectType(id){
+  if(dtMode==='primary'){primaryType=id;}
+  else{secondaryType=(secondaryType===id)?'':id;}
+  log((dtMode==='primary'?'Primary':'Secondary')+' disruption type: '+id,'action');
+  render();
+}
+
+function saveForm(){
+  log('Disruption record saved — '+(D.flightNum||C.flight)+' · '+D.classification,'save');
+}
+
+function pullTier(tierId,idsStr){
+  pullState['_tier_'+tierId]='pulling';
+  render();
+  setTimeout(function(){
+    pullState['_tier_'+tierId]='done';
+    log('Pull initiated — '+tierId.toUpperCase()+' evidence tier (connection pending — documents will populate when API is live)','pull');
+    render();
+  },1800);
+}
+
+function triggerUpload(id,name){pendingUpload={id:id,name:name};document.getElementById('file-input').click();}
+function handleUpload(e){
+  var f=e.target.files[0];
+  if(!f||!pendingUpload)return;
+  uploads[pendingUpload.id]=f.name;
+  log('Uploaded: "'+f.name+'" — '+pendingUpload.name,'upload');
+  e.target.value='';pendingUpload=null;render();
+}
+
+function addNote(){
+  var inp=document.getElementById('note-input');
+  var val=inp.value.trim();
+  if(!val)return;
+  log(val,'note');
+  inp.value='';
+}
+
+/* ── Init ── */
+log('Evidence module opened — '+C.name+' v. TestAirways','create');
+render();
+</script>
+</body>
+</html>
