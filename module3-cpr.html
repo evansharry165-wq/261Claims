@@ -3,10 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>261Claims — Module 3: CPR Deadlines</title>
+<title>261Claims — CPR deadlines</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<script src="shared_data.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -15,6 +16,7 @@
   --green:#1A7A4A;--green-l:#22A863;--green-faint:#E6F5EE;
   --red:#C0392B;--red-faint:#FCF0EF;
   --amber:#B45309;--amber-faint:#FEF3C7;
+  --purple:#4338CA;--purple-faint:#EEEDFE;
   --border:#E2E8F0;--border2:#CBD5E1;
   --text:#0F172A;--text2:#475569;--text3:#94A3B8;
   --surface:#FFFFFF;--surface2:#F8FAFC;--surface3:#F1F5F9;
@@ -23,135 +25,7 @@
 }
 html,body{height:100%;font-family:var(--font);background:var(--surface2);color:var(--text);font-size:14px}
 .app{display:flex;flex-direction:column;height:calc(100vh - 48px)}
-
-.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px;height:54px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
-.logo{display:flex;align-items:center;gap:10px;text-decoration:none}
-.logo-mark{width:32px;height:32px;background:var(--navy);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px}
-.logo-name{font-size:15px;font-weight:500;letter-spacing:-0.02em;color:var(--navy)}
-.logo-tag{font-size:12px;color:var(--text3);margin-left:2px}
-.topbar-right{display:flex;align-items:center;gap:10px}
-.mod-badge{font-size:11px;font-weight:500;background:var(--navy);color:#fff;border-radius:20px;padding:3px 10px}
-.av-row{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--text2)}
-.av{width:28px;height:28px;border-radius:50%;background:var(--navy2);color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500}
-.btn-back{font-size:12px;padding:5px 12px;border-radius:var(--r);border:1px solid var(--border);background:var(--surface);cursor:pointer;color:var(--text2);font-family:var(--font);display:flex;align-items:center;gap:5px;text-decoration:none}
-.btn-back:hover{background:var(--surface3)}
-
-.body{flex:1;display:grid;grid-template-columns:1fr 300px;overflow:hidden}
-.main{overflow-y:auto;padding:20px 24px}
-.sidebar{border-left:1px solid var(--border);background:var(--surface);display:flex;flex-direction:column;overflow:hidden}
-
-/* case header */
-.case-hdr{background:var(--surface);border:1px solid var(--border);border-radius:var(--r3);padding:15px 18px;margin-bottom:14px;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap}
-.ch-ref{font-size:11px;font-family:var(--mono);color:var(--text3);margin-bottom:2px}
-.ch-name{font-size:16px;font-weight:500;color:var(--text);margin-bottom:5px;letter-spacing:-0.01em}
-.ch-meta{display:flex;flex-wrap:wrap;gap:12px;font-size:12px;color:var(--text2)}
-.ch-meta span{display:flex;align-items:center;gap:4px}
-.ch-meta i{font-size:12px;color:var(--text3)}
-
-/* stage rail */
-.stage-rail{display:flex;align-items:center;margin-bottom:14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r3);padding:12px 16px;overflow-x:auto;gap:0}
-.rail-step{display:flex;flex-direction:column;align-items:center;flex:1;min-width:60px;position:relative;cursor:default;user-select:none}
-.rail-step:not(:last-child)::after{content:'';position:absolute;top:11px;right:-50%;width:100%;height:1.5px;background:var(--border2);z-index:0}
-.rail-pip{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;border:2px solid var(--border2);background:var(--surface3);color:var(--text3);position:relative;z-index:1}
-.rail-pip.done{background:var(--green-faint);border-color:var(--green-l);color:var(--green)}
-.rail-pip.active{background:var(--amber-faint);border-color:var(--amber);color:var(--amber);box-shadow:0 0 0 3px rgba(180,83,9,0.1)}
-.rail-label{font-size:10px;font-weight:500;margin-top:4px;text-align:center;color:var(--text3)}
-.rail-label.done{color:var(--green)}
-.rail-label.active{color:var(--amber)}
-
-/* purpose */
-.purpose{background:var(--surface);border:1px solid var(--border);border-radius:var(--r3);padding:13px 17px;margin-bottom:14px;border-left:4px solid var(--amber)}
-.purpose-label{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.07em;color:var(--amber);margin-bottom:3px;display:flex;align-items:center;gap:5px}
-.purpose-text{font-size:12px;color:var(--text2);line-height:1.6}
-
-/* deadline cards */
-.deadline-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
-.dl-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:13px 15px}
-.dl-card.urgent{border-color:#FECACA;background:var(--red-faint)}
-.dl-card.warning{border-color:#FDE68A;background:var(--amber-faint)}
-.dl-card.ok{border-color:#BBF7D0;background:var(--green-faint)}
-.dl-label{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:5px;display:flex;align-items:center;gap:5px}
-.dl-label.urgent{color:var(--red)}
-.dl-label.warning{color:var(--amber)}
-.dl-label.ok{color:var(--green)}
-.dl-date{font-size:17px;font-weight:500;font-family:var(--mono);margin-bottom:2px}
-.dl-date.urgent{color:var(--red)}
-.dl-date.warning{color:var(--amber)}
-.dl-date.ok{color:var(--green)}
-.dl-days{font-size:11px;color:var(--text2);margin-bottom:8px}
-.dl-desc{font-size:11px;color:var(--text2);line-height:1.5;margin-bottom:6px}
-.dl-rule{font-size:10px;color:var(--text3);font-style:italic;margin-bottom:9px}
-.cal-row{display:flex;gap:5px;flex-wrap:wrap}
-.btn-cal{font-size:10px;padding:4px 9px;border-radius:var(--r);border:1px solid var(--border2);background:var(--surface);cursor:pointer;color:var(--text2);font-family:var(--font);display:inline-flex;align-items:center;gap:3px;transition:background 0.15s}
-.btn-cal:hover{background:var(--surface3)}
-.btn-cal.added{background:var(--green-faint);border-color:#BBF7D0;color:var(--green);cursor:default}
-
-/* checklist card */
-.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r3);padding:16px 18px;margin-bottom:14px}
-.card-title{font-size:13px;font-weight:500;color:var(--text);margin-bottom:12px;display:flex;align-items:center;gap:7px}
-.checklist{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
-.chk-item{display:flex;align-items:flex-start;gap:11px;padding:11px 13px;border:1px solid var(--border);border-radius:var(--r2);background:var(--surface);transition:all 0.15s}
-.chk-item.done{background:var(--green-faint);border-color:#BBF7D0}
-.chkbox{width:20px;height:20px;border-radius:5px;border:1.5px solid var(--border2);background:var(--surface);flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.15s}
-.chkbox:hover{border-color:var(--blue)}
-.chkbox.on{background:var(--green-l);border-color:var(--green-l)}
-.chkbox.on i{display:block}
-.chkbox i{display:none;color:#fff;font-size:11px}
-.chk-body{flex:1}
-.chk-title{font-size:13px;font-weight:500;color:var(--text);margin-bottom:2px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
-.chk-title.done{text-decoration:line-through;color:var(--text3)}
-.chk-sub{font-size:11px;color:var(--text2);line-height:1.5}
-.tag-req{font-size:10px;font-weight:500;padding:1px 7px;border-radius:20px;background:var(--red-faint);color:var(--red)}
-.tag-opt{font-size:10px;font-weight:500;padding:1px 7px;border-radius:20px;background:var(--surface3);color:var(--text3)}
-
-/* LOA decision */
-.loa-opts{display:flex;flex-direction:column;gap:5px;margin-top:8px;padding:10px 12px;background:var(--amber-faint);border:1px solid var(--amber);border-radius:var(--r)}
-.loa-opt-title{font-size:10px;font-weight:500;color:var(--amber);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;display:flex;align-items:center;gap:4px}
-.loa-opt{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text);cursor:pointer;padding:2px 0}
-.loa-opt input{accent-color:var(--navy);width:13px;height:13px;cursor:pointer}
-.loa-confirmed{font-size:11px;color:var(--green);display:flex;align-items:center;gap:4px;margin-top:6px}
-
-/* LOA draft panel */
-.loa-draft-panel{border:1px solid var(--border);border-radius:var(--r2);overflow:hidden;margin-top:10px}
-.ldp-header{padding:11px 14px;background:var(--surface2);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
-.ldp-title{font-size:12px;font-weight:500;color:var(--text);display:flex;align-items:center;gap:6px}
-.ldp-actions{display:flex;gap:6px}
-.btn-loa{font-size:11px;padding:5px 11px;border-radius:var(--r);border:1px solid var(--border2);background:var(--surface);cursor:pointer;color:var(--text2);font-family:var(--font);display:inline-flex;align-items:center;gap:4px;transition:background 0.15s}
-.btn-loa:hover{background:var(--surface3)}
-.btn-loa.primary{background:var(--navy);color:#fff;border-color:var(--navy)}
-.btn-loa.primary:hover{background:var(--navy2)}
-.loa-letter{padding:20px 24px;font-size:12px;line-height:1.8;color:var(--text);background:var(--surface);font-family:Georgia,serif;white-space:pre-wrap;max-height:480px;overflow-y:auto;border-bottom:1px solid var(--border)}
-.loa-letter-editable{padding:20px 24px;font-size:12px;line-height:1.8;color:var(--text);background:var(--surface);font-family:Georgia,serif;white-space:pre-wrap;max-height:480px;overflow-y:auto;border-bottom:1px solid var(--border);outline:none;border:1px solid var(--blue)}
-.loa-footer{padding:10px 14px;display:flex;align-items:center;justify-content:space-between;background:var(--surface2)}
-.loa-status{font-size:11px;color:var(--text3)}
-.loa-status.approved{color:var(--green);font-weight:500}
-
-/* advance */
-.btn-advance{width:100%;padding:11px;background:var(--navy);color:#fff;border:none;border-radius:var(--r);cursor:pointer;font-size:13px;font-weight:500;font-family:var(--font);display:flex;align-items:center;justify-content:center;gap:7px;transition:background 0.15s}
-.btn-advance:hover:not(:disabled){background:var(--navy2)}
-.btn-advance:disabled{background:var(--border2);color:var(--text3);cursor:not-allowed}
-.advance-hint{font-size:11px;color:var(--text3);text-align:center;margin-top:6px;min-height:16px}
-
-/* sidebar */
-.sb-header{padding:13px 15px;border-bottom:1px solid var(--border);flex-shrink:0}
-.sb-title{font-size:12px;font-weight:500;color:var(--text)}
-.sb-sub{font-size:11px;color:var(--text3);margin-top:1px}
-.audit-scroll{flex:1;overflow-y:auto;padding:10px 13px}
-.audit-entry{display:flex;gap:8px;padding:7px 0;border-bottom:1px solid var(--border)}
-.audit-entry:last-child{border-bottom:none}
-.a-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:4px}
-.a-create{background:var(--green-l)}.a-action{background:var(--green-l)}
-.a-cal{background:var(--blue)}.a-note{background:var(--amber)}
-.a-stage{background:var(--blue)}.a-draft{background:var(--purple,#4338CA)}
-.a-text{font-size:11px;color:var(--text);line-height:1.4}
-.a-time{font-size:10px;color:var(--text3);margin-top:1px}
-.note-bar{padding:9px 11px;border-top:1px solid var(--border);display:flex;gap:5px;flex-shrink:0}
-.note-bar input{flex:1;font-size:11px;padding:5px 8px;border:1px solid var(--border);border-radius:var(--r);background:var(--surface);color:var(--text);font-family:var(--font)}
-.note-bar input:focus{outline:none;border-color:var(--blue)}
-.note-bar button{font-size:11px;padding:5px 9px;border-radius:var(--r);border:1px solid var(--border);background:var(--surface2);cursor:pointer;font-family:var(--font);color:var(--text2)}
-
-/* ── Global nav ── */
-.global-nav{background:var(--navy);height:48px;display:flex;align-items:center;padding:0 20px;gap:0;flex-shrink:0;border-bottom:1px solid rgba(255,255,255,0.07)}
+.global-nav{background:var(--navy);height:48px;display:flex;align-items:center;padding:0 20px;gap:0;flex-shrink:0}
 .gn-logo{display:flex;align-items:center;gap:8px;text-decoration:none;margin-right:20px;flex-shrink:0}
 .gn-mark{width:28px;height:28px;background:var(--blue);border-radius:6px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px}
 .gn-name{font-size:14px;font-weight:500;color:#fff;letter-spacing:-0.01em}
@@ -161,417 +35,198 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 .gn-link.active{background:rgba(42,111,219,0.35);color:#fff}
 .gn-link i{font-size:13px}
 .gn-right{display:flex;align-items:center;gap:8px;margin-left:8px}
-.gn-av{width:26px;height:26px;border-radius:50%;background:#1C2E44;border:1.5px solid rgba(255,255,255,0.15);color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500}
-.gn-user{font-size:12px;color:rgba(255,255,255,0.5)}
+.gn-user-btn{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:20px;padding:3px 10px 3px 4px;cursor:pointer;transition:all 0.15s}
+.gn-user-btn:hover{background:rgba(255,255,255,0.12)}
+.gn-av{width:24px;height:24px;border-radius:50%;background:#1C2E44;color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500}
+.gn-user{font-size:11px;font-weight:500;color:rgba(255,255,255,0.8)}
+.body{flex:1;overflow:hidden;display:flex;flex-direction:column}
+.page-header{background:var(--surface);border-bottom:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.ph-left h2{font-size:15px;font-weight:500;color:var(--text);margin-bottom:1px}
+.ph-left p{font-size:11px;color:var(--text3)}
+.ph-stats{display:flex;gap:16px}
+.ph-stat{text-align:center}
+.ph-stat-val{font-size:18px;font-weight:500;color:var(--text)}
+.ph-stat-label{font-size:10px;color:var(--text3)}
+.case-table-wrap{flex:1;overflow-y:auto;padding:20px 24px}
+.case-table{width:100%;border-collapse:collapse}
+.case-table th{text-align:left;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.06em;color:var(--text3);padding:0 12px 10px 0;border-bottom:2px solid var(--border);white-space:nowrap}
+.case-table td{padding:10px 12px 10px 0;border-bottom:1px solid var(--border);vertical-align:middle}
+.case-table tr:hover td{background:var(--surface2);cursor:pointer}
+.case-table tr:last-child td{border-bottom:none}
+.td-ref{font-family:var(--mono);font-size:10px;color:var(--text3)}
+.td-name{font-size:12px;font-weight:500;color:var(--text)}
+.td-meta{font-size:11px;color:var(--text2)}
+.td-type{font-size:11px;color:var(--text2)}
+.cat-pill{font-size:10px;font-weight:500;padding:2px 6px;border-radius:20px;font-family:var(--mono)}
+.cat-a{background:var(--blue-faint);color:var(--blue-text)}
+.cat-b{background:var(--amber-faint);color:var(--amber)}
+.cat-c{background:var(--red-faint);color:var(--red)}
+.days-pill{font-size:10px;font-weight:500;padding:2px 8px;border-radius:20px;white-space:nowrap}
+.dp-urgent{background:var(--red-faint);color:var(--red)}
+.dp-warn{background:var(--amber-faint);color:var(--amber)}
+.dp-ok{background:var(--green-faint);color:var(--green)}
+.prog-bar{width:80px;height:5px;background:var(--border);border-radius:3px;overflow:hidden;display:inline-block;vertical-align:middle}
+.prog-fill{height:100%;border-radius:3px}
+.empty-state{text-align:center;padding:60px 20px;color:var(--text3)}
+.empty-state i{font-size:36px;display:block;margin-bottom:12px;opacity:0.35}
+.empty-state p{font-size:13px;line-height:1.6}
+.stage-icon{width:30px;height:30px;border-radius:var(--r);display:flex;align-items:center;justify-content:center;font-size:13px}
+/* user modal */
+.user-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.3);z-index:1000;align-items:flex-start;justify-content:flex-end;padding:52px 16px 0}
+.user-modal.open{display:flex}
+.user-dropdown{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);width:220px;box-shadow:0 4px 20px rgba(0,0,0,0.12);overflow:hidden}
+.ud-header{padding:10px 14px;border-bottom:1px solid var(--border);font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.07em;color:var(--text3)}
+.ud-item{display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;transition:background 0.15s}
+.ud-item:hover{background:var(--surface2)}
+.ud-av{width:28px;height:28px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;flex-shrink:0}
+.ud-name{font-size:12px;font-weight:500;color:var(--text)}
+.ud-role{font-size:10px;color:var(--text3)}
 </style>
 </head>
 <body>
 <nav class="global-nav">
   <a href="index.html" class="gn-logo"><div class="gn-mark"><i class="ti ti-plane"></i></div><span class="gn-name">261Claims</span></a>
-  <div class="gn-links"><a href="index.html" class="gn-link"><i class="ti ti-layout-dashboard"></i>Dashboard</a><a href="module1-intake.html" class="gn-link"><i class="ti ti-file-upload"></i>Intake</a><a href="module2-case-management.html" class="gn-link"><i class="ti ti-layout-kanban"></i>Cases</a><a href="module3-cpr.html" class="gn-link active"><i class="ti ti-calendar-due"></i>CPR</a><a href="module4-evidence.html" class="gn-link"><i class="ti ti-folder-open"></i>Evidence</a><a href="module5-drafting.html" class="gn-link"><i class="ti ti-file-pencil"></i>Drafting</a><a href="module6-mi.html" class="gn-link"><i class="ti ti-chart-bar"></i>MI</a></div>
-  <div class="gn-right"><div class="gn-av">SB</div><span class="gn-user">S. Booth</span></div>
+  <div class="gn-links">
+    <a href="index.html" class="gn-link"><i class="ti ti-layout-dashboard"></i> Dashboard</a>
+    <a href="module1-intake.html" class="gn-link"><i class="ti ti-file-upload"></i> Intake</a>
+    <a href="module2-case-management.html" class="gn-link"><i class="ti ti-layout-kanban"></i> Cases</a>
+    <a href="module3-cpr.html" class="gn-link active"><i class="ti ti-calendar-due"></i> CPR</a>
+    <a href="module4-evidence.html" class="gn-link"><i class="ti ti-folder-open"></i> Evidence</a>
+    <a href="module5-drafting.html" class="gn-link"><i class="ti ti-file-pencil"></i> Drafting</a>
+    <a href="module6-mi.html" class="gn-link"><i class="ti ti-chart-bar"></i> MI</a>
+  </div>
+  <div class="gn-right">
+    <div class="gn-user-btn" onclick="toggleUserMenu()">
+      <div class="gn-av" id="nav-av">SB</div>
+      <span class="gn-user" id="nav-user">S. Booth</span>
+      <i class="ti ti-chevron-down" style="font-size:10px;color:rgba(255,255,255,0.4);margin-left:2px"></i>
+    </div>
+  </div>
 </nav>
 <div class="app">
-    <div class="body">
-    <div class="main" id="main"></div>
-    <div class="sidebar">
-      <div class="sb-header">
-        <div class="sb-title">Audit trail</div>
-        <div class="sb-sub" id="audit-count">0 entries</div>
+  <div class="body">
+    <div class="page-header">
+      <div class="ph-left">
+        <h2 id="ph-title">CPR deadlines</h2>
+        <p id="ph-sub">Cases with active CPR obligations assigned to you</p>
       </div>
-      <div class="audit-scroll" id="audit-scroll"></div>
-      <div class="note-bar">
-        <input type="text" id="note-input" placeholder="Add a note…" onkeydown="if(event.key==='Enter')addNote()">
-        <button onclick="addNote()">Add</button>
+      <div class="ph-stats" id="ph-stats"></div>
+    </div>
+    <div class="case-table-wrap">
+      <table class="case-table">
+        <thead><tr>
+          <th>Ref</th>
+          <th>Claimant</th>
+          <th>Flight</th>
+          <th>Type</th>
+          <th>Value</th>
+          <th>Cat</th>
+          <th>LOA status</th>
+          <th>CPR deadline</th>
+        </tr></thead>
+        <tbody id="case-tbody"></tbody>
+      </table>
+      <div id="empty-state" style="display:none" class="empty-state">
+        <i class="ti ti-calendar-due"></i>
+        <p>No cases at the CPR deadlines stage assigned to you.</p>
       </div>
     </div>
   </div>
 </div>
-
+<div class="user-modal" id="user-modal" onclick="closeUserMenu(event)">
+  <div class="user-dropdown">
+    <div class="ud-header">Switch user (demo)</div>
+    <div class="ud-item" onclick="switchUser('SB')"><div class="ud-av">SB</div><div><div class="ud-name">Sarah Booth</div><div class="ud-role">Head of Legal Ops</div></div></div>
+    <div class="ud-item" onclick="switchUser('JP')"><div class="ud-av">JP</div><div><div class="ud-name">James Patel</div><div class="ud-role">Senior Solicitor</div></div></div>
+    <div class="ud-item" onclick="switchUser('KR')"><div class="ud-av">KR</div><div><div class="ud-name">Kiran Rahman</div><div class="ud-role">Solicitor</div></div></div>
+  </div>
+</div>
 <script>
-/* ── Case data ── */
-var _i={};
-try{var _r=sessionStorage.getItem('aeroCaseData');if(_r)_i=JSON.parse(_r);}catch(e){}
-var C={
-  ref:        _i.ref        ||'AC-2026-0089',
-  name:       _i.claimant   ||'Daniel Hartley',
-  sol:        _i.solicitor  ||'Pemberton & Associates Solicitors LLP',
-  solAddr:    'Clarke & Partners Solicitors, 22 Bridge Street, Manchester, M3 3BT',
-  flight:     _i.flight     ||'HC 1184 — LTN to BCN (diverted VLC)',
-  value:      _i.value      ||'£39,000+',
-  type:       _i.type       ||'EC 261/2004 — delay / diversion',
-  date:       _i.date       ||'22 May 2026',
-  framework:  _i.framework  ||'EC Regulation 261/2004',
-  assignedTo: _i.assignedTo ||'S. Booth',
-  user:       'S. Booth'
-};
+var activeUser = getActiveUser();
 
-/* ── Date helpers ── */
-var MONTHS={Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11,
-  January:0,February:1,March:2,April:3,June:5,July:6,August:7,September:8,October:9,November:10,December:11};
-
-function parseDate(s){
-  var m=s.match(/(\d+)\s+(\w+)\s+(\d{4})/);
-  if(!m)return new Date();
-  return new Date(parseInt(m[3]),MONTHS[m[2]]||0,parseInt(m[1]));
+function updateNavUser(){
+  var u = USERS[activeUser];
+  document.getElementById('nav-av').textContent = u.initials;
+  document.getElementById('nav-user').textContent = u.name;
 }
-function addDays(d,n){var r=new Date(d);r.setDate(r.getDate()+n);return r;}
-function fmtDate(d){return d.toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'});}
-function fmtShort(d){return d.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});}
-function daysFrom(d){var n=new Date();n.setHours(0,0,0,0);return Math.round((d-n)/(1000*60*60*24));}
-function urgency(days){return days<=3?'urgent':days<=7?'warning':'ok';}
-
-var locDate = parseDate(C.date);
-var d21  = addDays(locDate,21);
-var d28  = addDays(locDate,28);
-var d3m  = addDays(locDate,91);
-var d4m  = addDays(locDate,120);
-
-var DEADLINES=[
-  {id:'response',  label:'LOC response deadline',        date:d21,
-   desc:'A substantive response to the letter of claim must be sent within 21 days of receipt. Failure to respond within this period may entitle the claimant to issue proceedings without further notice.',
-   rule:'CPR Pre-Action Protocol — 21 days from LOC receipt'},
-  {id:'ack',       label:'Acknowledgement outer limit',   date:d28,
-   desc:'If a full response cannot be provided within 21 days, an acknowledgement confirming receipt and providing a response date must be sent. The response itself must then follow within three months of acknowledgement.',
-   rule:'CPR Pre-Action Protocol para. 3.6 — 21 days acknowledgement, 3 months investigation'},
-  {id:'lor',       label:'Letter of response deadline',   date:d3m,
-   desc:'The defendant has three months from the date of acknowledgement to investigate and provide a substantive letter of response addressing all heads of claim.',
-   rule:'CPR Pre-Action Protocol para. 3.7 — 3 months from acknowledgement'},
-  {id:'limitation',label:'4-month limitation review flag',date:d4m,
-   desc:'EC261 claims are subject to a 6-year limitation period in England & Wales. This flag prompts a case review at 4 months to ensure all steps have been taken and no obligations have been missed.',
-   rule:'Limitation Act 1980 s.9 — 6 years from date of flight'},
-];
-
-/* ── State ── */
-var checked={};
-var loaChoice=_i.loaChoice||'';
-var calAdded={};
-var loaDraftState='';  // '' | 'draft' | 'editing' | 'approved'
-var loaEdits='';
-var audit=[];
-
-function ts(){return new Date().toLocaleString('en-GB',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});}
-function log(t,type){audit.push({t:t,type:type||'action',time:ts(),by:C.user});renderAudit();}
-
-/* ── Checklist ── */
-var CHECKS=[
-  {id:'c_deadlines',label:'CPR deadlines reviewed',           sub:'Confirm you have reviewed all four deadlines and understand the obligations for this case.',req:true},
-  {id:'c_calendar', label:'Response deadline added to calendar',sub:'Export the 21-day response deadline using the calendar buttons below.',req:true},
-  {id:'c_loa',      label:'Letter of Acknowledgement decision made',sub:'Select your decision below — draft available if needed.',req:true},
-  {id:'c_sol',      label:'Claimant solicitor details confirmed', sub:C.sol+' confirmed as acting for the claimant.',req:true},
-  {id:'c_counsel',  label:'Assigned solicitor briefed',          sub:C.assignedTo+' informed of all CPR obligations.',req:false},
-];
-
-function allReqDone(){
-  return CHECKS.filter(function(c){return c.req;}).every(function(c){return checked[c.id];})
-    && loaChoice!=='';
+function toggleUserMenu(){ document.getElementById('user-modal').classList.toggle('open'); }
+function closeUserMenu(e){ if(e.target===document.getElementById('user-modal')) document.getElementById('user-modal').classList.remove('open'); }
+function switchUser(id){
+  setActiveUser(id); activeUser=id; updateNavUser();
+  document.getElementById('user-modal').classList.remove('open');
+  render();
 }
 
-/* ── Build LOA letter text ── */
-function buildLOA(){
-  var today=fmtDate(new Date());
-  var responseBy=fmtDate(d3m);
-  var ref=C.ref;
-  return 'PRIVATE AND CONFIDENTIAL\n'
-    +'BY EMAIL AND FIRST CLASS POST\n\n'
-    +today+'\n\n'
-    +C.sol+'\n'
-    +C.solAddr+'\n\n'
-    +'Dear Sirs,\n\n'
-    +'RE: '+C.name.toUpperCase()+' v. TESTAIRWAYS — '+C.type.toUpperCase()+'\n'
-    +'YOUR REF: [INSERT CLAIMANT REF]   OUR REF: '+ref+'\n'
-    +'FLIGHT: '+C.flight+'\n\n'
-    +'ACKNOWLEDGEMENT OF LETTER OF CLAIM\n\n'
-    +'We write on behalf of TestAirways in response to your letter of claim dated '+C.date+', received by our Legal Department on '+C.date+'.\n\n'
-    +'We confirm receipt of your letter of claim and write to acknowledge the same in accordance with the Pre-Action Protocol.\n\n'
-    +'INVESTIGATION\n\n'
-    +'We are currently investigating the circumstances surrounding the above-referenced flight disruption. '
-    +'The matter has been assigned to our legal team and we are in the process of gathering the relevant operational data, flight records, and evidence necessary to respond substantively to each of your client\'s heads of claim.\n\n'
-    +'In accordance with the Pre-Action Protocol, we will provide a full Letter of Response no later than '+responseBy+', being three months from the date of this acknowledgement. '
-    +'We reserve the right to seek an extension of this period by agreement should the investigation require additional time, and we will notify you promptly if this becomes necessary.\n\n'
-    +'EXTRAORDINARY CIRCUMSTANCES\n\n'
-    +'Without prejudice to our investigation, we draw your attention to the fact that the disruption to flight '+C.flight+' arose from circumstances beyond the reasonable control of TestAirways. '
-    +'We are gathering evidence in respect of the applicable extraordinary circumstances defence under Article 5(3) of EC Regulation 261/2004 (as retained in UK law) and the test established in Wallentin-Hermann v Alitalia (Case C-549/07). '
-    +'Our position on liability will be set out in full in our Letter of Response.\n\n'
-    +'RESERVATION OF RIGHTS\n\n'
-    +'Nothing in this letter constitutes an admission of liability. TestAirways reserves all rights and defences available to it under EC Regulation 261/2004, the Montreal Convention, and at common law. '
-    +'We will respond to each of the heads of claim raised in your letter in our substantive Letter of Response.\n\n'
-    +'ALTERNATIVE DISPUTE RESOLUTION\n\n'
-    +'We note your client\'s right to refer this matter to the Civil Aviation Authority (CAA) or an approved Alternative Dispute Resolution (ADR) scheme. '
-    +'We remain open to resolving this matter without recourse to litigation where appropriate and will address any proposals for settlement in our Letter of Response.\n\n'
-    +'We look forward to corresponding with you further.\n\n'
-    +'Yours faithfully,\n\n'
-    +C.assignedTo+'\n'
-    +'Legal Department\n'
-    +'TestAirways\n\n'
-    +'---\n'
-    +'This letter is sent on behalf of TestAirways. It does not constitute legal advice to the recipient. '
-    +'The contents are confidential and subject to legal professional privilege.';
-}
+function render(){
+  var u = USERS[activeUser];
+  var stage = 'cpr';
+  var cases = stage==='cases'
+    ? getCasesForUser(activeUser)
+    : getCasesForUser(activeUser, stage);
+  cases = cases.sort(function(a,b){return a.cprDaysLeft-b.cprDaysLeft;});
 
-/* ── Render ── */
-function render(){renderMain();renderAudit();}
+  document.getElementById('ph-title').textContent = 'CPR deadlines — ' + u.name;
+  document.getElementById('ph-sub').textContent = cases.length + ' case'+(cases.length!==1?'s':'')+' · sorted by CPR deadline urgency';
 
-function renderMain(){
-  var m=document.getElementById('main');
+  var urgCount = cases.filter(function(c){return c.cprDaysLeft<=7;}).length;
+  document.getElementById('ph-stats').innerHTML =
+    statBadge(cases.length,'Total','var(--text)') +
+    statBadge(urgCount,'Urgent','var(--red)');
 
-  /* case header */
-  var hdr='<div class="case-hdr">'
-    +'<div><div class="ch-ref">'+C.ref+'</div>'
-    +'<div class="ch-name">'+C.name+' v. TestAirways</div>'
-    +'<div class="ch-meta">'
-    +'<span><i class="ti ti-plane"></i>'+C.flight+'</span>'
-    +'<span><i class="ti ti-currency-pound"></i>'+C.value+'</span>'
-    +'<span><i class="ti ti-calendar"></i>LOC received '+C.date+'</span>'
-    +'</div></div></div>';
-
-  /* stage rail */
-  var RAIL=[
-    {l:'Intake',   pip:'done',  icon:'ti-check'},
-    {l:'Triage',   pip:'done',  icon:'ti-check'},
-    {l:'CPR',      pip:'active',icon:'ti-calendar-due'},
-    {l:'Evidence', pip:'',      icon:'ti-folder'},
-    {l:'Defence',  pip:'',      icon:'ti-shield'},
-    {l:'Resolve',  pip:'',      icon:'ti-circle-check'},
-  ];
-  var rail='<div class="stage-rail">'
-    +RAIL.map(function(s){
-      return '<div class="rail-step">'
-        +'<div class="rail-pip '+s.pip+'"><i class="ti '+s.icon+'" style="font-size:10px"></i></div>'
-        +'<div class="rail-label '+s.pip+'">'+s.l+'</div>'
-        +'</div>';
-    }).join('')+'</div>';
-
-  /* purpose */
-  var purpose='<div class="purpose">'
-    +'<div class="purpose-label"><i class="ti ti-calendar-due" style="font-size:11px"></i>Module 3 — CPR deadlines</div>'
-    +'<div class="purpose-text">Confirm all CPR obligations are tracked before evidence gathering begins. Set calendar reminders for each deadline, confirm the Letter of Acknowledgement position, and if sending one, review and approve the draft below.</div>'
-    +'</div>';
-
-  /* deadline cards */
-  var dlCards='<div class="deadline-grid">'
-    +DEADLINES.map(function(dl){
-      var days=daysFrom(dl.date);
-      var urg=urgency(days);
-      var daysTxt=days<0?'Overdue by '+Math.abs(days)+' day'+(Math.abs(days)!==1?'s':'')
-                 :days===0?'Due today'
-                 :'Due in '+days+' day'+(days!==1?'s':'');
-      var isAdded=!!calAdded[dl.id];
-      var calBtns=isAdded
-        ?'<button class="btn-cal added"><i class="ti ti-check" style="font-size:10px"></i> Added</button>'
-        :'<button class="btn-cal" onclick="exportICS(\''+dl.id+'\',\''+dl.label+'\',\''+dl.date.toISOString()+'\')"><i class="ti ti-calendar-plus" style="font-size:10px"></i> .ics</button>'
-         +'<button class="btn-cal" onclick="openGCal(\''+dl.id+'\',\''+dl.label+'\',\''+dl.date.toISOString()+'\')"><i class="ti ti-brand-google" style="font-size:10px"></i> Google</button>';
-      return '<div class="dl-card '+urg+'">'
-        +'<div class="dl-label '+urg+'"><i class="ti ti-clock" style="font-size:10px"></i>'+dl.label+'</div>'
-        +'<div class="dl-date '+urg+'">'+fmtDate(dl.date)+'</div>'
-        +'<div class="dl-days">'+daysTxt+'</div>'
-        +'<div class="dl-desc">'+dl.desc+'</div>'
-        +'<div class="dl-rule">'+dl.rule+'</div>'
-        +'<div class="cal-row">'+calBtns+'</div>'
-        +'</div>';
-    }).join('')+'</div>';
-
-  /* checklist */
-  var chkHtml=CHECKS.map(function(c){
-    var isDone=!!checked[c.id];
-    var extra='';
-
-    if(c.id==='c_loa'){
-      if(!loaChoice){
-        extra='<div class="loa-opts">'
-          +'<div class="loa-opt-title"><i class="ti ti-mail" style="font-size:10px"></i>Letter of Acknowledgement</div>'
-          +'<label class="loa-opt"><input type="radio" name="loa" value="draft" onchange="setLoa(\'draft\')"> Draft and send a Letter of Acknowledgement from this system</label>'
-          +'<label class="loa-opt"><input type="radio" name="loa" value="sending" onchange="setLoa(\'sending\')"> Sending separately — no draft needed</label>'
-          +'<label class="loa-opt"><input type="radio" name="loa" value="none" onchange="setLoa(\'none\')"> Not sending — decision noted</label>'
-          +'</div>';
-      } else {
-        var loaLabels={draft:'Drafting LOA in this system',sending:'Sending separately',none:'Not sending — noted'};
-        extra='<div class="loa-confirmed"><i class="ti ti-check" style="font-size:11px"></i>'+loaLabels[loaChoice]+'</div>';
-      }
-    }
-
-    return '<div class="chk-item'+(isDone?' done':'')+'">'
-      +'<div class="chkbox'+(isDone?' on':'')+'" onclick="toggleCheck(\''+c.id+'\',\''+c.label+'\')"><i class="ti ti-check"></i></div>'
-      +'<div class="chk-body">'
-      +'<div class="chk-title'+(isDone?' done':'')+'">'+c.label
-      +'<span class="'+(c.req?'tag-req':'tag-opt')+'">'+(c.req?'Required':'Optional')+'</span>'
-      +'</div>'
-      +'<div class="chk-sub">'+c.sub+'</div>'
-      +extra
-      +'</div></div>';
-  }).join('');
-
-  /* LOA draft panel */
-  var loaDraftPanel='';
-  if(loaChoice==='draft'){
-    var letterText=loaEdits||buildLOA();
-    var statusTxt='';
-    var statusCls='loa-status';
-    if(loaDraftState==='approved'){statusTxt='Approved for sending';statusCls='loa-status approved';}
-    else if(loaDraftState==='editing'){statusTxt='Editing…';}
-    else{statusTxt='Draft — pending review';}
-
-    loaDraftPanel='<div class="loa-draft-panel">'
-      +'<div class="ldp-header">'
-      +'<div class="ldp-title"><i class="ti ti-file-text" style="font-size:13px;color:var(--amber)"></i>Letter of Acknowledgement — draft</div>'
-      +'<div class="ldp-actions">'
-      +(loaDraftState!=='approved'
-        ?'<button class="btn-loa" onclick="editLOA()"><i class="ti ti-pencil" style="font-size:11px"></i> Edit</button>'
-         +'<button class="btn-loa" onclick="downloadLOA()"><i class="ti ti-download" style="font-size:11px"></i> Download</button>'
-         +'<button class="btn-loa primary" onclick="approveLOA()"><i class="ti ti-check" style="font-size:11px"></i> Approve & mark sent</button>'
-        :'<button class="btn-loa" onclick="downloadLOA()"><i class="ti ti-download" style="font-size:11px"></i> Download</button>'
-         +'<span style="font-size:11px;color:var(--green);font-weight:500;padding:5px 8px;display:flex;align-items:center;gap:4px"><i class="ti ti-circle-check" style="font-size:12px"></i>Approved</span>'
-      )
-      +'</div></div>'
-      +'<div class="loa-letter" id="loa-text">'+letterText.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</div>'
-      +'<div class="loa-footer"><div class="'+statusCls+'">'+statusTxt+'</div>'
-      +'<div style="font-size:10px;color:var(--text3)">Review before approving — this document will be sent to '+C.sol+'</div>'
-      +'</div></div>';
+  var tbody = document.getElementById('case-tbody');
+  var empty = document.getElementById('empty-state');
+  if(!cases.length){
+    tbody.innerHTML=''; empty.style.display='block'; return;
   }
-
-  var done=allReqDone();
-  var hint='';
-  if(!done){
-    if(!loaChoice) hint='Select a Letter of Acknowledgement decision to proceed';
-    else{
-      var miss=CHECKS.filter(function(c){return c.req&&!checked[c.id];});
-      if(miss.length) hint=miss.length+' required item'+(miss.length>1?'s':'')+' remaining';
-    }
-  }
-
-  var chkCard='<div class="card">'
-    +'<div class="card-title"><i class="ti ti-list-check" style="color:var(--amber);font-size:15px"></i>CPR compliance checklist</div>'
-    +'<div class="checklist">'+chkHtml+'</div>'
-    +loaDraftPanel
-    +'<div style="margin-top:'+(loaDraftPanel?'14px':'0px')+'">'
-    +'<button class="btn-advance" onclick="goToEvidence()" '+(done?'':'disabled')+'>Proceed to evidence gathering <i class="ti ti-arrow-right"></i></button>'
-    +'<div class="advance-hint">'+hint+'</div>'
-    +'</div></div>';
-
-  m.innerHTML=hdr+rail+purpose+dlCards+chkCard;
-}
-
-function renderAudit(){
-  var el=document.getElementById('audit-scroll');
-  document.getElementById('audit-count').textContent=audit.length+' entr'+(audit.length===1?'y':'ies');
-  if(!audit.length){el.innerHTML='<div style="font-size:11px;color:var(--text3);padding:6px 0">No activity yet</div>';return;}
-  el.innerHTML=audit.slice().reverse().map(function(e){
-    return '<div class="audit-entry"><div class="a-dot a-'+e.type+'"></div>'
-      +'<div><div class="a-text">'+e.t+'</div>'
-      +'<div class="a-time">'+e.time+' · '+e.by+'</div></div></div>';
+  empty.style.display='none';
+  tbody.innerHTML = cases.map(function(c){
+    var urg = daysUrgency(c.cprDaysLeft);
+    var catCls = c.cat==='A'?'cat-a':c.cat==='B'?'cat-b':'cat-c';
+    return '<tr data-ref="'+c.ref+'" class="case-tr">'
+      +'<td><div class="td-ref">'+c.ref+'</div></td>'
+      +'<td><div class="td-name">'+c.claimant+'</div><div class="td-meta">'+c.solicitor.split(' ')[0]+'…</div></td>'
+      +'<td><div class="td-type">'+c.flightNum+'</div><div class="td-meta">'+c.dep+' → '+c.arr+'</div></td>'
+      +'<td><div class="td-type">'+c.disruptionType+'</div></td>'
+      +'<td><div class="td-type" style="font-family:var(--mono);font-weight:500">'+c.value+'</div></td>'
+      +'<td><span class="cat-pill '+catCls+'">'+c.cat+'</span></td>'
+      +'<td>'+extraCol(c)+'</td>'
+      +'<td><span class="days-pill dp-'+urg+'">'+urgencyLabel(c.cprDaysLeft)+'</span></td>'
+      +'</tr>';
   }).join('');
 }
 
-/* ── Actions ── */
-function toggleCheck(id,label){
-  if(checked[id]){delete checked[id];log('Unchecked: '+label,'action');}
-  else{checked[id]=true;log('Confirmed: '+label,'action');}
-  render();
+function statBadge(val,label,col){
+  return '<div class="ph-stat"><div class="ph-stat-val" style="color:'+col+'">'+val+'</div><div class="ph-stat-label">'+label+'</div></div>';
 }
 
-function setLoa(val){
-  loaChoice=val;
-  checked['c_loa']=true;
-  if(val==='draft') loaDraftState='draft';
-  var msgs={draft:'LOA decision: drafting in system — review required before sending',sending:'LOA decision: sending separately',none:'LOA decision: not sending — noted on record'};
-  log(msgs[val],'draft');
-  try{var d=JSON.parse(sessionStorage.getItem('aeroCaseData')||'{}');d.loaChoice=val;sessionStorage.setItem('aeroCaseData',JSON.stringify(d));}catch(e){}
-  render();
+function extraCol(c){
+  var st = c.loaStatus==='approved'?'Approved':c.loaStatus==='sent'?'Sent':'Not sent';
+  var col = c.loaStatus?'var(--green)':'var(--amber)';
+  return '<span style="font-size:10px;font-weight:500;color:'+col+'">'+st+'</span>';
 }
 
-function editLOA(){
-  var el=document.getElementById('loa-text');
-  if(!el)return;
-  loaEdits=el.innerText||el.textContent||buildLOA();
-  loaDraftState='editing';
-  log('LOA draft opened for editing','draft');
-  render();
-}
-
-function approveLOA(){
-  var el=document.getElementById('loa-text');
-  if(el) loaEdits=el.innerText||el.textContent||loaEdits||buildLOA();
-  loaDraftState='approved';
-  checked['c_loa']=true;
-  log('Letter of Acknowledgement approved by '+C.user+' — marked as sent to '+C.sol,'draft');
-  render();
-}
-
-function downloadLOA(){
-  var text=loaEdits||buildLOA();
-  var blob=new Blob([text],{type:'text/plain'});
-  var a=document.createElement('a');
-  a.href=URL.createObjectURL(blob);
-  a.download=C.ref+'-Letter-of-Acknowledgement.txt';
-  a.click();
-  log('LOA draft downloaded: '+C.ref+'-Letter-of-Acknowledgement.txt','draft');
-}
-
-function exportICS(id,label,dateStr){
-  var d=new Date(dateStr);
-  function fmt(dt){return dt.toISOString().replace(/[-:]/g,'').split('.')[0]+'Z';}
-  var end=new Date(d.getTime()+3600000);
-  var r14=new Date(d.getTime()-14*86400000);
-  var r7=new Date(d.getTime()-7*86400000);
-  var r3=new Date(d.getTime()-3*86400000);
-  var ics='BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//261Claims//EN\r\n'
-    +'BEGIN:VEVENT\r\nUID:'+C.ref+'-'+id+'@261claims\r\n'
-    +'DTSTART:'+fmt(d)+'\r\nDTEND:'+fmt(end)+'\r\n'
-    +'SUMMARY:'+label+' — '+C.name+' v. TestAirways ('+C.ref+')\r\n'
-    +'DESCRIPTION:'+C.type+' · Value: '+C.value+' · Ref: '+C.ref+'\r\n'
-    +'BEGIN:VALARM\r\nTRIGGER:'+fmt(r14)+'\r\nACTION:DISPLAY\r\nDESCRIPTION:14 days — '+label+' '+C.ref+'\r\nEND:VALARM\r\n'
-    +'BEGIN:VALARM\r\nTRIGGER:'+fmt(r7)+'\r\nACTION:DISPLAY\r\nDESCRIPTION:7 days — '+label+' '+C.ref+'\r\nEND:VALARM\r\n'
-    +'BEGIN:VALARM\r\nTRIGGER:'+fmt(r3)+'\r\nACTION:DISPLAY\r\nDESCRIPTION:3 days — '+label+' '+C.ref+'\r\nEND:VALARM\r\n'
-    +'END:VEVENT\r\nEND:VCALENDAR';
-  var blob=new Blob([ics],{type:'text/calendar'});
-  var a=document.createElement('a');
-  a.href=URL.createObjectURL(blob);
-  a.download=C.ref+'-'+id+'.ics';
-  a.click();
-  calAdded[id]=true;
-  if(id==='response') checked['c_calendar']=true;
-  log('Calendar export: '+label+' — '+fmtDate(new Date(dateStr)),'cal');
-  render();
-}
-
-function openGCal(id,label,dateStr){
-  var d=new Date(dateStr);
-  function fmt(dt){return dt.toISOString().replace(/[-:T]/g,'').split('.')[0]+'Z';}
-  var end=new Date(d.getTime()+3600000);
-  var text=encodeURIComponent(label+' — '+C.name+' v. TestAirways ('+C.ref+')');
-  var details=encodeURIComponent(C.type+' · Value: '+C.value+' · Ref: '+C.ref);
-  window.open('https://calendar.google.com/calendar/render?action=TEMPLATE&text='+text+'&dates='+fmt(d)+'/'+fmt(end)+'&details='+details,'_blank');
-  calAdded[id]=true;
-  if(id==='response') checked['c_calendar']=true;
-  log('Google Calendar: '+label,'cal');
-  render();
-}
-
-function goToEvidence(){
-  if(!allReqDone())return;
-  log('CPR stage complete — proceeding to evidence management','stage');
+function openCase(ref){
+  var c = getCase(ref);
+  if(!c) return;
   try{
-    var d=JSON.parse(sessionStorage.getItem('aeroCaseData')||'{}');
-    d.cprComplete=true;
-    d.responseDeadline=fmtDate(d21);
-    d.loaStatus=loaDraftState;
-    sessionStorage.setItem('aeroCaseData',JSON.stringify(d));
+    sessionStorage.setItem('aeroCaseData', JSON.stringify({
+      ref:c.ref, claimant:c.claimant, solicitor:c.solicitor,
+      flight:c.flight, value:c.value, type:c.type,
+      date:c.locDate, framework:'EC Regulation 261/2004',
+      points:c.points, assignedTo:USERS[c.assignedTo].name
+    }));
   }catch(e){}
-  window.location.href='module4-evidence.html';
+  window.location.href = 'module3-cpr-workspace.html?ref='+ref;
 }
 
-function addNote(){
-  var inp=document.getElementById('note-input');
-  var val=inp.value.trim();
-  if(!val)return;
-  log(val,'note');
-  inp.value='';
-}
-
-/* ── Init ── */
-log('CPR module opened — '+C.name+' v. TestAirways','create');
-log('LOC received: '+C.date+' · Response deadline: '+fmtDate(d21),'action');
+updateNavUser();
 render();
+
+// Event delegation for case rows
+document.getElementById('case-tbody').addEventListener('click', function(e){
+  var tr = e.target.closest('.case-tr');
+  if(tr) openCase(tr.dataset.ref);
+});
 </script>
 </body>
 </html>
