@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Aero Claims — Module 1: Case Intake</title>
+<title>261Claims — Module 1: Case Intake</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
@@ -24,7 +24,7 @@
   html,body{height:100%;font-family:var(--font);background:var(--surface2);color:var(--text);font-size:14px}
 
   /* ── Layout ── */
-  .app{display:flex;flex-direction:column;height:100vh}
+  .app{display:flex;flex-direction:column;height:calc(100vh - 48px)}
   .topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px;height:54px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
   .logo{display:flex;align-items:center;gap:10px}
   .logo-mark{width:32px;height:32px;background:var(--navy);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px}
@@ -133,24 +133,31 @@
   /* ── Success toast ── */
   .toast{position:fixed;bottom:24px;right:24px;background:var(--navy);color:#fff;font-size:12px;padding:10px 16px;border-radius:var(--r2);display:none;align-items:center;gap:8px;z-index:100}
   .toast.show{display:flex}
+
+/* ── Global nav ── */
+.global-nav{background:var(--navy);height:48px;display:flex;align-items:center;padding:0 20px;gap:0;flex-shrink:0;border-bottom:1px solid rgba(255,255,255,0.07)}
+.gn-logo{display:flex;align-items:center;gap:8px;text-decoration:none;margin-right:20px;flex-shrink:0}
+.gn-mark{width:28px;height:28px;background:var(--blue);border-radius:6px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px}
+.gn-name{font-size:14px;font-weight:500;color:#fff;letter-spacing:-0.01em}
+.gn-links{display:flex;align-items:center;gap:2px;flex:1}
+.gn-link{display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r);font-size:12px;font-weight:500;color:rgba(255,255,255,0.5);text-decoration:none;transition:all 0.15s;white-space:nowrap}
+.gn-link:hover{background:rgba(255,255,255,0.08);color:#fff}
+.gn-link.active{background:rgba(42,111,219,0.35);color:#fff}
+.gn-link i{font-size:13px}
+.gn-right{display:flex;align-items:center;gap:8px;margin-left:8px}
+.gn-av{width:26px;height:26px;border-radius:50%;background:#1C2E44;border:1.5px solid rgba(255,255,255,0.15);color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500}
+.gn-user{font-size:12px;color:rgba(255,255,255,0.5)}
 </style>
 </head>
 <body>
+<nav class="global-nav">
+  <a href="index.html" class="gn-logo"><div class="gn-mark"><i class="ti ti-plane"></i></div><span class="gn-name">261Claims</span></a>
+  <div class="gn-links"><a href="index.html" class="gn-link"><i class="ti ti-layout-dashboard"></i>Dashboard</a><a href="module1-intake.html" class="gn-link active"><i class="ti ti-file-upload"></i>Intake</a><a href="module2-case-management.html" class="gn-link"><i class="ti ti-layout-kanban"></i>Cases</a><a href="module3-cpr.html" class="gn-link"><i class="ti ti-calendar-due"></i>CPR</a><a href="module4-evidence.html" class="gn-link"><i class="ti ti-folder-open"></i>Evidence</a><a href="module5-drafting.html" class="gn-link"><i class="ti ti-file-pencil"></i>Drafting</a><a href="module6-mi.html" class="gn-link"><i class="ti ti-chart-bar"></i>MI</a></div>
+  <div class="gn-right"><div class="gn-av">SB</div><span class="gn-user">S. Booth</span></div>
+</nav>
 
 <div class="app">
-  <div class="topbar">
-    <div class="logo">
-      <div class="logo-mark"><i class="ti ti-plane"></i></div>
-      <span class="logo-name">Aero Claims</span>
-      <span class="logo-tag">/ Case intake</span>
-    </div>
-    <div class="topbar-right">
-      <span class="mod-badge">Module 1 — Case intake</span>
-      <div class="avatar-row"><div class="av">SB</div><span>S. Booth</span></div>
-    </div>
-  </div>
-
-  <div class="body">
+    <div class="body">
     <!-- Left: upload + fields -->
     <div class="left-panel">
       <div class="panel-section">
@@ -208,7 +215,7 @@ const DEMO = {
   jurisdiction:'England & Wales',
   framework:'EC Regulation 261/2004',
   points:[
-    {n:1,claim:'Delay in excess of three hours — Article 7',detail:'Actual arrival was 7 hrs 55 min after scheduled arrival of 10:50. Article 7(1)(a) entitles the claimant to €400 statutory compensation for a flight under 1,500km with a delay of 3+ hours.',evidenceStatus:'green',evidenceLabel:'Statutory entitlement — largely undeniable',evidenceDoc:'Flight ops data',evidenceDetail:'The delay is a matter of record. Defence focus should be on limiting consequential loss exposure, not denying the core delay. €400 cap is the ceiling on statutory compensation.'},
+    {n:1,claim:'Delay in excess of three hours — Article 7',detail:'Actual arrival was 7 hrs 55 min after scheduled arrival of 10:50. Article 7(1)(a) entitles the claimant to €250 statutory compensation for a flight under 1,500km with a delay of 3+ hours.',evidenceStatus:'green',evidenceLabel:'Statutory entitlement — largely undeniable',evidenceDoc:'Flight ops data',evidenceDetail:'The delay is a matter of record. Defence focus should be on limiting consequential loss exposure, not denying the core delay. €250 cap is the ceiling on statutory compensation.'},
     {n:2,claim:'Extraordinary circumstances — burden on carrier',detail:'Claimant puts airline to strict proof that: (a) weather was of exceptional nature; (b) all reasonable measures were taken; (c) delay was unavoidable even with reasonable measures.',evidenceStatus:'amber',evidenceLabel:'Partially evidenced — weather data on file',evidenceDoc:'METAR · SIGMET · NOTAM',evidenceDetail:'BCN weather data and SIGMET records available. Still needed: evidence that other carriers diverted or cancelled on same route same day, and confirmation that fuel load did not permit holding. This is the primary battleground.'},
     {n:3,claim:'Article 9 — duty of care obligations',detail:'Claimant was not provided meal vouchers, written notice of rights, or hotel/transport during 3h45m delay at Valencia. This is a separate breach recoverable regardless of EC261 outcome.',evidenceStatus:'red',evidenceLabel:'No counter-evidence on file',evidenceDoc:null,evidenceDetail:'Crew and ground staff records at Valencia Airport needed. If vouchers were offered and refused, or if claimant left the airport, that changes exposure. Check ground handling records urgently.'},
     {n:4,claim:'Consequential loss — missed contract (£38,250)',detail:'Claimant missed a business meeting and alleges a £38,250 contract loss with Meridian Consulting SL. Letter from Meridian Consulting cited as evidence of withdrawal.',evidenceStatus:'red',evidenceLabel:'Causation highly contestable',evidenceDoc:null,evidenceDetail:'This is the dangerous figure. Causation must be challenged: was the meeting reschedulable? Did the claimant take reasonable steps to mitigate? Was the contract actually lost due solely to the delay? Obtain Meridian Consulting SL correspondence independently. Likely to settle or fail at quantum stage.'},
