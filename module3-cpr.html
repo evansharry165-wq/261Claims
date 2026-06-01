@@ -1,232 +1,347 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>261Claims — CPR deadlines</title>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>261Claims — CPR Deadlines</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <script src="shared_data.js"></script>
+<script src="_nav.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --navy:#0B1628;--navy2:#132033;
-  --blue:#2A6FDB;--blue-faint:#EFF6FF;--blue-text:#1D4ED8;
-  --green:#1A7A4A;--green-l:#22A863;--green-faint:#E6F5EE;
-  --red:#C0392B;--red-faint:#FCF0EF;
-  --amber:#B45309;--amber-faint:#FEF3C7;
-  --purple:#4338CA;--purple-faint:#EEEDFE;
-  --border:#E2E8F0;--border2:#CBD5E1;
-  --text:#0F172A;--text2:#475569;--text3:#94A3B8;
-  --surface:#FFFFFF;--surface2:#F8FAFC;--surface3:#F1F5F9;
-  --font:'DM Sans',sans-serif;--mono:'DM Mono',monospace;
-  --r:8px;--r2:12px;--r3:16px;
-}
+:root{--navy:#0B1628;--blue:#2A6FDB;--blue-faint:#EFF6FF;--blue-text:#1D4ED8;--green:#1A7A4A;--green-l:#22A863;--green-faint:#E6F5EE;--red:#C0392B;--red-faint:#FCF0EF;--amber:#B45309;--amber-faint:#FEF3C7;--purple:#4338CA;--purple-faint:#EEEDFE;--border:#E2E8F0;--text:#0F172A;--text2:#475569;--text3:#94A3B8;--surface:#fff;--surface2:#F8FAFC;--surface3:#F1F5F9;--font:'DM Sans',sans-serif;--mono:'DM Mono',monospace;--r:8px;--r2:12px;--r3:16px}
 html,body{height:100%;font-family:var(--font);background:var(--surface2);color:var(--text);font-size:14px}
-.app{display:flex;flex-direction:column;height:calc(100vh - 48px)}
-.global-nav{background:var(--navy);height:48px;display:flex;align-items:center;padding:0 20px;gap:0;flex-shrink:0}
-.gn-logo{display:flex;align-items:center;gap:8px;text-decoration:none;margin-right:20px;flex-shrink:0}
-.gn-mark{width:28px;height:28px;background:var(--blue);border-radius:6px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px}
-.gn-name{font-size:14px;font-weight:500;color:#fff;letter-spacing:-0.01em}
-.gn-links{display:flex;align-items:center;gap:2px;flex:1}
-.gn-link{display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r);font-size:12px;font-weight:500;color:rgba(255,255,255,0.5);text-decoration:none;transition:all 0.15s;white-space:nowrap}
-.gn-link:hover{background:rgba(255,255,255,0.08);color:#fff}
-.gn-link.active{background:rgba(42,111,219,0.35);color:#fff}
-.gn-link i{font-size:13px}
-.gn-right{display:flex;align-items:center;gap:8px;margin-left:8px}
-.gn-user-btn{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:20px;padding:3px 10px 3px 4px;cursor:pointer;transition:all 0.15s}
-.gn-user-btn:hover{background:rgba(255,255,255,0.12)}
-.gn-av{width:24px;height:24px;border-radius:50%;background:#1C2E44;color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500}
-.gn-user{font-size:11px;font-weight:500;color:rgba(255,255,255,0.8)}
-.body{flex:1;overflow:hidden;display:flex;flex-direction:column}
-.page-header{background:var(--surface);border-bottom:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
-.ph-left h2{font-size:15px;font-weight:500;color:var(--text);margin-bottom:1px}
-.ph-left p{font-size:11px;color:var(--text3)}
-.ph-stats{display:flex;gap:16px}
-.ph-stat{text-align:center}
-.ph-stat-val{font-size:18px;font-weight:500;color:var(--text)}
-.ph-stat-label{font-size:10px;color:var(--text3)}
-.case-table-wrap{flex:1;overflow-y:auto;padding:20px 24px}
-.case-table{width:100%;border-collapse:collapse}
-.case-table th{text-align:left;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.06em;color:var(--text3);padding:0 12px 10px 0;border-bottom:2px solid var(--border);white-space:nowrap}
-.case-table td{padding:10px 12px 10px 0;border-bottom:1px solid var(--border);vertical-align:middle}
-.case-table tr:hover td{background:var(--surface2);cursor:pointer}
-.case-table tr:last-child td{border-bottom:none}
-.td-ref{font-family:var(--mono);font-size:10px;color:var(--text3)}
-.td-name{font-size:12px;font-weight:500;color:var(--text)}
-.td-meta{font-size:11px;color:var(--text2)}
-.td-type{font-size:11px;color:var(--text2)}
-.cat-pill{font-size:10px;font-weight:500;padding:2px 6px;border-radius:20px;font-family:var(--mono)}
-.cat-a{background:var(--blue-faint);color:var(--blue-text)}
-.cat-b{background:var(--amber-faint);color:var(--amber)}
-.cat-c{background:var(--red-faint);color:var(--red)}
-.days-pill{font-size:10px;font-weight:500;padding:2px 8px;border-radius:20px;white-space:nowrap}
-.dp-urgent{background:var(--red-faint);color:var(--red)}
-.dp-warn{background:var(--amber-faint);color:var(--amber)}
-.dp-ok{background:var(--green-faint);color:var(--green)}
-.prog-bar{width:80px;height:5px;background:var(--border);border-radius:3px;overflow:hidden;display:inline-block;vertical-align:middle}
-.prog-fill{height:100%;border-radius:3px}
+.app{display:flex;flex-direction:column;height:100vh}
+.body{flex:1;display:grid;grid-template-columns:1fr 360px;overflow:hidden;gap:0}
+.left{overflow-y:auto;padding:20px 24px}
+.right{border-left:1px solid var(--border);background:var(--surface);overflow-y:auto}
+.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px}
+.ph-title{font-size:18px;font-weight:600;letter-spacing:-0.02em}
+.ph-sub{font-size:12px;color:var(--text3);margin-top:2px}
+.ph-actions{display:flex;gap:8px}
+.btn{display:flex;align-items:center;gap:5px;padding:7px 14px;border-radius:var(--r);font-size:12px;font-weight:500;cursor:pointer;font-family:var(--font);border:none;transition:all 0.15s}
+.btn-navy{background:var(--navy);color:#fff}.btn-navy:hover{opacity:0.9}
+.btn-outline{background:var(--surface);border:1px solid var(--border);color:var(--text2)}.btn-outline:hover{background:var(--surface2)}
+.btn-sm{padding:5px 10px;font-size:11px}
+
+/* Deadline cards */
+.deadline-section{margin-bottom:18px}
+.section-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text3);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.deadline-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r3);padding:14px 16px;margin-bottom:8px;display:flex;align-items:flex-start;gap:12px;cursor:pointer;transition:all 0.15s;border-left:4px solid}
+.deadline-card:hover{box-shadow:0 2px 12px rgba(0,0,0,0.08);transform:translateY(-1px)}
+.dc-urgent{border-left-color:var(--red)}
+.dc-warn{border-left-color:var(--amber)}
+.dc-ok{border-left-color:var(--green-l)}
+.dc-icon{width:36px;height:36px;border-radius:var(--r2);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.dc-ref{font-size:10px;font-family:var(--mono);color:var(--text3);margin-bottom:2px}
+.dc-claimant{font-size:13px;font-weight:600;color:var(--text);margin-bottom:2px}
+.dc-flight{font-size:11px;color:var(--text2)}
+.dc-right{margin-left:auto;text-align:right;flex-shrink:0}
+.dc-days{font-size:20px;font-weight:700;line-height:1}
+.dc-days-label{font-size:10px;color:var(--text3);margin-top:1px}
+.dc-deadline{font-size:10px;color:var(--text3);margin-top:4px;font-family:var(--mono)}
+.dc-actions{display:flex;gap:6px;margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
+.loa-badge{font-size:10px;font-weight:500;padding:2px 8px;border-radius:20px}
+.loa-approved{background:var(--green-faint);color:var(--green)}
+.loa-sent{background:var(--amber-faint);color:var(--amber)}
+.loa-none{background:var(--surface3);color:var(--text3)}
+.stage-badge{font-size:10px;font-weight:500;padding:2px 8px;border-radius:20px}
+
+/* Calendar */
+.cal-header{padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.cal-title{font-size:13px;font-weight:600}
+.cal-nav{display:flex;gap:4px}
+.cal-nav button{width:26px;height:26px;border:1px solid var(--border);border-radius:var(--r);background:var(--surface);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px}
+.cal-nav button:hover{background:var(--surface2)}
+.cal-grid{padding:10px 14px}
+.cal-days-header{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:4px}
+.cal-day-name{text-align:center;font-size:9px;font-weight:600;color:var(--text3);padding:4px 0;text-transform:uppercase}
+.cal-dates{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.cal-date{min-height:32px;border-radius:var(--r);padding:3px 4px;font-size:11px;color:var(--text2);position:relative;cursor:default}
+.cal-date.other-month{color:var(--text3);opacity:0.5}
+.cal-date.today{background:var(--navy);color:#fff;font-weight:600}
+.cal-date.has-deadline{cursor:pointer}
+.cal-date.has-deadline:hover{background:var(--surface2)}
+.cal-date-num{font-size:11px;font-weight:500}
+.deadline-dot{width:5px;height:5px;border-radius:50%;margin-top:2px}
+.deadline-dots{display:flex;gap:2px;flex-wrap:wrap;margin-top:1px}
+.cal-legend{padding:10px 16px;border-top:1px solid var(--border)}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:10px;color:var(--text3);margin-bottom:4px}
+.legend-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.cal-selected-info{padding:10px 16px;border-top:1px solid var(--border);background:var(--surface2);font-size:11px}
+.csi-title{font-size:11px;font-weight:600;color:var(--text);margin-bottom:6px}
+.csi-case{padding:6px 0;border-bottom:1px solid var(--border)}
+.csi-case:last-child{border-bottom:none}
+.csi-ref{font-family:var(--mono);font-size:10px;color:var(--text3)}
+.csi-name{font-size:11px;font-weight:500}
 .empty-state{text-align:center;padding:60px 20px;color:var(--text3)}
-.empty-state i{font-size:36px;display:block;margin-bottom:12px;opacity:0.35}
-.empty-state p{font-size:13px;line-height:1.6}
-.stage-icon{width:30px;height:30px;border-radius:var(--r);display:flex;align-items:center;justify-content:center;font-size:13px}
-/* user modal */
-.user-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.3);z-index:1000;align-items:flex-start;justify-content:flex-end;padding:52px 16px 0}
-.user-modal.open{display:flex}
-.user-dropdown{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);width:220px;box-shadow:0 4px 20px rgba(0,0,0,0.12);overflow:hidden}
-.ud-header{padding:10px 14px;border-bottom:1px solid var(--border);font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.07em;color:var(--text3)}
-.ud-item{display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;transition:background 0.15s}
-.ud-item:hover{background:var(--surface2)}
-.ud-av{width:28px;height:28px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;flex-shrink:0}
-.ud-name{font-size:12px;font-weight:500;color:var(--text)}
-.ud-role{font-size:10px;color:var(--text3)}
+.empty-state i{font-size:40px;opacity:0.2;display:block;margin-bottom:12px}
 </style>
 </head>
 <body>
-<nav class="global-nav">
-  <a href="index.html" class="gn-logo"><div class="gn-mark"><i class="ti ti-plane"></i></div><span class="gn-name">261Claims</span></a>
-  <div class="gn-links">
-    <a href="index.html" class="gn-link"><i class="ti ti-layout-dashboard"></i> Dashboard</a>
-    <a href="module1-intake.html" class="gn-link"><i class="ti ti-file-upload"></i> Intake</a>
-    <a href="module2-case-management.html" class="gn-link"><i class="ti ti-layout-kanban"></i> Cases</a>
-    <a href="module3-cpr.html" class="gn-link active"><i class="ti ti-calendar-due"></i> CPR</a>
-    <a href="module4-evidence.html" class="gn-link"><i class="ti ti-folder-open"></i> Evidence</a>
-    <a href="module5-drafting.html" class="gn-link"><i class="ti ti-file-pencil"></i> Drafting</a>
-    <a href="module6-mi.html" class="gn-link"><i class="ti ti-chart-bar"></i> MI</a>
-  </div>
-  <div class="gn-right">
-    <div class="gn-user-btn" onclick="toggleUserMenu()">
-      <div class="gn-av" id="nav-av">SB</div>
-      <span class="gn-user" id="nav-user">S. Booth</span>
-      <i class="ti ti-chevron-down" style="font-size:10px;color:rgba(255,255,255,0.4);margin-left:2px"></i>
-    </div>
-  </div>
-</nav>
 <div class="app">
-  <div class="body">
+<div id="global-nav-wrap"></div>
+<div class="body">
+  <div class="left">
     <div class="page-header">
-      <div class="ph-left">
-        <h2 id="ph-title">CPR deadlines</h2>
-        <p id="ph-sub">Cases with active CPR obligations assigned to you</p>
-      </div>
-      <div class="ph-stats" id="ph-stats"></div>
-    </div>
-    <div class="case-table-wrap">
-      <table class="case-table">
-        <thead><tr>
-          <th>Ref</th>
-          <th>Claimant</th>
-          <th>Flight</th>
-          <th>Type</th>
-          <th>Value</th>
-          <th>Cat</th>
-          <th>LOA status</th>
-          <th>CPR deadline</th>
-        </tr></thead>
-        <tbody id="case-tbody"></tbody>
-      </table>
-      <div id="empty-state" style="display:none" class="empty-state">
-        <i class="ti ti-calendar-due"></i>
-        <p>No cases at the CPR deadlines stage assigned to you.</p>
+      <div><div class="ph-title" id="ph-title">CPR Deadlines</div><div class="ph-sub" id="ph-sub"></div></div>
+      <div class="ph-actions">
+        <button class="btn btn-outline btn-sm" onclick="exportICS()"><i class="ti ti-calendar-export"></i> Export to calendar</button>
+        <button class="btn btn-outline btn-sm" onclick="openGoogleCal()"><i class="ti ti-brand-google"></i> Google Calendar</button>
       </div>
     </div>
+    <div id="deadline-list"></div>
+  </div>
+  <div class="right">
+    <div class="cal-header">
+      <div class="cal-title" id="cal-month-title">—</div>
+      <div class="cal-nav">
+        <button onclick="prevMonth()"><i class="ti ti-chevron-left"></i></button>
+        <button onclick="goToday()" title="Today" style="font-size:9px;font-weight:600;color:var(--text2)">Today</button>
+        <button onclick="nextMonth()"><i class="ti ti-chevron-right"></i></button>
+      </div>
+    </div>
+    <div class="cal-grid">
+      <div class="cal-days-header" id="cal-days-header"></div>
+      <div class="cal-dates" id="cal-dates"></div>
+    </div>
+    <div class="cal-legend">
+      <div class="legend-item"><div class="legend-dot" style="background:var(--red)"></div>Urgent — ≤3 days</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--amber)"></div>This week — ≤7 days</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--green-l)"></div>Upcoming</div>
+    </div>
+    <div class="cal-selected-info" id="cal-selected-info" style="display:none"></div>
   </div>
 </div>
-<div class="user-modal" id="user-modal" onclick="closeUserMenu(event)">
-  <div class="user-dropdown">
-    <div class="ud-header">Switch user (demo)</div>
-    <div class="ud-item" onclick="switchUser('SB')"><div class="ud-av">SB</div><div><div class="ud-name">Sarah Booth</div><div class="ud-role">Head of Legal Ops</div></div></div>
-    <div class="ud-item" onclick="switchUser('JP')"><div class="ud-av">JP</div><div><div class="ud-name">James Patel</div><div class="ud-role">Senior Solicitor</div></div></div>
-    <div class="ud-item" onclick="switchUser('KR')"><div class="ud-av">KR</div><div><div class="ud-name">Kiran Rahman</div><div class="ud-role">Solicitor</div></div></div>
-  </div>
 </div>
 <script>
-var activeUser = getActiveUser();
+var calYear, calMonth, selectedDate = null;
 
-function updateNavUser(){
-  var u = USERS[activeUser];
-  document.getElementById('nav-av').textContent = u.initials;
-  document.getElementById('nav-user').textContent = u.name;
+window.addEventListener('DOMContentLoaded', function(){
+  renderGlobalNav('cpr');
+  var now = new Date();
+  calYear = now.getFullYear(); calMonth = now.getMonth();
+  renderPage();
+});
+
+function getAllDeadlines(){
+  /* Return ALL cases with CPR deadlines — not just current user */
+  return STATE.getCases().filter(function(c){ return c.cprDeadlineISO; })
+    .sort(function(a,b){ return a.cprDaysLeft - b.cprDaysLeft; });
 }
-function toggleUserMenu(){ document.getElementById('user-modal').classList.toggle('open'); }
-function closeUserMenu(e){ if(e.target===document.getElementById('user-modal')) document.getElementById('user-modal').classList.remove('open'); }
-function switchUser(id){
-  setActiveUser(id); activeUser=id; updateNavUser();
-  document.getElementById('user-modal').classList.remove('open');
-  render();
+
+function getMyDeadlines(){
+  var uid = STATE.getActiveUser();
+  return getAllDeadlines().filter(function(c){ return c.assignedTo === uid; });
 }
 
-function render(){
-  var u = USERS[activeUser];
-  var stage = 'cpr';
-  var cases = stage==='cases'
-    ? getCasesForUser(activeUser)
-    : getCasesForUser(activeUser, stage);
-  cases = cases.sort(function(a,b){return a.cprDaysLeft-b.cprDaysLeft;});
+function renderPage(){
+  var uid = STATE.getActiveUser();
+  var u = USERS[uid];
+  document.getElementById('ph-title').textContent = 'CPR Deadlines — ' + u.full;
+  var my = getMyDeadlines();
+  var all = getAllDeadlines();
+  document.getElementById('ph-sub').textContent = my.length + ' of your cases · ' + all.length + ' total open · click any case to open workspace';
+  renderDeadlineList(my, all);
+  renderCalendar();
+}
 
-  document.getElementById('ph-title').textContent = 'CPR deadlines — ' + u.name;
-  document.getElementById('ph-sub').textContent = cases.length + ' case'+(cases.length!==1?'s':'')+' · sorted by CPR deadline urgency';
+function renderDeadlineList(my, all){
+  var html = '';
 
-  var urgCount = cases.filter(function(c){return c.cprDaysLeft<=7;}).length;
-  document.getElementById('ph-stats').innerHTML =
-    statBadge(cases.length,'Total','var(--text)') +
-    statBadge(urgCount,'Urgent','var(--red)');
+  /* My urgent */
+  var myUrgent = my.filter(function(c){return c.cprDaysLeft<=7;});
+  var myComing = my.filter(function(c){return c.cprDaysLeft>7;});
+  var teamOnly = all.filter(function(c){return c.assignedTo!==STATE.getActiveUser() && c.cprDaysLeft<=7;});
 
-  var tbody = document.getElementById('case-tbody');
-  var empty = document.getElementById('empty-state');
-  if(!cases.length){
-    tbody.innerHTML=''; empty.style.display='block'; return;
+  if(myUrgent.length){
+    html += '<div class="deadline-section"><div class="section-label"><i class="ti ti-alarm" style="font-size:11px;color:var(--red)"></i>Your urgent deadlines</div>';
+    html += myUrgent.map(function(c){ return deadlineCard(c); }).join('');
+    html += '</div>';
   }
-  empty.style.display='none';
-  tbody.innerHTML = cases.map(function(c){
-    var urg = daysUrgency(c.cprDaysLeft);
-    var catCls = c.cat==='A'?'cat-a':c.cat==='B'?'cat-b':'cat-c';
-    return '<tr data-ref="'+c.ref+'" class="case-tr">'
-      +'<td><div class="td-ref">'+c.ref+'</div></td>'
-      +'<td><div class="td-name">'+c.claimant+'</div><div class="td-meta">'+c.solicitor.split(' ')[0]+'…</div></td>'
-      +'<td><div class="td-type">'+c.flightNum+'</div><div class="td-meta">'+c.dep+' → '+c.arr+'</div></td>'
-      +'<td><div class="td-type">'+c.disruptionType+'</div></td>'
-      +'<td><div class="td-type" style="font-family:var(--mono);font-weight:500">'+c.value+'</div></td>'
-      +'<td><span class="cat-pill '+catCls+'">'+c.cat+'</span></td>'
-      +'<td>'+extraCol(c)+'</td>'
-      +'<td><span class="days-pill dp-'+urg+'">'+urgencyLabel(c.cprDaysLeft)+'</span></td>'
-      +'</tr>';
-  }).join('');
+
+  if(myComing.length){
+    html += '<div class="deadline-section"><div class="section-label"><i class="ti ti-calendar" style="font-size:11px;color:var(--amber)"></i>Your upcoming deadlines</div>';
+    html += myComing.map(function(c){ return deadlineCard(c); }).join('');
+    html += '</div>';
+  }
+
+  if(teamOnly.length){
+    html += '<div class="deadline-section"><div class="section-label"><i class="ti ti-users" style="font-size:11px;color:var(--text3)"></i>Team urgent deadlines</div>';
+    html += teamOnly.map(function(c){ return deadlineCard(c, true); }).join('');
+    html += '</div>';
+  }
+
+  if(!my.length && !teamOnly.length){
+    html = '<div class="empty-state"><i class="ti ti-calendar-check"></i><p>No CPR deadlines on file. Cases move here once LOA is sent and CPR clock is started.</p></div>';
+  }
+
+  document.getElementById('deadline-list').innerHTML = html;
 }
 
-function statBadge(val,label,col){
-  return '<div class="ph-stat"><div class="ph-stat-val" style="color:'+col+'">'+val+'</div><div class="ph-stat-label">'+label+'</div></div>';
-}
+function deadlineCard(c, isTeam){
+  var urg = daysUrgency(c.cprDaysLeft);
+  var iconBg = urg==='urgent'?'#FCF0EF':urg==='warn'?'#FEF3C7':'#E6F5EE';
+  var iconCol = urg==='urgent'?'var(--red)':urg==='warn'?'var(--amber)':'var(--green)';
+  var loaCls = c.loaStatus==='approved'?'loa-approved':c.loaStatus==='sent'?'loa-sent':'loa-none';
+  var loaLabel = c.loaStatus==='approved'?'LOA Approved':c.loaStatus==='sent'?'LOA Sent':'LOA Pending';
+  var sc = stageColor(c.stage); var sb = stageBg(c.stage);
+  var assignee = USERS[c.assignedTo];
 
-function extraCol(c){
-  var st = c.loaStatus==='approved'?'Approved':c.loaStatus==='sent'?'Sent':'Not sent';
-  var col = c.loaStatus?'var(--green)':'var(--amber)';
-  return '<span style="font-size:10px;font-weight:500;color:'+col+'">'+st+'</span>';
+  /* Format the CPR deadline date */
+  var deadlineStr = '—';
+  if(c.cprDeadlineISO){
+    var d = new Date(c.cprDeadlineISO);
+    var M=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    deadlineStr = d.getDate()+' '+M[d.getMonth()]+' '+d.getFullYear();
+  }
+
+  return '<div class="deadline-card dc-'+urg+'" onclick="openCase(\''+c.ref+'\')">'
+    +'<div class="dc-icon" style="background:'+iconBg+';color:'+iconCol+'"><i class="ti ti-calendar-due"></i></div>'
+    +'<div style="flex:1;min-width:0">'
+    +'<div class="dc-ref">'+c.ref+(isTeam?' · Assigned to '+(assignee?assignee.name:'?'):'')+'</div>'
+    +'<div class="dc-claimant">'+c.claimant+' <span class="stage-badge" style="background:'+sb+';color:'+sc+'">'+stageLabel(c.stage)+'</span></div>'
+    +'<div class="dc-flight">'+c.flightNum+' · '+c.dep+' → '+c.arr+' · '+c.airline+' · '+c.value+'</div>'
+    +'<div class="dc-actions"><span class="loa-badge '+loaCls+'">'+loaLabel+'</span>'
+    +(c.triageNote?'<span style="font-size:10px;color:var(--text3);max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block">'+c.triageNote.substring(0,80)+'…</span>':'')
+    +'</div>'
+    +'</div>'
+    +'<div class="dc-right">'
+    +'<div class="dc-days" style="color:'+iconCol+'">'+c.cprDaysLeft+'</div>'
+    +'<div class="dc-days-label">days left</div>'
+    +'<div class="dc-deadline">Due '+deadlineStr+'</div>'
+    +'</div>'
+    +'</div>';
 }
 
 function openCase(ref){
-  var c = getCase(ref);
+  var c = STATE.getCase(ref);
   if(!c) return;
-  try{
-    sessionStorage.setItem('aeroCaseData', JSON.stringify({
-      ref:c.ref, claimant:c.claimant, solicitor:c.solicitor,
-      flight:c.flight, value:c.value, type:c.type,
-      date:c.locDate, framework:'EC Regulation 261/2004',
-      points:c.points, assignedTo:USERS[c.assignedTo].name
-    }));
-  }catch(e){}
-  window.location.href = 'module3-cpr-workspace.html?ref='+ref;
+  window.location.href = 'module3-cpr-workspace.html?ref='+encodeURIComponent(ref);
 }
 
-updateNavUser();
-render();
+/* ── Calendar ── */
+var DAY_NAMES = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+var MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
-// Event delegation for case rows
-document.getElementById('case-tbody').addEventListener('click', function(e){
-  var tr = e.target.closest('.case-tr');
-  if(tr) openCase(tr.dataset.ref);
-});
+function renderCalendar(){
+  document.getElementById('cal-month-title').textContent = MONTH_NAMES[calMonth] + ' ' + calYear;
+  document.getElementById('cal-days-header').innerHTML = DAY_NAMES.map(function(d){
+    return '<div class="cal-day-name">'+d+'</div>';
+  }).join('');
+
+  /* Build deadline map: ISO date → [cases] */
+  var deadlineMap = {};
+  getAllDeadlines().forEach(function(c){
+    if(!c.cprDeadlineISO) return;
+    var k = c.cprDeadlineISO.substring(0,10);
+    if(!deadlineMap[k]) deadlineMap[k] = [];
+    deadlineMap[k].push(c);
+  });
+
+  var today = new Date();
+  var todayStr = today.toISOString().substring(0,10);
+
+  /* First day of month — adjust to Mon=0 */
+  var firstDay = new Date(calYear, calMonth, 1).getDay();
+  firstDay = firstDay===0?6:firstDay-1; /* Mon=0 */
+  var daysInMonth = new Date(calYear, calMonth+1, 0).getDate();
+  var daysInPrev  = new Date(calYear, calMonth, 0).getDate();
+
+  var cells = [];
+  /* Prev month padding */
+  for(var i=firstDay-1;i>=0;i--) cells.push({day:daysInPrev-i,month:calMonth-1,year:calYear,other:true});
+  /* Current month */
+  for(var d=1;d<=daysInMonth;d++){
+    var m=calMonth,y=calYear;
+    var iso=y+'-'+String(m+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+    cells.push({day:d,month:m,year:y,other:false,iso:iso,cases:deadlineMap[iso]||[],isToday:iso===todayStr});
+  }
+  /* Next month padding */
+  var rem = cells.length%7===0?0:7-cells.length%7;
+  for(var n=1;n<=rem;n++) cells.push({day:n,month:calMonth+1,year:calYear,other:true});
+
+  document.getElementById('cal-dates').innerHTML = cells.map(function(cell){
+    var cls = 'cal-date'+(cell.other?' other-month':'')+(cell.isToday?' today':'')+(cell.cases&&cell.cases.length?' has-deadline':'');
+    var dots = '';
+    if(cell.cases && cell.cases.length){
+      dots = '<div class="deadline-dots">'+cell.cases.slice(0,3).map(function(c){
+        var urg=daysUrgency(c.cprDaysLeft);
+        var col=urg==='urgent'?'var(--red)':urg==='warn'?'var(--amber)':'var(--green-l)';
+        return '<div class="deadline-dot" style="background:'+col+'"></div>';
+      }).join('')+'</div>';
+    }
+    var onclick = (cell.cases&&cell.cases.length&&!cell.other) ? 'onclick="selectCalDate(\''+cell.iso+'\')" ' : '';
+    return '<div class="'+cls+'" '+onclick+'><div class="cal-date-num">'+cell.day+'</div>'+dots+'</div>';
+  }).join('');
+}
+
+function selectCalDate(iso){
+  selectedDate = iso;
+  var deadlineMap = {};
+  getAllDeadlines().forEach(function(c){
+    if(!c.cprDeadlineISO) return;
+    var k = c.cprDeadlineISO.substring(0,10);
+    if(!deadlineMap[k]) deadlineMap[k]=[];
+    deadlineMap[k].push(c);
+  });
+  var cases = deadlineMap[iso]||[];
+  var el = document.getElementById('cal-selected-info');
+  if(!cases.length){ el.style.display='none'; return; }
+  var d=new Date(iso);
+  var M=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  el.style.display='block';
+  el.innerHTML = '<div class="csi-title">'+d.getDate()+' '+M[d.getMonth()]+' '+d.getFullYear()+' — '+cases.length+' deadline'+(cases.length>1?'s':'')+'</div>'
+    +cases.map(function(c){
+      var sc=stageColor(c.stage);var sb=stageBg(c.stage);
+      return '<div class="csi-case" style="cursor:pointer" onclick="openCase(\''+c.ref+'\')">'
+        +'<div class="csi-ref">'+c.ref+' · '+(USERS[c.assignedTo]?USERS[c.assignedTo].name:'?')+'</div>'
+        +'<div class="csi-name">'+c.claimant+' — '+c.airline+'</div>'
+        +'<div style="margin-top:3px"><span style="font-size:10px;font-weight:500;padding:1px 7px;border-radius:20px;background:'+sb+';color:'+sc+'">'+stageLabel(c.stage)+'</span></div>'
+        +'</div>';
+    }).join('');
+}
+
+function prevMonth(){ calMonth--; if(calMonth<0){calMonth=11;calYear--;} renderCalendar(); }
+function nextMonth(){ calMonth++; if(calMonth>11){calMonth=0;calYear++;} renderCalendar(); }
+function goToday(){ var n=new Date();calYear=n.getFullYear();calMonth=n.getMonth();renderCalendar(); }
+
+/* ICS export */
+function exportICS(){
+  var cases = getAllDeadlines();
+  if(!cases.length){ alert('No deadlines to export.'); return; }
+  var ics = 'BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//261Claims//EN\r\nCALSCALE:GREGORIAN\r\n';
+  cases.forEach(function(c){
+    if(!c.cprDeadlineISO) return;
+    var d=new Date(c.cprDeadlineISO);
+    function fmt(dt){return dt.toISOString().replace(/[-:]/g,'').split('.')[0]+'Z';}
+    ics+='BEGIN:VEVENT\r\n';
+    ics+='UID:'+c.ref+'@261claims\r\n';
+    ics+='DTSTART;VALUE=DATE:'+c.cprDeadlineISO.replace(/-/g,'')+'\r\n';
+    ics+='SUMMARY:CPR Deadline — '+c.ref+' '+c.claimant+'\r\n';
+    ics+='DESCRIPTION:'+c.claimant+' v '+c.airline+' | '+c.flightNum+' | '+c.value+'\r\n';
+    ics+='END:VEVENT\r\n';
+  });
+  ics+='END:VCALENDAR';
+  var a=document.createElement('a');
+  a.href='data:text/calendar;charset=utf-8,'+encodeURIComponent(ics);
+  a.download='261Claims-CPR-Deadlines.ics';
+  a.click();
+}
+
+function openGoogleCal(){
+  var cases=getMyDeadlines();
+  if(!cases.length){alert('No deadlines to add.');return;}
+  var c=cases[0];
+  if(!c.cprDeadlineISO){alert('No deadline date on first case.');return;}
+  var d=new Date(c.cprDeadlineISO);
+  function fmt(dt){return dt.toISOString().replace(/[-:T]/g,'').split('.')[0]+'Z';}
+  var url='https://calendar.google.com/calendar/render?action=TEMPLATE&text='+encodeURIComponent('CPR Deadline — '+c.ref+' '+c.claimant)+'&dates='+fmt(d)+'/'+fmt(new Date(d.getTime()+86400000))+'&details='+encodeURIComponent(c.claimant+' v '+c.airline+' | '+c.flightNum);
+  window.open(url,'_blank');
+}
+
+function render(){ renderPage(); }
 </script>
 </body>
 </html>
