@@ -205,24 +205,11 @@ input[type=file]{display:none}
 .loa-status.approved{color:var(--green);font-weight:500}
 .loa-send-note{font-size:10px;color:var(--amber);display:flex;align-items:center;gap:4px;margin-top:6px;padding:6px 9px;background:var(--amber-faint);border-radius:var(--r);border:1px solid #FDE68A}
 </style>
+<script src="shared_data.js"></script>
+<script src="_nav.js"></script>
 </head>
 <body>
-<nav class="global-nav" style="background:var(--navy);height:48px;display:flex;align-items:center;padding:0 20px;gap:0;flex-shrink:0">
-  <a href="index.html" style="display:flex;align-items:center;gap:8px;text-decoration:none;margin-right:16px">
-    <div style="width:28px;height:28px;background:var(--blue);border-radius:6px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px"><i class="ti ti-plane"></i></div>
-    <span style="font-size:14px;font-weight:500;color:#fff">261Claims</span>
-  </a>
-  <div style="display:flex;align-items:center;gap:2px;flex:1">
-    <a href="index.html" style="display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r);font-size:12px;font-weight:500;color:rgba(255,255,255,0.5);text-decoration:none"><i class="ti ti-layout-dashboard"></i> Dashboard</a>
-    <a href="module1-intake.html" style="display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r);font-size:12px;font-weight:500;color:rgba(255,255,255,0.5);text-decoration:none"><i class="ti ti-file-upload"></i> Intake</a>
-    <a href="module2-case-management.html" style="display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r);font-size:12px;font-weight:500;color:rgba(255,255,255,0.5);text-decoration:none"><i class="ti ti-layout-kanban"></i> Cases</a>
-    <a href="module3-cpr.html" style="display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r);font-size:12px;font-weight:500;color:rgba(255,255,255,0.5);text-decoration:none"><i class="ti ti-calendar-due"></i> CPR</a>
-    <a href="module4-evidence.html" style="display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r);font-size:12px;font-weight:500;color:rgba(255,255,255,0.5);text-decoration:none"><i class="ti ti-folder-open"></i> Evidence</a>
-    <a href="module5-drafting.html" style="display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r);font-size:12px;font-weight:500;color:rgba(255,255,255,0.5);text-decoration:none"><i class="ti ti-file-pencil"></i> Drafting</a>
-    <a href="module6-mi.html" style="display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r);font-size:12px;font-weight:500;color:rgba(255,255,255,0.5);text-decoration:none"><i class="ti ti-chart-bar"></i> MI</a>
-  </div>
-  <a href="module2-case-management.html" style="font-size:11px;padding:5px 12px;border-radius:var(--r);border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.7);text-decoration:none;display:flex;align-items:center;gap:5px"><i class="ti ti-layout-kanban"></i> Back to Cases</a>
-</nav>
+<div id="global-nav-wrap"></div>
 <div class="app">
     <div class="body">
     <div class="main" id="main"></div>
@@ -244,7 +231,7 @@ input[type=file]{display:none}
 <script>
 /* ── Case data ── */
 let _i={};
-try{const r=sessionStorage.getItem('aeroCaseData');if(r)_i=JSON.parse(r);}catch(e){}
+/* State loaded from STATE engine — persists across sessions */
 const C={
   ref:    _i.ref       ||'AC-2026-0089',
   name:   _i.claimant  ||'Daniel Hartley',
@@ -512,7 +499,7 @@ function setAssignee(val){
   assignedTo=val;checked['t_assign']=true;
   log('Assigned to: '+val,'action');render();
 }
-function saveNotes(){
+function saveNotes(){ if(C && C.ref) { var notes=document.getElementById('notes-area')?.value||''; STATE.saveCase(C.ref,{notes:notes}); STATE.addActivity(C.ref,'Notes updated','action'); }
   const inp=document.getElementById('inp-notes');
   if(!inp||!inp.value.trim())return;
   strategyNote=inp.value.trim();
@@ -524,11 +511,12 @@ function advance(){
   if(!stageComplete(currentStage))return;
   const next=currentStage+1;
   log('Stage complete: '+STAGES[currentStage].label+' → '+(STAGES[next]?.label||'closed'),'stage');
+  if(C && C.ref) { STATE.advanceStage(C.ref); }
   if(currentStage===1){
     try{
       const d=JSON.parse(sessionStorage.getItem('aeroCaseData')||'{}');
       d.assignedTo=assignedTo;d.strategyNote=strategyNote;d.loaChoice=loaChoice;
-      sessionStorage.setItem('aeroCaseData',JSON.stringify(d));
+      /* STATE.saveCase handles persistence — called on advance() */
     }catch(e){}
     window.location.href='module3-cpr.html';return;
   }
