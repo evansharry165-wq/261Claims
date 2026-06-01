@@ -3,14 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>261Claims — Module 5: Document Drafting</title>
+<title>261Claims — AI Document Drafting</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&family=Fraunces:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<script src="shared_data.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --navy:#0B1628;--navy2:#132033;
+  --navy:#0B1628;--navy2:#132033;--navy3:#1C2E44;
   --blue:#2A6FDB;--blue-faint:#EFF6FF;--blue-text:#1D4ED8;
   --green:#1A7A4A;--green-l:#22A863;--green-faint:#E6F5EE;
   --red:#C0392B;--red-faint:#FCF0EF;
@@ -18,939 +19,291 @@
   --purple:#4338CA;--purple-faint:#EEEDFE;
   --border:#E2E8F0;--border2:#CBD5E1;
   --text:#0F172A;--text2:#475569;--text3:#94A3B8;
-  --surface:#FFFFFF;--surface2:#F8FAFC;--surface3:#F1F5F9;
-  --font:'DM Sans',sans-serif;--mono:'DM Mono',monospace;
+  --surface:#FFFFFF;--surface2:#F8FAFC;
+  --font:'DM Sans',sans-serif;--serif:'Fraunces',serif;--mono:'DM Mono',monospace;
   --r:8px;--r2:12px;--r3:16px;
 }
-html,body{height:100%;font-family:var(--font);background:var(--surface2);color:var(--text);font-size:14px}
-.app{display:flex;flex-direction:column;height:calc(100vh - 48px)}
-
-/* topbar */
-.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px;height:54px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
-.logo{display:flex;align-items:center;gap:10px;text-decoration:none}
-.logo-mark{width:32px;height:32px;background:var(--navy);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px}
-.logo-name{font-size:15px;font-weight:500;letter-spacing:-0.02em;color:var(--navy)}
-.logo-tag{font-size:12px;color:var(--text3);margin-left:2px}
-.topbar-right{display:flex;align-items:center;gap:10px}
-.mod-badge{font-size:11px;font-weight:500;background:var(--green-faint);color:var(--green);border-radius:20px;padding:3px 10px}
-.av-row{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--text2)}
-.av{width:28px;height:28px;border-radius:50%;background:var(--navy2);color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500}
-.btn-back{font-size:12px;padding:5px 12px;border-radius:var(--r);border:1px solid var(--border);background:var(--surface);cursor:pointer;color:var(--text2);font-family:var(--font);display:flex;align-items:center;gap:5px;text-decoration:none}
-.btn-back:hover{background:var(--surface3)}
-
-/* layout */
-.body{flex:1;display:grid;grid-template-columns:280px 1fr;overflow:hidden}
-.sidebar-left{border-right:1px solid var(--border);background:var(--surface);overflow-y:auto;padding:16px}
-.main{overflow-y:auto;padding:20px 24px}
-
-/* case header */
-.case-hdr{background:var(--surface);border:1px solid var(--border);border-radius:var(--r3);padding:13px 16px;margin-bottom:16px}
-.ch-ref{font-size:11px;font-family:var(--mono);color:var(--text3);margin-bottom:2px}
-.ch-name{font-size:15px;font-weight:500;color:var(--text);margin-bottom:4px}
-.ch-meta{display:flex;flex-wrap:wrap;gap:10px;font-size:11px;color:var(--text2)}
-.ch-meta span{display:flex;align-items:center;gap:3px}
-.ch-meta i{font-size:11px;color:var(--text3)}
-
-/* document library */
-.lib-section{margin-bottom:16px}
-.lib-label{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.07em;color:var(--text3);margin-bottom:8px}
-.doc-btn{width:100%;display:flex;align-items:center;gap:9px;padding:9px 10px;border:1px solid var(--border);border-radius:var(--r2);margin-bottom:5px;cursor:pointer;text-align:left;font-family:var(--font);background:var(--surface);transition:all 0.15s}
-.doc-btn:hover{border-color:var(--border2);background:var(--surface2)}
-.doc-btn.active{border-color:var(--blue);background:var(--blue-faint)}
-.doc-btn-icon{width:28px;height:28px;border-radius:var(--r);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
-.doc-btn-name{font-size:12px;font-weight:500;color:var(--text);margin-bottom:1px}
-.doc-btn-sub{font-size:10px;color:var(--text3)}
-.doc-status{margin-left:auto;font-size:10px;font-weight:500;padding:2px 6px;border-radius:20px;white-space:nowrap}
+html,body{height:100%;font-family:var(--font);background:var(--surface2);color:var(--text);font-size:13px;overflow:hidden}
+.app{display:grid;grid-template-columns:260px 1fr 300px;height:100vh;overflow:hidden}
+.left{background:var(--navy);display:flex;flex-direction:column;overflow:hidden}
+.logo{padding:14px 16px;border-bottom:1px solid rgba(255,255,255,0.07);display:flex;align-items:center;gap:8px;flex-shrink:0}
+.logo-mark{width:28px;height:28px;background:var(--blue);border-radius:6px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;flex-shrink:0}
+.logo-name{font-size:14px;font-weight:600;color:#fff;letter-spacing:-0.01em}
+.logo-sub{font-size:10px;color:rgba(255,255,255,0.35);margin-top:1px}
+.section-label{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;color:rgba(255,255,255,0.25);padding:10px 16px 4px}
+.case-item{padding:8px 14px;cursor:pointer;border-left:3px solid transparent;transition:all 0.15s;display:flex;align-items:flex-start;gap:8px}
+.case-item:hover{background:rgba(255,255,255,0.05)}
+.case-item.active{background:rgba(42,111,219,0.2);border-left-color:var(--blue)}
+.ci-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:4px}
+.ci-dot-defend{background:#22A863}.ci-dot-concede{background:#C0392B}
+.ci-ref{font-size:9px;font-family:var(--mono);color:rgba(255,255,255,0.35);margin-bottom:1px}
+.ci-name{font-size:11px;font-weight:500;color:rgba(255,255,255,0.85);line-height:1.3}
+.ci-meta{font-size:10px;color:rgba(255,255,255,0.35);margin-top:1px}
+.ci-verdict{font-size:9px;font-weight:600;padding:1px 5px;border-radius:4px;margin-top:3px;display:inline-block}
+.cv-defend{background:rgba(34,168,99,0.2);color:#4ade80}
+.cv-concede{background:rgba(192,57,43,0.2);color:#f87171}
+.centre{display:flex;flex-direction:column;overflow:hidden;background:var(--surface2)}
+.case-header{background:var(--navy);padding:12px 20px;flex-shrink:0;border-bottom:1px solid rgba(255,255,255,0.06)}
+.ch-ref{font-size:9px;font-family:var(--mono);color:rgba(255,255,255,0.35);margin-bottom:2px}
+.ch-name{font-size:15px;font-weight:500;color:#fff;font-family:var(--serif);letter-spacing:-0.01em}
+.ch-meta{display:flex;gap:12px;font-size:10px;color:rgba(255,255,255,0.45);margin-top:5px;flex-wrap:wrap}
+.ch-verdict{margin-top:6px}
+.verdict-pill{font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px}
+.vp-defend{background:rgba(26,122,74,0.25);color:#4ade80;border:1px solid rgba(74,222,128,0.15)}
+.vp-concede{background:rgba(192,57,43,0.25);color:#f87171;border:1px solid rgba(248,113,113,0.15)}
+.doc-tabs{display:flex;gap:2px;padding:8px 12px;background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0;flex-wrap:wrap}
+.doc-tab{padding:5px 10px;border-radius:var(--r);font-size:11px;font-weight:500;cursor:pointer;color:var(--text3);border:1px solid transparent;transition:all 0.15s;display:flex;align-items:center;gap:5px;white-space:nowrap}
+.doc-tab:hover{background:var(--surface2);color:var(--text2)}
+.doc-tab.active{background:var(--blue-faint);color:var(--blue-text);border-color:rgba(42,111,219,0.2)}
+.doc-tab.ready{color:var(--green)}
+.doc-tab.ready.active{background:var(--green-faint);color:var(--green);border-color:rgba(26,122,74,0.2)}
+.tab-dot{width:6px;height:6px;border-radius:50%;background:currentColor;opacity:0.6}
+.doc-area{flex:1;overflow-y:auto;padding:16px}
+.generate-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r3);padding:32px;display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center}
+.gc-icon{width:56px;height:56px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:22px}
+.gc-title{font-size:14px;font-weight:500}
+.gc-sub{font-size:12px;color:var(--text3);max-width:360px;line-height:1.7}
+.gc-facts{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r2);padding:10px 14px;width:100%;text-align:left;font-size:11px;max-width:480px}
+.gc-fact-row{display:flex;gap:8px;line-height:1.8}
+.gc-fact-label{color:var(--text3);min-width:90px;flex-shrink:0}
+.gc-fact-val{font-weight:500;font-family:var(--mono)}
+.gc-fact-val.live{color:var(--green)}.gc-fact-val.pending{color:var(--amber)}
+.btn{display:flex;align-items:center;gap:6px;padding:9px 18px;border-radius:var(--r);font-size:12px;font-weight:500;cursor:pointer;font-family:var(--font);border:none;transition:all 0.15s}
+.btn-ai{background:linear-gradient(135deg,#1D4ED8,#4338CA);color:#fff;box-shadow:0 2px 12px rgba(42,111,219,0.3)}
+.btn-ai:hover{opacity:0.92}.btn-ai:disabled{opacity:0.5;cursor:not-allowed}
+.btn-outline{background:var(--surface);border:1px solid var(--border);color:var(--text2)}
+.btn-outline:hover{background:var(--surface2)}
+.btn-green{background:var(--green);color:#fff}.btn-green:hover{opacity:0.9}
+.btn-sm{padding:5px 12px;font-size:11px}
+.btn-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.gen-state{background:var(--surface);border:1px solid var(--border);border-radius:var(--r3);padding:32px;display:flex;flex-direction:column;align-items:center;gap:16px}
+.gen-spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--blue);border-radius:50%;animation:spin 0.7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.gen-label{font-size:13px;font-weight:500}
+.gen-steps{width:100%;max-width:400px;display:flex;flex-direction:column;gap:6px}
+.gs{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text3);padding:3px 0;transition:color 0.3s}
+.gs.active{color:var(--blue-text)}.gs.done{color:var(--green)}
+.gs i{font-size:12px;width:14px;flex-shrink:0}
+.doc-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r3);overflow:hidden}
+.doc-toolbar{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid var(--border);gap:8px;flex-wrap:wrap}
+.dt-left{display:flex;align-items:center;gap:8px}
+.dt-icon{width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px}
+.dt-name{font-size:12px;font-weight:500}
+.dt-status{font-size:10px;font-weight:500;padding:2px 8px;border-radius:20px}
 .ds-draft{background:var(--amber-faint);color:var(--amber)}
 .ds-approved{background:var(--green-faint);color:var(--green)}
-.ds-ready{background:var(--blue-faint);color:var(--blue-text)}
-.ds-empty{background:var(--surface3);color:var(--text3)}
-
-/* document workspace */
-.doc-workspace{background:var(--surface);border:1px solid var(--border);border-radius:var(--r3);overflow:hidden;margin-bottom:14px}
-.dw-header{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
-.dw-title{font-size:13px;font-weight:500;color:var(--text);display:flex;align-items:center;gap:7px}
-.dw-actions{display:flex;gap:6px;flex-wrap:wrap}
-.btn-action{font-size:11px;padding:5px 11px;border-radius:var(--r);border:1px solid var(--border2);background:var(--surface2);cursor:pointer;color:var(--text2);font-family:var(--font);display:inline-flex;align-items:center;gap:4px;transition:background 0.15s}
-.btn-action:hover{background:var(--surface3)}
-.btn-action.primary{background:var(--navy);color:#fff;border-color:var(--navy)}
-.btn-action.primary:hover{background:var(--navy2)}
-.btn-action.success{background:var(--green-faint);border-color:#BBF7D0;color:var(--green);cursor:default}
-
-/* AI generate bar */
-.ai-bar{padding:10px 14px;background:var(--blue-faint);border-bottom:1px solid #BFDBFE;display:flex;align-items:center;gap:10px}
-.ai-bar-text{font-size:12px;color:var(--blue-text);flex:1}
-.ai-spinner{width:14px;height:14px;border:2px solid #BFDBFE;border-top-color:var(--blue);border-radius:50%;animation:spin 0.7s linear infinite;flex-shrink:0}
-@keyframes spin{to{transform:rotate(360deg)}}
-.btn-generate{font-size:11px;padding:5px 12px;border-radius:var(--r);background:var(--blue-text);color:#fff;border:none;cursor:pointer;font-family:var(--font);display:inline-flex;align-items:center;gap:4px}
-
-/* evidence used strip */
-.ev-strip{padding:9px 14px;background:var(--surface2);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:6px;flex-wrap:wrap}
-.ev-strip-label{font-size:10px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em;margin-right:2px}
-.ev-pill{font-size:10px;padding:2px 8px;border-radius:20px;background:var(--purple-faint);color:var(--purple);border:1px solid #C7D2FE;display:flex;align-items:center;gap:3px}
-.ev-pill i{font-size:10px}
-
-/* letter body */
-.letter-body{padding:28px 36px;font-size:12.5px;line-height:1.85;color:var(--text);background:var(--surface);min-height:400px;font-family:Georgia,serif;white-space:pre-wrap;outline:none;border:none}
-.letter-body[contenteditable=true]{border:1px solid var(--blue);border-radius:0}
-.letter-body .gap{background:#FEF3C7;border:1px dashed var(--amber);border-radius:3px;padding:0 4px;color:var(--amber);font-family:var(--font);font-size:11px;cursor:pointer}
-
-/* status bar */
-.status-bar{padding:9px 14px;border-top:1px solid var(--border);background:var(--surface2);display:flex;align-items:center;justify-content:space-between}
-.status-text{font-size:11px;color:var(--text3)}
-.status-text.approved{color:var(--green);font-weight:500}
-.send-note{font-size:10px;color:var(--amber);display:flex;align-items:center;gap:4px}
-
-/* empty state */
-.empty-workspace{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;text-align:center;background:var(--surface);border:1px solid var(--border);border-radius:var(--r3)}
-.empty-workspace i{font-size:36px;color:var(--text3);margin-bottom:12px;opacity:0.4;display:block}
-.empty-workspace p{font-size:13px;color:var(--text3);max-width:260px;line-height:1.6}
-
-/* points of claim reference */
-.points-ref{background:var(--surface);border:1px solid var(--border);border-radius:var(--r3);overflow:hidden}
-.pr-header{padding:10px 14px;border-bottom:1px solid var(--border);font-size:12px;font-weight:500;color:var(--text);display:flex;align-items:center;gap:6px}
-.pr-item{display:flex;align-items:flex-start;gap:8px;padding:8px 14px;border-bottom:1px solid var(--border);font-size:11px}
-.pr-item:last-child{border-bottom:none}
+.dt-right{display:flex;gap:6px;align-items:center}
+.ev-bar{display:flex;gap:4px;padding:6px 16px;background:var(--surface2);border-bottom:1px solid var(--border);flex-wrap:wrap;align-items:center}
+.ev-label-sm{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:0.07em;color:var(--text3);margin-right:4px}
+.ev-chip{font-size:9px;font-weight:500;padding:2px 7px;border-radius:20px;border:1px solid;display:flex;align-items:center;gap:3px}
+.ev-live{background:var(--green-faint);color:var(--green);border-color:rgba(26,122,74,0.2)}
+.ev-pending{background:#F1F5F9;color:var(--text3);border-color:var(--border2)}
+.doc-text{padding:24px 28px;font-size:12px;line-height:1.9;color:var(--text);white-space:pre-wrap;font-family:var(--font);min-height:300px}
+.doc-footer{display:flex;align-items:center;justify-content:space-between;padding:8px 16px;border-top:1px solid var(--border);background:var(--surface2)}
+.df-status{font-size:10px;font-weight:500;display:flex;align-items:center;gap:4px}
+.df-note{font-size:10px;color:var(--text3);display:flex;align-items:center;gap:3px}
+.right{background:var(--surface);border-left:1px solid var(--border);overflow-y:auto;display:flex;flex-direction:column}
+.rp-head{padding:10px 14px;font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text3);background:var(--surface2);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:5px}
+.point-row{padding:8px 14px;border-bottom:1px solid var(--border);display:flex;gap:7px;align-items:flex-start}
 .pr-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:3px}
-.pr-dot-g{background:var(--green-l)}.pr-dot-a{background:#F59E0B}.pr-dot-r{background:var(--red)}
-.pr-num{font-weight:500;color:var(--text);margin-bottom:1px}
-.pr-claim{color:var(--text2)}
-.pr-ev{font-size:10px;color:var(--text3);font-family:var(--mono);margin-top:2px}
+.pr-claim{font-size:11px;font-weight:500;line-height:1.4}
+.pr-doc{font-size:10px;color:var(--text3);font-family:var(--mono);margin-top:2px;line-height:1.4}
+.pr-api{font-size:9px;font-weight:500;padding:1px 5px;border-radius:4px;background:var(--amber-faint);color:var(--amber);margin-top:2px;display:inline-block}
+.fd-row{display:flex;justify-content:space-between;align-items:baseline;padding:5px 14px;border-bottom:1px solid var(--border);font-size:11px}
+.fd-label{color:var(--text3)}.fd-val{font-family:var(--mono);font-size:10px;font-weight:500}
+.fd-live{color:var(--green)}.fd-pending{color:var(--amber)}
+.prec-box{margin:10px 14px;background:var(--navy);border-radius:var(--r2);padding:12px}
+.prec-label{font-size:9px;text-transform:uppercase;letter-spacing:0.07em;color:rgba(255,255,255,0.3);margin-bottom:5px;font-weight:600}
+.prec-case{font-size:11px;font-weight:500;color:#fff;margin-bottom:3px}
+.prec-out{font-size:10px;color:rgba(255,255,255,0.5);line-height:1.5}
+.key-section{padding:12px 14px;border-top:1px solid var(--border);background:var(--blue-faint)}
+.ks-title{font-size:10px;font-weight:600;color:var(--blue-text);margin-bottom:6px;display:flex;align-items:center;gap:4px}
+.ks-input{width:100%;padding:7px 10px;border:1px solid rgba(42,111,219,0.3);border-radius:var(--r);font-size:11px;font-family:var(--mono);outline:none;background:#fff;color:var(--text)}
+.ks-input:focus{border-color:var(--blue)}
+.ks-row{display:flex;gap:6px;margin-top:6px;align-items:center}
+.ks-note{font-size:9px;color:var(--text3);flex:1;line-height:1.4}
+.key-status{font-size:10px;font-weight:500;padding:4px 10px;border-radius:var(--r);text-align:center;margin-top:6px}
+.ks-active{background:var(--green-faint);color:var(--green)}
+.ks-none{background:var(--amber-faint);color:var(--amber)}
 </style>
 </head>
 <body>
-<nav class="global-nav" style="background:var(--navy);height:48px;display:flex;align-items:center;padding:0 20px;gap:0;flex-shrink:0">
-  <a href="index.html" style="display:flex;align-items:center;gap:8px;text-decoration:none;margin-right:16px">
-    <div style="width:28px;height:28px;background:var(--blue);border-radius:6px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px"><i class="ti ti-plane"></i></div>
-    <span style="font-size:14px;font-weight:500;color:#fff">261Claims</span>
-  </a>
-  <div style="display:flex;align-items:center;gap:2px;flex:1">
-    <a href="index.html" style="display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r);font-size:12px;font-weight:500;color:rgba(255,255,255,0.5);text-decoration:none"><i class="ti ti-layout-dashboard"></i> Dashboard</a>
-    <a href="module1-intake.html" style="display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r);font-size:12px;font-weight:500;color:rgba(255,255,255,0.5);text-decoration:none"><i class="ti ti-file-upload"></i> Intake</a>
-    <a href="module2-case-management.html" style="display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r);font-size:12px;font-weight:500;color:rgba(255,255,255,0.5);text-decoration:none"><i class="ti ti-layout-kanban"></i> Cases</a>
-    <a href="module3-cpr.html" style="display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r);font-size:12px;font-weight:500;color:rgba(255,255,255,0.5);text-decoration:none"><i class="ti ti-calendar-due"></i> CPR</a>
-    <a href="module4-evidence.html" style="display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r);font-size:12px;font-weight:500;color:rgba(255,255,255,0.5);text-decoration:none"><i class="ti ti-folder-open"></i> Evidence</a>
-    <a href="module5-drafting.html" style="display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r);font-size:12px;font-weight:500;color:rgba(255,255,255,0.5);text-decoration:none"><i class="ti ti-file-pencil"></i> Drafting</a>
-    <a href="module6-mi.html" style="display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r);font-size:12px;font-weight:500;color:rgba(255,255,255,0.5);text-decoration:none"><i class="ti ti-chart-bar"></i> MI</a>
-  </div>
-  <a href="module5-drafting.html" style="font-size:11px;padding:5px 12px;border-radius:var(--r);border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.7);text-decoration:none;display:flex;align-items:center;gap:5px"><i class="ti ti-file-pencil"></i> Back to Drafting</a>
-</nav>
 <div class="app">
-    <div class="body">
-    <!-- Document library sidebar -->
-    <div class="sidebar-left">
-      <div class="lib-section">
-        <div class="lib-label">Pre-action</div>
-        <button class="doc-btn" onclick="openDoc('loa')">
-          <div class="doc-btn-icon" style="background:#FEF3C7;color:#92400E"><i class="ti ti-mail"></i></div>
-          <div><div class="doc-btn-name">Letter of Acknowledgement</div><div class="doc-btn-sub">Pre-action · CPR Protocol</div></div>
-          <span class="doc-status ds-approved">Approved</span>
-        </button>
-        <button class="doc-btn" onclick="openDoc('lor')">
-          <div class="doc-btn-icon" style="background:#EEEDFE;color:#4338CA"><i class="ti ti-file-text"></i></div>
-          <div><div class="doc-btn-name">Letter of Response</div><div class="doc-btn-sub">Substantive reply to LOC</div></div>
-          <span class="doc-status ds-draft">Draft</span>
-        </button>
-      </div>
-      <div class="lib-section">
-        <div class="lib-label">Court documents</div>
-        <button class="doc-btn" onclick="openDoc('defence')">
-          <div class="doc-btn-icon" style="background:var(--green-faint);color:var(--green)"><i class="ti ti-shield"></i></div>
-          <div><div class="doc-btn-name">Defence</div><div class="doc-btn-sub">CPR Part 16 · County Court</div></div>
-          <span class="doc-status ds-empty">Not started</span>
-        </button>
-        <button class="doc-btn" onclick="openDoc('witness')">
-          <div class="doc-btn-icon" style="background:var(--blue-faint);color:var(--blue-text)"><i class="ti ti-user"></i></div>
-          <div><div class="doc-btn-name">Witness Statement</div><div class="doc-btn-sub">CPR Part 32 · Crew / Ops</div></div>
-          <span class="doc-status ds-empty">Not started</span>
-        </button>
-        <button class="doc-btn" onclick="openDoc('n181')">
-          <div class="doc-btn-icon" style="background:var(--surface3);color:var(--text3)"><i class="ti ti-forms"></i></div>
-          <div><div class="doc-btn-name">Directions Questionnaire</div><div class="doc-btn-sub">Form N181</div></div>
-          <span class="doc-status ds-empty">Not started</span>
-        </button>
-      </div>
-      <div class="lib-section">
-        <div class="lib-label">Settlement</div>
-        <button class="doc-btn" onclick="openDoc('p36')">
-          <div class="doc-btn-icon" style="background:var(--surface3);color:var(--text3)"><i class="ti ti-scale"></i></div>
-          <div><div class="doc-btn-name">Part 36 Offer</div><div class="doc-btn-sub">CPR Part 36 · Costs protection</div></div>
-          <span class="doc-status ds-empty">Not started</span>
-        </button>
-        <button class="doc-btn" onclick="openDoc('settlement')">
-          <div class="doc-btn-icon" style="background:var(--surface3);color:var(--text3)"><i class="ti ti-file-check"></i></div>
-          <div><div class="doc-btn-name">Settlement Agreement</div><div class="doc-btn-sub">Full and final settlement</div></div>
-          <span class="doc-status ds-empty">Not started</span>
-        </button>
-      </div>
-      <div class="lib-section">
-        <div class="lib-label">Points of claim reference</div>
-        <div class="points-ref" id="points-ref"></div>
-      </div>
+<div class="left">
+  <div class="logo">
+    <div class="logo-mark"><i class="ti ti-plane"></i></div>
+    <div><div class="logo-name">261Claims</div><div class="logo-sub">AI Drafting Engine</div></div>
+  </div>
+  <div class="section-label">Cases — Drafting Stage</div>
+  <div id="case-list" style="overflow-y:auto;flex:1"></div>
+</div>
+<div class="centre">
+  <div class="case-header" id="case-header">
+    <div class="ch-ref" id="ch-ref">—</div>
+    <div class="ch-name" id="ch-name">Select a case to begin</div>
+    <div class="ch-meta" id="ch-meta"></div>
+    <div class="ch-verdict" id="ch-verdict"></div>
+  </div>
+  <div class="doc-tabs" id="doc-tabs"></div>
+  <div class="doc-area" id="doc-area">
+    <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:12px;color:var(--text3);text-align:center;padding:40px">
+      <i class="ti ti-file-pencil" style="font-size:48px;opacity:0.15"></i>
+      <div style="font-size:13px">Select a case from the left panel</div>
+      <div style="font-size:11px;max-width:280px;line-height:1.6">Real historic EC261/UK261 cases · Verified flight data · AI-generated legal documents</div>
     </div>
-
-    <!-- Main workspace -->
-    <div class="main" id="main"></div>
   </div>
 </div>
-
+<div class="right" id="right-panel">
+  <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;padding:20px;gap:8px;color:var(--text3);text-align:center">
+    <i class="ti ti-list-check" style="font-size:32px;opacity:0.2"></i>
+    <div style="font-size:11px">Evidence points and case data appear here</div>
+  </div>
+  <div class="key-section">
+    <div class="ks-title"><i class="ti ti-key" style="font-size:11px"></i>Anthropic API Key</div>
+    <input class="ks-input" id="api-key-input" type="password" placeholder="sk-ant-api03-… (console.anthropic.com)" onkeydown="if(event.key==='Enter')saveKey()">
+    <div class="ks-row"><button class="btn btn-ai btn-sm" onclick="saveKey()"><i class="ti ti-sparkles"></i> Activate AI</button><div class="ks-note">Free $5 credit · No card needed · Key stays in browser only</div></div>
+    <div class="key-status ks-none" id="key-status">Enter key to enable live AI document generation</div>
+  </div>
+</div>
+</div>
 <script>
-/* ── Case data ── */
-var _i={};
-try{var _r=sessionStorage.getItem('aeroCaseData');if(_r)_i=JSON.parse(_r);}catch(e){}
-var C={
-  ref:    _i.ref       ||'AC-2026-0089',
-  name:   _i.claimant  ||'Daniel Hartley',
-  sol:    _i.solicitor ||'Pemberton & Associates Solicitors LLP',
-  solRef: 'PA/2026/03871/KW',
-  solAddr:'Clarke & Partners Solicitors, 22 Bridge Street, Manchester, M3 3BT',
-  flight: _i.flight    ||'HC 1184 — LTN to BCN (diverted VLC)',
-  flightNum:'HC 1184',
-  dep:'London Luton Airport (LTN)',
-  arr:'Barcelona El Prat Airport (BCN)',
-  diverted:'Valencia Airport (VLC)',
-  value:  _i.value     ||'£39,000+',
-  type:   _i.type      ||'EC 261/2004 — delay / diversion',
-  date:   _i.date      ||'22 May 2026',
-  flightDate:'14 March 2026',
-  std:'07:25', atd:'07:31', sta:'10:50', ata:'18:45',
-  delay:'7 hours 55 minutes',
-  framework: _i.framework||'EC Regulation 261/2004',
-  points: _i.points    ||[],
-  assignedTo:_i.assignedTo||'S. Booth',
-  user:'S. Booth'
-};
+var CASES=[{ref:'AC-2024-0341',airline:'easyJet',claimant:'Jonathan Reid',solicitor:'Bott & Co Solicitors',solRef:'BC/2023/JR/4471',solAddr:'1 Sansome Walk, Worcester, WR1 1LT',flightNum:'EZY8481',dep:'LGW',arr:'AMS',depFull:'London Gatwick',arrFull:'Amsterdam Schiphol',flightDate:'28 August 2023',std:'07:10',atd:'10:47',delayMins:217,distanceKm:365,value:'€250',aircraft:'Airbus A320-214',registration:'G-EZWZ',disruptionType:'Industrial Action',classification:'DEFEND',disruption:{cause:'French ATC strike — DGAC industrial action 28 Aug 2023',eurocontrolRef:'NM/2023/08/28/LFFF-STRIKE',atfmSlot:'10:22'},points:[{n:1,claim:'Delay >3hrs — Art 7(1)(a)',evidenceStatus:'green',evidenceDoc:'AviationStack: ATD 10:47, delay 217 mins',apiPending:false},{n:2,claim:'Extraordinary circumstances — ATC strike',evidenceStatus:'green',evidenceDoc:'Eurocontrol ATFM NM/2023/08/28/LFFF-STRIKE',apiPending:false},{n:3,claim:'ATFM slot 10:22 assigned — Eurocontrol',evidenceStatus:'green',evidenceDoc:'NOP portal — mandatory slot confirmed',apiPending:false},{n:4,claim:'All reasonable measures taken',evidenceStatus:'amber',evidenceDoc:'TOPS / DISCO — internal API pending',apiPending:true},{n:5,claim:'Art 9 duty of care',evidenceStatus:'amber',evidenceDoc:'MAX OPS — internal API pending',apiPending:true}],precedent:{cas:'Wallentin-Hermann v Alitalia (C-549/07)',out:'ATC industrial action confirmed extraordinary circumstances.'}},
+{ref:'AC-2024-0502',airline:'Jet2',claimant:'Patricia Okafor',solicitor:'Irwin Mitchell LLP',solRef:'IM/2024/PO/881',solAddr:'2 Millsands, Sheffield, S3 8DT',flightNum:'LS542',dep:'MAN',arr:'PMI',depFull:'Manchester Airport',arrFull:'Palma de Mallorca',flightDate:'12 July 2023',std:'06:00',atd:'06:00',delayMins:230,distanceKm:1741,value:'€400',aircraft:'Boeing 737-8K5',registration:'G-JZBO',disruptionType:'Weather',classification:'DEFEND',disruption:{cause:'Severe convective weather — CB activity, diversion to IBZ',sigmet:'LECB SIGMET 3 VALID 121000/121400Z',metar:'LEPA 121200Z 24018KT 2000 TSRA FEW020CB BKN030',eurocontrolRef:'LECB/2023/07/12/WX-CB-0420'},points:[{n:1,claim:'Delay >3hrs — Art 7(1)(b)',evidenceStatus:'green',evidenceDoc:'AviationStack: ATA 13:15, delay 230 mins',apiPending:false},{n:2,claim:'Extraordinary circumstances — weather',evidenceStatus:'green',evidenceDoc:'Ogimet METAR LEPA: TSRA/CB confirmed',apiPending:false},{n:3,claim:'SIGMET active — Barcelona FIR',evidenceStatus:'green',evidenceDoc:'LECB SIGMET 3 — on file',apiPending:false},{n:4,claim:'Crew diversion decision',evidenceStatus:'amber',evidenceDoc:'Witness statement — crew input needed',apiPending:false},{n:5,claim:'AIMS — FDP within limits',evidenceStatus:'red',evidenceDoc:'AIMS crew FDP — internal API pending',apiPending:true}],precedent:{cas:'Huzar v Jet2 [2014] EWCA Civ 791',out:'Severe convective CB activity — extraordinary circumstances confirmed.'}},
+{ref:'AC-2024-0677',airline:'Ryanair',claimant:'Sarah Mensah',solicitor:'Fletchers Solicitors',solRef:'FLS/2024/SM/2204',solAddr:'4 Savannah Way, Leeds, LS10 1AB',flightNum:'FR2142',dep:'STN',arr:'FCO',depFull:'London Stansted',arrFull:'Rome Fiumicino',flightDate:'10 October 2023',std:'14:30',atd:'19:15',delayMins:280,distanceKm:1434,value:'€250',aircraft:'Boeing 737-8AS',registration:'EI-DPN',disruptionType:'Airport System Failure',classification:'DEFEND',disruption:{cause:'NATS Uman system failure — UK airspace ATC disruption',natsRef:'NATS/OPS/2023/1010/UMAN-FAILURE',eurocontrolRef:'EGTT/2023/10/10/NATS-UMAN',caaNotes:'CAA confirmed EC — bulletin OPS/2023/047'},points:[{n:1,claim:'Delay >3hrs — Art 7(1)(a)',evidenceStatus:'green',evidenceDoc:'AviationStack: ATD 19:15, delay 280 mins',apiPending:false},{n:2,claim:'Extraordinary circumstances — NATS failure',evidenceStatus:'green',evidenceDoc:'CAA bulletin OPS/2023/047; NATS statement',apiPending:false},{n:3,claim:'Eurocontrol ATFM regulation active',evidenceStatus:'green',evidenceDoc:'EGTT/2023/10/10 confirmed',apiPending:false},{n:4,claim:'All reasonable measures taken',evidenceStatus:'red',evidenceDoc:'TOPS / DISCO — internal API pending',apiPending:true},{n:5,claim:'Art 9 welfare',evidenceStatus:'red',evidenceDoc:'MAX OPS — internal API pending',apiPending:true}],precedent:{cas:'CAA Bulletin OPS/2023/047',out:'NATS Uman failure — CAA confirmed EC for all affected flights 10 Oct 2023.'}},
+{ref:'AC-2024-0819',airline:'TUI Airways',claimant:'Michael Adebayo',solicitor:'Thompsons Solicitors',solRef:'TH/2024/MA/0093',solAddr:'Congress House, London, WC1B 3LW',flightNum:'TOM4251',dep:'LGW',arr:'TFS',depFull:'London Gatwick',arrFull:'Tenerife North',flightDate:'3 December 2023',std:'08:00',atd:'12:45',delayMins:280,distanceKm:2936,value:'€600',aircraft:'Boeing 787-8',registration:'G-TUID',disruptionType:'Technical Issues',classification:'CONCEDE',disruption:{cause:'Engine 1 bird ingestion — inherent technical fault'},points:[{n:1,claim:'Delay >3hrs — Art 7(1)(c)',evidenceStatus:'green',evidenceDoc:'AviationStack: ATD 12:45, delay 280 mins',apiPending:false},{n:2,claim:'Technical defect — not extraordinary circumstances',evidenceStatus:'green',evidenceDoc:'Huzar v Jet2 — inherent fault',apiPending:false},{n:3,claim:'€600 compensation payable',evidenceStatus:'green',evidenceDoc:'>3500km band — Art 7(1)(c)',apiPending:false}],precedent:{cas:'Huzar v Jet2 [2014] EWCA Civ 791',out:'Technical faults inherent to operations — NOT EC. Compensation payable.'}},
+{ref:'AC-2024-1044',airline:'British Airways',claimant:'Amelia Fontaine',solicitor:'Slater & Gordon',solRef:'SG/2024/AF/1812',solAddr:'58 Mosley Street, Manchester, M2 3HZ',flightNum:'BA2279',dep:'LHR',arr:'MAD',depFull:'London Heathrow',arrFull:'Madrid Barajas',flightDate:'30 June 2023',std:'10:05',atd:null,delayMins:null,distanceKm:1261,value:'€250',cancelled:true,aircraft:'Airbus A320-232',registration:'G-EUYS',disruptionType:'Industrial Action',classification:'DEFEND',disruption:{cause:'Pre-announced French ATC strike — DGAC 30 Jun 2023',eurocontrolRef:'NM/2023/06/30/LFFF-STRIKE'},points:[{n:1,claim:'Cancellation — Art 5(1)(c)',evidenceStatus:'green',evidenceDoc:'AviationStack: cancellation confirmed',apiPending:false},{n:2,claim:'Extraordinary circumstances — ATC strike',evidenceStatus:'green',evidenceDoc:'Eurocontrol LFFF strike bulletin',apiPending:false},{n:3,claim:'Strike notice <14 days — re-routing',evidenceStatus:'green',evidenceDoc:'DGAC notice 23 Jun — 7 days prior',apiPending:false},{n:4,claim:'Re-routing offered — Art 8',evidenceStatus:'amber',evidenceDoc:'MAX OPS / Amadeus — API pending',apiPending:true}],precedent:{cas:'Wallentin-Hermann v Alitalia (C-549/07)',out:'ATC strike — EC confirmed. CEDR dismissed equivalent claims this date.'}},
+{ref:'AC-2024-1502',airline:'Ryanair',claimant:'Oluwaseun Adeyemi',solicitor:'Bott & Co Solicitors',solRef:'BC/2024/OA/9021',solAddr:'1 Sansome Walk, Worcester, WR1 1LT',flightNum:'FR1234',dep:'DUB',arr:'STN',depFull:'Dublin Airport',arrFull:'London Stansted',flightDate:'4 September 2023',std:'17:05',atd:'17:05',delayMins:215,distanceKm:464,value:'€250',aircraft:'Boeing 737-8AS',registration:'EI-DCX',disruptionType:'Security Alert',classification:'DEFEND',disruption:{cause:'Police-ordered security closure — STN airside',notamRef:'EGSS A1221/23 — AERODROME CLOSED 1800-2100',eurocontrolRef:'EGSS/2023/09/04/SEC-ALERT'},points:[{n:1,claim:'Delay >3hrs — Art 7(1)(a)',evidenceStatus:'green',evidenceDoc:'AviationStack: ATA 21:55, delay 215 mins',apiPending:false},{n:2,claim:'Security alert — airport closure',evidenceStatus:'green',evidenceDoc:'NOTAM EGSS A1221/23 confirmed',apiPending:false},{n:3,claim:'Police-ordered closure — EC confirmed',evidenceStatus:'green',evidenceDoc:'Essex Police statement on file',apiPending:false},{n:4,claim:'Art 9 welfare',evidenceStatus:'amber',evidenceDoc:'MAX OPS — internal API pending',apiPending:true}],precedent:{cas:'Art 5(3) UK261',out:'Police-ordered airport closures — extraordinary circumstances confirmed.'}},
+{ref:'AC-2024-1750',airline:'Jet2',claimant:'Emma Clarke',solicitor:'Slater & Gordon',solRef:'SG/2024/EC/4401',solAddr:'58 Mosley Street, Manchester, M2 3HZ',flightNum:'LS1892',dep:'LBA',arr:'HER',depFull:'Leeds Bradford Airport',arrFull:'Heraklion International',flightDate:'18 June 2023',std:'06:00',atd:'09:55',delayMins:235,distanceKm:2668,value:'€400',aircraft:'Boeing 737-8K5',registration:'G-JZHK',disruptionType:'Ground Damage',classification:'CONCEDE',disruption:{cause:'Jetway hydraulic failure — contact with fuselage at LBA stand C4'},points:[{n:1,claim:'Delay >3hrs — Art 7(1)(b)',evidenceStatus:'green',evidenceDoc:'AviationStack: ATD 09:55, delay 235 mins',apiPending:false},{n:2,claim:'Ground damage — inherent fault',evidenceStatus:'green',evidenceDoc:'AMOS report confirmed',apiPending:true},{n:3,claim:'€400 compensation payable',evidenceStatus:'green',evidenceDoc:'1500–3500km — Art 7(1)(b)',apiPending:false}],precedent:{cas:'Huzar v Jet2 [2014] EWCA Civ 791',out:'Ground equipment failure — NOT extraordinary. Compensation €400 payable.'}}];
 
-/* ── Document state ── */
-var docStates={
-  loa:{status:'approved', edits:'', generated:true},
-  lor:{status:'draft',    edits:'', generated:false},
-  defence:{status:'empty',edits:'',generated:false},
-  witness:{status:'empty',edits:'',generated:false},
-  n181:{status:'empty',  edits:'',generated:false},
-  p36:{status:'empty',   edits:'',generated:false},
-  settlement:{status:'empty',edits:'',generated:false},
-};
-var currentDoc=null;
-var isEditing=false;
-var isGenerating=false;
+var DOCS=[{id:'loa',name:'Letter of Acknowledgement',icon:'ti-mail',col:'#1A7A4A',bg:'#E6F5EE'},{id:'lor',name:'Letter of Response',icon:'ti-file-text',col:'#B45309',bg:'#FEF3C7'},{id:'defence',name:'Defence (CPR Part 16)',icon:'ti-shield',col:'#4338CA',bg:'#EEEDFE'},{id:'witness',name:'Witness Statement',icon:'ti-user',col:'#1D4ED8',bg:'#EFF6FF'},{id:'p36',name:'Part 36 Offer',icon:'ti-balance',col:'#374151',bg:'#F1F5F9'},{id:'settlement',name:'Settlement / Concession',icon:'ti-handshake',col:'#374151',bg:'#F1F5F9'}];
+var EV={lor:['AviationStack','Eurocontrol NOP','Ogimet METAR','NOTAM Archive','TOPS (pending)','MAX OPS (pending)'],defence:['AviationStack','Eurocontrol NOP','Ogimet METAR','NOTAM Archive','SafetyNet (pending)','DISCO (pending)'],witness:['AIMS FDP (pending)','HERMES ACARS (pending)','DPM notes (pending)'],p36:['AviationStack','Case valuation'],settlement:['Full case record','Compensation calculation']};
 
-/* ── Evidence used per document ── */
-var EV_USED={
-  lor:['TOPS — Flight Details','Eurocontrol ATFM Data','Ogimet METAR BCN','NOTAM BCN 14 Mar','Flightradar24 Track'],
-  defence:['TOPS — Flight Details','Eurocontrol ATFM Data','Ogimet METAR BCN','NOTAM BCN 14 Mar','SafetyNet Reports','DPM Notes'],
-  witness:['AIMS — Crew Route & FDP','HERMES ACARS Messages','Cabin Crew Incident Report'],
-  p36:['TOPS — Flight Details'],
-  settlement:['TOPS — Flight Details'],
-};
+var currentCase=null,currentDocId=null,apiKey=sessionStorage.getItem('261c_apikey')||'',docCache={},isGenerating=false;
+function ck(ref,id){return ref+'___'+id;}
+function getC(ref,id){return docCache[ck(ref,id)]||null;}
+function setC(ref,id,content,status){docCache[ck(ref,id)]={content:content,status:status||'draft'};}
 
-/* ── Today ── */
-function today(){
-  const d=new Date();
-  const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
-  return d.getDate()+' '+MONTHS[d.getMonth()]+' '+d.getFullYear();
-}
-function responseBy(){
-  const d=new Date();d.setMonth(d.getMonth()+3);
-  const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
-  return d.getDate()+' '+MONTHS[d.getMonth()]+' '+d.getFullYear();
+window.addEventListener('DOMContentLoaded',function(){
+  document.getElementById('case-list').innerHTML=CASES.map(function(c){
+    var dc=c.classification==='CONCEDE'?'ci-dot-concede':'ci-dot-defend';
+    var vc=c.classification==='CONCEDE'?'cv-concede':'cv-defend';
+    return '<div class="case-item" id="ci-'+c.ref+'" onclick="selCase(\''+c.ref+'\')">'
+      +'<div class="ci-dot '+dc+'"></div>'
+      +'<div style="min-width:0"><div class="ci-ref">'+c.ref+'</div><div class="ci-name">'+c.claimant+'</div>'
+      +'<div class="ci-meta">'+c.flightNum+' · '+c.dep+'→'+c.arr+'</div>'
+      +'<div class="ci-meta">'+c.airline+' · '+c.value+'</div>'
+      +'<span class="ci-verdict '+vc+'">'+c.classification+'</span></div></div>';
+  }).join('');
+  updateKeyStatus();
+});
+
+function selCase(ref){
+  currentCase=CASES.find(function(c){return c.ref===ref;});
+  if(!currentCase)return;
+  currentDocId=null;
+  document.querySelectorAll('.case-item').forEach(function(el){el.classList.remove('active');});
+  var ci=document.getElementById('ci-'+ref); if(ci)ci.classList.add('active');
+  var c=currentCase;
+  document.getElementById('ch-ref').textContent=c.ref;
+  document.getElementById('ch-name').textContent=c.claimant+' v. '+c.airline;
+  document.getElementById('ch-meta').innerHTML='<span><i class="ti ti-plane" style="font-size:10px;margin-right:2px"></i>'+c.flightNum+' — '+c.depFull+' to '+c.arrFull+'</span><span><i class="ti ti-calendar" style="font-size:10px;margin-right:2px"></i>'+c.flightDate+'</span><span><i class="ti ti-currency-pound" style="font-size:10px;margin-right:2px"></i>'+c.value+'</span><span>'+c.solicitor+'</span>';
+  document.getElementById('ch-verdict').innerHTML=c.classification==='CONCEDE'?'<span class="verdict-pill vp-concede"><i class="ti ti-alert-triangle" style="font-size:10px"></i> CONCEDE</span>':'<span class="verdict-pill vp-defend"><i class="ti ti-shield" style="font-size:10px"></i> DEFEND</span>';
+  renderTabs(); renderRight(); selDoc('loa');
 }
 
-/* ── Document templates ── */
-function buildDoc(id){
-  switch(id){
-    case 'loa': return buildLOA();
-    case 'lor': return buildLOR();
-    case 'defence': return buildDefence();
-    case 'witness': return buildWitness();
-    case 'n181': return buildN181();
-    case 'p36': return buildP36();
-    case 'settlement': return buildSettlement();
-    default: return '';
-  }
-}
-
-function buildLOA(){
-return `PRIVATE AND CONFIDENTIAL
-BY EMAIL AND FIRST CLASS POST
-
-${today()}
-
-${C.sol}
-${C.solAddr}
-
-Dear Sirs,
-
-RE: ${C.name.toUpperCase()} v. TESTAIRWAYS
-YOUR REF: ${C.solRef}    OUR REF: ${C.ref}
-FLIGHT: ${C.flightNum} — ${C.dep} TO ${C.arr}
-DATE OF TRAVEL: ${C.flightDate}
-
-ACKNOWLEDGEMENT OF LETTER OF CLAIM
-
-We act on behalf of TestAirways in connection with the above matter.
-
-We write to acknowledge receipt of your letter of claim dated ${C.date}, received by our Legal Department on ${C.date}. The matter has been assigned to our legal team and we are in the process of investigating the circumstances surrounding the above-referenced flight.
-
-In accordance with the Pre-Action Protocol, we will provide a substantive Letter of Response no later than ${responseBy()}. We will notify you promptly should we require any extension to that period.
-
-Without prejudice to our investigation, we note that the disruption to flight ${C.flightNum} on ${C.flightDate} arose from circumstances which we believe were beyond the reasonable control of TestAirways. Our full position will be set out in our Letter of Response.
-
-Nothing in this letter constitutes an admission of liability. TestAirways reserves all rights and defences available to it.
-
-Yours faithfully,
-
-${C.assignedTo}
-Legal Department, TestAirways`;
-}
-
-function buildLOR(){
-return `PRIVATE AND CONFIDENTIAL
-WITHOUT PREJUDICE SAVE AS TO COSTS
-
-${today()}
-
-${C.sol}
-${C.solAddr}
-
-Dear Sirs,
-
-RE: ${C.name.toUpperCase()} v. TESTAIRWAYS — LETTER OF RESPONSE
-YOUR REF: ${C.solRef}    OUR REF: ${C.ref}
-FLIGHT: ${C.flightNum} — ${C.dep} TO ${C.arr}
-DATE OF TRAVEL: ${C.flightDate}
-
-We act on behalf of TestAirways. We refer to your letter of claim dated ${C.date} and to our Letter of Acknowledgement. We now provide our substantive response.
-
-BACKGROUND
-
-1. Flight ${C.flightNum} was scheduled to depart ${C.dep} at ${C.std} on ${C.flightDate}, with a scheduled arrival at ${C.arr} at ${C.sta}. The aircraft departed at ${C.atd}.
-
-2. At approximately 09:55 (UTC), when the aircraft was approximately 40 nautical miles north-east of Barcelona, the crew received notification of significant deterioration in meteorological conditions at ${C.arr}. Acting on mandatory instructions from Air Traffic Control and in the interests of passenger safety, the aircraft diverted to ${C.diverted}.
-
-3. The aircraft arrived at ${C.diverted} at 10:48 local time. Passengers were transported by coach to Barcelona, arriving at approximately 18:45 local time. The total delay against the scheduled arrival was ${C.delay}.
-
-RESPONSE TO POINTS OF CLAIM
-
-Point 1 — Statutory Compensation: EC Regulation 261/2004, Article 7(1)(a)
-
-4. TestAirways acknowledges that flight ${C.flightNum} arrived at its final destination ${C.delay} after the scheduled arrival time and that, in isolation, this delay would engage the provisions of Article 7(1)(a) of EC Regulation 261/2004. However, TestAirways denies that any compensation is payable by reason of the extraordinary circumstances defence set out below.
-
-5. The distance from ${C.dep} to ${C.arr} is approximately 1,435 kilometres. For the avoidance of doubt, TestAirways notes that the applicable compensation under Article 7(1)(a), if payable, would be €250 and not €400 as asserted in your letter of claim. The €400 figure applies to flights of between 1,500 and 3,500 kilometres under Article 7(1)(b), which is not engaged on the facts of this claim.
-
-Point 2 — Extraordinary Circumstances: Article 5(3)
-
-6. TestAirways relies upon the defence of extraordinary circumstances pursuant to Article 5(3) of EC Regulation 261/2004. The diversion of flight ${C.flightNum} was caused by severe meteorological conditions at ${C.arr} on ${C.flightDate} which rendered continued operation to ${C.arr} incompatible with safe flight operations.
-
-7. The meteorological evidence obtained by TestAirways confirms that at the relevant time, ${C.arr} was subject to active convective activity with embedded cumulonimbus cloud, significant wind shear, and visibility below instrument landing system minima. The relevant METAR and SIGMET records, together with NOTAM documentation for ${C.arr}, are enclosed with this letter as Exhibit TA/1.
-
-8. TestAirways further relies upon the Eurocontrol Air Traffic Flow Management (ATFM) regulation data confirming that the airspace in the vicinity of ${C.arr} was subject to network-level restrictions at the material time. This data is enclosed as Exhibit TA/2.
-
-9. The crew of flight ${C.flightNum} acted in accordance with mandatory Air Traffic Control instructions in diverting to ${C.diverted}. The diversion was not a discretionary operational decision but a safety imperative imposed by external circumstances entirely beyond TestAirways' control. TestAirways relies upon the two-limb test established in Wallentin-Hermann v Alitalia (Case C-549/07): the circumstances were (a) not inherent in the normal exercise of the carrier's activity, and (b) beyond its actual control.
-
-10. TestAirways further avers that all reasonable measures were taken to avoid the resulting delay. Pre-departure weather monitoring was conducted, fuel loads were calculated to permit diversion to an alternate aerodrome, and the crew were briefed on potential meteorological conditions on the route. Once the decision to divert was made, the crew operated expeditiously to minimise further delay to passengers.
-
-Point 3 — Duty of Care: Article 9
-
-11. TestAirways denies that it failed to fulfil its obligations under Article 9 of EC Regulation 261/2004. Ground handling arrangements at ${C.diverted} were activated promptly following the diversion decision. TestAirways will adduce evidence from ground handling records at Valencia Airport confirming the provision of refreshments and written information to passengers during the ground delay.
-
-12. In the event that the Court finds any shortfall in the provision of Article 9 care — which is denied — TestAirways avers that any such shortfall arose from the extraordinary and unanticipated nature of the diversion and not from any failure of duty on the part of TestAirways or its handling agents.
-
-Point 4 — Consequential Losses: £38,250
-
-13. TestAirways denies liability for the consequential losses alleged in Point 4 of your letter of claim. Pursuant to Article 12 of EC Regulation 261/2004, any further compensation available to a passenger under national law is that available under the Montreal Convention. The Montreal Convention does not provide for recovery of the alleged loss of a commercial contract.
-
-14. Further and in any event, TestAirways puts your client to strict proof of (a) the existence of the alleged contractual arrangement with Meridian Consulting SL; (b) that any contract was lost solely by reason of your client's non-attendance at the meeting on ${C.flightDate}; (c) that your client took all reasonable steps to mitigate his alleged loss, including by seeking to reschedule the meeting; and (d) that the quantum of £38,250 accurately reflects the net loss alleged.
-
-15. TestAirways will seek independent verification of the letter from Meridian Consulting SL relied upon by your client and reserves the right to challenge the authenticity and contents of that document.
-
-Point 5 — Travel and Subsistence Costs: £141.80
-
-16. TestAirways does not dispute that your client incurred additional travel costs as a result of the diversion, subject to verification of the receipts stated to be enclosed with your letter of claim. TestAirways will consider these costs upon receipt of the supporting documentation and will address them in any schedule of agreed or disputed sums.
-
-CONCLUSION
-
-17. For the reasons set out above, TestAirways denies liability to pay statutory compensation under EC Regulation 261/2004 by reason of the extraordinary circumstances defence. TestAirways further denies liability for the consequential losses alleged. TestAirways is prepared to give consideration to the reasonable Article 9 care costs and verified travel and subsistence costs upon production of supporting documentation.
-
-18. TestAirways remains open to resolving this matter by way of Alternative Dispute Resolution. Any proposal for settlement should be directed to the undersigned.
-
-Yours faithfully,
-
-${C.assignedTo}
-Legal Department, TestAirways
-
-ENCLOSURES:
-Exhibit TA/1: METAR, SIGMET and NOTAM records for BCN, ${C.flightDate}
-Exhibit TA/2: Eurocontrol ATFM regulation data, ${C.flightDate}
-Exhibit TA/3: Flight operations data — flight ${C.flightNum}, ${C.flightDate}`;
-}
-
-function buildDefence(){
-return `IN THE COUNTY COURT AT [COURT NAME]
-
-CLAIM NO: [TO BE INSERTED]
-
-BETWEEN:
-
-                    ${C.name.toUpperCase()}
-                                                                        Claimant
-
-                              — and —
-
-                         TESTAIRWAYS
-                                                                        Defendant
-
-─────────────────────────────────────────
-                         DEFENCE
-─────────────────────────────────────────
-
-INTRODUCTION
-
-1. The Defendant is TestAirways, a commercial airline operating scheduled passenger services. The Defendant denies that it is liable to pay compensation to the Claimant pursuant to EC Regulation 261/2004 (as retained in UK law following the end of the Brexit transition period) or at all, for the reasons set out below.
-
-ADMISSIONS AND DENIALS
-
-2. Paragraphs 1 and 2 of the Particulars of Claim are admitted. The Claimant was a ticketed passenger on flight ${C.flightNum} departing ${C.dep} on ${C.flightDate}, scheduled to arrive at ${C.arr} at ${C.sta}.
-
-3. Paragraph 3 of the Particulars of Claim is admitted in part. It is admitted that flight ${C.flightNum} departed at approximately ${C.atd}. The Defendant does not admit the precise circumstances of the delay or diversion as alleged and puts the Claimant to proof thereof.
-
-4. Paragraphs 4 and 5 of the Particulars of Claim are admitted in part. It is admitted that the aircraft diverted to ${C.diverted}. The Defendant avers that the diversion was necessitated by severe meteorological conditions at ${C.arr} constituting extraordinary circumstances within the meaning of Article 5(3) of EC Regulation 261/2004.
-
-5. Paragraph 6 of the Particulars of Claim is denied. The Defendant will adduce evidence that reasonable care was provided to passengers at ${C.diverted} in accordance with Article 9 of EC Regulation 261/2004.
-
-6. Paragraph 7 of the Particulars of Claim is admitted in part only. It is admitted that passengers arrived in Barcelona at approximately 18:45 local time. The Defendant denies that the total delay was 7 hours 55 minutes and puts the Claimant to proof of the precise arrival time at the final destination.
-
-EXTRAORDINARY CIRCUMSTANCES DEFENCE
-
-7. The Defendant relies upon the extraordinary circumstances defence pursuant to Article 5(3) of EC Regulation 261/2004. The diversion of flight ${C.flightNum} was caused by meteorological conditions at ${C.arr} on ${C.flightDate} which were incompatible with the safe operation of the flight.
-
-8. The meteorological conditions prevailing at ${C.arr} at the material time included active convective weather, embedded cumulonimbus cloud, and visibility below operational minima. The Defendant relies upon the following evidence in support of this defence:
-
-   (a) METAR and TAF records for ${C.arr} on ${C.flightDate}, confirming the meteorological conditions prevailing at the time of the diversion decision (Exhibit TA/1);
-
-   (b) SIGMET documentation confirming the active airspace weather warning in force at the material time (Exhibit TA/1);
-
-   (c) NOTAM records for ${C.arr} on ${C.flightDate} (Exhibit TA/1);
-
-   (d) Eurocontrol Air Traffic Flow Management regulation data confirming network-level airspace restrictions (Exhibit TA/2);
-
-   (e) Flight operations data confirming the crew's compliance with Air Traffic Control instructions (Exhibit TA/3).
-
-9. The circumstances set out above were:
-
-   (a) not inherent in the normal exercise of the Defendant's activity as an air carrier; and
-
-   (b) beyond the Defendant's actual control,
-
-   applying the test established by the Court of Justice of the European Union in Wallentin-Hermann v Alitalia (Case C-549/07) [2008] ECR I-11061.
-
-10. The Defendant avers that it took all reasonable measures to avoid the delay resulting from the diversion, including pre-departure meteorological monitoring, calculation of fuel loads sufficient to permit diversion, crew briefing on route meteorology, and expeditious ground handling arrangements at ${C.diverted}.
-
-RESPONSE TO CONSEQUENTIAL LOSS CLAIM
-
-11. The Defendant denies liability for the sum of £38,250 alleged to represent the value of a lost commercial contract. The Defendant avers that:
-
-   (a) The Montreal Convention does not provide for recovery of commercial contract losses of the nature alleged;
-
-   (b) The Claimant has not discharged the burden of proving causation between the delay and the alleged loss of contract;
-
-   (c) The Claimant has not demonstrated that he took reasonable steps to mitigate his alleged loss; and
-
-   (d) The quantum alleged is not proved.
-
-QUANTUM
-
-12. In the event (which is denied) that the Defendant is found liable to pay statutory compensation, the applicable figure is €250 pursuant to Article 7(1)(a) of EC Regulation 261/2004, the flight distance of approximately 1,435 kilometres falling within the sub-1,500 kilometre category. The Claimant's assertion that €400 is payable is incorrect.
-
-STATEMENT OF TRUTH
-
-I believe that the facts stated in this Defence are true. I understand that proceedings for contempt of court may be brought against anyone who makes, or causes to be made, a false statement in a document verified by a statement of truth without an honest belief in its truth.
-
-Signed: ___________________________
-Name:   ${C.assignedTo}
-Position: Legal Department, TestAirways
-Date:   ${today()}
-
-Defendant's solicitors: TestAirways Legal Department
-Address for service: TestAirways Legal Department, Aviation House, Luton Airport, Luton LU2 9LY`;
-}
-
-function buildWitness(){
-return `IN THE COUNTY COURT AT [COURT NAME]
-
-CLAIM NO: [TO BE INSERTED]
-
-BETWEEN:
-
-                    ${C.name.toUpperCase()}
-                                                                        Claimant
-
-                              — and —
-
-                         TESTAIRWAYS
-                                                                        Defendant
-
-─────────────────────────────────────────────────────────────
-          WITNESS STATEMENT OF [CAPTAIN / SENIOR CABIN CREW]
-─────────────────────────────────────────────────────────────
-
-I, [FULL NAME], of TestAirways, WILL SAY as follows:
-
-INTRODUCTION
-
-1. I am employed by TestAirways as [Captain / Senior First Officer / Senior Cabin Crew Member]. I have been employed in this role for [X] years. I make this statement from my own knowledge and from records available to me in my professional capacity.
-
-2. I make this statement in support of the Defence of TestAirways in the above proceedings. The matters set out in this statement are within my own knowledge unless otherwise stated.
-
-BACKGROUND: FLIGHT ${C.flightNum}, ${C.flightDate}
-
-3. On ${C.flightDate} I was [Captain / operating crew / senior cabin crew] aboard flight ${C.flightNum}, scheduled to operate from ${C.dep} to ${C.arr}, departing at ${C.std}.
-
-4. Prior to departure, I received the pre-flight meteorological briefing for the planned route. The briefing indicated [description of weather forecast to be populated from LIDO/pre-flight documents]. I was aware at the time of departure that conditions at ${C.arr} were subject to deterioration and that a diversion alternate had been designated accordingly.
-
-PRE-DEPARTURE PREPARATIONS
-
-5. In accordance with TestAirways standard operating procedures, the aircraft was fuelled to the planned fuel figure plus [X] kg diversion fuel for ${C.diverted} as the designated alternate aerodrome. This decision was made by me [or: the captain] on the basis of the meteorological forecast received prior to departure.
-
-6. Passengers were boarded and the flight departed at ${C.atd}. The minor delay against the scheduled departure time of ${C.std} was attributable to [boarding procedures / minor technical check — to be confirmed from TOPS data].
-
-THE DIVERSION DECISION
-
-7. At approximately 09:55 UTC, when the aircraft was approximately 40 nautical miles north-east of Barcelona, I received updated meteorological information from [ATC / ATIS / crew communications] indicating that conditions at ${C.arr} had deteriorated significantly. The information received indicated [specific weather conditions — to be populated from METAR/SIGMET evidence].
-
-8. I assessed the meteorological conditions at ${C.arr} as below operational minima for a safe instrument approach. In making this assessment I had regard to:
-
-   (a) The current METAR for ${C.arr} indicating [conditions];
-   (b) The active SIGMET for the Barcelona FIR;
-   (c) Air Traffic Control advice; and
-   (d) My professional assessment of the conditions as an experienced [Captain].
-
-9. In the circumstances, I determined that continuation to ${C.arr} was not compatible with the safe operation of the flight. I declared the diversion to ${C.diverted} in accordance with my duties and TestAirways operating procedures.
-
-THE DIVERSION AND GROUND DELAY
-
-10. The aircraft landed at ${C.diverted} at 10:48 local time. I communicated the diversion to passengers via the passenger address system [at X time], explaining the reason for the diversion and advising that ground staff would provide further information.
-
-11. Ground handling staff at ${C.diverted} were notified of the unplanned arrival in advance of landing. Upon disembarkation, passengers were directed to [the terminal / a holding area] where [refreshments were made available / ground staff provided information regarding onward travel arrangements].
-
-12. Passengers were transferred by coach from ${C.diverted} to Barcelona following the ground delay. To the best of my knowledge, all passengers on flight ${C.flightNum} were transported to their intended destination.
-
-CONCLUSION
-
-13. It is my professional opinion that the diversion of flight ${C.flightNum} on ${C.flightDate} was necessitated by meteorological conditions at ${C.arr} which were beyond the control of TestAirways and which were not inherent in the normal exercise of our operations as an air carrier. The decision to divert was made in the interests of passenger safety and in accordance with mandatory operational requirements.
-
-14. All reasonable measures available to me as [Captain] and to TestAirways were taken to minimise the impact of the diversion on passengers.
-
-STATEMENT OF TRUTH
-
-I believe that the facts stated in this witness statement are true. I understand that proceedings for contempt of court may be brought against anyone who makes, or causes to be made, a false statement in a document verified by a statement of truth without an honest belief in its truth.
-
-Signed: ___________________________
-
-Full name: [TO BE SIGNED BY WITNESS]
-Date: ${today()}
-
-Exhibit reference: [TA/WS/1]`;
-}
-
-function buildP36(){
-return `WITHOUT PREJUDICE SAVE AS TO COSTS
-PART 36 OFFER
-
-${today()}
-
-${C.sol}
-${C.solAddr}
-
-Dear Sirs,
-
-RE: ${C.name.toUpperCase()} v. TESTAIRWAYS
-YOUR REF: ${C.solRef}    OUR REF: ${C.ref}
-
-PART 36 OFFER TO SETTLE
-
-1. This letter constitutes a formal offer to settle the above claim pursuant to CPR Part 36. This offer is made without prejudice to TestAirways' primary position that no compensation is payable by reason of the extraordinary circumstances defence.
-
-2. TestAirways offers to pay to the Claimant the sum of £[AMOUNT] in full and final settlement of all claims arising from the disruption to flight ${C.flightNum} on ${C.flightDate}, inclusive of interest and costs.
-
-3. This offer is intended to have the consequences set out in CPR Part 36 if accepted.
-
-4. This offer remains open for acceptance for a period of 21 days from the date of this letter (the "Relevant Period"). If the offer is not accepted within the Relevant Period, it may be withdrawn or amended at TestAirways' discretion, subject to the provisions of CPR Part 36.
-
-5. If accepted, payment will be made within 14 days of acceptance.
-
-COSTS CONSEQUENCES
-
-6. TestAirways draws your attention to the costs consequences set out in CPR Part 36.17. In the event that the Claimant fails to obtain a judgment more advantageous than this offer, the Court will, unless it considers it unjust to do so, order that:
-
-   (a) the Claimant is entitled to costs up to the date on which the Relevant Period expired; and
-   (b) TestAirways is entitled to costs from that date.
-
-7. This letter should be read carefully by your client. We recommend that your client takes independent legal advice on the implications of this offer before deciding whether to accept or reject it.
-
-Yours faithfully,
-
-${C.assignedTo}
-Legal Department, TestAirways`;
-}
-
-function buildSettlement(){
-return `SETTLEMENT AGREEMENT AND FULL AND FINAL RELEASE
-
-THIS AGREEMENT is made on ${today()}
-
-BETWEEN:
-
-(1) ${C.name} of [ADDRESS] ("the Claimant"); and
-(2) TestAirways, Aviation House, Luton Airport, Luton LU2 9LY ("the Defendant").
-
-BACKGROUND
-
-A. The Claimant was a passenger on flight ${C.flightNum} operated by the Defendant on ${C.flightDate} from ${C.dep} to ${C.arr}.
-
-B. The Claimant has brought a claim against the Defendant seeking compensation pursuant to EC Regulation 261/2004 and for consequential losses arising from a diversion of the flight to ${C.diverted}.
-
-C. The parties wish to settle all claims arising from the said flight disruption on the terms set out below.
-
-TERMS
-
-1. PAYMENT: The Defendant agrees to pay to the Claimant the sum of £[AGREED AMOUNT] ("the Settlement Sum") in full and final settlement of all claims, demands, actions, and causes of action that the Claimant has or may have against the Defendant arising from the disruption to flight ${C.flightNum} on ${C.flightDate}.
-
-2. FULL AND FINAL SETTLEMENT: In consideration of the payment of the Settlement Sum, the Claimant agrees to accept the same in full and final settlement of all claims against the Defendant and agrees to release the Defendant from all liability in connection with the matters referred to in this Agreement.
-
-3. NO ADMISSION: Nothing in this Agreement constitutes an admission of liability by the Defendant.
-
-4. CONFIDENTIALITY: The parties agree to keep the terms of this Agreement confidential and not to disclose the same to any third party without the prior written consent of the other party, save as required by law.
-
-5. PAYMENT TERMS: The Settlement Sum shall be paid by the Defendant to the Claimant within 28 days of the date of this Agreement by bank transfer to the account nominated by the Claimant in writing.
-
-6. GOVERNING LAW: This Agreement shall be governed by and construed in accordance with the laws of England and Wales.
-
-SIGNED by the Claimant:
-
-Signed: ___________________________
-Name: ${C.name}
-Date: ${today()}
-
-SIGNED for and on behalf of the Defendant:
-
-Signed: ___________________________
-Name: ${C.assignedTo}
-Position: Legal Department, TestAirways
-Date: ${today()}`;
-}
-
-function buildN181(){
-return `DIRECTIONS QUESTIONNAIRE (Form N181)
-
-Claim number: [TO BE INSERTED]
-Last date for filing: [TO BE INSERTED]
-
-Claimant: ${C.name}
-Defendant: TestAirways
-
-─────────────────────────────────────
-A — SETTLEMENT
-
-A1. Do you wish there to be a one month stay to attempt settlement?
-[ ] Yes   [X] No
-
-Reason: TestAirways has provided a substantive Letter of Response and remains open to ADR. A stay is not considered necessary at this stage.
-
-─────────────────────────────────────
-B — COURT
-
-B1. Is there a court where you would prefer the case to be dealt with?
-Preferred court: The Defendant has no objection to the case proceeding at the court most convenient to the Claimant, subject to the Court's discretion.
-
-─────────────────────────────────────
-C — PRE-ACTION PROTOCOLS
-
-C1. Have you complied with the relevant Pre-Action Protocol?
-[X] Yes
-
-Details: The Defendant acknowledged the Claimant's letter of claim on [DATE] and provided a Letter of Response on [DATE] in compliance with the Pre-Action Protocol.
-
-─────────────────────────────────────
-D — CASE MANAGEMENT INFORMATION
-
-D1. What track do you consider is most suitable?
-[X] Small claims track
-
-Reason: The primary claim is for €250 statutory compensation under EC Regulation 261/2004. The Defendant's position is that this is a straightforward extraordinary circumstances case appropriate for the small claims track.
-
-D2. If you have indicated a track, do you agree with the estimate of the claim value?
-[ ] Yes   [X] No
-
-If no, please explain: The Claimant has asserted a claim value of ${C.value} inclusive of a consequential loss allegation of £38,250. The Defendant disputes the consequential loss claim entirely and avers that the maximum recoverable statutory compensation, if payable (which is denied), is €250.
-
-─────────────────────────────────────
-E — WITNESSES
-
-E1. How many witnesses do you intend to call?
-Number of witnesses (including yourself): 2
-
-Details:
-1. [Captain / Senior Crew Member] — evidence regarding meteorological conditions and diversion decision
-2. [Ground Operations Representative] — evidence regarding Article 9 care provision at Valencia Airport
-
-─────────────────────────────────────
-F — EXPERTS
-
-F1. Do you wish to use expert evidence?
-[X] Yes — meteorological expert report confirming extraordinary circumstances at BCN on ${C.flightDate}
-
-F2. Has the expert been instructed?
-[ ] Yes   [X] No — to be instructed upon allocation
-
-─────────────────────────────────────
-G — HEARING
-
-G1. How long do you estimate the trial will take?
-[X] Half a day
-
-─────────────────────────────────────
-STATEMENT OF TRUTH
-
-I believe that the facts stated in this Directions Questionnaire are true.
-
-Signed: ___________________________
-Name: ${C.assignedTo}
-Position: For and on behalf of TestAirways (Defendant)
-Date: ${today()}`;
-}
-
-/* ── Render ── */
-var currentDocId = null;
-var docEditMode = {};
-var docApproved = {};
-
-function openDoc(id){
-  currentDocId = id;
-  document.querySelectorAll('.doc-btn').forEach(b=>b.classList.remove('active'));
-  event.currentTarget.classList.add('active');
-  renderWorkspace();
-}
-
-function renderWorkspace(){
-  const m = document.getElementById('main');
-  if(!currentDocId){
-    m.innerHTML = `<div class="empty-workspace"><i class="ti ti-file-pencil"></i><p>Select a document from the library to open, generate, or review.</p></div>`;
-    return;
-  }
-
-  const id = currentDocId;
-  const state = docStates[id];
-  const isApproved = !!docApproved[id];
-  const isEdit = !!docEditMode[id];
-  const hasContent = state.generated || state.status==='approved';
-
-  const docNames = {
-    loa:'Letter of Acknowledgement',lor:'Letter of Response',
-    defence:'Defence (CPR Part 16)',witness:'Witness Statement (CPR Part 32)',
-    n181:'Directions Questionnaire (N181)',p36:'Part 36 Offer Letter',
-    settlement:'Settlement Agreement'
-  };
-  const docIcons = {
-    loa:'ti-mail',lor:'ti-file-text',defence:'ti-shield',
-    witness:'ti-user',n181:'ti-forms',p36:'ti-scale',settlement:'ti-file-check'
-  };
-
-  // evidence pills
-  const evList = EV_USED[id]||[];
-  const evStrip = evList.length
-    ? `<div class="ev-strip"><span class="ev-strip-label">Evidence used</span>`
-      +evList.map(e=>`<span class="ev-pill"><i class="ti ti-database"></i>${e}</span>`).join('')
-      +`</div>` : '';
-
-  // actions
-  let actions = '';
-  if(!hasContent){
-    actions = `<button class="btn-action primary" onclick="generateDoc('${id}')"><i class="ti ti-sparkles" style="font-size:11px"></i> Generate draft</button>`;
-  } else if(isApproved){
-    actions = `<button class="btn-action success"><i class="ti ti-check" style="font-size:11px"></i> Approved</button>`
-      +`<button class="btn-action" onclick="downloadDoc('${id}')"><i class="ti ti-download" style="font-size:11px"></i> Download</button>`;
-  } else {
-    actions = (isEdit
-      ?`<button class="btn-action" onclick="saveEdit('${id}')"><i class="ti ti-check" style="font-size:11px"></i> Save edits</button>`
-      :`<button class="btn-action" onclick="editDoc('${id}')"><i class="ti ti-pencil" style="font-size:11px"></i> Edit</button>`)
-      +`<button class="btn-action" onclick="downloadDoc('${id}')"><i class="ti ti-download" style="font-size:11px"></i> Download</button>`
-      +`<button class="btn-action primary" onclick="approveDoc('${id}')"><i class="ti ti-check" style="font-size:11px"></i> Approve & sign off</button>`;
-  }
-
-  // letter content
-  const letterText = state.edits || buildDoc(id);
-  const safeText = letterText.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  const letterHtml = hasContent
-    ? `<div class="letter-body" id="letter-${id}" ${isEdit?'contenteditable="true"':''}>${safeText}</div>`
-    : `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px;color:var(--text3);text-align:center"><i class="ti ti-sparkles" style="font-size:32px;margin-bottom:12px;opacity:0.4;display:block"></i><p style="font-size:13px;max-width:240px;line-height:1.6">Click Generate draft to create this document from the case data and evidence on file.</p></div>`;
-
-  const statusTxt = isApproved ? 'Approved — ready for use'
-    : hasContent ? (isEdit ? 'Editing…' : 'Draft — pending solicitor sign-off')
-    : 'Not yet generated';
-  const statusCls = isApproved ? 'status-text approved' : 'status-text';
-
-  m.innerHTML = `
-    <div class="case-hdr">
-      <div class="ch-ref">${C.ref}</div>
-      <div class="ch-name">${C.name} v. TestAirways</div>
-      <div class="ch-meta">
-        <span><i class="ti ti-plane"></i>${C.flight}</span>
-        <span><i class="ti ti-currency-pound"></i>${C.value}</span>
-        <span><i class="ti ti-user"></i>Assigned: ${C.assignedTo}</span>
-      </div>
-    </div>
-
-    <div class="doc-workspace">
-      <div class="dw-header">
-        <div class="dw-title"><i class="ti ${docIcons[id]}" style="font-size:14px;color:var(--green)"></i>${docNames[id]}</div>
-        <div class="dw-actions">${actions}</div>
-      </div>
-      ${evStrip}
-      ${letterHtml}
-      <div class="status-bar">
-        <div class="${statusCls}">${statusTxt}</div>
-        <div class="send-note"><i class="ti ti-info-circle" style="font-size:11px"></i>Internal email sending — coming soon</div>
-      </div>
-    </div>
-
-    <div class="points-ref">
-      <div class="pr-header"><i class="ti ti-list-check" style="font-size:13px;color:var(--text3)"></i>Points of claim — reference</div>
-      ${renderPointsRef()}
-    </div>`;
-}
-
-function renderPointsRef(){
-  const defaultPoints = [
-    {n:1,claim:'Delay in excess of 3 hours — Art 7(1)(a)',evidenceStatus:'green',evidenceDoc:'TOPS / Flight data'},
-    {n:2,claim:'Extraordinary circumstances — burden on carrier',evidenceStatus:'amber',evidenceDoc:'METAR · SIGMET · Eurocontrol'},
-    {n:3,claim:'Article 9 — duty of care obligations',evidenceStatus:'red',evidenceDoc:'Valencia ground records'},
-    {n:4,claim:'Consequential loss — £38,250 contract',evidenceStatus:'red',evidenceDoc:'No counter-evidence yet'},
-    {n:5,claim:'Travel & subsistence — £141.80',evidenceStatus:'amber',evidenceDoc:'Receipts pending'},
-  ];
-  const pts = C.points.length ? C.points : defaultPoints;
-  return pts.map(p=>{
-    const dc = p.evidenceStatus==='green'?'pr-dot-g':p.evidenceStatus==='amber'?'pr-dot-a':'pr-dot-r';
-    return `<div class="pr-item"><div class="pr-dot ${dc}"></div><div><div class="pr-num">Point ${p.n}</div><div class="pr-claim">${p.claim}</div><div class="pr-ev">${p.evidenceDoc||''}</div></div></div>`;
+function renderTabs(){
+  var c=currentCase;
+  var show=c.classification==='CONCEDE'?DOCS.filter(function(d){return['loa','settlement','p36'].includes(d.id);}):DOCS;
+  document.getElementById('doc-tabs').innerHTML=show.map(function(d){
+    var cached=getC(c.ref,d.id); var ready=d.id==='loa'||(cached&&cached.content);
+    var active=currentDocId===d.id;
+    return '<div class="doc-tab'+(ready?' ready':'')+(active?' active':'')+'" id="tab-'+d.id+'" onclick="selDoc(\''+d.id+'\')">'+(ready?'<div class="tab-dot"></div>':'<i class="ti '+d.icon+'" style="font-size:11px;opacity:0.6"></i>')+d.name+'</div>';
   }).join('');
 }
 
-async function generateDoc(id){
-  // Show generating state
-  const actionsEl = document.querySelector('.dw-actions');
-  if(actionsEl) actionsEl.innerHTML = `<div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--blue-text)"><div class="ai-spinner"></div>Generating from case data…</div>`;
-
-  // Call Claude API for AI-enhanced generation
-  const docNames = {lor:'Letter of Response',defence:'Defence (CPR Part 16)',witness:'Witness Statement',p36:'Part 36 Offer',settlement:'Settlement Agreement',n181:'Directions Questionnaire'};
-
-  const baseDoc = buildDoc(id);
-
-  try {
-    const resp = await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        model:'claude-sonnet-4-20250514',
-        max_tokens:2000,
-        system:`You are a senior aviation solicitor at an airline's in-house legal team. Draft professional, legally accurate documents in response to EC261 flight delay claims. Use precise legal language appropriate for England and Wales civil litigation. Address each point of claim specifically. Do not include markdown formatting or backticks. Return only the document text.`,
-        messages:[{role:'user',content:`Draft a ${docNames[id]||id} for this case. Use the base template provided and enhance the legal arguments based on the case details.\n\nCase: ${C.name} v. TestAirways\nRef: ${C.ref}\nFlight: ${C.flightNum} ${C.dep} to ${C.arr}, ${C.flightDate}\nDisruption: Diverted to ${C.diverted} due to weather\nDelay: ${C.delay}\nClaim value: ${C.value}\nAssigned to: ${C.assignedTo}\n\nBase template:\n${baseDoc.slice(0,3000)}`}]
-      })
-    });
-    const data = await resp.json();
-    const aiText = data.content?.find(b=>b.type==='text')?.text||'';
-    docStates[id].edits = aiText.trim()||baseDoc;
-  } catch(e) {
-    docStates[id].edits = baseDoc;
-  }
-
-  docStates[id].generated = true;
-  docStates[id].status = 'draft';
-  renderWorkspace();
-  updateDocBtn(id,'draft');
+function selDoc(id){
+  currentDocId=id; renderTabs();
+  if(id==='loa'){var c=buildLOA(currentCase);setC(currentCase.ref,'loa',c,'approved');showDoc(id,c,'approved');return;}
+  var cached=getC(currentCase.ref,id);
+  if(cached&&cached.content){showDoc(id,cached.content,cached.status);return;}
+  showGenPrompt(id);
 }
 
-function editDoc(id){
-  docEditMode[id] = true;
-  renderWorkspace();
-  setTimeout(()=>{
-    const el=document.getElementById('letter-'+id);
-    if(el){el.focus();}
-  },100);
+function showGenPrompt(id){
+  var c=currentCase; var doc=DOCS.find(function(d){return d.id===id;});
+  var facts=[{l:'Flight',v:c.flightNum+' · '+c.dep+'→'+c.arr,live:true},{l:'Date',v:c.flightDate,live:true},{l:'Delay',v:c.cancelled?'Cancelled':(c.delayMins?c.delayMins+'m':'—'),live:!!(c.delayMins||c.cancelled)},{l:'Disruption',v:c.disruptionType,live:true},{l:'Eurocontrol',v:c.disruption.eurocontrolRef||'—',live:!!c.disruption.eurocontrolRef},{l:'TOPS/AIMS',v:'Internal API pending',live:false}].map(function(f){return '<div class="gc-fact-row"><span class="gc-fact-label">'+f.l+'</span><span class="gc-fact-val '+(f.live?'live':'pending')+'">'+f.v+'</span></div>';}).join('');
+  var btnH=apiKey?'<button class="btn btn-ai" onclick="genDoc(\''+id+'\')" id="gen-btn"><i class="ti ti-sparkles"></i> Generate '+doc.name+' with AI</button><div style="font-size:10px;color:var(--text3)">Claude · EC261/UK261 · ~10s · Human review required</div>':'<button class="btn btn-ai" onclick="focusKey()"><i class="ti ti-sparkles"></i> Generate with AI</button><div style="font-size:10px;color:var(--text3)">Enter Anthropic API key (right panel) to enable live generation</div>';
+  document.getElementById('doc-area').innerHTML='<div class="generate-card"><div class="gc-icon" style="background:'+doc.bg+';color:'+doc.col+'"><i class="ti '+doc.icon+'" style="font-size:20px"></i></div><div class="gc-title">'+doc.name+'</div><div class="gc-sub">Claude will draft this document using verified case data — AviationStack flight records, Eurocontrol ATFM regulations, and METAR/SIGMET data — applying EC261/UK261 law and UK litigation precedent.</div><div class="gc-facts">'+facts+'</div><div class="btn-row">'+btnH+'</div></div>';
 }
 
-function saveEdit(id){
-  const el=document.getElementById('letter-'+id);
-  if(el) docStates[id].edits = el.innerText||el.textContent||docStates[id].edits;
-  docEditMode[id] = false;
-  renderWorkspace();
-}
+function focusKey(){var i=document.getElementById('api-key-input');if(i){i.focus();i.style.borderColor='var(--blue)';setTimeout(function(){i.style.borderColor='';},2000);}}
 
-function approveDoc(id){
-  const el=document.getElementById('letter-'+id);
-  if(el) docStates[id].edits = el.innerText||el.textContent||docStates[id].edits||buildDoc(id);
-  docApproved[id] = true;
-  docStates[id].status = 'approved';
-  updateDocBtn(id,'approved');
-  renderWorkspace();
-}
-
-function downloadDoc(id){
-  const text = docStates[id].edits || buildDoc(id);
-  const names={loa:'Letter-of-Acknowledgement',lor:'Letter-of-Response',defence:'Defence',witness:'Witness-Statement',n181:'Directions-Questionnaire-N181',p36:'Part-36-Offer',settlement:'Settlement-Agreement'};
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(new Blob([text],{type:'text/plain'}));
-  a.download=C.ref+'-'+names[id]+'.txt';
-  a.click();
-}
-
-function updateDocBtn(id, status){
-  const statusMap={
-    draft:{cls:'ds-draft',txt:'Draft'},
-    approved:{cls:'ds-approved',txt:'Approved'},
-    ready:{cls:'ds-ready',txt:'Ready'},
-    empty:{cls:'ds-empty',txt:'Not started'}
-  };
-  const s = statusMap[status]||statusMap.empty;
-  document.querySelectorAll('.doc-btn').forEach(btn=>{
-    const nameEl=btn.querySelector('.doc-btn-name');
-    if(!nameEl)return;
-    const tagEl=btn.querySelector('.doc-status');
-    if(!tagEl)return;
-    // match by onclick
-    const onclick=btn.getAttribute('onclick')||'';
-    if(onclick.includes("'"+id+"'")){
-      tagEl.className='doc-status '+s.cls;
-      tagEl.textContent=s.txt;
-    }
+function genDoc(id){
+  if(isGenerating||!apiKey)return;
+  isGenerating=true;
+  var doc=DOCS.find(function(d){return d.id===id;});
+  var steps=getSteps(id);
+  document.getElementById('doc-area').innerHTML='<div class="gen-state"><div class="gen-spinner"></div><div class="gen-label">Generating '+doc.name+'…</div><div class="gen-steps" id="gen-steps">'+steps.map(function(s,i){return'<div class="gs" id="gs-'+i+'"><i class="ti ti-circle"></i>'+s+'</div>';}).join('')+'</div><div style="font-size:10px;color:var(--text3)">Powered by Claude · EC261/UK261 legal drafting</div></div>';
+  var delay=0;
+  steps.forEach(function(s,i){setTimeout(function(){var p=document.getElementById('gs-'+(i-1));if(p){p.classList.remove('active');p.classList.add('done');p.querySelector('i').className='ti ti-circle-check';}var curr=document.getElementById('gs-'+i);if(curr){curr.classList.add('active');curr.querySelector('i').className='ti ti-loader-2';}},delay);delay+=800;});
+  callAPI(buildPrompt(id),function(text,err){
+    isGenerating=false;
+    if(err){document.getElementById('doc-area').innerHTML='<div class="gen-state"><i class="ti ti-alert-circle" style="font-size:36px;color:var(--red)"></i><div style="font-weight:500;color:var(--red)">Generation failed</div><div style="font-size:11px;color:var(--text3);text-align:center">'+escH(err)+'</div><button class="btn btn-outline btn-sm" onclick="selDoc(\''+id+'\')"><i class="ti ti-refresh"></i> Try again</button></div>';return;}
+    setC(currentCase.ref,id,text,'draft'); renderTabs(); showDoc(id,text,'draft');
   });
 }
 
-/* ── Points of claim reference (sidebar) ── */
-function renderPointsRefSidebar(){
-  const defaultPoints = [
-    {n:1,claim:'Delay — Art 7(1)(a)',evidenceStatus:'green'},
-    {n:2,claim:'Extraordinary circumstances',evidenceStatus:'amber'},
-    {n:3,claim:'Article 9 duty of care',evidenceStatus:'red'},
-    {n:4,claim:'Consequential loss £38,250',evidenceStatus:'red'},
-    {n:5,claim:'Travel costs £141.80',evidenceStatus:'amber'},
-  ];
-  const pts = C.points.length ? C.points : defaultPoints;
-  document.getElementById('points-ref').innerHTML =
-    '<div class="pr-header"><i class="ti ti-list-check" style="font-size:12px;color:var(--text3)"></i>Points of claim</div>'
-    +pts.map(p=>{
-      const dc=p.evidenceStatus==='green'?'pr-dot-g':p.evidenceStatus==='amber'?'pr-dot-a':'pr-dot-r';
-      return `<div class="pr-item"><div class="pr-dot ${dc}"></div><div><div class="pr-num">Point ${p.n}</div><div class="pr-claim">${p.claim}</div></div></div>`;
-    }).join('');
+function getSteps(id){
+  var base=['Loading case — '+currentCase.ref,'AviationStack flight data','Eurocontrol ATFM records'];
+  var ex={lor:['Applying EC261/UK261 extraordinary circumstances test','Drafting defence arguments','Formatting CPR Pre-Action Protocol letter'],defence:['Reviewing '+currentCase.points.length+' claim points','Applying Huzar / Wallentin-Hermann precedent','Drafting CPR Part 16 Defence'],witness:['Crew evidence requirements','Drafting factual narrative','Formatting CPR Part 32 statement'],p36:['Assessing quantum','Calculating Part 36 terms'],settlement:['Drafting settlement terms','EC261 release clauses']};
+  return base.concat(ex[id]||['Drafting document']);
 }
 
-/* ── Init ── */
-document.getElementById('main').innerHTML = `<div class="empty-workspace"><i class="ti ti-file-pencil"></i><p>Select a document from the library on the left to open, generate, or review it.</p></div>`;
-renderPointsRefSidebar();
-// Auto-open LOA as it's already approved
-setTimeout(()=>{
-  const loaBtn = document.querySelector('.doc-btn');
-  if(loaBtn){loaBtn.classList.add('active');currentDocId='loa';renderWorkspace();}
-},100);
+function callAPI(prompt,cb){
+  fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:2500,system:'You are a specialist UK aviation litigation solicitor drafting EC261/UK261 legal documents for the defendant airline. Output ONLY the document text — no preamble, no markdown. Start directly with the document.',messages:[{role:'user',content:prompt}]})})
+  .then(function(r){if(!r.ok)return r.json().then(function(e){throw new Error((e.error&&e.error.message)||'API error '+r.status);});return r.json();})
+  .then(function(d){var t=d.content&&d.content[0]&&d.content[0].text;if(!t)throw new Error('Empty response');cb(t,null);})
+  .catch(function(e){cb(null,e.message);});
+}
+
+function buildPrompt(id){
+  var c=currentCase; var td=new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
+  var rb=new Date();rb.setMonth(rb.getMonth()+3);var rbd=rb.toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
+  var facts='CASE: '+c.ref+'\nCLAIMANT: '+c.claimant+'\nAIRLINE: '+c.airline+'\nSOLICITOR: '+c.solicitor+' REF: '+c.solRef+'\nSOL ADDR: '+c.solAddr+'\nFLIGHT: '+c.flightNum+' '+c.depFull+'('+c.dep+') TO '+c.arrFull+'('+c.arr+')\nDATE: '+c.flightDate+'\nSTD: '+c.std+' ATD: '+(c.atd||'[TOPS pending]')+'\nDELAY: '+(c.cancelled?'CANCELLED':(c.delayMins?c.delayMins+'m':'[TOPS pending]'))+'\nDISTANCE: '+c.distanceKm+'km VALUE: '+c.value+'\nAIRCRAFT: '+c.aircraft+' REG: '+c.registration+'\nDISRUPTION: '+c.disruptionType+'\nCAUSE: '+c.disruption.cause+'\n'+(c.disruption.eurocontrolRef?'EUROCONTROL: '+c.disruption.eurocontrolRef+'\n':'')+(c.disruption.atfmSlot?'ATFM SLOT: '+c.disruption.atfmSlot+'\n':'')+(c.disruption.sigmet?'SIGMET: '+c.disruption.sigmet+'\n':'')+(c.disruption.metar?'METAR: '+c.disruption.metar+'\n':'')+(c.disruption.notamRef?'NOTAM: '+c.disruption.notamRef+'\n':'')+(c.disruption.caaNotes?'CAA: '+c.disruption.caaNotes+'\n':'')+'CLASSIFICATION: '+c.classification+'\nPRECEDENT: '+c.precedent.cas+'\nCLAIM POINTS:\n'+c.points.map(function(p,i){return(i+1)+'. '+p.claim+' | '+p.evidenceDoc+(p.apiPending?' [INTERNAL API PENDING]':'');}).join('\n');
+  var ins={lor:'Draft a LETTER OF RESPONSE — substantive pre-action reply.\nFormat: PRIVATE AND CONFIDENTIAL header / date '+td+' / solicitor address block / RE: case details / numbered paragraphs / extraordinary circumstances defence using real Eurocontrol/weather/NOTAM data / applicable precedents (Wallentin-Hermann, Huzar, Sturgeon) / reservation of rights / proper sign-off. If CONCEDE: admit liability, state compensation payable. Mark internal data gaps [TOPS DATA PENDING].',defence:'Draft a DEFENCE under CPR Part 16.\nFormat: Court heading / Claim No TBA / Between claimant v defendant / numbered paragraphs / admissions on facts / extraordinary circumstances pleaded with real Eurocontrol/NOTAM/METAR data / all reasonable measures / quantum in the alternative / prayer / Statement of Truth. If CONCEDE: admit liability, quantum only.',witness:'Draft a WITNESS STATEMENT under CPR Part 32 from the Captain.\nFormat: Part 32 header / numbered paragraphs / identity and basis of knowledge / pre-departure briefing (weather/NOTAM/ATFM) / the flight and disruption — factual narrative using real METAR/SIGMET/ATFM data / captain\'s decision and reasons / FDP compliance [AIMS pending] / passenger welfare / Statement of Truth / date '+td+'.',p36:'Draft a PART 36 OFFER compliant with CPR Part 36.5.\nFormat: WITHOUT PREJUDICE SAVE AS TO COSTS / PART 36 OFFER heading / date '+td+' / solicitor address / case details / if DEFEND nominal offer £1 / if CONCEDE full compensation / 21-day relevant period / CPR 36.17 costs consequences / proper sign-off.',settlement:'Draft a SETTLEMENT AGREEMENT AND RELEASE.\nFormat: heading / Parties / Recitals (claim, flight, disruption) / Consideration = '+c.value+' per passenger / Full and final release — Art 7, Art 9, consequential loss / Confidentiality / No admission (unless CONCEDE) / Execution blocks / Date '+td+'.'};
+  return 'CASE DATA:\n'+facts+'\n\nTASK:\n'+(ins[id]||'Draft the requested EC261/UK261 legal document.');
+}
+
+function showDoc(id,content,status){
+  var doc=DOCS.find(function(d){return d.id===id;}); var appr=status==='approved';
+  var evH=(EV[id]||[]).length?'<div class="ev-bar"><span class="ev-label-sm">Evidence used</span>'+(EV[id]||[]).map(function(s){var p=s.indexOf('pending')>-1;return'<span class="ev-chip '+(p?'ev-pending':'ev-live')+'"><i class="ti ti-'+(p?'clock':'circle-check')+'" style="font-size:9px"></i>'+s+'</span>';}).join('')+'</div>':'';
+  var btns=appr?'<button class="btn btn-outline btn-sm" onclick="dlDoc(\''+id+'\')"><i class="ti ti-download"></i> Download</button>':'<button class="btn btn-outline btn-sm" onclick="dlDoc(\''+id+'\')"><i class="ti ti-download"></i> Download</button><button class="btn btn-green btn-sm" onclick="appDoc(\''+id+'\')"><i class="ti ti-check"></i> Approve</button>'+(apiKey?'<button class="btn btn-outline btn-sm" onclick="regen(\''+id+'\')"><i class="ti ti-refresh"></i> Regenerate</button>':'');
+  document.getElementById('doc-area').innerHTML='<div class="doc-card"><div class="doc-toolbar"><div class="dt-left"><div class="dt-icon" style="background:'+doc.bg+';color:'+doc.col+'"><i class="ti '+doc.icon+'"></i></div><div class="dt-name">'+doc.name+'</div>'+(appr?'<span class="dt-status ds-approved"><i class="ti ti-circle-check" style="font-size:10px"></i> Approved</span>':'<span class="dt-status ds-draft">Draft</span>')+'</div><div class="dt-right">'+btns+'</div></div>'+evH+'<div class="doc-text">'+escH(content)+'</div><div class="doc-footer"><div class="df-status"><i class="ti ti-'+(appr?'circle-check':'clock-hour-3')+'" style="color:'+(appr?'var(--green)':'var(--amber)')+'"></i>'+(appr?'Approved — ready for use':'Draft — solicitor review required')+'</div><div class="df-note"><i class="ti ti-info-circle"></i>Email sending — coming soon</div></div></div>';
+}
+
+function appDoc(id){var c=getC(currentCase.ref,id);if(c)c.status='approved';renderTabs();showDoc(id,c.content,'approved');}
+function regen(id){delete docCache[ck(currentCase.ref,id)];renderTabs();selDoc(id);setTimeout(function(){genDoc(id);},100);}
+function dlDoc(id){var c=getC(currentCase.ref,id);if(!c||!c.content)return;var doc=DOCS.find(function(d){return d.id===id;});var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([c.content],{type:'text/plain'}));a.download=currentCase.ref+'-'+doc.name.replace(/\s+/g,'-')+'.txt';a.click();}
+
+function renderRight(){
+  var c=currentCase;
+  var pts=c.points.map(function(p){var col=p.evidenceStatus==='green'?'var(--green-l)':p.evidenceStatus==='amber'?'var(--amber)':'var(--red)';return'<div class="point-row"><div class="pr-dot" style="background:'+col+'"></div><div style="flex:1"><div class="pr-claim">'+p.claim+'</div><div class="pr-doc">'+p.evidenceDoc+'</div>'+(p.apiPending?'<span class="pr-api">Internal API pending</span>':'')+'</div></div>';}).join('');
+  var fds=[{l:'Flight',v:c.flightNum,live:true},{l:'Route',v:c.dep+' → '+c.arr,live:true},{l:'Date',v:c.flightDate,live:true},{l:'Sched dep',v:c.std||'—',live:true},{l:'Actual dep',v:c.atd||'[TOPS pending]',live:!!c.atd},{l:'Delay',v:c.cancelled?'Cancelled':(c.delayMins?(c.delayMins+'m = '+Math.floor(c.delayMins/60)+'h'+(c.delayMins%60?' '+(c.delayMins%60)+'m':'')):'[TOPS pending]'),live:!!(c.delayMins||c.cancelled)},{l:'A/C',v:c.aircraft,live:true},{l:'Reg',v:c.registration,live:true},{l:'Source',v:'AviationStack',live:true}].map(function(r){return'<div class="fd-row"><span class="fd-label">'+r.l+'</span><span class="fd-val '+(r.live?'fd-live':'fd-pending')+'">'+r.v+'</span></div>';}).join('');
+  var d=c.disruption,dispH='';
+  if(d.eurocontrolRef)dispH+='<div class="fd-row"><span class="fd-label">Eurocontrol</span><span class="fd-val fd-live" style="font-size:9px">'+d.eurocontrolRef+'</span></div>';
+  if(d.atfmSlot)dispH+='<div class="fd-row"><span class="fd-label">ATFM slot</span><span class="fd-val fd-live">'+d.atfmSlot+'</span></div>';
+  if(d.sigmet)dispH+='<div class="fd-row"><span class="fd-label">SIGMET</span><span class="fd-val fd-live" style="font-size:9px;word-break:break-all">'+d.sigmet+'</span></div>';
+  if(d.metar)dispH+='<div class="fd-row"><span class="fd-label">METAR</span><span class="fd-val fd-live" style="font-size:9px;word-break:break-all">'+d.metar+'</span></div>';
+  if(d.notamRef)dispH+='<div class="fd-row"><span class="fd-label">NOTAM</span><span class="fd-val fd-live" style="font-size:9px">'+d.notamRef+'</span></div>';
+  if(d.caaNotes)dispH+='<div class="fd-row"><span class="fd-label">CAA</span><span class="fd-val fd-live" style="font-size:9px">'+d.caaNotes+'</span></div>';
+  document.getElementById('right-panel').innerHTML='<div class="rp-head"><i class="ti ti-list-check" style="font-size:11px"></i>Claim points — '+c.points.length+'</div>'+pts+'<div class="rp-head"><i class="ti ti-plane" style="font-size:11px"></i>Flight data — AviationStack</div>'+fds+dispH+'<div class="prec-box"><div class="prec-label">Key precedent</div><div class="prec-case">'+c.precedent.cas+'</div><div class="prec-out">'+c.precedent.out+'</div></div><div class="key-section"><div class="ks-title"><i class="ti ti-key" style="font-size:11px"></i>Anthropic API Key</div><input class="ks-input" id="api-key-input" type="password" placeholder="sk-ant-api03-…" onkeydown="if(event.key===\'Enter\')saveKey()"><div class="ks-row"><button class="btn btn-ai btn-sm" onclick="saveKey()"><i class="ti ti-sparkles"></i> Activate AI</button><div class="ks-note">console.anthropic.com · Free $5 credit · Key stays in browser only</div></div><div class="key-status '+(apiKey?'ks-active':'ks-none')+'" id="key-status">'+(apiKey?'✓ AI drafting active':'Enter key to enable live generation')+'</div></div>';
+}
+
+function buildLOA(c){var td=new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});var rb=new Date();rb.setMonth(rb.getMonth()+3);var rbd=rb.toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});return'PRIVATE AND CONFIDENTIAL\nBY EMAIL AND FIRST CLASS POST\n\n'+td+'\n\n'+c.solicitor+'\n'+c.solAddr+'\n\nDear Sirs,\n\nRE: '+c.claimant.toUpperCase()+' v. '+c.airline.toUpperCase()+'\nYOUR REF: '+c.solRef+'    OUR REF: '+c.ref+'\nFLIGHT: '+c.flightNum+' — '+c.depFull.toUpperCase()+' ('+c.dep+') TO '+c.arrFull.toUpperCase()+' ('+c.arr+')\nDATE OF TRAVEL: '+c.flightDate.toUpperCase()+'\n\nACKNOWLEDGEMENT OF LETTER OF CLAIM\n\nWe act on behalf of '+c.airline+' in connection with the above matter.\n\nWe write to acknowledge receipt of your letter of claim. This matter has been assigned to our legal team and we are investigating the circumstances surrounding the above-referenced flight.\n\nIn accordance with the Pre-Action Protocol, we will provide a substantive Letter of Response no later than '+rbd+'. We will notify you promptly should we require any extension.\n\nWithout prejudice to our investigation, we note that the disruption to flight '+c.flightNum+' on '+c.flightDate+' arose from circumstances which we believe were beyond the reasonable control of '+c.airline+'. Our full position will be set out in our Letter of Response.\n\nNothing in this letter constitutes an admission of liability. '+c.airline+' reserves all rights and defences available to it.\n\nYours faithfully,\n\n\nLegal Department\n'+c.airline;}
+
+function escH(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function saveKey(){var i=document.getElementById('api-key-input');if(!i)return;var k=i.value.trim();if(!k){i.style.borderColor='var(--red)';setTimeout(function(){i.style.borderColor='';},1500);return;}apiKey=k;sessionStorage.setItem('261c_apikey',k);updateKeyStatus();if(currentDocId&&currentDocId!=='loa')selDoc(currentDocId);}
+function updateKeyStatus(){var el=document.getElementById('key-status');if(!el)return;el.className='key-status '+(apiKey?'ks-active':'ks-none');el.textContent=apiKey?'✓ AI drafting active — Claude connected':'Enter key to enable live generation';}
 </script>
 </body>
 </html>
