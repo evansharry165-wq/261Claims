@@ -8,6 +8,7 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <script src="shared_data.js"></script>
+<script src="_nav.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -84,25 +85,7 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 </style>
 </head>
 <body>
-<nav class="global-nav">
-  <a href="index.html" class="gn-logo"><div class="gn-mark"><i class="ti ti-plane"></i></div><span class="gn-name">261Claims</span></a>
-  <div class="gn-links">
-    <a href="index.html" class="gn-link"><i class="ti ti-layout-dashboard"></i> Dashboard</a>
-    <a href="module1-intake.html" class="gn-link"><i class="ti ti-file-upload"></i> Intake</a>
-    <a href="module2-case-management.html" class="gn-link"><i class="ti ti-layout-kanban"></i> Cases</a>
-    <a href="module3-cpr.html" class="gn-link"><i class="ti ti-calendar-due"></i> CPR</a>
-    <a href="module4-evidence.html" class="gn-link active"><i class="ti ti-folder-open"></i> Evidence</a>
-    <a href="module5-drafting.html" class="gn-link"><i class="ti ti-file-pencil"></i> Drafting</a>
-    <a href="module6-mi.html" class="gn-link"><i class="ti ti-chart-bar"></i> MI</a>
-  </div>
-  <div class="gn-right">
-    <div class="gn-user-btn" onclick="toggleUserMenu()">
-      <div class="gn-av" id="nav-av">SB</div>
-      <span class="gn-user" id="nav-user">S. Booth</span>
-      <i class="ti ti-chevron-down" style="font-size:10px;color:rgba(255,255,255,0.4);margin-left:2px"></i>
-    </div>
-  </div>
-</nav>
+<div id="global-nav-wrap"></div>
 <div class="app">
   <div class="body">
     <div class="page-header">
@@ -133,10 +116,7 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
     </div>
   </div>
 </div>
-<div class="user-modal" id="user-modal" onclick="closeUserMenu(event)">
-  <div class="user-dropdown">
-    <div class="ud-header">Switch user (demo)</div>
-    <div class="ud-item" onclick="switchUser('SB')"><div class="ud-av">SB</div><div><div class="ud-name">Sarah Booth</div><div class="ud-role">Head of Legal Ops</div></div></div>
+</div>
     <div class="ud-item" onclick="switchUser('JP')"><div class="ud-av">JP</div><div><div class="ud-name">James Patel</div><div class="ud-role">Senior Solicitor</div></div></div>
     <div class="ud-item" onclick="switchUser('KR')"><div class="ud-av">KR</div><div><div class="ud-name">Kiran Rahman</div><div class="ud-role">Solicitor</div></div></div>
   </div>
