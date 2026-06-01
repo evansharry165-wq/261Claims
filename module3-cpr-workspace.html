@@ -150,24 +150,11 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 .note-bar input:focus{outline:none;border-color:var(--blue)}
 .note-bar button{font-size:11px;padding:5px 9px;border-radius:var(--r);border:1px solid var(--border);background:var(--surface2);cursor:pointer;font-family:var(--font);color:var(--text2)}
 </style>
+<script src="shared_data.js"></script>
+<script src="_nav.js"></script>
 </head>
 <body>
-<nav class="global-nav" style="background:var(--navy);height:48px;display:flex;align-items:center;padding:0 20px;gap:0;flex-shrink:0">
-  <a href="index.html" style="display:flex;align-items:center;gap:8px;text-decoration:none;margin-right:16px">
-    <div style="width:28px;height:28px;background:var(--blue);border-radius:6px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px"><i class="ti ti-plane"></i></div>
-    <span style="font-size:14px;font-weight:500;color:#fff">261Claims</span>
-  </a>
-  <div style="display:flex;align-items:center;gap:2px;flex:1">
-    <a href="index.html" style="display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r);font-size:12px;font-weight:500;color:rgba(255,255,255,0.5);text-decoration:none"><i class="ti ti-layout-dashboard"></i> Dashboard</a>
-    <a href="module1-intake.html" style="display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r);font-size:12px;font-weight:500;color:rgba(255,255,255,0.5);text-decoration:none"><i class="ti ti-file-upload"></i> Intake</a>
-    <a href="module2-case-management.html" style="display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r);font-size:12px;font-weight:500;color:rgba(255,255,255,0.5);text-decoration:none"><i class="ti ti-layout-kanban"></i> Cases</a>
-    <a href="module3-cpr.html" style="display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r);font-size:12px;font-weight:500;color:rgba(255,255,255,0.5);text-decoration:none"><i class="ti ti-calendar-due"></i> CPR</a>
-    <a href="module4-evidence.html" style="display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r);font-size:12px;font-weight:500;color:rgba(255,255,255,0.5);text-decoration:none"><i class="ti ti-folder-open"></i> Evidence</a>
-    <a href="module5-drafting.html" style="display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r);font-size:12px;font-weight:500;color:rgba(255,255,255,0.5);text-decoration:none"><i class="ti ti-file-pencil"></i> Drafting</a>
-    <a href="module6-mi.html" style="display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r);font-size:12px;font-weight:500;color:rgba(255,255,255,0.5);text-decoration:none"><i class="ti ti-chart-bar"></i> MI</a>
-  </div>
-  <a href="module3-cpr.html" style="font-size:11px;padding:5px 12px;border-radius:var(--r);border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.7);text-decoration:none;display:flex;align-items:center;gap:5px"><i class="ti ti-calendar-due"></i> Back to CPR deadlines</a>
-</nav>
+<div id="global-nav-wrap"></div>
 <div class="app">
     <div class="body">
     <div class="main" id="main"></div>
