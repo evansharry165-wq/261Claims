@@ -734,3 +734,27 @@ function stageBg(s){
 function evPctColor(pct){ return pct>=70?'var(--green-l)':pct>=40?'#F59E0B':'var(--red)'; }
 function getActiveUser(){ return sessionStorage.getItem('261c_user')||'SB'; }
 function setActiveUser(id){ sessionStorage.setItem('261c_user', id); }
+
+/* ═══════════════════════════════════════════════════════════════════
+   COMPATIBILITY SHIM
+   Adds `flight` and `type` fields that the original dashboard,
+   intake, and CPR modules expect.
+   flight = "EZY8481 — London Gatwick (LGW) to Amsterdam Schiphol (AMS)"
+   type   = "EC 261/2004 — Industrial Action"
+═══════════════════════════════════════════════════════════════════ */
+ALL_CASES.forEach(function(c){
+  if(!c.flight){
+    c.flight = c.flightNum + ' — ' + (c.depFull||c.dep) + ' (' + c.dep + ') to ' + (c.arrFull||c.arr) + ' (' + c.arr + ')';
+  }
+  if(!c.type){
+    c.type = 'EC 261/2004 — ' + (c.cancelled ? 'Cancellation' : c.disruptionType);
+  }
+  if(!c.locDate){
+    /* Derive a plausible locDate ~3 months after flight for display */
+    var fd = new Date(c.flightDateISO);
+    fd.setMonth(fd.getMonth()+3);
+    var M=['January','February','March','April','May','June','July','August','September','October','November','December'];
+    c.locDate = fd.getDate()+' '+M[fd.getMonth()]+' '+fd.getFullYear();
+  }
+  if(!c.date){ c.date = c.locDate; }
+});
