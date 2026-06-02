@@ -8,6 +8,7 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&family=Fraunces:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <script src="shared_data.js"></script>
+<script src="_nav.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -128,6 +129,7 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 </style>
 </head>
 <body>
+<div id="global-nav-wrap"></div>
 <div class="app">
 <div class="left">
   <div class="logo">
@@ -167,13 +169,7 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 </div>
 </div>
 <script>
-var CASES=[{ref:'AC-2024-0341',airline:'easyJet',claimant:'Jonathan Reid',solicitor:'Bott & Co Solicitors',solRef:'BC/2023/JR/4471',solAddr:'1 Sansome Walk, Worcester, WR1 1LT',flightNum:'EZY8481',dep:'LGW',arr:'AMS',depFull:'London Gatwick',arrFull:'Amsterdam Schiphol',flightDate:'28 August 2023',std:'07:10',atd:'10:47',delayMins:217,distanceKm:365,value:'€250',aircraft:'Airbus A320-214',registration:'G-EZWZ',disruptionType:'Industrial Action',classification:'DEFEND',disruption:{cause:'French ATC strike — DGAC industrial action 28 Aug 2023',eurocontrolRef:'NM/2023/08/28/LFFF-STRIKE',atfmSlot:'10:22'},points:[{n:1,claim:'Delay >3hrs — Art 7(1)(a)',evidenceStatus:'green',evidenceDoc:'AviationStack: ATD 10:47, delay 217 mins',apiPending:false},{n:2,claim:'Extraordinary circumstances — ATC strike',evidenceStatus:'green',evidenceDoc:'Eurocontrol ATFM NM/2023/08/28/LFFF-STRIKE',apiPending:false},{n:3,claim:'ATFM slot 10:22 assigned — Eurocontrol',evidenceStatus:'green',evidenceDoc:'NOP portal — mandatory slot confirmed',apiPending:false},{n:4,claim:'All reasonable measures taken',evidenceStatus:'amber',evidenceDoc:'TOPS / DISCO — internal API pending',apiPending:true},{n:5,claim:'Art 9 duty of care',evidenceStatus:'amber',evidenceDoc:'MAX OPS — internal API pending',apiPending:true}],precedent:{cas:'Wallentin-Hermann v Alitalia (C-549/07)',out:'ATC industrial action confirmed extraordinary circumstances.'}},
-{ref:'AC-2024-0502',airline:'Jet2',claimant:'Patricia Okafor',solicitor:'Irwin Mitchell LLP',solRef:'IM/2024/PO/881',solAddr:'2 Millsands, Sheffield, S3 8DT',flightNum:'LS542',dep:'MAN',arr:'PMI',depFull:'Manchester Airport',arrFull:'Palma de Mallorca',flightDate:'12 July 2023',std:'06:00',atd:'06:00',delayMins:230,distanceKm:1741,value:'€400',aircraft:'Boeing 737-8K5',registration:'G-JZBO',disruptionType:'Weather',classification:'DEFEND',disruption:{cause:'Severe convective weather — CB activity, diversion to IBZ',sigmet:'LECB SIGMET 3 VALID 121000/121400Z',metar:'LEPA 121200Z 24018KT 2000 TSRA FEW020CB BKN030',eurocontrolRef:'LECB/2023/07/12/WX-CB-0420'},points:[{n:1,claim:'Delay >3hrs — Art 7(1)(b)',evidenceStatus:'green',evidenceDoc:'AviationStack: ATA 13:15, delay 230 mins',apiPending:false},{n:2,claim:'Extraordinary circumstances — weather',evidenceStatus:'green',evidenceDoc:'Ogimet METAR LEPA: TSRA/CB confirmed',apiPending:false},{n:3,claim:'SIGMET active — Barcelona FIR',evidenceStatus:'green',evidenceDoc:'LECB SIGMET 3 — on file',apiPending:false},{n:4,claim:'Crew diversion decision',evidenceStatus:'amber',evidenceDoc:'Witness statement — crew input needed',apiPending:false},{n:5,claim:'AIMS — FDP within limits',evidenceStatus:'red',evidenceDoc:'AIMS crew FDP — internal API pending',apiPending:true}],precedent:{cas:'Huzar v Jet2 [2014] EWCA Civ 791',out:'Severe convective CB activity — extraordinary circumstances confirmed.'}},
-{ref:'AC-2024-0677',airline:'Ryanair',claimant:'Sarah Mensah',solicitor:'Fletchers Solicitors',solRef:'FLS/2024/SM/2204',solAddr:'4 Savannah Way, Leeds, LS10 1AB',flightNum:'FR2142',dep:'STN',arr:'FCO',depFull:'London Stansted',arrFull:'Rome Fiumicino',flightDate:'10 October 2023',std:'14:30',atd:'19:15',delayMins:280,distanceKm:1434,value:'€250',aircraft:'Boeing 737-8AS',registration:'EI-DPN',disruptionType:'Airport System Failure',classification:'DEFEND',disruption:{cause:'NATS Uman system failure — UK airspace ATC disruption',natsRef:'NATS/OPS/2023/1010/UMAN-FAILURE',eurocontrolRef:'EGTT/2023/10/10/NATS-UMAN',caaNotes:'CAA confirmed EC — bulletin OPS/2023/047'},points:[{n:1,claim:'Delay >3hrs — Art 7(1)(a)',evidenceStatus:'green',evidenceDoc:'AviationStack: ATD 19:15, delay 280 mins',apiPending:false},{n:2,claim:'Extraordinary circumstances — NATS failure',evidenceStatus:'green',evidenceDoc:'CAA bulletin OPS/2023/047; NATS statement',apiPending:false},{n:3,claim:'Eurocontrol ATFM regulation active',evidenceStatus:'green',evidenceDoc:'EGTT/2023/10/10 confirmed',apiPending:false},{n:4,claim:'All reasonable measures taken',evidenceStatus:'red',evidenceDoc:'TOPS / DISCO — internal API pending',apiPending:true},{n:5,claim:'Art 9 welfare',evidenceStatus:'red',evidenceDoc:'MAX OPS — internal API pending',apiPending:true}],precedent:{cas:'CAA Bulletin OPS/2023/047',out:'NATS Uman failure — CAA confirmed EC for all affected flights 10 Oct 2023.'}},
-{ref:'AC-2024-0819',airline:'TUI Airways',claimant:'Michael Adebayo',solicitor:'Thompsons Solicitors',solRef:'TH/2024/MA/0093',solAddr:'Congress House, London, WC1B 3LW',flightNum:'TOM4251',dep:'LGW',arr:'TFS',depFull:'London Gatwick',arrFull:'Tenerife North',flightDate:'3 December 2023',std:'08:00',atd:'12:45',delayMins:280,distanceKm:2936,value:'€600',aircraft:'Boeing 787-8',registration:'G-TUID',disruptionType:'Technical Issues',classification:'CONCEDE',disruption:{cause:'Engine 1 bird ingestion — inherent technical fault'},points:[{n:1,claim:'Delay >3hrs — Art 7(1)(c)',evidenceStatus:'green',evidenceDoc:'AviationStack: ATD 12:45, delay 280 mins',apiPending:false},{n:2,claim:'Technical defect — not extraordinary circumstances',evidenceStatus:'green',evidenceDoc:'Huzar v Jet2 — inherent fault',apiPending:false},{n:3,claim:'€600 compensation payable',evidenceStatus:'green',evidenceDoc:'>3500km band — Art 7(1)(c)',apiPending:false}],precedent:{cas:'Huzar v Jet2 [2014] EWCA Civ 791',out:'Technical faults inherent to operations — NOT EC. Compensation payable.'}},
-{ref:'AC-2024-1044',airline:'British Airways',claimant:'Amelia Fontaine',solicitor:'Slater & Gordon',solRef:'SG/2024/AF/1812',solAddr:'58 Mosley Street, Manchester, M2 3HZ',flightNum:'BA2279',dep:'LHR',arr:'MAD',depFull:'London Heathrow',arrFull:'Madrid Barajas',flightDate:'30 June 2023',std:'10:05',atd:null,delayMins:null,distanceKm:1261,value:'€250',cancelled:true,aircraft:'Airbus A320-232',registration:'G-EUYS',disruptionType:'Industrial Action',classification:'DEFEND',disruption:{cause:'Pre-announced French ATC strike — DGAC 30 Jun 2023',eurocontrolRef:'NM/2023/06/30/LFFF-STRIKE'},points:[{n:1,claim:'Cancellation — Art 5(1)(c)',evidenceStatus:'green',evidenceDoc:'AviationStack: cancellation confirmed',apiPending:false},{n:2,claim:'Extraordinary circumstances — ATC strike',evidenceStatus:'green',evidenceDoc:'Eurocontrol LFFF strike bulletin',apiPending:false},{n:3,claim:'Strike notice <14 days — re-routing',evidenceStatus:'green',evidenceDoc:'DGAC notice 23 Jun — 7 days prior',apiPending:false},{n:4,claim:'Re-routing offered — Art 8',evidenceStatus:'amber',evidenceDoc:'MAX OPS / Amadeus — API pending',apiPending:true}],precedent:{cas:'Wallentin-Hermann v Alitalia (C-549/07)',out:'ATC strike — EC confirmed. CEDR dismissed equivalent claims this date.'}},
-{ref:'AC-2024-1502',airline:'Ryanair',claimant:'Oluwaseun Adeyemi',solicitor:'Bott & Co Solicitors',solRef:'BC/2024/OA/9021',solAddr:'1 Sansome Walk, Worcester, WR1 1LT',flightNum:'FR1234',dep:'DUB',arr:'STN',depFull:'Dublin Airport',arrFull:'London Stansted',flightDate:'4 September 2023',std:'17:05',atd:'17:05',delayMins:215,distanceKm:464,value:'€250',aircraft:'Boeing 737-8AS',registration:'EI-DCX',disruptionType:'Security Alert',classification:'DEFEND',disruption:{cause:'Police-ordered security closure — STN airside',notamRef:'EGSS A1221/23 — AERODROME CLOSED 1800-2100',eurocontrolRef:'EGSS/2023/09/04/SEC-ALERT'},points:[{n:1,claim:'Delay >3hrs — Art 7(1)(a)',evidenceStatus:'green',evidenceDoc:'AviationStack: ATA 21:55, delay 215 mins',apiPending:false},{n:2,claim:'Security alert — airport closure',evidenceStatus:'green',evidenceDoc:'NOTAM EGSS A1221/23 confirmed',apiPending:false},{n:3,claim:'Police-ordered closure — EC confirmed',evidenceStatus:'green',evidenceDoc:'Essex Police statement on file',apiPending:false},{n:4,claim:'Art 9 welfare',evidenceStatus:'amber',evidenceDoc:'MAX OPS — internal API pending',apiPending:true}],precedent:{cas:'Art 5(3) UK261',out:'Police-ordered airport closures — extraordinary circumstances confirmed.'}},
-{ref:'AC-2024-1750',airline:'Jet2',claimant:'Emma Clarke',solicitor:'Slater & Gordon',solRef:'SG/2024/EC/4401',solAddr:'58 Mosley Street, Manchester, M2 3HZ',flightNum:'LS1892',dep:'LBA',arr:'HER',depFull:'Leeds Bradford Airport',arrFull:'Heraklion International',flightDate:'18 June 2023',std:'06:00',atd:'09:55',delayMins:235,distanceKm:2668,value:'€400',aircraft:'Boeing 737-8K5',registration:'G-JZHK',disruptionType:'Ground Damage',classification:'CONCEDE',disruption:{cause:'Jetway hydraulic failure — contact with fuselage at LBA stand C4'},points:[{n:1,claim:'Delay >3hrs — Art 7(1)(b)',evidenceStatus:'green',evidenceDoc:'AviationStack: ATD 09:55, delay 235 mins',apiPending:false},{n:2,claim:'Ground damage — inherent fault',evidenceStatus:'green',evidenceDoc:'AMOS report confirmed',apiPending:true},{n:3,claim:'€400 compensation payable',evidenceStatus:'green',evidenceDoc:'1500–3500km — Art 7(1)(b)',apiPending:false}],precedent:{cas:'Huzar v Jet2 [2014] EWCA Civ 791',out:'Ground equipment failure — NOT extraordinary. Compensation €400 payable.'}}];
+var CASES = STATE.getCases();
 
 var DOCS=[{id:'loa',name:'Letter of Acknowledgement',icon:'ti-mail',col:'#1A7A4A',bg:'#E6F5EE'},{id:'lor',name:'Letter of Response',icon:'ti-file-text',col:'#B45309',bg:'#FEF3C7'},{id:'defence',name:'Defence (CPR Part 16)',icon:'ti-shield',col:'#4338CA',bg:'#EEEDFE'},{id:'witness',name:'Witness Statement',icon:'ti-user',col:'#1D4ED8',bg:'#EFF6FF'},{id:'p36',name:'Part 36 Offer',icon:'ti-balance',col:'#374151',bg:'#F1F5F9'},{id:'settlement',name:'Settlement / Concession',icon:'ti-handshake',col:'#374151',bg:'#F1F5F9'}];
 var EV={lor:['AviationStack','Eurocontrol NOP','Ogimet METAR','NOTAM Archive','TOPS (pending)','MAX OPS (pending)'],defence:['AviationStack','Eurocontrol NOP','Ogimet METAR','NOTAM Archive','SafetyNet (pending)','DISCO (pending)'],witness:['AIMS FDP (pending)','HERMES ACARS (pending)','DPM notes (pending)'],p36:['AviationStack','Case valuation'],settlement:['Full case record','Compensation calculation']};
@@ -183,7 +179,10 @@ function ck(ref,id){return ref+'___'+id;}
 function getC(ref,id){return docCache[ck(ref,id)]||null;}
 function setC(ref,id,content,status){docCache[ck(ref,id)]={content:content,status:status||'draft'};}
 
-window.addEventListener('DOMContentLoaded',function(){
+window.addEventListener('DOMContentLoaded',function(){renderGlobalNav('drafting');
+  /* Auto-select case from URL ?ref= param */
+  var _urlRef = new URLSearchParams(window.location.search).get('ref');
+  if(_urlRef){ var _preCase=STATE.getCase(_urlRef); if(_preCase) setTimeout(function(){ selCase(_urlRef); },100); }
   document.getElementById('case-list').innerHTML=CASES.map(function(c){
     var dc=c.classification==='CONCEDE'?'ci-dot-concede':'ci-dot-defend';
     var vc=c.classification==='CONCEDE'?'cv-concede':'cv-defend';
@@ -198,7 +197,7 @@ window.addEventListener('DOMContentLoaded',function(){
 });
 
 function selCase(ref){
-  currentCase=CASES.find(function(c){return c.ref===ref;});
+  currentCase=STATE.getCase(ref);
   if(!currentCase)return;
   currentDocId=null;
   document.querySelectorAll('.case-item').forEach(function(el){el.classList.remove('active');});
@@ -225,6 +224,10 @@ function selDoc(id){
   currentDocId=id; renderTabs();
   if(id==='loa'){var c=buildLOA(currentCase);setC(currentCase.ref,'loa',c,'approved');showDoc(id,c,'approved');return;}
   var cached=getC(currentCase.ref,id);
+  if(!cached||!cached.content){
+    var saved=STATE.loadDraftDoc(currentCase.ref,id);
+    if(saved&&saved.content){ setC(currentCase.ref,id,saved.content,saved.status||'draft'); cached=getC(currentCase.ref,id); }
+  }
   if(cached&&cached.content){showDoc(id,cached.content,cached.status);return;}
   showGenPrompt(id);
 }
@@ -249,7 +252,7 @@ function genDoc(id){
   callAPI(buildPrompt(id),function(text,err){
     isGenerating=false;
     if(err){document.getElementById('doc-area').innerHTML='<div class="gen-state"><i class="ti ti-alert-circle" style="font-size:36px;color:var(--red)"></i><div style="font-weight:500;color:var(--red)">Generation failed</div><div style="font-size:11px;color:var(--text3);text-align:center">'+escH(err)+'</div><button class="btn btn-outline btn-sm" onclick="selDoc(\''+id+'\')"><i class="ti ti-refresh"></i> Try again</button></div>';return;}
-    setC(currentCase.ref,id,text,'draft'); renderTabs(); showDoc(id,text,'draft');
+    setC(currentCase.ref,id,text,'draft'); STATE.saveDraftDoc(currentCase.ref,id,text,'draft'); STATE.addActivity(currentCase.ref,'Draft generated: '+id,'ai'); renderTabs(); showDoc(id,text,'draft');
   });
 }
 
@@ -281,7 +284,7 @@ function showDoc(id,content,status){
   document.getElementById('doc-area').innerHTML='<div class="doc-card"><div class="doc-toolbar"><div class="dt-left"><div class="dt-icon" style="background:'+doc.bg+';color:'+doc.col+'"><i class="ti '+doc.icon+'"></i></div><div class="dt-name">'+doc.name+'</div>'+(appr?'<span class="dt-status ds-approved"><i class="ti ti-circle-check" style="font-size:10px"></i> Approved</span>':'<span class="dt-status ds-draft">Draft</span>')+'</div><div class="dt-right">'+btns+'</div></div>'+evH+'<div class="doc-text">'+escH(content)+'</div><div class="doc-footer"><div class="df-status"><i class="ti ti-'+(appr?'circle-check':'clock-hour-3')+'" style="color:'+(appr?'var(--green)':'var(--amber)')+'"></i>'+(appr?'Approved — ready for use':'Draft — solicitor review required')+'</div><div class="df-note"><i class="ti ti-info-circle"></i>Email sending — coming soon</div></div></div>';
 }
 
-function appDoc(id){var c=getC(currentCase.ref,id);if(c)c.status='approved';renderTabs();showDoc(id,c.content,'approved');}
+function appDoc(id){var c=getC(currentCase.ref,id);if(c){c.status='approved';STATE.saveDraftDoc(currentCase.ref,id,c.content,'approved');STATE.addActivity(currentCase.ref,'Document approved: '+id,'action');}renderTabs();showDoc(id,c.content,'approved');}
 function regen(id){delete docCache[ck(currentCase.ref,id)];renderTabs();selDoc(id);setTimeout(function(){genDoc(id);},100);}
 function dlDoc(id){var c=getC(currentCase.ref,id);if(!c||!c.content)return;var doc=DOCS.find(function(d){return d.id===id;});var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([c.content],{type:'text/plain'}));a.download=currentCase.ref+'-'+doc.name.replace(/\s+/g,'-')+'.txt';a.click();}
 
