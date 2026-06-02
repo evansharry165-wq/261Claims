@@ -673,9 +673,14 @@ function exportReport(){
   a.click();
 }
 
-render();
+/* moved to DOMContentLoaded */
 </script>
 
-<script>document.addEventListener("DOMContentLoaded",function(){if(typeof renderGlobalNav==="function")renderGlobalNav("mi");});</script>
+<script>
+window.addEventListener("DOMContentLoaded", function(){
+  renderGlobalNav("mi");
+  render();
+});
+</script>
 </body>
 </html>
