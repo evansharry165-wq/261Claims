@@ -7,7 +7,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
-<script src="shared_data.js"></script>
+<script src="shared_data.js">  renderGlobalNav('dashboard');
+</script>
 <script src="_nav.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -175,14 +176,10 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 
       <i class="ti ti-check ud-tick"></i>
     </div>
-    <div class="ud-item" id="ud-JP" onclick="switchUser('JP')">
-      <div class="ud-av">JP</div>
-      <div><div class="ud-name">James Patel</div><div class="ud-role">Senior Solicitor · 3 cases</div></div>
+    
       <i class="ti ti-check ud-tick"></i>
     </div>
-    <div class="ud-item" id="ud-KR" onclick="switchUser('KR')">
-      <div class="ud-av">KR</div>
-      <div><div class="ud-name">Kiran Rahman</div><div class="ud-role">Solicitor · 3 cases</div></div>
+    
       <i class="ti ti-check ud-tick"></i>
     </div>
   </div>
@@ -190,7 +187,7 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 
 <script>
 /* ── State ── */
-var activeUser = getActiveUser();
+var activeUser = STATE.getActiveUser(); /* always read from STATE */
 
 /* ── News data ── */
 var LEGAL_NEWS = [
@@ -221,14 +218,9 @@ function toggleUserMenu(){ document.getElementById('user-modal').classList.toggl
 function closeMenu(){ document.getElementById('user-modal').classList.remove('open'); }
 
 function switchUser(id){
-  setActiveUser(id);
-  activeUser = id;
-  closeMenu();
-  var u = USERS[id];
-  document.getElementById('nav-av').textContent = u.initials;
-  document.getElementById('nav-user').textContent = u.name;
-  document.querySelectorAll('.ud-item').forEach(function(el){ el.classList.remove('current'); });
-  document.getElementById('ud-'+id).classList.add('current');
+  STATE.setActiveUser(id);
+  activeUser = STATE.getActiveUser();
+  switchGlobalUser(id); /* update nav */
   render();
 }
 
@@ -253,7 +245,7 @@ function dateStr(){
 }
 
 /* ── Render ── */
-function render(){
+function render(){ activeUser = STATE.getActiveUser(); //_use STATE 
   var u = USERS[activeUser];
   var myCases = getCasesForUser(STATE.getActiveUser());
   var urgentCases = myCases.filter(function(c){ return c.cprDaysLeft <= 3; });
