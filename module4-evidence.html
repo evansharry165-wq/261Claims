@@ -334,6 +334,11 @@ document.getElementById('case-tbody').addEventListener('click', function(e){
 });
 </script>
 
-<script>document.addEventListener("DOMContentLoaded",function(){if(typeof renderGlobalNav==="function")renderGlobalNav("evidence");});</script>
+<script>
+window.addEventListener("DOMContentLoaded", function(){
+  renderGlobalNav("evidence");
+  render();
+});
+</script>
 </body>
 </html>
