@@ -368,6 +368,11 @@ function getWorkspaceUrl(c){
 /* Called by nav user switch */
 function render(){ renderPage(); }
 </script>
-<script>document.addEventListener("DOMContentLoaded",function(){if(typeof renderGlobalNav==="function")renderGlobalNav("cases");});</script>
+<script>
+window.addEventListener("DOMContentLoaded", function(){
+  renderGlobalNav("cases");
+  render();
+});
+</script>
 </body>
 </html>
