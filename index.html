@@ -610,8 +610,13 @@ function openCase(ref){
 
 /* ── Init ── */
 initNav();
-render();
+/* render() moved to DOMContentLoaded below */
 </script>
-<script>window.addEventListener("DOMContentLoaded",function(){renderGlobalNav("dashboard");renderPage&&renderPage();render&&render();init&&init();});</script>
+<script>
+window.addEventListener("DOMContentLoaded", function(){
+  renderGlobalNav("dashboard");
+  render();
+});
+</script>
 </body>
 </html>
