@@ -428,6 +428,11 @@ function startCPRClock(ref){
 
 function render(){ renderList(); }
 </script>
-<script>document.addEventListener("DOMContentLoaded",function(){if(typeof renderGlobalNav==="function")renderGlobalNav("intake");});</script>
+<script>
+window.addEventListener("DOMContentLoaded", function(){
+  renderGlobalNav("intake");
+  render();
+});
+</script>
 </body>
 </html>
