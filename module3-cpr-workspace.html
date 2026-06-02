@@ -150,8 +150,7 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 .note-bar input:focus{outline:none;border-color:var(--blue)}
 .note-bar button{font-size:11px;padding:5px 9px;border-radius:var(--r);border:1px solid var(--border);background:var(--surface2);cursor:pointer;font-family:var(--font);color:var(--text2)}
 </style>
-<script src="shared_data.js">  renderGlobalNav('cpr');
-</script>
+<script src="shared_data.js"></script>
 <script src="_nav.js"></script>
 </head>
 <body>
@@ -555,5 +554,6 @@ log('CPR module opened — '+C.name+' v. TestAirways','create');
 log('LOC received: '+C.date+' · Response deadline: '+fmtDate(d21),'action');
 render();
 </script>
+<script>window.addEventListener("DOMContentLoaded",function(){renderGlobalNav("cpr");renderPage&&renderPage();render&&render();init&&init();});</script>
 </body>
 </html>
