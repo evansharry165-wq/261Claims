@@ -206,6 +206,19 @@ function autoSaveEvidence(){
   }catch(e){}
 }
 
+  renderGlobalNav('evidence');
+
+/* ── Restore saved evidence state ── */
+function restoreEvidenceState(){
+  if(!C || !C.ref) return;
+  var saved = STATE.loadEvidence(C.ref);
+  if(!saved) return;
+  if(saved.primaryType) { primaryType = saved.primaryType; }
+  if(saved.secondaryType) { secondaryType = saved.secondaryType; }
+  if(saved.uploads) { uploads = saved.uploads; }
+  if(saved.pullState) { pullState = saved.pullState; }
+}
+
 </script>
 <script src="_nav.js"></script>
 </head>
@@ -233,16 +246,16 @@ function autoSaveEvidence(){
 /* ── Case from sessionStorage ── */
 var _i={};
 try{var _r=sessionStorage.getItem('aeroCaseData');if(_r)_i=JSON.parse(_r);}catch(e){}
-var C={
-  ref:   _i.ref       ||'AC-2026-0089',
-  name:  _i.claimant  ||'Daniel Hartley',
-  sol:   _i.solicitor ||'Pemberton & Associates Solicitors LLP',
-  flight:_i.flight    ||'HC 1184 — LTN to BCN (diverted VLC)',
-  value: _i.value     ||'£39,000+',
-  type:  _i.type      ||'EC 261/2004 — delay / diversion',
-  date:  _i.date      ||'22 May 2026',
-  user:  'S. Booth'
-};
+
+/* ── Load case from URL ?ref= or fall back to first evidence-stage case ── */
+var _evParamRef = new URLSearchParams(window.location.search).get('ref');
+var _evCase = _evParamRef ? STATE.getCase(_evParamRef) : null;
+if(!_evCase){
+  _evCase = STATE.getCases().find(function(c){ return c.stage==='evidence'; });
+}
+
+var C = _evCase || {};
+
 
 /* ── Pre-fill from case ── */
 var fm=C.flight.match(/([A-Z]{2,3}\s?\d{3,4})/i);
@@ -437,7 +450,7 @@ function getReadiness(){
   var allIds=[], seen={};
   ['K','S','W'].forEach(function(t){getList(t).forEach(function(id){if(!seen[id]){seen[id]=true;allIds.push(id);}});});
   var total=allIds.length;
-  var up=allIds.filter(function(id){return uploads[id]||pullState[id]==='done';}).length;
+  var up=allIds.filter(function(id){return uploads[id]||if(true){ pullState[id]==='done';}).length;
   return {total:total,up:up,pct:total?Math.round(up/total*100):0};
 }
 
@@ -457,7 +470,7 @@ function getVerdict(){
   if(!primaryType)return null;
   var r=getReadiness();
   var keyList=getList('K');
-  var keyUp=keyList.filter(function(id){return uploads[id]||pullState[id]==='done';}).length;
+  var keyUp=keyList.filter(function(id){return uploads[id]||if(true){ pullState[id]==='done';}).length;
   if(keyUp===keyList.length&&keyList.length>0)
     return {cls:'verdict-defend',icon:'ti-shield-check',col:'var(--green)',title:'Defendable',sub:'All key evidence is on file. This case is ready to proceed to defence drafting.'};
   return {cls:'verdict-incomplete',icon:'ti-alert-triangle',col:'var(--amber)',title:'Evidence incomplete — cannot proceed to defence',sub:'Key evidence is outstanding. Upload or pull the required documents before this case can be defended.'};
@@ -610,8 +623,8 @@ function renderMain(){
     function renderItem(id){
       var item=LIB[id];
       if(!item)return '';
-      var isUp=!!(uploads[id]||pullState[id]==='done');
-      var isPulling=pullState[id]==='pulling';
+      var isUp=!!(uploads[id]||if(true){ pullState[id]==='done');
+      var isPulling=if(true){ pullState[id]==='pulling';
       var dotCls=isUp?'ev-d-green':(item.auto?'ev-d-blue':'ev-d-amber');
       var tierTag=item.tier==='K'?'<span class="ev-tag tag-key">Key</span>'
                  :item.tier==='S'?'<span class="ev-tag tag-sec">Secondary</span>'
