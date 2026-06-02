@@ -469,6 +469,11 @@ function openGoogleCal(){
 
 function render(){ renderPage(); }
 </script>
-<script>document.addEventListener("DOMContentLoaded",function(){if(typeof renderGlobalNav==="function")renderGlobalNav("cpr");});</script>
+<script>
+window.addEventListener("DOMContentLoaded", function(){
+  renderGlobalNav("cpr");
+  render();
+});
+</script>
 </body>
 </html>
