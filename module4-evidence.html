@@ -243,27 +243,21 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
   </div>
 </div>
 </div>
-    <div class="ud-item" onclick="switchUser('JP')"><div class="ud-av">JP</div><div><div class="ud-name">James Patel</div><div class="ud-role">Senior Solicitor</div></div></div>
-    <div class="ud-item" onclick="switchUser('KR')"><div class="ud-av">KR</div><div><div class="ud-name">Kiran Rahman</div><div class="ud-role">Solicitor</div></div></div>
+
   </div>
 </div>
 <script>
-var activeUser = getActiveUser();
+var activeUser = STATE.getActiveUser();
 
-function updateNavUser(){
-  var u = USERS[activeUser];
-  document.getElementById('nav-av').textContent = u.initials;
-  document.getElementById('nav-user').textContent = u.name;
-}
-function toggleUserMenu(){ document.getElementById('user-modal').classList.toggle('open'); }
-function closeUserMenu(e){ if(e.target===document.getElementById('user-modal')) document.getElementById('user-modal').classList.remove('open'); }
 function switchUser(id){
-  setActiveUser(id); activeUser=id; updateNavUser();
-  document.getElementById('user-modal').classList.remove('open');
+  STATE.setActiveUser(id);
+  activeUser = STATE.getActiveUser();
+  switchGlobalUser(id);
   render();
 }
 
 function render(){
+  activeUser = STATE.getActiveUser();
   var u = USERS[activeUser];
   var stage = 'evidence';
   var cases = stage==='cases'
@@ -324,20 +318,19 @@ function openCase(ref){
   window.location.href = 'module4-evidence-workspace.html?ref='+ref;
 }
 
-updateNavUser();
-render();
-
-// Event delegation for case rows
-document.getElementById('case-tbody').addEventListener('click', function(e){
-  var tr = e.target.closest('.case-tr');
-  if(tr) openCase(tr.dataset.ref);
-});
+// init handled by DOMContentLoaded below
 </script>
 
 <script>
 window.addEventListener("DOMContentLoaded", function(){
   renderGlobalNav("evidence");
   render();
+  // Event delegation for case rows
+  var tbody = document.getElementById('case-tbody');
+  if(tbody) tbody.addEventListener('click', function(e){
+    var tr = e.target.closest('.case-tr');
+    if(tr) openCase(tr.dataset.ref);
+  });
 });
 </script>
 </body>
