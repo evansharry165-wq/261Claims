@@ -25,6 +25,7 @@ function renderGlobalNav(activeModule){
     {id:'evidence',  href:'module4-evidence.html',          icon:'ti-folder-open',      label:'Evidence'},
     {id:'drafting',  href:'module5-drafting.html',          icon:'ti-file-pencil',      label:'Drafting'},
     {id:'mi',        href:'module6-mi.html',                icon:'ti-chart-bar',        label:'MI'},
+    {id:'education', href:'module7-education.html',        icon:'ti-school',            label:'Education Hub'},
   ];
   var linksHtml = navLinks.map(function(l){
     var active = l.id === activeModule ? ' active' : '';
@@ -569,6 +570,19 @@ function render(){ activeUser = STATE.getActiveUser(); //_use STATE
     +netToolsHtml
     +'</div>'
     +'</div>'
+
+    +'<div class="panel" style="margin-top:14px">'
+    +'<div class="panel-hdr"><div class="panel-title"><i class="ti ti-school" style="color:var(--blue)"></i>Education Hub</div><a href="module7-education.html" class="panel-link">Open <i class="ti ti-arrow-right" style="font-size:11px"></i></a></div>'
+    +'<div style="display:flex;flex-direction:column;gap:6px;padding:4px 0">'
+    +'<a href="module7-education.html" class="case-row" style="text-decoration:none;padding:10px 12px">'
+    +'<div class="cr-stage-icon" style="background:#EFF6FF"><i class="ti ti-gavel" style="color:#1D4ED8;font-size:12px"></i></div>'
+    +'<div style="flex:1"><div class="cr-ref">Case Law & Regulation</div><div class="cr-meta">AI-powered · Wallentin-Hermann, Sturgeon, Pešková & more</div></div>'
+    +'<i class="ti ti-arrow-right" style="font-size:12px;color:var(--text3)"></i></a>'
+    +'<a href="module7-education.html" class="case-row" style="text-decoration:none;padding:10px 12px">'
+    +'<div class="cr-stage-icon" style="background:#F0FDFA"><i class="ti ti-books" style="color:#0D9488;font-size:12px"></i></div>'
+    +'<div style="flex:1"><div class="cr-ref">Training Library</div><div class="cr-meta">SOPs · Training docs · Platform guidance · 24 documents</div></div>'
+    +'<i class="ti ti-arrow-right" style="font-size:12px;color:var(--text3)"></i></a>'
+    +'</div></div>'
 
     +'</div>';
 }
