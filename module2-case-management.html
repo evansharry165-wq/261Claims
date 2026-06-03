@@ -1,379 +1,275 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>261Claims — Cases</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <script src="shared_data.js"></script>
-<script>
-/* ════════════════════════════════════════════════════════════════
-   261Claims — Global Navigation Component v3.0
-   Include this AFTER shared_data.js on every page.
-   Call: renderGlobalNav('active-module-id')
-   Modules: dashboard, intake, cases, cpr, evidence, drafting, mi
-════════════════════════════════════════════════════════════════ */
-function renderGlobalNav(activeModule){
-  var u = USERS[STATE.getActiveUser()] || USERS.SB;
-  var navLinks = [
-    {id:'dashboard', href:'index.html',                     icon:'ti-layout-dashboard', label:'Dashboard'},
-    {id:'intake',    href:'module1-intake.html',            icon:'ti-file-upload',      label:'Intake'},
-    {id:'cases',     href:'module2-case-management.html',   icon:'ti-layout-kanban',    label:'Cases'},
-    {id:'cpr',       href:'module3-cpr.html',               icon:'ti-calendar-due',     label:'CPR'},
-    {id:'evidence',  href:'module4-evidence.html',          icon:'ti-folder-open',      label:'Evidence'},
-    {id:'drafting',  href:'module5-drafting.html',          icon:'ti-file-pencil',      label:'Drafting'},
-    {id:'mi',        href:'module6-mi.html',                icon:'ti-chart-bar',        label:'MI'},
-    {id:'education', href:'module7-education.html',        icon:'ti-school',            label:'Education Hub'},
-  ];
-  var linksHtml = navLinks.map(function(l){
-    var active = l.id === activeModule ? ' active' : '';
-    return '<a href="'+l.href+'" class="gn-link'+active+'"><i class="ti '+l.icon+'"></i> '+l.label+'</a>';
-  }).join('');
-
-  var html = '<nav class="global-nav" id="global-nav">'
-    +'<a href="index.html" class="gn-logo">'
-    +'<div class="gn-mark"><i class="ti ti-plane"></i></div>'
-    +'<span class="gn-name">261Claims</span>'
-    +'</a>'
-    +'<div class="gn-links">'+linksHtml+'</div>'
-    +'<div class="gn-right">'
-    +'<div class="gn-user-btn" id="gn-user-btn" onclick="toggleGlobalUserMenu()">'
-    +'<div class="gn-av" id="gn-av" style="background:'+u.colour+'">'+u.initials+'</div>'
-    +'<span class="gn-user" id="gn-user">'+u.name+'</span>'
-    +'<i class="ti ti-chevron-down" style="font-size:10px;color:rgba(255,255,255,0.4);margin-left:2px"></i>'
-    +'</div>'
-    +'</div>'
-    +'</nav>'
-    +'<div class="gn-user-dropdown" id="gn-dropdown">'
-    +'<div class="gn-ud-head">Switch user — demo</div>'
-    +Object.values(USERS).map(function(usr){
-      var active = usr.id === STATE.getActiveUser() ? ' gn-ud-active' : '';
-      return '<div class="gn-ud-item'+active+'" onclick="switchGlobalUser(\''+usr.id+'\')">'
-        +'<div class="gn-ud-av" style="background:'+usr.colour+'">'+usr.initials+'</div>'
-        +'<div><div class="gn-ud-name">'+usr.full+'</div><div class="gn-ud-role">'+usr.role+'</div></div>'
-        +(usr.id===STATE.getActiveUser()?'<i class="ti ti-check" style="margin-left:auto;color:var(--blue)"></i>':'')
-        +'</div>';
-    }).join('')
-    +'<div class="gn-ud-item gn-ud-reset" onclick="if(confirm(\'Reset all case data to defaults?\'))STATE.reset()">'
-    +'<i class="ti ti-refresh" style="font-size:13px;color:var(--text3)"></i>'
-    +'<div style="font-size:11px;color:var(--text3)">Reset demo data</div>'
-    +'</div>'
-    +'</div>';
-
-  /* Inject nav CSS if not already present */
-  if(!document.getElementById('gn-styles')){
-    var style = document.createElement('style');
-    style.id = 'gn-styles';
-    style.textContent = `
-.global-nav{background:#0B1628;height:48px;display:flex;align-items:center;padding:0 20px;gap:0;position:sticky;top:0;z-index:200;border-bottom:1px solid rgba(255,255,255,0.06);flex-shrink:0}
-.gn-logo{display:flex;align-items:center;gap:8px;text-decoration:none;margin-right:20px;flex-shrink:0}
-.gn-mark{width:28px;height:28px;background:#2A6FDB;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px}
-.gn-name{font-size:14px;font-weight:600;color:#fff;letter-spacing:-0.02em}
-.gn-links{display:flex;align-items:center;gap:2px;flex:1;overflow:hidden}
-.gn-link{display:flex;align-items:center;gap:5px;padding:5px 10px;border-radius:6px;font-size:12px;font-weight:500;color:rgba(255,255,255,0.5);text-decoration:none;white-space:nowrap;transition:all 0.15s;flex-shrink:0}
-.gn-link:hover{background:rgba(255,255,255,0.08);color:#fff}
-.gn-link.active{background:rgba(42,111,219,0.3);color:#fff}
-.gn-link i{font-size:12px}
-.gn-right{display:flex;align-items:center;gap:8px;margin-left:8px;flex-shrink:0}
-.gn-user-btn{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:20px;padding:3px 10px 3px 4px;cursor:pointer;transition:all 0.15s}
-.gn-user-btn:hover{background:rgba(255,255,255,0.12)}
-.gn-av{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:#fff}
-.gn-user{font-size:11px;font-weight:500;color:rgba(255,255,255,0.8)}
-.gn-user-dropdown{display:none;position:fixed;top:52px;right:14px;background:#fff;border:1px solid #E2E8F0;border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,0.14);width:240px;overflow:hidden;z-index:500}
-.gn-user-dropdown.open{display:block}
-.gn-ud-head{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#94A3B8;padding:10px 14px 6px;border-bottom:1px solid #F1F5F9}
-.gn-ud-item{display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;transition:background 0.1s}
-.gn-ud-item:hover{background:#F8FAFC}
-.gn-ud-active{background:#EFF6FF}
-.gn-ud-av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#fff;flex-shrink:0}
-.gn-ud-name{font-size:12px;font-weight:500;color:#0F172A}
-.gn-ud-role{font-size:10px;color:#94A3B8}
-.gn-ud-reset{border-top:1px solid #F1F5F9;gap:8px}
-    `;
-    document.head.appendChild(style);
-  }
-
-  /* Find or create nav container */
-  var existing = document.getElementById('global-nav-wrap');
-  if(!existing){
-    existing = document.createElement('div');
-    existing.id = 'global-nav-wrap';
-    document.body.insertBefore(existing, document.body.firstChild);
-  }
-  existing.innerHTML = html;
-}
-
-function toggleGlobalUserMenu(){
-  var dd = document.getElementById('gn-dropdown');
-  if(dd) dd.classList.toggle('open');
-}
-
-function switchGlobalUser(id){
-  STATE.setActiveUser(id);
-  document.getElementById('gn-dropdown').classList.remove('open');
-  /* Update avatar + name in nav */
-  var u = USERS[id];
-  var av = document.getElementById('gn-av');
-  var nm = document.getElementById('gn-user');
-  if(av){ av.textContent=u.initials; av.style.background=u.colour; }
-  if(nm) nm.textContent = u.name;
-  /* Trigger page re-render if available */
-  if(typeof render === 'function') render();
-  if(typeof renderPage === 'function') renderPage();
-  if(typeof init === 'function') init();
-}
-
-/* Close dropdown on outside click */
-document.addEventListener('click', function(e){
-  var dd = document.getElementById('gn-dropdown');
-  var btn = document.getElementById('gn-user-btn');
-  if(dd && btn && !btn.contains(e.target) && !dd.contains(e.target)){
-    dd.classList.remove('open');
-  }
-});
-
-</script>
-
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{--navy:#0B1628;--blue:#2A6FDB;--blue-faint:#EFF6FF;--blue-text:#1D4ED8;--green:#1A7A4A;--green-l:#22A863;--green-faint:#E6F5EE;--red:#C0392B;--red-faint:#FCF0EF;--amber:#B45309;--amber-faint:#FEF3C7;--purple:#4338CA;--purple-faint:#EEEDFE;--border:#E2E8F0;--border2:#CBD5E1;--text:#0F172A;--text2:#475569;--text3:#94A3B8;--surface:#fff;--surface2:#F8FAFC;--surface3:#F1F5F9;--font:'DM Sans',sans-serif;--mono:'DM Mono',monospace;--r:8px;--r2:12px;--r3:16px}
+:root{
+  --navy:#0B1628;--navy2:#132033;
+  --blue:#2A6FDB;--blue-faint:#EFF6FF;--blue-text:#1D4ED8;
+  --green:#1A7A4A;--green-l:#22A863;--green-faint:#E6F5EE;
+  --red:#C0392B;--red-faint:#FCF0EF;
+  --amber:#B45309;--amber-faint:#FEF3C7;
+  --purple:#4338CA;--purple-faint:#EEEDFE;
+  --border:#E2E8F0;--border2:#CBD5E1;
+  --text:#0F172A;--text2:#475569;--text3:#94A3B8;
+  --surface:#FFFFFF;--surface2:#F8FAFC;--surface3:#F1F5F9;
+  --font:'DM Sans',sans-serif;--mono:'DM Mono',monospace;
+  --r:8px;--r2:12px;--r3:16px;
+}
 html,body{height:100%;font-family:var(--font);background:var(--surface2);color:var(--text);font-size:14px}
-.app{display:flex;flex-direction:column;height:100vh}
-.body{flex:1;padding:20px 24px;overflow-y:auto}
-.toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;gap:12px;flex-wrap:wrap}
-.toolbar-left h2{font-size:18px;font-weight:600;letter-spacing:-0.02em}
-.toolbar-left p{font-size:12px;color:var(--text3);margin-top:2px}
-.toolbar-right{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.search-box{display:flex;align-items:center;gap:6px;padding:6px 12px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);font-size:12px;color:var(--text2)}
-.search-box input{border:none;outline:none;font-family:var(--font);font-size:12px;color:var(--text);background:transparent;width:180px}
-.search-box input::placeholder{color:var(--text3)}
-.filter-pill{padding:5px 12px;border-radius:20px;font-size:11px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--text2);transition:all 0.15s}
-.filter-pill.active{background:var(--navy);color:#fff;border-color:var(--navy)}
-.sort-select{padding:6px 10px;border-radius:var(--r);font-size:11px;border:1px solid var(--border);background:var(--surface);color:var(--text2);font-family:var(--font);cursor:pointer}
-.case-table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--r3);overflow:hidden}
-.case-table{width:100%;border-collapse:collapse;font-size:12px}
-.case-table thead tr{background:var(--surface2)}
-.case-table th{text-align:left;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.07em;color:var(--text3);padding:10px 12px;border-bottom:1px solid var(--border);cursor:pointer;user-select:none;white-space:nowrap}
-.case-table th:hover{color:var(--text2)}
-.case-table th .sort-icon{opacity:0.4;font-size:9px;margin-left:3px}
-.case-table th.sorted .sort-icon{opacity:1;color:var(--blue)}
-.case-table td{padding:11px 12px;border-bottom:1px solid var(--border);vertical-align:middle}
+.app{display:flex;flex-direction:column;height:calc(100vh - 48px)}
+.global-nav{background:var(--navy);height:48px;display:flex;align-items:center;padding:0 20px;gap:0;flex-shrink:0}
+.gn-logo{display:flex;align-items:center;gap:8px;text-decoration:none;margin-right:20px;flex-shrink:0}
+.gn-mark{width:28px;height:28px;background:var(--blue);border-radius:6px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px}
+.gn-name{font-size:14px;font-weight:500;color:#fff;letter-spacing:-0.01em}
+.gn-links{display:flex;align-items:center;gap:2px;flex:1}
+.gn-link{display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r);font-size:12px;font-weight:500;color:rgba(255,255,255,0.5);text-decoration:none;transition:all 0.15s;white-space:nowrap}
+.gn-link:hover{background:rgba(255,255,255,0.08);color:#fff}
+.gn-link.active{background:rgba(42,111,219,0.35);color:#fff}
+.gn-link i{font-size:13px}
+.gn-right{display:flex;align-items:center;gap:8px;margin-left:8px}
+.gn-user-btn{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:20px;padding:3px 10px 3px 4px;cursor:pointer;transition:all 0.15s}
+.gn-user-btn:hover{background:rgba(255,255,255,0.12)}
+.gn-av{width:24px;height:24px;border-radius:50%;background:#1C2E44;color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500}
+.gn-user{font-size:11px;font-weight:500;color:rgba(255,255,255,0.8)}
+.body{flex:1;overflow:hidden;display:flex;flex-direction:column}
+.page-header{background:var(--surface);border-bottom:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.ph-left h2{font-size:15px;font-weight:500;color:var(--text);margin-bottom:1px}
+.ph-left p{font-size:11px;color:var(--text3)}
+.ph-stats{display:flex;gap:16px}
+.ph-stat{text-align:center}
+.ph-stat-val{font-size:18px;font-weight:500;color:var(--text)}
+.ph-stat-label{font-size:10px;color:var(--text3)}
+.case-table-wrap{flex:1;overflow-y:auto;padding:20px 24px}
+.case-table{width:100%;border-collapse:collapse}
+.case-table th{text-align:left;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.06em;color:var(--text3);padding:0 12px 10px 0;border-bottom:2px solid var(--border);white-space:nowrap}
+.case-table td{padding:10px 12px 10px 0;border-bottom:1px solid var(--border);vertical-align:middle}
+.case-table tr:hover td{background:var(--surface2);cursor:pointer}
 .case-table tr:last-child td{border-bottom:none}
-.case-table tbody tr{cursor:pointer;transition:background 0.1s}
-.case-table tbody tr:hover td{background:var(--surface2)}
-.td-ref{font-family:var(--mono);font-size:10px;color:var(--text3);display:block;margin-bottom:1px}
-.td-claimant{font-size:12px;font-weight:600;color:var(--text)}
-.td-sol{font-size:10px;color:var(--text3);margin-top:1px}
-.td-flight{font-size:11px;font-weight:500;color:var(--text);font-family:var(--mono)}
-.td-route{font-size:10px;color:var(--text3)}
-.td-date{font-size:11px;color:var(--text2)}
-.td-date-sub{font-size:9px;color:var(--text3);margin-top:1px}
-.cat-pill{font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;font-family:var(--mono)}
+.td-ref{font-family:var(--mono);font-size:10px;color:var(--text3)}
+.td-name{font-size:12px;font-weight:500;color:var(--text)}
+.td-meta{font-size:11px;color:var(--text2)}
+.td-type{font-size:11px;color:var(--text2)}
+.cat-pill{font-size:10px;font-weight:500;padding:2px 6px;border-radius:20px;font-family:var(--mono)}
 .cat-a{background:var(--blue-faint);color:var(--blue-text)}
 .cat-b{background:var(--amber-faint);color:var(--amber)}
 .cat-c{background:var(--red-faint);color:var(--red)}
-.stage-pill{font-size:10px;font-weight:500;padding:3px 10px;border-radius:20px;white-space:nowrap}
-.cpr-pill{font-size:10px;font-weight:600;padding:3px 9px;border-radius:20px;white-space:nowrap}
-.cp-urgent{background:var(--red-faint);color:var(--red)}
-.cp-warn{background:var(--amber-faint);color:var(--amber)}
-.cp-ok{background:var(--green-faint);color:var(--green)}
-.verdict-d{font-size:10px;font-weight:600;padding:2px 8px;border-radius:4px;background:var(--green-faint);color:var(--green)}
-.verdict-c{font-size:10px;font-weight:600;padding:2px 8px;border-radius:4px;background:var(--red-faint);color:var(--red)}
-.ev-bar-wrap{display:flex;align-items:center;gap:6px}
-.ev-bar{height:4px;background:var(--border);border-radius:2px;overflow:hidden;width:56px}
-.ev-fill{height:100%;border-radius:2px}
-.ev-pct{font-size:10px;font-weight:500;width:26px;text-align:right}
-.empty-state{text-align:center;padding:60px;color:var(--text3)}
-.empty-state i{font-size:40px;opacity:0.2;display:block;margin-bottom:12px}
-.stats-bar{display:flex;gap:12px;margin-bottom:14px}
-.stat-chip{display:flex;align-items:center;gap:6px;padding:6px 12px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);font-size:12px}
-.sc-val{font-size:14px;font-weight:600;color:var(--text)}
-.sc-label{font-size:11px;color:var(--text3)}
-.sc-dot{width:8px;height:8px;border-radius:50%}
-.resume-badge{font-size:9px;font-weight:500;padding:1px 6px;border-radius:4px;background:var(--blue-faint);color:var(--blue-text);margin-left:4px;vertical-align:middle}
+.days-pill{font-size:10px;font-weight:500;padding:2px 8px;border-radius:20px;white-space:nowrap}
+.dp-urgent{background:var(--red-faint);color:var(--red)}
+.dp-warn{background:var(--amber-faint);color:var(--amber)}
+.dp-ok{background:var(--green-faint);color:var(--green)}
+.prog-bar{width:80px;height:5px;background:var(--border);border-radius:3px;overflow:hidden;display:inline-block;vertical-align:middle}
+.prog-fill{height:100%;border-radius:3px}
+.empty-state{text-align:center;padding:60px 20px;color:var(--text3)}
+.empty-state i{font-size:36px;display:block;margin-bottom:12px;opacity:0.35}
+.empty-state p{font-size:13px;line-height:1.6}
+.stage-icon{width:30px;height:30px;border-radius:var(--r);display:flex;align-items:center;justify-content:center;font-size:13px}
+/* user modal */
+.user-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.3);z-index:1000;align-items:flex-start;justify-content:flex-end;padding:52px 16px 0}
+.user-modal.open{display:flex}
+.user-dropdown{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);width:220px;box-shadow:0 4px 20px rgba(0,0,0,0.12);overflow:hidden}
+.ud-header{padding:10px 14px;border-bottom:1px solid var(--border);font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.07em;color:var(--text3)}
+.ud-item{display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;transition:background 0.15s}
+.ud-item:hover{background:var(--surface2)}
+.ud-av{width:28px;height:28px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;flex-shrink:0}
+.ud-name{font-size:12px;font-weight:500;color:var(--text)}
+.ud-role{font-size:10px;color:var(--text3)}
 </style>
 </head>
 <body>
-<div class="app">
-<div id="global-nav-wrap"></div>
-<div class="body">
-  <div class="toolbar">
-    <div class="toolbar-left">
-      <h2 id="page-title">Cases</h2>
-      <p id="page-sub"></p>
-    </div>
-    <div class="toolbar-right">
-      <div class="search-box"><i class="ti ti-search" style="font-size:13px;color:var(--text3)"></i><input type="text" id="search-input" placeholder="Search claimant, ref, flight…" oninput="renderTable()"></div>
-      <div style="display:flex;gap:4px" id="filter-pills"></div>
-      <select class="sort-select" id="sort-select" onchange="renderTable()">
-        <option value="cpr">Sort: CPR deadline</option>
-        <option value="received">Sort: Date received</option>
-        <option value="stage">Sort: Stage</option>
-        <option value="value">Sort: Value</option>
-        <option value="ref">Sort: Reference</option>
-      </select>
+<nav class="global-nav">
+  <a href="index.html" class="gn-logo"><div class="gn-mark"><i class="ti ti-plane"></i></div><span class="gn-name">261Claims</span></a>
+  <div class="gn-links">
+    <a href="index.html" class="gn-link"><i class="ti ti-layout-dashboard"></i> Dashboard</a>
+    <a href="module1-intake.html" class="gn-link"><i class="ti ti-file-upload"></i> Intake</a>
+    <a href="module2-case-management.html" class="gn-link active"><i class="ti ti-layout-kanban"></i> Cases</a>
+    <a href="module3-cpr.html" class="gn-link"><i class="ti ti-calendar-due"></i> CPR</a>
+    <a href="module4-evidence.html" class="gn-link"><i class="ti ti-folder-open"></i> Evidence</a>
+    <a href="module5-drafting.html" class="gn-link"><i class="ti ti-file-pencil"></i> Drafting</a>
+    <a href="module6-mi.html" class="gn-link"><i class="ti ti-chart-bar"></i> MI</a>
+  </div>
+  <div class="gn-right">
+    <div class="gn-user-btn" onclick="toggleUserMenu()">
+      <div class="gn-av" id="nav-av">SB</div>
+      <span class="gn-user" id="nav-user">S. Booth</span>
+      <i class="ti ti-chevron-down" style="font-size:10px;color:rgba(255,255,255,0.4);margin-left:2px"></i>
     </div>
   </div>
-  <div class="stats-bar" id="stats-bar"></div>
-  <div class="case-table-wrap">
-    <table class="case-table">
-      <thead>
-        <tr>
-          <th onclick="setSort('ref')">Ref <span class="sort-icon ti ti-chevrons-up-down"></span></th>
-          <th onclick="setSort('claimant')">Claimant <span class="sort-icon ti ti-chevrons-up-down"></span></th>
-          <th onclick="setSort('flight')">Flight <span class="sort-icon ti ti-chevrons-up-down"></span></th>
-          <th onclick="setSort('received')">Received <span class="sort-icon ti ti-chevrons-up-down"></span></th>
+</nav>
+<div class="app">
+  <div class="body">
+    <div class="page-header">
+      <div class="ph-left">
+        <h2 id="ph-title">My cases</h2>
+        <p id="ph-sub">All cases assigned to you across all stages</p>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px"><input id="search-input" type="text" placeholder="Search cases, claimants, flights…" style="font-size:12px;padding:6px 12px;border:1px solid var(--border);border-radius:var(--r);background:var(--surface);color:var(--text);font-family:var(--font);width:260px" onkeyup="render()" /><div class="ph-stats" id="ph-stats"></div></div>
+    </div>
+    <div class="case-table-wrap">
+      <table class="case-table">
+        <thead><tr>
+          <th>Ref</th>
+          <th>Claimant</th>
+          <th>Flight</th>
+          <th>Type</th>
+          <th>Value</th>
           <th>Cat</th>
-          <th onclick="setSort('stage')">Stage <span class="sort-icon ti ti-chevrons-up-down"></span></th>
-          <th>Verdict</th>
-          <th>Evidence</th>
-          <th onclick="setSort('cpr')">CPR Deadline <span class="sort-icon ti ti-chevrons-up-down"></span></th>
-        </tr>
-      </thead>
-      <tbody id="case-tbody"></tbody>
-    </table>
-    <div id="empty-state" class="empty-state" style="display:none">
-      <i class="ti ti-file-search"></i>
-      <p>No cases match your filters.</p>
+          <th>Stage</th>
+          <th>Last action</th>
+          <th>CPR deadline</th>
+        </tr></thead>
+        <tbody id="case-tbody"></tbody>
+      </table>
+      <div id="empty-state" style="display:none" class="empty-state">
+        <i class="ti ti-briefcase"></i>
+        <p>No cases assigned to you.</p>
+      </div>
     </div>
   </div>
 </div>
+<div class="user-modal" id="user-modal" onclick="closeUserMenu(event)">
+  <div class="user-dropdown">
+    <div class="ud-header">Switch user (demo)</div>
+    <div class="ud-item" onclick="switchUser('SB')"><div class="ud-av">SB</div><div><div class="ud-name">Sarah Booth</div><div class="ud-role">Head of Legal Ops</div></div></div>
+    <div class="ud-item" onclick="switchUser('JP')"><div class="ud-av">JP</div><div><div class="ud-name">James Patel</div><div class="ud-role">Senior Solicitor</div></div></div>
+    <div class="ud-item" onclick="switchUser('KR')"><div class="ud-av">KR</div><div><div class="ud-name">Kiran Rahman</div><div class="ud-role">Solicitor</div></div></div>
+  </div>
 </div>
 <script>
-var activeFilter = 'all';
-var sortField = 'cpr';
-var sortDir = 1;
+var activeUser = getActiveUser();
 
-window.addEventListener('DOMContentLoaded', function(){
-  renderGlobalNav('cases');
-  renderPage();
-});
-
-function renderPage(){
-  var u = USERS[STATE.getActiveUser()];
-  document.getElementById('page-title').textContent = 'Cases — ' + u.full;
-  renderFilters();
-  renderStats();
-  renderTable();
+function updateNavUser(){
+  var u = USERS[activeUser];
+  document.getElementById('nav-av').textContent = u.initials;
+  document.getElementById('nav-user').textContent = u.name;
+}
+function toggleUserMenu(){ document.getElementById('user-modal').classList.toggle('open'); }
+function closeUserMenu(e){ if(e.target===document.getElementById('user-modal')) document.getElementById('user-modal').classList.remove('open'); }
+function switchUser(id){
+  setActiveUser(id); activeUser=id; updateNavUser();
+  document.getElementById('user-modal').classList.remove('open');
+  render();
 }
 
-function renderFilters(){
-  var pills = [
-    {id:'all',    label:'All cases'},
-    {id:'mine',   label:'My cases'},
-    {id:'urgent', label:'Urgent (≤7d)'},
-    {id:'active', label:'Active'},
-    {id:'resolved',label:'Resolved'},
-  ];
-  document.getElementById('filter-pills').innerHTML = pills.map(function(p){
-    return '<button class="filter-pill'+(activeFilter===p.id?' active':'')+'" onclick="setFilter(\''+p.id+'\')">'+p.label+'</button>';
-  }).join('');
+
+function lastAction(c){
+  if(!c.activity || !c.activity.length) return '<span style="color:var(--text3)">—</span>';
+  var last = c.activity[c.activity.length-1];
+  var icons = {create:'ti-plus',stage:'ti-arrow-right',action:'ti-check',upload:'ti-upload',ai:'ti-robot',draft:'ti-file-pencil',note:'ti-note'};
+  var icon = icons[last.type] || 'ti-clock';
+  return '<i class="ti '+icon+'" style="font-size:10px;margin-right:3px;color:var(--text3)"></i>'+last.text.substring(0,35)+(last.text.length>35?'…':'');
 }
 
-function setFilter(f){ activeFilter=f; renderFilters(); renderTable(); }
-function setSort(f){
-  if(sortField===f) sortDir*=-1; else { sortField=f; sortDir=1; }
-  renderTable();
-}
+function render(){
+  var u = USERS[activeUser];
+  var stage = 'all';
+  var searchTerm = document.getElementById('search-input') ? document.getElementById('search-input').value.toLowerCase() : '';
+  var cases = getCasesForUser(activeUser);
+  if(searchTerm){ cases = cases.filter(function(c){ return c.claimant.toLowerCase().indexOf(searchTerm)>=0 || c.ref.toLowerCase().indexOf(searchTerm)>=0 || c.flightNum.toLowerCase().indexOf(searchTerm)>=0 || c.solicitor.toLowerCase().indexOf(searchTerm)>=0; }); }
+  cases = cases.sort(function(a,b){return a.cprDaysLeft-b.cprDaysLeft;});
 
-function getFilteredCases(){
-  var uid = STATE.getActiveUser();
-  var q = (document.getElementById('search-input').value||'').toLowerCase();
-  var cases = STATE.getCases().filter(function(c){
-    if(activeFilter==='mine' && c.assignedTo!==uid) return false;
-    if(activeFilter==='urgent' && c.cprDaysLeft>7) return false;
-    if(activeFilter==='active' && ['resolve'].includes(c.stage)) return false;
-    if(activeFilter==='resolved' && c.stage!=='resolve') return false;
-    if(q){
-      var hay = (c.claimant+c.ref+c.flightNum+c.dep+c.arr+c.airline+c.solicitor+c.disruptionType).toLowerCase();
-      if(hay.indexOf(q)<0) return false;
-    }
-    return true;
-  });
-  cases.sort(function(a,b){
-    var av,bv;
-    if(sortField==='cpr'){av=a.cprDaysLeft;bv=b.cprDaysLeft;}
-    else if(sortField==='received'){av=a.receivedDateISO||'';bv=b.receivedDateISO||'';}
-    else if(sortField==='stage'){av=STAGES.indexOf(a.stage);bv=STAGES.indexOf(b.stage);}
-    else if(sortField==='value'){av=parseInt((a.value||'0').replace(/\D/g,''));bv=parseInt((b.value||'0').replace(/\D/g,''));}
-    else if(sortField==='ref'){av=a.ref;bv=b.ref;}
-    else if(sortField==='claimant'){av=a.claimant;bv=b.claimant;}
-    else if(sortField==='flight'){av=a.flightNum;bv=b.flightNum;}
-    else{av=a.ref;bv=b.ref;}
-    return av<bv?-sortDir:av>bv?sortDir:0;
-  });
-  return cases;
-}
+  document.getElementById('ph-title').textContent = 'My cases — ' + u.name;
+  document.getElementById('ph-sub').textContent = cases.length + ' case'+(cases.length!==1?'s':'')+' · sorted by CPR deadline urgency';
 
-function renderStats(){
-  var all = STATE.getCases();
-  var uid = STATE.getActiveUser();
-  var mine = all.filter(function(c){return c.assignedTo===uid;});
-  var urgent = mine.filter(function(c){return c.cprDaysLeft<=7;});
-  var resolved = all.filter(function(c){return c.stage==='resolve';});
-  document.getElementById('stats-bar').innerHTML = [
-    {val:all.length,     label:'Total cases',    col:'#1D4ED8'},
-    {val:mine.length,    label:'My cases',       col:'#4338CA'},
-    {val:urgent.length,  label:'Urgent (≤7d)',   col:'#C0392B'},
-    {val:resolved.length,label:'Resolved',       col:'#1A7A4A'},
-  ].map(function(s){
-    return '<div class="stat-chip"><div class="sc-dot" style="background:'+s.col+'"></div><div class="sc-val">'+s.val+'</div><div class="sc-label">'+s.label+'</div></div>';
-  }).join('');
-}
+  var urgCount = cases.filter(function(c){return c.cprDaysLeft<=7;}).length;
+  document.getElementById('ph-stats').innerHTML =
+    statBadge(cases.length,'Total','var(--text)') +
+    statBadge(urgCount,'Urgent','var(--red)');
 
-function renderTable(){
-  var cases = getFilteredCases();
   var tbody = document.getElementById('case-tbody');
   var empty = document.getElementById('empty-state');
-  var sub = document.getElementById('page-sub');
-  sub.textContent = cases.length + ' case'+(cases.length!==1?'s':'')+' · click to resume where you left off';
-
-  if(!cases.length){ tbody.innerHTML=''; empty.style.display='block'; return; }
+  if(!cases.length){
+    tbody.innerHTML=''; empty.style.display='block'; return;
+  }
   empty.style.display='none';
-
   tbody.innerHTML = cases.map(function(c){
     var urg = daysUrgency(c.cprDaysLeft);
     var catCls = c.cat==='A'?'cat-a':c.cat==='B'?'cat-b':'cat-c';
-    var sc = stageColor(c.stage); var sb = stageBg(c.stage);
-    var ev = c.evidencePct||0; var ec = evPctColor(ev);
-    var verd = c.classification==='CONCEDE'
-      ? '<span class="verdict-c">CONCEDE</span>'
-      : '<span class="verdict-d">DEFEND</span>';
-    var workspaceUrl = getWorkspaceUrl(c);
-    return '<tr onclick="window.location.href=\''+workspaceUrl+'\'">'
-      +'<td><span class="td-ref">'+c.ref+'</span></td>'
-      +'<td><div class="td-claimant">'+c.claimant+' <span class="resume-badge">Resume →</span></div><div class="td-sol">'+c.solicitor.split(' ').slice(0,2).join(' ')+'</div></td>'
-      +'<td><div class="td-flight">'+c.flightNum+'</div><div class="td-route">'+c.dep+' → '+c.arr+'</div></td>'
-      +'<td><div class="td-date">'+(c.receivedDate||'—')+'</div><div class="td-date-sub">'+c.airline+'</div></td>'
+    return '<tr data-ref="'+c.ref+'" class="case-tr">'
+      +'<td><div class="td-ref">'+c.ref+'</div></td>'
+      +'<td><div class="td-name">'+c.claimant+'</div><div class="td-meta">'+c.solicitor.split(' ')[0]+'…</div></td>'
+      +'<td><div class="td-type">'+c.flightNum+'</div><div class="td-meta">'+c.dep+' → '+c.arr+'</div></td>'
+      +'<td><div class="td-type">'+c.disruptionType+'</div></td>'
+      +'<td><div class="td-type" style="font-family:var(--mono);font-weight:500">'+c.value+'</div></td>'
       +'<td><span class="cat-pill '+catCls+'">'+c.cat+'</span></td>'
-      +'<td><span class="stage-pill" style="background:'+sb+';color:'+sc+'">'+stageLabel(c.stage)+'</span></td>'
-      +'<td>'+verd+'</td>'
-      +'<td><div class="ev-bar-wrap"><div class="ev-bar"><div class="ev-fill" style="width:'+ev+'%;background:'+ec+'"></div></div><span class="ev-pct" style="color:'+ec+'">'+ev+'%</span></div></td>'
-      +'<td><span class="cpr-pill cp-'+urg+'">'+urgencyLabel(c.cprDaysLeft)+'</span></td>'
+      +'<td>'+extraCol(c)+'</td>'
+      +'<td><div style="font-size:11px;color:var(--text2)">'+lastAction(c)+'</div></td>'
+      +'<td><span class="days-pill dp-'+urg+'">'+urgencyLabel(c.cprDaysLeft)+'</span></td>'
       +'</tr>';
   }).join('');
 }
 
-function getWorkspaceUrl(c){
-  var stage = c.stage;
-  var ref = encodeURIComponent(c.ref);
-  if(stage==='intake'||stage==='triage') return 'module1-intake.html?ref='+ref;
-  if(stage==='cpr') return 'module3-cpr-workspace.html?ref='+ref;
-  if(stage==='evidence') return 'module4-evidence-workspace.html?ref='+ref;
-  if(stage==='drafting') return 'module5-drafting-workspace.html?ref='+ref;
-  if(stage==='defence'||stage==='resolve') return 'module2-case-workspace.html?ref='+ref;
-  return 'module2-case-workspace.html?ref='+ref;
+function statBadge(val,label,col){
+  return '<div class="ph-stat"><div class="ph-stat-val" style="color:'+col+'">'+val+'</div><div class="ph-stat-label">'+label+'</div></div>';
 }
 
-/* Called by nav user switch */
-function render(){ renderPage(); }
+function extraCol(c){
+  var sc = stageColor(c.stage); var sb = stageBg(c.stage);
+  return '<span style="font-size:10px;font-weight:500;padding:2px 8px;border-radius:20px;background:'+sb+';color:'+sc+'">'+stageLabel(c.stage)+'</span>';
+}
+
+function openCase(ref){
+  var c = getCase(ref);
+  if(!c) return;
+  try{
+    sessionStorage.setItem('aeroCaseData', JSON.stringify({
+      ref:c.ref, claimant:c.claimant, solicitor:c.solicitor,
+      flight:c.flight, value:c.value, type:c.type,
+      date:c.locDate, framework:'EC Regulation 261/2004',
+      points:c.points, assignedTo:USERS[c.assignedTo].name
+    }));
+  }catch(e){}
+  window.location.href = 'module2-case-workspace.html?ref='+ref;
+}
+
+updateNavUser();
+render();
+
+// Event delegation for case rows
+document.getElementById('case-tbody').addEventListener('click', function(e){
+  var tr = e.target.closest('.case-tr');
+  if(tr) openCase(tr.dataset.ref);
+});
 </script>
 <script>
-window.addEventListener("DOMContentLoaded", function(){
-  renderGlobalNav("cases");
-  render();
-});
+// Dynamic nav badges
+(function(){
+  try {
+    var userId = typeof getActiveUser === 'function' ? getActiveUser() : 'SB';
+    var cases = typeof getCasesForUser === 'function' ? getCasesForUser(userId) : [];
+    var intakeCount = cases.filter(function(c){ return c.stage==='intake'; }).length;
+    var urgentCPR = cases.filter(function(c){ return c.cprDaysLeft <= 7 && c.stage !== 'resolve'; }).length;
+    
+    // Find nav links and add badges
+    var links = document.querySelectorAll('.gn-link');
+    links.forEach(function(link){
+      var href = link.getAttribute('href') || '';
+      var badge = null;
+      if(href.indexOf('module1-intake') >= 0 && intakeCount > 0){
+        badge = intakeCount;
+      } else if(href.indexOf('module3-cpr') >= 0 && urgentCPR > 0){
+        badge = urgentCPR;
+      }
+      if(badge){
+        var existing = link.querySelector('.nav-count');
+        if(!existing){
+          var span = document.createElement('span');
+          span.className = 'nav-count';
+          span.style.cssText = 'background:var(--red);color:#fff;font-size:9px;font-weight:500;padding:1px 5px;border-radius:20px;margin-left:3px';
+          span.textContent = badge;
+          link.appendChild(span);
+        }
+      }
+    });
+  } catch(e){}
+})();
 </script>
 </body>
 </html>

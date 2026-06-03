@@ -2,27 +2,260 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>261Claims — Drafting</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<script src="shared_data.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;font-family:'DM Sans',sans-serif;background:#0B1628;display:flex;align-items:center;justify-content:center}
-.wrap{display:flex;flex-direction:column;align-items:center;gap:14px;color:rgba(255,255,255,0.5);text-align:center}
-.mark{width:40px;height:40px;background:#2A6FDB;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;color:#fff}
-.name{font-size:15px;font-weight:500;color:#fff}
-.spinner{width:32px;height:32px;border:3px solid rgba(255,255,255,0.1);border-top-color:#2A6FDB;border-radius:50%;animation:spin 0.7s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-p{font-size:12px}
+:root{
+  --navy:#0B1628;--navy2:#132033;
+  --blue:#2A6FDB;--blue-faint:#EFF6FF;--blue-text:#1D4ED8;
+  --green:#1A7A4A;--green-l:#22A863;--green-faint:#E6F5EE;
+  --red:#C0392B;--red-faint:#FCF0EF;
+  --amber:#B45309;--amber-faint:#FEF3C7;
+  --purple:#4338CA;--purple-faint:#EEEDFE;
+  --border:#E2E8F0;--border2:#CBD5E1;
+  --text:#0F172A;--text2:#475569;--text3:#94A3B8;
+  --surface:#FFFFFF;--surface2:#F8FAFC;--surface3:#F1F5F9;
+  --font:'DM Sans',sans-serif;--mono:'DM Mono',monospace;
+  --r:8px;--r2:12px;--r3:16px;
+}
+html,body{height:100%;font-family:var(--font);background:var(--surface2);color:var(--text);font-size:14px}
+.app{display:flex;flex-direction:column;height:calc(100vh - 48px)}
+.global-nav{background:var(--navy);height:48px;display:flex;align-items:center;padding:0 20px;gap:0;flex-shrink:0}
+.gn-logo{display:flex;align-items:center;gap:8px;text-decoration:none;margin-right:20px;flex-shrink:0}
+.gn-mark{width:28px;height:28px;background:var(--blue);border-radius:6px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px}
+.gn-name{font-size:14px;font-weight:500;color:#fff;letter-spacing:-0.01em}
+.gn-links{display:flex;align-items:center;gap:2px;flex:1}
+.gn-link{display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r);font-size:12px;font-weight:500;color:rgba(255,255,255,0.5);text-decoration:none;transition:all 0.15s;white-space:nowrap}
+.gn-link:hover{background:rgba(255,255,255,0.08);color:#fff}
+.gn-link.active{background:rgba(42,111,219,0.35);color:#fff}
+.gn-link i{font-size:13px}
+.gn-right{display:flex;align-items:center;gap:8px;margin-left:8px}
+.gn-user-btn{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:20px;padding:3px 10px 3px 4px;cursor:pointer;transition:all 0.15s}
+.gn-user-btn:hover{background:rgba(255,255,255,0.12)}
+.gn-av{width:24px;height:24px;border-radius:50%;background:#1C2E44;color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500}
+.gn-user{font-size:11px;font-weight:500;color:rgba(255,255,255,0.8)}
+.body{flex:1;overflow:hidden;display:flex;flex-direction:column}
+.page-header{background:var(--surface);border-bottom:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.ph-left h2{font-size:15px;font-weight:500;color:var(--text);margin-bottom:1px}
+.ph-left p{font-size:11px;color:var(--text3)}
+.ph-stats{display:flex;gap:16px}
+.ph-stat{text-align:center}
+.ph-stat-val{font-size:18px;font-weight:500;color:var(--text)}
+.ph-stat-label{font-size:10px;color:var(--text3)}
+.case-table-wrap{flex:1;overflow-y:auto;padding:20px 24px}
+.case-table{width:100%;border-collapse:collapse}
+.case-table th{text-align:left;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.06em;color:var(--text3);padding:0 12px 10px 0;border-bottom:2px solid var(--border);white-space:nowrap}
+.case-table td{padding:10px 12px 10px 0;border-bottom:1px solid var(--border);vertical-align:middle}
+.case-table tr:hover td{background:var(--surface2);cursor:pointer}
+.case-table tr:last-child td{border-bottom:none}
+.td-ref{font-family:var(--mono);font-size:10px;color:var(--text3)}
+.td-name{font-size:12px;font-weight:500;color:var(--text)}
+.td-meta{font-size:11px;color:var(--text2)}
+.td-type{font-size:11px;color:var(--text2)}
+.cat-pill{font-size:10px;font-weight:500;padding:2px 6px;border-radius:20px;font-family:var(--mono)}
+.cat-a{background:var(--blue-faint);color:var(--blue-text)}
+.cat-b{background:var(--amber-faint);color:var(--amber)}
+.cat-c{background:var(--red-faint);color:var(--red)}
+.days-pill{font-size:10px;font-weight:500;padding:2px 8px;border-radius:20px;white-space:nowrap}
+.dp-urgent{background:var(--red-faint);color:var(--red)}
+.dp-warn{background:var(--amber-faint);color:var(--amber)}
+.dp-ok{background:var(--green-faint);color:var(--green)}
+.prog-bar{width:80px;height:5px;background:var(--border);border-radius:3px;overflow:hidden;display:inline-block;vertical-align:middle}
+.prog-fill{height:100%;border-radius:3px}
+.empty-state{text-align:center;padding:60px 20px;color:var(--text3)}
+.empty-state i{font-size:36px;display:block;margin-bottom:12px;opacity:0.35}
+.empty-state p{font-size:13px;line-height:1.6}
+.stage-icon{width:30px;height:30px;border-radius:var(--r);display:flex;align-items:center;justify-content:center;font-size:13px}
+/* user modal */
+.user-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.3);z-index:1000;align-items:flex-start;justify-content:flex-end;padding:52px 16px 0}
+.user-modal.open{display:flex}
+.user-dropdown{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);width:220px;box-shadow:0 4px 20px rgba(0,0,0,0.12);overflow:hidden}
+.ud-header{padding:10px 14px;border-bottom:1px solid var(--border);font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.07em;color:var(--text3)}
+.ud-item{display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;transition:background 0.15s}
+.ud-item:hover{background:var(--surface2)}
+.ud-av{width:28px;height:28px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;flex-shrink:0}
+.ud-name{font-size:12px;font-weight:500;color:var(--text)}
+.ud-role{font-size:10px;color:var(--text3)}
 </style>
-<script>window.location.replace('module5-drafting-workspace.html'+window.location.search);</script>
 </head>
 <body>
-<div class="wrap">
-  <div class="mark">✈</div>
-  <div class="name">261Claims</div>
-  <div class="spinner"></div>
-  <p>Opening AI Drafting Engine…</p>
+<nav class="global-nav">
+  <a href="index.html" class="gn-logo"><div class="gn-mark"><i class="ti ti-plane"></i></div><span class="gn-name">261Claims</span></a>
+  <div class="gn-links">
+    <a href="index.html" class="gn-link"><i class="ti ti-layout-dashboard"></i> Dashboard</a>
+    <a href="module1-intake.html" class="gn-link"><i class="ti ti-file-upload"></i> Intake</a>
+    <a href="module2-case-management.html" class="gn-link"><i class="ti ti-layout-kanban"></i> Cases</a>
+    <a href="module3-cpr.html" class="gn-link"><i class="ti ti-calendar-due"></i> CPR</a>
+    <a href="module4-evidence.html" class="gn-link"><i class="ti ti-folder-open"></i> Evidence</a>
+    <a href="module5-drafting.html" class="gn-link active"><i class="ti ti-file-pencil"></i> Drafting</a>
+    <a href="module6-mi.html" class="gn-link"><i class="ti ti-chart-bar"></i> MI</a>
+  </div>
+  <div class="gn-right">
+    <div class="gn-user-btn" onclick="toggleUserMenu()">
+      <div class="gn-av" id="nav-av">SB</div>
+      <span class="gn-user" id="nav-user">S. Booth</span>
+      <i class="ti ti-chevron-down" style="font-size:10px;color:rgba(255,255,255,0.4);margin-left:2px"></i>
+    </div>
+  </div>
+</nav>
+<div class="app">
+  <div class="body">
+    <div class="page-header">
+      <div class="ph-left">
+        <h2 id="ph-title">Drafting</h2>
+        <p id="ph-sub">Documents to draft and approve — cases ready for legal response</p>
+      </div>
+      <div class="ph-stats" id="ph-stats"></div>
+    </div>
+    <div class="case-table-wrap">
+      <table class="case-table">
+        <thead><tr>
+          <th>Ref</th>
+          <th>Claimant</th>
+          <th>Flight</th>
+          <th>Type</th>
+          <th>Value</th>
+          <th>Cat</th>
+          <th>Documents</th>
+          <th>CPR deadline</th>
+        </tr></thead>
+        <tbody id="case-tbody"></tbody>
+      </table>
+      <div id="empty-state" style="display:none" class="empty-state">
+        <i class="ti ti-file-pencil"></i>
+        <p>No cases at the drafting stage.</p>
+      </div>
+    </div>
+  </div>
 </div>
+<div class="user-modal" id="user-modal" onclick="closeUserMenu(event)">
+  <div class="user-dropdown">
+    <div class="ud-header">Switch user (demo)</div>
+    <div class="ud-item" onclick="switchUser('SB')"><div class="ud-av">SB</div><div><div class="ud-name">Sarah Booth</div><div class="ud-role">Head of Legal Ops</div></div></div>
+    <div class="ud-item" onclick="switchUser('JP')"><div class="ud-av">JP</div><div><div class="ud-name">James Patel</div><div class="ud-role">Senior Solicitor</div></div></div>
+    <div class="ud-item" onclick="switchUser('KR')"><div class="ud-av">KR</div><div><div class="ud-name">Kiran Rahman</div><div class="ud-role">Solicitor</div></div></div>
+  </div>
+</div>
+<script>
+var activeUser = getActiveUser();
+
+function updateNavUser(){
+  var u = USERS[activeUser];
+  document.getElementById('nav-av').textContent = u.initials;
+  document.getElementById('nav-user').textContent = u.name;
+}
+function toggleUserMenu(){ document.getElementById('user-modal').classList.toggle('open'); }
+function closeUserMenu(e){ if(e.target===document.getElementById('user-modal')) document.getElementById('user-modal').classList.remove('open'); }
+function switchUser(id){
+  setActiveUser(id); activeUser=id; updateNavUser();
+  document.getElementById('user-modal').classList.remove('open');
+  render();
+}
+
+function render(){
+  var u = USERS[activeUser];
+  var stage = 'drafting';
+  var cases = getCasesForUser(activeUser, 'drafting');
+  cases = cases.sort(function(a,b){return a.cprDaysLeft-b.cprDaysLeft;});
+
+  document.getElementById('ph-title').textContent = 'Drafting — ' + u.name;
+  document.getElementById('ph-sub').textContent = cases.length + ' case'+(cases.length!==1?'s':'')+' · sorted by CPR deadline urgency';
+
+  var urgCount = cases.filter(function(c){return c.cprDaysLeft<=7;}).length;
+  document.getElementById('ph-stats').innerHTML =
+    statBadge(cases.length,'Total','var(--text)') +
+    statBadge(urgCount,'Urgent','var(--red)');
+
+  var tbody = document.getElementById('case-tbody');
+  var empty = document.getElementById('empty-state');
+  if(!cases.length){
+    tbody.innerHTML=''; empty.style.display='block'; return;
+  }
+  empty.style.display='none';
+  tbody.innerHTML = cases.map(function(c){
+    var urg = daysUrgency(c.cprDaysLeft);
+    var catCls = c.cat==='A'?'cat-a':c.cat==='B'?'cat-b':'cat-c';
+    return '<tr data-ref="'+c.ref+'" class="case-tr">'
+      +'<td><div class="td-ref">'+c.ref+'</div></td>'
+      +'<td><div class="td-name">'+c.claimant+'</div><div class="td-meta">'+c.solicitor.split(' ')[0]+'…</div></td>'
+      +'<td><div class="td-type">'+c.flightNum+'</div><div class="td-meta">'+c.dep+' → '+c.arr+'</div></td>'
+      +'<td><div class="td-type">'+c.disruptionType+'</div></td>'
+      +'<td><div class="td-type" style="font-family:var(--mono);font-weight:500">'+c.value+'</div></td>'
+      +'<td><span class="cat-pill '+catCls+'">'+c.cat+'</span></td>'
+      +'<td>'+extraCol(c)+'</td>'
+      +'<td><span class="days-pill dp-'+urg+'">'+urgencyLabel(c.cprDaysLeft)+'</span></td>'
+      +'</tr>';
+  }).join('');
+}
+
+function statBadge(val,label,col){
+  return '<div class="ph-stat"><div class="ph-stat-val" style="color:'+col+'">'+val+'</div><div class="ph-stat-label">'+label+'</div></div>';
+}
+
+function extraCol(c){
+  return '<span style="font-size:11px;color:var(--text2)">LOR · Defence · Witness</span>';
+}
+
+function openCase(ref){
+  var c = getCase(ref);
+  if(!c) return;
+  try{
+    sessionStorage.setItem('aeroCaseData', JSON.stringify({
+      ref:c.ref, claimant:c.claimant, solicitor:c.solicitor,
+      flight:c.flight, value:c.value, type:c.type,
+      date:c.locDate, framework:'EC Regulation 261/2004',
+      points:c.points, assignedTo:USERS[c.assignedTo].name
+    }));
+  }catch(e){}
+  window.location.href = 'module5-drafting-workspace.html?ref='+ref;
+}
+
+updateNavUser();
+render();
+
+// Event delegation for case rows
+document.getElementById('case-tbody').addEventListener('click', function(e){
+  var tr = e.target.closest('.case-tr');
+  if(tr) openCase(tr.dataset.ref);
+});
+</script>
+<script>
+// Dynamic nav badges
+(function(){
+  try {
+    var userId = typeof getActiveUser === 'function' ? getActiveUser() : 'SB';
+    var cases = typeof getCasesForUser === 'function' ? getCasesForUser(userId) : [];
+    var intakeCount = cases.filter(function(c){ return c.stage==='intake'; }).length;
+    var urgentCPR = cases.filter(function(c){ return c.cprDaysLeft <= 7 && c.stage !== 'resolve'; }).length;
+    
+    // Find nav links and add badges
+    var links = document.querySelectorAll('.gn-link');
+    links.forEach(function(link){
+      var href = link.getAttribute('href') || '';
+      var badge = null;
+      if(href.indexOf('module1-intake') >= 0 && intakeCount > 0){
+        badge = intakeCount;
+      } else if(href.indexOf('module3-cpr') >= 0 && urgentCPR > 0){
+        badge = urgentCPR;
+      }
+      if(badge){
+        var existing = link.querySelector('.nav-count');
+        if(!existing){
+          var span = document.createElement('span');
+          span.className = 'nav-count';
+          span.style.cssText = 'background:var(--red);color:#fff;font-size:9px;font-weight:500;padding:1px 5px;border-radius:20px;margin-left:3px';
+          span.textContent = badge;
+          link.appendChild(span);
+        }
+      }
+    });
+  } catch(e){}
+})();
+</script>
 </body>
 </html>

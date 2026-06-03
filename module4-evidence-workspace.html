@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>261Claims — Module 4: Evidence Management</title>
+<title>261Claims — Evidence</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
@@ -203,7 +203,6 @@ input[type=file]{display:none}
     <a href="module4-evidence.html" style="display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r);font-size:12px;font-weight:500;color:rgba(255,255,255,0.5);text-decoration:none"><i class="ti ti-folder-open"></i> Evidence</a>
     <a href="module5-drafting.html" style="display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r);font-size:12px;font-weight:500;color:rgba(255,255,255,0.5);text-decoration:none"><i class="ti ti-file-pencil"></i> Drafting</a>
     <a href="module6-mi.html" style="display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r);font-size:12px;font-weight:500;color:rgba(255,255,255,0.5);text-decoration:none"><i class="ti ti-chart-bar"></i> MI</a>
-    <a href="module7-education.html" class="gn-link"><i class="ti ti-school"></i> Education Hub</a>
   </div>
   <a href="module4-evidence.html" style="font-size:11px;padding:5px 12px;border-radius:var(--r);border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.7);text-decoration:none;display:flex;align-items:center;gap:5px"><i class="ti ti-folder-open"></i> Back to Evidence</a>
 </nav>
@@ -229,29 +228,16 @@ input[type=file]{display:none}
 /* ── Case from sessionStorage ── */
 var _i={};
 try{var _r=sessionStorage.getItem('aeroCaseData');if(_r)_i=JSON.parse(_r);}catch(e){}
-var C = (function(){
-  var _urlRef = new URLSearchParams(window.location.search).get('ref');
-  if(_urlRef && typeof STATE !== 'undefined'){
-    var _stateCase = STATE.getCase(_urlRef);
-    if(_stateCase) return _stateCase;
-  }
-  // Fallback to sessionStorage
-  if(_i && _i.ref) return {
-    ref:_i.ref, claimant:_i.claimant||_i.name, name:_i.claimant||_i.name,
-    airline:_i.airline||'TestAirways', solicitor:_i.sol||_i.solicitor,
-    flightNum:_i.flightNum, flight:_i.flight, dep:_i.dep, arr:_i.arr,
-    depFull:_i.depFull, arrFull:_i.arrFull, flightDate:_i.flightDate,
-    value:_i.value, cat:_i.cat, stage:_i.stage,
-    receivedDate:_i.receivedDate||_i.date, date:_i.date||_i.receivedDate,
-    locDate:_i.locDate, cprDaysLeft:_i.cprDaysLeft,
-    disruptionType:_i.disruptionType, classification:_i.classification||'DEFEND',
-    points:_i.points||[], assignedTo:_i.assignedTo, triageNote:_i.triageNote||''
-  };
-  // Last resort default
-  return {ref:'—',claimant:'No case loaded',name:'No case loaded',airline:'',
-    flight:'',flightNum:'',dep:'',arr:'',value:'',cat:'A',
-    disruptionType:'',classification:'DEFEND',assignedTo:'SB'};
-})();
+var C={
+  ref:   _i.ref       ||'AC-2026-0089',
+  name:  _i.claimant  ||'Daniel Hartley',
+  sol:   _i.solicitor ||'Pemberton & Associates Solicitors LLP',
+  flight:_i.flight    ||'HC 1184 — LTN to BCN (diverted VLC)',
+  value: _i.value     ||'£39,000+',
+  type:  _i.type      ||'EC 261/2004 — delay / diversion',
+  date:  _i.date      ||'22 May 2026',
+  user:  'S. Booth'
+};
 
 /* ── Pre-fill from case ── */
 var fm=C.flight.match(/([A-Z]{2,3}\s?\d{3,4})/i);
@@ -425,7 +411,7 @@ var D={
 };
 
 function ts(){return new Date().toLocaleString('en-GB',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});}
-function log(t,type){audit.push({t:t,type:type||'action',time:ts(),by:(C.assignedTo||"")});renderAudit();}
+function log(t,type){audit.push({t:t,type:type||'action',time:ts(),by:C.user});renderAudit();}
 
 /* ── Build combined evidence list ── */
 function getList(tier){
@@ -487,11 +473,11 @@ function renderMain(){
   var pTxt=primaryType?(r.up+' / '+r.total+' documents'):'Select disruption type';
   var hdr='<div class="case-hdr"><div class="ch-row">'
     +'<div><div class="ch-ref">'+C.ref+'</div>'
-    +'<div class="ch-name">'+(C.claimant||C.name||'Claimant')+' v. '+(C.airline||'TestAirways')+'</div>'
+    +'<div class="ch-name">'+C.name+' v. TestAirways</div>'
     +'<div class="ch-meta">'
-    +'<span><i class="ti ti-plane"></i>'+(C.flight||C.flightNum||'')+'</span>'
+    +'<span><i class="ti ti-plane"></i>'+C.flight+'</span>'
     +'<span><i class="ti ti-currency-pound"></i>'+C.value+'</span>'
-    +'<span><i class="ti ti-calendar"></i>'+(C.date||C.receivedDate||C.locDate||'')+'</span>'
+    +'<span><i class="ti ti-calendar"></i>'+C.date+'</span>'
     +'</div></div>'
     +'<div class="ch-right">'
     +'<span class="status-pill" style="background:'+pBg+';color:'+pCol+'"><i class="ti ti-folder"></i>'+pTxt+'</span>'
@@ -751,9 +737,76 @@ function addNote(){
   inp.value='';
 }
 
+
+// Read case ref from URL and pre-populate
+(function(){
+  var params = new URLSearchParams(window.location.search);
+  var ref = params.get('ref');
+  if(ref){
+    var caseData = typeof getCase === 'function' ? getCase(ref) : null;
+    if(caseData){
+      try{
+        sessionStorage.setItem('aeroCaseData', JSON.stringify({
+          ref: caseData.ref,
+          claimant: caseData.claimant,
+          solicitor: caseData.solicitor,
+          flight: caseData.flight,
+          value: caseData.value,
+          type: caseData.type,
+          date: caseData.locDate,
+          framework: 'EC Regulation 261/2004',
+          points: caseData.points,
+          assignedTo: USERS[caseData.assignedTo] ? USERS[caseData.assignedTo].name : caseData.assignedTo
+        }));
+      }catch(e){}
+    }
+  }
+})();
+
+/* ── Pre-fill from case data ── */
+if(C.flightNum && C.flightNum !== 'HC 1184'){
+  D.flightNum = C.flightNum;
+}
+if(C.dep) D.dep = C.dep;
+if(C.arr) D.arr = C.arr;
+if(C.date) D.flightDate = C.date;
+
 /* ── Init ── */
-log('Evidence module opened — '+(C.claimant||C.name||'?')+' v. '+(C.airline||'airline'),'create');
+log('Evidence module opened — '+C.name+' v. TestAirways','create');
 render();
+</script>
+<script>
+// Dynamic nav badges
+(function(){
+  try {
+    var userId = typeof getActiveUser === 'function' ? getActiveUser() : 'SB';
+    var cases = typeof getCasesForUser === 'function' ? getCasesForUser(userId) : [];
+    var intakeCount = cases.filter(function(c){ return c.stage==='intake'; }).length;
+    var urgentCPR = cases.filter(function(c){ return c.cprDaysLeft <= 7 && c.stage !== 'resolve'; }).length;
+    
+    // Find nav links and add badges
+    var links = document.querySelectorAll('.gn-link');
+    links.forEach(function(link){
+      var href = link.getAttribute('href') || '';
+      var badge = null;
+      if(href.indexOf('module1-intake') >= 0 && intakeCount > 0){
+        badge = intakeCount;
+      } else if(href.indexOf('module3-cpr') >= 0 && urgentCPR > 0){
+        badge = urgentCPR;
+      }
+      if(badge){
+        var existing = link.querySelector('.nav-count');
+        if(!existing){
+          var span = document.createElement('span');
+          span.className = 'nav-count';
+          span.style.cssText = 'background:var(--red);color:#fff;font-size:9px;font-weight:500;padding:1px 5px;border-radius:20px;margin-left:3px';
+          span.textContent = badge;
+          link.appendChild(span);
+        }
+      }
+    });
+  } catch(e){}
+})();
 </script>
 </body>
 </html>
