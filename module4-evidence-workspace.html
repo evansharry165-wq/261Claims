@@ -187,7 +187,9 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 .note-bar button{font-size:11px;padding:5px 9px;border-radius:var(--r);border:1px solid var(--border);background:var(--surface2);cursor:pointer;font-family:var(--font);color:var(--text2)}
 input[type=file]{display:none}
 </style>
-<script src="shared_data.js">
+<script src="shared_data.js"></script>
+<script src="_nav.js"></script>
+<script>
 /* Auto-save evidence state */
 function autoSaveEvidence(){
   if(!C || !C.ref) return;
@@ -206,7 +208,6 @@ function autoSaveEvidence(){
   }catch(e){}
 }
 
-  renderGlobalNav('evidence');
 
 /* ── Restore saved evidence state ── */
 function restoreEvidenceState(){
@@ -258,9 +259,10 @@ var C = _evCase || {};
 
 
 /* ── Pre-fill from case ── */
-var fm=C.flight.match(/([A-Z]{2,3}\s?\d{3,4})/i);
-var am=C.flight.match(/([A-Z]{3})\s*(?:to|–|-|—)\s*([A-Z]{3})/i);
-var vm=C.value.match(/(\d+)/);
+var _flight = C.flight || (C.flightNum + ' — ' + (C.depFull||C.dep||'') + ' to ' + (C.arrFull||C.arr||''));
+var fm=_flight.match(/([A-Z]{2,3}\s?\d{3,4})/i);
+var am=_flight.match(/([A-Z]{3})\s*(?:to|–|-|—)\s*([A-Z]{3})/i);
+var vm=(C.value||'').match(/(\d+)/);
 
 /* ── Disruption types ── */
 var DT=[
@@ -759,6 +761,12 @@ function addNote(){
 log('Evidence module opened — '+C.name+' v. TestAirways','create');
 render();
 </script>
-<script>document.addEventListener("DOMContentLoaded",function(){if(typeof renderGlobalNav==="function")renderGlobalNav("evidence");});</script>
+<script>
+window.addEventListener("DOMContentLoaded", function(){
+  if(typeof renderGlobalNav === "function") renderGlobalNav("evidence");
+  if(typeof restoreEvidenceState === "function") restoreEvidenceState();
+  if(typeof init === "function") init();
+});
+</script>
 </body>
 </html>
