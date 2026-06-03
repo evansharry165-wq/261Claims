@@ -413,7 +413,7 @@ function getVerdict(){
 }
 
 /* ── Render ── */
-function render(){try{renderMain();}catch(e){console.error(e);}renderAudit();}
+function render(){try{renderMain();}catch(e){console.error("renderMain error:",e); var m=document.getElementById("main"); if(m) m.innerHTML='<div style="padding:20px;color:red;font-size:12px">Evidence load error: '+e.message+'</div>';}renderAudit();}
 
 function renderMain(){
   var m=document.getElementById('main');
@@ -429,9 +429,9 @@ function renderMain(){
     +'<div><div class="ch-ref">'+C.ref+'</div>'
     +'<div class="ch-name">'+(C.claimant||C.name||'?')+' v. TestAirways</div>'
     +'<div class="ch-meta">'
-    +'<span><i class="ti ti-plane"></i>'+C.flight+'</span>'
+    +'<span><i class="ti ti-plane"></i>'+(C.flight||C.flightNum||'')+'</span>'
     +'<span><i class="ti ti-currency-pound"></i>'+C.value+'</span>'
-    +'<span><i class="ti ti-calendar"></i>'+C.date+'</span>'
+    +'<span><i class="ti ti-calendar"></i>'+(C.date||C.receivedDate||C.flightDate||'')+'</span>'
     +'</div></div>'
     +'<div class="ch-right">'
     +'<span class="status-pill" style="background:'+pBg+';color:'+pCol+'"><i class="ti ti-folder"></i>'+pTxt+'</span>'
