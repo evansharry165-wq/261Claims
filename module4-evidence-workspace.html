@@ -2,12 +2,15 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>261Claims — Module 4: Evidence Management</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>261Claims — Evidence Workspace</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<script src="shared_data.js"></script>
+<script src="_nav.js"></script>
 <style>
+
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
   --navy:#0B1628;--navy2:#132033;
@@ -187,46 +190,11 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 .note-bar button{font-size:11px;padding:5px 9px;border-radius:var(--r);border:1px solid var(--border);background:var(--surface2);cursor:pointer;font-family:var(--font);color:var(--text2)}
 input[type=file]{display:none}
 </style>
-<script src="shared_data.js"></script>
-<script src="_nav.js"></script>
-<script>
-/* Auto-save evidence state */
-function autoSaveEvidence(){
-  if(!C || !C.ref) return;
-  try{
-    var state = {
-      primaryType: primaryType,
-      secondaryType: secondaryType,
-      uploads: uploads,
-      pullState: pullState,
-      summaryData: {
-        flightNum: document.getElementById('ev-flight-num')?.value||'',
-        notes: document.getElementById('ev-summary-notes')?.value||'',
-      }
-    };
-    STATE.saveEvidence(C.ref, state);
-  }catch(e){}
-}
-
-
-/* ── Restore saved evidence state ── */
-function restoreEvidenceState(){
-  if(!C || !C.ref) return;
-  var saved = STATE.loadEvidence(C.ref);
-  if(!saved) return;
-  if(saved.primaryType) { primaryType = saved.primaryType; }
-  if(saved.secondaryType) { secondaryType = saved.secondaryType; }
-  if(saved.uploads) { uploads = saved.uploads; }
-  if(saved.pullState) { pullState = saved.pullState; }
-}
-
-</script>
-
 </head>
 <body>
 <div id="global-nav-wrap"></div>
 <div class="app">
-    <div class="body">
+  <div class="body">
     <div class="main" id="main"></div>
     <div class="sidebar">
       <div class="sb-header">
@@ -244,27 +212,21 @@ function restoreEvidenceState(){
 <input type="file" id="file-input" onchange="handleUpload(event)">
 
 <script>
-/* ── Case from sessionStorage ── */
-var _i={};
-try{var _r=sessionStorage.getItem('aeroCaseData');if(_r)_i=JSON.parse(_r);}catch(e){}
+/* ════════════════════════════════════════════════════════════════
+   Evidence Workspace — v3.1
+   Clean init, STATE-powered, proper DOMContentLoaded sequence
+════════════════════════════════════════════════════════════════ */
 
-/* ── Load case from URL ?ref= or fall back to first evidence-stage case ── */
+/* ── Load case from URL ?ref= param ── */
 var _evParamRef = new URLSearchParams(window.location.search).get('ref');
-var _evCase = _evParamRef ? STATE.getCase(_evParamRef) : null;
-if(!_evCase){
-  _evCase = STATE.getCases().find(function(c){ return c.stage==='evidence'; });
-}
-
-var C = _evCase || {};
-
+var C = _evParamRef ? STATE.getCase(_evParamRef) : null;
+if(!C) C = STATE.getCases().find(function(c){ return c.stage==='evidence'; }) || {};
 
 /* ── Pre-fill from case ── */
-var _flight = C.flight || (C.flightNum + ' — ' + (C.depFull||C.dep||'') + ' to ' + (C.arrFull||C.arr||''));
-var fm=_flight.match(/([A-Z]{2,3}\s?\d{3,4})/i);
-var am=_flight.match(/([A-Z]{3})\s*(?:to|–|-|—)\s*([A-Z]{3})/i);
-var vm=(C.value||'').match(/(\d+)/);
-
-/* ── Disruption types ── */
+var _flight = C.flight || ((C.flightNum||'') + ' — ' + (C.depFull||C.dep||'') + ' to ' + (C.arrFull||C.arr||''));
+var fm = _flight.match(/([A-Z]{2,3}\s?\d{3,4})/i);
+var am = _flight.match(/([A-Z]{3})\s*(?:to|–|-|—)\s*([A-Z]{3})/i);
+var vm = (C.value||'').match(/(\d+)/);
 var DT=[
   {id:'ATC Restrictions',       icon:'ti-tower'},
   {id:'Weather',                icon:'ti-cloud-storm'},
@@ -281,56 +243,7 @@ var DT=[
   {id:'Security Alert',         icon:'ti-shield-exclamation'},
   {id:'Passenger Welfare',      icon:'ti-heart-handshake'},
   {id:'Political Unrest',       icon:'ti-flag'},
-];
-
-/* ── Evidence library ── */
-/* tier: K=key, S=secondary, W=wider */
-/* auto: API-ready pull (labelled, hollow) */
-var LIB={
-  /* ─ ALWAYS REQUIRED ─ */
-  tops:      {name:'TOPS — Flight Details & Legislation Report',  tier:'K', why:'Primary operational flight record. Confirms scheduled and actual times, delay codes, and the EC261 legislation evidence report. Central to every evidence pack.',                                               src:'Internal — TOPS',          link:null, auto:true,  api:'Auto-pull by flight number — TOPS API connection pending'},
-  disco:     {name:'DISCO — Disruption Record',                   tier:'K', why:'Operational disruption log. Records the sequence of events, decisions, and communications during the disruption. Core narrative source for every pack.',                                                           src:'Internal — DISCO',         link:null, auto:true,  api:'Auto-pull by flight number and date — DISCO API connection pending'},
-  aims:      {name:'AIMS — Crew Route & FDP Tables',              tier:'K', why:'Crew flight duty period data. Confirms planned and actual crew route, report time, max FDP, and whether duty limits were observed. Required on every pack.',                                                       src:'Internal — AIMS',          link:null, auto:true,  api:'Auto-pull by crew identifiers and date — AIMS API connection pending'},
-  safetynet: {name:'SafetyNet Reports',                           tier:'K', why:'Safety and operational event records. Required on every evidence pack and for all diversions regardless of disruption type.',                                                                                      src:'Internal — SafetyNet',     link:null, auto:true,  api:'Auto-pull by flight number — SafetyNet API connection pending'},
-  eurocontrol:{name:'Eurocontrol — ATFM Regulations & Flight Data',tier:'K',why:'Confirms ATC flow management slot restrictions and network-level disruption data. Central to any ATC or airspace extraordinary circumstances argument.',                                                          src:'Eurocontrol NOP',          link:'https://www.public.nm.eurocontrol.int/PUBPORTAL/gateway/spec/', auto:true, api:'Auto-pull by departure airport and date — Eurocontrol API connection pending'},
-  /* ─ SECONDARY ─ */
-  connected: {name:'Connected Portal — Flight Plans & Scratchpads',tier:'S', why:'Pre-departure flight planning documents. Shows crew awareness of conditions before departure and operational planning decisions.',                                                                               src:'Internal — Connected Portal',link:null,auto:true,  api:'Auto-pull by flight number — Connected Portal API connection pending'},
-  network_out:{name:'Network Outlook Brief',                       tier:'S', why:'Eurocontrol pre-departure network brief confirming anticipated disruptions across the network on the day of the flight.',                                                                                        src:'Eurocontrol NOP',          link:'https://www.public.nm.eurocontrol.int/PUBPORTAL/gateway/spec/', auto:true, api:'Auto-pull by date — Eurocontrol API connection pending'},
-  lido:      {name:'LIDO — Flight Plans & Fuel Figures',          tier:'S', why:'Aircraft flight planning data including fuel loads and routing. Demonstrates pre-departure operational planning.',                                                                                                 src:'Internal — LIDO',          link:null, auto:true,  api:'Auto-pull by flight number — LIDO API connection pending'},
-  hermes:    {name:'HERMES ACARS Messages',                       tier:'S', why:'Aircraft-to-operations communications during the flight. Provides the real-time operational picture during the disruption.',                                                                                     src:'Internal — HERMES',        link:null, auto:true,  api:'Auto-pull by flight number — HERMES API connection pending'},
-  max_ops:   {name:'MAX OPS — Passenger Communications',          tier:'S', why:'SMS and email notifications sent to passengers. Confirms duty of care obligations were met and passengers were kept informed.',                                                                                   src:'Internal — MAX OPS',       link:null, auto:true,  api:'Auto-pull by flight number — MAX OPS API connection pending'},
-  dpm:       {name:'DPM Notes',                                   tier:'S', why:'Disruption Planning Manager operational notes. Records decisions made and rationale for diversion, delay, or other operational action.',                                                                         src:'Internal — DPM',           link:null, auto:false, api:null},
-  internal_email:{name:'Internal Emails — Operations / Crewing',  tier:'S', why:'ICC alerts, diversion notifications, HOTAC and coach decisions. Confirms the operational picture and passenger care decisions taken during the disruption.',                                                     src:'Internal mailboxes',       link:null, auto:false, api:null},
-  ops_review:{name:'Daily Ops Review',                            tier:'S', why:'Operations centre daily summary. Provides the broader network context for the disruption on the day.',                                                                                                           src:'Internal — Operations',    link:null, auto:false, api:null},
-  flightradar:{name:'Flightradar24 — Flight Track',               tier:'S', why:'Flight tracking data confirming actual flight path, diversion point, and arrival time. Required for all diversions.',                                                                                           src:'Flightradar24',            link:'https://www.flightradar24.com', auto:true, api:'Auto-pull by flight number and date — Flightradar24 API connection pending'},
-  flightstats:{name:'FlightStats — Airport Delay Data',           tier:'S', why:'Airport-wide delay picture on the day. Demonstrates systemic disruption beyond this individual flight, supporting extraordinary circumstances.',                                                                  src:'FlightStats',              link:'https://www.flightstats.com/v2/airport-delays', auto:true, api:'Auto-pull by airport and date — FlightStats API connection pending'},
-  airport_web:{name:'Airport Statement / Travel Advisory',        tier:'S', why:'Official airport communications confirming operational disruption. Supports extraordinary circumstances where the cause originated at the airport.',                                                             src:'Affected airport website', link:null, auto:false, api:null},
-  /* ─ TYPE-SPECIFIC KEY ─ */
-  ogimet:    {name:'Ogimet — METAR & TAF Reports',                tier:'K', why:'Official meteorological aerodrome reports for the affected airport on the date of disruption. Primary evidence source for any weather extraordinary circumstances argument.',                                     src:'Ogimet',                   link:'https://www.ogimet.com', auto:true, api:'Auto-pull by airport ICAO and date — Ogimet API connection pending'},
-  met_office:{name:'Met Office — Daily Impact Hazard Forecast',   tier:'K', why:'Met Office hazard forecast confirming dangerous weather conditions. Supports extraordinary circumstances classification for weather disruptions.',                                                                 src:'Met Office',               link:'https://www.metoffice.gov.uk', auto:true, api:'Auto-pull by date and region — Met Office API connection pending'},
-  notam:     {name:'NOTAM Records',                               tier:'K', why:'Aerodrome notices confirming active restrictions. Essential for closure, runway, and industrial action claims.',                                                                                                 src:'NOTAM Search',             link:'https://notams.aim.faa.gov/notamSearch/nsapp.html#/', auto:true, api:'Auto-pull by airport ICAO and date — NOTAM API connection pending'},
-  lightning: {name:'Lightning Maps — Strike Records',             tier:'K', why:'Confirms lightning strike activity in the area at the time. Required for lightning strike and severe weather claims.',                                                                                           src:'Lightning Maps',           link:'https://www.lightningmaps.org/blitzortung/europe/index.php?lang=en', auto:true, api:'Auto-pull by location and time — Lightning Maps API connection pending'},
-  amos:      {name:'AMOS — Technical Event Record',               tier:'K', why:'Aircraft maintenance and technical log for the event. Confirms nature and extent of technical disruption. Required for birdstrike, lightning, ground damage, and technical claims.',                            src:'Internal — AMOS',          link:null, auto:true,  api:'Auto-pull by aircraft registration and date — AMOS API connection pending'},
-  wildfire:  {name:'EFFIS — Wildfire Map',                        tier:'K', why:'European wildfire mapping confirming active fire locations. Required for natural disaster claims involving fire or smoke disruption.',                                                                            src:'Copernicus EFFIS',         link:'https://forest-fire.emergency.copernicus.eu/apps/effis_current_situation/', auto:true, api:'Auto-pull by location and date — EFFIS API connection pending'},
-  /* ─ WIDER ─ */
-  case_studies:  {name:'Case Studies',                            tier:'W', why:'Precedent cases relevant to this disruption type. Provides legal context and supports the defence argument.',                                                                                                    src:'Evidence Information — 2. Case Studies', link:null, auto:false, api:null},
-  crew_docs:     {name:'Crew Regulatory Documents',               tier:'W', why:'Crew licensing, duty regulations, and operational standards documentation. Supports FDP and crew-related defence arguments.',                                                                                    src:'Evidence Information — 3. Crew',         link:null, auto:false, api:null},
-  eurocontrol_w: {name:'Eurocontrol Reference Documents',         tier:'W', why:'ATFCM user manuals, NOP guides, and regulatory frameworks. Establishes the ATC regulatory context for the defence.',                                                                                           src:'Evidence Information — 4. Eurocontrol',  link:null, auto:false, api:null},
-  weather_briefs:{name:'Weather Briefs & Phenomena Guides',       tier:'W', why:'Standard aviation weather documentation including phenomena explanations, decode guides, and meteorological reference material.',                                                                                src:'Evidence Information — 6. Weather Briefs',link:null,auto:false, api:null},
-  caa_docs:      {name:'CAA Documentation',                       tier:'W', why:'Civil Aviation Authority regulatory guidance relevant to the disruption type.',                                                                                                                                  src:'Evidence Information — 8. CAA',          link:null, auto:false, api:null},
-  ac_ops:        {name:'Aircraft Operations & Procedures',        tier:'W', why:'Standard operating procedures and aircraft operations manuals relevant to the disruption.',                                                                                                                     src:'Evidence Information — 10. Aircraft Operations and Procedures', link:null, auto:false, api:null},
-  airport_info:  {name:'Airport Information',                     tier:'W', why:'Airport-specific operational information, layout plans, and handling procedures relevant to the disruption location.',                                                                                          src:'Evidence Information — 11. Airport Information', link:null, auto:false, api:null},
-  witness_cases: {name:'Witness Cases & Judgements',              tier:'W', why:'Relevant court judgements and witness evidence from comparable cases. Provides legal precedent to support the defence.',                                                                                        src:'Evidence Information — 14. Witness Cases & Judgements', link:null, auto:false, api:null},
-  policies:      {name:'Airline Policies & Terms & Conditions',   tier:'W', why:'Applicable airline policies and T&Cs relevant to the claim. Supports contractual defence arguments.',                                                                                                          src:'Evidence Information — 15. eJ Policies & Ts&Cs', link:null, auto:false, api:null},
-  flight_plan:   {name:'Flight Planning Documentation',           tier:'W', why:'Standard flight planning reference material and procedures documentation.',                                                                                                                                     src:'Evidence Information — 16. Flight Planning', link:null, auto:false, api:null},
-  tech_docs:     {name:'Technical Reference Documents',           tier:'W', why:'Technical manuals and reference documents supporting engineering or maintenance-related defence arguments.',                                                                                                     src:'Evidence Information — 17. Tech',           link:null, auto:false, api:null},
-  overnight_docs:{name:'Overnight Delay Documentation',           tier:'W', why:'Standard documentation and precedents for overnight delay claims. Relevant where crew rest requirements caused extended delay.',                                                                                 src:'Evidence Information — 7. Overnight Delays', link:null, auto:false, api:null},
-  welfare_docs:  {name:'Welfare & Passenger Care Documentation',  tier:'W', why:'Documentation relating to passenger welfare obligations. Relevant to any Article 9 or passenger welfare allegation.',                                                                                          src:'Evidence Information — 9. Welfare',         link:null, auto:false, api:null},
-};
-
-/* ── Evidence matrix by disruption type ── */
-/* key / secondary / wider grouped per type */
-var MATRIX={
+];var MATRIX={
   'ATC Restrictions':{
     K:['tops','disco','aims','safetynet','eurocontrol','notam'],
     S:['connected','network_out','lido','hermes','max_ops','dpm','internal_email','flightradar','flightstats','ops_review'],
@@ -413,8 +326,7 @@ var MATRIX={
     W:['overnight_docs','crew_docs','caa_docs','ac_ops','case_studies']
   },
 };
-
-/* ── State ── */
+/* ── Local state ── */
 var primaryType='', secondaryType='', dtMode='primary';
 var uploads={}, pullState={};
 var summaryOpen=false;
@@ -424,14 +336,36 @@ var pendingUpload=null;
 var D={
   flightNum:fm?fm[1]:'', dep:am?am[1]:'', arr:am?am[2]:'',
   cat:vm?(parseInt(vm[1])<=250?'A':parseInt(vm[1])<=400?'B':'C'):'',
-  std:'',sta:'',atd:'',ata:'',
-  acReg:'',crewBase:'',reportTime:'',lastLand:'',
+  std:C.std||'',sta:C.sta||'',atd:C.atd||'',ata:C.ata||'',
+  acReg:C.registration||'',crewBase:'',reportTime:'',lastLand:'',
   maxFDP:'',plannedFDP:'',sectors:'',acPlan:'',
-  primaryCause:'',secondaryCause:'',summary:'',classification:'DEFEND'
+  primaryCause:C.disruptionType||'',secondaryCause:'',
+  summary:C.triageNote||'',classification:C.classification||'DEFEND'
 };
+function restoreEvidenceState(){
+  if(!C || !C.ref) return;
+  var saved = STATE.loadEvidence(C.ref);
+  if(!saved) return;
+  if(saved.primaryType) primaryType = saved.primaryType;
+  if(saved.secondaryType) secondaryType = saved.secondaryType;
+  if(saved.uploads) uploads = saved.uploads;
+  if(saved.pullState) pullState = saved.pullState;
+  if(saved.D) Object.assign(D, saved.D);
+}
+
+/* ── Auto-save to STATE ── */
+function autoSaveEvidence(){
+  if(!C || !C.ref) return;
+  try{
+    STATE.saveEvidence(C.ref, {
+      primaryType:primaryType, secondaryType:secondaryType,
+      uploads:uploads, pullState:pullState, D:D
+    });
+  }catch(e){}
+}
 
 function ts(){return new Date().toLocaleString('en-GB',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});}
-function log(t,type){audit.push({t:t,type:type||'action',time:ts(),by:(C.assignedTo||"")});renderAudit();}
+function log(t,type){audit.push({t:t,type:type||'action',time:ts(),by:(C.assignedTo||'')});renderAudit();}
 
 /* ── Build combined evidence list ── */
 function getList(tier){
@@ -493,7 +427,7 @@ function renderMain(){
   var pTxt=primaryType?(r.up+' / '+r.total+' documents'):'Select disruption type';
   var hdr='<div class="case-hdr"><div class="ch-row">'
     +'<div><div class="ch-ref">'+C.ref+'</div>'
-    +'<div class="ch-name">'+(C.claimant||C.name||'Claimant')+' v. '+(C.airline||'Airline')+'</div>'
+    +'<div class="ch-name">'+(C.claimant||C.name||'?')+' v. TestAirways</div>'
     +'<div class="ch-meta">'
     +'<span><i class="ti ti-plane"></i>'+C.flight+'</span>'
     +'<span><i class="ti ti-currency-pound"></i>'+C.value+'</span>'
@@ -757,11 +691,12 @@ function addNote(){
   inp.value='';
 }
 
-/* ── Init ── */
+
+/* ── Init — runs after DOM is ready ── */
 window.addEventListener('DOMContentLoaded', function(){
   renderGlobalNav('evidence');
   restoreEvidenceState();
-  if(C && C.claimant) {
+  if(C && C.claimant){
     log('Evidence module opened — ' + C.claimant + ' v. ' + (C.airline||'airline'), 'create');
   }
   render();
