@@ -431,7 +431,7 @@ var D={
 };
 
 function ts(){return new Date().toLocaleString('en-GB',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});}
-function log(t,type){audit.push({t:t,type:type||'action',time:ts(),by:C.user});renderAudit();}
+function log(t,type){audit.push({t:t,type:type||'action',time:ts(),by:(C.assignedTo||"")});renderAudit();}
 
 /* ── Build combined evidence list ── */
 function getList(tier){
@@ -493,7 +493,7 @@ function renderMain(){
   var pTxt=primaryType?(r.up+' / '+r.total+' documents'):'Select disruption type';
   var hdr='<div class="case-hdr"><div class="ch-row">'
     +'<div><div class="ch-ref">'+C.ref+'</div>'
-    +'<div class="ch-name">'+C.name+' v. TestAirways</div>'
+    +'<div class="ch-name">'+(C.claimant||C.name||'Claimant')+' v. '+(C.airline||'Airline')+'</div>'
     +'<div class="ch-meta">'
     +'<span><i class="ti ti-plane"></i>'+C.flight+'</span>'
     +'<span><i class="ti ti-currency-pound"></i>'+C.value+'</span>'
@@ -758,14 +758,13 @@ function addNote(){
 }
 
 /* ── Init ── */
-log('Evidence module opened — '+C.name+' v. TestAirways','create');
-render();
-</script>
-<script>
-window.addEventListener("DOMContentLoaded", function(){
-  if(typeof renderGlobalNav === "function") renderGlobalNav("evidence");
-  if(typeof restoreEvidenceState === "function") restoreEvidenceState();
-  if(typeof init === "function") init();
+window.addEventListener('DOMContentLoaded', function(){
+  renderGlobalNav('evidence');
+  restoreEvidenceState();
+  if(C && C.claimant) {
+    log('Evidence module opened — ' + C.claimant + ' v. ' + (C.airline||'airline'), 'create');
+  }
+  render();
 });
 </script>
 </body>
