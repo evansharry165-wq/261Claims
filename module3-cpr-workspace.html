@@ -151,6 +151,29 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 .note-bar button{font-size:11px;padding:5px 9px;border-radius:var(--r);border:1px solid var(--border);background:var(--surface2);cursor:pointer;font-family:var(--font);color:var(--text2)}
 </style>
 <script src="shared_data.js"></script>
+
+<script>
+(function(){
+  try{
+    var params = new URLSearchParams(window.location.search);
+    var ref = params.get('ref');
+    if(ref && typeof getCase === 'function'){
+      var caseData = getCase(ref);
+      if(caseData){
+        sessionStorage.setItem('aeroCaseData', JSON.stringify({
+          ref:caseData.ref, claimant:caseData.claimant,
+          solicitor:caseData.solicitor, flight:caseData.flight,
+          value:caseData.value, type:caseData.type,
+          date:caseData.locDate, framework:'EC Regulation 261/2004',
+          points:caseData.points,
+          jurisdiction:caseData.jurisdiction||'england-wales',
+          assignedTo:typeof USERS!=='undefined'&&USERS[caseData.assignedTo]?USERS[caseData.assignedTo].name:caseData.assignedTo
+        }));
+      }
+    }
+  }catch(e){}
+})();
+</script>
 </head>
 <body>
 <div class="app">

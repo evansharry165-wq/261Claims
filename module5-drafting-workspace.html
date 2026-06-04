@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>261Claims — Drafting</title>
+<title>261Claims — Module 5: Document Drafting</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
@@ -23,7 +23,7 @@
   --r:8px;--r2:12px;--r3:16px;
 }
 html,body{height:100%;font-family:var(--font);background:var(--surface2);color:var(--text);font-size:14px}
-.app{display:flex;flex-direction:column;height:calc(100vh - 48px)}
+.app{display:flex;flex-direction:column;height:100vh}
 
 /* topbar */
 .topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px;height:54px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
@@ -117,45 +117,14 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 .pr-claim{color:var(--text2)}
 .pr-ev{font-size:10px;color:var(--text3);font-family:var(--mono);margin-top:2px}
 </style>
-/* ── Init ── */
-document.getElementById('main').innerHTML = `<div class="empty-workspace"><i class="ti ti-file-pencil"></i><p>Select a document from the library on the left to open, generate, or review it.</p></div>`;
-renderPointsRefSidebar();
-// Auto-open LOA as it's already approved
-setTimeout(()=>{
-  const loaBtn = document.querySelector('.doc-btn');
-  if(loaBtn){loaBtn.classList.add('active');currentDocId='loa';renderWorkspace();}
-},100);
-</script>
+<script src="shared_data.js"></script>
 
 <script>
-(function(){
-  try{
-    if(typeof getCasesForUser!=='function') return;
-    var uid = typeof getActiveUser==='function' ? getActiveUser() : 'SB';
-    var cases = getCasesForUser(uid);
-    var intakeN = cases.filter(function(c){return c.stage==='intake';}).length;
-    var urgentN = cases.filter(function(c){return c.cprDaysLeft<=7 && c.stage!=='resolve';}).length;
-    document.querySelectorAll('.gn-link').forEach(function(link){
-      var h = link.getAttribute('href')||'';
-      var n = h.indexOf('module1')>=0?intakeN:h.indexOf('module3-cpr')>=0?urgentN:0;
-      if(n>0){
-        var s=document.createElement('span');
-        s.style.cssText='background:#C0392B;color:#fff;font-size:9px;font-weight:600;padding:1px 5px;border-radius:10px;margin-left:4px;line-height:1.4';
-        s.textContent=n;
-        link.appendChild(s);
-      }
-    });
-  }catch(e){}
-})();
-</script>
-
-<script>
-// Read case ref from URL and pre-populate
 (function(){
   try{
     var params = new URLSearchParams(window.location.search);
     var ref = params.get('ref');
-    if(ref && typeof getCase==='function'){
+    if(ref && typeof getCase === 'function'){
       var caseData = getCase(ref);
       if(caseData){
         sessionStorage.setItem('aeroCaseData', JSON.stringify({
@@ -164,12 +133,847 @@ setTimeout(()=>{
           value:caseData.value, type:caseData.type,
           date:caseData.locDate, framework:'EC Regulation 261/2004',
           points:caseData.points,
-          assignedTo: USERS[caseData.assignedTo] ? USERS[caseData.assignedTo].name : caseData.assignedTo
+          jurisdiction:caseData.jurisdiction||'england-wales',
+          assignedTo:typeof USERS!=='undefined'&&USERS[caseData.assignedTo]?USERS[caseData.assignedTo].name:caseData.assignedTo
         }));
       }
     }
   }catch(e){}
 })();
+</script>
+</head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <div style="display:flex;align-items:center;gap:14px">
+      <a href="index.html" class="btn-back"><i class="ti ti-arrow-left"></i> Home</a>
+      <div class="logo">
+        <div class="logo-mark"><i class="ti ti-plane"></i></div>
+        <span class="logo-name">261Claims</span>
+        <span class="logo-tag">/ Document drafting</span>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <span class="mod-badge">Module 5 — Drafting</span>
+      <div class="av-row"><div class="av">SB</div><span>S. Booth</span></div>
+    </div>
+  </div>
+
+  <div class="body">
+    <!-- Document library sidebar -->
+    <div class="sidebar-left">
+      <div class="lib-section">
+        <div class="lib-label">Pre-action</div>
+        <button class="doc-btn" onclick="openDoc('loa')">
+          <div class="doc-btn-icon" style="background:#FEF3C7;color:#92400E"><i class="ti ti-mail"></i></div>
+          <div><div class="doc-btn-name">Letter of Acknowledgement</div><div class="doc-btn-sub">Pre-action · CPR Protocol</div></div>
+          <span class="doc-status ds-approved">Approved</span>
+        </button>
+        <button class="doc-btn" onclick="openDoc('lor')">
+          <div class="doc-btn-icon" style="background:#EEEDFE;color:#4338CA"><i class="ti ti-file-text"></i></div>
+          <div><div class="doc-btn-name">Letter of Response</div><div class="doc-btn-sub">Substantive reply to LOC</div></div>
+          <span class="doc-status ds-draft">Draft</span>
+        </button>
+      </div>
+      <div class="lib-section">
+        <div class="lib-label">Court documents</div>
+        <button class="doc-btn" onclick="openDoc('defence')">
+          <div class="doc-btn-icon" style="background:var(--green-faint);color:var(--green)"><i class="ti ti-shield"></i></div>
+          <div><div class="doc-btn-name">Defence</div><div class="doc-btn-sub">CPR Part 16 · County Court</div></div>
+          <span class="doc-status ds-empty">Not started</span>
+        </button>
+        <button class="doc-btn" onclick="openDoc('witness')">
+          <div class="doc-btn-icon" style="background:var(--blue-faint);color:var(--blue-text)"><i class="ti ti-user"></i></div>
+          <div><div class="doc-btn-name">Witness Statement</div><div class="doc-btn-sub">CPR Part 32 · Crew / Ops</div></div>
+          <span class="doc-status ds-empty">Not started</span>
+        </button>
+        <button class="doc-btn" onclick="openDoc('n181')">
+          <div class="doc-btn-icon" style="background:var(--surface3);color:var(--text3)"><i class="ti ti-forms"></i></div>
+          <div><div class="doc-btn-name">Directions Questionnaire</div><div class="doc-btn-sub">Form N181</div></div>
+          <span class="doc-status ds-empty">Not started</span>
+        </button>
+      </div>
+      <div class="lib-section">
+        <div class="lib-label">Settlement</div>
+        <button class="doc-btn" onclick="openDoc('p36')">
+          <div class="doc-btn-icon" style="background:var(--surface3);color:var(--text3)"><i class="ti ti-scale"></i></div>
+          <div><div class="doc-btn-name">Part 36 Offer</div><div class="doc-btn-sub">CPR Part 36 · Costs protection</div></div>
+          <span class="doc-status ds-empty">Not started</span>
+        </button>
+        <button class="doc-btn" onclick="openDoc('settlement')">
+          <div class="doc-btn-icon" style="background:var(--surface3);color:var(--text3)"><i class="ti ti-file-check"></i></div>
+          <div><div class="doc-btn-name">Settlement Agreement</div><div class="doc-btn-sub">Full and final settlement</div></div>
+          <span class="doc-status ds-empty">Not started</span>
+        </button>
+      </div>
+      <div class="lib-section">
+        <div class="lib-label">Points of claim reference</div>
+        <div class="points-ref" id="points-ref"></div>
+      </div>
+    </div>
+
+    <!-- Main workspace -->
+    <div class="main" id="main"></div>
+  </div>
+</div>
+
+<script>
+/* ── Case data ── */
+var _i={};
+try{var _r=sessionStorage.getItem('aeroCaseData');if(_r)_i=JSON.parse(_r);}catch(e){}
+var C={
+  ref:    _i.ref       ||'AC-2026-0089',
+  name:   _i.claimant  ||'Daniel Hartley',
+  sol:    _i.solicitor ||'Pemberton & Associates Solicitors LLP',
+  solRef: 'PA/2026/03871/KW',
+  solAddr:'Clarke & Partners Solicitors, 22 Bridge Street, Manchester, M3 3BT',
+  flight: _i.flight    ||'HC 1184 — LTN to BCN (diverted VLC)',
+  flightNum:'HC 1184',
+  dep:'London Luton Airport (LTN)',
+  arr:'Barcelona El Prat Airport (BCN)',
+  diverted:'Valencia Airport (VLC)',
+  value:  _i.value     ||'£39,000+',
+  type:   _i.type      ||'EC 261/2004 — delay / diversion',
+  date:   _i.date      ||'22 May 2026',
+  flightDate:'14 March 2026',
+  std:'07:25', atd:'07:31', sta:'10:50', ata:'18:45',
+  delay:'7 hours 55 minutes',
+  framework: _i.framework||'EC Regulation 261/2004',
+  points: _i.points    ||[],
+  assignedTo:_i.assignedTo||'S. Booth',
+  user:'S. Booth'
+};
+
+/* ── Document state ── */
+var docStates={
+  loa:{status:'approved', edits:'', generated:true},
+  lor:{status:'draft',    edits:'', generated:false},
+  defence:{status:'empty',edits:'',generated:false},
+  witness:{status:'empty',edits:'',generated:false},
+  n181:{status:'empty',  edits:'',generated:false},
+  p36:{status:'empty',   edits:'',generated:false},
+  settlement:{status:'empty',edits:'',generated:false},
+};
+var currentDoc=null;
+var isEditing=false;
+var isGenerating=false;
+
+/* ── Evidence used per document ── */
+var EV_USED={
+  lor:['TOPS — Flight Details','Eurocontrol ATFM Data','Ogimet METAR BCN','NOTAM BCN 14 Mar','Flightradar24 Track'],
+  defence:['TOPS — Flight Details','Eurocontrol ATFM Data','Ogimet METAR BCN','NOTAM BCN 14 Mar','SafetyNet Reports','DPM Notes'],
+  witness:['AIMS — Crew Route & FDP','HERMES ACARS Messages','Cabin Crew Incident Report'],
+  p36:['TOPS — Flight Details'],
+  settlement:['TOPS — Flight Details'],
+};
+
+/* ── Today ── */
+function today(){
+  const d=new Date();
+  const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  return d.getDate()+' '+MONTHS[d.getMonth()]+' '+d.getFullYear();
+}
+function responseBy(){
+  const d=new Date();d.setMonth(d.getMonth()+3);
+  const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  return d.getDate()+' '+MONTHS[d.getMonth()]+' '+d.getFullYear();
+}
+
+/* ── Document templates ── */
+function buildDoc(id){
+  switch(id){
+    case 'loa': return buildLOA();
+    case 'lor': return buildLOR();
+    case 'defence': return buildDefence();
+    case 'witness': return buildWitness();
+    case 'n181': return buildN181();
+    case 'p36': return buildP36();
+    case 'settlement': return buildSettlement();
+    default: return '';
+  }
+}
+
+function buildLOA(){
+return `PRIVATE AND CONFIDENTIAL
+BY EMAIL AND FIRST CLASS POST
+
+${today()}
+
+${C.sol}
+${C.solAddr}
+
+Dear Sirs,
+
+RE: ${C.name.toUpperCase()} v. TESTAIRWAYS
+YOUR REF: ${C.solRef}    OUR REF: ${C.ref}
+FLIGHT: ${C.flightNum} — ${C.dep} TO ${C.arr}
+DATE OF TRAVEL: ${C.flightDate}
+
+ACKNOWLEDGEMENT OF LETTER OF CLAIM
+
+We act on behalf of TestAirways in connection with the above matter.
+
+We write to acknowledge receipt of your letter of claim dated ${C.date}, received by our Legal Department on ${C.date}. The matter has been assigned to our legal team and we are in the process of investigating the circumstances surrounding the above-referenced flight.
+
+In accordance with the Pre-Action Protocol, we will provide a substantive Letter of Response no later than ${responseBy()}. We will notify you promptly should we require any extension to that period.
+
+Without prejudice to our investigation, we note that the disruption to flight ${C.flightNum} on ${C.flightDate} arose from circumstances which we believe were beyond the reasonable control of TestAirways. Our full position will be set out in our Letter of Response.
+
+Nothing in this letter constitutes an admission of liability. TestAirways reserves all rights and defences available to it.
+
+Yours faithfully,
+
+${C.assignedTo}
+Legal Department, TestAirways`;
+}
+
+function buildLOR(){
+return `PRIVATE AND CONFIDENTIAL
+WITHOUT PREJUDICE SAVE AS TO COSTS
+
+${today()}
+
+${C.sol}
+${C.solAddr}
+
+Dear Sirs,
+
+RE: ${C.name.toUpperCase()} v. TESTAIRWAYS — LETTER OF RESPONSE
+YOUR REF: ${C.solRef}    OUR REF: ${C.ref}
+FLIGHT: ${C.flightNum} — ${C.dep} TO ${C.arr}
+DATE OF TRAVEL: ${C.flightDate}
+
+We act on behalf of TestAirways. We refer to your letter of claim dated ${C.date} and to our Letter of Acknowledgement. We now provide our substantive response.
+
+BACKGROUND
+
+1. Flight ${C.flightNum} was scheduled to depart ${C.dep} at ${C.std} on ${C.flightDate}, with a scheduled arrival at ${C.arr} at ${C.sta}. The aircraft departed at ${C.atd}.
+
+2. At approximately 09:55 (UTC), when the aircraft was approximately 40 nautical miles north-east of Barcelona, the crew received notification of significant deterioration in meteorological conditions at ${C.arr}. Acting on mandatory instructions from Air Traffic Control and in the interests of passenger safety, the aircraft diverted to ${C.diverted}.
+
+3. The aircraft arrived at ${C.diverted} at 10:48 local time. Passengers were transported by coach to Barcelona, arriving at approximately 18:45 local time. The total delay against the scheduled arrival was ${C.delay}.
+
+RESPONSE TO POINTS OF CLAIM
+
+Point 1 — Statutory Compensation: EC Regulation 261/2004, Article 7(1)(a)
+
+4. TestAirways acknowledges that flight ${C.flightNum} arrived at its final destination ${C.delay} after the scheduled arrival time and that, in isolation, this delay would engage the provisions of Article 7(1)(a) of EC Regulation 261/2004. However, TestAirways denies that any compensation is payable by reason of the extraordinary circumstances defence set out below.
+
+5. The distance from ${C.dep} to ${C.arr} is approximately 1,435 kilometres. For the avoidance of doubt, TestAirways notes that the applicable compensation under Article 7(1)(a), if payable, would be €250 and not €400 as asserted in your letter of claim. The €400 figure applies to flights of between 1,500 and 3,500 kilometres under Article 7(1)(b), which is not engaged on the facts of this claim.
+
+Point 2 — Extraordinary Circumstances: Article 5(3)
+
+6. TestAirways relies upon the defence of extraordinary circumstances pursuant to Article 5(3) of EC Regulation 261/2004. The diversion of flight ${C.flightNum} was caused by severe meteorological conditions at ${C.arr} on ${C.flightDate} which rendered continued operation to ${C.arr} incompatible with safe flight operations.
+
+7. The meteorological evidence obtained by TestAirways confirms that at the relevant time, ${C.arr} was subject to active convective activity with embedded cumulonimbus cloud, significant wind shear, and visibility below instrument landing system minima. The relevant METAR and SIGMET records, together with NOTAM documentation for ${C.arr}, are enclosed with this letter as Exhibit TA/1.
+
+8. TestAirways further relies upon the Eurocontrol Air Traffic Flow Management (ATFM) regulation data confirming that the airspace in the vicinity of ${C.arr} was subject to network-level restrictions at the material time. This data is enclosed as Exhibit TA/2.
+
+9. The crew of flight ${C.flightNum} acted in accordance with mandatory Air Traffic Control instructions in diverting to ${C.diverted}. The diversion was not a discretionary operational decision but a safety imperative imposed by external circumstances entirely beyond TestAirways' control. TestAirways relies upon the two-limb test established in Wallentin-Hermann v Alitalia (Case C-549/07): the circumstances were (a) not inherent in the normal exercise of the carrier's activity, and (b) beyond its actual control.
+
+10. TestAirways further avers that all reasonable measures were taken to avoid the resulting delay. Pre-departure weather monitoring was conducted, fuel loads were calculated to permit diversion to an alternate aerodrome, and the crew were briefed on potential meteorological conditions on the route. Once the decision to divert was made, the crew operated expeditiously to minimise further delay to passengers.
+
+Point 3 — Duty of Care: Article 9
+
+11. TestAirways denies that it failed to fulfil its obligations under Article 9 of EC Regulation 261/2004. Ground handling arrangements at ${C.diverted} were activated promptly following the diversion decision. TestAirways will adduce evidence from ground handling records at Valencia Airport confirming the provision of refreshments and written information to passengers during the ground delay.
+
+12. In the event that the Court finds any shortfall in the provision of Article 9 care — which is denied — TestAirways avers that any such shortfall arose from the extraordinary and unanticipated nature of the diversion and not from any failure of duty on the part of TestAirways or its handling agents.
+
+Point 4 — Consequential Losses: £38,250
+
+13. TestAirways denies liability for the consequential losses alleged in Point 4 of your letter of claim. Pursuant to Article 12 of EC Regulation 261/2004, any further compensation available to a passenger under national law is that available under the Montreal Convention. The Montreal Convention does not provide for recovery of the alleged loss of a commercial contract.
+
+14. Further and in any event, TestAirways puts your client to strict proof of (a) the existence of the alleged contractual arrangement with Meridian Consulting SL; (b) that any contract was lost solely by reason of your client's non-attendance at the meeting on ${C.flightDate}; (c) that your client took all reasonable steps to mitigate his alleged loss, including by seeking to reschedule the meeting; and (d) that the quantum of £38,250 accurately reflects the net loss alleged.
+
+15. TestAirways will seek independent verification of the letter from Meridian Consulting SL relied upon by your client and reserves the right to challenge the authenticity and contents of that document.
+
+Point 5 — Travel and Subsistence Costs: £141.80
+
+16. TestAirways does not dispute that your client incurred additional travel costs as a result of the diversion, subject to verification of the receipts stated to be enclosed with your letter of claim. TestAirways will consider these costs upon receipt of the supporting documentation and will address them in any schedule of agreed or disputed sums.
+
+CONCLUSION
+
+17. For the reasons set out above, TestAirways denies liability to pay statutory compensation under EC Regulation 261/2004 by reason of the extraordinary circumstances defence. TestAirways further denies liability for the consequential losses alleged. TestAirways is prepared to give consideration to the reasonable Article 9 care costs and verified travel and subsistence costs upon production of supporting documentation.
+
+18. TestAirways remains open to resolving this matter by way of Alternative Dispute Resolution. Any proposal for settlement should be directed to the undersigned.
+
+Yours faithfully,
+
+${C.assignedTo}
+Legal Department, TestAirways
+
+ENCLOSURES:
+Exhibit TA/1: METAR, SIGMET and NOTAM records for BCN, ${C.flightDate}
+Exhibit TA/2: Eurocontrol ATFM regulation data, ${C.flightDate}
+Exhibit TA/3: Flight operations data — flight ${C.flightNum}, ${C.flightDate}`;
+}
+
+function buildDefence(){
+return `IN THE COUNTY COURT AT [COURT NAME]
+
+CLAIM NO: [TO BE INSERTED]
+
+BETWEEN:
+
+                    ${C.name.toUpperCase()}
+                                                                        Claimant
+
+                              — and —
+
+                         TESTAIRWAYS
+                                                                        Defendant
+
+─────────────────────────────────────────
+                         DEFENCE
+─────────────────────────────────────────
+
+INTRODUCTION
+
+1. The Defendant is TestAirways, a commercial airline operating scheduled passenger services. The Defendant denies that it is liable to pay compensation to the Claimant pursuant to EC Regulation 261/2004 (as retained in UK law following the end of the Brexit transition period) or at all, for the reasons set out below.
+
+ADMISSIONS AND DENIALS
+
+2. Paragraphs 1 and 2 of the Particulars of Claim are admitted. The Claimant was a ticketed passenger on flight ${C.flightNum} departing ${C.dep} on ${C.flightDate}, scheduled to arrive at ${C.arr} at ${C.sta}.
+
+3. Paragraph 3 of the Particulars of Claim is admitted in part. It is admitted that flight ${C.flightNum} departed at approximately ${C.atd}. The Defendant does not admit the precise circumstances of the delay or diversion as alleged and puts the Claimant to proof thereof.
+
+4. Paragraphs 4 and 5 of the Particulars of Claim are admitted in part. It is admitted that the aircraft diverted to ${C.diverted}. The Defendant avers that the diversion was necessitated by severe meteorological conditions at ${C.arr} constituting extraordinary circumstances within the meaning of Article 5(3) of EC Regulation 261/2004.
+
+5. Paragraph 6 of the Particulars of Claim is denied. The Defendant will adduce evidence that reasonable care was provided to passengers at ${C.diverted} in accordance with Article 9 of EC Regulation 261/2004.
+
+6. Paragraph 7 of the Particulars of Claim is admitted in part only. It is admitted that passengers arrived in Barcelona at approximately 18:45 local time. The Defendant denies that the total delay was 7 hours 55 minutes and puts the Claimant to proof of the precise arrival time at the final destination.
+
+EXTRAORDINARY CIRCUMSTANCES DEFENCE
+
+7. The Defendant relies upon the extraordinary circumstances defence pursuant to Article 5(3) of EC Regulation 261/2004. The diversion of flight ${C.flightNum} was caused by meteorological conditions at ${C.arr} on ${C.flightDate} which were incompatible with the safe operation of the flight.
+
+8. The meteorological conditions prevailing at ${C.arr} at the material time included active convective weather, embedded cumulonimbus cloud, and visibility below operational minima. The Defendant relies upon the following evidence in support of this defence:
+
+   (a) METAR and TAF records for ${C.arr} on ${C.flightDate}, confirming the meteorological conditions prevailing at the time of the diversion decision (Exhibit TA/1);
+
+   (b) SIGMET documentation confirming the active airspace weather warning in force at the material time (Exhibit TA/1);
+
+   (c) NOTAM records for ${C.arr} on ${C.flightDate} (Exhibit TA/1);
+
+   (d) Eurocontrol Air Traffic Flow Management regulation data confirming network-level airspace restrictions (Exhibit TA/2);
+
+   (e) Flight operations data confirming the crew's compliance with Air Traffic Control instructions (Exhibit TA/3).
+
+9. The circumstances set out above were:
+
+   (a) not inherent in the normal exercise of the Defendant's activity as an air carrier; and
+
+   (b) beyond the Defendant's actual control,
+
+   applying the test established by the Court of Justice of the European Union in Wallentin-Hermann v Alitalia (Case C-549/07) [2008] ECR I-11061.
+
+10. The Defendant avers that it took all reasonable measures to avoid the delay resulting from the diversion, including pre-departure meteorological monitoring, calculation of fuel loads sufficient to permit diversion, crew briefing on route meteorology, and expeditious ground handling arrangements at ${C.diverted}.
+
+RESPONSE TO CONSEQUENTIAL LOSS CLAIM
+
+11. The Defendant denies liability for the sum of £38,250 alleged to represent the value of a lost commercial contract. The Defendant avers that:
+
+   (a) The Montreal Convention does not provide for recovery of commercial contract losses of the nature alleged;
+
+   (b) The Claimant has not discharged the burden of proving causation between the delay and the alleged loss of contract;
+
+   (c) The Claimant has not demonstrated that he took reasonable steps to mitigate his alleged loss; and
+
+   (d) The quantum alleged is not proved.
+
+QUANTUM
+
+12. In the event (which is denied) that the Defendant is found liable to pay statutory compensation, the applicable figure is €250 pursuant to Article 7(1)(a) of EC Regulation 261/2004, the flight distance of approximately 1,435 kilometres falling within the sub-1,500 kilometre category. The Claimant's assertion that €400 is payable is incorrect.
+
+STATEMENT OF TRUTH
+
+I believe that the facts stated in this Defence are true. I understand that proceedings for contempt of court may be brought against anyone who makes, or causes to be made, a false statement in a document verified by a statement of truth without an honest belief in its truth.
+
+Signed: ___________________________
+Name:   ${C.assignedTo}
+Position: Legal Department, TestAirways
+Date:   ${today()}
+
+Defendant's solicitors: TestAirways Legal Department
+Address for service: TestAirways Legal Department, Aviation House, Luton Airport, Luton LU2 9LY`;
+}
+
+function buildWitness(){
+return `IN THE COUNTY COURT AT [COURT NAME]
+
+CLAIM NO: [TO BE INSERTED]
+
+BETWEEN:
+
+                    ${C.name.toUpperCase()}
+                                                                        Claimant
+
+                              — and —
+
+                         TESTAIRWAYS
+                                                                        Defendant
+
+─────────────────────────────────────────────────────────────
+          WITNESS STATEMENT OF [CAPTAIN / SENIOR CABIN CREW]
+─────────────────────────────────────────────────────────────
+
+I, [FULL NAME], of TestAirways, WILL SAY as follows:
+
+INTRODUCTION
+
+1. I am employed by TestAirways as [Captain / Senior First Officer / Senior Cabin Crew Member]. I have been employed in this role for [X] years. I make this statement from my own knowledge and from records available to me in my professional capacity.
+
+2. I make this statement in support of the Defence of TestAirways in the above proceedings. The matters set out in this statement are within my own knowledge unless otherwise stated.
+
+BACKGROUND: FLIGHT ${C.flightNum}, ${C.flightDate}
+
+3. On ${C.flightDate} I was [Captain / operating crew / senior cabin crew] aboard flight ${C.flightNum}, scheduled to operate from ${C.dep} to ${C.arr}, departing at ${C.std}.
+
+4. Prior to departure, I received the pre-flight meteorological briefing for the planned route. The briefing indicated [description of weather forecast to be populated from LIDO/pre-flight documents]. I was aware at the time of departure that conditions at ${C.arr} were subject to deterioration and that a diversion alternate had been designated accordingly.
+
+PRE-DEPARTURE PREPARATIONS
+
+5. In accordance with TestAirways standard operating procedures, the aircraft was fuelled to the planned fuel figure plus [X] kg diversion fuel for ${C.diverted} as the designated alternate aerodrome. This decision was made by me [or: the captain] on the basis of the meteorological forecast received prior to departure.
+
+6. Passengers were boarded and the flight departed at ${C.atd}. The minor delay against the scheduled departure time of ${C.std} was attributable to [boarding procedures / minor technical check — to be confirmed from TOPS data].
+
+THE DIVERSION DECISION
+
+7. At approximately 09:55 UTC, when the aircraft was approximately 40 nautical miles north-east of Barcelona, I received updated meteorological information from [ATC / ATIS / crew communications] indicating that conditions at ${C.arr} had deteriorated significantly. The information received indicated [specific weather conditions — to be populated from METAR/SIGMET evidence].
+
+8. I assessed the meteorological conditions at ${C.arr} as below operational minima for a safe instrument approach. In making this assessment I had regard to:
+
+   (a) The current METAR for ${C.arr} indicating [conditions];
+   (b) The active SIGMET for the Barcelona FIR;
+   (c) Air Traffic Control advice; and
+   (d) My professional assessment of the conditions as an experienced [Captain].
+
+9. In the circumstances, I determined that continuation to ${C.arr} was not compatible with the safe operation of the flight. I declared the diversion to ${C.diverted} in accordance with my duties and TestAirways operating procedures.
+
+THE DIVERSION AND GROUND DELAY
+
+10. The aircraft landed at ${C.diverted} at 10:48 local time. I communicated the diversion to passengers via the passenger address system [at X time], explaining the reason for the diversion and advising that ground staff would provide further information.
+
+11. Ground handling staff at ${C.diverted} were notified of the unplanned arrival in advance of landing. Upon disembarkation, passengers were directed to [the terminal / a holding area] where [refreshments were made available / ground staff provided information regarding onward travel arrangements].
+
+12. Passengers were transferred by coach from ${C.diverted} to Barcelona following the ground delay. To the best of my knowledge, all passengers on flight ${C.flightNum} were transported to their intended destination.
+
+CONCLUSION
+
+13. It is my professional opinion that the diversion of flight ${C.flightNum} on ${C.flightDate} was necessitated by meteorological conditions at ${C.arr} which were beyond the control of TestAirways and which were not inherent in the normal exercise of our operations as an air carrier. The decision to divert was made in the interests of passenger safety and in accordance with mandatory operational requirements.
+
+14. All reasonable measures available to me as [Captain] and to TestAirways were taken to minimise the impact of the diversion on passengers.
+
+STATEMENT OF TRUTH
+
+I believe that the facts stated in this witness statement are true. I understand that proceedings for contempt of court may be brought against anyone who makes, or causes to be made, a false statement in a document verified by a statement of truth without an honest belief in its truth.
+
+Signed: ___________________________
+
+Full name: [TO BE SIGNED BY WITNESS]
+Date: ${today()}
+
+Exhibit reference: [TA/WS/1]`;
+}
+
+function buildP36(){
+return `WITHOUT PREJUDICE SAVE AS TO COSTS
+PART 36 OFFER
+
+${today()}
+
+${C.sol}
+${C.solAddr}
+
+Dear Sirs,
+
+RE: ${C.name.toUpperCase()} v. TESTAIRWAYS
+YOUR REF: ${C.solRef}    OUR REF: ${C.ref}
+
+PART 36 OFFER TO SETTLE
+
+1. This letter constitutes a formal offer to settle the above claim pursuant to CPR Part 36. This offer is made without prejudice to TestAirways' primary position that no compensation is payable by reason of the extraordinary circumstances defence.
+
+2. TestAirways offers to pay to the Claimant the sum of £[AMOUNT] in full and final settlement of all claims arising from the disruption to flight ${C.flightNum} on ${C.flightDate}, inclusive of interest and costs.
+
+3. This offer is intended to have the consequences set out in CPR Part 36 if accepted.
+
+4. This offer remains open for acceptance for a period of 21 days from the date of this letter (the "Relevant Period"). If the offer is not accepted within the Relevant Period, it may be withdrawn or amended at TestAirways' discretion, subject to the provisions of CPR Part 36.
+
+5. If accepted, payment will be made within 14 days of acceptance.
+
+COSTS CONSEQUENCES
+
+6. TestAirways draws your attention to the costs consequences set out in CPR Part 36.17. In the event that the Claimant fails to obtain a judgment more advantageous than this offer, the Court will, unless it considers it unjust to do so, order that:
+
+   (a) the Claimant is entitled to costs up to the date on which the Relevant Period expired; and
+   (b) TestAirways is entitled to costs from that date.
+
+7. This letter should be read carefully by your client. We recommend that your client takes independent legal advice on the implications of this offer before deciding whether to accept or reject it.
+
+Yours faithfully,
+
+${C.assignedTo}
+Legal Department, TestAirways`;
+}
+
+function buildSettlement(){
+return `SETTLEMENT AGREEMENT AND FULL AND FINAL RELEASE
+
+THIS AGREEMENT is made on ${today()}
+
+BETWEEN:
+
+(1) ${C.name} of [ADDRESS] ("the Claimant"); and
+(2) TestAirways, Aviation House, Luton Airport, Luton LU2 9LY ("the Defendant").
+
+BACKGROUND
+
+A. The Claimant was a passenger on flight ${C.flightNum} operated by the Defendant on ${C.flightDate} from ${C.dep} to ${C.arr}.
+
+B. The Claimant has brought a claim against the Defendant seeking compensation pursuant to EC Regulation 261/2004 and for consequential losses arising from a diversion of the flight to ${C.diverted}.
+
+C. The parties wish to settle all claims arising from the said flight disruption on the terms set out below.
+
+TERMS
+
+1. PAYMENT: The Defendant agrees to pay to the Claimant the sum of £[AGREED AMOUNT] ("the Settlement Sum") in full and final settlement of all claims, demands, actions, and causes of action that the Claimant has or may have against the Defendant arising from the disruption to flight ${C.flightNum} on ${C.flightDate}.
+
+2. FULL AND FINAL SETTLEMENT: In consideration of the payment of the Settlement Sum, the Claimant agrees to accept the same in full and final settlement of all claims against the Defendant and agrees to release the Defendant from all liability in connection with the matters referred to in this Agreement.
+
+3. NO ADMISSION: Nothing in this Agreement constitutes an admission of liability by the Defendant.
+
+4. CONFIDENTIALITY: The parties agree to keep the terms of this Agreement confidential and not to disclose the same to any third party without the prior written consent of the other party, save as required by law.
+
+5. PAYMENT TERMS: The Settlement Sum shall be paid by the Defendant to the Claimant within 28 days of the date of this Agreement by bank transfer to the account nominated by the Claimant in writing.
+
+6. GOVERNING LAW: This Agreement shall be governed by and construed in accordance with the laws of England and Wales.
+
+SIGNED by the Claimant:
+
+Signed: ___________________________
+Name: ${C.name}
+Date: ${today()}
+
+SIGNED for and on behalf of the Defendant:
+
+Signed: ___________________________
+Name: ${C.assignedTo}
+Position: Legal Department, TestAirways
+Date: ${today()}`;
+}
+
+function buildN181(){
+return `DIRECTIONS QUESTIONNAIRE (Form N181)
+
+Claim number: [TO BE INSERTED]
+Last date for filing: [TO BE INSERTED]
+
+Claimant: ${C.name}
+Defendant: TestAirways
+
+─────────────────────────────────────
+A — SETTLEMENT
+
+A1. Do you wish there to be a one month stay to attempt settlement?
+[ ] Yes   [X] No
+
+Reason: TestAirways has provided a substantive Letter of Response and remains open to ADR. A stay is not considered necessary at this stage.
+
+─────────────────────────────────────
+B — COURT
+
+B1. Is there a court where you would prefer the case to be dealt with?
+Preferred court: The Defendant has no objection to the case proceeding at the court most convenient to the Claimant, subject to the Court's discretion.
+
+─────────────────────────────────────
+C — PRE-ACTION PROTOCOLS
+
+C1. Have you complied with the relevant Pre-Action Protocol?
+[X] Yes
+
+Details: The Defendant acknowledged the Claimant's letter of claim on [DATE] and provided a Letter of Response on [DATE] in compliance with the Pre-Action Protocol.
+
+─────────────────────────────────────
+D — CASE MANAGEMENT INFORMATION
+
+D1. What track do you consider is most suitable?
+[X] Small claims track
+
+Reason: The primary claim is for €250 statutory compensation under EC Regulation 261/2004. The Defendant's position is that this is a straightforward extraordinary circumstances case appropriate for the small claims track.
+
+D2. If you have indicated a track, do you agree with the estimate of the claim value?
+[ ] Yes   [X] No
+
+If no, please explain: The Claimant has asserted a claim value of ${C.value} inclusive of a consequential loss allegation of £38,250. The Defendant disputes the consequential loss claim entirely and avers that the maximum recoverable statutory compensation, if payable (which is denied), is €250.
+
+─────────────────────────────────────
+E — WITNESSES
+
+E1. How many witnesses do you intend to call?
+Number of witnesses (including yourself): 2
+
+Details:
+1. [Captain / Senior Crew Member] — evidence regarding meteorological conditions and diversion decision
+2. [Ground Operations Representative] — evidence regarding Article 9 care provision at Valencia Airport
+
+─────────────────────────────────────
+F — EXPERTS
+
+F1. Do you wish to use expert evidence?
+[X] Yes — meteorological expert report confirming extraordinary circumstances at BCN on ${C.flightDate}
+
+F2. Has the expert been instructed?
+[ ] Yes   [X] No — to be instructed upon allocation
+
+─────────────────────────────────────
+G — HEARING
+
+G1. How long do you estimate the trial will take?
+[X] Half a day
+
+─────────────────────────────────────
+STATEMENT OF TRUTH
+
+I believe that the facts stated in this Directions Questionnaire are true.
+
+Signed: ___________________________
+Name: ${C.assignedTo}
+Position: For and on behalf of TestAirways (Defendant)
+Date: ${today()}`;
+}
+
+/* ── Render ── */
+var currentDocId = null;
+var docEditMode = {};
+var docApproved = {};
+
+function openDoc(id){
+  currentDocId = id;
+  document.querySelectorAll('.doc-btn').forEach(b=>b.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+  renderWorkspace();
+}
+
+function renderWorkspace(){
+  const m = document.getElementById('main');
+  if(!currentDocId){
+    m.innerHTML = `<div class="empty-workspace"><i class="ti ti-file-pencil"></i><p>Select a document from the library to open, generate, or review.</p></div>`;
+    return;
+  }
+
+  const id = currentDocId;
+  const state = docStates[id];
+  const isApproved = !!docApproved[id];
+  const isEdit = !!docEditMode[id];
+  const hasContent = state.generated || state.status==='approved';
+
+  const docNames = {
+    loa:'Letter of Acknowledgement',lor:'Letter of Response',
+    defence:'Defence (CPR Part 16)',witness:'Witness Statement (CPR Part 32)',
+    n181:'Directions Questionnaire (N181)',p36:'Part 36 Offer Letter',
+    settlement:'Settlement Agreement'
+  };
+  const docIcons = {
+    loa:'ti-mail',lor:'ti-file-text',defence:'ti-shield',
+    witness:'ti-user',n181:'ti-forms',p36:'ti-scale',settlement:'ti-file-check'
+  };
+
+  // evidence pills
+  const evList = EV_USED[id]||[];
+  const evStrip = evList.length
+    ? `<div class="ev-strip"><span class="ev-strip-label">Evidence used</span>`
+      +evList.map(e=>`<span class="ev-pill"><i class="ti ti-database"></i>${e}</span>`).join('')
+      +`</div>` : '';
+
+  // actions
+  let actions = '';
+  if(!hasContent){
+    actions = `<button class="btn-action primary" onclick="generateDoc('${id}')"><i class="ti ti-sparkles" style="font-size:11px"></i> Generate draft</button>`;
+  } else if(isApproved){
+    actions = `<button class="btn-action success"><i class="ti ti-check" style="font-size:11px"></i> Approved</button>`
+      +`<button class="btn-action" onclick="downloadDoc('${id}')"><i class="ti ti-download" style="font-size:11px"></i> Download</button>`;
+  } else {
+    actions = (isEdit
+      ?`<button class="btn-action" onclick="saveEdit('${id}')"><i class="ti ti-check" style="font-size:11px"></i> Save edits</button>`
+      :`<button class="btn-action" onclick="editDoc('${id}')"><i class="ti ti-pencil" style="font-size:11px"></i> Edit</button>`)
+      +`<button class="btn-action" onclick="downloadDoc('${id}')"><i class="ti ti-download" style="font-size:11px"></i> Download</button>`
+      +`<button class="btn-action primary" onclick="approveDoc('${id}')"><i class="ti ti-check" style="font-size:11px"></i> Approve & sign off</button>`;
+  }
+
+  // letter content
+  const letterText = state.edits || buildDoc(id);
+  const safeText = letterText.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const letterHtml = hasContent
+    ? `<div class="letter-body" id="letter-${id}" ${isEdit?'contenteditable="true"':''}>${safeText}</div>`
+    : `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px;color:var(--text3);text-align:center"><i class="ti ti-sparkles" style="font-size:32px;margin-bottom:12px;opacity:0.4;display:block"></i><p style="font-size:13px;max-width:240px;line-height:1.6">Click Generate draft to create this document from the case data and evidence on file.</p></div>`;
+
+  const statusTxt = isApproved ? 'Approved — ready for use'
+    : hasContent ? (isEdit ? 'Editing…' : 'Draft — pending solicitor sign-off')
+    : 'Not yet generated';
+  const statusCls = isApproved ? 'status-text approved' : 'status-text';
+
+  m.innerHTML = `
+    <div class="case-hdr">
+      <div class="ch-ref">${C.ref}</div>
+      <div class="ch-name">${C.name} v. TestAirways</div>
+      <div class="ch-meta">
+        <span><i class="ti ti-plane"></i>${C.flight}</span>
+        <span><i class="ti ti-currency-pound"></i>${C.value}</span>
+        <span><i class="ti ti-user"></i>Assigned: ${C.assignedTo}</span>
+      </div>
+    </div>
+
+    <div class="doc-workspace">
+      <div class="dw-header">
+        <div class="dw-title"><i class="ti ${docIcons[id]}" style="font-size:14px;color:var(--green)"></i>${docNames[id]}</div>
+        <div class="dw-actions">${actions}</div>
+      </div>
+      ${evStrip}
+      ${letterHtml}
+      <div class="status-bar">
+        <div class="${statusCls}">${statusTxt}</div>
+        <div class="send-note"><i class="ti ti-info-circle" style="font-size:11px"></i>Internal email sending — coming soon</div>
+      </div>
+    </div>
+
+    <div class="points-ref">
+      <div class="pr-header"><i class="ti ti-list-check" style="font-size:13px;color:var(--text3)"></i>Points of claim — reference</div>
+      ${renderPointsRef()}
+    </div>`;
+}
+
+function renderPointsRef(){
+  const defaultPoints = [
+    {n:1,claim:'Delay in excess of 3 hours — Art 7(1)(a)',evidenceStatus:'green',evidenceDoc:'TOPS / Flight data'},
+    {n:2,claim:'Extraordinary circumstances — burden on carrier',evidenceStatus:'amber',evidenceDoc:'METAR · SIGMET · Eurocontrol'},
+    {n:3,claim:'Article 9 — duty of care obligations',evidenceStatus:'red',evidenceDoc:'Valencia ground records'},
+    {n:4,claim:'Consequential loss — £38,250 contract',evidenceStatus:'red',evidenceDoc:'No counter-evidence yet'},
+    {n:5,claim:'Travel & subsistence — £141.80',evidenceStatus:'amber',evidenceDoc:'Receipts pending'},
+  ];
+  const pts = C.points.length ? C.points : defaultPoints;
+  return pts.map(p=>{
+    const dc = p.evidenceStatus==='green'?'pr-dot-g':p.evidenceStatus==='amber'?'pr-dot-a':'pr-dot-r';
+    return `<div class="pr-item"><div class="pr-dot ${dc}"></div><div><div class="pr-num">Point ${p.n}</div><div class="pr-claim">${p.claim}</div><div class="pr-ev">${p.evidenceDoc||''}</div></div></div>`;
+  }).join('');
+}
+
+async function generateDoc(id){
+  // Show generating state
+  const actionsEl = document.querySelector('.dw-actions');
+  if(actionsEl) actionsEl.innerHTML = `<div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--blue-text)"><div class="ai-spinner"></div>Generating from case data…</div>`;
+
+  // Call Claude API for AI-enhanced generation
+  const docNames = {lor:'Letter of Response',defence:'Defence (CPR Part 16)',witness:'Witness Statement',p36:'Part 36 Offer',settlement:'Settlement Agreement',n181:'Directions Questionnaire'};
+
+  const baseDoc = buildDoc(id);
+
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:2000,
+        system:`You are a senior aviation solicitor at an airline's in-house legal team. Draft professional, legally accurate documents in response to EC261 flight delay claims. Use precise legal language appropriate for England and Wales civil litigation. Address each point of claim specifically. Do not include markdown formatting or backticks. Return only the document text.`,
+        messages:[{role:'user',content:`Draft a ${docNames[id]||id} for this case. Use the base template provided and enhance the legal arguments based on the case details.\n\nCase: ${C.name} v. TestAirways\nRef: ${C.ref}\nFlight: ${C.flightNum} ${C.dep} to ${C.arr}, ${C.flightDate}\nDisruption: Diverted to ${C.diverted} due to weather\nDelay: ${C.delay}\nClaim value: ${C.value}\nAssigned to: ${C.assignedTo}\n\nBase template:\n${baseDoc.slice(0,3000)}`}]
+      })
+    });
+    const data = await resp.json();
+    const aiText = data.content?.find(b=>b.type==='text')?.text||'';
+    docStates[id].edits = aiText.trim()||baseDoc;
+  } catch(e) {
+    docStates[id].edits = baseDoc;
+  }
+
+  docStates[id].generated = true;
+  docStates[id].status = 'draft';
+  renderWorkspace();
+  updateDocBtn(id,'draft');
+}
+
+function editDoc(id){
+  docEditMode[id] = true;
+  renderWorkspace();
+  setTimeout(()=>{
+    const el=document.getElementById('letter-'+id);
+    if(el){el.focus();}
+  },100);
+}
+
+function saveEdit(id){
+  const el=document.getElementById('letter-'+id);
+  if(el) docStates[id].edits = el.innerText||el.textContent||docStates[id].edits;
+  docEditMode[id] = false;
+  renderWorkspace();
+}
+
+function approveDoc(id){
+  const el=document.getElementById('letter-'+id);
+  if(el) docStates[id].edits = el.innerText||el.textContent||docStates[id].edits||buildDoc(id);
+  docApproved[id] = true;
+  docStates[id].status = 'approved';
+  updateDocBtn(id,'approved');
+  renderWorkspace();
+}
+
+function downloadDoc(id){
+  const text = docStates[id].edits || buildDoc(id);
+  const names={loa:'Letter-of-Acknowledgement',lor:'Letter-of-Response',defence:'Defence',witness:'Witness-Statement',n181:'Directions-Questionnaire-N181',p36:'Part-36-Offer',settlement:'Settlement-Agreement'};
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([text],{type:'text/plain'}));
+  a.download=C.ref+'-'+names[id]+'.txt';
+  a.click();
+}
+
+function updateDocBtn(id, status){
+  const statusMap={
+    draft:{cls:'ds-draft',txt:'Draft'},
+    approved:{cls:'ds-approved',txt:'Approved'},
+    ready:{cls:'ds-ready',txt:'Ready'},
+    empty:{cls:'ds-empty',txt:'Not started'}
+  };
+  const s = statusMap[status]||statusMap.empty;
+  document.querySelectorAll('.doc-btn').forEach(btn=>{
+    const nameEl=btn.querySelector('.doc-btn-name');
+    if(!nameEl)return;
+    const tagEl=btn.querySelector('.doc-status');
+    if(!tagEl)return;
+    // match by onclick
+    const onclick=btn.getAttribute('onclick')||'';
+    if(onclick.includes("'"+id+"'")){
+      tagEl.className='doc-status '+s.cls;
+      tagEl.textContent=s.txt;
+    }
+  });
+}
+
+/* ── Points of claim reference (sidebar) ── */
+function renderPointsRefSidebar(){
+  const defaultPoints = [
+    {n:1,claim:'Delay — Art 7(1)(a)',evidenceStatus:'green'},
+    {n:2,claim:'Extraordinary circumstances',evidenceStatus:'amber'},
+    {n:3,claim:'Article 9 duty of care',evidenceStatus:'red'},
+    {n:4,claim:'Consequential loss £38,250',evidenceStatus:'red'},
+    {n:5,claim:'Travel costs £141.80',evidenceStatus:'amber'},
+  ];
+  const pts = C.points.length ? C.points : defaultPoints;
+  document.getElementById('points-ref').innerHTML =
+    '<div class="pr-header"><i class="ti ti-list-check" style="font-size:12px;color:var(--text3)"></i>Points of claim</div>'
+    +pts.map(p=>{
+      const dc=p.evidenceStatus==='green'?'pr-dot-g':p.evidenceStatus==='amber'?'pr-dot-a':'pr-dot-r';
+      return `<div class="pr-item"><div class="pr-dot ${dc}"></div><div><div class="pr-num">Point ${p.n}</div><div class="pr-claim">${p.claim}</div></div></div>`;
+    }).join('');
+}
+
+/* ── Init ── */
+document.getElementById('main').innerHTML = `<div class="empty-workspace"><i class="ti ti-file-pencil"></i><p>Select a document from the library on the left to open, generate, or review it.</p></div>`;
+renderPointsRefSidebar();
+// Auto-open LOA as it's already approved
+setTimeout(()=>{
+  const loaBtn = document.querySelector('.doc-btn');
+  if(loaBtn){loaBtn.classList.add('active');currentDocId='loa';renderWorkspace();}
+},100);
 </script>
 </body>
 </html>
