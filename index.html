@@ -172,7 +172,7 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
     <span class="gn-name">261Claims</span>
   </a>
   <div class="gn-links">
-    <a href="index.html" class="gn-link active"><i class="ti ti-layout-dashboard"></i> Dashboard</a>
+    <a href="index.html" class="gn-link active" id="nav-dashboard"><i class="ti ti-layout-dashboard"></i> Dashboard</a>
     <a href="module1-intake.html" class="gn-link"><i class="ti ti-file-upload"></i> Intake</a>
     <a href="module2-case-management.html" class="gn-link"><i class="ti ti-layout-kanban"></i> Cases</a>
     <a href="module3-cpr.html" class="gn-link"><i class="ti ti-calendar-due"></i> CPR</a>
@@ -211,6 +211,14 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
       <div><div class="ud-name">Kiran Rahman</div><div class="ud-role">Solicitor · 3 cases</div></div>
       <i class="ti ti-check ud-tick"></i>
     </div>
+    <div style="padding:10px 14px;border-top:1px solid var(--border)">
+      <div style="font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.07em;color:var(--text3);margin-bottom:8px">Interface language</div>
+      <div style="display:flex;gap:5px">
+        <button onclick="setLang('en')" id="lang-en" style="font-size:11px;padding:4px 10px;border-radius:20px;border:1px solid var(--border);background:var(--surface2);cursor:pointer;font-family:var(--font);transition:all 0.15s">🇬🇧 English</button>
+        <button onclick="setLang('fr')" id="lang-fr" style="font-size:11px;padding:4px 10px;border-radius:20px;border:1px solid var(--border);background:var(--surface2);cursor:pointer;font-family:var(--font);transition:all 0.15s">🇫🇷 Français</button>
+        <button onclick="setLang('es')" id="lang-es" style="font-size:11px;padding:4px 10px;border-radius:20px;border:1px solid var(--border);background:var(--surface2);cursor:pointer;font-family:var(--font);transition:all 0.15s">🇪🇸 Español</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -245,6 +253,16 @@ var NET_LINKS = [
 /* ── User nav ── */
 function toggleUserMenu(){ document.getElementById('user-modal').classList.toggle('open'); }
 function closeMenu(){ document.getElementById('user-modal').classList.remove('open'); }
+
+function setLang(lang){
+  if(typeof setUILang==='function') setUILang(lang);
+  // Update button states
+  ['en','fr','es'].forEach(function(l){
+    var btn = document.getElementById('lang-'+l);
+    if(btn) btn.style.cssText = 'font-size:11px;padding:4px 10px;border-radius:20px;border:1px solid '+(l===lang?'var(--navy)':'var(--border)')+';background:'+(l===lang?'var(--navy)':'var(--surface2)')+';cursor:pointer;font-family:var(--font);color:'+(l===lang?'#fff':'inherit')+';transition:all 0.15s';
+  });
+  render(); // Re-render with new language
+}
 
 function switchUser(id){
   setActiveUser(id);

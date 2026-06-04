@@ -202,7 +202,7 @@ function render(){
       +'<td><span class="cat-pill '+catCls+'">'+c.cat+'</span></td>'
       +'<td>'+extraCol(c)+'</td>'
       +'<td><div style="font-size:11px;color:var(--text2)">'+lastAction(c)+'</div></td>'
-      +'<td><span class="days-pill dp-'+urg+'">'+urgencyLabel(c.cprDaysLeft)+'</span></td>'
+      +'<td>'+(c.jurisdiction&&c.jurisdiction!=='england-wales'&&typeof getJurisdiction==='function'?'<span style="font-size:11px">'+getJurisdiction(c.jurisdiction).flag+'</span> ':'')+' <span class="days-pill dp-'+urg+'">'+urgencyLabel(c.cprDaysLeft)+'</span></td>'
       +'</tr>';
   }).join('');
 }
