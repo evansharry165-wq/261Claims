@@ -120,17 +120,17 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 <script>
 (function(){
   try{
-    var params = new URLSearchParams(window.location.search);
-    var ref = params.get('ref');
-    if(!ref) return;
-    if(typeof getCase !== 'function') return;
-    var cd = getCase(ref);
-    if(!cd) return;
-    sessionStorage.setItem('aeroCaseData', JSON.stringify({
-      ref:cd.ref, claimant:cd.claimant, solicitor:cd.solicitor,
-      flight:cd.flight, value:cd.value, type:cd.type, date:cd.locDate,
-      framework:'EC Regulation 261/2004', points:cd.points||[],
-      jurisdiction:cd.jurisdiction||'england-wales', lang:cd.lang||'en',
+    var p=new URLSearchParams(window.location.search),ref=p.get('ref');
+    if(!ref||typeof getCase!=='function') return;
+    var cd=getCase(ref); if(!cd) return;
+    sessionStorage.setItem('aeroCaseData',JSON.stringify({
+      ref:cd.ref,claimant:cd.claimant,solicitor:cd.solicitor,
+      flight:cd.flight,flightNum:cd.flightNum,dep:cd.dep,arr:cd.arr,
+      flightDate:cd.flightDate,value:cd.value,type:cd.type,date:cd.locDate,
+      framework:'EC Regulation 261/2004',points:cd.points||[],
+      jurisdiction:cd.jurisdiction||'england-wales',lang:cd.lang||'en',
+      disruptionType:cd.disruptionType||'',evidencePct:cd.evidencePct||0,
+      loaStatus:cd.loaStatus||'',triageNote:cd.triageNote||'',
       assignedTo:typeof USERS!=='undefined'&&USERS[cd.assignedTo]?USERS[cd.assignedTo].name:cd.assignedTo
     }));
   }catch(e){}
@@ -971,5 +971,86 @@ setTimeout(()=>{
   if(loaBtn){loaBtn.classList.add('active');currentDocId='loa';renderWorkspace();}
 },100);
 </script>
+<!-- User switcher -->
+<div class="user-modal" id="user-modal" onclick="if(event.target===this)closeMenu()">
+  <div class="user-dropdown">
+    <div class="ud-header">Switch user — demo</div>
+
+    <div style="padding:4px 14px 2px;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.06em;color:var(--text3)">UK Litigation</div>
+    <div class="ud-item" id="ud-SB" onclick="switchUser('SB')">
+      <div class="ud-av">SB</div>
+      <div><div class="ud-name">Sarah Booth</div><div class="ud-role">Head of Legal Ops</div></div>
+      <i class="ti ti-check ud-tick"></i>
+    </div>
+    <div class="ud-item" id="ud-JP" onclick="switchUser('JP')">
+      <div class="ud-av">JP</div>
+      <div><div class="ud-name">James Patel</div><div class="ud-role">Senior Solicitor</div></div>
+      <i class="ti ti-check ud-tick"></i>
+    </div>
+    <div class="ud-item" id="ud-KR" onclick="switchUser('KR')">
+      <div class="ud-av">KR</div>
+      <div><div class="ud-name">Kiran Rahman</div><div class="ud-role">Solicitor</div></div>
+      <i class="ti ti-check ud-tick"></i>
+    </div>
+
+    <div style="height:1px;background:var(--border);margin:4px 0"></div>
+    <div style="padding:4px 14px 2px;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.06em;color:var(--text3)">🇫🇷 Équipe France</div>
+    <div class="ud-item" id="ud-MD" onclick="switchUser('MD')">
+      <div class="ud-av" style="background:#1a3a6b">MD</div>
+      <div><div class="ud-name">Marie Dupont</div><div class="ud-role">Juriste senior</div></div>
+      <i class="ti ti-check ud-tick"></i>
+    </div>
+    <div class="ud-item" id="ud-PL" onclick="switchUser('PL')">
+      <div class="ud-av" style="background:#1a3a6b">PL</div>
+      <div><div class="ud-name">Pierre Laurent</div><div class="ud-role">Juriste</div></div>
+      <i class="ti ti-check ud-tick"></i>
+    </div>
+
+    <div style="height:1px;background:var(--border);margin:4px 0"></div>
+    <div style="padding:4px 14px 2px;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.06em;color:var(--text3)">🇪🇸 Equipo España</div>
+    <div class="ud-item" id="ud-CG" onclick="switchUser('CG')">
+      <div class="ud-av" style="background:#6b1a1a">CG</div>
+      <div><div class="ud-name">Carlos García</div><div class="ud-role">Abogado senior</div></div>
+      <i class="ti ti-check ud-tick"></i>
+    </div>
+    <div class="ud-item" id="ud-IM" onclick="switchUser('IM')">
+      <div class="ud-av" style="background:#6b1a1a">IM</div>
+      <div><div class="ud-name">Isabel Martín</div><div class="ud-role">Abogada</div></div>
+      <i class="ti ti-check ud-tick"></i>
+    </div>
+  </div>
+</div>
+<script>
+function toggleUserMenu(){ document.getElementById('user-modal').classList.toggle('open'); }
+function closeMenu(){ document.getElementById('user-modal').classList.remove('open'); }
+function switchUser(id){
+  if(typeof setActiveUser==='function') setActiveUser(id);
+  if(typeof activeUser!=='undefined') activeUser=id;
+  closeMenu();
+  var u = typeof USERS!=='undefined' ? USERS[id] : null;
+  if(u){
+    var avEl=document.getElementById('nav-av'); if(avEl) avEl.textContent=u.initials;
+    var unEl=document.getElementById('nav-user'); if(unEl) unEl.textContent=u.name;
+  }
+  // Clear language override so user's language takes effect
+  sessionStorage.removeItem('261c_lang');
+  // Update active tick
+  document.querySelectorAll('.ud-item').forEach(function(el){el.classList.remove('current');});
+  var active=document.getElementById('ud-'+id); if(active) active.classList.add('current');
+  // Re-render if function exists
+  if(typeof render==='function') render();
+  if(typeof renderList==='function') renderList();
+}
+// Init nav user on load
+(function(){
+  try{
+    var uid=typeof getActiveUser==='function'?getActiveUser():'SB';
+    var u=typeof USERS!=='undefined'?USERS[uid]:null;
+    if(!u) return;
+    var avEl=document.getElementById('nav-av'); if(avEl) avEl.textContent=u.initials;
+    var unEl=document.getElementById('nav-user'); if(unEl) unEl.textContent=u.name;
+    var active=document.getElementById('ud-'+uid); if(active) active.classList.add('current');
+  }catch(e){}
+})();</script>
 </body>
 </html>
