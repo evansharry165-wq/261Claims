@@ -82,28 +82,29 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 .ud-name{font-size:12px;font-weight:500;color:var(--text)}
 .ud-role{font-size:10px;color:var(--text3)}
 </style>
+<script src="nav.js"></script>
 </head>
 <body>
-<nav class="global-nav">
-  <a href="index.html" class="gn-logo"><div class="gn-mark"><i class="ti ti-plane"></i></div><span class="gn-name">261Claims</span></a>
-  <div class="gn-links">
-    <a href="index.html" class="gn-link"><i class="ti ti-layout-dashboard"></i> Dashboard</a>
-    <a href="module1-intake.html" class="gn-link"><i class="ti ti-file-upload"></i> Intake</a>
-    <a href="module2-case-management.html" class="gn-link"><i class="ti ti-layout-kanban"></i> Cases</a>
-    <a href="module3-cpr.html" class="gn-link active"><i class="ti ti-calendar-due"></i> CPR</a>
-    <a href="module4-evidence.html" class="gn-link"><i class="ti ti-folder-open"></i> Evidence</a>
-    <a href="module5-drafting.html" class="gn-link"><i class="ti ti-file-pencil"></i> Drafting</a>
-    <a href="module6-mi.html" class="gn-link"><i class="ti ti-chart-bar"></i> MI</a>
-    <a href="education.html" class="gn-link"><i class="ti ti-school"></i> Knowledge</a>
+<nav class="global-nav" id="global-nav">
+  <a href="index.html" class="gn-logo">
+    <div class="gn-mark"><i class="ti ti-plane"></i></div>
+    <span class="gn-name">261Claims</span>
+  </a>
+  <div class="gn-links" id="gn-links">
+    <!-- rendered by JS -->
   </div>
   <div class="gn-right">
-    <div class="gn-user-btn" onclick="toggleUserMenu()">
-      <div class="gn-av" id="nav-av">SB</div>
-      <span class="gn-user" id="nav-user">S. Booth</span>
+    <div class="gn-user-btn" id="gn-user-btn" onclick="toggleUserDropdown()">
+      <div class="gn-av" id="gn-av">SB</div>
+      <span class="gn-username" id="gn-username">S. Booth</span>
       <i class="ti ti-chevron-down" style="font-size:10px;color:rgba(255,255,255,0.4);margin-left:2px"></i>
+      <div class="user-dropdown" id="user-dropdown" onclick="event.stopPropagation()">
+        <!-- rendered by JS -->
+      </div>
     </div>
   </div>
 </nav>
+
 <div class="app">
   <div class="body">
     <div class="page-header">
@@ -224,7 +225,8 @@ function openCase(ref){
   window.location.href = 'module3-cpr-workspace.html?ref=' + ref;
 }
 
-updateNavUser();
+window.renderPage = render;
+if(typeof renderNav==="function") renderNav();
 render();
 
 // Event delegation for case rows
