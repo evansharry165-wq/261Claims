@@ -209,12 +209,19 @@ function openCase(ref){
   try{
     sessionStorage.setItem('aeroCaseData', JSON.stringify({
       ref:c.ref, claimant:c.claimant, solicitor:c.solicitor,
-      flight:c.flight, value:c.value, type:c.type,
-      date:c.locDate, framework:'EC Regulation 261/2004',
-      points:c.points, assignedTo:USERS[c.assignedTo].name
+      flight:c.flight, flightNum:c.flightNum,
+      dep:c.dep, arr:c.arr, flightDate:c.flightDate,
+      value:c.value, type:c.type, date:c.locDate,
+      framework:'EC Regulation 261/2004',
+      points:c.points||[],
+      jurisdiction:c.jurisdiction||'england-wales',
+      lang:c.lang||'en',
+      disruptionType:c.disruptionType||'',
+      loaStatus:c.loaStatus||'',
+      assignedTo:USERS[c.assignedTo]?USERS[c.assignedTo].name:c.assignedTo
     }));
   }catch(e){}
-  window.location.href = 'module3-cpr-workspace.html?ref='+ref;
+  window.location.href = 'module3-cpr-workspace.html?ref=' + ref;
 }
 
 updateNavUser();

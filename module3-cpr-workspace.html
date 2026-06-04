@@ -151,29 +151,37 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 .note-bar button{font-size:11px;padding:5px 9px;border-radius:var(--r);border:1px solid var(--border);background:var(--surface2);cursor:pointer;font-family:var(--font);color:var(--text2)}
 </style>
 <script src="shared_data.js"></script>
-
 <script>
+/* ── URL param → sessionStorage pre-loader ── */
 (function(){
   try{
     var params = new URLSearchParams(window.location.search);
     var ref = params.get('ref');
-    if(ref && typeof getCase === 'function'){
-      var caseData = getCase(ref);
-      if(caseData){
-        sessionStorage.setItem('aeroCaseData', JSON.stringify({
-          ref:caseData.ref, claimant:caseData.claimant,
-          solicitor:caseData.solicitor, flight:caseData.flight,
-          value:caseData.value, type:caseData.type,
-          date:caseData.locDate, framework:'EC Regulation 261/2004',
-          points:caseData.points,
-          jurisdiction:caseData.jurisdiction||'england-wales',
-          assignedTo:typeof USERS!=='undefined'&&USERS[caseData.assignedTo]?USERS[caseData.assignedTo].name:caseData.assignedTo
-        }));
-      }
-    }
-  }catch(e){}
+    if(!ref) return;
+    if(typeof getCase !== 'function') return;
+    var cd = getCase(ref);
+    if(!cd) return;
+    sessionStorage.setItem('aeroCaseData', JSON.stringify({
+      ref:cd.ref, claimant:cd.claimant, solicitor:cd.solicitor,
+      flight:cd.flight, flightNum:cd.flightNum,
+      dep:cd.dep, arr:cd.arr, flightDate:cd.flightDate,
+      value:cd.value, type:cd.type, date:cd.locDate,
+      framework:'EC Regulation 261/2004',
+      points:cd.points||[],
+      jurisdiction:cd.jurisdiction||'england-wales',
+      lang:cd.lang||'en',
+      disruptionType:cd.disruptionType||'',
+      classification:cd.classification||'',
+      evidencePct:cd.evidencePct||0,
+      loaStatus:cd.loaStatus||'',
+      triageNote:cd.triageNote||'',
+      assignedTo:typeof USERS!=='undefined'&&USERS[cd.assignedTo]?USERS[cd.assignedTo].name:cd.assignedTo
+    }));
+  }catch(e){ console.warn('URL pre-loader:', e); }
 })();
 </script>
+
+<script src="shared_data.js"></script>
 </head>
 <body>
 <div class="app">

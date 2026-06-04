@@ -219,15 +219,37 @@ function extraCol(c){
 function openCase(ref){
   var c = getCase(ref);
   if(!c) return;
+  // Write full case data to sessionStorage
   try{
     sessionStorage.setItem('aeroCaseData', JSON.stringify({
       ref:c.ref, claimant:c.claimant, solicitor:c.solicitor,
-      flight:c.flight, value:c.value, type:c.type,
-      date:c.locDate, framework:'EC Regulation 261/2004',
-      points:c.points, assignedTo:USERS[c.assignedTo].name
+      flight:c.flight, flightNum:c.flightNum,
+      dep:c.dep, arr:c.arr, flightDate:c.flightDate,
+      value:c.value, type:c.type, date:c.locDate,
+      framework:'EC Regulation 261/2004',
+      points:c.points,
+      jurisdiction:c.jurisdiction||'england-wales',
+      lang:c.lang||'en',
+      disruptionType:c.disruptionType||'',
+      classification:c.classification||'',
+      evidencePct:c.evidencePct||0,
+      loaStatus:c.loaStatus||'',
+      triageNote:c.triageNote||'',
+      assignedTo:USERS[c.assignedTo]?USERS[c.assignedTo].name:c.assignedTo
     }));
   }catch(e){}
-  window.location.href = 'module2-case-workspace.html?ref='+ref;
+  // Route to the correct workspace based on case stage
+  var STAGE_ROUTES = {
+    'intake':   'module1-intake.html',
+    'triage':   'module2-case-workspace.html',
+    'cpr':      'module3-cpr-workspace.html',
+    'evidence': 'module4-evidence-workspace.html',
+    'drafting': 'module5-drafting-workspace.html',
+    'defence':  'module5-drafting-workspace.html',
+    'resolve':  'module2-case-workspace.html'
+  };
+  var dest = STAGE_ROUTES[c.stage] || 'module2-case-workspace.html';
+  window.location.href = dest + '?ref=' + ref;
 }
 
 updateNavUser();

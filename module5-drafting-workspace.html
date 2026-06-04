@@ -117,30 +117,26 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 .pr-claim{color:var(--text2)}
 .pr-ev{font-size:10px;color:var(--text3);font-family:var(--mono);margin-top:2px}
 </style>
-<script src="shared_data.js"></script>
-
 <script>
 (function(){
   try{
     var params = new URLSearchParams(window.location.search);
     var ref = params.get('ref');
-    if(ref && typeof getCase === 'function'){
-      var caseData = getCase(ref);
-      if(caseData){
-        sessionStorage.setItem('aeroCaseData', JSON.stringify({
-          ref:caseData.ref, claimant:caseData.claimant,
-          solicitor:caseData.solicitor, flight:caseData.flight,
-          value:caseData.value, type:caseData.type,
-          date:caseData.locDate, framework:'EC Regulation 261/2004',
-          points:caseData.points,
-          jurisdiction:caseData.jurisdiction||'england-wales',
-          assignedTo:typeof USERS!=='undefined'&&USERS[caseData.assignedTo]?USERS[caseData.assignedTo].name:caseData.assignedTo
-        }));
-      }
-    }
+    if(!ref) return;
+    if(typeof getCase !== 'function') return;
+    var cd = getCase(ref);
+    if(!cd) return;
+    sessionStorage.setItem('aeroCaseData', JSON.stringify({
+      ref:cd.ref, claimant:cd.claimant, solicitor:cd.solicitor,
+      flight:cd.flight, value:cd.value, type:cd.type, date:cd.locDate,
+      framework:'EC Regulation 261/2004', points:cd.points||[],
+      jurisdiction:cd.jurisdiction||'england-wales', lang:cd.lang||'en',
+      assignedTo:typeof USERS!=='undefined'&&USERS[cd.assignedTo]?USERS[cd.assignedTo].name:cd.assignedTo
+    }));
   }catch(e){}
 })();
 </script>
+<script src="shared_data.js"></script>
 </head>
 <body>
 <div class="app">
