@@ -150,483 +150,54 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 .note-bar input:focus{outline:none;border-color:var(--blue)}
 .note-bar button{font-size:11px;padding:5px 9px;border-radius:var(--r);border:1px solid var(--border);background:var(--surface2);cursor:pointer;font-family:var(--font);color:var(--text2)}
 </style>
-<script src="shared_data.js"></script>
-</head>
-<body>
-<nav class="global-nav" style="background:var(--navy);height:48px;display:flex;align-items:center;padding:0 20px;gap:0;flex-shrink:0">
-  <a href="index.html" style="display:flex;align-items:center;gap:8px;text-decoration:none;margin-right:16px">
-    <div style="width:28px;height:28px;background:var(--blue);border-radius:6px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px"><i class="ti ti-plane"></i></div>
-    <span style="font-size:14px;font-weight:500;color:#fff">261Claims</span>
-  </a>
-  <div style="display:flex;align-items:center;gap:2px;flex:1">
-    <a href="index.html" style="display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r);font-size:12px;font-weight:500;color:rgba(255,255,255,0.5);text-decoration:none"><i class="ti ti-layout-dashboard"></i> Dashboard</a>
-    <a href="module1-intake.html" style="display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r);font-size:12px;font-weight:500;color:rgba(255,255,255,0.5);text-decoration:none"><i class="ti ti-file-upload"></i> Intake</a>
-    <a href="module2-case-management.html" style="display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r);font-size:12px;font-weight:500;color:rgba(255,255,255,0.5);text-decoration:none"><i class="ti ti-layout-kanban"></i> Cases</a>
-    <a href="module3-cpr.html" style="display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r);font-size:12px;font-weight:500;color:rgba(255,255,255,0.5);text-decoration:none"><i class="ti ti-calendar-due"></i> CPR</a>
-    <a href="module4-evidence.html" style="display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r);font-size:12px;font-weight:500;color:rgba(255,255,255,0.5);text-decoration:none"><i class="ti ti-folder-open"></i> Evidence</a>
-    <a href="module5-drafting.html" style="display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r);font-size:12px;font-weight:500;color:rgba(255,255,255,0.5);text-decoration:none"><i class="ti ti-file-pencil"></i> Drafting</a>
-    <a href="module6-mi.html" style="display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r);font-size:12px;font-weight:500;color:rgba(255,255,255,0.5);text-decoration:none"><i class="ti ti-chart-bar"></i> MI</a>
-  </div>
-  <a href="module3-cpr.html" style="font-size:11px;padding:5px 12px;border-radius:var(--r);border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.7);text-decoration:none;display:flex;align-items:center;gap:5px"><i class="ti ti-calendar-due"></i> Back to CPR deadlines</a>
-</nav>
-<div class="app">
-    <div class="body">
-    <div class="main" id="main"></div>
-    <div class="sidebar">
-      <div class="sb-header">
-        <div class="sb-title">Audit trail</div>
-        <div class="sb-sub" id="audit-count">0 entries</div>
-      </div>
-      <div class="audit-scroll" id="audit-scroll"></div>
-      <div class="note-bar">
-        <input type="text" id="note-input" placeholder="Add a note…" onkeydown="if(event.key==='Enter')addNote()">
-        <button onclick="addNote()">Add</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<script>
-/* ── Case data ── */
-var _i={};
-try{var _r=sessionStorage.getItem('aeroCaseData');if(_r)_i=JSON.parse(_r);}catch(e){}
-var C={
-  ref:        _i.ref        ||'AC-2026-0089',
-  name:       _i.claimant   ||'Daniel Hartley',
-  sol:        _i.solicitor  ||'Pemberton & Associates Solicitors LLP',
-  solAddr:    'Clarke & Partners Solicitors, 22 Bridge Street, Manchester, M3 3BT',
-  flight:     _i.flight     ||'HC 1184 — LTN to BCN (diverted VLC)',
-  value:      _i.value      ||'£39,000+',
-  type:       _i.type       ||'EC 261/2004 — delay / diversion',
-  date:       _i.date       ||'22 May 2026',
-  framework:  _i.framework  ||'EC Regulation 261/2004',
-  assignedTo: _i.assignedTo ||'S. Booth',
-  user:       'S. Booth'
-};
-
-/* ── Date helpers ── */
-var MONTHS={Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11,
-  January:0,February:1,March:2,April:3,June:5,July:6,August:7,September:8,October:9,November:10,December:11};
-
-function parseDate(s){
-  var m=s.match(/(\d+)\s+(\w+)\s+(\d{4})/);
-  if(!m)return new Date();
-  return new Date(parseInt(m[3]),MONTHS[m[2]]||0,parseInt(m[1]));
-}
-function addDays(d,n){var r=new Date(d);r.setDate(r.getDate()+n);return r;}
-function fmtDate(d){return d.toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'});}
-function fmtShort(d){return d.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});}
-function daysFrom(d){var n=new Date();n.setHours(0,0,0,0);return Math.round((d-n)/(1000*60*60*24));}
-function urgency(days){return days<=3?'urgent':days<=7?'warning':'ok';}
-
-var locDate = parseDate(C.date);
-var d21  = addDays(locDate,21);
-var d28  = addDays(locDate,28);
-var d3m  = addDays(locDate,91);
-var d4m  = addDays(locDate,120);
-
-var DEADLINES=[
-  {id:'response',  label:'LOC response deadline',        date:d21,
-   desc:'A substantive response to the letter of claim must be sent within 21 days of receipt. Failure to respond within this period may entitle the claimant to issue proceedings without further notice.',
-   rule:'CPR Pre-Action Protocol — 21 days from LOC receipt'},
-  {id:'ack',       label:'Acknowledgement outer limit',   date:d28,
-   desc:'If a full response cannot be provided within 21 days, an acknowledgement confirming receipt and providing a response date must be sent. The response itself must then follow within three months of acknowledgement.',
-   rule:'CPR Pre-Action Protocol para. 3.6 — 21 days acknowledgement, 3 months investigation'},
-  {id:'lor',       label:'Letter of response deadline',   date:d3m,
-   desc:'The defendant has three months from the date of acknowledgement to investigate and provide a substantive letter of response addressing all heads of claim.',
-   rule:'CPR Pre-Action Protocol para. 3.7 — 3 months from acknowledgement'},
-  {id:'limitation',label:'4-month limitation review flag',date:d4m,
-   desc:'EC261 claims are subject to a 6-year limitation period in England & Wales. This flag prompts a case review at 4 months to ensure all steps have been taken and no obligations have been missed.',
-   rule:'Limitation Act 1980 s.9 — 6 years from date of flight'},
-];
-
-/* ── State ── */
-var checked={};
-var loaChoice=_i.loaChoice||'';
-var calAdded={};
-var loaDraftState='';  // '' | 'draft' | 'editing' | 'approved'
-var loaEdits='';
-var audit=[];
-
-function ts(){return new Date().toLocaleString('en-GB',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});}
-function log(t,type){audit.push({t:t,type:type||'action',time:ts(),by:C.user});renderAudit();}
-
-/* ── Checklist ── */
-var CHECKS=[
-  {id:'c_deadlines',label:'CPR deadlines reviewed',           sub:'Confirm you have reviewed all four deadlines and understand the obligations for this case.',req:true},
-  {id:'c_calendar', label:'Response deadline added to calendar',sub:'Export the 21-day response deadline using the calendar buttons below.',req:true},
-  {id:'c_loa',      label:'Letter of Acknowledgement decision made',sub:'Select your decision below — draft available if needed.',req:true},
-  {id:'c_sol',      label:'Claimant solicitor details confirmed', sub:C.sol+' confirmed as acting for the claimant.',req:true},
-  {id:'c_counsel',  label:'Assigned solicitor briefed',          sub:C.assignedTo+' informed of all CPR obligations.',req:false},
-];
-
-function allReqDone(){
-  return CHECKS.filter(function(c){return c.req;}).every(function(c){return checked[c.id];})
-    && loaChoice!=='';
-}
-
-/* ── Build LOA letter text ── */
-function buildLOA(){
-  var today=fmtDate(new Date());
-  var responseBy=fmtDate(d3m);
-  var ref=C.ref;
-  return 'PRIVATE AND CONFIDENTIAL\n'
-    +'BY EMAIL AND FIRST CLASS POST\n\n'
-    +today+'\n\n'
-    +C.sol+'\n'
-    +C.solAddr+'\n\n'
-    +'Dear Sirs,\n\n'
-    +'RE: '+C.name.toUpperCase()+' v. TESTAIRWAYS — '+C.type.toUpperCase()+'\n'
-    +'YOUR REF: [INSERT CLAIMANT REF]   OUR REF: '+ref+'\n'
-    +'FLIGHT: '+C.flight+'\n\n'
-    +'ACKNOWLEDGEMENT OF LETTER OF CLAIM\n\n'
-    +'We write on behalf of TestAirways in response to your letter of claim dated '+C.date+', received by our Legal Department on '+C.date+'.\n\n'
-    +'We confirm receipt of your letter of claim and write to acknowledge the same in accordance with the Pre-Action Protocol.\n\n'
-    +'INVESTIGATION\n\n'
-    +'We are currently investigating the circumstances surrounding the above-referenced flight disruption. '
-    +'The matter has been assigned to our legal team and we are in the process of gathering the relevant operational data, flight records, and evidence necessary to respond substantively to each of your client\'s heads of claim.\n\n'
-    +'In accordance with the Pre-Action Protocol, we will provide a full Letter of Response no later than '+responseBy+', being three months from the date of this acknowledgement. '
-    +'We reserve the right to seek an extension of this period by agreement should the investigation require additional time, and we will notify you promptly if this becomes necessary.\n\n'
-    +'EXTRAORDINARY CIRCUMSTANCES\n\n'
-    +'Without prejudice to our investigation, we draw your attention to the fact that the disruption to flight '+C.flight+' arose from circumstances beyond the reasonable control of TestAirways. '
-    +'We are gathering evidence in respect of the applicable extraordinary circumstances defence under Article 5(3) of EC Regulation 261/2004 (as retained in UK law) and the test established in Wallentin-Hermann v Alitalia (Case C-549/07). '
-    +'Our position on liability will be set out in full in our Letter of Response.\n\n'
-    +'RESERVATION OF RIGHTS\n\n'
-    +'Nothing in this letter constitutes an admission of liability. TestAirways reserves all rights and defences available to it under EC Regulation 261/2004, the Montreal Convention, and at common law. '
-    +'We will respond to each of the heads of claim raised in your letter in our substantive Letter of Response.\n\n'
-    +'ALTERNATIVE DISPUTE RESOLUTION\n\n'
-    +'We note your client\'s right to refer this matter to the Civil Aviation Authority (CAA) or an approved Alternative Dispute Resolution (ADR) scheme. '
-    +'We remain open to resolving this matter without recourse to litigation where appropriate and will address any proposals for settlement in our Letter of Response.\n\n'
-    +'We look forward to corresponding with you further.\n\n'
-    +'Yours faithfully,\n\n'
-    +C.assignedTo+'\n'
-    +'Legal Department\n'
-    +'TestAirways\n\n'
-    +'---\n'
-    +'This letter is sent on behalf of TestAirways. It does not constitute legal advice to the recipient. '
-    +'The contents are confidential and subject to legal professional privilege.';
-}
-
-/* ── Render ── */
-function render(){renderMain();renderAudit();}
-
-function renderMain(){
-  var m=document.getElementById('main');
-
-  /* case header */
-  var hdr='<div class="case-hdr">'
-    +'<div><div class="ch-ref">'+C.ref+'</div>'
-    +'<div class="ch-name">'+C.name+' v. TestAirways</div>'
-    +'<div class="ch-meta">'
-    +'<span><i class="ti ti-plane"></i>'+C.flight+'</span>'
-    +'<span><i class="ti ti-currency-pound"></i>'+C.value+'</span>'
-    +'<span><i class="ti ti-calendar"></i>LOC received '+C.date+'</span>'
-    +'</div></div></div>';
-
-  /* stage rail */
-  var RAIL=[
-    {l:'Intake',   pip:'done',  icon:'ti-check'},
-    {l:'Triage',   pip:'done',  icon:'ti-check'},
-    {l:'CPR',      pip:'active',icon:'ti-calendar-due'},
-    {l:'Evidence', pip:'',      icon:'ti-folder'},
-    {l:'Defence',  pip:'',      icon:'ti-shield'},
-    {l:'Resolve',  pip:'',      icon:'ti-circle-check'},
-  ];
-  var rail='<div class="stage-rail">'
-    +RAIL.map(function(s){
-      return '<div class="rail-step">'
-        +'<div class="rail-pip '+s.pip+'"><i class="ti '+s.icon+'" style="font-size:10px"></i></div>'
-        +'<div class="rail-label '+s.pip+'">'+s.l+'</div>'
-        +'</div>';
-    }).join('')+'</div>';
-
-  /* purpose */
-  var purpose=''
-    +'<div class="purpose-text">Confirm all CPR obligations are tracked before evidence gathering begins. Set calendar reminders for each deadline, confirm the Letter of Acknowledgement position, and if sending one, review and approve the draft below.</div>'
-    +'</div>';
-
-  /* deadline cards */
-  var dlCards='<div class="deadline-grid">'
-    +DEADLINES.map(function(dl){
-      var days=daysFrom(dl.date);
-      var urg=urgency(days);
-      var daysTxt=days<0?'Overdue by '+Math.abs(days)+' day'+(Math.abs(days)!==1?'s':'')
-                 :days===0?'Due today'
-                 :'Due in '+days+' day'+(days!==1?'s':'');
-      var isAdded=!!calAdded[dl.id];
-      var calBtns=isAdded
-        ?'<button class="btn-cal added"><i class="ti ti-check" style="font-size:10px"></i> Added</button>'
-        :'<button class="btn-cal" onclick="exportICS(\''+dl.id+'\',\''+dl.label+'\',\''+dl.date.toISOString()+'\')"><i class="ti ti-calendar-plus" style="font-size:10px"></i> .ics</button>'
-         +'<button class="btn-cal" onclick="openGCal(\''+dl.id+'\',\''+dl.label+'\',\''+dl.date.toISOString()+'\')"><i class="ti ti-brand-google" style="font-size:10px"></i> Google</button>';
-      return '<div class="dl-card '+urg+'">'
-        +'<div class="dl-label '+urg+'"><i class="ti ti-clock" style="font-size:10px"></i>'+dl.label+'</div>'
-        +'<div class="dl-date '+urg+'">'+fmtDate(dl.date)+'</div>'
-        +'<div class="dl-days">'+daysTxt+'</div>'
-        +'<div class="dl-desc">'+dl.desc+'</div>'
-        +'<div class="dl-rule">'+dl.rule+'</div>'
-        +'<div class="cal-row">'+calBtns+'</div>'
-        +'</div>';
-    }).join('')+'</div>';
-
-  /* checklist */
-  var chkHtml=CHECKS.map(function(c){
-    var isDone=!!checked[c.id];
-    var extra='';
-
-    if(c.id==='c_loa'){
-      if(!loaChoice){
-        extra='<div class="loa-opts">'
-          +'<div class="loa-opt-title"><i class="ti ti-mail" style="font-size:10px"></i>Letter of Acknowledgement</div>'
-          +'<label class="loa-opt"><input type="radio" name="loa" value="draft" onchange="setLoa(\'draft\')"> Draft and send a Letter of Acknowledgement from this system</label>'
-          +'<label class="loa-opt"><input type="radio" name="loa" value="sending" onchange="setLoa(\'sending\')"> Sending separately — no draft needed</label>'
-          +'<label class="loa-opt"><input type="radio" name="loa" value="none" onchange="setLoa(\'none\')"> Not sending — decision noted</label>'
-          +'</div>';
-      } else {
-        var loaLabels={draft:'Drafting LOA in this system',sending:'Sending separately',none:'Not sending — noted'};
-        extra='<div class="loa-confirmed"><i class="ti ti-check" style="font-size:11px"></i>'+loaLabels[loaChoice]+'</div>';
-      }
-    }
-
-    return '<div class="chk-item'+(isDone?' done':'')+'">'
-      +'<div class="chkbox'+(isDone?' on':'')+'" onclick="toggleCheck(\''+c.id+'\',\''+c.label+'\')"><i class="ti ti-check"></i></div>'
-      +'<div class="chk-body">'
-      +'<div class="chk-title'+(isDone?' done':'')+'">'+c.label
-      +'<span class="'+(c.req?'tag-req':'tag-opt')+'">'+(c.req?'Required':'Optional')+'</span>'
-      +'</div>'
-      +'<div class="chk-sub">'+c.sub+'</div>'
-      +extra
-      +'</div></div>';
-  }).join('');
-
-  /* LOA draft panel */
-  var loaDraftPanel='';
-  if(loaChoice==='draft'){
-    var letterText=loaEdits||buildLOA();
-    var statusTxt='';
-    var statusCls='loa-status';
-    if(loaDraftState==='approved'){statusTxt='Approved for sending';statusCls='loa-status approved';}
-    else if(loaDraftState==='editing'){statusTxt='Editing…';}
-    else{statusTxt='Draft — pending review';}
-
-    loaDraftPanel='<div class="loa-draft-panel">'
-      +'<div class="ldp-header">'
-      +'<div class="ldp-title"><i class="ti ti-file-text" style="font-size:13px;color:var(--amber)"></i>Letter of Acknowledgement — draft</div>'
-      +'<div class="ldp-actions">'
-      +(loaDraftState!=='approved'
-        ?'<button class="btn-loa" onclick="editLOA()"><i class="ti ti-pencil" style="font-size:11px"></i> Edit</button>'
-         +'<button class="btn-loa" onclick="downloadLOA()"><i class="ti ti-download" style="font-size:11px"></i> Download</button>'
-         +'<button class="btn-loa primary" onclick="approveLOA()"><i class="ti ti-check" style="font-size:11px"></i> Approve & mark sent</button>'
-        :'<button class="btn-loa" onclick="downloadLOA()"><i class="ti ti-download" style="font-size:11px"></i> Download</button>'
-         +'<span style="font-size:11px;color:var(--green);font-weight:500;padding:5px 8px;display:flex;align-items:center;gap:4px"><i class="ti ti-circle-check" style="font-size:12px"></i>Approved</span>'
-      )
-      +'</div></div>'
-      +'<div class="loa-letter" id="loa-text">'+letterText.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</div>'
-      +'<div class="loa-footer"><div class="'+statusCls+'">'+statusTxt+'</div>'
-      +'<div style="font-size:10px;color:var(--text3)">Review before approving — this document will be sent to '+C.sol+'</div>'
-      +'</div></div>';
-  }
-
-  var done=allReqDone();
-  var hint='';
-  if(!done){
-    if(!loaChoice) hint='Select a Letter of Acknowledgement decision to proceed';
-    else{
-      var miss=CHECKS.filter(function(c){return c.req&&!checked[c.id];});
-      if(miss.length) hint=miss.length+' required item'+(miss.length>1?'s':'')+' remaining';
-    }
-  }
-
-  var chkCard='<div class="card">'
-    +'<div class="card-title"><i class="ti ti-list-check" style="color:var(--amber);font-size:15px"></i>CPR compliance checklist</div>'
-    +'<div class="checklist">'+chkHtml+'</div>'
-    +loaDraftPanel
-    +'<div style="margin-top:'+(loaDraftPanel?'14px':'0px')+'">'
-    +'<button class="btn-advance" onclick="goToEvidence()" '+(done?'':'disabled')+'>Proceed to evidence gathering <i class="ti ti-arrow-right"></i></button>'
-    +'<div class="advance-hint">'+hint+'</div>'
-    +'</div></div>';
-
-  m.innerHTML=hdr+rail+purpose+dlCards+chkCard;
-}
-
-function renderAudit(){
-  var el=document.getElementById('audit-scroll');
-  document.getElementById('audit-count').textContent=audit.length+' entr'+(audit.length===1?'y':'ies');
-  if(!audit.length){el.innerHTML='<div style="font-size:11px;color:var(--text3);padding:6px 0">No activity yet</div>';return;}
-  el.innerHTML=audit.slice().reverse().map(function(e){
-    return '<div class="audit-entry"><div class="a-dot a-'+e.type+'"></div>'
-      +'<div><div class="a-text">'+e.t+'</div>'
-      +'<div class="a-time">'+e.time+' · '+e.by+'</div></div></div>';
-  }).join('');
-}
-
-/* ── Actions ── */
-function toggleCheck(id,label){
-  if(checked[id]){delete checked[id];log('Unchecked: '+label,'action');}
-  else{checked[id]=true;log('Confirmed: '+label,'action');}
-  render();
-}
-
-function setLoa(val){
-  loaChoice=val;
-  checked['c_loa']=true;
-  if(val==='draft') loaDraftState='draft';
-  var msgs={draft:'LOA decision: drafting in system — review required before sending',sending:'LOA decision: sending separately',none:'LOA decision: not sending — noted on record'};
-  log(msgs[val],'draft');
-  try{var d=JSON.parse(sessionStorage.getItem('aeroCaseData')||'{}');d.loaChoice=val;sessionStorage.setItem('aeroCaseData',JSON.stringify(d));}catch(e){}
-  render();
-}
-
-function editLOA(){
-  var el=document.getElementById('loa-text');
-  if(!el)return;
-  loaEdits=el.innerText||el.textContent||buildLOA();
-  loaDraftState='editing';
-  log('LOA draft opened for editing','draft');
-  render();
-}
-
-function approveLOA(){
-  var el=document.getElementById('loa-text');
-  if(el) loaEdits=el.innerText||el.textContent||loaEdits||buildLOA();
-  loaDraftState='approved';
-  checked['c_loa']=true;
-  log('Letter of Acknowledgement approved by '+C.user+' — marked as sent to '+C.sol,'draft');
-  render();
-}
-
-function downloadLOA(){
-  var text=loaEdits||buildLOA();
-  var blob=new Blob([text],{type:'text/plain'});
-  var a=document.createElement('a');
-  a.href=URL.createObjectURL(blob);
-  a.download=C.ref+'-Letter-of-Acknowledgement.txt';
-  a.click();
-  log('LOA draft downloaded: '+C.ref+'-Letter-of-Acknowledgement.txt','draft');
-}
-
-function exportICS(id,label,dateStr){
-  var d=new Date(dateStr);
-  function fmt(dt){return dt.toISOString().replace(/[-:]/g,'').split('.')[0]+'Z';}
-  var end=new Date(d.getTime()+3600000);
-  var r14=new Date(d.getTime()-14*86400000);
-  var r7=new Date(d.getTime()-7*86400000);
-  var r3=new Date(d.getTime()-3*86400000);
-  var ics='BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//261Claims//EN\r\n'
-    +'BEGIN:VEVENT\r\nUID:'+C.ref+'-'+id+'@261claims\r\n'
-    +'DTSTART:'+fmt(d)+'\r\nDTEND:'+fmt(end)+'\r\n'
-    +'SUMMARY:'+label+' — '+C.name+' v. TestAirways ('+C.ref+')\r\n'
-    +'DESCRIPTION:'+C.type+' · Value: '+C.value+' · Ref: '+C.ref+'\r\n'
-    +'BEGIN:VALARM\r\nTRIGGER:'+fmt(r14)+'\r\nACTION:DISPLAY\r\nDESCRIPTION:14 days — '+label+' '+C.ref+'\r\nEND:VALARM\r\n'
-    +'BEGIN:VALARM\r\nTRIGGER:'+fmt(r7)+'\r\nACTION:DISPLAY\r\nDESCRIPTION:7 days — '+label+' '+C.ref+'\r\nEND:VALARM\r\n'
-    +'BEGIN:VALARM\r\nTRIGGER:'+fmt(r3)+'\r\nACTION:DISPLAY\r\nDESCRIPTION:3 days — '+label+' '+C.ref+'\r\nEND:VALARM\r\n'
-    +'END:VEVENT\r\nEND:VCALENDAR';
-  var blob=new Blob([ics],{type:'text/calendar'});
-  var a=document.createElement('a');
-  a.href=URL.createObjectURL(blob);
-  a.download=C.ref+'-'+id+'.ics';
-  a.click();
-  calAdded[id]=true;
-  if(id==='response') checked['c_calendar']=true;
-  log('Calendar export: '+label+' — '+fmtDate(new Date(dateStr)),'cal');
-  render();
-}
-
-function openGCal(id,label,dateStr){
-  var d=new Date(dateStr);
-  function fmt(dt){return dt.toISOString().replace(/[-:T]/g,'').split('.')[0]+'Z';}
-  var end=new Date(d.getTime()+3600000);
-  var text=encodeURIComponent(label+' — '+C.name+' v. TestAirways ('+C.ref+')');
-  var details=encodeURIComponent(C.type+' · Value: '+C.value+' · Ref: '+C.ref);
-  window.open('https://calendar.google.com/calendar/render?action=TEMPLATE&text='+text+'&dates='+fmt(d)+'/'+fmt(end)+'&details='+details,'_blank');
-  calAdded[id]=true;
-  if(id==='response') checked['c_calendar']=true;
-  log('Google Calendar: '+label,'cal');
-  render();
-}
-
-function goToEvidence(){
-  if(!allReqDone())return;
-  log('CPR stage complete — proceeding to evidence management','stage');
-  try{
-    var d=JSON.parse(sessionStorage.getItem('aeroCaseData')||'{}');
-    d.cprComplete=true;
-    d.responseDeadline=fmtDate(d21);
-    d.loaStatus=loaDraftState;
-    sessionStorage.setItem('aeroCaseData',JSON.stringify(d));
-  }catch(e){}
-  window.location.href='module4-evidence.html';
-}
-
-function addNote(){
-  var inp=document.getElementById('note-input');
-  var val=inp.value.trim();
-  if(!val)return;
-  log(val,'note');
-  inp.value='';
-}
-
-
-// Read case ref from URL and pre-populate
-(function(){
-  var params = new URLSearchParams(window.location.search);
-  var ref = params.get('ref');
-  if(ref){
-    var caseData = typeof getCase === 'function' ? getCase(ref) : null;
-    if(caseData){
-      try{
-        sessionStorage.setItem('aeroCaseData', JSON.stringify({
-          ref: caseData.ref,
-          claimant: caseData.claimant,
-          solicitor: caseData.solicitor,
-          flight: caseData.flight,
-          value: caseData.value,
-          type: caseData.type,
-          date: caseData.locDate,
-          framework: 'EC Regulation 261/2004',
-          points: caseData.points,
-          assignedTo: USERS[caseData.assignedTo] ? USERS[caseData.assignedTo].name : caseData.assignedTo
-        }));
-      }catch(e){}
-    }
-  }
-})();
-
 /* ── Init ── */
 log('CPR module opened — '+C.name+' v. TestAirways','create');
 log('LOC received: '+C.date+' · Response deadline: '+fmtDate(d21),'action');
 render();
 </script>
+
 <script>
-// Dynamic nav badges
 (function(){
-  try {
-    var userId = typeof getActiveUser === 'function' ? getActiveUser() : 'SB';
-    var cases = typeof getCasesForUser === 'function' ? getCasesForUser(userId) : [];
-    var intakeCount = cases.filter(function(c){ return c.stage==='intake'; }).length;
-    var urgentCPR = cases.filter(function(c){ return c.cprDaysLeft <= 7 && c.stage !== 'resolve'; }).length;
-    
-    // Find nav links and add badges
-    var links = document.querySelectorAll('.gn-link');
-    links.forEach(function(link){
-      var href = link.getAttribute('href') || '';
-      var badge = null;
-      if(href.indexOf('module1-intake') >= 0 && intakeCount > 0){
-        badge = intakeCount;
-      } else if(href.indexOf('module3-cpr') >= 0 && urgentCPR > 0){
-        badge = urgentCPR;
-      }
-      if(badge){
-        var existing = link.querySelector('.nav-count');
-        if(!existing){
-          var span = document.createElement('span');
-          span.className = 'nav-count';
-          span.style.cssText = 'background:var(--red);color:#fff;font-size:9px;font-weight:500;padding:1px 5px;border-radius:20px;margin-left:3px';
-          span.textContent = badge;
-          link.appendChild(span);
-        }
+  try{
+    if(typeof getCasesForUser!=='function') return;
+    var uid = typeof getActiveUser==='function' ? getActiveUser() : 'SB';
+    var cases = getCasesForUser(uid);
+    var intakeN = cases.filter(function(c){return c.stage==='intake';}).length;
+    var urgentN = cases.filter(function(c){return c.cprDaysLeft<=7 && c.stage!=='resolve';}).length;
+    document.querySelectorAll('.gn-link').forEach(function(link){
+      var h = link.getAttribute('href')||'';
+      var n = h.indexOf('module1')>=0?intakeN:h.indexOf('module3-cpr')>=0?urgentN:0;
+      if(n>0){
+        var s=document.createElement('span');
+        s.style.cssText='background:#C0392B;color:#fff;font-size:9px;font-weight:600;padding:1px 5px;border-radius:10px;margin-left:4px;line-height:1.4';
+        s.textContent=n;
+        link.appendChild(s);
       }
     });
-  } catch(e){}
+  }catch(e){}
+})();
+</script>
+
+<script>
+// Read case ref from URL and pre-populate
+(function(){
+  try{
+    var params = new URLSearchParams(window.location.search);
+    var ref = params.get('ref');
+    if(ref && typeof getCase==='function'){
+      var caseData = getCase(ref);
+      if(caseData){
+        sessionStorage.setItem('aeroCaseData', JSON.stringify({
+          ref:caseData.ref, claimant:caseData.claimant,
+          solicitor:caseData.solicitor, flight:caseData.flight,
+          value:caseData.value, type:caseData.type,
+          date:caseData.locDate, framework:'EC Regulation 261/2004',
+          points:caseData.points,
+          assignedTo: USERS[caseData.assignedTo] ? USERS[caseData.assignedTo].name : caseData.assignedTo
+        }));
+      }
+    }
+  }catch(e){}
 })();
 </script>
 </body>

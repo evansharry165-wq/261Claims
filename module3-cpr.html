@@ -94,6 +94,7 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
     <a href="module4-evidence.html" class="gn-link"><i class="ti ti-folder-open"></i> Evidence</a>
     <a href="module5-drafting.html" class="gn-link"><i class="ti ti-file-pencil"></i> Drafting</a>
     <a href="module6-mi.html" class="gn-link"><i class="ti ti-chart-bar"></i> MI</a>
+    <a href="education.html" class="gn-link"><i class="ti ti-school"></i> Knowledge</a>
   </div>
   <div class="gn-right">
     <div class="gn-user-btn" onclick="toggleUserMenu()">
@@ -128,7 +129,7 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
       </table>
       <div id="empty-state" style="display:none" class="empty-state">
         <i class="ti ti-calendar-due"></i>
-        <p>No CPR obligations assigned to you.</p>
+        <p>No open cases with CPR obligations.</p>
       </div>
     </div>
   </div>
@@ -159,7 +160,6 @@ function switchUser(id){
 
 function render(){
   var u = USERS[activeUser];
-  var stage = 'cpr';
   var cases = getCasesForUser(activeUser).filter(function(c){ return c.stage !== 'resolve'; });
   cases = cases.sort(function(a,b){return a.cprDaysLeft-b.cprDaysLeft;});
 
@@ -226,38 +226,28 @@ document.getElementById('case-tbody').addEventListener('click', function(e){
   if(tr) openCase(tr.dataset.ref);
 });
 </script>
+
 <script>
-// Dynamic nav badges
 (function(){
-  try {
-    var userId = typeof getActiveUser === 'function' ? getActiveUser() : 'SB';
-    var cases = typeof getCasesForUser === 'function' ? getCasesForUser(userId) : [];
-    var intakeCount = cases.filter(function(c){ return c.stage==='intake'; }).length;
-    var urgentCPR = cases.filter(function(c){ return c.cprDaysLeft <= 7 && c.stage !== 'resolve'; }).length;
-    
-    // Find nav links and add badges
-    var links = document.querySelectorAll('.gn-link');
-    links.forEach(function(link){
-      var href = link.getAttribute('href') || '';
-      var badge = null;
-      if(href.indexOf('module1-intake') >= 0 && intakeCount > 0){
-        badge = intakeCount;
-      } else if(href.indexOf('module3-cpr') >= 0 && urgentCPR > 0){
-        badge = urgentCPR;
-      }
-      if(badge){
-        var existing = link.querySelector('.nav-count');
-        if(!existing){
-          var span = document.createElement('span');
-          span.className = 'nav-count';
-          span.style.cssText = 'background:var(--red);color:#fff;font-size:9px;font-weight:500;padding:1px 5px;border-radius:20px;margin-left:3px';
-          span.textContent = badge;
-          link.appendChild(span);
-        }
+  try{
+    if(typeof getCasesForUser!=='function') return;
+    var uid = typeof getActiveUser==='function' ? getActiveUser() : 'SB';
+    var cases = getCasesForUser(uid);
+    var intakeN = cases.filter(function(c){return c.stage==='intake';}).length;
+    var urgentN = cases.filter(function(c){return c.cprDaysLeft<=7 && c.stage!=='resolve';}).length;
+    document.querySelectorAll('.gn-link').forEach(function(link){
+      var h = link.getAttribute('href')||'';
+      var n = h.indexOf('module1')>=0?intakeN:h.indexOf('module3-cpr')>=0?urgentN:0;
+      if(n>0){
+        var s=document.createElement('span');
+        s.style.cssText='background:#C0392B;color:#fff;font-size:9px;font-weight:600;padding:1px 5px;border-radius:10px;margin-left:4px;line-height:1.4';
+        s.textContent=n;
+        link.appendChild(s);
       }
     });
-  } catch(e){}
+  }catch(e){}
 })();
 </script>
+
 </body>
 </html>
