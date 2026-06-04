@@ -171,15 +171,15 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
     <div class="gn-mark"><i class="ti ti-plane"></i></div>
     <span class="gn-name">261Claims</span>
   </a>
-  <div class="gn-links">
-    <a href="index.html" class="gn-link active" id="nav-dashboard"><i class="ti ti-layout-dashboard"></i> Dashboard</a>
-    <a href="module1-intake.html" class="gn-link"><i class="ti ti-file-upload"></i> Intake</a>
-    <a href="module2-case-management.html" class="gn-link"><i class="ti ti-layout-kanban"></i> Cases</a>
-    <a href="module3-cpr.html" class="gn-link"><i class="ti ti-calendar-due"></i> CPR</a>
-    <a href="module4-evidence.html" class="gn-link"><i class="ti ti-folder-open"></i> Evidence</a>
-    <a href="module5-drafting.html" class="gn-link"><i class="ti ti-file-pencil"></i> Drafting</a>
-    <a href="module6-mi.html" class="gn-link"><i class="ti ti-chart-bar"></i> MI</a>
-    <a href="education.html" class="gn-link"><i class="ti ti-school"></i> Knowledge</a>
+  <div class="gn-links" id="gn-links">
+    <a href="index.html" class="gn-link" id="gnl-dashboard"><i class="ti ti-layout-dashboard"></i> <span class="gnl">Dashboard</span></a>
+    <a href="module1-intake.html" class="gn-link" id="gnl-intake"><i class="ti ti-file-upload"></i> <span class="gnl">Intake</span></a>
+    <a href="module2-case-management.html" class="gn-link" id="gnl-cases"><i class="ti ti-layout-kanban"></i> <span class="gnl">Cases</span></a>
+    <a href="module3-cpr.html" class="gn-link" id="gnl-cpr"><i class="ti ti-calendar-due"></i> <span class="gnl">CPR</span></a>
+    <a href="module4-evidence.html" class="gn-link" id="gnl-evidence"><i class="ti ti-folder-open"></i> <span class="gnl">Evidence</span></a>
+    <a href="module5-drafting.html" class="gn-link" id="gnl-drafting"><i class="ti ti-file-pencil"></i> <span class="gnl">Drafting</span></a>
+    <a href="module6-mi.html" class="gn-link" id="gnl-mi"><i class="ti ti-chart-bar"></i> <span class="gnl">MI</span></a>
+    <a href="education.html" class="gn-link" id="gnl-knowledge"><i class="ti ti-school"></i> <span class="gnl">Knowledge</span></a>
   </div>
   <div class="gn-right">
     <div class="gn-user-btn" onclick="toggleUserMenu()">
@@ -192,417 +192,73 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 
 <div class="page" id="page"></div>
 
-<!-- User switcher -->
 <div class="user-modal" id="user-modal" onclick="if(event.target===this)closeMenu()">
   <div class="user-dropdown">
     <div class="ud-header">Switch user — demo</div>
-
     <div style="padding:4px 14px 2px;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.06em;color:var(--text3)">UK Litigation</div>
-    <div class="ud-item" id="ud-SB" onclick="switchUser('SB')">
-      <div class="ud-av">SB</div>
-      <div><div class="ud-name">Sarah Booth</div><div class="ud-role">Head of Legal Ops</div></div>
-      <i class="ti ti-check ud-tick"></i>
-    </div>
-    <div class="ud-item" id="ud-JP" onclick="switchUser('JP')">
-      <div class="ud-av">JP</div>
-      <div><div class="ud-name">James Patel</div><div class="ud-role">Senior Solicitor</div></div>
-      <i class="ti ti-check ud-tick"></i>
-    </div>
-    <div class="ud-item" id="ud-KR" onclick="switchUser('KR')">
-      <div class="ud-av">KR</div>
-      <div><div class="ud-name">Kiran Rahman</div><div class="ud-role">Solicitor</div></div>
-      <i class="ti ti-check ud-tick"></i>
-    </div>
-
+    <div class="ud-item" id="ud-SB" onclick="switchUser('SB')"><div class="ud-av">SB</div><div><div class="ud-name">Sarah Booth</div><div class="ud-role">Head of Legal Ops</div></div><i class="ti ti-check ud-tick"></i></div>
+    <div class="ud-item" id="ud-JP" onclick="switchUser('JP')"><div class="ud-av">JP</div><div><div class="ud-name">James Patel</div><div class="ud-role">Senior Solicitor</div></div><i class="ti ti-check ud-tick"></i></div>
+    <div class="ud-item" id="ud-KR" onclick="switchUser('KR')"><div class="ud-av">KR</div><div><div class="ud-name">Kiran Rahman</div><div class="ud-role">Solicitor</div></div><i class="ti ti-check ud-tick"></i></div>
     <div style="height:1px;background:var(--border);margin:4px 0"></div>
     <div style="padding:4px 14px 2px;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.06em;color:var(--text3)">🇫🇷 Équipe France</div>
-    <div class="ud-item" id="ud-MD" onclick="switchUser('MD')">
-      <div class="ud-av" style="background:#1a3a6b">MD</div>
-      <div><div class="ud-name">Marie Dupont</div><div class="ud-role">Juriste senior</div></div>
-      <i class="ti ti-check ud-tick"></i>
-    </div>
-    <div class="ud-item" id="ud-PL" onclick="switchUser('PL')">
-      <div class="ud-av" style="background:#1a3a6b">PL</div>
-      <div><div class="ud-name">Pierre Laurent</div><div class="ud-role">Juriste</div></div>
-      <i class="ti ti-check ud-tick"></i>
-    </div>
-
+    <div class="ud-item" id="ud-MD" onclick="switchUser('MD')"><div class="ud-av" style="background:#1a3a6b">MD</div><div><div class="ud-name">Marie Dupont</div><div class="ud-role">Juriste senior</div></div><i class="ti ti-check ud-tick"></i></div>
+    <div class="ud-item" id="ud-PL" onclick="switchUser('PL')"><div class="ud-av" style="background:#1a3a6b">PL</div><div><div class="ud-name">Pierre Laurent</div><div class="ud-role">Juriste</div></div><i class="ti ti-check ud-tick"></i></div>
     <div style="height:1px;background:var(--border);margin:4px 0"></div>
     <div style="padding:4px 14px 2px;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.06em;color:var(--text3)">🇪🇸 Equipo España</div>
-    <div class="ud-item" id="ud-CG" onclick="switchUser('CG')">
-      <div class="ud-av" style="background:#6b1a1a">CG</div>
-      <div><div class="ud-name">Carlos García</div><div class="ud-role">Abogado senior</div></div>
-      <i class="ti ti-check ud-tick"></i>
-    </div>
-    <div class="ud-item" id="ud-IM" onclick="switchUser('IM')">
-      <div class="ud-av" style="background:#6b1a1a">IM</div>
-      <div><div class="ud-name">Isabel Martín</div><div class="ud-role">Abogada</div></div>
-      <i class="ti ti-check ud-tick"></i>
-    </div>
-  </div>
-</div>
-    <div class="ud-item" id="ud-SB" onclick="switchUser('SB')">
-      <div class="ud-av">SB</div>
-      <div><div class="ud-name">Sarah Booth</div><div class="ud-role">Head of Legal Ops · 4 cases</div></div>
-      <i class="ti ti-check ud-tick"></i>
-    </div>
-    <div class="ud-item" id="ud-JP" onclick="switchUser('JP')">
-      <div class="ud-av">JP</div>
-      <div><div class="ud-name">James Patel</div><div class="ud-role">Senior Solicitor · 3 cases</div></div>
-      <i class="ti ti-check ud-tick"></i>
-    </div>
-    <div class="ud-item" id="ud-KR" onclick="switchUser('KR')">
-      <div class="ud-av">KR</div>
-      <div><div class="ud-name">Kiran Rahman</div><div class="ud-role">Solicitor · 3 cases</div></div>
-      <i class="ti ti-check ud-tick"></i>
-    </div>
-    <div style="padding:10px 14px;border-top:1px solid var(--border)">
-      <div style="font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.07em;color:var(--text3);margin-bottom:8px">Interface language</div>
-      <div style="display:flex;gap:5px">
-        <button onclick="setLang('en')" id="lang-en" style="font-size:11px;padding:4px 10px;border-radius:20px;border:1px solid var(--border);background:var(--surface2);cursor:pointer;font-family:var(--font);transition:all 0.15s">🇬🇧 English</button>
-        <button onclick="setLang('fr')" id="lang-fr" style="font-size:11px;padding:4px 10px;border-radius:20px;border:1px solid var(--border);background:var(--surface2);cursor:pointer;font-family:var(--font);transition:all 0.15s">🇫🇷 Français</button>
-        <button onclick="setLang('es')" id="lang-es" style="font-size:11px;padding:4px 10px;border-radius:20px;border:1px solid var(--border);background:var(--surface2);cursor:pointer;font-family:var(--font);transition:all 0.15s">🇪🇸 Español</button>
-      </div>
-    </div>
+    <div class="ud-item" id="ud-CG" onclick="switchUser('CG')"><div class="ud-av" style="background:#6b1a1a">CG</div><div><div class="ud-name">Carlos García</div><div class="ud-role">Abogado senior</div></div><i class="ti ti-check ud-tick"></i></div>
+    <div class="ud-item" id="ud-IM" onclick="switchUser('IM')"><div class="ud-av" style="background:#6b1a1a">IM</div><div><div class="ud-name">Isabel Martín</div><div class="ud-role">Abogada</div></div><i class="ti ti-check ud-tick"></i></div>
   </div>
 </div>
 
 <script>
-/* ── State ── */
-var activeUser = getActiveUser();
-
-/* ── News data ── */
-var LEGAL_NEWS = [
-  {source:'CJEU',title:'Flightright v Iberia: Hidden technical defects not extraordinary circumstances — carriers cannot rely on manufacturer notices alone',date:'22 May 2026',tag:'Case law',tagCls:'law'},
-  {source:'CAA',title:'UK261 enforcement update: Increased scrutiny of extraordinary circumstances evidence standards across major carriers',date:'18 May 2026',tag:'Regulatory',tagCls:'reg'},
-  {source:'Supreme Court',title:'Lipton v BA Cityflyer: Pilot illness confirmed not extraordinary — full judgment published with costs guidance',date:'12 May 2026',tag:'Case law',tagCls:'law'},
-  {source:'DfT',title:'Post-Brexit UK261 review: Government consultation on compensation thresholds closes 30 June 2026',date:'1 May 2026',tag:'Policy',tagCls:'reg'},
-];
-
-var OPS_NEWS = [
-  {source:'Eurocontrol',title:'Summer 2026 ATC capacity restrictions: Southern Europe route network — significant ATFM delays forecast June through August',date:'30 May 2026',tag:'Operations',tagCls:'ops'},
-  {source:'NATS',title:'London TMA restrictions active 1–14 June: Expected average delays of 18 minutes at peak periods',date:'29 May 2026',tag:'ATC',tagCls:'ops'},
-  {source:'Met Office',title:'Convective outlook: Elevated thunderstorm risk across Mediterranean basin this weekend — BCN, PMI, ALC affected',date:'30 May 2026',tag:'Weather',tagCls:'ops'},
-  {source:'Eurocontrol NOP',title:'Palma de Mallorca sector congestion: ATFM regulations in force daily 10:00–18:00 UTC through June',date:'28 May 2026',tag:'NOTAM',tagCls:'ops'},
-];
-
-var NET_LINKS = [
-  {href:'https://www.public.nm.eurocontrol.int/PUBPORTAL/gateway/spec/',icon:'ti-radar',bg:'#EFF6FF',col:'#1D4ED8',name:'Eurocontrol NOP',sub:'ATFM & network data'},
-  {href:'https://www.flightradar24.com',icon:'ti-plane',bg:'var(--surface3)',col:'#374151',name:'Flightradar24',sub:'Live flight tracking'},
-  {href:'https://notams.aim.faa.gov/notamSearch/disclaimer.html',icon:'ti-file-alert',bg:'#FEF3C7',col:'#92400E',name:'NOTAM Search',sub:'Aerodrome notices'},
-  {href:'https://www.ogimet.com',icon:'ti-cloud-storm',bg:'#EEEDFE',col:'#4338CA',name:'Ogimet',sub:'METAR & TAF'},
-  {href:'https://www.metoffice.gov.uk',icon:'ti-cloud',bg:'var(--green-faint)',col:'var(--green)',name:'Met Office',sub:'Hazard forecasts'},
-  {href:'https://www.lightningmaps.org/blitzortung/europe/index.php?lang=en',icon:'ti-bolt',bg:'#FEF3C7',col:'#B45309',name:'Lightning Maps',sub:'Live strike data'},
-];
-
-/* ── User nav ── */
-function toggleUserMenu(){ document.getElementById('user-modal').classList.toggle('open'); }
-function closeMenu(){ document.getElementById('user-modal').classList.remove('open'); }
-
-function setLang(lang){
-  if(typeof setUILang==='function') setUILang(lang);
-  // Update button states
-  ['en','fr','es'].forEach(function(l){
-    var btn = document.getElementById('lang-'+l);
-    if(btn) btn.style.cssText = 'font-size:11px;padding:4px 10px;border-radius:20px;border:1px solid '+(l===lang?'var(--navy)':'var(--border)')+';background:'+(l===lang?'var(--navy)':'var(--surface2)')+';cursor:pointer;font-family:var(--font);color:'+(l===lang?'#fff':'inherit')+';transition:all 0.15s';
-  });
-  render(); // Re-render with new language
+/* ── Nav + user switcher ── */
+function _navInit(){
+  try{
+    var uid = typeof getActiveUser==='function'?getActiveUser():'SB';
+    var u = typeof USERS!=='undefined'?USERS[uid]:null;
+    if(u){
+      var av=document.getElementById('nav-av'); if(av) av.textContent=u.initials;
+      var un=document.getElementById('nav-user'); if(un) un.textContent=u.name;
+    }
+    // Translate nav labels
+    var labels = {dashboard:'dashboard',intake:'intake',cases:'cases',cpr:'cpr',
+                  evidence:'evidence',drafting:'drafting',mi:'mi',knowledge:'knowledge'};
+    Object.keys(labels).forEach(function(id){
+      var el=document.getElementById('gnl-'+id);
+      if(el){ var sp=el.querySelector('.gnl'); if(sp && typeof t==='function') sp.textContent=t(labels[id]); }
+    });
+    // Add badge counts
+    if(typeof getCasesForUser==='function'){
+      var cases=getCasesForUser(uid);
+      var intN=cases.filter(function(c){return c.stage==='intake';}).length;
+      var urgN=cases.filter(function(c){return c.cprDaysLeft<=7&&c.stage!=='resolve';}).length;
+      if(intN>0){var il=document.getElementById('gnl-intake');if(il){var b=document.createElement('span');b.style.cssText='background:#C0392B;color:#fff;font-size:9px;font-weight:600;padding:1px 5px;border-radius:10px;margin-left:3px;vertical-align:middle';b.textContent=intN;il.appendChild(b);}}
+      if(urgN>0){var cl=document.getElementById('gnl-cpr');if(cl){var b2=document.createElement('span');b2.style.cssText='background:#C0392B;color:#fff;font-size:9px;font-weight:600;padding:1px 5px;border-radius:10px;margin-left:3px;vertical-align:middle';b2.textContent=urgN;cl.appendChild(b2);}}
+    }
+    // Active state
+    var p=window.location.pathname.split('/').pop()||'index.html';
+    var active=p.indexOf('module1')>=0?'intake':p.indexOf('module2')>=0?'cases':p.indexOf('module3')>=0?'cpr':p.indexOf('module4')>=0?'evidence':p.indexOf('module5')>=0?'drafting':p.indexOf('module6')>=0?'mi':p.indexOf('education')>=0?'knowledge':'dashboard';
+    var al=document.getElementById('gnl-'+active); if(al) al.classList.add('active');
+    // Active user tick
+    document.querySelectorAll('.ud-item').forEach(function(el){el.classList.remove('current');});
+    var at=document.getElementById('ud-'+uid); if(at) at.classList.add('current');
+  }catch(e){}
 }
-
-
-function toggleUserMenu(){ document.getElementById('user-modal').classList.toggle('open'); }
-function closeMenu(){ document.getElementById('user-modal').classList.remove('open'); }
+function toggleUserMenu(){var m=document.getElementById('user-modal');if(m)m.classList.toggle('open');}
+function closeMenu(){var m=document.getElementById('user-modal');if(m)m.classList.remove('open');}
 function switchUser(id){
-  if(typeof setActiveUser==='function') setActiveUser(id);
-  if(typeof activeUser!=='undefined') activeUser=id;
+  if(typeof setActiveUser==='function')setActiveUser(id);
+  if(typeof activeUser!=='undefined')activeUser=id;
   closeMenu();
-  var u = typeof USERS!=='undefined' ? USERS[id] : null;
-  if(u){
-    var avEl=document.getElementById('nav-av'); if(avEl) avEl.textContent=u.initials;
-    var unEl=document.getElementById('nav-user'); if(unEl) unEl.textContent=u.name;
-  }
-  // Clear language override so user's language takes effect
   sessionStorage.removeItem('261c_lang');
-  // Update active tick
-  document.querySelectorAll('.ud-item').forEach(function(el){el.classList.remove('current');});
-  var active=document.getElementById('ud-'+id); if(active) active.classList.add('current');
-  // Re-render if function exists
-  if(typeof render==='function') render();
-  if(typeof renderList==='function') renderList();
+  _navInit();
+  if(typeof render==='function')render();
+  if(typeof renderList==='function')renderList();
+  if(typeof renderPage==='function')renderPage();
 }
-// Init nav user on load
-(function(){
-  try{
-    var uid=typeof getActiveUser==='function'?getActiveUser():'SB';
-    var u=typeof USERS!=='undefined'?USERS[uid]:null;
-    if(!u) return;
-    var avEl=document.getElementById('nav-av'); if(avEl) avEl.textContent=u.initials;
-    var unEl=document.getElementById('nav-user'); if(unEl) unEl.textContent=u.name;
-    var active=document.getElementById('ud-'+uid); if(active) active.classList.add('current');
-  }catch(e){}
-})();
-
-function initNav(){
-  var u = USERS[activeUser];
-  document.getElementById('nav-av').textContent = u.initials;
-  document.getElementById('nav-user').textContent = u.name;
-  document.getElementById('ud-'+activeUser).classList.add('current');
-}
-
-/* ── Greeting ── */
-function greeting(){
-  var h = new Date().getHours();
-  var salut = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
-  return salut + ', ' + USERS[activeUser].full.split(' ')[0] + '.';
-}
-function dateStr(){
-  var d = new Date();
-  var DAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-  var MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-  return DAYS[d.getDay()] + ' ' + d.getDate() + ' ' + MONTHS[d.getMonth()] + ' ' + d.getFullYear();
-}
-
-/* ── Render ── */
-function render(){
-  var u = USERS[activeUser];
-  var myCases = getCasesForUser(activeUser);
-  var urgentCases = myCases.filter(function(c){ return c.cprDaysLeft <= 3; });
-  var warnCases   = myCases.filter(function(c){ return c.cprDaysLeft > 3 && c.cprDaysLeft <= 7; });
-  var evidenceCases = myCases.filter(function(c){ return c.stage === 'evidence'; });
-  var draftingCases = myCases.filter(function(c){ return c.stage === 'drafting'; });
-  var intakeCases   = myCases.filter(function(c){ return c.stage === 'intake'; });
-
-  /* ── Urgent strip ── */
-  var urgentHtml = '';
-  if(!urgentCases.length && !warnCases.length){
-    urgentHtml = '<div class="us-clear"><i class="ti ti-circle-check" style="font-size:13px"></i>No urgent CPR deadlines this week</div>';
-  } else {
-    urgentHtml = urgentCases.map(function(c){
-      return '<a href="module3-cpr-workspace.html" class="us-chip chip-urgent"><i class="ti ti-clock" style="font-size:11px"></i>'+c.ref+' — '+c.cprDaysLeft+'d</a>';
-    }).join('') + warnCases.map(function(c){
-      return '<a href="module3-cpr-workspace.html" class="us-chip chip-warn"><i class="ti ti-clock" style="font-size:11px"></i>'+c.ref+' — '+c.cprDaysLeft+'d</a>';
-    }).join('');
-  }
-
-  /* ── Personal stat cards ── */
-  var mostUrgent = myCases.reduce(function(min,c){ return c.cprDaysLeft < min ? c.cprDaysLeft : min; }, 999);
-  var urgentSub = mostUrgent === 999 ? 'No open cases' : mostUrgent <= 3 ? mostUrgent+'d — act now' : mostUrgent+'d — next deadline';
-  var urgentSubCls = mostUrgent <= 3 ? 'urgent' : mostUrgent <= 7 ? 'warn' : '';
-
-  var statsHtml = [
-    {label:'My open cases',   val:myCases.length,         icon:'ti-briefcase',    bg:'#EFF6FF',col:'#1D4ED8', sub:u.role,           subcls:''},
-    {label:'Intake queue',    val:intakeCases.length,     icon:'ti-inbox',        bg:'#FEF3C7',col:'#92400E', sub:intakeCases.length?'Awaiting action':'Clear',subcls:intakeCases.length?'warn':'good'},
-    {label:'Evidence packs',  val:evidenceCases.length,   icon:'ti-folder-open',  bg:'#EEEDFE',col:'#4338CA', sub:evidenceCases.length?'In progress':'None active',subcls:''},
-    {label:'Next CPR deadline',val:mostUrgent===999?'—':mostUrgent+'d',icon:'ti-calendar-due',bg:'#FCF0EF',col:'#C0392B', sub:urgentSub, subcls:urgentSubCls},
-  ].map(function(s){
-    return '<div class="pstat">'
-      +'<div class="pstat-top"><div class="pstat-label">'+s.label+'</div>'
-      +'<div class="pstat-icon" style="background:'+s.bg+'"><i class="ti '+s.icon+'" style="color:'+s.col+';font-size:13px"></i></div>'
-      +'</div>'
-      +'<div class="pstat-val">'+s.val+'</div>'
-      +'<div class="pstat-sub '+s.subcls+'">'+s.sub+'</div>'
-      +'</div>';
-  }).join('');
-
-  /* ── Pipeline strip ── */
-  var STAGES = [
-    {id:'intake',    label:'Intake',    col:'#1D4ED8'},
-    {id:'triage',    label:'Triage',    col:'#92400E'},
-    {id:'cpr',       label:'CPR',       col:'#B45309'},
-    {id:'evidence',  label:'Evidence',  col:'#4338CA'},
-    {id:'drafting',  label:'Drafting',  col:'#065F46'},
-    {id:'defence',   label:'Defence',   col:'#1A7A4A'},
-    {id:'resolve',   label:'Resolve',   col:'#374151'},
-  ];
-  var STAGE_LINKS = {
-    intake:'module1-intake.html',triage:'module2-case-management.html',
-    cpr:'module3-cpr.html',evidence:'module4-evidence.html',
-    drafting:'module5-drafting.html',defence:'module5-drafting-workspace.html',
-    resolve:'module2-case-workspace.html'
-  };
-  var pipelineHtml = STAGES.map(function(s){
-    var count = myCases.filter(function(c){ return c.stage===s.id; }).length;
-    var colStyle = count > 0 ? 'color:'+s.col : 'color:var(--border2)';
-    return '<a href="'+(STAGE_LINKS[s.id]||'#')+'" class="pipe-stage">'
-      +'<div class="pipe-count" style="'+colStyle+'">'+count+'</div>'
-      +'<div class="pipe-name">'+s.label+'</div>'
-      +'</a>';
-  }).join('');
-
-  /* ── My cases sorted by urgency ── */
-  var sortedCases = myCases.slice().sort(function(a,b){ return a.cprDaysLeft - b.cprDaysLeft; });
-  var caseRowsHtml = sortedCases.length
-    ? sortedCases.map(function(c){
-        var urg = daysUrgency(c.cprDaysLeft);
-        var sc = stageColor(c.stage); var sb = stageBg(c.stage);
-        return '<div class="case-row" onclick="openCase(\''+c.ref+'\')">'
-          +'<div class="cr-stage-icon" style="background:'+sb+'"><i class="ti '+stageIcon(c.stage)+'" style="color:'+sc+';font-size:12px"></i></div>'
-          +'<div style="flex:1;min-width:0">'
-          +'<div class="cr-ref">'+c.ref+'</div>'
-          +'<div class="cr-name">'+c.claimant+' v. TestAirways</div>'
-          +'<div class="cr-meta">'+c.flight+' · '+c.value+'</div>'
-          +'</div>'
-          +'<div class="cr-right">'
-          +'<span class="stage-pill" style="background:'+sb+';color:'+sc+'">'+stageLabel(c.stage)+'</span>'
-          +'<span class="days-pill dp-'+urg+'">'+urgencyLabel(c.cprDaysLeft)+'</span>'
-          +'</div></div>';
-      }).join('')
-    : '<div class="empty-row">No open cases assigned to you.</div>';
-
-  /* ── Evidence progress ── */
-  var evHtml = evidenceCases.length
-    ? evidenceCases.map(function(c){
-        var pct = c.evidencePct || 0;
-        var col = evPctColor(pct);
-        return '<div class="ev-row">'
-          +'<div style="flex:1;min-width:0">'
-          +'<div class="ev-name">'+c.claimant+'</div>'
-          +'<div class="ev-meta">'+c.ref+' · '+c.disruptionType+'</div>'
-          +'</div>'
-          +'<div class="ev-bar-wrap">'
-          +'<div class="ev-bar"><div class="ev-fill" style="width:'+pct+'%;background:'+col+'"></div></div>'
-          +'<span class="ev-pct" style="color:'+col+'">'+pct+'%</span>'
-          +'</div></div>';
-      }).join('')
-    : '<div class="empty-row">No cases at evidence stage.</div>';
-
-  /* ── CPR deadlines list ── */
-  var deadlineHtml = sortedCases.filter(function(c){ return c.cprDaysLeft <= 21; }).length
-    ? sortedCases.filter(function(c){ return c.cprDaysLeft <= 21; }).map(function(c){
-        var urg = daysUrgency(c.cprDaysLeft);
-        return '<div class="dl-row">'
-          +'<div class="dl-ref">'+c.ref+'</div>'
-          +'<div class="dl-name">'+c.claimant+'</div>'
-          +'<div class="dl-type">'+c.type.split('—')[0].trim()+'</div>'
-          +'<span class="days-pill dp-'+urg+'" style="margin-left:8px">'+urgencyLabel(c.cprDaysLeft)+'</span>'
-          +'</div>';
-      }).join('')
-    : '<div class="empty-row">No deadlines in the next 21 days.</div>';
-
-  /* ── Legal news ── */
-  var legalNewsHtml = LEGAL_NEWS.map(function(n){
-    return '<div class="news-item">'
-      +'<div class="news-source">'+n.source+'<span class="news-tag '+n.tagCls+'">'+n.tag+'</span></div>'
-      +'<div class="news-title">'+n.title+'</div>'
-      +'<div class="news-date">'+n.date+'</div>'
-      +'</div>';
-  }).join('');
-
-  /* ── Ops & network news ── */
-  var opsNewsHtml = OPS_NEWS.map(function(n){
-    return '<div class="news-item">'
-      +'<div class="news-source">'+n.source+'<span class="news-tag '+n.tagCls+'">'+n.tag+'</span></div>'
-      +'<div class="news-title">'+n.title+'</div>'
-      +'<div class="news-date">'+n.date+'</div>'
-      +'</div>';
-  }).join('');
-
-  /* ── Network tools ── */
-  var netToolsHtml = '<div class="net-grid">'
-    +NET_LINKS.map(function(n){
-      return '<a href="'+n.href+'" target="_blank" rel="noopener" class="net-link">'
-        +'<div class="net-icon" style="background:'+n.bg+'"><i class="ti '+n.icon+'" style="color:'+n.col+'"></i></div>'
-        +'<div><div class="net-name">'+n.name+'</div><div class="net-sub">'+n.sub+'</div></div>'
-        +'</a>';
-    }).join('')
-    +'</div>';
-
-  /* ── Assemble page ── */
-  document.getElementById('page').innerHTML =
-    /* Header */
-    '<div class="page-header">'
-    +'<div class="greeting">'+greeting()+'</div>'
-    +'<div class="greeting-sub">'+dateStr()+'</div>'
-    +'</div>'
-
-    /* Urgent strip */
-    +'<div class="urgent-strip">'
-    +'<div class="us-label"><i class="ti ti-alarm" style="font-size:11px"></i>CPR watch</div>'
-    +urgentHtml
-    +'</div>'
-
-    /* Personal stats */
-    +'<div class="grid-4">'+statsHtml+'</div>'
-
-    /* Pipeline */
-    +'<div class="pipeline">'
-    +'<div class="pipe-label">My pipeline</div>'
-    +pipelineHtml
-    +'</div>'
-
-    /* My cases + Evidence progress */
-    +'<div class="grid-2">'
-
-    +'<div class="panel">'
-    +'<div class="panel-hdr"><div class="panel-title"><i class="ti ti-briefcase" style="color:var(--blue)"></i>My cases</div>'
-    +'<a href="module2-case-management.html" class="panel-link">View all <i class="ti ti-arrow-right" style="font-size:11px"></i></a></div>'
-    +caseRowsHtml
-    +'</div>'
-
-    +'<div style="display:flex;flex-direction:column;gap:14px">'
-    +'<div class="panel">'
-    +'<div class="panel-hdr"><div class="panel-title"><i class="ti ti-calendar-due" style="color:var(--red)"></i>CPR deadlines</div>'
-    +'<a href="module3-cpr.html" class="panel-link">View all <i class="ti ti-arrow-right" style="font-size:11px"></i></a></div>'
-    +deadlineHtml
-    +'</div>'
-    +'<div class="panel">'
-    +'<div class="panel-hdr"><div class="panel-title"><i class="ti ti-folder-open" style="color:var(--purple)"></i>Evidence progress</div>'
-    +'<a href="module4-evidence.html" class="panel-link">View all <i class="ti ti-arrow-right" style="font-size:11px"></i></a></div>'
-    +evHtml
-    +'</div>'
-    +'</div>'
-
-    +'</div>'
-
-    /* News section */
-    +'<div class="grid-news">'
-
-    +'<div class="panel">'
-    +'<div class="panel-hdr"><div class="panel-title"><i class="ti ti-gavel" style="color:var(--text3)"></i>Legal & regulatory</div></div>'
-    +legalNewsHtml
-    +'</div>'
-
-    +'<div style="display:flex;flex-direction:column;gap:14px">'
-    +'<div class="panel">'
-    +'<div class="panel-hdr"><div class="panel-title"><i class="ti ti-radar" style="color:var(--text3)"></i>Network & operations</div></div>'
-    +opsNewsHtml
-    +'</div>'
-    +'<div class="panel">'
-    +'<div class="panel-hdr"><div class="panel-title"><i class="ti ti-world" style="color:var(--text3)"></i>Live sources</div></div>'
-    +netToolsHtml
-    +'</div>'
-    +'</div>'
-
-    +'</div>';
-}
-
-/* ── Case navigation ── */
-var STAGE_WORKSPACE = {
-  intake:'module1-intake.html',
-  triage:'module2-case-workspace.html',
-  cpr:'module3-cpr-workspace.html',
-  evidence:'module4-evidence-workspace.html',
-  drafting:'module5-drafting-workspace.html',
-  defence:'module5-drafting-workspace.html',
-  resolve:'module2-case-workspace.html',
-};
-function openCase(ref){
-  var c = getCase(ref);
-  if(!c) return;
-  try{
-    sessionStorage.setItem('aeroCaseData', JSON.stringify({
-      ref:c.ref, claimant:c.claimant, solicitor:c.solicitor,
-      flight:c.flight, value:c.value, type:c.type,
-      date:c.locDate, framework:'EC Regulation 261/2004',
-      points:c.points, assignedTo:USERS[c.assignedTo].name
-    }));
-  }catch(e){}
-  window.location.href = (STAGE_WORKSPACE[c.stage]||'module2-case-workspace.html')+'?ref='+ref;
-}
-
-/* ── Init ── */
-initNav();
-render();
+if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',_navInit);}
+else{_navInit();}
+setTimeout(_navInit,150);
 </script>
 </body>
 </html>

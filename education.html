@@ -109,20 +109,26 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 <body>
 
 <nav class="global-nav">
-  <a href="index.html" class="gn-logo"><div class="gn-mark"><i class="ti ti-plane"></i></div><span class="gn-name">261Claims</span></a>
-  <div class="gn-links">
-    <a href="index.html" class="gn-link"><i class="ti ti-layout-dashboard"></i> Dashboard</a>
-    <a href="module1-intake.html" class="gn-link"><i class="ti ti-file-upload"></i> Intake</a>
-    <a href="module2-case-management.html" class="gn-link"><i class="ti ti-layout-kanban"></i> Cases</a>
-    <a href="module3-cpr.html" class="gn-link"><i class="ti ti-calendar-due"></i> CPR</a>
-    <a href="module4-evidence.html" class="gn-link"><i class="ti ti-folder-open"></i> Evidence</a>
-    <a href="module5-drafting.html" class="gn-link"><i class="ti ti-file-pencil"></i> Drafting</a>
-    <a href="module6-mi.html" class="gn-link"><i class="ti ti-chart-bar"></i> MI</a>
-    <a href="education.html" class="gn-link active"><i class="ti ti-school"></i> Knowledge</a>
+  <a href="index.html" class="gn-logo">
+    <div class="gn-mark"><i class="ti ti-plane"></i></div>
+    <span class="gn-name">261Claims</span>
+  </a>
+  <div class="gn-links" id="gn-links">
+    <a href="index.html" class="gn-link" id="gnl-dashboard"><i class="ti ti-layout-dashboard"></i> <span class="gnl">Dashboard</span></a>
+    <a href="module1-intake.html" class="gn-link" id="gnl-intake"><i class="ti ti-file-upload"></i> <span class="gnl">Intake</span></a>
+    <a href="module2-case-management.html" class="gn-link" id="gnl-cases"><i class="ti ti-layout-kanban"></i> <span class="gnl">Cases</span></a>
+    <a href="module3-cpr.html" class="gn-link" id="gnl-cpr"><i class="ti ti-calendar-due"></i> <span class="gnl">CPR</span></a>
+    <a href="module4-evidence.html" class="gn-link" id="gnl-evidence"><i class="ti ti-folder-open"></i> <span class="gnl">Evidence</span></a>
+    <a href="module5-drafting.html" class="gn-link" id="gnl-drafting"><i class="ti ti-file-pencil"></i> <span class="gnl">Drafting</span></a>
+    <a href="module6-mi.html" class="gn-link" id="gnl-mi"><i class="ti ti-chart-bar"></i> <span class="gnl">MI</span></a>
+    <a href="education.html" class="gn-link" id="gnl-knowledge"><i class="ti ti-school"></i> <span class="gnl">Knowledge</span></a>
   </div>
   <div class="gn-right">
-    <div class="gn-av" id="nav-av">SB</div>
-    <span class="gn-user" id="nav-user">S. Booth</span>
+    <div class="gn-user-btn" onclick="toggleUserMenu()">
+      <div class="gn-av" id="nav-av">SB</div>
+      <span class="gn-user" id="nav-user">S. Booth</span>
+      <i class="ti ti-chevron-down" style="font-size:10px;color:rgba(255,255,255,0.4);margin-left:2px"></i>
+    </div>
   </div>
 </nav>
 
@@ -352,7 +358,23 @@ templates: {
   }
 },
 
-updates: {
+
+
+  'france-spain': {
+    title: 'France & Spain — Jurisdiction guide',
+    sub: 'Procedural differences for French and Spanish EC261 claims',
+    content: function(){
+      return '<div class="article-grid">'
+        + articleCard('ti-gavel','tag-law','France','Tribunal Judiciaire — mandatory mediation','From 6 February 2026, prior mediation is mandatory before any court action in France (Mediateur du Tourisme et du Voyage). Without mediation the claim is inadmissible. Court proceedings are initiated by assignation served by a bailiff. Limitation period: 5 years.','Essential · 10 min')
+        + articleCard('ti-calendar-due','tag-proc','France','French procedural timetable','Step 1: Respond to the claim within 60 days. Step 2: Mandatory MTV mediation — 90 days. Step 3: If mediation fails, assignation before the Tribunal Judiciaire. Step 4: Monitor 5-year limitation from date of flight.','Essential · 8 min')
+        + articleCard('ti-building-government','tag-law','Spain','Juzgado de lo Mercantil and AESA','EC261 claims go to the Commercial Court (Juzgado de lo Mercantil). AESA (aviation regulator) can open a parallel administrative sanction procedure independent of civil litigation. Both tracks must be managed simultaneously. Limitation: 5 years.','Essential · 8 min')
+        + articleCard('ti-clock','tag-proc','Spain','Spanish procedural timetable','Step 1: Respond within 30 days (AESA standard). Step 2: Contestacion a la demanda within 20 business days of court notification. Warning: AESA may sanction independently. Limitation: 5 years.','Important · 7 min')
+        + articleCard('ti-alert-triangle','tag-reg','All jurisdictions','Limitation periods — European comparison','England and Wales: 6 years. France: 5 years. Spain: 5 years. Germany: 3 years (expires 31 December). Italy: 2 years — urgent monitoring required. Poland: 1 year — immediate action always required. Italian and Polish cases need the earliest internal flags.','Quick reference · 5 min')
+        + articleCard('ti-file-text','tag-proc','Documents','Court document names by jurisdiction','France: Accuse de reception, Lettre de reponse, Conclusions en defense, Attestation de temoin. Spain: Acuse de recibo, Escrito de respuesta, Contestacion a la demanda, Declaracion testifical. All generated automatically in the correct language by the Drafting module.','Important · 6 min')
+        + '</div>';
+    }
+  },
+  updates: {
   title: 'Legal updates',
   sub: 'Recent developments in EC261 law, CAA guidance, and aviation regulation',
   content: function(){
@@ -393,6 +415,74 @@ function render(){
 })();
 
 render();
+</script>
+<div class="user-modal" id="user-modal" onclick="if(event.target===this)closeMenu()">
+  <div class="user-dropdown">
+    <div class="ud-header">Switch user — demo</div>
+    <div style="padding:4px 14px 2px;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.06em;color:var(--text3)">UK Litigation</div>
+    <div class="ud-item" id="ud-SB" onclick="switchUser('SB')"><div class="ud-av">SB</div><div><div class="ud-name">Sarah Booth</div><div class="ud-role">Head of Legal Ops</div></div><i class="ti ti-check ud-tick"></i></div>
+    <div class="ud-item" id="ud-JP" onclick="switchUser('JP')"><div class="ud-av">JP</div><div><div class="ud-name">James Patel</div><div class="ud-role">Senior Solicitor</div></div><i class="ti ti-check ud-tick"></i></div>
+    <div class="ud-item" id="ud-KR" onclick="switchUser('KR')"><div class="ud-av">KR</div><div><div class="ud-name">Kiran Rahman</div><div class="ud-role">Solicitor</div></div><i class="ti ti-check ud-tick"></i></div>
+    <div style="height:1px;background:var(--border);margin:4px 0"></div>
+    <div style="padding:4px 14px 2px;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.06em;color:var(--text3)">🇫🇷 Équipe France</div>
+    <div class="ud-item" id="ud-MD" onclick="switchUser('MD')"><div class="ud-av" style="background:#1a3a6b">MD</div><div><div class="ud-name">Marie Dupont</div><div class="ud-role">Juriste senior</div></div><i class="ti ti-check ud-tick"></i></div>
+    <div class="ud-item" id="ud-PL" onclick="switchUser('PL')"><div class="ud-av" style="background:#1a3a6b">PL</div><div><div class="ud-name">Pierre Laurent</div><div class="ud-role">Juriste</div></div><i class="ti ti-check ud-tick"></i></div>
+    <div style="height:1px;background:var(--border);margin:4px 0"></div>
+    <div style="padding:4px 14px 2px;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.06em;color:var(--text3)">🇪🇸 Equipo España</div>
+    <div class="ud-item" id="ud-CG" onclick="switchUser('CG')"><div class="ud-av" style="background:#6b1a1a">CG</div><div><div class="ud-name">Carlos García</div><div class="ud-role">Abogado senior</div></div><i class="ti ti-check ud-tick"></i></div>
+    <div class="ud-item" id="ud-IM" onclick="switchUser('IM')"><div class="ud-av" style="background:#6b1a1a">IM</div><div><div class="ud-name">Isabel Martín</div><div class="ud-role">Abogada</div></div><i class="ti ti-check ud-tick"></i></div>
+  </div>
+</div>
+
+<script>
+/* ── Nav + user switcher ── */
+function _navInit(){
+  try{
+    var uid = typeof getActiveUser==='function'?getActiveUser():'SB';
+    var u = typeof USERS!=='undefined'?USERS[uid]:null;
+    if(u){
+      var av=document.getElementById('nav-av'); if(av) av.textContent=u.initials;
+      var un=document.getElementById('nav-user'); if(un) un.textContent=u.name;
+    }
+    // Translate nav labels
+    var labels = {dashboard:'dashboard',intake:'intake',cases:'cases',cpr:'cpr',
+                  evidence:'evidence',drafting:'drafting',mi:'mi',knowledge:'knowledge'};
+    Object.keys(labels).forEach(function(id){
+      var el=document.getElementById('gnl-'+id);
+      if(el){ var sp=el.querySelector('.gnl'); if(sp && typeof t==='function') sp.textContent=t(labels[id]); }
+    });
+    // Add badge counts
+    if(typeof getCasesForUser==='function'){
+      var cases=getCasesForUser(uid);
+      var intN=cases.filter(function(c){return c.stage==='intake';}).length;
+      var urgN=cases.filter(function(c){return c.cprDaysLeft<=7&&c.stage!=='resolve';}).length;
+      if(intN>0){var il=document.getElementById('gnl-intake');if(il){var b=document.createElement('span');b.style.cssText='background:#C0392B;color:#fff;font-size:9px;font-weight:600;padding:1px 5px;border-radius:10px;margin-left:3px;vertical-align:middle';b.textContent=intN;il.appendChild(b);}}
+      if(urgN>0){var cl=document.getElementById('gnl-cpr');if(cl){var b2=document.createElement('span');b2.style.cssText='background:#C0392B;color:#fff;font-size:9px;font-weight:600;padding:1px 5px;border-radius:10px;margin-left:3px;vertical-align:middle';b2.textContent=urgN;cl.appendChild(b2);}}
+    }
+    // Active state
+    var p=window.location.pathname.split('/').pop()||'index.html';
+    var active=p.indexOf('module1')>=0?'intake':p.indexOf('module2')>=0?'cases':p.indexOf('module3')>=0?'cpr':p.indexOf('module4')>=0?'evidence':p.indexOf('module5')>=0?'drafting':p.indexOf('module6')>=0?'mi':p.indexOf('education')>=0?'knowledge':'dashboard';
+    var al=document.getElementById('gnl-'+active); if(al) al.classList.add('active');
+    // Active user tick
+    document.querySelectorAll('.ud-item').forEach(function(el){el.classList.remove('current');});
+    var at=document.getElementById('ud-'+uid); if(at) at.classList.add('current');
+  }catch(e){}
+}
+function toggleUserMenu(){var m=document.getElementById('user-modal');if(m)m.classList.toggle('open');}
+function closeMenu(){var m=document.getElementById('user-modal');if(m)m.classList.remove('open');}
+function switchUser(id){
+  if(typeof setActiveUser==='function')setActiveUser(id);
+  if(typeof activeUser!=='undefined')activeUser=id;
+  closeMenu();
+  sessionStorage.removeItem('261c_lang');
+  _navInit();
+  if(typeof render==='function')render();
+  if(typeof renderList==='function')renderList();
+  if(typeof renderPage==='function')renderPage();
+}
+if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',_navInit);}
+else{_navInit();}
+setTimeout(_navInit,150);
 </script>
 </body>
 </html>

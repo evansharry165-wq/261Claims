@@ -85,16 +85,19 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 </head>
 <body>
 <nav class="global-nav">
-  <a href="index.html" class="gn-logo"><div class="gn-mark"><i class="ti ti-plane"></i></div><span class="gn-name">261Claims</span></a>
-  <div class="gn-links">
-    <a href="index.html" class="gn-link"><i class="ti ti-layout-dashboard"></i> Dashboard</a>
-    <a href="module1-intake.html" class="gn-link"><i class="ti ti-file-upload"></i> Intake</a>
-    <a href="module2-case-management.html" class="gn-link active"><i class="ti ti-layout-kanban"></i> Cases</a>
-    <a href="module3-cpr.html" class="gn-link"><i class="ti ti-calendar-due"></i> CPR</a>
-    <a href="module4-evidence.html" class="gn-link"><i class="ti ti-folder-open"></i> Evidence</a>
-    <a href="module5-drafting.html" class="gn-link"><i class="ti ti-file-pencil"></i> Drafting</a>
-    <a href="module6-mi.html" class="gn-link"><i class="ti ti-chart-bar"></i> MI</a>
-    <a href="education.html" class="gn-link"><i class="ti ti-school"></i> Knowledge</a>
+  <a href="index.html" class="gn-logo">
+    <div class="gn-mark"><i class="ti ti-plane"></i></div>
+    <span class="gn-name">261Claims</span>
+  </a>
+  <div class="gn-links" id="gn-links">
+    <a href="index.html" class="gn-link" id="gnl-dashboard"><i class="ti ti-layout-dashboard"></i> <span class="gnl">Dashboard</span></a>
+    <a href="module1-intake.html" class="gn-link" id="gnl-intake"><i class="ti ti-file-upload"></i> <span class="gnl">Intake</span></a>
+    <a href="module2-case-management.html" class="gn-link" id="gnl-cases"><i class="ti ti-layout-kanban"></i> <span class="gnl">Cases</span></a>
+    <a href="module3-cpr.html" class="gn-link" id="gnl-cpr"><i class="ti ti-calendar-due"></i> <span class="gnl">CPR</span></a>
+    <a href="module4-evidence.html" class="gn-link" id="gnl-evidence"><i class="ti ti-folder-open"></i> <span class="gnl">Evidence</span></a>
+    <a href="module5-drafting.html" class="gn-link" id="gnl-drafting"><i class="ti ti-file-pencil"></i> <span class="gnl">Drafting</span></a>
+    <a href="module6-mi.html" class="gn-link" id="gnl-mi"><i class="ti ti-chart-bar"></i> <span class="gnl">MI</span></a>
+    <a href="education.html" class="gn-link" id="gnl-knowledge"><i class="ti ti-school"></i> <span class="gnl">Knowledge</span></a>
   </div>
   <div class="gn-right">
     <div class="gn-user-btn" onclick="toggleUserMenu()">
@@ -143,130 +146,7 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
     <div class="ud-item" onclick="switchUser('KR')"><div class="ud-av">KR</div><div><div class="ud-name">Kiran Rahman</div><div class="ud-role">Solicitor</div></div></div>
   </div>
 </div>
-<script>
-var activeUser = getActiveUser();
 
-function updateNavUser(){
-  var u = USERS[activeUser];
-  document.getElementById('nav-av').textContent = u.initials;
-  document.getElementById('nav-user').textContent = u.name;
-}
-function toggleUserMenu(){ document.getElementById('user-modal').classList.toggle('open'); }
-function closeUserMenu(e){ if(e.target===document.getElementById('user-modal')) document.getElementById('user-modal').classList.remove('open'); }
-
-function toggleUserMenu(){ document.getElementById('user-modal').classList.toggle('open'); }
-function closeMenu(){ document.getElementById('user-modal').classList.remove('open'); }
-function switchUser(id){
-  if(typeof setActiveUser==='function') setActiveUser(id);
-  if(typeof activeUser!=='undefined') activeUser=id;
-  closeMenu();
-  var u = typeof USERS!=='undefined' ? USERS[id] : null;
-  if(u){
-    var avEl=document.getElementById('nav-av'); if(avEl) avEl.textContent=u.initials;
-    var unEl=document.getElementById('nav-user'); if(unEl) unEl.textContent=u.name;
-  }
-  // Clear language override so user's language takes effect
-  sessionStorage.removeItem('261c_lang');
-  // Update active tick
-  document.querySelectorAll('.ud-item').forEach(function(el){el.classList.remove('current');});
-  var active=document.getElementById('ud-'+id); if(active) active.classList.add('current');
-  // Re-render if function exists
-  if(typeof render==='function') render();
-  if(typeof renderList==='function') renderList();
-}
-// Init nav user on load
-(function(){
-  try{
-    var uid=typeof getActiveUser==='function'?getActiveUser():'SB';
-    var u=typeof USERS!=='undefined'?USERS[uid]:null;
-    if(!u) return;
-    var avEl=document.getElementById('nav-av'); if(avEl) avEl.textContent=u.initials;
-    var unEl=document.getElementById('nav-user'); if(unEl) unEl.textContent=u.name;
-    var active=document.getElementById('ud-'+uid); if(active) active.classList.add('current');
-  }catch(e){}
-})();
-
-
-function lastAction(c){
-  if(!c.activity||!c.activity.length) return '<span style="color:var(--text3)">—</span>';
-  var last=c.activity[c.activity.length-1];
-  var icons={create:'ti-plus',stage:'ti-arrow-right',action:'ti-check',upload:'ti-upload',ai:'ti-robot',draft:'ti-file-pencil',note:'ti-note'};
-  var icon=icons[last.type]||'ti-clock';
-  var txt=last.text.length>38?last.text.substring(0,38)+'…':last.text;
-  return '<i class="ti '+icon+'" style="font-size:10px;margin-right:3px;color:var(--text3)"></i>'+txt;
-}
-
-function render(){
-  var u = USERS[activeUser];
-  var searchTerm = document.getElementById('search-input') ? document.getElementById('search-input').value.toLowerCase() : '';
-  var cases = getCasesForUser(activeUser);
-  if(searchTerm){ cases = cases.filter(function(c){ return c.claimant.toLowerCase().indexOf(searchTerm)>=0 || c.ref.toLowerCase().indexOf(searchTerm)>=0 || c.flightNum.toLowerCase().indexOf(searchTerm)>=0; }); }
-  cases = cases.sort(function(a,b){return a.cprDaysLeft-b.cprDaysLeft;});
-
-  document.getElementById('ph-title').textContent = 'My cases — ' + u.name;
-  document.getElementById('ph-sub').textContent = cases.length + ' case'+(cases.length!==1?'s':'')+' · sorted by CPR deadline urgency';
-
-  var urgCount = cases.filter(function(c){return c.cprDaysLeft<=7;}).length;
-  document.getElementById('ph-stats').innerHTML =
-    statBadge(cases.length,'Total','var(--text)') +
-    statBadge(urgCount,'Urgent','var(--red)');
-
-  var tbody = document.getElementById('case-tbody');
-  var empty = document.getElementById('empty-state');
-  if(!cases.length){
-    tbody.innerHTML=''; empty.style.display='block'; return;
-  }
-  empty.style.display='none';
-  tbody.innerHTML = cases.map(function(c){
-    var urg = daysUrgency(c.cprDaysLeft);
-    var catCls = c.cat==='A'?'cat-a':c.cat==='B'?'cat-b':'cat-c';
-    return '<tr data-ref="'+c.ref+'" class="case-tr">'
-      +'<td><div class="td-ref">'+c.ref+'</div></td>'
-      +'<td><div class="td-name">'+c.claimant+'</div><div class="td-meta">'+c.solicitor.split(' ')[0]+'…</div></td>'
-      +'<td><div class="td-type">'+c.flightNum+'</div><div class="td-meta">'+c.dep+' → '+c.arr+'</div></td>'
-      +'<td><div class="td-type">'+c.disruptionType+'</div></td>'
-      +'<td><div class="td-type" style="font-family:var(--mono);font-weight:500">'+c.value+'</div></td>'
-      +'<td><span class="cat-pill '+catCls+'">'+c.cat+'</span></td>'
-      +'<td>'+extraCol(c)+'</td>'
-      +'<td><div style="font-size:11px;color:var(--text2)">'+lastAction(c)+'</div></td>'
-      +'<td>'+(c.jurisdiction&&c.jurisdiction!=='england-wales'&&typeof getJurisdiction==='function'?'<span style="font-size:11px">'+getJurisdiction(c.jurisdiction).flag+'</span> ':'')+' <span class="days-pill dp-'+urg+'">'+urgencyLabel(c.cprDaysLeft)+'</span></td>'
-      +'</tr>';
-  }).join('');
-}
-
-function statBadge(val,label,col){
-  return '<div class="ph-stat"><div class="ph-stat-val" style="color:'+col+'">'+val+'</div><div class="ph-stat-label">'+label+'</div></div>';
-}
-
-function extraCol(c){
-  var sc = stageColor(c.stage); var sb = stageBg(c.stage);
-  return '<span style="font-size:10px;font-weight:500;padding:2px 8px;border-radius:20px;background:'+sb+';color:'+sc+'">'+stageLabel(c.stage)+'</span>';
-}
-
-function openCase(ref){
-  var c = getCase(ref);
-  if(!c) return;
-  try{
-    sessionStorage.setItem('aeroCaseData', JSON.stringify({
-      ref:c.ref, claimant:c.claimant, solicitor:c.solicitor,
-      flight:c.flight, value:c.value, type:c.type,
-      date:c.locDate, framework:'EC Regulation 261/2004',
-      points:c.points, assignedTo:USERS[c.assignedTo].name
-    }));
-  }catch(e){}
-  var ROUTES={'intake':'module1-intake.html','triage':'module2-case-workspace.html','cpr':'module3-cpr-workspace.html','evidence':'module4-evidence-workspace.html','drafting':'module5-drafting-workspace.html','defence':'module5-drafting-workspace.html','resolve':'module2-case-workspace.html'};
-  window.location.href=(ROUTES[c.stage]||'module2-case-workspace.html')+'?ref='+ref;
-}
-
-updateNavUser();
-render();
-
-// Event delegation for case rows
-document.getElementById('case-tbody').addEventListener('click', function(e){
-  var tr = e.target.closest('.case-tr');
-  if(tr) openCase(tr.dataset.ref);
-});
-</script>
 
 <script>
 (function(){
@@ -290,54 +170,72 @@ document.getElementById('case-tbody').addEventListener('click', function(e){
 })();
 </script>
 
-<!-- User switcher -->
 <div class="user-modal" id="user-modal" onclick="if(event.target===this)closeMenu()">
   <div class="user-dropdown">
     <div class="ud-header">Switch user — demo</div>
-
     <div style="padding:4px 14px 2px;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.06em;color:var(--text3)">UK Litigation</div>
-    <div class="ud-item" id="ud-SB" onclick="switchUser('SB')">
-      <div class="ud-av">SB</div>
-      <div><div class="ud-name">Sarah Booth</div><div class="ud-role">Head of Legal Ops</div></div>
-      <i class="ti ti-check ud-tick"></i>
-    </div>
-    <div class="ud-item" id="ud-JP" onclick="switchUser('JP')">
-      <div class="ud-av">JP</div>
-      <div><div class="ud-name">James Patel</div><div class="ud-role">Senior Solicitor</div></div>
-      <i class="ti ti-check ud-tick"></i>
-    </div>
-    <div class="ud-item" id="ud-KR" onclick="switchUser('KR')">
-      <div class="ud-av">KR</div>
-      <div><div class="ud-name">Kiran Rahman</div><div class="ud-role">Solicitor</div></div>
-      <i class="ti ti-check ud-tick"></i>
-    </div>
-
+    <div class="ud-item" id="ud-SB" onclick="switchUser('SB')"><div class="ud-av">SB</div><div><div class="ud-name">Sarah Booth</div><div class="ud-role">Head of Legal Ops</div></div><i class="ti ti-check ud-tick"></i></div>
+    <div class="ud-item" id="ud-JP" onclick="switchUser('JP')"><div class="ud-av">JP</div><div><div class="ud-name">James Patel</div><div class="ud-role">Senior Solicitor</div></div><i class="ti ti-check ud-tick"></i></div>
+    <div class="ud-item" id="ud-KR" onclick="switchUser('KR')"><div class="ud-av">KR</div><div><div class="ud-name">Kiran Rahman</div><div class="ud-role">Solicitor</div></div><i class="ti ti-check ud-tick"></i></div>
     <div style="height:1px;background:var(--border);margin:4px 0"></div>
     <div style="padding:4px 14px 2px;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.06em;color:var(--text3)">🇫🇷 Équipe France</div>
-    <div class="ud-item" id="ud-MD" onclick="switchUser('MD')">
-      <div class="ud-av" style="background:#1a3a6b">MD</div>
-      <div><div class="ud-name">Marie Dupont</div><div class="ud-role">Juriste senior</div></div>
-      <i class="ti ti-check ud-tick"></i>
-    </div>
-    <div class="ud-item" id="ud-PL" onclick="switchUser('PL')">
-      <div class="ud-av" style="background:#1a3a6b">PL</div>
-      <div><div class="ud-name">Pierre Laurent</div><div class="ud-role">Juriste</div></div>
-      <i class="ti ti-check ud-tick"></i>
-    </div>
-
+    <div class="ud-item" id="ud-MD" onclick="switchUser('MD')"><div class="ud-av" style="background:#1a3a6b">MD</div><div><div class="ud-name">Marie Dupont</div><div class="ud-role">Juriste senior</div></div><i class="ti ti-check ud-tick"></i></div>
+    <div class="ud-item" id="ud-PL" onclick="switchUser('PL')"><div class="ud-av" style="background:#1a3a6b">PL</div><div><div class="ud-name">Pierre Laurent</div><div class="ud-role">Juriste</div></div><i class="ti ti-check ud-tick"></i></div>
     <div style="height:1px;background:var(--border);margin:4px 0"></div>
     <div style="padding:4px 14px 2px;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.06em;color:var(--text3)">🇪🇸 Equipo España</div>
-    <div class="ud-item" id="ud-CG" onclick="switchUser('CG')">
-      <div class="ud-av" style="background:#6b1a1a">CG</div>
-      <div><div class="ud-name">Carlos García</div><div class="ud-role">Abogado senior</div></div>
-      <i class="ti ti-check ud-tick"></i>
-    </div>
-    <div class="ud-item" id="ud-IM" onclick="switchUser('IM')">
-      <div class="ud-av" style="background:#6b1a1a">IM</div>
-      <div><div class="ud-name">Isabel Martín</div><div class="ud-role">Abogada</div></div>
-      <i class="ti ti-check ud-tick"></i>
-    </div>
+    <div class="ud-item" id="ud-CG" onclick="switchUser('CG')"><div class="ud-av" style="background:#6b1a1a">CG</div><div><div class="ud-name">Carlos García</div><div class="ud-role">Abogado senior</div></div><i class="ti ti-check ud-tick"></i></div>
+    <div class="ud-item" id="ud-IM" onclick="switchUser('IM')"><div class="ud-av" style="background:#6b1a1a">IM</div><div><div class="ud-name">Isabel Martín</div><div class="ud-role">Abogada</div></div><i class="ti ti-check ud-tick"></i></div>
   </div>
 </div>
+<script>
+/* ── Nav + user switcher ── */
+function _navInit(){
+  try{
+    var uid = typeof getActiveUser==='function'?getActiveUser():'SB';
+    var u = typeof USERS!=='undefined'?USERS[uid]:null;
+    if(u){
+      var av=document.getElementById('nav-av'); if(av) av.textContent=u.initials;
+      var un=document.getElementById('nav-user'); if(un) un.textContent=u.name;
+    }
+    // Translate nav labels
+    var labels = {dashboard:'dashboard',intake:'intake',cases:'cases',cpr:'cpr',
+                  evidence:'evidence',drafting:'drafting',mi:'mi',knowledge:'knowledge'};
+    Object.keys(labels).forEach(function(id){
+      var el=document.getElementById('gnl-'+id);
+      if(el){ var sp=el.querySelector('.gnl'); if(sp && typeof t==='function') sp.textContent=t(labels[id]); }
+    });
+    // Add badge counts
+    if(typeof getCasesForUser==='function'){
+      var cases=getCasesForUser(uid);
+      var intN=cases.filter(function(c){return c.stage==='intake';}).length;
+      var urgN=cases.filter(function(c){return c.cprDaysLeft<=7&&c.stage!=='resolve';}).length;
+      if(intN>0){var il=document.getElementById('gnl-intake');if(il){var b=document.createElement('span');b.style.cssText='background:#C0392B;color:#fff;font-size:9px;font-weight:600;padding:1px 5px;border-radius:10px;margin-left:3px;vertical-align:middle';b.textContent=intN;il.appendChild(b);}}
+      if(urgN>0){var cl=document.getElementById('gnl-cpr');if(cl){var b2=document.createElement('span');b2.style.cssText='background:#C0392B;color:#fff;font-size:9px;font-weight:600;padding:1px 5px;border-radius:10px;margin-left:3px;vertical-align:middle';b2.textContent=urgN;cl.appendChild(b2);}}
+    }
+    // Active state
+    var p=window.location.pathname.split('/').pop()||'index.html';
+    var active=p.indexOf('module1')>=0?'intake':p.indexOf('module2')>=0?'cases':p.indexOf('module3')>=0?'cpr':p.indexOf('module4')>=0?'evidence':p.indexOf('module5')>=0?'drafting':p.indexOf('module6')>=0?'mi':p.indexOf('education')>=0?'knowledge':'dashboard';
+    var al=document.getElementById('gnl-'+active); if(al) al.classList.add('active');
+    // Active user tick
+    document.querySelectorAll('.ud-item').forEach(function(el){el.classList.remove('current');});
+    var at=document.getElementById('ud-'+uid); if(at) at.classList.add('current');
+  }catch(e){}
+}
+function toggleUserMenu(){var m=document.getElementById('user-modal');if(m)m.classList.toggle('open');}
+function closeMenu(){var m=document.getElementById('user-modal');if(m)m.classList.remove('open');}
+function switchUser(id){
+  if(typeof setActiveUser==='function')setActiveUser(id);
+  if(typeof activeUser!=='undefined')activeUser=id;
+  closeMenu();
+  sessionStorage.removeItem('261c_lang');
+  _navInit();
+  if(typeof render==='function')render();
+  if(typeof renderList==='function')renderList();
+  if(typeof renderPage==='function')renderPage();
+}
+if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',_navInit);}
+else{_navInit();}
+setTimeout(_navInit,150);
+</script>
 </body>
 </html>

@@ -150,37 +150,25 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 .note-bar input:focus{outline:none;border-color:var(--blue)}
 .note-bar button{font-size:11px;padding:5px 9px;border-radius:var(--r);border:1px solid var(--border);background:var(--surface2);cursor:pointer;font-family:var(--font);color:var(--text2)}
 </style>
-<script src="shared_data.js"></script>
 <script>
-/* ── URL param → sessionStorage pre-loader ── */
 (function(){
   try{
-    var params = new URLSearchParams(window.location.search);
-    var ref = params.get('ref');
-    if(!ref) return;
-    if(typeof getCase !== 'function') return;
-    var cd = getCase(ref);
-    if(!cd) return;
-    sessionStorage.setItem('aeroCaseData', JSON.stringify({
-      ref:cd.ref, claimant:cd.claimant, solicitor:cd.solicitor,
-      flight:cd.flight, flightNum:cd.flightNum,
-      dep:cd.dep, arr:cd.arr, flightDate:cd.flightDate,
-      value:cd.value, type:cd.type, date:cd.locDate,
-      framework:'EC Regulation 261/2004',
-      points:cd.points||[],
-      jurisdiction:cd.jurisdiction||'england-wales',
-      lang:cd.lang||'en',
-      disruptionType:cd.disruptionType||'',
-      classification:cd.classification||'',
-      evidencePct:cd.evidencePct||0,
-      loaStatus:cd.loaStatus||'',
-      triageNote:cd.triageNote||'',
+    var p=new URLSearchParams(window.location.search),ref=p.get('ref');
+    if(!ref||typeof getCase!=='function') return;
+    var cd=getCase(ref); if(!cd) return;
+    sessionStorage.setItem('aeroCaseData',JSON.stringify({
+      ref:cd.ref,claimant:cd.claimant,solicitor:cd.solicitor,
+      flight:cd.flight,flightNum:cd.flightNum,dep:cd.dep,arr:cd.arr,
+      flightDate:cd.flightDate,value:cd.value,type:cd.type,date:cd.locDate,
+      framework:'EC Regulation 261/2004',points:cd.points||[],
+      jurisdiction:cd.jurisdiction||'england-wales',lang:cd.lang||'en',
+      disruptionType:cd.disruptionType||'',evidencePct:cd.evidencePct||0,
+      loaStatus:cd.loaStatus||'',triageNote:cd.triageNote||'',
       assignedTo:typeof USERS!=='undefined'&&USERS[cd.assignedTo]?USERS[cd.assignedTo].name:cd.assignedTo
     }));
-  }catch(e){ console.warn('URL pre-loader:', e); }
+  }catch(e){}
 })();
 </script>
-
 <script src="shared_data.js"></script>
 </head>
 <body>
@@ -394,14 +382,18 @@ function renderMain(){
   /* jurisdiction banner */
   var jurBanner = '';
   if(J && jKey !== 'england-wales'){
-    var impStyle = J.important ? 'margin-top:6px;font-size:11px;font-weight:500;color:#FDE68A;padding:6px 10px;background:rgba(255,255,255,0.1);border-radius:var(--r)' : '';
     jurBanner = '<div style="background:var(--navy);border-radius:var(--r2);padding:12px 16px;margin-bottom:14px;display:flex;align-items:flex-start;gap:12px">'
       +'<div style="font-size:22px;flex-shrink:0">'+J.flag+'</div>'
       +'<div style="flex:1">'
       +'<div style="font-size:12px;font-weight:500;color:#fff;margin-bottom:2px">'+J.name+' · '+J.court+'</div>'
-      +'<div style="font-size:11px;color:rgba(255,255,255,0.65);line-height:1.5">'+J.procedureNote+'</div>'
-      +(J.important?'<div style="'+impStyle+'">⚠️ '+J.important+'</div>':'')
-      +'</div></div>';
+      +'<div style="font-size:11px;color:rgba(255,255,255,0.65);line-height:1.5;margin-bottom:'+(J.important?'8px':'0')+'">'+J.procedureNote+'</div>'
+      +(J.important?'<div style="font-size:11px;font-weight:500;color:#FDE68A;padding:6px 10px;background:rgba(255,255,255,0.08);border-radius:var(--r)">⚠️ '+J.important+'</div>':'')
+      +'</div>'
+      +'<div style="text-align:right;flex-shrink:0">'
+      +'<div style="font-size:10px;color:rgba(255,255,255,0.4);margin-bottom:2px">'+J.limitationNote+'</div>'
+      +'<div style="font-size:10px;color:rgba(255,255,255,0.4)">'+J.responseWindowNote+'</div>'
+      +'</div>'
+      +'</div>';
   }
 
   /* Use jurisdiction deadlines if available */
@@ -631,6 +623,74 @@ function addNote(){
 log('CPR module opened — '+C.name+' v. TestAirways','create');
 log('LOC received: '+C.date+' · Response deadline: '+fmtDate(d21),'action');
 render();
+</script>
+<div class="user-modal" id="user-modal" onclick="if(event.target===this)closeMenu()">
+  <div class="user-dropdown">
+    <div class="ud-header">Switch user — demo</div>
+    <div style="padding:4px 14px 2px;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.06em;color:var(--text3)">UK Litigation</div>
+    <div class="ud-item" id="ud-SB" onclick="switchUser('SB')"><div class="ud-av">SB</div><div><div class="ud-name">Sarah Booth</div><div class="ud-role">Head of Legal Ops</div></div><i class="ti ti-check ud-tick"></i></div>
+    <div class="ud-item" id="ud-JP" onclick="switchUser('JP')"><div class="ud-av">JP</div><div><div class="ud-name">James Patel</div><div class="ud-role">Senior Solicitor</div></div><i class="ti ti-check ud-tick"></i></div>
+    <div class="ud-item" id="ud-KR" onclick="switchUser('KR')"><div class="ud-av">KR</div><div><div class="ud-name">Kiran Rahman</div><div class="ud-role">Solicitor</div></div><i class="ti ti-check ud-tick"></i></div>
+    <div style="height:1px;background:var(--border);margin:4px 0"></div>
+    <div style="padding:4px 14px 2px;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.06em;color:var(--text3)">🇫🇷 Équipe France</div>
+    <div class="ud-item" id="ud-MD" onclick="switchUser('MD')"><div class="ud-av" style="background:#1a3a6b">MD</div><div><div class="ud-name">Marie Dupont</div><div class="ud-role">Juriste senior</div></div><i class="ti ti-check ud-tick"></i></div>
+    <div class="ud-item" id="ud-PL" onclick="switchUser('PL')"><div class="ud-av" style="background:#1a3a6b">PL</div><div><div class="ud-name">Pierre Laurent</div><div class="ud-role">Juriste</div></div><i class="ti ti-check ud-tick"></i></div>
+    <div style="height:1px;background:var(--border);margin:4px 0"></div>
+    <div style="padding:4px 14px 2px;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.06em;color:var(--text3)">🇪🇸 Equipo España</div>
+    <div class="ud-item" id="ud-CG" onclick="switchUser('CG')"><div class="ud-av" style="background:#6b1a1a">CG</div><div><div class="ud-name">Carlos García</div><div class="ud-role">Abogado senior</div></div><i class="ti ti-check ud-tick"></i></div>
+    <div class="ud-item" id="ud-IM" onclick="switchUser('IM')"><div class="ud-av" style="background:#6b1a1a">IM</div><div><div class="ud-name">Isabel Martín</div><div class="ud-role">Abogada</div></div><i class="ti ti-check ud-tick"></i></div>
+  </div>
+</div>
+
+<script>
+/* ── Nav + user switcher ── */
+function _navInit(){
+  try{
+    var uid = typeof getActiveUser==='function'?getActiveUser():'SB';
+    var u = typeof USERS!=='undefined'?USERS[uid]:null;
+    if(u){
+      var av=document.getElementById('nav-av'); if(av) av.textContent=u.initials;
+      var un=document.getElementById('nav-user'); if(un) un.textContent=u.name;
+    }
+    // Translate nav labels
+    var labels = {dashboard:'dashboard',intake:'intake',cases:'cases',cpr:'cpr',
+                  evidence:'evidence',drafting:'drafting',mi:'mi',knowledge:'knowledge'};
+    Object.keys(labels).forEach(function(id){
+      var el=document.getElementById('gnl-'+id);
+      if(el){ var sp=el.querySelector('.gnl'); if(sp && typeof t==='function') sp.textContent=t(labels[id]); }
+    });
+    // Add badge counts
+    if(typeof getCasesForUser==='function'){
+      var cases=getCasesForUser(uid);
+      var intN=cases.filter(function(c){return c.stage==='intake';}).length;
+      var urgN=cases.filter(function(c){return c.cprDaysLeft<=7&&c.stage!=='resolve';}).length;
+      if(intN>0){var il=document.getElementById('gnl-intake');if(il){var b=document.createElement('span');b.style.cssText='background:#C0392B;color:#fff;font-size:9px;font-weight:600;padding:1px 5px;border-radius:10px;margin-left:3px;vertical-align:middle';b.textContent=intN;il.appendChild(b);}}
+      if(urgN>0){var cl=document.getElementById('gnl-cpr');if(cl){var b2=document.createElement('span');b2.style.cssText='background:#C0392B;color:#fff;font-size:9px;font-weight:600;padding:1px 5px;border-radius:10px;margin-left:3px;vertical-align:middle';b2.textContent=urgN;cl.appendChild(b2);}}
+    }
+    // Active state
+    var p=window.location.pathname.split('/').pop()||'index.html';
+    var active=p.indexOf('module1')>=0?'intake':p.indexOf('module2')>=0?'cases':p.indexOf('module3')>=0?'cpr':p.indexOf('module4')>=0?'evidence':p.indexOf('module5')>=0?'drafting':p.indexOf('module6')>=0?'mi':p.indexOf('education')>=0?'knowledge':'dashboard';
+    var al=document.getElementById('gnl-'+active); if(al) al.classList.add('active');
+    // Active user tick
+    document.querySelectorAll('.ud-item').forEach(function(el){el.classList.remove('current');});
+    var at=document.getElementById('ud-'+uid); if(at) at.classList.add('current');
+  }catch(e){}
+}
+function toggleUserMenu(){var m=document.getElementById('user-modal');if(m)m.classList.toggle('open');}
+function closeMenu(){var m=document.getElementById('user-modal');if(m)m.classList.remove('open');}
+function switchUser(id){
+  if(typeof setActiveUser==='function')setActiveUser(id);
+  if(typeof activeUser!=='undefined')activeUser=id;
+  closeMenu();
+  sessionStorage.removeItem('261c_lang');
+  _navInit();
+  if(typeof render==='function')render();
+  if(typeof renderList==='function')renderList();
+  if(typeof renderPage==='function')renderPage();
+}
+if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',_navInit);}
+else{_navInit();}
+setTimeout(_navInit,150);
 </script>
 </body>
 </html>
