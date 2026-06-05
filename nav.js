@@ -10,6 +10,7 @@
     {key:'drafting',  icon:'ti-file-pencil',       href:'module5-drafting.html'},
     {key:'mi',        icon:'ti-chart-bar',         href:'module6-mi.html'},
     {key:'knowledge', icon:'ti-school',            href:'education.html'},
+    {key:'repository', icon:'ti-database',          href:'repository.html'},
   ];
 
   var TEAMS = [
@@ -32,6 +33,7 @@
     if(p.indexOf('module5-drafting-workspace')>=0) return 'drafting';
     if(p.indexOf('module6')>=0) return 'mi';
     if(p.indexOf('education')>=0) return 'knowledge';
+    if(p.indexOf('repository')>=0) return 'repository';
     return 'dashboard';
   })();
 

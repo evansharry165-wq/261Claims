@@ -14,6 +14,7 @@ function renderGlobalNav(activeModule){
     {id:'evidence',  href:'module4-evidence.html',          icon:'ti-folder-open',      label:'Evidence'},
     {id:'drafting',  href:'module5-drafting.html',          icon:'ti-file-pencil',      label:'Drafting'},
     {id:'mi',        href:'module6-mi.html',                icon:'ti-chart-bar',        label:'MI'},
+    {id:'repository',href:'repository.html',                icon:'ti-database',         label:'Repository'},
   ];
   var linksHtml = navLinks.map(function(l){
     var active = l.id === activeModule ? ' active' : '';

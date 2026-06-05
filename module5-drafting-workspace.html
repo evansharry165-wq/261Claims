@@ -912,7 +912,7 @@ function renderWorkspace(){
   const versionPanel = `<div class="points-ref" style="margin-bottom:14px"><div class="pr-header"><i class="ti ti-history" style="font-size:13px;color:var(--text3)"></i>Document version history</div>`
     +(versions.length?versions.map(v=>`<div class="pr-item"><div class="pr-dot pr-dot-g"></div><div><div class="pr-num">${v.label}</div><div class="pr-ev">${v.time} · ${v.by}</div></div></div>`).join(''):`<div class="pr-item"><div class="pr-dot pr-dot-a"></div><div><div class="pr-num">No versions saved yet</div><div class="pr-ev">Generate or edit this document to create a version.</div></div></div>`)
     +`</div>`;
-  const resolutionPanel = `<div class="points-ref"><div class="pr-header"><i class="ti ti-archive" style="font-size:13px;color:var(--text3)"></i>Resolution and repository</div><div class="pr-item"><div class="pr-dot ${caseResolved?'pr-dot-g':'pr-dot-a'}"></div><div style="flex:1"><div class="pr-num">${caseResolved?'Closed and stored in repository':'Ready to close after final document approval'}</div><div class="pr-ev">Outcome, final documents, evidence pack, and AI rationale are retained for search and future similar-case recommendations.</div></div><button class="btn-action ${caseResolved?'success':'primary'}" onclick="resolveCase()">${caseResolved?'Stored':'Close & store'}</button></div></div>`;
+  const resolutionPanel = `<div class="points-ref"><div class="pr-header"><i class="ti ti-archive" style="font-size:13px;color:var(--text3)"></i>Resolution and repository</div><div class="pr-item"><div class="pr-dot ${caseResolved?'pr-dot-g':'pr-dot-a'}"></div><div style="flex:1"><div class="pr-num">${caseResolved?'Closed and stored in repository':'Ready to close after final document approval'}</div><div class="pr-ev">Outcome, final documents, evidence pack, and AI rationale are retained for search and future similar-case recommendations.</div></div><button class="btn-action ${caseResolved?'success':'primary'}" onclick="resolveCase()">${caseResolved?'Stored':'Close & store'}</button><a class="btn-action" href="repository.html"><i class="ti ti-database" style="font-size:11px"></i>Open repository</a></div></div>`;
 
   m.innerHTML = `
     <div class="case-hdr">
@@ -1028,7 +1028,7 @@ function resolveCase(){
   caseResolved=true;
   try{
     var repo=JSON.parse(sessionStorage.getItem('261c_repository')||'[]');
-    repo.unshift({ref:C.ref,claimant:C.name,outcome:'Defended / response issued',stored:new Date().toISOString(),documents:Object.keys(docApproved).filter(k=>docApproved[k]),value:C.value});
+    repo.unshift({ref:C.ref,claimant:C.name,outcome:'Defended / response issued',stored:new Date().toISOString(),documents:Object.keys(docApproved).filter(k=>docApproved[k]),value:C.value,flightNum:C.flightNum,disruptionType:C.type,solicitor:C.sol});
     sessionStorage.setItem('261c_repository',JSON.stringify(repo.slice(0,20)));
   }catch(e){}
   renderWorkspace();

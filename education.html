@@ -190,6 +190,7 @@ function t(key){var d=I18N[getUILang()]||I18N.en;return d[key]||I18N.en[key]||ke
     <a href="education.html" class="gn-link" id="gnl-knowledge"><i class="ti ti-school"></i> <span class="gnl">Knowledge</span></a>
   </div>
   <div class="gn-right">
+    <a href="repository.html" class="gn-link repo-nav" style="background:rgba(34,168,99,0.15);border:1px solid rgba(34,168,99,0.35);color:#D1FAE5"><i class="ti ti-database"></i> Repository</a>
     <div class="gn-user-btn" onclick="toggleUserMenu()">
       <div class="gn-av" id="nav-av">SB</div>
       <span class="gn-user" id="nav-user">S. Booth</span>
@@ -213,6 +214,7 @@ function t(key){var d=I18N[getUILang()]||I18N.en;return d[key]||I18N.en[key]||ke
     <div class="sb-item" onclick="showSection('france-spain', event)"><i class="ti ti-world"></i> France & Spain</div>
 
     <div class="sb-section">Team resources</div>
+    <div class="sb-item" onclick="showSection('repository_learning', event)"><i class="ti ti-database"></i> Repository learning</div>
     <div class="sb-item" onclick="showSection('templates', event)"><i class="ti ti-file-text"></i> Document templates</div>
     <div class="sb-item" onclick="showSection('updates', event)"><i class="ti ti-news"></i> Legal updates <span class="sb-count" style="background:var(--red-faint);color:var(--red)">3</span></div>
   </div>
@@ -423,6 +425,22 @@ templates: {
           +'</a>';
       }).join('')
       +'</div>';
+  }
+},
+
+repository_learning: {
+  title: 'Repository learning',
+  sub: 'How closed cases feed recommendations, evidence strategy, drafting and training',
+  content: function(){
+    return '<div class="panel"><div class="panel-hdr"><i class="ti ti-database" style="font-size:14px;color:var(--green)"></i><div><div class="panel-title">Closed case repository</div><div class="panel-sub">Outcome data becomes reusable legal and operational learning</div></div></div>'
+      +'<div class="panel-body" style="font-size:12px;color:var(--text2);line-height:1.7">'
+      +'When a case is closed, the platform stores the outcome, evidence pack, AI rationale, approved drafting, applied case law and settlement/payment data. New claims are compared against this repository to flag similar facts and recommend whether to defend, settle, pay or escalate.'
+      +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px">'
+      +'<a class="article-card" href="repository.html"><div class="ac-tag tag-proc"><i class="ti ti-database" style="font-size:11px"></i>Repository</div><div class="ac-title">Open repository module</div><div class="ac-summary">Search defended, settled, paid and withdrawn cases with similarity suggestions and evidence playbooks.</div><div class="ac-footer"><span class="ac-read">Open <i class="ti ti-arrow-right" style="font-size:10px"></i></span></div></a>'
+      + articleCard('ti-brain','tag-law','AI Learning','Similarity matching and recommendations','The engine compares disruption type, jurisdiction, solicitor, route, claim value, evidence profile and outcome to suggest the best next step for new cases.','Workflow · 6 min')
+      + articleCard('ti-folder-open','tag-proc','Evidence','Evidence playbook reuse','Successful evidence packs become source lists for future similar cases, reducing manual evidence chasing and improving consistency.','Evidence · 7 min')
+      + articleCard('ti-school','tag-reg','Training','Case law applied to facts','Repository outcomes update training material so users understand how Wallentin-Hermann, Sturgeon, van der Lans and Pešková apply in real claims.','Education · 8 min')
+      +'</div></div></div>';
   }
 },
 
