@@ -131,25 +131,7 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 .ud-item.current .ud-tick{display:block}
 
 </style>
-<script>
-(function(){
-  try{
-    var p=new URLSearchParams(window.location.search),ref=p.get('ref');
-    if(!ref||typeof getCase!=='function') return;
-    var cd=getCase(ref); if(!cd) return;
-    sessionStorage.setItem('aeroCaseData',JSON.stringify({
-      ref:cd.ref,claimant:cd.claimant,solicitor:cd.solicitor,
-      flight:cd.flight,flightNum:cd.flightNum,dep:cd.dep,arr:cd.arr,
-      flightDate:cd.flightDate,value:cd.value,type:cd.type,date:cd.locDate,
-      framework:'EC Regulation 261/2004',points:cd.points||[],
-      jurisdiction:cd.jurisdiction||'england-wales',lang:cd.lang||'en',
-      disruptionType:cd.disruptionType||'',evidencePct:cd.evidencePct||0,
-      loaStatus:cd.loaStatus||'',triageNote:cd.triageNote||'',
-      assignedTo:typeof USERS!=='undefined'&&USERS[cd.assignedTo]?USERS[cd.assignedTo].name:cd.assignedTo
-    }));
-  }catch(e){}
-})();
-</script>
+
 </head>
 <body>
 <script>
@@ -205,6 +187,52 @@ function getUILang(){return sessionStorage.getItem('261c_lang')||(USERS[getActiv
 function t(key){var d=I18N[getUILang()]||I18N.en;return d[key]||I18N.en[key]||key;}
 
 </script>
+<script>
+/* URL param → sessionStorage — runs before case init */
+(function(){
+  try{
+    var p=new URLSearchParams(window.location.search);
+    var ref=p.get('ref');
+    if(!ref) return;
+    // Try sessionStorage case store first
+    var stored=null;
+    try{stored=JSON.parse(sessionStorage.getItem('261c_case')||'null');}catch(e){}
+    if(stored&&stored.ref===ref){
+      // Already correct — write to aeroCaseData for legacy readers
+      sessionStorage.setItem('aeroCaseData',JSON.stringify({
+        ref:stored.ref,claimant:stored.claimant,solicitor:stored.solicitor,
+        flight:stored.flight,flightNum:stored.flightNum,dep:stored.dep,arr:stored.arr,
+        flightDate:stored.flightDate,value:stored.value,type:stored.type,
+        date:stored.locDate||stored.date,framework:'EC Regulation 261/2004',
+        points:stored.points||[],jurisdiction:stored.jurisdiction||'england-wales',
+        lang:stored.lang||'en',disruptionType:stored.disruptionType||'',
+        evidencePct:stored.evidencePct||0,loaStatus:stored.loaStatus||'',
+        triageNote:stored.triageNote||'',
+        assignedTo:stored.assignedTo||(stored.assignedTo_name||'')
+      }));
+      return;
+    }
+    // Find case in embedded ALL_CASES data
+    if(typeof ALL_CASES==='undefined') return;
+    var cd=ALL_CASES.find(function(c){return c.ref===decodeURIComponent(ref);});
+    if(!cd) return;
+    var u=typeof USERS!=='undefined'&&USERS[cd.assignedTo]?USERS[cd.assignedTo].name:cd.assignedTo;
+    var payload={
+      ref:cd.ref,claimant:cd.claimant,solicitor:cd.solicitor,
+      flight:cd.flight,flightNum:cd.flightNum,dep:cd.dep,arr:cd.arr,
+      flightDate:cd.flightDate,value:cd.value,type:cd.type,
+      date:cd.locDate,framework:'EC Regulation 261/2004',
+      points:cd.points||[],jurisdiction:cd.jurisdiction||'england-wales',
+      lang:cd.lang||'en',disruptionType:cd.disruptionType||'',
+      evidencePct:cd.evidencePct||0,loaStatus:cd.loaStatus||'',
+      triageNote:cd.triageNote||'',assignedTo:u
+    };
+    sessionStorage.setItem('aeroCaseData',JSON.stringify(payload));
+    sessionStorage.setItem('261c_case',JSON.stringify(cd));
+  }catch(e){console.warn('URL reader:',e);}
+})();
+</script>
+
 <div class="app">
   <div class="topbar">
     <div style="display:flex;align-items:center;gap:14px">
