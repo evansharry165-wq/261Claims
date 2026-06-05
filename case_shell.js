@@ -134,7 +134,7 @@ var CaseShell = (function () {
 
     document.getElementById('case-header').innerHTML =
       '<div class="case-bar-top">' +
-      '<a href="module2-case-management.html" class="case-back"><i class="ti ti-arrow-left"></i> Cases</a>' +
+      '<a href="cases.html" class="case-back"><i class="ti ti-arrow-left"></i> Cases</a>' +
       '<div class="case-bar-meta">' +
       '<span class="case-bar-ref">' +
       escapeHtml(c.ref) +
@@ -381,12 +381,12 @@ var CaseShell = (function () {
     var ref = params.get('ref');
     var tab = params.get('tab') || 'overview';
     if (!ref) {
-      window.location.href = 'module2-case-management.html';
+      window.location.href = 'cases.html';
       return;
     }
     var c = loadCase(ref);
     if (!c) {
-      window.location.href = 'module2-case-management.html';
+      window.location.href = 'cases.html';
       return;
     }
     if (!params.get('tab') && typeof getPrimaryTab === 'function') tab = getPrimaryTab(c);

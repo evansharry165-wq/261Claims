@@ -780,21 +780,21 @@ Update to reflect:
 - [x] Redirect legacy workspace URLs (`case_embed.js` → `case.html?ref=&tab=`)
 
 ### Phase 3 — Cases & intake
-- [ ] Rename/enhance case list (`cases.html`) with next-action columns
-- [ ] Restructure intake with tabs
-- [ ] Remove/redirect module list pages
-- [ ] Create `requests.html` for EH
+- [x] Rename/enhance case list (`cases.html`) with next-action columns
+- [x] Restructure intake with tabs (`intake.html` — New LOC / Add to existing case)
+- [x] Remove/redirect module list pages (`legacy_redirect.js`)
+- [x] Create `requests.html` for EH
 
 ### Phase 4 — Insights & Repository
-- [ ] Create `insights.html` (3 tabs)
-- [ ] Merge education hubs
-- [ ] Simplify `repository.html` to evidence store only
-- [ ] Move past cases to Insights
+- [x] Create `insights.html` (3 tabs: Reporting, Past cases, Guidance)
+- [x] Merge education hubs (Guidance tab embeds `education.html`)
+- [x] Simplify `repository.html` to evidence store only (default to filing view)
+- [x] Move past cases to Insights (`insights_data.js`)
 
 ### Phase 5 — Cleanup
-- [ ] Remove duplicate inline nav from all HTML files
-- [ ] Delete redirect stubs after migration verified
-- [ ] Update README
+- [x] Update nav to new URLs (`shared_nav.js`, `nav.js`, cross-page links)
+- [x] Legacy module list pages redirect to new URLs (workspace iframes retained)
+- [x] Update README
 
 ---
 

@@ -5,10 +5,28 @@ Case management for in-house legal and evidence teams handling EC261/UK261 aviat
 
 Serve the repository root with any static web server and open `index.html`.
 
-The **Work** dashboard (`index.html`) is the daily starting point: Do now tasks, CPR watch items, and a collapsible portfolio summary. Navigation uses four items — Work, Cases, Repository, Insights.
+GitHub Pages: [https://evansharry165-wq.github.io/261Claims/index.html](https://evansharry165-wq.github.io/261Claims/index.html)
 
-**Demo path:** Open urgent case AC-2026-0089 from the banner (unified case shell at `case.html` with Overview, Triage, Deadlines, Evidence, Documents, and Activity tabs), then switch to Emma Hughes (Evidence team) to complete the request queue.
+## Site structure
 
-Legacy workspace URLs (`module2-case-workspace.html?ref=…`, etc.) redirect into the case shell automatically.
+| Page | Purpose |
+|---|---|
+| `index.html` | **Work** — Do now / Watch / Portfolio |
+| `cases.html` | Case register with next-action columns |
+| `case.html` | Unified case workspace (Overview, Triage, Deadlines, Evidence, Documents, Activity) |
+| `intake.html` | New claim intake (New LOC / Add to existing case) |
+| `requests.html` | Evidence team request queue (EH user) |
+| `repository.html` | Evidence filing store (SharePoint mirror) |
+| `insights.html` | Reporting, past cases archive, and guidance |
 
-See `REDESIGN_SPEC.md` for the full redesign plan and implementation phases.
+Navigation: **Work · Cases · Repository · Insights** (Evidence team sees **Requests** instead of Cases).
+
+## Demo path
+
+1. **Sarah Booth** → Work → open AC-2026-0089 from the demo banner
+2. Use case shell tabs or Continue CTA through triage → deadlines → evidence
+3. Switch to **Emma Hughes** → complete evidence requests in Repository
+
+Legacy URLs (`module2-case-management.html`, `module6-mi.html`, etc.) redirect automatically.
+
+See `REDESIGN_SPEC.md` for the full redesign plan.

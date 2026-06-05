@@ -3,9 +3,9 @@
 (function(){
   var NAV_LINKS = [
     {key:'work',       icon:'ti-layout-dashboard', href:'index.html'},
-    {key:'cases',      icon:'ti-briefcase',        href:'module2-case-management.html'},
+    {key:'cases',      icon:'ti-briefcase',        href:'cases.html'},
     {key:'repository', icon:'ti-database',         href:'repository.html'},
-    {key:'insights',   icon:'ti-chart-dots',       href:'module6-mi.html'},
+    {key:'insights',   icon:'ti-chart-dots',       href:'insights.html'},
   ];
 
   var TEAMS = [

@@ -91,9 +91,103 @@ function getNextAction(c) {
 }
 
 var EVIDENCE_REQUEST_SEED = [
-  { id: 'REQ-001', ref: 'AC-2026-0089', status: 'open', requestedBy: 'S. Booth', missing: ['Valencia ground handling records', 'Passenger care evidence', 'DPM notes'], since: '2d ago' },
-  { id: 'REQ-002', ref: 'AC-2026-0091', status: 'open', requestedBy: 'J. Patel', missing: ['Eurocontrol regulation PDF', 'MAX OPS passenger communications'], since: '1d ago' }
+  {
+    id: 'REQ-001',
+    ref: 'AC-2026-0089',
+    claimant: 'Daniel Hartley',
+    flight: 'HC 1184 — LTN → BCN',
+    pack: 'Gold',
+    priority: 'Urgent',
+    due: '3d',
+    status: 'open',
+    requestedBy: 'S. Booth',
+    missing: ['Valencia ground handling records', 'Passenger care evidence', 'DPM notes'],
+    note: 'Pull all left gaps on passenger care and diversion ground handling.',
+    since: '2d ago'
+  },
+  {
+    id: 'REQ-002',
+    ref: 'AC-2026-0091',
+    claimant: 'Rebecca Walsh',
+    flight: 'HC 307 — MAN → AMS',
+    pack: 'Bronze',
+    priority: 'Normal',
+    due: '7d',
+    status: 'open',
+    requestedBy: 'J. Patel',
+    missing: ['Eurocontrol regulation PDF', 'MAX OPS passenger communications'],
+    note: 'ATC delay pack — network outlook still missing.',
+    since: '1d ago'
+  }
 ];
+
+var CASE_FILTER_MAP = {
+  intake: ['intake'],
+  triage: ['triage'],
+  deadlines: ['cpr'],
+  evidence: ['evidence'],
+  drafting: ['drafting', 'defence'],
+  urgent: null
+};
+
+function filterCasesByParam(cases, filter) {
+  if (!filter) return cases;
+  if (filter === 'urgent') {
+    return cases.filter(function (c) {
+      return c.cprDaysLeft <= 7 && c.stage !== 'resolve';
+    });
+  }
+  var stages = CASE_FILTER_MAP[filter];
+  if (!stages) return cases;
+  return cases.filter(function (c) {
+    return stages.indexOf(c.stage) >= 0;
+  });
+}
+
+function sortCases(cases, sort) {
+  var list = cases.slice();
+  if (sort === 'stage') {
+    var order = ['intake', 'triage', 'cpr', 'evidence', 'drafting', 'defence', 'resolve'];
+    list.sort(function (a, b) {
+      return order.indexOf(a.stage) - order.indexOf(b.stage);
+    });
+  } else if (sort === 'value') {
+    list.sort(function (a, b) {
+      var av = parseInt(String(a.value).replace(/,/g, '').match(/\d+/) || '0', 10);
+      var bv = parseInt(String(b.value).replace(/,/g, '').match(/\d+/) || '0', 10);
+      return bv - av;
+    });
+  } else {
+    list.sort(function (a, b) {
+      return a.cprDaysLeft - b.cprDaysLeft;
+    });
+  }
+  return list;
+}
+
+function updateEvidenceRequest(id, status) {
+  var reqs = [];
+  try {
+    reqs = JSON.parse(sessionStorage.getItem('261c_evidence_requests') || '[]');
+  } catch (e) {}
+  var found = false;
+  reqs = reqs.map(function (r) {
+    if (r.id === id) {
+      found = true;
+      return Object.assign({}, r, { status: status });
+    }
+    return r;
+  });
+  if (!found) {
+    var seed = EVIDENCE_REQUEST_SEED.find(function (r) {
+      return r.id === id;
+    });
+    if (seed) reqs.push(Object.assign({}, seed, { status: status }));
+  }
+  try {
+    sessionStorage.setItem('261c_evidence_requests', JSON.stringify(reqs));
+  } catch (e) {}
+}
 
 function getEvidenceRequests() {
   var reqs = [];

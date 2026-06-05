@@ -10,35 +10,32 @@
 
   var LEGAL_NAV = [
     { key: 'work', icon: 'ti-layout-dashboard', href: 'index.html' },
-    { key: 'cases', icon: 'ti-briefcase', href: 'module2-case-management.html' },
+    { key: 'cases', icon: 'ti-briefcase', href: 'cases.html' },
     { key: 'repository', icon: 'ti-database', href: 'repository.html' },
-    { key: 'insights', icon: 'ti-chart-dots', href: 'module6-mi.html' }
+    { key: 'insights', icon: 'ti-chart-dots', href: 'insights.html' }
   ];
 
   var EVIDENCE_NAV = [
     { key: 'work', icon: 'ti-layout-dashboard', href: 'index.html' },
-    { key: 'requests', icon: 'ti-user-question', href: 'module4-evidence.html' },
+    { key: 'requests', icon: 'ti-user-question', href: 'requests.html' },
     { key: 'repository', icon: 'ti-database', href: 'repository.html' },
-    { key: 'insights', icon: 'ti-chart-dots', href: 'module6-mi.html' }
+    { key: 'insights', icon: 'ti-chart-dots', href: 'insights.html' }
   ];
 
   function activePageKey() {
     var p = window.location.pathname.split('/').pop() || 'index.html';
     if (p === 'index.html' || p === '') return 'work';
-    if (p === 'case.html') return 'cases';
-    if (p.indexOf('module1') >= 0 || p.indexOf('intake') >= 0) return 'cases';
-    if (p.indexOf('module2') >= 0) return 'cases';
-    if (p.indexOf('module3') >= 0) return 'cases';
-    if (p.indexOf('module4-evidence.html') >= 0) {
+    if (p === 'case.html' || p === 'cases.html') return 'cases';
+    if (p === 'intake.html' || p.indexOf('module1') >= 0 || p.indexOf('intake') >= 0) return 'cases';
+    if (p === 'requests.html') return 'requests';
+    if (p.indexOf('module2') >= 0 || p.indexOf('module3') >= 0) return 'cases';
+    if (p.indexOf('module4-evidence.html') >= 0 || p.indexOf('module4') >= 0) {
       var uid = typeof getActiveUser === 'function' ? getActiveUser() : 'SB';
       var u = typeof USERS !== 'undefined' ? USERS[uid] : null;
       return u && u.team === 'evidence' ? 'requests' : 'cases';
     }
-    if (p.indexOf('module4') >= 0) return 'cases';
     if (p.indexOf('module5') >= 0) return 'cases';
-    if (p.indexOf('module6') >= 0) return 'insights';
-    if (p.indexOf('education') >= 0) return 'insights';
-    if (p.indexOf('module7') >= 0) return 'insights';
+    if (p === 'insights.html' || p.indexOf('module6') >= 0 || p.indexOf('education') >= 0 || p.indexOf('module7') >= 0) return 'insights';
     if (p.indexOf('repository') >= 0) return 'repository';
     return 'work';
   }
