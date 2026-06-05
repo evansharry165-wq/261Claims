@@ -36,10 +36,68 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 
 .evidence-layout{display:grid;grid-template-columns:320px 1fr;gap:14px}.calendar-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--r3);overflow:hidden}.calendar-day{padding:12px 14px;border-bottom:1px solid var(--border);cursor:pointer;display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center}.calendar-day:hover,.calendar-day.active{background:var(--blue-faint)}.day-num{width:38px;height:38px;border-radius:12px;background:var(--surface3);display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:500}.day-num span{font-size:9px;text-transform:uppercase;color:var(--text3)}.day-title{font-size:12px;font-weight:500}.day-sub{font-size:10px;color:var(--text3);margin-top:2px}.pack-score{font-size:10px;font-weight:500;padding:3px 7px;border-radius:20px;background:var(--green-faint);color:var(--green)}.pack-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}.pack-card{border:1px solid var(--border);border-radius:var(--r2);padding:12px;background:var(--surface2)}.pack-card.gold{border-color:#FDE68A;background:#FFFBEB}.pack-card.bronze{border-color:#DDD6FE;background:#FAF5FF}.pack-title{font-size:12px;font-weight:500;display:flex;align-items:center;gap:6px;margin-bottom:5px}.pack-copy{font-size:11px;color:var(--text2);line-height:1.5}.source-table{width:100%;border-collapse:collapse;font-size:12px}.source-table th{text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);font-weight:500;padding:0 8px 8px 0;border-bottom:2px solid var(--border)}.source-table td{padding:9px 8px 9px 0;border-bottom:1px solid var(--border);vertical-align:top}.status-ok{background:var(--green-faint);color:var(--green)}.status-wait{background:var(--amber-faint);color:var(--amber)}.status-gap{background:var(--red-faint);color:var(--red)}.request-box{border:1px dashed var(--border2);border-radius:var(--r2);padding:12px;background:var(--surface2);margin-top:12px}.request-box textarea{width:100%;min-height:58px;border:1px solid var(--border);border-radius:var(--r);font-family:var(--font);font-size:12px;padding:8px;resize:vertical;margin-top:8px}.mini-btn{font-size:11px;border:1px solid var(--border2);border-radius:var(--r);background:#fff;padding:6px 9px;cursor:pointer;color:var(--text2);font-family:var(--font);display:inline-flex;gap:5px;align-items:center;text-decoration:none}.mini-btn.primary{background:var(--navy);border-color:var(--navy);color:#fff}.attach-strip{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.case-chip{font-size:10px;padding:4px 7px;border-radius:20px;background:var(--blue-faint);color:var(--blue-text);border:1px solid #BFDBFE}
 
+/* ── Evidence filing system (SharePoint mirror) ── */
+.filing-layout{display:grid;grid-template-columns:280px 1fr 260px;gap:14px;min-height:520px}
+.filing-tree{background:var(--surface);border:1px solid var(--border);border-radius:var(--r3);overflow:hidden;display:flex;flex-direction:column}
+.filing-tree-hdr{padding:12px 14px;border-bottom:1px solid var(--border);font-size:12px;font-weight:500;display:flex;align-items:center;gap:7px}
+.filing-tree-body{flex:1;overflow-y:auto;padding:8px 0}
+.tree-item{display:flex;align-items:center;gap:7px;padding:7px 14px;cursor:pointer;font-size:12px;color:var(--text2);border-left:3px solid transparent}
+.tree-item:hover{background:var(--surface2)}
+.tree-item.active{background:var(--blue-faint);border-left-color:var(--blue);color:var(--blue-text);font-weight:500}
+.tree-item i{font-size:14px;flex-shrink:0;color:var(--text3)}
+.tree-item.active i{color:var(--blue-text)}
+.tree-item .tree-count{margin-left:auto;font-size:10px;color:var(--text3);background:var(--surface3);padding:1px 6px;border-radius:10px}
+.tree-nested{padding-left:14px}
+.tree-year,.tree-month{font-size:11px;padding:5px 14px 5px 28px;color:var(--text3);cursor:pointer;display:flex;align-items:center;gap:6px}
+.tree-year:hover,.tree-month:hover{background:var(--surface2);color:var(--text2)}
+.tree-year.active,.tree-month.active{color:var(--blue-text);font-weight:500}
+.tree-day{font-size:11px;padding:5px 14px 5px 42px;color:var(--text3);cursor:pointer;display:flex;align-items:center;gap:6px}
+.tree-day:hover{background:var(--surface2);color:var(--text2)}
+.tree-day.active{color:var(--blue-text);font-weight:500;background:var(--blue-faint)}
+.filing-main{background:var(--surface);border:1px solid var(--border);border-radius:var(--r3);overflow:hidden;display:flex;flex-direction:column}
+.filing-toolbar{padding:10px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:var(--surface2)}
+.breadcrumb{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--text3);flex:1;min-width:0;flex-wrap:wrap}
+.breadcrumb span{cursor:pointer;color:var(--blue-text)}
+.breadcrumb span:hover{text-decoration:underline}
+.breadcrumb .bc-sep{color:var(--text3)}
+.filing-search{font-size:12px;border:1px solid var(--border);border-radius:var(--r);padding:7px 10px;width:180px;font-family:var(--font)}
+.filing-body{flex:1;overflow-y:auto;padding:0}
+.file-table{width:100%;border-collapse:collapse;font-size:12px}
+.file-table th{text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);font-weight:500;padding:10px 14px;border-bottom:2px solid var(--border);background:var(--surface2);position:sticky;top:0}
+.file-table td{padding:10px 14px;border-bottom:1px solid var(--border);vertical-align:middle}
+.file-table tr:hover td{background:var(--surface2)}
+.file-name{font-weight:500;display:flex;align-items:center;gap:7px}
+.file-name i{color:var(--blue-text);font-size:15px}
+.file-meta{font-size:10px;color:var(--text3);margin-top:2px}
+.tier-k{background:var(--red-faint);color:var(--red)}.tier-s{background:var(--amber-faint);color:var(--amber)}.tier-w{background:var(--purple-faint);color:var(--purple)}
+.upload-zone{border:2px dashed var(--border2);border-radius:var(--r2);padding:18px;text-align:center;margin:14px;background:var(--surface2);cursor:pointer;transition:border-color .15s,background .15s}
+.upload-zone:hover,.upload-zone.dragover{border-color:var(--blue);background:var(--blue-faint)}
+.upload-zone i{font-size:28px;color:var(--text3);display:block;margin-bottom:8px}
+.upload-zone p{font-size:12px;color:var(--text2);line-height:1.5}
+.upload-zone strong{color:var(--blue-text)}
+.upload-form{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding:14px;border-top:1px solid var(--border);background:var(--surface2)}
+.upload-form label{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);display:block;margin-bottom:3px}
+.upload-form input,.upload-form select{width:100%;font-size:12px;padding:7px 9px;border:1px solid var(--border);border-radius:var(--r);font-family:var(--font)}
+.filing-sidebar{background:var(--surface);border:1px solid var(--border);border-radius:var(--r3);overflow:hidden}
+.filing-sidebar .panel-body{max-height:400px;overflow-y:auto}
+.view-toggle{display:flex;gap:4px}.view-toggle button{font-size:11px;padding:5px 10px;border:1px solid var(--border);background:var(--surface);border-radius:var(--r);cursor:pointer;font-family:var(--font);color:var(--text2)}
+.view-toggle button.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+.sp-path{font-family:var(--mono);font-size:10px;color:var(--text3);background:var(--surface3);padding:8px 12px;border-radius:var(--r);margin:12px 14px 0;line-height:1.6;word-break:break-all}
+.pull-banner{background:linear-gradient(135deg,var(--green-faint),#fff);border:1px solid #BBF7D0;border-radius:var(--r2);padding:11px 14px;margin:14px;font-size:12px;color:var(--text2);line-height:1.55}
+.pull-banner strong{color:var(--green)}
+.folder-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;padding:14px}
+.folder-card{border:1px solid var(--border);border-radius:var(--r2);padding:14px 12px;cursor:pointer;text-align:center;background:var(--surface2);transition:all .15s}
+.folder-card:hover{border-color:var(--blue);background:var(--blue-faint);transform:translateY(-1px)}
+.folder-card i{font-size:28px;color:var(--blue-text);display:block;margin-bottom:8px}
+.folder-card .fc-name{font-size:12px;font-weight:500;line-height:1.35}
+.folder-card .fc-count{font-size:10px;color:var(--text3);margin-top:4px}
+input[type=file].filing-file-input{display:none}
+
 </style>
 </head>
 <body>
 <script src="shared_data.js"></script>
+<script src="evidence_filing.js"></script>
 <nav class="global-nav">
   <a href="index.html" class="gn-logo"><div class="gn-mark"><i class="ti ti-plane"></i></div><span class="gn-name">261Claims</span></a>
   <div class="gn-links">
@@ -74,7 +132,167 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
     <div class="ud-item" id="ud-EH" onclick="switchUser('EH')"><div class="ud-av" style="background:#164E63">EH</div><div><div class="ud-name">Emma Hughes</div><div class="ud-role">Evidence Handling Specialist</div></div><i class="ti ti-check ud-tick"></i></div>
 </div></div>
 <script>
+function isEvidenceTeam(){var uid=getActiveUser();return uid==='EH'||(USERS[uid]&&USERS[uid].team==='evidence');}
+function sharePointPath(path){
+  var base='SharePoint / Evidence Repository';
+  if(!path.categoryId)return base;
+  var cat=EvidenceFiling.categoryById(path.categoryId);
+  var segs=[base,cat?cat.name:path.categoryId];
+  if(path.year)segs.push(path.year);
+  if(path.month){var m=EvidenceFiling.MONTHS[parseInt(path.month,10)-1];segs.push(m||path.month);}
+  if(path.date){var p=EvidenceFiling.dateParts(path.date);segs.push(p.dayLabel);}
+  return segs.join(' / ');
+}
+function setFilingPath(p){filingPath=Object.assign({categoryId:null,year:null,month:null,date:null},p||{});filingView='browse';render();}
+function filingBreadcrumb(){
+  var parts=[{label:'Evidence Repository',action:"setFilingPath({})"}];
+  if(filingPath.categoryId){var c=EvidenceFiling.categoryById(filingPath.categoryId);parts.push({label:c?c.name:filingPath.categoryId,action:"setFilingPath({categoryId:'"+filingPath.categoryId+"'})"});}
+  if(filingPath.year)parts.push({label:filingPath.year,action:"setFilingPath({categoryId:'"+filingPath.categoryId+"',year:'"+filingPath.year+"'})"});
+  if(filingPath.month)parts.push({label:EvidenceFiling.MONTHS[parseInt(filingPath.month,10)-1],action:"setFilingPath({categoryId:'"+filingPath.categoryId+"',year:'"+filingPath.year+"',month:"+filingPath.month+"})"});
+  if(filingPath.date){var dp=EvidenceFiling.dateParts(filingPath.date);parts.push({label:dp.dayLabel,action:filingPath.categoryId?"setFilingPath({categoryId:'"+filingPath.categoryId+"',year:'"+filingPath.year+"',month:"+filingPath.month+"})":null});}
+  return parts.map(function(p,i){return (i?'<span class="bc-sep">›</span>':'')+(p.action?'<span onclick="'+p.action+'">'+escapeHtml(p.label)+'</span>':'<span>'+escapeHtml(p.label)+'</span>');}).join('');
+}
+function renderFilingTree(){
+  var tree=EvidenceFiling.getFolderTree();
+  var cats=EvidenceFiling.FILING_CATEGORIES;
+  var html='';
+  cats.forEach(function(cat){
+    var node=tree[cat.id];
+    var total=node?Object.keys(node.years).reduce(function(s,y){return s+Object.keys(node.years[y].months).reduce(function(s2,m){return s2+Object.keys(node.years[y].months[m].days).reduce(function(s3,d){return s3+node.years[y].months[m].days[d].count;},0);},0);},0):0;
+    var active=filingPath.categoryId===cat.id&&!filingPath.year;
+    html+='<div class="tree-item'+(active?' active':'')+'" onclick="setFilingPath({categoryId:\''+cat.id+'\'})"><i class="ti '+cat.icon+'"></i><span>'+escapeHtml(cat.name.split('—')[0].trim())+'</span><span class="tree-count">'+total+'</span></div>';
+    if(filingPath.categoryId===cat.id&&node){
+      var years=Object.keys(node.years).sort().reverse();
+      years.forEach(function(y){
+        var yActive=filingPath.year===y&&!filingPath.month;
+        html+='<div class="tree-year'+(yActive?' active':'')+'" onclick="event.stopPropagation();setFilingPath({categoryId:\''+cat.id+'\',year:\''+y+'\'})"><i class="ti ti-chevron-'+(filingPath.year===y?'down':'right')+'" style="font-size:10px"></i>'+y+'</div>';
+        if(filingPath.year===y){
+          var months=Object.keys(node.years[y].months).sort(function(a,b){return parseInt(b,10)-parseInt(a,10);});
+          months.forEach(function(m){
+            var mn=node.years[y].months[m];
+            var mActive=filingPath.month===parseInt(m,10)&&!filingPath.date;
+            html+='<div class="tree-month'+(mActive?' active':'')+'" onclick="event.stopPropagation();setFilingPath({categoryId:\''+cat.id+'\',year:\''+y+'\',month:'+m+'})"><i class="ti ti-chevron-'+(filingPath.month===parseInt(m,10)?'down':'right')+'" style="font-size:10px"></i>'+mn.name+'</div>';
+            if(filingPath.month===parseInt(m,10)){
+              Object.keys(mn.days).sort().reverse().forEach(function(d){
+                var day=mn.days[d];
+                html+='<div class="tree-day'+(filingPath.date===d?' active':'')+'" onclick="event.stopPropagation();setFilingPath({categoryId:\''+cat.id+'\',year:\''+y+'\',month:'+m+',date:\''+d+'\'})"><i class="ti ti-calendar-event" style="font-size:10px"></i>'+escapeHtml(day.label)+' <span class="tree-count">'+day.count+'</span></div>';
+              });
+            }
+          });
+        }
+      });
+    }
+  });
+  return html;
+}
+function renderFilingContent(){
+  var eh=isEvidenceTeam();
+  if(filingSearch){
+    var files=EvidenceFiling.searchFiles(filingSearch);
+    return renderFileTable(files,true);
+  }
+  if(filingPath.date&&!filingPath.categoryId){
+    var dayFiles=EvidenceFiling.getFilesInPath(null,null,null,filingPath.date);
+    return '<div style="padding:12px 14px 0;font-size:12px;color:var(--text2)">All evidence filed for <strong>'+escapeHtml(EvidenceFiling.dateParts(filingPath.date).dayLabel)+'</strong> across every category.</div>'+renderFileTable(dayFiles,false);
+  }
+  if(!filingPath.categoryId){
+    var tree=EvidenceFiling.getFolderTree();
+    return '<div class="folder-grid">'+EvidenceFiling.FILING_CATEGORIES.map(function(cat){
+      var node=tree[cat.id];
+      var count=node?EvidenceFiling.getFilesInPath(cat.id).length:0;
+      return '<div class="folder-card" onclick="setFilingPath({categoryId:\''+cat.id+'\'})"><i class="ti '+cat.icon+'"></i><div class="fc-name">'+escapeHtml(cat.name)+'</div><div class="fc-count">'+count+' file'+(count===1?'':'s')+'</div></div>';
+    }).join('')+'</div>';
+  }
+  if(filingPath.categoryId&&!filingPath.year){
+    var tree=EvidenceFiling.getFolderTree();
+    var node=tree[filingPath.categoryId];
+    if(!node||!Object.keys(node.years).length)return '<div class="empty-note">No files in this category yet.'+(eh?' Use upload below to add the first file.':'')+'</div>';
+    return '<div class="folder-grid">'+Object.keys(node.years).sort().reverse().map(function(y){
+      var count=EvidenceFiling.getFilesInPath(filingPath.categoryId,y).length;
+      return '<div class="folder-card" onclick="setFilingPath({categoryId:\''+filingPath.categoryId+'\',year:\''+y+'\'})"><i class="ti ti-calendar"></i><div class="fc-name">'+y+'</div><div class="fc-count">'+count+' file'+(count===1?'':'s')+'</div></div>';
+    }).join('')+'</div>';
+  }
+  if(filingPath.year&&!filingPath.month){
+    var tree=EvidenceFiling.getFolderTree();
+    var months=tree[filingPath.categoryId]&&tree[filingPath.categoryId].years[filingPath.year]?tree[filingPath.categoryId].years[filingPath.year].months:{};
+    return '<div class="folder-grid">'+Object.keys(months).sort(function(a,b){return parseInt(b,10)-parseInt(a,10);}).map(function(m){
+      var count=EvidenceFiling.getFilesInPath(filingPath.categoryId,filingPath.year,m).length;
+      return '<div class="folder-card" onclick="setFilingPath({categoryId:\''+filingPath.categoryId+'\',year:\''+filingPath.year+'\',month:'+m+'})"><i class="ti ti-folder"></i><div class="fc-name">'+months[m].name+'</div><div class="fc-count">'+count+' file'+(count===1?'':'s')+'</div></div>';
+    }).join('')+'</div>';
+  }
+  if(filingPath.month&&!filingPath.date){
+    var tree=EvidenceFiling.getFolderTree();
+    var days=tree[filingPath.categoryId]&&tree[filingPath.categoryId].years[filingPath.year]&&tree[filingPath.categoryId].years[filingPath.year].months[filingPath.month]?tree[filingPath.categoryId].years[filingPath.year].months[filingPath.month].days:{};
+    return '<div class="folder-grid">'+Object.keys(days).sort().reverse().map(function(d){
+      return '<div class="folder-card" onclick="setFilingPath({categoryId:\''+filingPath.categoryId+'\',year:\''+filingPath.year+'\',month:'+filingPath.month+',date:\''+d+'\'})"><i class="ti ti-calendar-event"></i><div class="fc-name">'+escapeHtml(days[d].label)+'</div><div class="fc-count">'+days[d].count+' file'+(days[d].count===1?'':'s')+'</div></div>';
+    }).join('')+'</div>';
+  }
+  var files=EvidenceFiling.getFilesInPath(filingPath.categoryId,filingPath.year,filingPath.month,filingPath.date);
+  return renderFileTable(files,false);
+}
+function renderFileTable(files,fromSearch){
+  var eh=isEvidenceTeam();
+  if(!files.length)return '<div class="empty-note">No files'+(fromSearch?' match your search':' in this folder')+'.'+(eh?' Upload evidence using the panel below.':'')+'</div>';
+  var rows=files.map(function(f){
+    var tierCls=f.tier==='K'?'tier-k':f.tier==='S'?'tier-s':'tier-w';
+    var ext=f.filename.split('.').pop().toLowerCase();
+    var icon=ext==='pdf'?'ti-file-type-pdf':ext==='msg'?'ti-mail':ext==='docx'?'ti-file-word':'ti-file';
+    return '<tr><td><div class="file-name"><i class="ti '+icon+'"></i><div><div>'+escapeHtml(f.filename)+'</div><div class="file-meta">'+escapeHtml(f.flights.join(', '))+(f.routes?' · '+escapeHtml(f.routes):'')+'</div></div></div></td><td><span class="pill '+tierCls+'">'+f.tier+'</span></td><td>'+escapeHtml(f.dayLabel)+'</td><td>'+escapeHtml(f.source)+'</td><td>'+EvidenceFiling.formatSize(f.size)+'</td><td>'+(eh?'<button class="mini-btn" onclick="deleteFilingFile(\''+f.id+'\')"><i class="ti ti-trash"></i></button> ':'')+'<button class="mini-btn primary" onclick="pullFileToCase(\''+f.id+'\')"><i class="ti ti-download"></i> Pull</button></td></tr>';
+  }).join('');
+  return '<table class="file-table"><thead><tr><th>File</th><th>Tier</th><th>Date</th><th>Source</th><th>Size</th><th>Action</th></tr></thead><tbody>'+rows+'</tbody></table>';
+}
+function renderUploadPanel(){
+  if(!isEvidenceTeam())return '';
+  var catOpts=EvidenceFiling.FILING_CATEGORIES.map(function(c){return '<option value="'+c.id+'"'+(filingPath.categoryId===c.id?' selected':'')+'>'+escapeHtml(c.name)+'</option>';}).join('');
+  var dateVal=filingPath.date||'';
+  return '<div class="upload-zone" id="upload-zone" onclick="document.getElementById(\'filing-file-input\').click()" ondragover="event.preventDefault();this.classList.add(\'dragover\')" ondragleave="this.classList.remove(\'dragover\')" ondrop="handleFilingDrop(event)"><i class="ti ti-cloud-upload"></i><p><strong>Upload evidence</strong> — drag files here or click to browse<br>Files are filed by category → year → month → day, mirroring SharePoint</p></div><input type="file" id="filing-file-input" class="filing-file-input" onchange="handleFilingFileSelect(event)"><div class="upload-form"><div><label>Category</label><select id="upload-category">'+catOpts+'</select></div><div><label>Operation date</label><input type="date" id="upload-date" value="'+dateVal+'"></div><div><label>Flight number(s)</label><input type="text" id="upload-flights" placeholder="HC 1184"></div><div><label>Route</label><input type="text" id="upload-route" placeholder="LTN-BCN"></div><div><label>Source</label><select id="upload-source"><option>Manual</option><option>API</option><option>SharePoint migration</option></select></div><div style="display:flex;align-items:flex-end"><button class="mini-btn primary" style="width:100%;justify-content:center;padding:9px" onclick="document.getElementById(\'filing-file-input\').click()"><i class="ti ti-upload"></i> Choose file</button></div></div>';
+}
+function handleFilingFileSelect(e){processFilingUpload(e.target.files[0]);e.target.value='';}
+function handleFilingDrop(e){e.preventDefault();document.getElementById('upload-zone').classList.remove('dragover');processFilingUpload(e.dataTransfer.files[0]);}
+function processFilingUpload(file){
+  if(!file||!isEvidenceTeam())return;
+  var cat=document.getElementById('upload-category').value;
+  var date=document.getElementById('upload-date').value;
+  if(!date){alert('Please set the operation date before uploading.');return;}
+  var flights=(document.getElementById('upload-flights').value||'').split(/[,;]/).map(function(s){return s.trim();}).filter(Boolean);
+  var route=document.getElementById('upload-route').value||'';
+  var source=document.getElementById('upload-source').value||'Manual';
+  var uid=getActiveUser(), u=USERS[uid]||{};
+  var uploaded=EvidenceFiling.uploadFile({categoryId:cat,date:date,filename:file.name,flights:flights,routes:route,source:source,size:file.size,uploadedBy:uid,uploadedByName:u.full||u.name});
+  var parts=EvidenceFiling.dateParts(date);
+  setFilingPath({categoryId:cat,year:parts.year,month:parts.month,date:date});
+}
+function deleteFilingFile(id){if(confirm('Remove this file from the filing system?')){EvidenceFiling.deleteFile(id);render();}}
+function pullFileToCase(fileId){
+  var f=EvidenceFiling.getAllFiles().find(function(x){return x.id===fileId;});
+  if(!f)return;
+  try{
+    var pending=JSON.parse(sessionStorage.getItem('261c_pending_pulls')||'[]');
+    pending.push({fileId:f.id,filename:f.filename,libKey:f.libKey,categoryId:f.categoryId,date:f.date,flights:f.flights,pulledAt:new Date().toISOString()});
+    sessionStorage.setItem('261c_pending_pulls',JSON.stringify(pending.slice(0,50)));
+    EvidenceFiling.addAuditEntry('Legal pull queued: "'+f.filename+'" for evidence pack assembly','pull',(USERS[getActiveUser()]||{}).full||'Legal user');
+    alert('File queued for evidence pack.\n\nOpen the Evidence workspace for a matching case and click "Pull from repository" to attach.');
+  }catch(e){}
+  render();
+}
+function buildEvidenceDaysFromFiling(){
+  var dates={};
+  EvidenceFiling.getAllFiles().forEach(function(f){
+    if(!dates[f.date])dates[f.date]={date:f.date,label:f.dayLabel,flights:{},routes:f.routes,sources:[]};
+    f.flights.forEach(function(fl){dates[f.date].flights[fl]=true;});
+    var cat=EvidenceFiling.categoryById(f.categoryId);
+    dates[f.date].sources.push({name:cat?cat.name.split('—')[0].trim():f.categoryId,type:f.source==='Manual'?'Manual':'API',status:'On file',pack:f.tier==='K'?'Bronze':'Gold',linked:'',fileId:f.id});
+  });
+  return Object.keys(dates).sort().reverse().map(function(d){
+    var sum=EvidenceFiling.getDaySummary(d);
+    var day=dates[d];
+    return {date:d,label:day.label,routes:day.routes||'Multiple routes',flights:Object.keys(day.flights),completion:sum.completion,bronze:sum.bronzeReady,gold:sum.goldReady,summary:sum.fileCount+' evidence files on file across '+Object.keys(day.flights).length+' flight(s). Bronze '+sum.bronze+'%, Gold '+sum.gold+'%.',sources:day.sources};
+  });
+}
 var activeArea='hub', activeOutcome='all', query='', selectedRef='', evidenceFilter='All';
+var filingView='calendar';
+var filingPath={categoryId:null,year:null,month:null,date:null};
+var filingSearch='';
 var CLOSED_CASES=[
   {ref:'REP-2025-0142',claimant:'Nadia Collins',solicitor:'Clarke & Partners',flightNum:'HC 203',route:'LGW to ALC',disruptionType:'Weather',jurisdiction:'england-wales',outcome:'defended',value:'EUR 250',saving:'EUR 250',days:18,confidence:94,summary:'Defended after METAR, SIGMET and ATFM records showed unsafe convective weather at Alicante. Letter of response reused weather evidence bundle.',evidence:['TOPS report','METAR/TAF','SIGMET','NOTAM','Eurocontrol ATFM'],caseLaw:['Wallentin-Hermann','Sturgeon'],education:'Weather evidence pack - complete guide',recommendation:'For similar weather claims, pull METAR/SIGMET first and challenge compensation under Art 5(3).'},
   {ref:'REP-2025-0178',claimant:'Oliver James',solicitor:'Pemberton & Associates',flightNum:'HC 442',route:'LGW to BCN',disruptionType:'ATC Restrictions',jurisdiction:'england-wales',outcome:'defended',value:'EUR 250',saving:'EUR 250',days:12,confidence:97,summary:'Clean ATC slot defence. Eurocontrol regulation data matched TOPS delay codes and claimant withdrew after response.',evidence:['Eurocontrol regulation','TOPS delay code','Network Outlook','DISCO log'],caseLaw:['Wallentin-Hermann'],education:'ATC restrictions - the clean defence',recommendation:'High-confidence defend where Eurocontrol regulation directly matches the delay window.'},
@@ -135,27 +353,45 @@ function setArea(area){activeArea=area;render();}
 function select(ref){selectedRef=ref;render();}
 function shell(content){return '<div class="area-nav"><button class="area-btn '+(activeArea==='cases'?'active':'')+'" onclick="setArea(\'cases\')"><i class="ti ti-briefcase"></i>Cases</button><button class="area-btn '+(activeArea==='evidence'?'active':'')+'" onclick="setArea(\'evidence\')"><i class="ti ti-folder-open"></i>Evidence</button><button class="area-btn '+(activeArea==='education'?'active':'')+'" onclick="setArea(\'education\')"><i class="ti ti-school"></i>Education</button><button class="area-btn home" onclick="setArea(\'hub\')"><i class="ti ti-layout-grid"></i>Repository home</button></div>'+content;}
 function render(){var uid=getActiveUser(), u=USERS[uid]||USERS.SB;document.getElementById('nav-av').textContent=u.initials;document.getElementById('nav-user').textContent=u.name;document.querySelectorAll('.ud-item').forEach(function(el){el.classList.toggle('current',el.id==='ud-'+uid);});if(activeArea==='cases')return renderCases();if(activeArea==='evidence')return renderEvidence();if(activeArea==='education')return renderEducation();renderHub();}
-function renderHub(){var all=repoCases(), defended=all.filter(c=>c.outcome==='defended').length, settled=all.filter(c=>c.outcome==='settled').length;document.getElementById('page').innerHTML='<div class="hero"><div><h1>Repository Command Centre</h1><p>The repository is split into three working areas: closed case outcomes, reusable evidence file structures, and education generated from case law applied in real aviation claims.</p></div><div class="hero-actions"><a class="hero-btn" href="module1-intake.html"><i class="ti ti-upload"></i>Ingest claim</a><a class="hero-btn" href="module4-evidence.html"><i class="ti ti-folder-open"></i>Evidence module</a></div></div><div class="gateway-grid"><div class="gateway" onclick="setArea(\'cases\')"><div><div class="gw-icon" style="background:var(--green-faint);color:var(--green)"><i class="ti ti-briefcase"></i></div><div class="gw-title">1. Cases</div><div class="gw-copy">Settled, defended, paid and withdrawn claims are stored, analysed and made searchable for future case strategy.</div></div><div class="gw-meta"><span class="gw-chip">'+all.length+' records</span><span class="gw-chip">'+defended+' defended</span><span class="gw-chip">'+settled+' settled</span></div></div><div class="gateway" onclick="setArea(\'evidence\')"><div><div class="gw-icon" style="background:var(--purple-faint);color:var(--purple)"><i class="ti ti-folder-open"></i></div><div class="gw-title">2. Evidence</div><div class="gw-copy">Evidence specialists can manage source structures, upload day-of-operation files and keep automation inside the programme.</div></div><div class="gw-meta"><span class="gw-chip">TOPS</span><span class="gw-chip">Eurocontrol</span><span class="gw-chip">AMOS</span></div></div><div class="gateway" onclick="setArea(\'education\')"><div><div class="gw-icon" style="background:var(--blue-faint);color:var(--blue-text)"><i class="ti ti-school"></i></div><div class="gw-title">3. Education</div><div class="gw-copy">AI summaries explain the law, how it applied to closed cases, and what users should do next time.</div></div><div class="gw-meta"><span class="gw-chip">Case law</span><span class="gw-chip">Playbooks</span><span class="gw-chip">Training</span></div></div></div>'+renderLiveSuggestions();}
+function renderHub(){var all=repoCases(), defended=all.filter(c=>c.outcome==='defended').length, settled=all.filter(c=>c.outcome==='settled').length;document.getElementById('page').innerHTML='<div class="hero"><div><h1>Repository Command Centre</h1><p>The repository is split into three working areas: closed case outcomes, reusable evidence file structures, and education generated from case law applied in real aviation claims.</p></div><div class="hero-actions"><a class="hero-btn" href="module1-intake.html"><i class="ti ti-upload"></i>Ingest claim</a><a class="hero-btn" href="module4-evidence.html"><i class="ti ti-folder-open"></i>Evidence module</a></div></div><div class="gateway-grid"><div class="gateway" onclick="setArea(\'cases\')"><div><div class="gw-icon" style="background:var(--green-faint);color:var(--green)"><i class="ti ti-briefcase"></i></div><div class="gw-title">1. Cases</div><div class="gw-copy">Settled, defended, paid and withdrawn claims are stored, analysed and made searchable for future case strategy.</div></div><div class="gw-meta"><span class="gw-chip">'+all.length+' records</span><span class="gw-chip">'+defended+' defended</span><span class="gw-chip">'+settled+' settled</span></div></div><div class="gateway" onclick="setArea(\'evidence\')"><div><div class="gw-icon" style="background:var(--purple-faint);color:var(--purple)"><i class="ti ti-folder-open"></i></div><div class="gw-title">2. Evidence filing</div><div class="gw-copy">SharePoint-mirror filing system: evidence types organised by year, month and operation date. Evidence team uploads; legal team pulls into packs.</div></div><div class="gw-meta"><span class="gw-chip">SharePoint mirror</span><span class="gw-chip">Bronze/Gold</span><span class="gw-chip">Direct pull</span></div></div><div class="gateway" onclick="setArea(\'education\')"><div><div class="gw-icon" style="background:var(--blue-faint);color:var(--blue-text)"><i class="ti ti-school"></i></div><div class="gw-title">3. Education</div><div class="gw-copy">AI summaries explain the law, how it applied to closed cases, and what users should do next time.</div></div><div class="gw-meta"><span class="gw-chip">Case law</span><span class="gw-chip">Playbooks</span><span class="gw-chip">Training</span></div></div></div>'+renderLiveSuggestions();}
 function renderCases(){var all=repoCases(), rows=filteredCases();if(!selectedRef&&rows.length)selectedRef=rows[0].ref;var selected=all.find(c=>c.ref===selectedRef)||rows[0];var stats='<div class="grid-4"><div class="stat"><div class="stat-label">Case records</div><div class="stat-val">'+all.length+'</div><div class="stat-sub">Closed or stored</div></div><div class="stat"><div class="stat-label">Defended</div><div class="stat-val">'+all.filter(c=>c.outcome==='defended').length+'</div><div class="stat-sub">Reusable playbooks</div></div><div class="stat"><div class="stat-label">Settled / paid</div><div class="stat-val">'+all.filter(c=>c.outcome==='settled'||c.outcome==='paid').length+'</div><div class="stat-sub">Risk learning</div></div><div class="stat"><div class="stat-label">Avg confidence</div><div class="stat-val">'+Math.round(all.reduce((s,c)=>s+c.confidence,0)/all.length)+'%</div><div class="stat-sub">AI matching</div></div></div>';var tabs=['all','defended','settled','paid','withdrawn'].map(o=>'<button class="tab '+(activeOutcome===o?'active':'')+'" onclick="activeOutcome=&quot;'+o+'&quot;;render()">'+(o==='all'?'All':outcomeLabel(o))+'</button>').join('');var list='<div class="grid-main"><div class="panel"><div class="panel-hdr"><div><div class="panel-title"><i class="ti ti-briefcase"></i>Case outcome library</div><div class="panel-sub">Search closed claims by outcome, issue, evidence, case law or solicitor</div></div><div class="tabbar">'+tabs+'</div></div><div class="search-row"><input placeholder="Search cases..." value="'+escapeHtml(query)+'" oninput="query=this.value;render()"><select onchange="query=this.value;render()"><option value="">Filter evidence</option><option>Eurocontrol</option><option>METAR</option><option>AMOS</option><option>SafetyNet</option><option>TOPS</option></select></div>'+rows.map(c=>caseCard(c)).join('')+'</div><div class="panel detail"><div class="panel-hdr"><div><div class="panel-title"><i class="ti ti-brain"></i>Case insight</div><div class="panel-sub">Outcome, evidence and legal learning</div></div></div>'+(selected?detailHtml(selected):'<div class="detail-empty">Select a case.</div>')+'</div></div>';document.getElementById('page').innerHTML=shell(stats+list+renderLiveSuggestions());}
 function caseCard(c){return '<div class="case-card" onclick="select(&quot;'+c.ref+'&quot;)"><div><div class="ref">'+escapeHtml(c.ref)+'</div><div class="name">'+escapeHtml(c.claimant)+' · '+escapeHtml(c.flightNum)+'</div><div class="meta">'+escapeHtml(c.route)+' · '+escapeHtml(c.disruptionType)+' · '+escapeHtml(c.solicitor)+'<br>'+escapeHtml(c.summary)+'</div></div><div style="text-align:right"><span class="pill '+outcomeClass(c.outcome)+'">'+outcomeLabel(c.outcome)+'</span><div style="font-size:10px;color:var(--text3);margin-top:6px">'+c.confidence+'% confidence</div></div></div>';}
 function detailHtml(c){return '<div class="panel-body"><div class="kv"><div class="kv-label">Outcome</div><div class="kv-val"><span class="pill '+outcomeClass(c.outcome)+'">'+outcomeLabel(c.outcome)+'</span></div></div><div class="kv"><div class="kv-label">Saving</div><div class="kv-val">'+escapeHtml(c.saving)+'</div></div><div class="kv"><div class="kv-label">Time to close</div><div class="kv-val">'+c.days+' days</div></div><div class="kv"><div class="kv-label">Jurisdiction</div><div class="kv-val">'+escapeHtml(getJurisdiction(c.jurisdiction).name)+'</div></div><div class="case-law"><strong>Learning:</strong> '+escapeHtml(c.recommendation)+'</div><div class="ev-list">'+c.evidence.map(e=>'<span class="ev">'+escapeHtml(e)+'</span>').join('')+'</div><div class="case-law"><strong>Case law applied:</strong> '+escapeHtml(c.caseLaw.join(', '))+'</div></div>';}
 function renderEvidence(){
-  var day=EVIDENCE_DAYS.find(function(d){return d.date===activeEvidenceDay;})||EVIDENCE_DAYS[0];
-  var missing=day.sources.filter(function(s){return s.status==='Gap'||s.status==='Pending'||s.status==='Requested';}).length;
-  var complete=day.sources.filter(function(s){return s.status==='On file';}).length;
-  var calendar='<div class="calendar-panel"><div class="panel-hdr"><div><div class="panel-title"><i class="ti ti-calendar"></i>Evidence calendar</div><div class="panel-sub">Filed by day of operation, not by Outlook request</div></div></div>'
-    +EVIDENCE_DAYS.map(function(d){var parts=d.label.split(' ');return '<div class="calendar-day '+(d.date===activeEvidenceDay?'active':'')+'" onclick="activeEvidenceDay=&quot;'+d.date+'&quot;;render()"><div class="day-num">'+parts[0]+'<span>'+parts[1]+'</span></div><div><div class="day-title">'+escapeHtml(d.routes)+'</div><div class="day-sub">'+d.flights.map(escapeHtml).join(' · ')+' · '+(d.gold?'Gold available':d.bronze?'Bronze available':'Building pack')+'</div></div><div class="pack-score">'+d.completion+'%</div></div>';}).join('')+'</div>';
-  var packCards='<div class="pack-grid"><div class="pack-card bronze"><div class="pack-title"><i class="ti ti-award"></i>Bronze evidence pack</div><div class="pack-copy">Core documents needed by paralegals to understand and progress the case: TOPS, disruption record, primary external evidence and headline chronology.</div><div class="attach-strip"><span class="case-chip">'+(day.bronze?'Available':'In progress')+'</span><span class="case-chip">Lawyer self-service</span></div></div><div class="pack-card gold"><div class="pack-title"><i class="ti ti-certificate"></i>Gold evidence pack</div><div class="pack-copy">Full defence-ready pack with secondary sources, passenger-care evidence, operational explanations and repository learning for drafting.</div><div class="attach-strip"><span class="case-chip">'+(day.gold?'Available':'Evidence gaps')+'</span><span class="case-chip">Drafting ready</span></div></div></div>';
-  var sourceRows=day.sources.map(function(s){var cls=s.status==='On file'?'status-ok':s.status==='Gap'?'status-gap':'status-wait';return '<tr><td><strong>'+escapeHtml(s.name)+'</strong><div class="source-meta">'+escapeHtml(s.pack)+' pack · '+escapeHtml(s.type)+'</div></td><td><span class="pill '+cls+'">'+escapeHtml(s.status)+'</span></td><td>'+escapeHtml(s.linked)+'</td><td><button class="mini-btn primary"><i class="ti ti-link"></i>Attach</button> <button class="mini-btn"><i class="ti ti-eye"></i>View</button></td></tr>';}).join('');
-  var main='<div class="panel"><div class="panel-hdr"><div><div class="panel-title"><i class="ti ti-folder-open"></i>'+escapeHtml(day.label)+' evidence file</div><div class="panel-sub">'+escapeHtml(day.summary)+'</div></div><div class="tabbar"><button class="tab active">'+complete+' on file</button><button class="tab">'+missing+' gaps</button></div></div><div class="panel-body">'+packCards+'<table class="source-table"><thead><tr><th>Evidence source</th><th>Status</th><th>Linked case</th><th>Lawyer action</th></tr></thead><tbody>'+sourceRows+'</tbody></table><div class="request-box"><div class="panel-title"><i class="ti ti-message-question"></i>Evidence request / interpretation route</div><div class="source-why">Use only where a paralegal cannot find the evidence, needs an explanation of how to apply it, or wants the evidence specialist to create a bespoke gold pack.</div><textarea placeholder="Ask the evidence specialist or future AI assistant a question about this evidence day..."></textarea><div style="margin-top:8px"><button class="mini-btn primary"><i class="ti ti-send"></i>Raise request</button><button class="mini-btn"><i class="ti ti-brain"></i>AI evidence Q&A coming next</button></div></div></div></div>';
-  var ops='<div class="panel"><div class="panel-hdr"><div class="panel-title"><i class="ti ti-user-cog"></i>Evidence specialist operating model</div></div><div class="panel-body"><div class="insight"><div class="insight-title"><i class="ti ti-plug"></i>API pulls first</div><div class="insight-copy">TOPS, DISCO, AIMS, Eurocontrol, weather, NOTAM, AMOS and SafetyNet are pulled against flight/date where possible.</div></div><div class="insight"><div class="insight-title"><i class="ti ti-upload"></i>Manual upload second</div><div class="insight-copy">Operational notes, emails, screenshots and third-party documents are uploaded into the same calendar day file.</div></div><div class="insight"><div class="insight-title"><i class="ti ti-briefcase"></i>Lawyers consume</div><div class="insight-copy">Paralegals search by flight/date/case and attach documents directly, rather than requesting via Outlook.</div></div></div></div>';
-  document.getElementById('page').innerHTML=shell('<div class="hero"><div><h1>Evidence Repository</h1><p>Calendar-based evidence filing for the evidence specialist. Evidence is collected once, stored by day of operation, packaged as bronze or gold, and made directly available to lawyers for case work.</p></div><div class="hero-actions"><a class="hero-btn" href="module4-evidence.html"><i class="ti ti-folder-open"></i>Live evidence module</a></div></div><div class="evidence-layout">'+calendar+'<div>'+main+ops+'</div></div>');
+  var eh=isEvidenceTeam();
+  var allFiles=EvidenceFiling.getAllFiles();
+  var EVIDENCE_DAYS_LIVE=buildEvidenceDaysFromFiling();
+  var day=EVIDENCE_DAYS_LIVE.find(function(d){return d.date===activeEvidenceDay;})||EVIDENCE_DAYS_LIVE[0];
+  if(day&&!EVIDENCE_DAYS_LIVE.find(function(d){return d.date===activeEvidenceDay;}))activeEvidenceDay=day.date;
+  var stats='<div class="grid-4"><div class="stat"><div class="stat-label">Files on file</div><div class="stat-val">'+allFiles.length+'</div><div class="stat-sub">Across '+EvidenceFiling.FILING_CATEGORIES.length+' categories</div></div><div class="stat"><div class="stat-label">Operation days</div><div class="stat-val">'+EVIDENCE_DAYS_LIVE.length+'</div><div class="stat-sub">Year → month → date folders</div></div><div class="stat"><div class="stat-label">SharePoint mirror</div><div class="stat-val">Active</div><div class="stat-sub">Category / year / month / day</div></div><div class="stat"><div class="stat-label">Your role</div><div class="stat-val" style="font-size:16px">'+(eh?'Upload':'Pull')+'</div><div class="stat-sub">'+(eh?'Evidence team filing':'Legal team consumption')+'</div></div></div>';
+  var heroDesc=eh?'Upload and organise evidence by type, year, month and operation date — the same structure as SharePoint. Legal teams pull directly into evidence packs without Outlook requests.':'Browse filed evidence by category and operation date. Pull documents straight into bronze or gold evidence packs when working a case.';
+  var viewToggle='<div class="view-toggle"><button class="'+(filingView==='browse'?'active':'')+'" onclick="filingView=\'browse\';render()"><i class="ti ti-folders"></i> Folder browser</button><button class="'+(filingView==='calendar'?'active':'')+'" onclick="filingView=\'calendar\';render()"><i class="ti ti-calendar"></i> Operations calendar</button></div>';
+  var browsePanel='';
+  if(filingView==='browse'){
+    browsePanel='<div class="filing-layout"><div class="filing-tree"><div class="filing-tree-hdr"><i class="ti ti-folders"></i> Evidence categories</div><div class="filing-tree-body">'+renderFilingTree()+'</div></div><div class="filing-main"><div class="filing-toolbar"><div class="breadcrumb">'+filingBreadcrumb()+'</div><input class="filing-search" placeholder="Search files, flights…" value="'+escapeHtml(filingSearch)+'" oninput="filingSearch=this.value;render()">'+viewToggle+'</div><div class="sp-path"><i class="ti ti-brand-onedrive"></i> '+escapeHtml(sharePointPath(filingPath))+'</div>'+(eh?'<div class="pull-banner" style="margin:12px 14px 0;background:var(--purple-faint);border-color:#DDD6FE"><strong>Evidence team:</strong> Upload files into the correct category and operation date. Migrated SharePoint files can use source "SharePoint migration".</div>':'<div class="pull-banner" style="margin:12px 14px 0"><strong>Legal team:</strong> Click <strong>Pull</strong> on any file to queue it for the evidence pack. In the Evidence workspace, use "Pull from repository" to attach all matching files for the case flight and date.</div>')+'<div class="filing-body">'+renderFilingContent()+'</div>'+renderUploadPanel()+'</div><div class="filing-sidebar"><div class="panel-hdr"><div class="panel-title"><i class="ti ti-history"></i>Filing activity</div></div><div class="panel-body">'+EvidenceFiling.getAuditLog().slice(0,12).map(function(e){return '<div class="insight" style="margin-bottom:6px;padding:8px 10px"><div style="font-size:11px;line-height:1.45">'+escapeHtml(e.t)+'</div><div style="font-size:10px;color:var(--text3);margin-top:3px">'+escapeHtml(e.time)+' · '+escapeHtml(e.by)+'</div></div>';}).join('')+'<div class="insight" style="margin-top:10px"><div class="insight-title"><i class="ti ti-arrows-exchange"></i>SharePoint migration</div><div class="insight-copy">When the team migrates SharePoint, bulk-upload into matching category/year/month/day folders. Structure: Evidence type → Year → Month → Date → Files.</div></div></div></div></div>';
+  } else if(!day){
+    browsePanel='<div class="empty-note">No operation days filed yet.'+(eh?' Upload evidence to create the first day folder.':'')+'</div>'+viewToggle;
+  } else {
+    var complete=day.sources.filter(function(s){return s.status==='On file';}).length;
+    var calendar='<div class="calendar-panel"><div class="panel-hdr"><div><div class="panel-title"><i class="ti ti-calendar"></i>Operations calendar</div><div class="panel-sub">Live from filing system — day of operation view</div></div>'+viewToggle+'</div>'
+      +EVIDENCE_DAYS_LIVE.map(function(d){var parts=d.label.split(' ');return '<div class="calendar-day '+(d.date===activeEvidenceDay?'active':'')+'" onclick="activeEvidenceDay=&quot;'+d.date+'&quot;;render()"><div class="day-num">'+parts[0]+'<span>'+parts[1]+'</span></div><div><div class="day-title">'+escapeHtml(d.routes)+'</div><div class="day-sub">'+d.flights.map(escapeHtml).join(' · ')+' · '+(d.gold?'Gold available':d.bronze?'Bronze available':'Building pack')+'</div></div><div class="pack-score">'+d.completion+'%</div></div>';}).join('')+'</div>';
+    var packCards='<div class="pack-grid"><div class="pack-card bronze"><div class="pack-title"><i class="ti ti-award"></i>Bronze evidence pack</div><div class="pack-copy">Key-tier documents on file for this operation day.</div><div class="attach-strip"><span class="case-chip">'+(day.bronze?'Available':'In progress')+'</span></div></div><div class="pack-card gold"><div class="pack-title"><i class="ti ti-certificate"></i>Gold evidence pack</div><div class="pack-copy">Key + secondary sources filed. Defence-ready when gold threshold is met.</div><div class="attach-strip"><span class="case-chip">'+(day.gold?'Available':'Evidence gaps')+'</span></div></div></div>';
+    var sourceRows=day.sources.map(function(s){
+      var pullBtn=s.fileId?'<button class="mini-btn primary" onclick="pullFileToCase(\''+s.fileId+'\')"><i class="ti ti-download"></i>Pull</button> <button class="mini-btn" onclick="setFilingPath({date:\''+day.date+'\'});filingView=\'browse\';render()"><i class="ti ti-folder-open"></i>Folder</button>':'';
+      return '<tr><td><strong>'+escapeHtml(s.name)+'</strong><div class="source-meta">'+escapeHtml(s.pack)+' · '+escapeHtml(s.type)+'</div></td><td><span class="pill status-ok">'+escapeHtml(s.status)+'</span></td><td>'+pullBtn+'</td></tr>';
+    }).join('');
+    var main='<div class="panel"><div class="panel-hdr"><div><div class="panel-title"><i class="ti ti-folder-open"></i>'+escapeHtml(day.label)+' — '+complete+' files</div><div class="panel-sub">'+escapeHtml(day.summary)+'</div></div><button class="mini-btn" onclick="setFilingPath({date:\''+day.date+'\'});filingView=\'browse\';render()"><i class="ti ti-folders"></i>Browse folders</button></div><div class="panel-body">'+packCards+'<table class="source-table"><thead><tr><th>Evidence source</th><th>Status</th><th>Action</th></tr></thead><tbody>'+sourceRows+'</tbody></table></div></div>';
+    var ops='<div class="panel"><div class="panel-hdr"><div class="panel-title"><i class="ti ti-sitemap"></i>Filing structure</div></div><div class="panel-body"><div class="insight"><div class="insight-title"><i class="ti ti-folder"></i>Category folders</div><div class="insight-copy">TOPS, DISCO, Eurocontrol, Weather, AMOS — one folder per evidence type, matching SharePoint.</div></div><div class="insight"><div class="insight-title"><i class="ti ti-calendar"></i>Year → Month → Date</div><div class="insight-copy">Within each category: 2026 / March / 14 Mar 2026.</div></div><div class="insight"><div class="insight-title"><i class="ti ti-download"></i>Direct pull to packs</div><div class="insight-copy">Legal users pull from here into Module 4 evidence packs.</div></div></div></div>';
+    browsePanel='<div class="evidence-layout">'+calendar+'<div>'+main+ops+'</div></div>';
+  }
+  document.getElementById('page').innerHTML=shell('<div class="hero"><div><h1>Evidence Filing System</h1><p>'+heroDesc+'</p></div><div class="hero-actions"><a class="hero-btn" href="module4-evidence.html"><i class="ti ti-folder-open"></i>Evidence module</a>'+(eh?'<button class="hero-btn" onclick="filingView=\'browse\';setFilingPath({});render()" style="cursor:pointer;font-family:var(--font)"><i class="ti ti-upload"></i>Upload evidence</button>':'')+'</div></div>'+stats+browsePanel);
 }
 function renderEducation(){var cards=LAW_SUMMARIES.map(s=>'<div class="law-card"><div class="ref">'+escapeHtml(s.caseRef)+' · '+escapeHtml(s.law)+'</div><div class="law-title">'+escapeHtml(s.title)+'</div><div class="law-summary">'+escapeHtml(s.summary)+'</div><div class="case-law"><strong>Application:</strong> '+escapeHtml(s.application)+'</div></div>').join('');var ai='<div class="ai-box"><div class="ai-label">AI education generator</div><div style="font-size:12px;color:var(--text2);line-height:1.6">Closed cases with specific legal applications are converted into explainers for the Education Hub: the legal rule, factual application, evidence used, and recommended handling approach for future similar claims.</div></div>';document.getElementById('page').innerHTML=shell('<div class="hero"><div><h1>Education from Repository Outcomes</h1><p>Successful and unsuccessful cases become training material. Users can understand how case law was applied by the aviation company and how evidence changed the outcome.</p></div><div class="hero-actions"><a class="hero-btn" href="education.html"><i class="ti ti-school"></i>Open Education Hub</a></div></div><div class="grid-main"><div class="panel"><div class="panel-hdr"><div><div class="panel-title"><i class="ti ti-gavel"></i>AI-generated legal application summaries</div><div class="panel-sub">Case law explained through actual repository outcomes</div></div></div><div class="panel-body">'+ai+cards+'</div></div><div class="panel"><div class="panel-hdr"><div class="panel-title"><i class="ti ti-route"></i>How learning flows</div></div><div class="panel-body"><div class="insight"><div class="insight-title"><i class="ti ti-database"></i>Repository</div><div class="insight-copy">Stores outcome, evidence and arguments.</div></div><div class="insight"><div class="insight-title"><i class="ti ti-brain"></i>AI summary</div><div class="insight-copy">Explains legal rule and factual application.</div></div><div class="insight"><div class="insight-title"><i class="ti ti-school"></i>Education Hub</div><div class="insight-copy">Turns the learning into team training and guidance.</div></div></div></div></div>');}
 function renderLiveSuggestions(){var all=repoCases();var live=ALL_CASES.filter(c=>c.stage!=='resolve').map(function(c){var best=all.slice().sort((a,b)=>similarityScore(b,c)-similarityScore(a,c))[0];return {live:c,best:best,score:best?similarityScore(best,c):0};}).sort((a,b)=>b.score-a.score).slice(0,4);return '<div class="panel"><div class="panel-hdr"><div><div class="panel-title"><i class="ti ti-sparkles"></i>Live-case similarity suggestions</div><div class="panel-sub">New matters flagged against repository outcomes</div></div></div>'+live.map(x=>'<div class="case-card"><div><div class="ref">'+escapeHtml(x.live.ref)+' to '+escapeHtml(x.best.ref)+'</div><div class="name">'+escapeHtml(x.live.claimant)+' matches '+escapeHtml(x.best.claimant)+'</div><div class="meta"><strong>Suggested action:</strong> '+escapeHtml(x.best.recommendation)+'</div></div><div><span class="pill p-defended">'+x.score+'% match</span></div></div>').join('')+'</div>';}
 function toggleUserMenu(){document.getElementById('user-modal').classList.toggle('open');}
 function closeMenu(){document.getElementById('user-modal').classList.remove('open');}
 function switchUser(id){setActiveUser(id);sessionStorage.removeItem('261c_lang');closeMenu();render();}
+try{if(sessionStorage.getItem('261c_repo_area')==='evidence'){activeArea='evidence';sessionStorage.removeItem('261c_repo_area');}}catch(e){}
 render();
 </script>
 </body>
