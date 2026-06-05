@@ -100,18 +100,8 @@ input[type=file].filing-file-input{display:none}
 <script src="evidence_filing.js"></script>
 <nav class="global-nav">
   <a href="index.html" class="gn-logo"><div class="gn-mark"><i class="ti ti-plane"></i></div><span class="gn-name">261Claims</span></a>
-  <div class="gn-links">
-    <a href="index.html" class="gn-link"><i class="ti ti-layout-dashboard"></i> Dashboard</a>
-    <a href="module1-intake.html" class="gn-link"><i class="ti ti-file-upload"></i> Intake</a>
-    <a href="module2-case-management.html" class="gn-link"><i class="ti ti-layout-kanban"></i> Cases</a>
-    <a href="module3-cpr.html" class="gn-link"><i class="ti ti-calendar-due"></i> CPR</a>
-    <a href="module4-evidence.html" class="gn-link"><i class="ti ti-folder-open"></i> Evidence</a>
-    <a href="module5-drafting.html" class="gn-link"><i class="ti ti-file-pencil"></i> Drafting</a>
-    <a href="module6-mi.html" class="gn-link"><i class="ti ti-chart-bar"></i> MI</a>
-    <a href="education.html" class="gn-link"><i class="ti ti-school"></i> Knowledge</a>
-  </div>
+  <div class="gn-links" id="gn-links"></div>
   <div class="gn-right">
-    <a href="repository.html" class="gn-link repo-nav active"><i class="ti ti-database"></i> Repository</a>
     <div class="gn-user-btn" onclick="toggleUserMenu()"><div class="gn-av" id="nav-av">SB</div><span class="gn-user" id="nav-user">S. Booth</span><i class="ti ti-chevron-down" style="font-size:10px;color:rgba(255,255,255,0.4)"></i></div>
   </div>
 </nav>
@@ -390,10 +380,11 @@ function renderEducation(){var cards=LAW_SUMMARIES.map(s=>'<div class="law-card"
 function renderLiveSuggestions(){var all=repoCases();var live=ALL_CASES.filter(c=>c.stage!=='resolve').map(function(c){var best=all.slice().sort((a,b)=>similarityScore(b,c)-similarityScore(a,c))[0];return {live:c,best:best,score:best?similarityScore(best,c):0};}).sort((a,b)=>b.score-a.score).slice(0,4);return '<div class="panel"><div class="panel-hdr"><div><div class="panel-title"><i class="ti ti-sparkles"></i>Live-case similarity suggestions</div><div class="panel-sub">New matters flagged against repository outcomes</div></div></div>'+live.map(x=>'<div class="case-card"><div><div class="ref">'+escapeHtml(x.live.ref)+' to '+escapeHtml(x.best.ref)+'</div><div class="name">'+escapeHtml(x.live.claimant)+' matches '+escapeHtml(x.best.claimant)+'</div><div class="meta"><strong>Suggested action:</strong> '+escapeHtml(x.best.recommendation)+'</div></div><div><span class="pill p-defended">'+x.score+'% match</span></div></div>').join('')+'</div>';}
 function toggleUserMenu(){document.getElementById('user-modal').classList.toggle('open');}
 function closeMenu(){document.getElementById('user-modal').classList.remove('open');}
-function switchUser(id){setActiveUser(id);sessionStorage.removeItem('261c_lang');closeMenu();render();}
+function switchUser(id){setActiveUser(id);sessionStorage.removeItem('261c_lang');closeMenu();if(typeof renderGlobalNav==='function')renderGlobalNav();render();}
 try{if(sessionStorage.getItem('261c_repo_area')==='evidence'){activeArea='evidence';sessionStorage.removeItem('261c_repo_area');}}catch(e){}
 if(window.location.hash==='#evidence'){activeArea='evidence';filingView='browse';}
 render();
 </script>
+<script src="shared_nav.js"></script>
 </body>
 </html>

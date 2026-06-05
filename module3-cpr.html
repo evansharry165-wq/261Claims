@@ -85,22 +85,11 @@ tbody tr:hover td{background:var(--surface2);cursor:pointer}
 <body>
 <nav class="nav">
   <a href="index.html" class="nav-logo"><div class="nav-mark"><i class="ti ti-plane"></i></div><span class="nav-name">261Claims</span></a>
-  <div class="nav-links">
-    <a href="index.html" class="nl"><i class="ti ti-layout-dashboard"></i> <span id="nl-dashboard">Dashboard</span></a>
-    <a href="module1-intake.html" class="nl"><i class="ti ti-file-upload"></i> <span id="nl-intake">Intake</span></a>
-    <a href="module2-case-management.html" class="nl"><i class="ti ti-layout-kanban"></i> <span id="nl-cases">Cases</span></a>
-    <a href="module3-cpr.html" class="nl active"><i class="ti ti-calendar-due"></i> <span id="nl-cpr">CPR</span></a>
-    <a href="module4-evidence.html" class="nl"><i class="ti ti-folder-open"></i> <span id="nl-evidence">Evidence</span></a>
-    <a href="module5-drafting.html" class="nl"><i class="ti ti-file-pencil"></i> <span id="nl-drafting">Drafting</span></a>
-    <a href="module6-mi.html" class="nl"><i class="ti ti-chart-bar"></i> <span id="nl-mi">MI</span></a>
-    <a href="education.html" class="nl"><i class="ti ti-school"></i> <span id="nl-knowledge">Knowledge</span></a>
-  </div>
+  <div class="gn-links nav-links" id="gn-links"></div>
   <div class="nav-right">
-    <a href="repository.html" class="nl" style="background:rgba(34,168,99,0.15);border:1px solid rgba(34,168,99,0.35);color:#D1FAE5"><i class="ti ti-database"></i> Repository</a>
     <div class="user-btn" onclick="openMenu()">
       <div class="u-av" id="u-av">SB</div>
       <span class="u-name" id="u-name">S. Booth</span>
-      <i class="ti ti-chevron-down" style="font-size:10px;color:rgba(255,255,255,0.4);margin-left:2px"></i>
     </div>
   </div>
 </nav>
@@ -205,12 +194,11 @@ function _initNav(){
   var uid=getActiveUser(), u=USERS[uid]||USERS.SB;
   var av=document.getElementById('u-av'); if(av)av.textContent=u.initials;
   var un=document.getElementById('u-name'); if(un)un.textContent=u.name;
-  var keys=['dashboard','intake','cases','cpr','evidence','drafting','mi','knowledge'];
-  keys.forEach(function(k){var el=document.getElementById('nl-'+k);if(el)el.textContent=t(k);});
   ['SB','JP','KR','MD','PL','CG','IM','EH'].forEach(function(id){
     var el=document.getElementById('ud-'+id);
     if(el)el.classList.toggle('current',id===getActiveUser());
   });
+  if(typeof renderGlobalNav==='function')renderGlobalNav();
 }
 
 function _render(){
@@ -276,11 +264,13 @@ function _render(){
       var c=getCase(this.dataset.ref);
       if(!c)return;
       try{sessionStorage.setItem('261c_case',JSON.stringify(c));}catch(e){}
-      window.location.href='module3-cpr-workspace.html?ref='+encodeURIComponent(c.ref);
+      openCase(c.ref,'deadlines');
     });
   });
 }
 window.addEventListener('load',function(){_initNav();_render();});
 </script>
+<script src="case_helpers.js"></script>
+<script src="shared_nav.js"></script>
 </body>
 </html>

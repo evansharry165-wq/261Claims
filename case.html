@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>261Claims — Case</title>
+<script src="shared_data.js"></script>
+<script src="case_helpers.js"></script>
+</head>
+<body>
+<p style="font-family:sans-serif;padding:24px;color:#475569">Opening case…</p>
+<script>
+(function () {
+  var params = new URLSearchParams(window.location.search);
+  var ref = params.get('ref');
+  var tab = params.get('tab');
+  if (!ref) {
+    window.location.href = 'module2-case-management.html';
+    return;
+  }
+  var c = typeof getCase === 'function' ? getCase(ref) : null;
+  if (!c) {
+    window.location.href = 'module2-case-management.html';
+    return;
+  }
+  try {
+    sessionStorage.setItem('261c_case', JSON.stringify(c));
+    var u = USERS[c.assignedTo] ? USERS[c.assignedTo].name : c.assignedTo;
+    sessionStorage.setItem(
+      'aeroCaseData',
+      JSON.stringify({
+        ref: c.ref,
+        claimant: c.claimant,
+        solicitor: c.solicitor,
+        flight: c.flight,
+        flightNum: c.flightNum,
+        dep: c.dep,
+        arr: c.arr,
+        flightDate: c.flightDate,
+        value: c.value,
+        type: c.type,
+        date: c.locDate,
+        framework: 'EC Regulation 261/2004',
+        points: c.points || [],
+        jurisdiction: c.jurisdiction || 'england-wales',
+        lang: c.lang || 'en',
+        disruptionType: c.disruptionType || '',
+        evidencePct: c.evidencePct || 0,
+        loaStatus: c.loaStatus || '',
+        triageNote: c.triageNote || '',
+        assignedTo: u
+      })
+    );
+  } catch (e) {}
+  var targetTab = tab || getPrimaryTab(c);
+  var legacy = legacyRouteForTab(targetTab);
+  window.location.replace(legacy + '?ref=' + encodeURIComponent(ref));
+})();
+</script>
+</body>
+</html>

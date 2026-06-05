@@ -142,18 +142,8 @@ function t(key){var d=I18N[getUILang()]||I18N.en;return d[key]||I18N.en[key]||ke
     <div class="gn-mark"><i class="ti ti-plane"></i></div>
     <span class="gn-name">261Claims</span>
   </a>
-  <div class="gn-links" id="gn-links">
-    <a href="index.html" class="gn-link" id="gnl-dashboard"><i class="ti ti-layout-dashboard"></i> <span class="gnl">Dashboard</span></a>
-    <a href="module1-intake.html" class="gn-link" id="gnl-intake"><i class="ti ti-file-upload"></i> <span class="gnl">Intake</span></a>
-    <a href="module2-case-management.html" class="gn-link" id="gnl-cases"><i class="ti ti-layout-kanban"></i> <span class="gnl">Cases</span></a>
-    <a href="module3-cpr.html" class="gn-link" id="gnl-cpr"><i class="ti ti-calendar-due"></i> <span class="gnl">CPR</span></a>
-    <a href="module4-evidence.html" class="gn-link" id="gnl-evidence"><i class="ti ti-folder-open"></i> <span class="gnl">Evidence</span></a>
-    <a href="module5-drafting.html" class="gn-link" id="gnl-drafting"><i class="ti ti-file-pencil"></i> <span class="gnl">Drafting</span></a>
-    <a href="module6-mi.html" class="gn-link" id="gnl-mi"><i class="ti ti-chart-bar"></i> <span class="gnl">MI</span></a>
-    <a href="education.html" class="gn-link" id="gnl-knowledge"><i class="ti ti-school"></i> <span class="gnl">Knowledge</span></a>
-  </div>
+  <div class="gn-links" id="gn-links"></div>
   <div class="gn-right">
-    <a href="repository.html" class="gn-link repo-nav" style="background:rgba(34,168,99,0.15);border:1px solid rgba(34,168,99,0.35);color:#D1FAE5"><i class="ti ti-database"></i> Repository</a>
     <div class="gn-user-btn" onclick="toggleUserMenu()">
       <div class="gn-av" id="nav-av">SB</div>
       <span class="gn-user" id="nav-user">S. Booth</span>
@@ -342,5 +332,6 @@ function _render(){
 window.renderPage=_render;
 window.addEventListener('load',function(){_initNav();_render();});
 </script>
+<script src="shared_nav.js"></script>
 </body>
 </html>

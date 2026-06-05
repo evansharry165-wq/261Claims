@@ -764,11 +764,11 @@ Update to reflect:
 ## 8. Implementation phases
 
 ### Phase 1 — Navigation & Work (low risk, high impact)
-- [ ] Update `nav.js` to 4 links
-- [ ] Simplify `index.html` to Do now / Watch / Portfolio
-- [ ] Add `getNextAction()` to `shared_data.js`
-- [ ] Update `openCase()` to point at `case.html` (stub if needed)
-- [ ] Add demo guide banner
+- [x] Update `nav.js` / `shared_nav.js` to 4 links
+- [x] Simplify `index.html` to Do now / Watch / Portfolio
+- [x] Add `getNextAction()` and helpers in `case_helpers.js`
+- [x] Update `openCase()` to point at `case.html` (redirect stub to legacy workspaces)
+- [x] Add demo guide banner
 
 ### Phase 2 — Unified case shell
 - [ ] Create `case.html` with header, tabs, waiting-on strip

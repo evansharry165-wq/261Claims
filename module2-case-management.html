@@ -83,18 +83,8 @@ tbody tr:last-child td{border-bottom:none}
 <body>
 <nav class="nav">
   <a href="index.html" class="nav-logo"><div class="nav-mark"><i class="ti ti-plane"></i></div><span class="nav-name">261Claims</span></a>
-  <div class="nav-links">
-    <a href="index.html" class="nl"><i class="ti ti-layout-dashboard"></i> <span id="nl-dashboard">Dashboard</span></a>
-    <a href="module1-intake.html" class="nl"><i class="ti ti-file-upload"></i> <span id="nl-intake">Intake</span></a>
-    <a href="module2-case-management.html" class="nl active"><i class="ti ti-layout-kanban"></i> <span id="nl-cases">Cases</span></a>
-    <a href="module3-cpr.html" class="nl"><i class="ti ti-calendar-due"></i> <span id="nl-cpr">CPR</span></a>
-    <a href="module4-evidence.html" class="nl"><i class="ti ti-folder-open"></i> <span id="nl-evidence">Evidence</span></a>
-    <a href="module5-drafting.html" class="nl"><i class="ti ti-file-pencil"></i> <span id="nl-drafting">Drafting</span></a>
-    <a href="module6-mi.html" class="nl"><i class="ti ti-chart-bar"></i> <span id="nl-mi">MI</span></a>
-    <a href="education.html" class="nl"><i class="ti ti-school"></i> <span id="nl-knowledge">Knowledge</span></a>
-  </div>
+  <div class="gn-links nav-links" id="gn-links"></div>
   <div class="nav-right">
-    <a href="repository.html" class="nl" style="background:rgba(34,168,99,0.15);border:1px solid rgba(34,168,99,0.35);color:#D1FAE5"><i class="ti ti-database"></i> Repository</a>
     <div class="user-btn" onclick="openMenu()">
       <div class="u-av" id="u-av">SB</div>
       <span class="u-name" id="u-name">S. Booth</span>
@@ -228,12 +218,11 @@ function _initNav(){
   var u = USERS[_uid]||USERS.SB;
   document.getElementById('u-av').textContent = u.initials;
   document.getElementById('u-name').textContent = u.name;
-  var keys=['dashboard','intake','cases','cpr','evidence','drafting','mi','knowledge'];
-  keys.forEach(function(k){var el=document.getElementById('nl-'+k);if(el)el.textContent=t(k);});
   ['SB','JP','KR','MD','PL','CG','IM','EH'].forEach(function(id){
     var el=document.getElementById('ud-'+id);
     if(el)el.classList.toggle('current',id===_uid);
   });
+  if(typeof renderGlobalNav==='function')renderGlobalNav();
 }
 
 function lastAction(c){
@@ -297,12 +286,7 @@ function _render(){
   // Row click — navigate to correct workspace
   document.getElementById('tbody').querySelectorAll('tr[data-ref]').forEach(function(row){
     row.addEventListener('click', function(){
-      var ref = this.dataset.ref;
-      var c = getCase(ref);
-      if(!c) return;
-      try{sessionStorage.setItem('261c_case',JSON.stringify(c));}catch(e){}
-      var dest = STAGE_ROUTES[c.stage]||'module2-case-workspace.html';
-      window.location.href = dest+'?ref='+encodeURIComponent(ref);
+      openCase(this.dataset.ref);
     });
   });
 }
@@ -310,5 +294,7 @@ function _render(){
 window.addEventListener('load', function(){ _initNav(); _render(); });
 
 </script>
+<script src="case_helpers.js"></script>
+<script src="shared_nav.js"></script>
 </body>
 </html>

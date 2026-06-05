@@ -2,15 +2,10 @@
 /* ── Global nav JS ── */
 (function(){
   var NAV_LINKS = [
-    {key:'dashboard', icon:'ti-layout-dashboard', href:'index.html'},
-    {key:'intake',    icon:'ti-file-upload',       href:'module1-intake.html'},
-    {key:'cases',     icon:'ti-layout-kanban',     href:'module2-case-management.html'},
-    {key:'cpr',       icon:'ti-calendar-due',      href:'module3-cpr.html'},
-    {key:'evidence',  icon:'ti-folder-open',       href:'module4-evidence.html'},
-    {key:'drafting',  icon:'ti-file-pencil',       href:'module5-drafting.html'},
-    {key:'mi',        icon:'ti-chart-bar',         href:'module6-mi.html'},
-    {key:'knowledge', icon:'ti-school',            href:'education.html'},
-    {key:'repository', icon:'ti-database',          href:'repository.html'},
+    {key:'work',       icon:'ti-layout-dashboard', href:'index.html'},
+    {key:'cases',      icon:'ti-briefcase',        href:'module2-case-management.html'},
+    {key:'repository', icon:'ti-database',         href:'repository.html'},
+    {key:'insights',   icon:'ti-chart-dots',       href:'module6-mi.html'},
   ];
 
   var TEAMS = [
