@@ -186,7 +186,7 @@ const I18N={
   es:{dashboard:'Panel',intake:'Recepción',cases:'Casos',cpr:'Plazos',evidence:'Pruebas',drafting:'Redacción',mi:'Informes',knowledge:'Recursos',myCases:'Mis casos',intakeQueue:'Cola de recepción',cprWatch:'Vigilancia de plazos',myPipeline:'Mi flujo de trabajo',legalNews:'Noticias jurídicas',networkOps:'Red & operaciones',liveSources:'Fuentes en vivo',goodMorning:'Buenos días',goodAfternoon:'Buenas tardes',goodEvening:'Buenas noches',noUrgentDeadlines:'Sin plazos urgentes esta semana',evidenceProgress:'Progreso de pruebas',cprDeadlines:'Plazos procesales',viewAll:'Ver todo',uploadLOC:'Cargar carta de reclamación',noQueue:'No hay casos en su cola.',stage_intake:'Recepción',stage_triage:'Triaje',stage_cpr:'Plazos',stage_evidence:'Pruebas',stage_drafting:'Redacción',stage_defence:'Defensa',stage_resolve:'Resuelto'},
 };
 const ALL_CASES=[
-  {ref:'AC-2026-0089',assignedTo:'SB',claimant:'Daniel Hartley',solicitor:'Pemberton & Associates',flight:'HC 1184 — LTN → BCN',flightNum:'HC 1184',dep:'LTN',arr:'BCN',flightDate:'14 March 2026',value:'£39,000+',type:'EC261 — Diversion',locDate:'22 May 2026',stage:'evidence',cat:'C',jurisdiction:'england-wales',lang:'en',disruptionType:'Weather',classification:'ESCALATE',evidencePct:35,cprDaysLeft:3,points:[{n:1,claim:'Delay — Art 7(1)(a)',evidenceStatus:'green',evidenceDoc:'TOPS confirmed'},{n:2,claim:'Extraordinary circumstances — weather',evidenceStatus:'amber',evidenceDoc:'METAR/SIGMET pending'},{n:3,claim:'Article 9 — duty of care',evidenceStatus:'red',evidenceDoc:'Valencia ground records outstanding'},{n:4,claim:'Consequential loss — £38,250',evidenceStatus:'red',evidenceDoc:'No counter-evidence'},{n:5,claim:'Travel & subsistence — £141.80',evidenceStatus:'amber',evidenceDoc:'Receipts pending'}],loaStatus:'approved',triageNote:'Complex. Escalate on consequential loss.',activity:[{text:'Evidence module opened',time:'Today 09:14',type:'create'},{text:'AI triage — ESCALATE flagged',time:'Yesterday 16:30',type:'ai'}]},
+  {ref:'AC-2026-0089',assignedTo:'JP',claimant:'Daniel Hartley',solicitor:'Pemberton & Associates',flight:'HC 1184 — LTN → BCN',flightNum:'HC 1184',dep:'LTN',arr:'BCN',flightDate:'14 March 2026',value:'£1,560',type:'EC261 — Diversion',locDate:'22 May 2026',stage:'evidence',cat:'C',jurisdiction:'england-wales',lang:'en',disruptionType:'Weather',classification:'ESCALATE',escalatedTo:'JP',escalatedFrom:'SB',escalatedAt:'2 Jun 2026 14:22',evidencePct:35,cprDaysLeft:3,points:[{n:1,claim:'Delay compensation — Art 7(1)(a) · 4 pax × £220',evidenceStatus:'green',evidenceDoc:'TOPS confirmed · 7h 55m delay'},{n:2,claim:'Extraordinary circumstances — weather',evidenceStatus:'amber',evidenceDoc:'METAR/SIGMET pending'},{n:3,claim:'Article 9 — duty of care · £680',evidenceStatus:'red',evidenceDoc:'Valencia ground records outstanding'},{n:4,claim:'Travel & subsistence — £141.80',evidenceStatus:'amber',evidenceDoc:'Receipts pending'}],loaStatus:'approved',triageNote:'Weather diversion with Article 9 gaps. Escalate for senior review on extraordinary circumstances defence.',activity:[{text:'Evidence module opened',time:'Today 09:14',type:'create'},{text:'AI triage — ESCALATE flagged',time:'Yesterday 16:30',type:'ai'}]},
   {ref:'AC-2026-0101',assignedTo:'SB',claimant:'Angela Foster',solicitor:'Clarke & Partners',flight:'HC 203 — LGW → ALC',flightNum:'HC 203',dep:'LGW',arr:'ALC',flightDate:'20 May 2026',value:'€250',type:'EC261 — Weather delay',locDate:'30 May 2026',stage:'intake',cat:'A',jurisdiction:'england-wales',lang:'en',disruptionType:'Weather',classification:'DEFEND',evidencePct:0,cprDaysLeft:21,points:[],loaStatus:'',triageNote:'',activity:[{text:'LOC received',time:'Today 07:55',type:'create'}]},
   {ref:'AC-2026-0091',assignedTo:'JP',claimant:'Rebecca Walsh',solicitor:'Clarke & Partners',flight:'HC 307 — MAN → AMS',flightNum:'HC 307',dep:'MAN',arr:'AMS',flightDate:'9 April 2026',value:'€250',type:'EC261 — ATC delay',locDate:'4 June 2026',stage:'triage',cat:'A',jurisdiction:'england-wales',lang:'en',disruptionType:'ATC Restrictions',classification:'DEFEND',evidencePct:0,cprDaysLeft:21,points:[{n:1,claim:'Delay 3hrs 36mins — Art 7(1)(a)',evidenceStatus:'green',evidenceDoc:'Confirmed via TOPS'},{n:2,claim:'Extraordinary circumstances — ATC ATFM',evidenceStatus:'amber',evidenceDoc:'Eurocontrol data requested'},{n:3,claim:'Art 9 — refreshments not provided',evidenceStatus:'red',evidenceDoc:'Ground records required'},{n:4,claim:'Expenses — £18.40',evidenceStatus:'amber',evidenceDoc:'Receipts with LOC'}],loaStatus:'',triageNote:'',activity:[{text:'LOC uploaded — triage pending',time:'Today 10:30',type:'create'}]},
   {ref:'AC-2026-0076',assignedTo:'JP',claimant:'Sarah Taylor',solicitor:'Thompsons Solicitors',flight:'HC 330 — LGW → ALC',flightNum:'HC 330',dep:'LGW',arr:'ALC',flightDate:'28 April 2026',value:'€400',type:'EC261 — Weather delay',locDate:'22 May 2026',stage:'drafting',cat:'B',jurisdiction:'england-wales',lang:'en',disruptionType:'Weather',classification:'DEFEND',evidencePct:100,cprDaysLeft:7,points:[{n:1,claim:'Delay 4hrs 10mins — Art 7(1)(b)',evidenceStatus:'green',evidenceDoc:'TOPS confirmed'},{n:2,claim:'Extraordinary circumstances — weather',evidenceStatus:'green',evidenceDoc:'METAR/SIGMET confirmed'}],loaStatus:'sent',triageNote:'Clean weather case. Evidence complete. Draft LOR.',activity:[{text:'Evidence complete — LOR ready',time:'28 May 16:00',type:'stage'}]},
@@ -268,8 +268,8 @@ function t(key){var d=I18N[getUILang()]||I18N.en;return d[key]||I18N.en[key]||ke
 const DATA = {
   stats:{
     open:8, defended:18, settled:7, escalated:2, dismissed:3,
-    totalClaims:38, exposureGross:'£284,500', exposureNet:'£3,750',
-    avgClose:24, defenceRate:72, savingYTD:'£280,750'
+    totalClaims:38, exposureGross:'£24,680', exposureNet:'£3,750',
+    avgClose:24, defenceRate:72, savingYTD:'£20,930'
   },
   volumeByMonth:{
     labels:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
@@ -298,7 +298,7 @@ const DATA = {
   },
   exposure:{
     labels:['Jan','Feb','Mar','Apr','May'],
-    alleged:[48000,52000,71000,63000,50500],
+    alleged:[4200,5100,6800,6200,7480],
     actual:[250,500,750,1500,750]
   },
   workload:[
@@ -308,17 +308,17 @@ const DATA = {
     {name:'A. Lewis',     cases:8,  open:1, color:'#B45309'},
   ],
   recentCases:[
-    {ref:'AC-2026-0089',name:'Hartley v. TestAirways',type:'Weather/Diversion',cat:'C',value:'£39,000+',stage:'Evidence',days:3,solicitor:'S. Booth'},
-    {ref:'AC-2026-0091',name:'Walsh v. TestAirways',type:'ATC Restriction',cat:'A',value:'€250',stage:'Triage',days:8,solicitor:'J. Patel'},
-    {ref:'AC-2026-0094',name:'Morrison v. TestAirways',type:'Weather',cat:'A',value:'€250',stage:'Intake',days:15,solicitor:'K. Rahman'},
-    {ref:'AC-2026-0087',name:'Chen v. TestAirways',type:'Cancellation',cat:'B',value:'€400',stage:'Defence',days:5,solicitor:'S. Booth'},
-    {ref:'AC-2026-0083',name:'Okafor v. TestAirways',type:'Weather/Diversion',cat:'C',value:'£12,000',stage:'Evidence',days:12,solicitor:'J. Patel'},
-    {ref:'AC-2025-0044',name:'Williams v. TestAirways',type:'ATC Restriction',cat:'A',value:'€250',stage:'Closed',days:null,solicitor:'S. Booth',outcome:'defended'},
-    {ref:'AC-2025-0038',name:'Brown v. TestAirways',type:'Weather',cat:'B',value:'€400',stage:'Closed',days:null,solicitor:'J. Patel',outcome:'defended'},
-    {ref:'AC-2025-0052',name:'Moore v. TestAirways',type:'Technical',cat:'A',value:'€250',stage:'Closed',days:null,solicitor:'K. Rahman',outcome:'settled'},
+    {ref:'AC-2026-0089',name:'Hartley v National Airways',type:'Weather/Diversion',cat:'B',value:'£1,560',stage:'Evidence',days:3,solicitor:'J. Patel'},
+    {ref:'AC-2026-0091',name:'Walsh v National Airways',type:'ATC Restriction',cat:'A',value:'€250',stage:'Triage',days:8,solicitor:'J. Patel'},
+    {ref:'AC-2026-0094',name:'Morrison v National Airways',type:'Weather',cat:'A',value:'€250',stage:'Intake',days:15,solicitor:'K. Rahman'},
+    {ref:'AC-2026-0087',name:'Chen v National Airways',type:'Cancellation',cat:'B',value:'€400',stage:'Defence',days:5,solicitor:'S. Booth'},
+    {ref:'AC-2026-0083',name:'Okafor v National Airways',type:'Weather/Diversion',cat:'C',value:'£12,000',stage:'Evidence',days:12,solicitor:'J. Patel'},
+    {ref:'AC-2025-0044',name:'Williams v National Airways',type:'ATC Restriction',cat:'A',value:'€250',stage:'Closed',days:null,solicitor:'S. Booth',outcome:'defended'},
+    {ref:'AC-2025-0038',name:'Brown v National Airways',type:'Weather',cat:'B',value:'€400',stage:'Closed',days:null,solicitor:'J. Patel',outcome:'defended'},
+    {ref:'AC-2025-0052',name:'Moore v National Airways',type:'Technical',cat:'A',value:'€250',stage:'Closed',days:null,solicitor:'K. Rahman',outcome:'settled'},
   ],
   riskRegister:[
-    {case:'AC-2026-0089 — Hartley',reason:'Consequential loss claim unresolved · No FDR data on file',level:'high',val:'£39,000+'},
+    {case:'AC-2026-0089 — Hartley',reason:'Article 9 duty of care gaps · Valencia ground records outstanding',level:'high',val:'£1,560'},
     {case:'AC-2026-0087 — Chen',reason:'CPR response deadline in 5 days · Defence not yet filed',level:'high',val:'€400'},
     {case:'AC-2026-0083 — Okafor',reason:'Valencia ground records not received · Art 9 exposure unresolved',level:'med',val:'£12,000'},
     {case:'AC-2026-0091 — Walsh',reason:'AI triage pending · Evidence checklist not started',level:'med',val:'€250'},
@@ -365,7 +365,8 @@ function applyFilters(){
   scaledData.stats.defenceRate = activePeriod==='mtd'?68:activePeriod==='12m'?75:activePeriod==='all'?74:72;
   scaledData.stats.avgClose = activePeriod==='mtd'?19:activePeriod==='12m'?26:activePeriod==='all'?27:24;
   scaledData.stats.exposureNet = activePeriod==='mtd'?'£620':activePeriod==='12m'?'£5,200':activePeriod==='all'?'£9,800':'£3,750';
-  scaledData.stats.savingYTD = activePeriod==='mtd'?'£48,000':activePeriod==='12m'?'£392,000':activePeriod==='all'?'£680,000':'£280,750';
+  scaledData.stats.exposureGross = activePeriod==='mtd'?'£4,940':activePeriod==='12m'?'£34,550':activePeriod==='all'?'£44,420':'£24,680';
+  scaledData.stats.savingYTD = activePeriod==='mtd'?'£4,320':activePeriod==='12m'?'£29,350':activePeriod==='all'?'£40,620':'£20,930';
   // Filter workload by solicitor
   if(activeSolicitor!=='all'){
     const map={sb:'S. Booth',jp:'J. Patel',kr:'K. Rahman',al:'A. Lewis'};
@@ -414,8 +415,8 @@ function buildContent(displayStats){
     ${statCard('Open cases','8','ti-briefcase','var(--blue-text)','4 require action','sub-warn')}
     ${statCard('Defended YTD','18','ti-shield','var(--green)','72% defence rate','sub-up')}
     ${statCard('Settled YTD','7','ti-scale','var(--amber)','Avg £536 per case','sub-neu')}
-    ${statCard('Gross exposure','£284,500','ti-alert-triangle','var(--red)','Alleged value open cases','sub-red')}
-    ${statCard('Net paid out','£3,750','ti-coin','var(--green)','YTD vs £284,500 alleged','sub-up')}
+    ${statCard('Gross exposure',displayStats.exposureGross||'£24,680','ti-alert-triangle','var(--red)','Alleged value — open cases','sub-red')}
+    ${statCard('Net paid out',displayStats.exposureNet||'£3,750','ti-coin','var(--green)','YTD cash out on closed cases only','sub-up')}
     ${statCard('Avg days to close','24d','ti-clock','var(--text3)','Target: 28 days','sub-up')}
   </div>`;
 

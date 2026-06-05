@@ -89,6 +89,10 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 .pipeline-line{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
 .pipe-chip{font-size:11px;padding:3px 8px;border-radius:20px;background:var(--surface3);color:var(--text2)}
 .empty-row{padding:24px 16px;text-align:center;color:var(--text3);font-size:12px}
+.zone-escalated .panel{border-color:#FECACA;background:linear-gradient(180deg,#FFFBFB,var(--surface))}
+.task-row.escalated{border-left:3px solid var(--red)}
+.task-esc-badge{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:.05em;color:var(--red);background:var(--red-faint);padding:2px 6px;border-radius:10px;margin-left:6px}
+.demo-switch{background:var(--amber-faint);border-color:#FDE68A}
 .user-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.3);z-index:1000;align-items:flex-start;justify-content:flex-end;padding:52px 20px 0}
 .user-modal.open{display:flex}
 .user-dropdown{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);width:230px;box-shadow:0 4px 20px rgba(0,0,0,0.12);overflow:hidden}
@@ -136,14 +140,21 @@ function demoBannerHtml(){
   var dismissed=false;
   try{dismissed=sessionStorage.getItem('261c_demo_dismissed')==='1';}catch(e){}
   if(dismissed)return '';
+  var step=typeof getDemoStep==='function'?getDemoStep():'';
+  if(step==='switch_eh'){
+    return '<div class="demo-banner demo-switch" id="demo-banner"><div class="demo-text"><div class="demo-title">'+escapeHtml(t('demoGuideTitle'))+'</div>'+escapeHtml(t('demoSwitchEH')||'Evidence request sent to Emma Hughes (Evidence Team). Switch user to E. Hughes to complete.')+'</div><div class="demo-actions"><button class="demo-btn primary" onclick="switchUser(\'EH\')"><i class="ti ti-user-share"></i> '+escapeHtml(t('switchToEH')||'Continue as Emma Hughes')+'</button><button class="demo-btn" onclick="dismissDemoGuide()">Dismiss</button></div></div>';
+  }
   return '<div class="demo-banner" id="demo-banner"><div class="demo-text"><div class="demo-title">'+escapeHtml(t('demoGuideTitle'))+'</div>'+escapeHtml(t('demoGuideText'))+'</div><div class="demo-actions"><a class="demo-btn primary" href="javascript:openCase(\'AC-2026-0089\',\'evidence\')"><i class="ti ti-player-play"></i> '+escapeHtml(t('openDemoCase'))+'</a><button class="demo-btn" onclick="dismissDemoGuide()">Dismiss</button></div></div>';
 }
 
-function taskRows(tasks){
+function taskRows(tasks,opts){
+  opts=opts||{};
   if(!tasks.length)return '<div class="empty-row">'+escapeHtml(t('noTasks'))+'</div>';
   return tasks.map(function(tk){
     var urg=daysUrgency(tk.urg);
-    return '<div class="task-row" data-ref="'+escapeHtml(tk.ref)+'" data-tab="'+escapeHtml(tk.tab||'')+'"><div class="task-dot '+urg+'"></div><div><div class="task-ref">'+escapeHtml(tk.ref)+'</div><div class="task-action">'+escapeHtml(tk.txt)+'</div><div class="task-claimant">'+escapeHtml(tk.claimant||'')+(tk.blocker?' · '+escapeHtml(tk.blocker):'')+'</div></div><div class="task-deadline '+urg+'">'+escapeHtml(urgencyLabel(tk.urg))+'</div><div class="task-open">Open <i class="ti ti-arrow-right"></i></div></div>';
+    var esc=opts.escalated?' escalated':'';
+    var badge=opts.escalated?'<span class="task-esc-badge">'+escapeHtml(t('escalated')||'Escalated')+'</span>':'';
+    return '<div class="task-row'+esc+'" data-ref="'+escapeHtml(tk.ref)+'" data-tab="'+escapeHtml(tk.tab||'')+'"><div class="task-dot '+urg+'"></div><div><div class="task-ref">'+escapeHtml(tk.ref)+badge+'</div><div class="task-action">'+escapeHtml(tk.txt)+'</div><div class="task-claimant">'+escapeHtml(tk.claimant||'')+(tk.blocker?' · '+escapeHtml(tk.blocker):'')+'</div></div><div class="task-deadline '+urg+'">'+escapeHtml(urgencyLabel(tk.urg))+'</div><div class="task-open">Open <i class="ti ti-arrow-right"></i></div></div>';
   }).join('');
 }
 
@@ -192,15 +203,26 @@ function render(){
   if(uid==='EH'){renderEvidenceWork(u);return;}
 
   var cases=getCasesForUser(uid).slice().sort(function(a,b){return a.cprDaysLeft-b.cprDaysLeft;});
-  var tasks=collectDoNowTasks(cases,5);
+  var escalated=typeof collectEscalatedCases==='function'?collectEscalatedCases(ALL_CASES).filter(function(c){
+    return uid==='JP'?c.escalatedTo===uid:(uid==='SB'?c.escalatedFrom===uid:c.assignedTo===uid);
+  }):[];
+  var escTasks=escalated.map(function(c){
+    var a=getNextAction(c);
+    return {ref:c.ref,txt:'Senior review — '+a.text,icon:a.icon,urg:a.urgency,tab:a.tab,claimant:typeof caseTitle==='function'?caseTitle(c):c.claimant,blocker:typeof getAssignmentLine==='function'?getAssignmentLine(c):''};
+  });
+  var tasks=collectDoNowTasks(cases,5).filter(function(tk){
+    return !escalated.some(function(c){return c.ref===tk.ref;});
+  });
   var watch=buildWatchItems(cases);
   var greeting=(new Date().getHours()<12?t('goodMorning'):new Date().getHours()<18?t('goodAfternoon'):t('goodEvening'));
   var portfolioExpanded=(uid==='SB');
+  var escZone=escTasks.length?'<div class="zone zone-escalated"><div class="zone-hdr"><div class="zone-title"><i class="ti ti-alert-triangle" style="color:var(--red)"></i> '+escapeHtml(t('escalated')||'Escalated — senior review')+'</div></div><div class="panel">'+taskRows(escTasks,{escalated:true})+'</div></div>':'';
 
   document.getElementById('page').innerHTML=
     '<div class="page-header"><div class="greeting">'+greeting+', '+escapeHtml(u.full.split(' ')[0])+'</div><div class="greeting-sub">'+escapeHtml(u.role)+' · '+cases.length+' active case'+(cases.length!==1?'s':'')+'</div></div>'
     +demoBannerHtml()
     +'<div class="toolbar"><div class="search-wrap"><i class="ti ti-search"></i><input class="search-input" id="work-search" placeholder="'+escapeHtml(t('searchCases'))+'" oninput="searchCases(this.value)" onfocus="if(this.value)searchCases(this.value)"><div class="search-dropdown" id="search-dropdown"></div></div><a class="btn-new" href="intake.html"><i class="ti ti-mail-plus"></i> '+escapeHtml(t('newClaim'))+'</a></div>'
+    +escZone
     +'<div class="zone"><div class="zone-hdr"><div class="zone-title"><i class="ti ti-list-check"></i> '+escapeHtml(t('doNow'))+'</div><a class="zone-link" href="cases.html?sort=urgency">'+escapeHtml(t('viewAll'))+' <i class="ti ti-arrow-right"></i></a></div><div class="panel">'+taskRows(tasks)+'</div></div>'
     +'<div class="zone"><div class="zone-hdr"><div class="zone-title"><i class="ti ti-alert-triangle"></i> '+escapeHtml(t('watch'))+'</div></div>'+watchRows(watch)+'</div>'
     +portfolioHtml(cases,uid,portfolioExpanded);
@@ -261,6 +283,7 @@ function toggleUserMenu(){var m=document.getElementById('user-modal');if(m)m.cla
 function closeMenu(){var m=document.getElementById('user-modal');if(m)m.classList.remove('open');}
 function switchUser(id){
   if(typeof setActiveUser==='function')setActiveUser(id);
+  if(id==='EH'&&typeof clearDemoStep==='function')clearDemoStep();
   sessionStorage.removeItem('261c_lang');
   sessionStorage.removeItem('261c_case');
   sessionStorage.removeItem('aeroCaseData');

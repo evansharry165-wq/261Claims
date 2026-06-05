@@ -229,6 +229,24 @@ function openCase(ref, tab) {
   window.location.href = CASE_ROUTE(ref, targetTab);
 }
 
+function collectEscalatedCases(cases) {
+  return (cases || []).filter(function (c) {
+    return c.classification === 'ESCALATE' && c.escalatedTo;
+  });
+}
+
+function getAssignmentLine(c) {
+  if (!c) return '';
+  if (c.classification === 'ESCALATE' && c.escalatedFrom && c.escalatedTo) {
+    var fromU = USERS[c.escalatedFrom] || { name: c.escalatedFrom };
+    var toU = USERS[c.escalatedTo] || { name: c.escalatedTo };
+    var senior = toU.role && toU.role.indexOf('Senior') >= 0 ? ' (Senior)' : '';
+    return fromU.name + ' → ' + toU.name + senior;
+  }
+  var u = USERS[c.assignedTo];
+  return u ? u.name : c.assignedTo;
+}
+
 function collectDoNowTasks(cases, limit) {
   var tasks = [];
   (cases || []).forEach(function (c) {
@@ -290,6 +308,26 @@ function buildWatchItems(cases) {
       if (waiting) parts.push(waiting);
       return { ref: c.ref, text: parts.join(' · '), urgency: c.cprDaysLeft, tab: getPrimaryTab(c) };
     });
+}
+
+function setDemoEvidenceStep() {
+  try {
+    sessionStorage.setItem('261c_demo_step', 'switch_eh');
+  } catch (e) {}
+}
+
+function getDemoStep() {
+  try {
+    return sessionStorage.getItem('261c_demo_step') || '';
+  } catch (e) {
+    return '';
+  }
+}
+
+function clearDemoStep() {
+  try {
+    sessionStorage.removeItem('261c_demo_step');
+  } catch (e) {}
 }
 
 function portfolioSummary(cases) {
