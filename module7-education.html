@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>261Claims — Education Hub</title>
+<title>261Claims · easyJet Legal — Education Hub</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
@@ -311,7 +311,7 @@ html,body{height:100%;overflow:hidden;font-family:var(--font);color:var(--text);
       <div class="chat-pane">
         <div class="chat-header">
           <div class="chat-title"><div class="ai-dot"></div>261Claims AI Assistant</div>
-          <div class="chat-sub">Web search + EC261/UK261 knowledge · Sources always cited</div>
+          <div class="chat-sub">EC261/UK261 knowledge · Sources cited · Demonstration mode</div>
         </div>
         <div class="chat-messages" id="chatMessages">
           <!-- Welcome message -->
@@ -319,9 +319,9 @@ html,body{height:100%;overflow:hidden;font-family:var(--font);color:var(--text);
             <div class="msg-av ai"><i class="ti ti-robot" style="font-size:13px"></i></div>
             <div class="msg-body">
               <div class="msg-bubble">
-                Hello Harry. I'm your EC261/UK261 legal assistant.<br><br>
-                I can answer questions on case law, extraordinary circumstances definitions, CPR procedure, regulatory updates, and anything else in the EC261/UK261 landscape — drawing on live web search to keep answers current.<br><br>
-                I can also help you find documents in your training library. What would you like to know?
+                Hello. I'm your EC261/UK261 legal assistant for the easyJet in-house legal team.<br><br>
+                I can answer questions on case law, extraordinary circumstances definitions, CPR procedure, regulatory updates, and defence strategy — drawing on the platform knowledge library and closed-case repository.<br><br>
+                Try one of the suggested questions below, or ask your own.
               </div>
               <div class="msg-time">Now</div>
             </div>
@@ -799,6 +799,29 @@ function sendSuggested(btn){
   sendMessage();
 }
 
+function getDemoAiResponse(q){
+  var text=q.toLowerCase();
+  if(/atc|atfm|slot restriction|air traffic control/i.test(text)){
+    return 'ATC flow management restrictions can qualify as extraordinary circumstances under Article 5(3) EC261/2004, provided the carrier demonstrates the delay was caused by the restriction and not by its own operational decisions.\n\nDefence approach for easyJet:\n1. Pull Eurocontrol ATFM regulation data for the departure airport and date — this is the primary evidence source.\n2. Match the regulation window to the TOPS delay code and actual off-block/on-block times.\n3. Apply the Wallentin-Hermann two-limb test: the restriction must be (a) not inherent in the normal exercise of the carrier\'s activity, and (b) beyond its actual control.\n\nFor a clean ATC defend path, see repository case REP-2025-0178 (EZY 442 LGW–BCN): Eurocontrol regulation matched TOPS delay codes and the claimant withdrew after the Letter of Response.\n\nEvidence checklist: Eurocontrol regulation PDF, Network Outlook Brief, TOPS delay code, DISCO disruption log.';
+  }
+  if(/wallentin|two.limb|two limb/i.test(text)){
+    return 'Wallentin-Hermann v Alitalia (C-549/07) establishes the two-limb test for extraordinary circumstances:\n\n1. The event must not be inherent in the normal exercise of the carrier\'s activity.\n2. The event must be beyond the carrier\'s actual control.\n\nBoth limbs must be satisfied. The CJEU confirmed that airlines cannot rely on extraordinary circumstances where the cause is within their operational sphere — for example, routine technical defects (see van der Lans C-257/14) or crew rostering decisions.\n\nApplication in drafting: address both limbs explicitly in the Letter of Response. Cite the METAR/SIGMET or Eurocontrol data as the external cause, then explain why easyJet\'s operational response (fuel policy, diversion planning, crew decisions) demonstrates all reasonable measures were taken.\n\nUK note: post-Brexit, CJEU decisions are persuasive but not binding in England & Wales. UK courts have generally followed Wallentin-Hermann.';
+  }
+  if(/part 36|settlement offer/i.test(text)){
+    return 'CPR Part 36 offers are a key tactical tool in EC261 defence litigation.\n\nWhen to consider a Part 36 offer:\n• Where liability is genuinely disputed but there is commercial risk (e.g. incomplete Art 9 evidence).\n• Where the claimant\'s quantum is inflated (e.g. consequential loss claims like AC-2026-0089).\n• Where costs exposure on a small-value claim (€250) exceeds the compensation amount.\n\nKey rules:\n• The offer must comply with CPR Part 36.7 (written, open for acceptance for at least 21 days).\n• Costs consequences under CPR Part 36.17 apply if the claimant fails to beat the offer.\n• Mark offers "without prejudice except as to costs" where appropriate.\n\nThe 261Claims drafting module includes a Part 36 template. The CPR module tracks the 21-day relevant period once an offer is logged.\n\nFor high-value escalation cases, Part 36 may be premature until the Letter of Response is issued and evidence gaps are resolved.';
+  }
+  if(/uk261|post.brexit|brexit/i.test(text)){
+    return 'UK261 (Air Passenger Rights and Air Travel Organisers\' Licensing Regulations 2019) applies to flights departing from the UK post-Brexit.\n\nKey differences from EC261:\n• UK261 mirrors EC261 compensation bands and extraordinary circumstances framework.\n• CJEU case law (Wallentin-Hermann, Sturgeon, Pešková) is persuasive but not binding in UK courts.\n• The CAA enforces UK261; AESA equivalent enforcement does not apply to UK departures.\n• For flights departing EU airports to the UK, EC261 still applies regardless of carrier nationality.\n\nFor easyJet\'s UK operation: most claims are UK261 for LTN/LGW/MAN departures. French and Spanish departures remain under CE 261/2004 with local procedural rules (MTV mediation in France; Mercantile Court in Spain).\n\nThe DfT consultation on compensation thresholds closed June 2026 — monitor outcome for any change to the €250/€400/€600 bands.';
+  }
+  if(/sanchez|staff sickness|crew sickness|morcillo/i.test(text)){
+    return 'Sánchez-Morcillo v easyJet (Spanish proceedings) is a significant precedent on staff sickness and extraordinary circumstances.\n\nThe court held that crew illness can in principle amount to an extraordinary circumstance, but the carrier must demonstrate:\n1. The illness was genuinely unforeseen and not attributable to the carrier\'s resource planning.\n2. The carrier had adequate standby crew arrangements and took all reasonable measures.\n\nFor easyJet: staff sickness claims require AIMS crew roster data, standby crew availability records, and evidence of the carrier\'s crewing model. Do not assume sickness is automatically extraordinary — the burden is on the carrier.\n\nSee the Education Hub document library for the full case summary and evidence checklist.';
+  }
+  if(/consequential|montreal|article 12/i.test(text)){
+    return 'Consequential loss claims (lost contracts, business meetings, holiday costs beyond statutory compensation) are commonly pleaded alongside EC261 compensation.\n\nLegal position:\n• Article 12 EC261 limits further compensation to that available under national law, typically the Montreal Convention for international carriage.\n• The Montreal Convention does not provide for pure economic loss (lost contracts, missed meetings).\n• Claimants must prove causation, mitigation, and quantum on a strict basis.\n\nFor AC-2026-0089 (Hartley v easyJet, £39,000+ claimed): the Letter of Response should deny Montreal Convention liability for the alleged £38,250 contract loss, put the claimant to strict proof, and reserve the right to challenge document authenticity.\n\nThis is an ESCALATE classification — do not settle on consequential loss without Head of Legal Ops sign-off.';
+  }
+  return 'I can help with EC261/UK261 defence strategy, case law, CPR procedure, and evidence requirements for easyJet\'s in-house legal team.\n\nTry asking about:\n• Extraordinary circumstances and the Wallentin-Hermann test\n• ATC/ATFM slot restriction defences\n• CPR Part 36 settlement offers\n• UK261 vs EC261 post-Brexit\n• Consequential loss and Article 12\n• French MTV mandatory mediation\n\nYour question touches on an area I can assist with — please rephrase with a specific legal issue or case type for a detailed answer.';
+}
+
 async function sendMessage(){
   const input = document.getElementById('chatInput');
   const q = input.value.trim();
@@ -810,55 +833,18 @@ async function sendMessage(){
   document.getElementById('sendBtn').disabled=true;
 
   addMessage('user', q, null, 'Now');
-
   conversationHistory.push({role:'user', content: q});
 
   isAiTyping = true;
   const typingEl = addTypingIndicator();
 
-  try{
-    const response = await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({
-        model:'claude-sonnet-4-20250514',
-        max_tokens:1000,
-        system:`You are the 261Claims AI Legal Assistant — a specialist in EC261/2004, UK261 (Air Passenger Rights Regulations 2019), CPR procedure, and aviation compensation law.
+  await new Promise(r=>setTimeout(r,1600+Math.random()*900));
+  typingEl.remove();
 
-You assist airline legal defence teams. Your role is to answer questions on:
-- Case law and CJEU/UK court judgements (Wallentin-Hermann, Sturgeon, Pešková, Huzar, Van der Lans, etc.)
-- Extraordinary circumstances definitions and evidence requirements
-- UK261 vs EC261 differences post-Brexit
-- CPR procedure (deadlines, Part 36, service rules)
-- Regulatory updates from CAA, DfT, Eurocontrol
-- Defence strategy for EC261/UK261 claims
-
-Always:
-- Be precise and cite specific cases, articles, or regulations where relevant
-- State when information may have changed and web search should verify
-- Keep answers practical and defence-focused
-- Use clear headings when answering multi-part questions
-- Flag when the DfT consultation outcome (closed June 2026) may affect the answer
-
-Current date: June 2026. UK261 is the governing regulation for UK-departing flights. CJEU case law is persuasive but not binding in UK courts post-Brexit.`,
-        messages: conversationHistory
-      })
-    });
-
-    const data = await response.json();
-    typingEl.remove();
-
-    const aiText = data.content?.find(b=>b.type==='text')?.text || 'I was unable to generate a response. Please try again.';
-
-    conversationHistory.push({role:'assistant', content: aiText});
-
-    const sources = extractSources(q, aiText);
-    addMessage('ai', formatAiResponse(aiText), sources, formatTime());
-
-  } catch(err){
-    typingEl.remove();
-    addMessage('ai', 'I encountered an error connecting to the AI service. Please try again in a moment.', null, formatTime());
-  }
+  const aiText = getDemoAiResponse(q);
+  conversationHistory.push({role:'assistant', content: aiText});
+  const sources = extractSources(q, aiText);
+  addMessage('ai', formatAiResponse(aiText), sources, formatTime());
 
   isAiTyping = false;
   document.getElementById('sendBtn').disabled = false;
