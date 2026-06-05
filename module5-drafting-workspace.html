@@ -39,10 +39,12 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 .btn-back:hover{background:var(--surface3)}
 
 /* layout */
-.body{flex:1;display:grid;grid-template-columns:260px 1fr 200px;overflow:hidden;min-height:0}
+.body{flex:1;display:grid;grid-template-columns:240px 1fr 200px;overflow:hidden;min-height:0;transition:grid-template-columns .2s ease}
+.body.doc-focused{grid-template-columns:220px 1fr 0}
+.body.doc-focused .sidebar-right{opacity:0;pointer-events:none;overflow:hidden;border:none;padding:0}
 .sidebar-left{border-right:1px solid var(--border);background:var(--surface);overflow-y:auto;padding:14px;min-height:0}
-.main{overflow-y:auto;padding:16px 20px;min-height:0;min-width:0}
-.sidebar-right{border-left:1px solid var(--border);background:var(--surface);overflow-y:auto;padding:10px 12px;min-height:0}
+.main{overflow:hidden;padding:0;min-height:0;min-width:0;display:flex;flex-direction:column}
+.sidebar-right{border-left:1px solid var(--border);background:var(--surface);overflow-y:auto;padding:10px 12px;min-height:0;transition:opacity .2s ease}
 
 /* case header */
 .case-hdr{background:var(--surface);border:1px solid var(--border);border-radius:var(--r3);padding:13px 16px;margin-bottom:16px}
@@ -58,6 +60,9 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 .doc-btn{width:100%;display:flex;align-items:center;gap:9px;padding:9px 10px;border:1px solid var(--border);border-radius:var(--r2);margin-bottom:5px;cursor:pointer;text-align:left;font-family:var(--font);background:var(--surface);transition:all 0.15s}
 .doc-btn:hover{border-color:var(--border2);background:var(--surface2)}
 .doc-btn.active{border-color:var(--blue);background:var(--blue-faint)}
+.doc-btn.minimized{border-color:var(--amber);background:var(--amber-faint)}
+.doc-btn.minimized .doc-btn-sub::before{content:'Minimised · '}
+.doc-btn.open{border-left:3px solid var(--blue)}
 .doc-btn-icon{width:28px;height:28px;border-radius:var(--r);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
 .doc-btn-name{font-size:12px;font-weight:500;color:var(--text);margin-bottom:1px}
 .doc-btn-sub{font-size:10px;color:var(--text3)}
@@ -67,16 +72,38 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 .ds-ready{background:var(--blue-faint);color:var(--blue-text)}
 .ds-empty{background:var(--surface3);color:var(--text3)}
 
-/* document workspace */
-.doc-workspace{background:var(--surface);border:1px solid var(--border);border-radius:var(--r3);overflow:hidden;margin-bottom:14px}
-.dw-header{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
-.dw-title{font-size:13px;font-weight:500;color:var(--text);display:flex;align-items:center;gap:7px}
-.dw-actions{display:flex;gap:6px;flex-wrap:wrap}
-.btn-action{font-size:11px;padding:5px 11px;border-radius:var(--r);border:1px solid var(--border2);background:var(--surface2);cursor:pointer;color:var(--text2);font-family:var(--font);display:inline-flex;align-items:center;gap:4px;transition:background 0.15s}
+/* library home */
+.library-home{flex:1;overflow-y:auto;padding:20px 24px}
+.library-hero{background:var(--surface);border:1px solid var(--border);border-radius:var(--r3);padding:18px 20px;margin-bottom:16px}
+.library-hero h2{font-size:16px;font-weight:500;margin-bottom:4px}
+.library-hero p{font-size:12px;color:var(--text2);line-height:1.55;max-width:520px}
+.library-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+.library-stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:12px 14px}
+.library-stat-label{font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--text3);margin-bottom:4px}
+.library-stat-val{font-size:18px;font-weight:500}
+.open-docs-strip{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.open-doc-chip{font-size:11px;padding:5px 10px;border-radius:20px;border:1px solid var(--border2);background:var(--surface2);cursor:pointer;display:inline-flex;align-items:center;gap:5px;font-family:var(--font);color:var(--text2)}
+.open-doc-chip:hover{border-color:var(--blue);background:var(--blue-faint);color:var(--blue-text)}
+
+/* document focus — full central view */
+.doc-focus{flex:1;display:flex;flex-direction:column;min-height:0;background:var(--surface);border-left:1px solid var(--border)}
+.doc-focus-toolbar{flex-shrink:0;padding:10px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;background:var(--surface);flex-wrap:wrap}
+.doc-focus-nav{display:flex;align-items:center;gap:4px}
+.btn-dismiss{width:32px;height:32px;border-radius:var(--r);border:1px solid var(--border2);background:var(--surface2);cursor:pointer;color:var(--text2);display:flex;align-items:center;justify-content:center;font-family:var(--font);transition:background .15s}
+.btn-dismiss:hover{background:var(--surface3);color:var(--text)}
+.btn-dismiss.close:hover{background:var(--red-faint);border-color:#FECACA;color:var(--red)}
+.doc-focus-title{flex:1;min-width:180px}
+.doc-focus-title h3{font-size:14px;font-weight:500;display:flex;align-items:center;gap:7px}
+.doc-focus-title p{font-size:11px;color:var(--text3);margin-top:2px}
+.doc-focus-actions{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.doc-focus-scroll{flex:1;overflow-y:auto;min-height:0;display:flex;flex-direction:column}
+.doc-focus-footer{flex-shrink:0;padding:9px 16px;border-top:1px solid var(--border);background:var(--surface2);display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.btn-action{font-size:11px;padding:6px 12px;border-radius:var(--r);border:1px solid var(--border2);background:var(--surface2);cursor:pointer;color:var(--text2);font-family:var(--font);display:inline-flex;align-items:center;gap:4px;transition:background 0.15s}
 .btn-action:hover{background:var(--surface3)}
 .btn-action.primary{background:var(--navy);color:#fff;border-color:var(--navy)}
 .btn-action.primary:hover{background:var(--navy2)}
 .btn-action.success{background:var(--green-faint);border-color:#BBF7D0;color:var(--green);cursor:default}
+.btn-action.warn{background:var(--amber-faint);border-color:#FDE68A;color:var(--amber)}
 
 /* AI generate bar */
 .ai-bar{padding:10px 14px;background:var(--blue-faint);border-bottom:1px solid #BFDBFE;display:flex;align-items:center;gap:10px}
@@ -92,9 +119,12 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 .ev-pill i{font-size:10px}
 
 /* letter body */
-.letter-body{padding:28px 36px;font-size:12.5px;line-height:1.85;color:var(--text);background:var(--surface);min-height:400px;font-family:Georgia,serif;white-space:pre-wrap;outline:none;border:none}
-.letter-body[contenteditable=true]{border:1px solid var(--blue);border-radius:0}
+.letter-body{padding:36px 56px;font-size:13px;line-height:1.9;color:var(--text);background:var(--surface);flex:1;font-family:Georgia,serif;white-space:pre-wrap;outline:none;border:none;min-height:100%}
+.letter-body[contenteditable=true]{box-shadow:inset 0 0 0 2px var(--blue)}
 .letter-body .gap{background:#FEF3C7;border:1px dashed var(--amber);border-radius:3px;padding:0 4px;color:var(--amber);font-family:var(--font);font-size:11px;cursor:pointer}
+.letter-empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 24px;text-align:center;color:var(--text3)}
+.letter-empty i{font-size:40px;margin-bottom:14px;opacity:.35}
+.letter-empty p{font-size:13px;max-width:300px;line-height:1.65}
 
 /* status bar */
 .status-bar{padding:9px 14px;border-top:1px solid var(--border);background:var(--surface2);display:flex;align-items:center;justify-content:space-between}
@@ -119,9 +149,11 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 .pr-ev{font-size:9px;color:var(--text3);font-family:var(--mono);margin-top:1px}
 .doc-btn.rec{border-color:#BFDBFE;background:linear-gradient(135deg,var(--blue-faint),#fff)}
 .doc-btn.rec::after{content:'Recommended';font-size:8px;font-weight:500;background:var(--blue-text);color:#fff;padding:1px 5px;border-radius:8px;margin-left:auto}
-.letter-body{max-height:calc(100vh - 280px);overflow-y:auto}
-.doc-workspace{contain:layout style}
-.repo-btn-row{padding:10px 14px;border-top:1px solid var(--border);background:var(--surface2);display:flex;gap:6px;justify-content:flex-end}
+.repo-btn-row{padding:8px 16px;border-top:1px solid var(--border);background:var(--surface2);display:flex;gap:6px;justify-content:flex-end}
+.draft-toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--navy);color:#fff;padding:10px 18px;border-radius:var(--r2);font-size:12px;box-shadow:0 8px 24px rgba(0,0,0,.18);opacity:0;transition:transform .25s ease,opacity .25s ease;z-index:600;pointer-events:none}
+.draft-toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+.draft-hint{font-size:10px;color:var(--text3);display:flex;align-items:center;gap:4px}
+.draft-hint i{font-size:11px}
 
 .user-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.3);z-index:500}
 .user-modal.open{display:flex;justify-content:flex-end;padding:52px 20px 0}
@@ -257,7 +289,7 @@ function t(key){var d=I18N[getUILang()]||I18N.en;return d[key]||I18N.en[key]||ke
     </div>
   </div>
 
-  <div class="body">
+  <div class="body drafting-layout" id="draft-body">
     <!-- Document library sidebar -->
     <div class="sidebar-left">
       <div class="lib-section">
@@ -314,6 +346,7 @@ function t(key){var d=I18N[getUILang()]||I18N.en;return d[key]||I18N.en[key]||ke
       <div class="points-ref" id="points-ref"></div>
     </div>
   </div>
+  <div class="draft-toast" id="draft-toast"></div>
 </div>
 
 <script>
@@ -353,10 +386,11 @@ var docStates={
   p36:{status:'empty',   edits:'',generated:false},
   settlement:{status:'empty',edits:'',generated:false},
 };
-var currentDoc=null;
-var isEditing=false;
-var isGenerating=false;
 var storedInRepo={};
+var docFocused=false;
+var docDirty=false;
+var minimizedDocs={};
+var openDocs={};
 
 function getEvidencePct(){
   try{
@@ -871,103 +905,200 @@ var docEditMode = {};
 var docApproved = {};
 var docVersions = {};
 var caseResolved = false;
+var DOC_NAMES = {
+  loa:'Letter of Acknowledgement',lor:'Letter of Response',
+  defence:'Defence (CPR Part 16)',witness:'Witness Statement (CPR Part 32)',
+  n181:'Directions Questionnaire (N181)',p36:'Part 36 Offer Letter',
+  settlement:'Settlement Agreement'
+};
+var DOC_ICONS = {
+  loa:'ti-mail',lor:'ti-file-text',defence:'ti-shield',
+  witness:'ti-user',n181:'ti-forms',p36:'ti-scale',settlement:'ti-file-check'
+};
+
 function addVersion(id,label){
   docVersions[id]=docVersions[id]||[];
   docVersions[id].unshift({label:label,time:new Date().toLocaleString('en-GB',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}),by:C.assignedTo});
 }
 
+function setFocusMode(on){
+  docFocused=!!on;
+  var body=document.getElementById('draft-body');
+  if(body)body.classList.toggle('doc-focused',docFocused);
+}
+
+function showDraftToast(msg){
+  var t=document.getElementById('draft-toast');
+  if(!t)return;
+  t.textContent=msg;
+  t.classList.add('show');
+  clearTimeout(showDraftToast._tm);
+  showDraftToast._tm=setTimeout(function(){t.classList.remove('show');},2800);
+}
+
+function syncDocBtnStates(){
+  document.querySelectorAll('.doc-btn').forEach(function(btn){
+    var onclick=btn.getAttribute('onclick')||'';
+    var m=onclick.match(/openDoc\('([^']+)'/);
+    if(!m)return;
+    var id=m[1];
+    btn.classList.toggle('active',docFocused&&currentDocId===id);
+    btn.classList.toggle('open',!!openDocs[id]);
+    btn.classList.toggle('minimized',!!minimizedDocs[id]&&!docFocused);
+  });
+}
+
+function hasUnsavedEdits(){
+  if(!currentDocId||!docEditMode[currentDocId])return false;
+  var el=document.getElementById('letter-'+currentDocId);
+  if(!el)return docDirty;
+  var live=el.innerText||el.textContent||'';
+  var saved=docStates[currentDocId].edits||'';
+  return live.trim()!==saved.trim();
+}
+
+function dismissDocView(opts){
+  opts=opts||{};
+  if(!opts.force&&hasUnsavedEdits()){
+    if(!confirm('You have unsaved edits. Close without saving?'))return false;
+  }
+  if(currentDocId){
+    delete openDocs[currentDocId];
+    if(opts.minimize)minimizedDocs[currentDocId]=true;
+    else delete minimizedDocs[currentDocId];
+    docEditMode[currentDocId]=false;
+  }
+  docDirty=false;
+  currentDocId=null;
+  setFocusMode(false);
+  renderWorkspace();
+  return true;
+}
+
 function openDoc(id, btn){
-  currentDocId = id;
-  document.querySelectorAll('.doc-btn').forEach(function(b){b.classList.remove('active');});
-  var el=btn||document.querySelector('.doc-btn[onclick*="'+id+'"]');
-  if(el)el.classList.add('active');
+  if(docFocused&&currentDocId&&currentDocId!==id&&hasUnsavedEdits()){
+    if(!confirm('Switch document? Unsaved edits on the current document will be lost.'))return;
+  }
+  currentDocId=id;
+  openDocs[id]=true;
+  delete minimizedDocs[id];
+  docEditMode[id]=false;
+  docDirty=false;
+  setFocusMode(true);
+  syncDocBtnStates();
   renderWorkspace();
 }
 
-function renderWorkspace(){
-  const m = document.getElementById('main');
-  if(!currentDocId){
-    m.innerHTML = `<div class="empty-workspace"><i class="ti ti-file-pencil"></i><p>Select a document from the library to open, generate, or review.</p></div>`;
-    return;
+function closeDoc(){
+  dismissDocView({force:false});
+}
+
+function minimizeDoc(){
+  if(!currentDocId)return;
+  if(hasUnsavedEdits()){
+    if(!confirm('Minimise with unsaved edits? Changes will be lost unless you save first.'))return;
   }
+  var name=DOC_NAMES[currentDocId]||'Document';
+  dismissDocView({minimize:true});
+  showDraftToast(name+' minimised — reopen from the library');
+}
 
-  const id = currentDocId;
-  const state = docStates[id];
-  const isApproved = !!docApproved[id];
-  const isEdit = !!docEditMode[id];
-  const hasContent = state.generated || state.status==='approved';
+function renderLibraryHome(){
+  var pct=getEvidencePct();
+  var drafted=Object.keys(docStates).filter(function(k){return docStates[k].generated||docStates[k].status==='approved';}).length;
+  var approved=Object.keys(docApproved).filter(function(k){return docApproved[k];}).length;
+  var openChips=Object.keys(openDocs).concat(Object.keys(minimizedDocs)).filter(function(id,i,a){return a.indexOf(id)===i;}).map(function(id){
+    return '<button class="open-doc-chip" onclick="openDoc(\''+id+'\')"><i class="ti ti-file-text"></i>'+(DOC_NAMES[id]||id)+'</button>';
+  }).join('');
+  return '<div class="library-home">'
+    +'<div class="library-hero"><div class="ch-ref">'+C.ref+'</div>'
+    +'<h2>'+C.name+' v. TestAirways</h2>'
+    +'<p>Select a document from the library to open it in full-screen drafting view. Close, save, or download to return here.</p>'
+    +(openChips?'<div class="open-docs-strip">'+openChips+'</div>':'')
+    +'</div>'
+    +'<div class="library-stats">'
+    +'<div class="library-stat"><div class="library-stat-label">Evidence</div><div class="library-stat-val">'+pct+'%</div></div>'
+    +'<div class="library-stat"><div class="library-stat-label">Drafted</div><div class="library-stat-val">'+drafted+'</div></div>'
+    +'<div class="library-stat"><div class="library-stat-label">Approved</div><div class="library-stat-val">'+approved+'</div></div>'
+    +'</div>'
+    +'<div class="empty-workspace" style="min-height:200px"><i class="ti ti-file-pencil"></i><p>Open a document from the left library. It will fill this workspace until you close, save, or download it.</p></div>'
+    +'</div>';
+}
 
-  const docNames = {
-    loa:'Letter of Acknowledgement',lor:'Letter of Response',
-    defence:'Defence (CPR Part 16)',witness:'Witness Statement (CPR Part 32)',
-    n181:'Directions Questionnaire (N181)',p36:'Part 36 Offer Letter',
-    settlement:'Settlement Agreement'
-  };
-  const docIcons = {
-    loa:'ti-mail',lor:'ti-file-text',defence:'ti-shield',
-    witness:'ti-user',n181:'ti-forms',p36:'ti-scale',settlement:'ti-file-check'
-  };
+function renderDocFocus(){
+  var id=currentDocId;
+  var state=docStates[id];
+  var isApproved=!!docApproved[id];
+  var isEdit=!!docEditMode[id];
+  var hasContent=state.generated||state.status==='approved';
+  var evList=EV_USED[id]||[];
+  var evStrip=evList.length
+    ?'<div class="ev-strip"><span class="ev-strip-label">Evidence used</span>'
+      +evList.map(function(e){return '<span class="ev-pill"><i class="ti ti-database"></i>'+e+'</span>';}).join('')
+      +'</div>':'';
 
-  // evidence pills
-  const evList = EV_USED[id]||[];
-  const evStrip = evList.length
-    ? `<div class="ev-strip"><span class="ev-strip-label">Evidence used</span>`
-      +evList.map(e=>`<span class="ev-pill"><i class="ti ti-database"></i>${e}</span>`).join('')
-      +`</div>` : '';
-
-  // actions
-  let actions = '';
+  var actions='';
   if(!hasContent){
-    actions = `<button class="btn-action primary" onclick="generateDoc('${id}')"><i class="ti ti-sparkles" style="font-size:11px"></i> Generate draft</button>`;
-  } else if(isApproved){
-    actions = `<button class="btn-action success"><i class="ti ti-check" style="font-size:11px"></i> Approved</button>`
-      +`<button class="btn-action" onclick="downloadDoc('${id}')"><i class="ti ti-download" style="font-size:11px"></i> Download</button>`;
-  } else {
-    actions = (isEdit
-      ?`<button class="btn-action" onclick="saveEdit('${id}')"><i class="ti ti-check" style="font-size:11px"></i> Save edits</button>`
-      :`<button class="btn-action" onclick="editDoc('${id}')"><i class="ti ti-pencil" style="font-size:11px"></i> Edit</button>`)
-      +`<button class="btn-action" onclick="downloadDoc('${id}')"><i class="ti ti-download" style="font-size:11px"></i> Download</button>`
-      +`<button class="btn-action primary" onclick="approveDoc('${id}')"><i class="ti ti-check" style="font-size:11px"></i> Approve & sign off</button>`;
+    actions='<button class="btn-action primary" onclick="generateDoc(\''+id+'\')"><i class="ti ti-sparkles"></i> Generate draft</button>';
+  }else if(isApproved){
+    actions='<span class="btn-action success"><i class="ti ti-check"></i> Approved</span>'
+      +'<button class="btn-action" onclick="downloadDoc(\''+id+'\',true)"><i class="ti ti-download"></i> Download & close</button>';
+  }else{
+    actions=(isEdit
+      ?'<button class="btn-action primary" onclick="saveEdit(\''+id+'\')"><i class="ti ti-device-floppy"></i> Save & close</button>'
+      :'<button class="btn-action" onclick="editDoc(\''+id+'\')"><i class="ti ti-pencil"></i> Edit</button>')
+      +'<button class="btn-action" onclick="downloadDoc(\''+id+'\',true)"><i class="ti ti-download"></i> Download & close</button>'
+      +(isApproved?'':'<button class="btn-action warn" onclick="approveDoc(\''+id+'\')"><i class="ti ti-check"></i> Approve</button>');
   }
 
-  // letter content
-  const letterText = state.edits || buildDoc(id);
-  const safeText = letterText.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  const letterHtml = hasContent
-    ? `<div class="letter-body" id="letter-${id}" ${isEdit?'contenteditable="true"':''}>${safeText}</div>`
-    : `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px;color:var(--text3);text-align:center"><i class="ti ti-sparkles" style="font-size:32px;margin-bottom:12px;opacity:0.4;display:block"></i><p style="font-size:13px;max-width:240px;line-height:1.6">Click Generate draft to create this document from the case data and evidence on file.</p></div>`;
+  var letterText=state.edits||buildDoc(id);
+  var safeText=letterText.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  var letterHtml=hasContent
+    ?'<div class="letter-body" id="letter-'+id+'" '+(isEdit?'contenteditable="true"':'')+'>'+safeText+'</div>'
+    :'<div class="letter-empty"><i class="ti ti-sparkles"></i><p>Generate a draft from case data and evidence on file, then review it here in full-screen view.</p><button class="btn-action primary" style="margin-top:14px" onclick="generateDoc(\''+id+'\')"><i class="ti ti-sparkles"></i> Generate draft</button></div>';
 
-  const statusTxt = isApproved ? 'Approved — ready for use'
-    : hasContent ? (isEdit ? 'Editing…' : 'Draft — pending solicitor sign-off')
-    : 'Not yet generated';
-  const statusCls = isApproved ? 'status-text approved' : 'status-text';
-  const versions = docVersions[id]||[];
-  const versionPanel = versions.length?`<div style="font-size:10px;color:var(--text3);margin-bottom:10px;padding:8px 10px;background:var(--surface2);border-radius:var(--r)"><strong>Versions:</strong> ${versions.slice(0,3).map(v=>v.label+' ('+v.time+')').join(' · ')}</div>`:'';
-  const repoRow = isApproved?`<div class="repo-btn-row">${storedInRepo[id]?'<span class="btn-action success"><i class="ti ti-check"></i> In repository</span>':'<button class="btn-action primary" onclick="addToRepository(\''+id+'\')"><i class="ti ti-database"></i> Add to repository</button>'}</div>`:'';
+  var statusTxt=isApproved?'Approved — ready for use'
+    :hasContent?(isEdit?'Editing — save or close to exit':'Draft — pending solicitor sign-off')
+    :'Not yet generated';
+  var statusCls=isApproved?'status-text approved':'status-text';
+  var versions=docVersions[id]||[];
+  var versionNote=versions.length?'<span class="draft-hint"><i class="ti ti-history"></i>'+versions[0].label+' · '+versions[0].time+'</span>':'';
+  var repoRow=isApproved?'<div class="repo-btn-row">'+(storedInRepo[id]?'<span class="btn-action success"><i class="ti ti-check"></i> In repository</span>':'<button class="btn-action primary" onclick="addToRepository(\''+id+'\')"><i class="ti ti-database"></i> Add to repository</button>')+'</div>':'';
 
-  m.innerHTML = `
-    <div class="case-hdr" style="padding:10px 14px;margin-bottom:12px">
-      <div class="ch-ref">${C.ref}</div>
-      <div class="ch-name" style="font-size:14px">${C.name} v. TestAirways</div>
-      <div class="ch-meta" style="font-size:10px">
-        <span><i class="ti ti-plane"></i>${C.flight}</span>
-        <span><i class="ti ti-folder"></i>Evidence ${getEvidencePct()}%</span>
-        <span class="case-bar-pill" style="background:var(--purple-faint);color:var(--purple);font-size:9px;padding:2px 6px;border-radius:10px">${getEvidencePct()>=100?'DRAFTING':'IN PROGRESS'}</span>
-      </div>
-    </div>
-    ${versionPanel}
-    <div class="doc-workspace">
-      <div class="dw-header">
-        <div class="dw-title"><i class="ti ${docIcons[id]}" style="font-size:14px;color:var(--green)"></i>${docNames[id]}</div>
-        <div class="dw-actions">${actions}</div>
-      </div>
-      ${evStrip}
-      ${letterHtml}
-      <div class="status-bar">
-        <div class="${statusCls}">${statusTxt}</div>
-      </div>
-      ${repoRow}
-    </div>`;
+  return '<div class="doc-focus">'
+    +'<div class="doc-focus-toolbar">'
+    +'<div class="doc-focus-nav">'
+    +'<button class="btn-dismiss close" title="Close document" onclick="closeDoc()"><i class="ti ti-x"></i></button>'
+    +'<button class="btn-dismiss" title="Minimise to library" onclick="minimizeDoc()"><i class="ti ti-minus"></i></button>'
+    +'</div>'
+    +'<div class="doc-focus-title"><h3><i class="ti '+DOC_ICONS[id]+'" style="color:var(--green)"></i>'+DOC_NAMES[id]+'</h3>'
+    +'<p>'+C.ref+' · '+C.name+' · Evidence '+getEvidencePct()+'%</p></div>'
+    +'<div class="doc-focus-actions">'+actions+'</div>'
+    +'</div>'
+    +'<div class="doc-focus-scroll">'+evStrip+letterHtml+repoRow+'</div>'
+    +'<div class="doc-focus-footer"><div class="'+statusCls+'">'+statusTxt+'</div>'+versionNote+'<span class="draft-hint"><i class="ti ti-info-circle"></i>Close, save, or download to return to library</span></div>'
+    +'</div>';
+}
+
+function renderWorkspace(){
+  var m=document.getElementById('main');
+  if(!docFocused||!currentDocId){
+    setFocusMode(false);
+    m.innerHTML=renderLibraryHome();
+  }else{
+    setFocusMode(true);
+    m.innerHTML=renderDocFocus();
+    if(docEditMode[currentDocId]){
+      setTimeout(function(){
+        var el=document.getElementById('letter-'+currentDocId);
+        if(el){
+          el.addEventListener('input',function(){docDirty=true;});
+          el.focus();
+        }
+      },50);
+    }
+  }
+  syncDocBtnStates();
   renderPointsRefSidebar();
 }
 
@@ -987,9 +1118,8 @@ function renderPointsRef(){
 }
 
 async function generateDoc(id){
-  // Show generating state
-  const actionsEl = document.querySelector('.dw-actions');
-  if(actionsEl) actionsEl.innerHTML = `<div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--blue-text)"><div class="ai-spinner"></div>Generating from case data…</div>`;
+  var actionsEl=document.querySelector('.doc-focus-actions');
+  if(actionsEl)actionsEl.innerHTML='<div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--blue-text)"><div class="ai-spinner"></div>Generating from case data…</div>';
 
   // Call Claude API for AI-enhanced generation
   const docNames = {lor:'Letter of Response',defence:'Defence (CPR Part 16)',witness:'Witness Statement',p36:'Part 36 Offer',settlement:'Settlement Agreement',n181:'Directions Questionnaire'};
@@ -1031,11 +1161,14 @@ function editDoc(id){
 }
 
 function saveEdit(id){
-  const el=document.getElementById('letter-'+id);
-  if(el) docStates[id].edits = el.innerText||el.textContent||docStates[id].edits;
-  docEditMode[id] = false;
+  var el=document.getElementById('letter-'+id);
+  if(el)docStates[id].edits=el.innerText||el.textContent||docStates[id].edits;
+  docEditMode[id]=false;
+  docDirty=false;
   addVersion(id,'Solicitor edits saved');
-  renderWorkspace();
+  var name=DOC_NAMES[id]||'Document';
+  dismissDocView({force:true});
+  showDraftToast(name+' saved — returned to library');
 }
 
 function approveDoc(id){
@@ -1080,13 +1213,18 @@ function resolveCase(){
   renderWorkspace();
 }
 
-function downloadDoc(id){
-  const text = docStates[id].edits || buildDoc(id);
-  const names={loa:'Letter-of-Acknowledgement',lor:'Letter-of-Response',defence:'Defence',witness:'Witness-Statement',n181:'Directions-Questionnaire-N181',p36:'Part-36-Offer',settlement:'Settlement-Agreement'};
-  const a=document.createElement('a');
+function downloadDoc(id, closeAfter){
+  var text=docStates[id].edits||buildDoc(id);
+  var names={loa:'Letter-of-Acknowledgement',lor:'Letter-of-Response',defence:'Defence',witness:'Witness-Statement',n181:'Directions-Questionnaire-N181',p36:'Part-36-Offer',settlement:'Settlement-Agreement'};
+  var a=document.createElement('a');
   a.href=URL.createObjectURL(new Blob([text],{type:'text/plain'}));
-  a.download=C.ref+'-'+names[id]+'.txt';
+  a.download=C.ref+'-'+(names[id]||id)+'.txt';
   a.click();
+  if(closeAfter){
+    var name=DOC_NAMES[id]||'Document';
+    dismissDocView({force:true});
+    showDraftToast(name+' downloaded — returned to library');
+  }
 }
 
 function updateDocBtn(id, status){
@@ -1143,10 +1281,12 @@ function applyDocRecommendations(){
 }
 
 /* ── Init ── */
-document.getElementById('main').innerHTML = '<div class="empty-workspace"><i class="ti ti-file-pencil"></i><p>Select a document from the library. Recommendations are based on evidence completeness and claim status.</p></div>';
-renderPointsRefSidebar();
+renderWorkspace();
 applyDocRecommendations();
 var initPct=getEvidencePct();
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape'&&docFocused&&currentDocId){e.preventDefault();closeDoc();}
+});
 if(initPct>=100){
   setTimeout(function(){
     var lorBtn=document.querySelector('.doc-btn[onclick*="lor"]');
