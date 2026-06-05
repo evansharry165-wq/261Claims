@@ -39,11 +39,52 @@ function routeForStage(stage) {
   return legacyRouteForTab(tab);
 }
 
+function getStoredEvidencePct(ref) {
+  try {
+    var st = JSON.parse(sessionStorage.getItem('261c_evidence_' + ref) || 'null');
+    if (st && typeof st.evidencePct === 'number') return st.evidencePct;
+  } catch (e) {}
+  return null;
+}
+
+function syncCaseEvidencePct(ref, pct, readyForDrafting) {
+  var c = typeof getCase === 'function' ? getCase(ref) : null;
+  if (!c) return;
+  c.evidencePct = pct;
+  if (readyForDrafting) {
+    c.evidenceReady = true;
+    c.classification = 'DRAFTING';
+  }
+  try {
+    var stored = JSON.parse(sessionStorage.getItem('261c_case') || 'null');
+    if (stored && stored.ref === ref) {
+      stored.evidencePct = pct;
+      if (readyForDrafting) {
+        stored.evidenceReady = true;
+        stored.classification = 'DRAFTING';
+      }
+      sessionStorage.setItem('261c_case', JSON.stringify(stored));
+    }
+    var aero = JSON.parse(sessionStorage.getItem('aeroCaseData') || 'null');
+    if (aero && aero.ref === ref) {
+      aero.evidencePct = pct;
+      sessionStorage.setItem('aeroCaseData', JSON.stringify(aero));
+    }
+  } catch (e) {}
+}
+
+function getEffectiveEvidencePct(c) {
+  if (!c) return 0;
+  var stored = getStoredEvidencePct(c.ref);
+  return stored !== null ? stored : c.evidencePct || 0;
+}
+
 function getNextAction(c) {
   if (!c) return { text: 'Open case', tab: 'overview', icon: 'ti-file', urgency: 99 };
   var tab = getPrimaryTab(c);
   var text = 'Review case';
   var icon = 'ti-file';
+  var evPct = getEffectiveEvidencePct(c);
 
   if (c.stage === 'intake') {
     text = 'Review extracted claim and confirm triage';
@@ -57,14 +98,14 @@ function getNextAction(c) {
     text = c.loaStatus === 'sent' || c.loaStatus === 'approved' ? 'Review CPR deadlines' : 'Send letter of acknowledgement';
     tab = 'deadlines';
     icon = 'ti-calendar-due';
-  } else if (c.stage === 'evidence' && c.evidencePct < 70) {
-    text = 'Complete key evidence pack';
+  } else if (c.stage === 'evidence' && evPct < 100) {
+    text = 'Complete gold evidence pack';
     tab = 'evidence';
     icon = 'ti-folder-open';
-  } else if (c.stage === 'evidence') {
-    text = 'Review evidence pack readiness';
-    tab = 'evidence';
-    icon = 'ti-folder-open';
+  } else if (c.stage === 'evidence' && evPct >= 100) {
+    text = 'Move to drafting';
+    tab = 'documents';
+    icon = 'ti-file-pencil';
   } else if (c.stage === 'drafting' || c.stage === 'defence') {
     text = 'Review AI draft and sign off';
     tab = 'documents';
@@ -86,7 +127,7 @@ function getNextAction(c) {
     tab: tab,
     icon: icon,
     urgency: c.cprDaysLeft,
-    blocker: getWaitingOnSummary(c)
+    blocker: ''
   };
 }
 
@@ -101,7 +142,9 @@ var EVIDENCE_REQUEST_SEED = [
     due: '3d',
     status: 'open',
     requestedBy: 'S. Booth',
-    missing: ['Valencia ground handling records', 'Passenger care evidence', 'DPM notes'],
+    requestType: 'Daily Operations Review',
+    requestDate: '24MAR24',
+    missing: ['Daily Operations Review for 24MAR24', 'Valencia ground handling records', 'Passenger care evidence'],
     note: 'Pull all left gaps on passenger care and diversion ground handling.',
     since: '2d ago'
   },
@@ -165,16 +208,68 @@ function sortCases(cases, sort) {
   return list;
 }
 
+function getNotifications(uid) {
+  var all = [];
+  try {
+    all = JSON.parse(sessionStorage.getItem('261c_notifications') || '[]');
+  } catch (e) {}
+  return all.filter(function (n) {
+    return !uid || n.to === uid || n.to === 'all';
+  });
+}
+
+function pushNotification(notif) {
+  var all = [];
+  try {
+    all = JSON.parse(sessionStorage.getItem('261c_notifications') || '[]');
+  } catch (e) {}
+  all.unshift(
+    Object.assign(
+      {
+        id: 'N-' + Date.now(),
+        time: new Date().toLocaleString('en-GB', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }),
+        read: false
+      },
+      notif
+    )
+  );
+  try {
+    sessionStorage.setItem('261c_notifications', JSON.stringify(all.slice(0, 40)));
+  } catch (e) {}
+}
+
+function markNotificationsRead(uid) {
+  var all = [];
+  try {
+    all = JSON.parse(sessionStorage.getItem('261c_notifications') || '[]');
+  } catch (e) {}
+  all = all.map(function (n) {
+    if (n.to === uid) return Object.assign({}, n, { read: true });
+    return n;
+  });
+  try {
+    sessionStorage.setItem('261c_notifications', JSON.stringify(all));
+  } catch (e) {}
+}
+
+function unreadNotificationCount(uid) {
+  return getNotifications(uid).filter(function (n) {
+    return !n.read;
+  }).length;
+}
+
 function updateEvidenceRequest(id, status) {
   var reqs = [];
   try {
     reqs = JSON.parse(sessionStorage.getItem('261c_evidence_requests') || '[]');
   } catch (e) {}
   var found = false;
+  var updated = null;
   reqs = reqs.map(function (r) {
     if (r.id === id) {
       found = true;
-      return Object.assign({}, r, { status: status });
+      updated = Object.assign({}, r, { status: status });
+      return updated;
     }
     return r;
   });
@@ -182,11 +277,48 @@ function updateEvidenceRequest(id, status) {
     var seed = EVIDENCE_REQUEST_SEED.find(function (r) {
       return r.id === id;
     });
-    if (seed) reqs.push(Object.assign({}, seed, { status: status }));
+    if (seed) {
+      updated = Object.assign({}, seed, { status: status });
+      reqs.push(updated);
+    }
   }
   try {
     sessionStorage.setItem('261c_evidence_requests', JSON.stringify(reqs));
   } catch (e) {}
+  return updated;
+}
+
+function completeEvidenceRequest(id) {
+  var req = updateEvidenceRequest(id, 'complete');
+  if (!req) return null;
+  var requester = 'SB';
+  if (req.requestedBy) {
+    var u = Object.keys(USERS || {}).find(function (k) {
+      return USERS[k].name === req.requestedBy || USERS[k].full === req.requestedBy;
+    });
+    if (u) requester = u;
+  }
+  pushNotification({
+    to: requester,
+    type: 'evidence-complete',
+    ref: req.ref,
+    title: 'Evidence request complete',
+    body: (req.claimant || req.ref) + ' — documents uploaded to repository. Gold pack ready for review.',
+    tab: 'evidence'
+  });
+  return req;
+}
+
+function notifyEvidenceTeamRequest(req) {
+  pushNotification({
+    to: 'EH',
+    type: 'evidence-request',
+    ref: req.ref,
+    requestId: req.id,
+    title: 'New evidence request',
+    body: (req.requestedBy || 'Legal team') + ' requests completion for ' + (req.claimant || req.ref),
+    tab: 'requests'
+  });
 }
 
 function getEvidenceRequests() {
@@ -204,19 +336,31 @@ function getEvidenceRequests() {
 }
 
 function getWaitingOn(c) {
-  if (!c) return [];
-  return getEvidenceRequests().filter(function (r) {
-    return r.ref === c.ref && r.status !== 'complete';
-  });
+  return [];
 }
 
 function getWaitingOnSummary(c) {
-  var waiting = getWaitingOn(c);
-  if (!waiting.length) return '';
-  var items = waiting.reduce(function (acc, r) {
-    return acc.concat(r.missing || []);
-  }, []);
-  return 'Evidence team · ' + items.slice(0, 2).join(', ') + (items.length > 2 ? '…' : '');
+  return '';
+}
+
+function getActiveEvidenceRequest(ref) {
+  return getEvidenceRequests().find(function (r) {
+    return r.ref === ref && r.status !== 'complete';
+  }) || null;
+}
+
+function saveEvidenceWorkspaceState(ref, state) {
+  try {
+    sessionStorage.setItem('261c_evidence_' + ref, JSON.stringify(state));
+  } catch (e) {}
+}
+
+function loadEvidenceWorkspaceState(ref) {
+  try {
+    return JSON.parse(sessionStorage.getItem('261c_evidence_' + ref) || 'null');
+  } catch (e) {
+    return null;
+  }
 }
 
 function openCase(ref, tab) {
@@ -284,10 +428,8 @@ function buildWatchItems(cases) {
     })
     .slice(0, 5)
     .map(function (c) {
-      var waiting = getWaitingOnSummary(c);
       var parts = [c.ref, 'CPR ' + c.cprDaysLeft + 'd'];
-      if (c.stage === 'evidence') parts.push('Evidence ' + c.evidencePct + '%');
-      if (waiting) parts.push(waiting);
+      if (c.stage === 'evidence') parts.push('Evidence ' + getEffectiveEvidencePct(c) + '%');
       return { ref: c.ref, text: parts.join(' · '), urgency: c.cprDaysLeft, tab: getPrimaryTab(c) };
     });
 }

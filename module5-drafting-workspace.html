@@ -39,9 +39,10 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 .btn-back:hover{background:var(--surface3)}
 
 /* layout */
-.body{flex:1;display:grid;grid-template-columns:280px 1fr;overflow:hidden}
-.sidebar-left{border-right:1px solid var(--border);background:var(--surface);overflow-y:auto;padding:16px}
-.main{overflow-y:auto;padding:20px 24px}
+.body{flex:1;display:grid;grid-template-columns:260px 1fr 200px;overflow:hidden;min-height:0}
+.sidebar-left{border-right:1px solid var(--border);background:var(--surface);overflow-y:auto;padding:14px;min-height:0}
+.main{overflow-y:auto;padding:16px 20px;min-height:0;min-width:0}
+.sidebar-right{border-left:1px solid var(--border);background:var(--surface);overflow-y:auto;padding:10px 12px;min-height:0}
 
 /* case header */
 .case-hdr{background:var(--surface);border:1px solid var(--border);border-radius:var(--r3);padding:13px 16px;margin-bottom:16px}
@@ -107,15 +108,20 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 .empty-workspace p{font-size:13px;color:var(--text3);max-width:260px;line-height:1.6}
 
 /* points of claim reference */
-.points-ref{background:var(--surface);border:1px solid var(--border);border-radius:var(--r3);overflow:hidden}
-.pr-header{padding:10px 14px;border-bottom:1px solid var(--border);font-size:12px;font-weight:500;color:var(--text);display:flex;align-items:center;gap:6px}
-.pr-item{display:flex;align-items:flex-start;gap:8px;padding:8px 14px;border-bottom:1px solid var(--border);font-size:11px}
+.points-ref{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);overflow:hidden}
+.pr-header{padding:8px 10px;border-bottom:1px solid var(--border);font-size:10px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;display:flex;align-items:center;gap:5px}
+.pr-item{display:flex;align-items:flex-start;gap:6px;padding:6px 10px;border-bottom:1px solid var(--border);font-size:10px}
 .pr-item:last-child{border-bottom:none}
-.pr-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:3px}
+.pr-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:3px}
 .pr-dot-g{background:var(--green-l)}.pr-dot-a{background:#F59E0B}.pr-dot-r{background:var(--red)}
-.pr-num{font-weight:500;color:var(--text);margin-bottom:1px}
-.pr-claim{color:var(--text2)}
-.pr-ev{font-size:10px;color:var(--text3);font-family:var(--mono);margin-top:2px}
+.pr-num{font-weight:500;color:var(--text);margin-bottom:1px;font-size:10px}
+.pr-claim{color:var(--text2);line-height:1.4}
+.pr-ev{font-size:9px;color:var(--text3);font-family:var(--mono);margin-top:1px}
+.doc-btn.rec{border-color:#BFDBFE;background:linear-gradient(135deg,var(--blue-faint),#fff)}
+.doc-btn.rec::after{content:'Recommended';font-size:8px;font-weight:500;background:var(--blue-text);color:#fff;padding:1px 5px;border-radius:8px;margin-left:auto}
+.letter-body{max-height:calc(100vh - 280px);overflow-y:auto}
+.doc-workspace{contain:layout style}
+.repo-btn-row{padding:10px 14px;border-top:1px solid var(--border);background:var(--surface2);display:flex;gap:6px;justify-content:flex-end}
 
 .user-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.3);z-index:500}
 .user-modal.open{display:flex;justify-content:flex-end;padding:52px 20px 0}
@@ -256,12 +262,12 @@ function t(key){var d=I18N[getUILang()]||I18N.en;return d[key]||I18N.en[key]||ke
     <div class="sidebar-left">
       <div class="lib-section">
         <div class="lib-label">Pre-action</div>
-        <button class="doc-btn" onclick="openDoc('loa')">
+        <button class="doc-btn" onclick="openDoc('loa',this)">
           <div class="doc-btn-icon" style="background:#FEF3C7;color:#92400E"><i class="ti ti-mail"></i></div>
           <div><div class="doc-btn-name">Letter of Acknowledgement</div><div class="doc-btn-sub">Pre-action · CPR Protocol</div></div>
           <span class="doc-status ds-approved">Approved</span>
         </button>
-        <button class="doc-btn" onclick="openDoc('lor')">
+        <button class="doc-btn" onclick="openDoc('lor',this)">
           <div class="doc-btn-icon" style="background:#EEEDFE;color:#4338CA"><i class="ti ti-file-text"></i></div>
           <div><div class="doc-btn-name">Letter of Response</div><div class="doc-btn-sub">Substantive reply to LOC</div></div>
           <span class="doc-status ds-draft">Draft</span>
@@ -269,17 +275,17 @@ function t(key){var d=I18N[getUILang()]||I18N.en;return d[key]||I18N.en[key]||ke
       </div>
       <div class="lib-section">
         <div class="lib-label">Court documents</div>
-        <button class="doc-btn" onclick="openDoc('defence')">
+        <button class="doc-btn" onclick="openDoc('defence',this)">
           <div class="doc-btn-icon" style="background:var(--green-faint);color:var(--green)"><i class="ti ti-shield"></i></div>
           <div><div class="doc-btn-name">Defence</div><div class="doc-btn-sub">CPR Part 16 · County Court</div></div>
           <span class="doc-status ds-empty">Not started</span>
         </button>
-        <button class="doc-btn" onclick="openDoc('witness')">
+        <button class="doc-btn" onclick="openDoc('witness',this)">
           <div class="doc-btn-icon" style="background:var(--blue-faint);color:var(--blue-text)"><i class="ti ti-user"></i></div>
           <div><div class="doc-btn-name">Witness Statement</div><div class="doc-btn-sub">CPR Part 32 · Crew / Ops</div></div>
           <span class="doc-status ds-empty">Not started</span>
         </button>
-        <button class="doc-btn" onclick="openDoc('n181')">
+        <button class="doc-btn" onclick="openDoc('n181',this)">
           <div class="doc-btn-icon" style="background:var(--surface3);color:var(--text3)"><i class="ti ti-forms"></i></div>
           <div><div class="doc-btn-name">Directions Questionnaire</div><div class="doc-btn-sub">Form N181</div></div>
           <span class="doc-status ds-empty">Not started</span>
@@ -287,25 +293,26 @@ function t(key){var d=I18N[getUILang()]||I18N.en;return d[key]||I18N.en[key]||ke
       </div>
       <div class="lib-section">
         <div class="lib-label">Settlement</div>
-        <button class="doc-btn" onclick="openDoc('p36')">
+        <button class="doc-btn" onclick="openDoc('p36',this)">
           <div class="doc-btn-icon" style="background:var(--surface3);color:var(--text3)"><i class="ti ti-scale"></i></div>
           <div><div class="doc-btn-name">Part 36 Offer</div><div class="doc-btn-sub">CPR Part 36 · Costs protection</div></div>
           <span class="doc-status ds-empty">Not started</span>
         </button>
-        <button class="doc-btn" onclick="openDoc('settlement')">
+        <button class="doc-btn" onclick="openDoc('settlement',this)">
           <div class="doc-btn-icon" style="background:var(--surface3);color:var(--text3)"><i class="ti ti-file-check"></i></div>
           <div><div class="doc-btn-name">Settlement Agreement</div><div class="doc-btn-sub">Full and final settlement</div></div>
           <span class="doc-status ds-empty">Not started</span>
         </button>
       </div>
-      <div class="lib-section">
-        <div class="lib-label">Points of claim reference</div>
-        <div class="points-ref" id="points-ref"></div>
-      </div>
     </div>
 
     <!-- Main workspace -->
     <div class="main" id="main"></div>
+
+    <!-- Compact points reference -->
+    <div class="sidebar-right">
+      <div class="points-ref" id="points-ref"></div>
+    </div>
   </div>
 </div>
 
@@ -349,6 +356,29 @@ var docStates={
 var currentDoc=null;
 var isEditing=false;
 var isGenerating=false;
+var storedInRepo={};
+
+function getEvidencePct(){
+  try{
+    var st=JSON.parse(sessionStorage.getItem('261c_evidence_'+C.ref)||'null');
+    if(st&&typeof st.evidencePct==='number')return st.evidencePct;
+    var c=JSON.parse(sessionStorage.getItem('261c_case')||'null');
+    if(c&&c.ref===C.ref)return c.evidencePct||0;
+  }catch(e){}
+  return _i.evidencePct||35;
+}
+function getDocRecommendations(){
+  var pct=getEvidencePct();
+  var rec={};
+  rec.lor=pct>=70?95:pct>=40?70:40;
+  rec.defence=pct>=85?80:pct>=50?50:20;
+  rec.witness=pct>=60?75:30;
+  rec.settlement=C.value&&String(C.value).indexOf('39')>=0?85:pct>=80?60:25;
+  rec.p36=rec.settlement>50?70:30;
+  rec.n181=30;
+  rec.loa=100;
+  return rec;
+}
 
 /* ── Evidence used per document ── */
 var EV_USED={
@@ -846,10 +876,11 @@ function addVersion(id,label){
   docVersions[id].unshift({label:label,time:new Date().toLocaleString('en-GB',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}),by:C.assignedTo});
 }
 
-function openDoc(id){
+function openDoc(id, btn){
   currentDocId = id;
-  document.querySelectorAll('.doc-btn').forEach(b=>b.classList.remove('active'));
-  event.currentTarget.classList.add('active');
+  document.querySelectorAll('.doc-btn').forEach(function(b){b.classList.remove('active');});
+  var el=btn||document.querySelector('.doc-btn[onclick*="'+id+'"]');
+  if(el)el.classList.add('active');
   renderWorkspace();
 }
 
@@ -911,22 +942,20 @@ function renderWorkspace(){
     : 'Not yet generated';
   const statusCls = isApproved ? 'status-text approved' : 'status-text';
   const versions = docVersions[id]||[];
-  const versionPanel = `<div class="points-ref" style="margin-bottom:14px"><div class="pr-header"><i class="ti ti-history" style="font-size:13px;color:var(--text3)"></i>Document version history</div>`
-    +(versions.length?versions.map(v=>`<div class="pr-item"><div class="pr-dot pr-dot-g"></div><div><div class="pr-num">${v.label}</div><div class="pr-ev">${v.time} · ${v.by}</div></div></div>`).join(''):`<div class="pr-item"><div class="pr-dot pr-dot-a"></div><div><div class="pr-num">No versions saved yet</div><div class="pr-ev">Generate or edit this document to create a version.</div></div></div>`)
-    +`</div>`;
-  const resolutionPanel = `<div class="points-ref"><div class="pr-header"><i class="ti ti-archive" style="font-size:13px;color:var(--text3)"></i>Resolution and repository</div><div class="pr-item"><div class="pr-dot ${caseResolved?'pr-dot-g':'pr-dot-a'}"></div><div style="flex:1"><div class="pr-num">${caseResolved?'Closed and stored in repository':'Ready to close after final document approval'}</div><div class="pr-ev">Outcome, final documents, evidence pack, and AI rationale are retained for search and future similar-case recommendations.</div></div><button class="btn-action ${caseResolved?'success':'primary'}" onclick="resolveCase()">${caseResolved?'Stored':'Close & store'}</button><a class="btn-action" href="repository.html"><i class="ti ti-database" style="font-size:11px"></i>Open repository</a></div></div>`;
+  const versionPanel = versions.length?`<div style="font-size:10px;color:var(--text3);margin-bottom:10px;padding:8px 10px;background:var(--surface2);border-radius:var(--r)"><strong>Versions:</strong> ${versions.slice(0,3).map(v=>v.label+' ('+v.time+')').join(' · ')}</div>`:'';
+  const repoRow = isApproved?`<div class="repo-btn-row">${storedInRepo[id]?'<span class="btn-action success"><i class="ti ti-check"></i> In repository</span>':'<button class="btn-action primary" onclick="addToRepository(\''+id+'\')"><i class="ti ti-database"></i> Add to repository</button>'}</div>`:'';
 
   m.innerHTML = `
-    <div class="case-hdr">
+    <div class="case-hdr" style="padding:10px 14px;margin-bottom:12px">
       <div class="ch-ref">${C.ref}</div>
-      <div class="ch-name">${C.name} v. TestAirways</div>
-      <div class="ch-meta">
+      <div class="ch-name" style="font-size:14px">${C.name} v. TestAirways</div>
+      <div class="ch-meta" style="font-size:10px">
         <span><i class="ti ti-plane"></i>${C.flight}</span>
-        <span><i class="ti ti-currency-pound"></i>${C.value}</span>
-        <span><i class="ti ti-user"></i>Assigned: ${C.assignedTo}</span>
+        <span><i class="ti ti-folder"></i>Evidence ${getEvidencePct()}%</span>
+        <span class="case-bar-pill" style="background:var(--purple-faint);color:var(--purple);font-size:9px;padding:2px 6px;border-radius:10px">${getEvidencePct()>=100?'DRAFTING':'IN PROGRESS'}</span>
       </div>
     </div>
-
+    ${versionPanel}
     <div class="doc-workspace">
       <div class="dw-header">
         <div class="dw-title"><i class="ti ${docIcons[id]}" style="font-size:14px;color:var(--green)"></i>${docNames[id]}</div>
@@ -936,16 +965,10 @@ function renderWorkspace(){
       ${letterHtml}
       <div class="status-bar">
         <div class="${statusCls}">${statusTxt}</div>
-        <div class="send-note"><i class="ti ti-info-circle" style="font-size:11px"></i>Internal email sending — coming soon</div>
       </div>
-    </div>
-
-    ${versionPanel}
-    <div class="points-ref" style="margin-bottom:14px">
-      <div class="pr-header"><i class="ti ti-list-check" style="font-size:13px;color:var(--text3)"></i>Points of claim — reference</div>
-      ${renderPointsRef()}
-    </div>
-    ${resolutionPanel}`;
+      ${repoRow}
+    </div>`;
+  renderPointsRefSidebar();
 }
 
 function renderPointsRef(){
@@ -1026,6 +1049,27 @@ function approveDoc(id){
 }
 
 
+function addToRepository(id){
+  var names={loa:'Letter-of-Acknowledgement',lor:'Letter-of-Response',defence:'Defence',witness:'Witness-Statement',n181:'Directions-Questionnaire-N181',p36:'Part-36-Offer',settlement:'Settlement-Agreement'};
+  var text=docStates[id].edits||buildDoc(id);
+  try{
+    var repo=JSON.parse(sessionStorage.getItem('261c_repository')||'[]');
+    repo.unshift({
+      ref:C.ref,claimant:C.name,outcome:'Draft document',
+      stored:new Date().toISOString(),
+      documents:[names[id]||id],
+      value:C.value,flightNum:C.flightNum,
+      disruptionType:C.type,solicitor:C.sol,
+      docType:names[id],docText:text.slice(0,500)
+    });
+    sessionStorage.setItem('261c_repository',JSON.stringify(repo.slice(0,30)));
+    storedInRepo[id]=true;
+    if(window.parent!==window){window.parent.postMessage({type:'case-shell',action:'log',text:'Document stored in repository: '+(names[id]||id),logType:'upload'},'*');}
+  }catch(e){}
+  renderWorkspace();
+  updateDocBtn(id,'approved');
+}
+
 function resolveCase(){
   caseResolved=true;
   try{
@@ -1085,14 +1129,30 @@ function renderPointsRefSidebar(){
     }).join('');
 }
 
+function applyDocRecommendations(){
+  var rec=getDocRecommendations();
+  document.querySelectorAll('.doc-btn').forEach(function(btn){
+    var onclick=btn.getAttribute('onclick')||'';
+    var m=onclick.match(/openDoc\('([^']+)'/);
+    if(!m)return;
+    var id=m[1];
+    btn.classList.toggle('rec',rec[id]>=70);
+    var sub=btn.querySelector('.doc-btn-sub');
+    if(sub&&rec[id]>=70)sub.textContent='Recommended · '+rec[id]+'% fit';
+  });
+}
+
 /* ── Init ── */
-document.getElementById('main').innerHTML = `<div class="empty-workspace"><i class="ti ti-file-pencil"></i><p>Select a document from the library on the left to open, generate, or review it.</p></div>`;
+document.getElementById('main').innerHTML = '<div class="empty-workspace"><i class="ti ti-file-pencil"></i><p>Select a document from the library. Recommendations are based on evidence completeness and claim status.</p></div>';
 renderPointsRefSidebar();
-// Auto-open LOA as it's already approved
-setTimeout(()=>{
-  const loaBtn = document.querySelector('.doc-btn');
-  if(loaBtn){loaBtn.classList.add('active');currentDocId='loa';renderWorkspace();}
-},100);
+applyDocRecommendations();
+var initPct=getEvidencePct();
+if(initPct>=100){
+  setTimeout(function(){
+    var lorBtn=document.querySelector('.doc-btn[onclick*="lor"]');
+    if(lorBtn){openDoc('lor',lorBtn);}
+  },100);
+}
 </script>
 <script>
 /* ── Nav + user switcher ── */

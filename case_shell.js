@@ -96,41 +96,18 @@ var CaseShell = (function () {
     if (state.tab === 'activity') renderActivity();
   }
 
-  function waitingOnHtml(c) {
-    var waiting = typeof getWaitingOn === 'function' ? getWaitingOn(c) : [];
-    if (!waiting.length) return '';
-    var items = waiting.reduce(function (acc, r) {
-      return acc.concat(r.missing || []);
-    }, []);
-    return (
-      '<div class="waiting-on"><i class="ti ti-clock"></i> <strong>' +
-      escapeHtml(typeof t === 'function' ? t('waitingOn') : 'Waiting on') +
-      ':</strong> Evidence team · ' +
-      escapeHtml(items.slice(0, 3).join(', ')) +
-      (items.length > 3 ? '…' : '') +
-      ' <a href="javascript:CaseShell.switchTab(\'evidence\')" style="margin-left:8px;color:var(--blue-text);font-weight:500">View</a></div>'
-    );
-  }
-
-  function primaryCta(c) {
-    var action = typeof getNextAction === 'function' ? getNextAction(c) : { text: 'Open case', tab: 'overview' };
-    return (
-      '<a class="case-cta" href="javascript:CaseShell.switchTab(\'' +
-      escapeHtml(action.tab) +
-      '\')"><i class="ti ti-player-play"></i> ' +
-      escapeHtml(action.text) +
-      '</a>'
-    );
-  }
-
   function renderHeader(c) {
     var J = typeof getJurisdiction === 'function' ? getJurisdiction(c.jurisdiction) : { name: '', flag: '' };
     var urg = typeof daysUrgency === 'function' ? daysUrgency(c.cprDaysLeft) : 'ok';
-    var cls = c.classification || '';
-    var clsBg = cls === 'ESCALATE' ? 'var(--red-faint)' : cls === 'DEFEND' ? 'var(--green-faint)' : 'var(--surface3)';
-    var clsCol = cls === 'ESCALATE' ? 'var(--red)' : cls === 'DEFEND' ? 'var(--green)' : 'var(--text3)';
-    var evPct = c.evidencePct || 0;
+    var evPct = typeof getEffectiveEvidencePct === 'function' ? getEffectiveEvidencePct(c) : c.evidencePct || 0;
+    var readyDraft = evPct >= 100 || c.evidenceReady;
+    var cls = readyDraft && c.stage === 'evidence' ? 'DRAFTING' : c.classification || '';
+    var clsBg =
+      cls === 'DRAFTING' ? 'var(--purple-faint)' : cls === 'ESCALATE' ? 'var(--red-faint)' : cls === 'DEFEND' ? 'var(--green-faint)' : 'var(--surface3)';
+    var clsCol =
+      cls === 'DRAFTING' ? 'var(--purple)' : cls === 'ESCALATE' ? 'var(--red)' : cls === 'DEFEND' ? 'var(--green)' : 'var(--text3)';
     var evCol = typeof evPctColor === 'function' ? evPctColor(evPct) : '#94A3B8';
+    var notifCount = typeof unreadNotificationCount === 'function' ? unreadNotificationCount(getActiveUser()) : 0;
 
     document.getElementById('case-header').innerHTML =
       '<div class="case-bar-top">' +
@@ -163,9 +140,12 @@ var CaseShell = (function () {
         ? '<span class="case-bar-ev" style="color:' + evCol + '">Evidence ' + evPct + '%</span>'
         : '') +
       '</div>' +
-      primaryCta(c) +
-      '</div>' +
-      waitingOnHtml(c);
+      (notifCount
+        ? '<span class="case-bar-pill" style="background:var(--blue-faint);color:var(--blue-text);margin-left:auto"><i class="ti ti-bell"></i> ' +
+          notifCount +
+          ' new</span>'
+        : '') +
+      '</div>';
   }
 
   function renderTabs() {
@@ -329,12 +309,19 @@ var CaseShell = (function () {
   function renderFrame(tab) {
     var src = FRAME_MAP[tab];
     if (!src) return;
+    var extra = '';
+    try {
+      var params = new URLSearchParams(window.location.search);
+      if (params.get('request')) extra += '&request=' + encodeURIComponent(params.get('request'));
+    } catch (e) {}
     document.getElementById('tab-panel').innerHTML =
       '<iframe id="case-frame" class="case-frame" src="' +
       src +
       '?ref=' +
       encodeURIComponent(state.ref) +
-      '&embed=1" title="' +
+      '&embed=1' +
+      extra +
+      '" title="' +
       escapeHtml(tab) +
       '"></iframe>';
   }
@@ -412,6 +399,16 @@ var CaseShell = (function () {
         renderTabs();
       }
       switchTab(e.data.tab);
+    }
+    if (e.data.action === 'evidenceUpdate' && e.data.ref === state.ref) {
+      if (typeof syncCaseEvidencePct === 'function') {
+        syncCaseEvidencePct(e.data.ref, e.data.evidencePct, e.data.readyForDrafting);
+      }
+      loadCase(state.ref);
+      if (state.caseData) {
+        renderHeader(state.caseData);
+        renderTabs();
+      }
     }
   });
 

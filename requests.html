@@ -45,6 +45,8 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 .stat{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:12px}
 .stat-label{font-size:10px;text-transform:uppercase;color:var(--text3);letter-spacing:.06em}
 .stat-val{font-size:22px;font-weight:500;margin-top:4px}
+.notif-bar{background:var(--blue-faint);border:1px solid #BFDBFE;border-radius:var(--r2);padding:10px 14px;margin-bottom:14px;font-size:12px;color:var(--blue-text)}
+.notif-bar strong{display:block;margin-bottom:4px}
 .user-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.3);z-index:500;justify-content:flex-end;padding:52px 20px 0}
 .user-modal.open{display:flex}
 .user-dropdown{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);width:230px;overflow:hidden}
@@ -61,6 +63,7 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 <body>
 <script src="shared_data.js"></script>
 <script src="case_helpers.js"></script>
+<script src="evidence_filing.js"></script>
 
 <nav class="global-nav">
   <a href="index.html" class="gn-logo"><div class="gn-mark"><i class="ti ti-plane"></i></div><span class="gn-name">261Claims</span></a>
@@ -74,24 +77,89 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 var statusFilter='open';
 function escapeHtml(v){return String(v==null?'':v).replace(/[&<>"']/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch];});}
 function setStatusFilter(s){statusFilter=s;render();}
+
+function openRequest(id){
+  var r=getEvidenceRequests().find(function(x){return x.id===id;});
+  if(!r)return;
+  try{
+    sessionStorage.setItem('261c_active_request',r.id);
+    var c=getCase(r.ref);
+    if(c)sessionStorage.setItem('261c_case',JSON.stringify(c));
+  }catch(e){}
+  updateEvidenceRequest(r.id,'in-progress');
+  window.location.href='case.html?ref='+encodeURIComponent(r.ref)+'&tab=evidence&request='+encodeURIComponent(r.id);
+}
+
+function markRequestComplete(id){
+  var req=typeof completeEvidenceRequest==='function'?completeEvidenceRequest(id):null;
+  if(req&&typeof EvidenceFiling!=='undefined'){
+    EvidenceFiling.uploadFile({
+      categoryId:'dpm',
+      date:'2026-03-24',
+      filename:'HC1184_DailyOpsReview_24MAR24.pdf',
+      flights:['HC 1184'],
+      routes:'LTN-BCN-VLC',
+      uploadedBy:'EH',
+      uploadedByName:'E. Hughes',
+      source:'Manual',
+      size:62000,
+      notes:'Daily Operations Review uploaded on request completion'
+    });
+    EvidenceFiling.uploadFile({
+      categoryId:'max_ops',
+      date:'2026-03-14',
+      filename:'HC1184_Valencia_GroundHandling_14Mar2026.pdf',
+      flights:['HC 1184'],
+      routes:'VLC',
+      uploadedBy:'EH',
+      uploadedByName:'E. Hughes',
+      source:'Manual',
+      size:84000
+    });
+    try{
+      var evState=JSON.parse(sessionStorage.getItem('261c_evidence_AC-2026-0089')||'null');
+      if(evState){
+        evState.uploads=evState.uploads||{};
+        evState.uploads.ops_review='HC1184_DailyOpsReview_24MAR24.pdf';
+        evState.uploads.max_ops='HC1184_Valencia_GroundHandling_14Mar2026.pdf';
+        evState.uploads.dpm='HC1184_DailyOpsReview_24MAR24.pdf';
+        evState.pullState=evState.pullState||{};
+        evState.pullState.ops_review='done';
+        evState.pullState.max_ops='done';
+        evState.pullState.dpm='done';
+        evState.pullAllDone=true;
+        evState.evidencePct=100;
+        sessionStorage.setItem('261c_evidence_AC-2026-0089',JSON.stringify(evState));
+      }
+      if(typeof syncCaseEvidencePct==='function')syncCaseEvidencePct(req.ref,100,true);
+    }catch(e){}
+  }
+  sessionStorage.removeItem('261c_active_request');
+  render();
+}
+
 function render(){
   var uid=getActiveUser();
   var u=USERS[uid]||USERS.EH;
   var reqs=getEvidenceRequests();
+  var notifs=getNotifications(uid).filter(function(n){return !n.read;});
   var open=reqs.filter(function(r){return r.status!=='complete';});
   var complete=reqs.filter(function(r){return r.status==='complete';});
   var shown=statusFilter==='complete'?complete:statusFilter==='in-progress'?open.filter(function(r){return r.status==='in-progress';}):open.filter(function(r){return r.status==='open'||r.status==='in-progress';});
 
+  var notifHtml=notifs.length?'<div class="notif-bar"><strong><i class="ti ti-bell"></i> '+notifs.length+' new notification'+(notifs.length!==1?'s':'')+'</strong>'+notifs.slice(0,3).map(function(n){return escapeHtml(n.title)+' — '+escapeHtml(n.body);}).join('<br>')+'</div>':'';
+
   document.getElementById('page').innerHTML=
-    '<div class="page-hdr"><h1>Evidence requests · '+open.length+' open</h1><p>Queue for '+escapeHtml(u.name)+' — requests from legal teams where evidence packs have gaps</p></div>'
+    '<div class="page-hdr"><h1>Evidence requests · '+open.length+' open</h1><p>Queue for '+escapeHtml(u.name)+' — requests from legal teams where gold evidence packs have gaps</p></div>'
+    +notifHtml
     +'<div class="stats"><div class="stat"><div class="stat-label">Open</div><div class="stat-val">'+open.length+'</div></div><div class="stat"><div class="stat-label">Urgent</div><div class="stat-val" style="color:var(--red)">'+open.filter(function(r){return r.priority==='Urgent';}).length+'</div></div><div class="stat"><div class="stat-label">Complete</div><div class="stat-val" style="color:var(--green)">'+complete.length+'</div></div></div>'
     +'<div class="filter-bar"><button class="filter-chip '+(statusFilter==='open'?'active':'')+'" onclick="setStatusFilter(\'open\')">Open</button><button class="filter-chip '+(statusFilter==='in-progress'?'active':'')+'" onclick="setStatusFilter(\'in-progress\')">In progress</button><button class="filter-chip '+(statusFilter==='complete'?'active':'')+'" onclick="setStatusFilter(\'complete\')">Complete</button></div>'
     +(shown.length?shown.map(function(r){
       var done=r.status==='complete';
-      return '<div class="req-card"><div class="req-top"><div><div class="req-id">'+escapeHtml(r.id)+' · '+escapeHtml(r.ref)+'</div><div class="req-title">'+escapeHtml(r.claimant||r.ref)+' <span class="req-pill">'+escapeHtml(r.pack||'Bronze')+' pack</span><span class="req-pill '+(r.priority==='Urgent'?'urgent':'')+'">'+escapeHtml(r.priority||'Normal')+'</span></div><div class="req-meta">Requested by '+escapeHtml(r.requestedBy)+' · Due '+escapeHtml(r.due||'—')+'<br><strong>Missing:</strong> '+escapeHtml((r.missing||[]).join(', '))+'</div></div></div><div class="req-actions">'
-        +'<a class="btn-mini" href="case.html?ref='+encodeURIComponent(r.ref)+'&tab=evidence"><i class="ti ti-briefcase"></i> Open case</a>'
-        +'<a class="btn-mini" href="repository.html#evidence"><i class="ti ti-database"></i> Open in repository</a>'
-        +(done?'<span class="btn-mini done"><i class="ti ti-check"></i> Complete</span>':'<button class="btn-mini" onclick="updateEvidenceRequest(\''+r.id+'\',\'in-progress\');render()">Mark in progress</button><button class="btn-mini primary" onclick="updateEvidenceRequest(\''+r.id+'\',\'complete\');render()">Mark complete</button>')
+      var summary=(r.requestedBy||'Legal team')+' requests a '+(r.requestType||'evidence completion')+' for '+(r.requestDate||r.flight||'');
+      return '<div class="req-card"><div class="req-top"><div><div class="req-id">'+escapeHtml(r.id)+' · '+escapeHtml(r.ref)+'</div><div class="req-title">'+escapeHtml(r.claimant||r.ref)+' <span class="req-pill">Gold pack</span><span class="req-pill '+(r.priority==='Urgent'?'urgent':'')+'">'+escapeHtml(r.priority||'Normal')+'</span></div><div class="req-meta">'+escapeHtml(summary)+'<br>Requested by '+escapeHtml(r.requestedBy)+' · Due '+escapeHtml(r.due||'—')+'<br><strong>Missing:</strong> '+escapeHtml((r.missing||[]).join(', '))+'</div></div></div><div class="req-actions">'
+        +(done?'<span class="btn-mini done"><i class="ti ti-check"></i> Complete</span>':'<button class="btn-mini primary" onclick="openRequest(\''+r.id+'\')"><i class="ti ti-folder-open"></i> Open request</button><button class="btn-mini" onclick="markRequestComplete(\''+r.id+'\')"><i class="ti ti-circle-check"></i> Mark as complete</button>')
+        +'<a class="btn-mini" href="repository.html#evidence"><i class="ti ti-database"></i> Repository</a>'
         +'</div></div>';
     }).join(''):'<div class="req-card" style="text-align:center;color:var(--text3)">No requests in this filter.</div>');
   if(typeof renderGlobalNav==='function')renderGlobalNav();
@@ -105,6 +173,16 @@ function switchUser(id){
   ['SB','JP','KR','MD','PL','CG','IM','EH'].forEach(function(uid){var el=document.getElementById('ud-'+uid);if(el)el.classList.toggle('current',uid===id);});
   render();
 }
+(function seedDemoNotif(){
+  try{
+    if(sessionStorage.getItem('261c_seeded_eh_notif'))return;
+    var reqs=getEvidenceRequests();
+    if(reqs.some(function(r){return r.id==='REQ-001'&&r.status!=='complete';})){
+      pushNotification({to:'EH',type:'evidence-request',ref:'AC-2026-0089',requestId:'REQ-001',title:'New evidence request',body:'S. Booth requests a Daily Operations Review for 24MAR24 — Daniel Hartley',tab:'requests'});
+      sessionStorage.setItem('261c_seeded_eh_notif','1');
+    }
+  }catch(e){}
+})();
 window.addEventListener('load',render);
 </script>
 <script src="shared_nav.js"></script>

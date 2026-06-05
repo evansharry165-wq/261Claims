@@ -78,6 +78,13 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 .upload-form{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding:14px;border-top:1px solid var(--border);background:var(--surface2)}
 .upload-form label{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);display:block;margin-bottom:3px}
 .upload-form input,.upload-form select{width:100%;font-size:12px;padding:7px 9px;border:1px solid var(--border);border-radius:var(--r);font-family:var(--font)}
+.upload-form input.ai-filled{background:var(--blue-faint);border-color:#BFDBFE;color:var(--blue-text)}
+.ai-upload-bar{background:linear-gradient(135deg,var(--blue-faint),#fff);border:1px solid #BFDBFE;border-radius:var(--r2);padding:12px 14px;margin:14px;font-size:12px;color:var(--text2);line-height:1.55}
+.ai-upload-bar strong{color:var(--blue-text)}
+.ai-fields{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;padding:0 14px 14px;background:var(--surface2);border-top:1px solid var(--border)}
+.ai-fields label{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);display:block;margin-bottom:3px}
+.ai-fields input{width:100%;font-size:12px;padding:7px 9px;border:1px solid var(--border);border-radius:var(--r);font-family:var(--font)}
+.ai-fields input.ai-filled{background:var(--blue-faint);border-color:#BFDBFE;color:var(--blue-text)}
 .filing-sidebar{background:var(--surface);border:1px solid var(--border);border-radius:var(--r3);overflow:hidden}
 .filing-sidebar .panel-body{max-height:400px;overflow-y:auto}
 .view-toggle{display:flex;gap:4px}.view-toggle button{font-size:11px;padding:5px 10px;border:1px solid var(--border);background:var(--surface);border-radius:var(--r);cursor:pointer;font-family:var(--font);color:var(--text2)}
@@ -231,25 +238,73 @@ function renderFileTable(files,fromSearch){
   }).join('');
   return '<table class="file-table"><thead><tr><th>File</th><th>Tier</th><th>Date</th><th>Source</th><th>Size</th><th>Action</th></tr></thead><tbody>'+rows+'</tbody></table>';
 }
+var pendingUploadFile=null;
 function renderUploadPanel(){
   if(!isEvidenceTeam())return '';
   var catOpts=EvidenceFiling.FILING_CATEGORIES.map(function(c){return '<option value="'+c.id+'"'+(filingPath.categoryId===c.id?' selected':'')+'>'+escapeHtml(c.name)+'</option>';}).join('');
   var dateVal=filingPath.date||'';
-  return '<div class="upload-zone" id="upload-zone" onclick="document.getElementById(\'filing-file-input\').click()" ondragover="event.preventDefault();this.classList.add(\'dragover\')" ondragleave="this.classList.remove(\'dragover\')" ondrop="handleFilingDrop(event)"><i class="ti ti-cloud-upload"></i><p><strong>Upload evidence</strong> — drag files here or click to browse<br>Files are filed by category → year → month → day, mirroring SharePoint</p></div><input type="file" id="filing-file-input" class="filing-file-input" onchange="handleFilingFileSelect(event)"><div class="upload-form"><div><label>Category</label><select id="upload-category">'+catOpts+'</select></div><div><label>Operation date</label><input type="date" id="upload-date" value="'+dateVal+'"></div><div><label>Flight number(s)</label><input type="text" id="upload-flights" placeholder="HC 1184"></div><div><label>Route</label><input type="text" id="upload-route" placeholder="LTN-BCN"></div><div><label>Source</label><select id="upload-source"><option>Manual</option><option>API</option><option>SharePoint migration</option></select></div><div style="display:flex;align-items:flex-end"><button class="mini-btn primary" style="width:100%;justify-content:center;padding:9px" onclick="document.getElementById(\'filing-file-input\').click()"><i class="ti ti-upload"></i> Choose file</button></div></div>';
+  return '<div class="upload-zone" id="upload-zone" onclick="document.getElementById(\'filing-file-input\').click()" ondragover="event.preventDefault();this.classList.add(\'dragover\')" ondragleave="this.classList.remove(\'dragover\')" ondrop="handleFilingDrop(event)"><i class="ti ti-cloud-upload"></i><p><strong>Upload evidence</strong> — drag files here or click to browse<br>AI reads the document and fills filing details automatically. Review before confirming.</p></div><input type="file" id="filing-file-input" class="filing-file-input" onchange="handleFilingFileSelect(event)"><div id="ai-upload-review" style="display:none"><div class="ai-upload-bar"><strong><i class="ti ti-sparkles"></i> AI document analysis</strong> — review the extracted fields below, then confirm upload.</div><div class="ai-fields"><div><label>Category</label><input id="ai-doc-category" class="ai-filled" readonly></div><div><label>Doc type</label><input id="ai-doc-type" class="ai-filled" readonly></div><div><label>Flight</label><input id="ai-doc-flight" class="ai-filled"></div><div><label>From</label><input id="ai-doc-dep" class="ai-filled"></div><div><label>To</label><input id="ai-doc-arr" class="ai-filled"></div></div><div class="ai-fields" style="grid-template-columns:1fr 1fr 1fr 1fr 1fr"><div><label>Date</label><input id="ai-doc-date" type="date" class="ai-filled"></div><div><label>Route</label><input id="ai-doc-route" class="ai-filled"></div><div><label>Source</label><select id="ai-doc-source"><option>Manual</option><option>API</option><option>SharePoint migration</option></select></div><div style="grid-column:span 2;display:flex;align-items:flex-end;gap:6px"><button class="mini-btn primary" style="flex:1;justify-content:center;padding:9px" onclick="confirmAiUpload()"><i class="ti ti-check"></i> Confirm upload</button><button class="mini-btn" onclick="cancelAiUpload()">Cancel</button></div></div></div><div class="upload-form"><div><label>Category</label><select id="upload-category">'+catOpts+'</select></div><div><label>Operation date</label><input type="date" id="upload-date" value="'+dateVal+'"></div><div><label>Flight number(s)</label><input type="text" id="upload-flights" placeholder="HC 1184"></div><div><label>Route</label><input type="text" id="upload-route" placeholder="LTN-BCN"></div><div><label>Source</label><select id="upload-source"><option>Manual</option><option>API</option><option>SharePoint migration</option></select></div><div style="display:flex;align-items:flex-end"><button class="mini-btn primary" style="width:100%;justify-content:center;padding:9px" onclick="document.getElementById(\'filing-file-input\').click()"><i class="ti ti-upload"></i> Choose file</button></div></div>';
 }
-function handleFilingFileSelect(e){processFilingUpload(e.target.files[0]);e.target.value='';}
-function handleFilingDrop(e){e.preventDefault();document.getElementById('upload-zone').classList.remove('dragover');processFilingUpload(e.dataTransfer.files[0]);}
-function processFilingUpload(file){
+function aiParseFilename(name){
+  var n=String(name||'').replace(/\.[^.]+$/,'');
+  var out={categoryId:'tops',categoryLabel:'TOPS',docType:'Flight Details',flight:'',dep:'',arr:'',date:'',route:''};
+  var upper=n.toUpperCase();
+  if(upper.indexOf('EUROCONTROL')>=0||upper.indexOf('ATFM')>=0){out.categoryId='eurocontrol';out.categoryLabel='Eurocontrol';out.docType='Flight Data';}
+  else if(upper.indexOf('AIMS')>=0||upper.indexOf('CREW')>=0||upper.indexOf('FDP')>=0){out.categoryId='aims';out.categoryLabel='AIMS';out.docType='Crew Route';}
+  else if(upper.indexOf('DISCO')>=0){out.categoryId='disco';out.categoryLabel='DISCO';out.docType='Disruption Record';}
+  else if(upper.indexOf('DPM')>=0||upper.indexOf('OPSREVIEW')>=0||upper.indexOf('DAILYOPS')>=0){out.categoryId='dpm';out.categoryLabel='DPM';out.docType='Daily Ops Review';}
+  else if(upper.indexOf('METAR')>=0||upper.indexOf('SIGMET')>=0){out.categoryId='weather';out.categoryLabel='Weather';out.docType='METAR / SIGMET';}
+  else if(upper.indexOf('TOPS')>=0){out.categoryId='tops';out.categoryLabel='TOPS';out.docType='Flight Details';}
+  var fm=n.match(/([A-Z]{2}\s?\d{3,4})/i);if(fm)out.flight=fm[1].replace(/(\d+)/,' $1').trim().toUpperCase();
+  var rm=n.match(/([A-Z]{3})[_\-\s]+([A-Z]{3})/i);if(rm){out.dep=rm[1].toUpperCase();out.arr=rm[2].toUpperCase();out.route=out.dep+'-'+out.arr;}
+  var dm=n.match(/(\d{1,2})([A-Z]{3})(\d{2,4})/i);
+  if(dm){
+    var months={JAN:1,FEB:2,MAR:3,APR:4,MAY:5,JUN:6,JUL:7,AUG:8,SEP:9,OCT:10,NOV:11,DEC:12};
+    var mo=months[dm[2].toUpperCase()];
+    if(mo){var yr=dm[3].length===2?'20'+dm[3]:dm[3];out.date=yr+'-'+String(mo).padStart(2,'0')+'-'+String(dm[1]).padStart(2,'0');}
+  }
+  if(!out.date){var iso=n.match(/(\d{4})-(\d{2})-(\d{2})/);if(iso)out.date=iso[0];}
+  if(!out.date){var dmy=n.match(/(\d{1,2})([A-Za-z]+)(\d{4})/);if(dmy){var parsed=new Date(dmy[3],['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'].indexOf(dmy[2].slice(0,3).toLowerCase()),dmy[1]);if(!isNaN(parsed))out.date=parsed.toISOString().slice(0,10);}}
+  if(!out.flight&&upper.indexOf('EZY')>=0){var ez=n.match(/EZY\s?(\d{3,4})/i);if(ez)out.flight='EZY '+ez[1];}
+  if(!out.dep&&upper.indexOf('MAN')>=0)out.dep='MAN';
+  if(!out.arr&&upper.indexOf('BER')>=0)out.arr='BER';
+  if(out.dep&&out.arr&&!out.route)out.route=out.dep+'-'+out.arr;
+  return out;
+}
+function showAiReview(file,parsed){
+  pendingUploadFile=file;
+  document.getElementById('ai-upload-review').style.display='block';
+  document.getElementById('ai-doc-category').value=parsed.categoryLabel;
+  document.getElementById('ai-doc-type').value=parsed.docType;
+  document.getElementById('ai-doc-flight').value=parsed.flight;
+  document.getElementById('ai-doc-dep').value=parsed.dep;
+  document.getElementById('ai-doc-arr').value=parsed.arr;
+  document.getElementById('ai-doc-date').value=parsed.date||'';
+  document.getElementById('ai-doc-route').value=parsed.route;
+  document.getElementById('upload-category').value=parsed.categoryId;
+  if(parsed.date)document.getElementById('upload-date').value=parsed.date;
+  if(parsed.flight)document.getElementById('upload-flights').value=parsed.flight;
+  if(parsed.route)document.getElementById('upload-route').value=parsed.route;
+  pendingUploadFile._parsed=parsed;
+}
+function cancelAiUpload(){pendingUploadFile=null;document.getElementById('ai-upload-review').style.display='none';}
+function confirmAiUpload(){if(pendingUploadFile)processFilingUpload(pendingUploadFile,true);}
+function handleFilingFileSelect(e){var f=e.target.files[0];if(f){showAiReview(f,aiParseFilename(f.name));}e.target.value='';}
+function handleFilingDrop(e){e.preventDefault();document.getElementById('upload-zone').classList.remove('dragover');var f=e.dataTransfer.files[0];if(f)showAiReview(f,aiParseFilename(f.name));}
+function processFilingUpload(file,fromAi){
   if(!file||!isEvidenceTeam())return;
   var cat=document.getElementById('upload-category').value;
   var date=document.getElementById('upload-date').value;
+  if(fromAi)date=document.getElementById('ai-doc-date').value||date;
   if(!date){alert('Please set the operation date before uploading.');return;}
-  var flights=(document.getElementById('upload-flights').value||'').split(/[,;]/).map(function(s){return s.trim();}).filter(Boolean);
-  var route=document.getElementById('upload-route').value||'';
-  var source=document.getElementById('upload-source').value||'Manual';
+  var flights=(fromAi?document.getElementById('ai-doc-flight').value:document.getElementById('upload-flights').value||'').split(/[,;]/).map(function(s){return s.trim();}).filter(Boolean);
+  var route=fromAi?document.getElementById('ai-doc-route').value:document.getElementById('upload-route').value||'';
+  var source=(fromAi?document.getElementById('ai-doc-source'):document.getElementById('upload-source')).value||'Manual';
   var uid=getActiveUser(), u=USERS[uid]||{};
-  var uploaded=EvidenceFiling.uploadFile({categoryId:cat,date:date,filename:file.name,flights:flights,routes:route,source:source,size:file.size,uploadedBy:uid,uploadedByName:u.full||u.name});
+  EvidenceFiling.uploadFile({categoryId:cat,date:date,filename:file.name,flights:flights,routes:route,source:source,size:file.size,uploadedBy:uid,uploadedByName:u.full||u.name});
   var parts=EvidenceFiling.dateParts(date);
+  pendingUploadFile=null;
+  document.getElementById('ai-upload-review').style.display='none';
   setFilingPath({categoryId:cat,year:parts.year,month:parts.month,date:date});
 }
 function deleteFilingFile(id){if(confirm('Remove this file from the filing system?')){EvidenceFiling.deleteFile(id);render();}}

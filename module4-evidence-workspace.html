@@ -386,11 +386,11 @@ var DT=[
 /* auto: API-ready pull (labelled, hollow) */
 var LIB={
   /* ─ ALWAYS REQUIRED ─ */
-  tops:      {name:'TOPS — Flight Details & Legislation Report',  tier:'K', why:'Primary operational flight record. Confirms scheduled and actual times, delay codes, and the EC261 legislation evidence report. Central to every evidence pack.',                                               src:'Internal — TOPS',          link:null, auto:true,  api:'Auto-pull by flight number — TOPS API connection pending'},
+  tops:      {name:'TOPS — Operational Evidence Pack',            tier:'K', why:'Primary operational record for the disruption. Includes flight details for all legs (outbound, inbound, diverted and repositioning), legislation evidence reports, and airport details for every airport involved.', components:['Flight details — outbound, inbound, diverted & repositioning','Legislation evidence reports','Airport details — LTN, BCN & VLC'], src:'Internal — TOPS', link:null, auto:true,  api:'Auto-pull by flight number — TOPS API connection pending'},
   disco:     {name:'DISCO — Disruption Record',                   tier:'K', why:'Operational disruption log. Records the sequence of events, decisions, and communications during the disruption. Core narrative source for every pack.',                                                           src:'Internal — DISCO',         link:null, auto:true,  api:'Auto-pull by flight number and date — DISCO API connection pending'},
-  aims:      {name:'AIMS — Crew Route & FDP Tables',              tier:'K', why:'Crew flight duty period data. Confirms planned and actual crew route, report time, max FDP, and whether duty limits were observed. Required on every pack.',                                                       src:'Internal — AIMS',          link:null, auto:true,  api:'Auto-pull by crew identifiers and date — AIMS API connection pending'},
+  aims:      {name:'AIMS — Crew Route & FDP',                     tier:'K', why:'Crew route, duty tables and FDP calculation. Confirms planned and actual crew route, report time, max FDP, buffer calculation, and whether duty limits were observed.', components:['Crew route tables','FDP calculation & buffer'], src:'Internal — AIMS',          link:null, auto:true,  api:'Auto-pull by crew identifiers and date — AIMS API connection pending'},
   safetynet: {name:'SafetyNet Reports',                           tier:'K', why:'Safety and operational event records. Required on every evidence pack and for all diversions regardless of disruption type.',                                                                                      src:'Internal — SafetyNet',     link:null, auto:true,  api:'Auto-pull by flight number — SafetyNet API connection pending'},
-  eurocontrol:{name:'Eurocontrol — ATFM Regulations & Flight Data',tier:'K',why:'Confirms ATC flow management slot restrictions and network-level disruption data. Central to any ATC or airspace extraordinary circumstances argument.',                                                          src:'Eurocontrol NOP',          link:'https://www.public.nm.eurocontrol.int/PUBPORTAL/gateway/spec/', auto:true, api:'Auto-pull by departure airport and date — Eurocontrol API connection pending'},
+  eurocontrol:{name:'Eurocontrol — Oplogs, Flight Data & Regulations',tier:'K',why:'Operator logs, network flight data and ATFM regulations. Central to any ATC or airspace extraordinary circumstances argument. Additional NOP reference documents may be required.', components:['Operator logs (Oplogs)','Network flight data','ATFM regulations','Additional NOP reference documents'], src:'Eurocontrol NOP', link:'https://www.public.nm.eurocontrol.int/PUBPORTAL/gateway/spec/', auto:true, api:'Auto-pull by departure airport and date — Eurocontrol API connection pending'},
   /* ─ SECONDARY ─ */
   connected: {name:'Connected Portal — Flight Plans & Scratchpads',tier:'S', why:'Pre-departure flight planning documents. Shows crew awareness of conditions before departure and operational planning decisions.',                                                                               src:'Internal — Connected Portal',link:null,auto:true,  api:'Auto-pull by flight number — Connected Portal API connection pending'},
   network_out:{name:'Network Outlook Brief',                       tier:'S', why:'Eurocontrol pre-departure network brief confirming anticipated disruptions across the network on the day of the flight.',                                                                                        src:'Eurocontrol NOP',          link:'https://www.public.nm.eurocontrol.int/PUBPORTAL/gateway/spec/', auto:true, api:'Auto-pull by date — Eurocontrol API connection pending'},
@@ -519,6 +519,61 @@ var summaryOpen=false;
 var audit=[];
 var pendingUpload=null;
 var requestSent=false;
+var pullAllDone=false;
+var activeRequestId=null;
+
+function evidenceStateKey(){return '261c_evidence_'+C.ref;}
+function saveWorkspaceState(){
+  var state={D:D,primaryType:primaryType,secondaryType:secondaryType,dtMode:dtMode,uploads:uploads,pullState:pullState,summaryOpen:summaryOpen,requestSent:requestSent,pullAllDone:pullAllDone,evidencePct:getReadiness().pct,audit:audit.slice(-30)};
+  try{sessionStorage.setItem(evidenceStateKey(),JSON.stringify(state));}catch(e){}
+  syncEvidenceToCase();
+}
+function loadWorkspaceState(){
+  try{
+    var st=JSON.parse(sessionStorage.getItem(evidenceStateKey())||'null');
+    if(!st)return;
+    if(st.D)D=Object.assign(D,st.D);
+    if(st.primaryType)primaryType=st.primaryType;
+    if(st.secondaryType)secondaryType=st.secondaryType;
+    if(st.dtMode)dtMode=st.dtMode;
+    if(st.uploads)uploads=st.uploads;
+    if(st.pullState)pullState=st.pullState;
+    if(typeof st.summaryOpen==='boolean')summaryOpen=st.summaryOpen;
+    if(st.requestSent)requestSent=st.requestSent;
+    if(st.pullAllDone)pullAllDone=st.pullAllDone;
+    if(st.audit&&st.audit.length)audit=st.audit;
+  }catch(e){}
+}
+function syncEvidenceToCase(){
+  var r=getReadiness();
+  var pack=packReadiness();
+  var ready=pack.gold>=100;
+  try{
+    var stored=JSON.parse(sessionStorage.getItem('261c_case')||'null');
+    if(stored&&stored.ref===C.ref){
+      stored.evidencePct=r.pct;
+      if(ready){stored.evidenceReady=true;stored.classification='DRAFTING';}
+      sessionStorage.setItem('261c_case',JSON.stringify(stored));
+    }
+    var aero=JSON.parse(sessionStorage.getItem('aeroCaseData')||'null');
+    if(aero&&aero.ref===C.ref){aero.evidencePct=r.pct;sessionStorage.setItem('aeroCaseData',JSON.stringify(aero));}
+  }catch(e){}
+  if(window.parent!==window){
+    window.parent.postMessage({type:'case-shell',action:'evidenceUpdate',ref:C.ref,evidencePct:r.pct,readyForDrafting:ready},'*');
+  }
+}
+function getMissingItems(){
+  var pack=packReadiness();
+  return pack.keyMissing.concat(pack.secMissing).map(function(id){return {id:id,name:LIB[id]?LIB[id].name:id,manual:!(LIB[id]&&LIB[id].auto)};});
+}
+function moveToDrafting(){
+  syncEvidenceToCase();
+  if(window.parent!==window&&window.parent.CaseShell){
+    window.parent.CaseShell.switchTab('documents');
+    return;
+  }
+  window.location.href='case.html?ref='+encodeURIComponent(C.ref)+'&tab=documents';
+}
 
 var D={
   flightNum:fm?fm[1]:'', dep:am?am[1]:'', arr:am?am[2]:'',
@@ -563,9 +618,12 @@ function packReadiness(){
   var key=getList('K'), secondary=getList('S');
   var keyDone=key.filter(function(id){return uploads[id]||pullState[id]==='done';}).length;
   var secDone=secondary.filter(function(id){return uploads[id]||pullState[id]==='done';}).length;
+  var goldTotal=key.length+secondary.length;
+  var goldDone=keyDone+secDone;
   return {
-    bronze:key.length?Math.round(keyDone/key.length*100):0,
-    gold:(key.length+secondary.length)?Math.round((keyDone+secDone)/(key.length+secondary.length)*100):0,
+    gold:goldTotal?Math.round(goldDone/goldTotal*100):0,
+    goldDone:goldDone,
+    goldTotal:goldTotal,
     keyMissing:key.filter(function(id){return !(uploads[id]||pullState[id]==='done');}),
     secMissing:secondary.filter(function(id){return !(uploads[id]||pullState[id]==='done');})
   };
@@ -733,17 +791,36 @@ function renderMain(){
     +'</div>'
     +'</div></div>';
 
+  /* request banner for evidence team */
+  var requestBanner='';
+  if(activeRequestId){
+    try{
+      var reqs=JSON.parse(sessionStorage.getItem('261c_evidence_requests')||'[]');
+      var seed=[{id:'REQ-001',ref:'AC-2026-0089',claimant:'Daniel Hartley',requestedBy:'S. Booth',requestType:'Daily Operations Review',requestDate:'24MAR24',missing:['Daily Operations Review for 24MAR24','Valencia ground handling records','Passenger care evidence']}];
+      var allReqs=seed.concat(reqs);
+      var actReq=allReqs.find(function(r){return r.id===activeRequestId;});
+      if(actReq){
+        requestBanner='<div style="background:var(--blue-faint);border:1px solid #BFDBFE;border-radius:var(--r3);padding:12px 16px;margin-bottom:14px"><div style="font-size:13px;font-weight:500;color:var(--blue-text);margin-bottom:4px"><i class="ti ti-user-question"></i> Evidence request</div><div style="font-size:12px;color:var(--text2);line-height:1.55"><strong>'+actReq.requestedBy+'</strong> requests a <strong>'+(actReq.requestType||'evidence completion')+'</strong> for <strong>'+(actReq.requestDate||actReq.flight||'')+'</strong> — '+actReq.claimant+' ('+actReq.ref+')</div><div style="font-size:11px;color:var(--text3);margin-top:6px"><strong>Still needed:</strong> '+(actReq.missing||[]).join(' · ')+'</div></div>';
+      }
+    }catch(e){}
+  }
+
   /* evidence section */
   var opsPanel='';
   if(primaryType){
+    var missing=getMissingItems();
+    var missingBanner='';
+    if(pullAllDone&&missing.length){
+      missingBanner='<div style="background:var(--amber-faint);border:1px solid #FDE68A;border-radius:var(--r2);padding:12px 14px;margin-bottom:12px"><div style="font-size:12px;font-weight:500;color:var(--amber);margin-bottom:6px"><i class="ti ti-alert-triangle"></i> Still required after pull — upload yourself or request from evidence team</div><ul style="margin:0;padding-left:18px;font-size:11px;color:var(--text2);line-height:1.7">'+missing.map(function(m){return '<li>'+m.name+(m.manual?' <span style="color:var(--text3)">(manual upload)</span>':'')+'</li>';}).join('')+'</ul><div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap"><button class="btn-sm" onclick="requestEvidenceCompletion()" style="border:1px solid var(--border2);background:var(--surface);color:var(--text2)"><i class="ti ti-user-question"></i> Request from evidence team</button></div></div>';
+    }else if(pullAllDone&&!missing.length){
+      missingBanner='<div style="background:var(--green-faint);border:1px solid #BBF7D0;border-radius:var(--r2);padding:12px 14px;margin-bottom:12px;font-size:12px;color:var(--green)"><i class="ti ti-check"></i> All evidence gathered — gold pack complete. Ready to move to drafting.</div>';
+    }
     opsPanel='<div class="card"><div class="card-body open">'
-      +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">'
-      +'<div style="border:1px solid #DDD6FE;background:#FAF5FF;border-radius:var(--r2);padding:11px 12px"><div style="font-size:12px;font-weight:500;margin-bottom:4px"><i class="ti ti-award"></i> Bronze pack</div><div style="font-size:22px;font-weight:500;color:var(--purple)">'+pack.bronze+'%</div><div style="font-size:11px;color:var(--text2)">Core evidence needed for quick legal review</div></div>'
-      +'<div style="border:1px solid #FDE68A;background:#FFFBEB;border-radius:var(--r2);padding:11px 12px"><div style="font-size:12px;font-weight:500;margin-bottom:4px"><i class="ti ti-certificate"></i> Gold pack</div><div style="font-size:22px;font-weight:500;color:var(--amber)">'+pack.gold+'%</div><div style="font-size:11px;color:var(--text2)">Defence-ready evidence and explanations</div></div>'
+      +'<div style="border:1px solid #FDE68A;background:#FFFBEB;border-radius:var(--r2);padding:14px 16px;margin-bottom:12px"><div style="font-size:13px;font-weight:500;margin-bottom:4px;display:flex;align-items:center;gap:6px"><i class="ti ti-certificate" style="color:var(--amber)"></i> Gold evidence pack</div><div style="font-size:28px;font-weight:500;color:var(--amber);margin-bottom:4px">'+pack.gold+'%</div><div style="font-size:11px;color:var(--text2);line-height:1.55">261Claims targets the gold pack on every case — the most complete aviation defence. Higher collection demand, but the strongest position for legal.</div><div style="font-size:10px;color:var(--text3);margin-top:6px">'+pack.goldDone+' of '+pack.goldTotal+' key & secondary documents on file</div></div>'
+      +'<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn-sm btn-navy" onclick="pullAllEvidence()"><i class="ti ti-cloud-download"></i> Pull all evidence</button><button class="btn-sm btn-navy" onclick="pullFromRepository()" style="background:var(--green);border-color:var(--green)"><i class="ti ti-database"></i> Pull from repository</button><button class="btn-sm" onclick="requestEvidenceCompletion()" style="border:1px solid var(--border2);background:var(--surface2);color:var(--text2)"><i class="ti ti-user-question"></i> Request evidence completion</button><a class="btn-sm" href="repository.html" onclick="sessionStorage.setItem(\'261c_repo_area\',\'evidence\')" style="border:1px solid var(--border2);background:var(--surface2);color:var(--text2);text-decoration:none"><i class="ti ti-database"></i> Open filing system</a>'
+      +(pack.gold>=100?'<button class="btn-sm btn-navy" onclick="moveToDrafting()" style="background:var(--purple);border-color:var(--purple)"><i class="ti ti-file-pencil"></i> Move to drafting</button>':'')
       +'</div>'
-      +'<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn-sm btn-navy" onclick="pullAllEvidence()"><i class="ti ti-cloud-download"></i> Pull all evidence</button><button class="btn-sm btn-navy" onclick="pullFromRepository()" style="background:var(--green);border-color:var(--green)"><i class="ti ti-database"></i> Pull from repository</button><button class="btn-sm" onclick="requestEvidenceCompletion()" style="border:1px solid var(--border2);background:var(--surface2);color:var(--text2)"><i class="ti ti-user-question"></i> Request evidence completion</button><a class="btn-sm" href="repository.html" onclick="sessionStorage.setItem(\'261c_repo_area\',\'evidence\')" style="border:1px solid var(--border2);background:var(--surface2);color:var(--text2);text-decoration:none"><i class="ti ti-database"></i> Open filing system</a></div>'
       +(requestSent?'<div style="margin-top:9px;font-size:11px;color:var(--green);background:var(--green-faint);border:1px solid #BBF7D0;border-radius:var(--r);padding:7px 9px"><i class="ti ti-check"></i> Evidence completion request sent to Evidence Handling queue.</div>':'')
-      +(pack.keyMissing.length||pack.secMissing.length?'<div style="margin-top:10px;font-size:11px;color:var(--text2)"><strong>Missing:</strong> '+pack.keyMissing.concat(pack.secMissing).map(function(id){return LIB[id]?LIB[id].name:id;}).join('; ')+'</div>':'<div style="margin-top:10px;font-size:11px;color:var(--green)">All Bronze/Gold pack evidence is currently on file.</div>')
       +'</div></div>';
   }
   var evHtml='';
@@ -781,6 +858,10 @@ function renderMain(){
       var repoMatch=getRepositoryMatch(id);
       var repoRow=(!isUp&&repoMatch)?'<div class="ev-api-note" style="color:var(--green)"><i class="ti ti-database" style="font-size:9px"></i> On file in repository: '+repoMatch.filename+' — click Pull from repository</div>':'';
       var apiRow=(item.auto&&!isUp&&!repoMatch)?'<div class="ev-api-note">'+item.api+'</div>':'';
+      var compRow='';
+      if(item.components&&item.components.length){
+        compRow='<div style="padding:0 12px 8px 29px;font-size:10px;color:var(--text3);line-height:1.6">'+item.components.map(function(c){return '<span style="display:inline-block;background:var(--surface3);border-radius:10px;padding:2px 7px;margin:2px 4px 2px 0">'+c+'</span>';}).join('')+'</div>';
+      }
       return '<div class="ev-item'+(isUp?' ev-uploaded':(item.auto?' ev-api':''))+'">'
         +'<div class="ev-row">'
         +'<div class="ev-dot '+dotCls+'"></div>'
@@ -791,7 +872,7 @@ function renderMain(){
         +'</div>'
         +'<div class="ev-actions">'+actionBtn+'</div>'
         +'</div>'
-        +fileRow+repoRow+apiRow
+        +fileRow+repoRow+apiRow+compRow
         +'</div>';
     }
 
@@ -831,6 +912,7 @@ function renderMain(){
       +'</div></div>'
       +'</div>'
       +'<div class="card-body open">'
+      +(pullAllDone?missingBanner:'')
       +'<div class="prog-track"><div class="prog-fill" style="width:'+r.pct+'%"></div></div>'
       +'<div class="prog-stats">'
       +'<div class="prog-stat"><strong style="color:var(--green)">'+r.up+'</strong> on file</div>'
@@ -844,7 +926,8 @@ function renderMain(){
       +'</div></div>';
   }
 
-  m.innerHTML=hdr+summary+typeCard+opsPanel+evHtml;
+  m.innerHTML=requestBanner+hdr+summary+typeCard+opsPanel+evHtml;
+  saveWorkspaceState();
 }
 
 function renderAudit(){
@@ -918,6 +1001,7 @@ function pullAllEvidence(){
       pullState[id]='done';
     }
   });
+  pullAllDone=true;
   log('Pull all evidence completed — API sources and repository filing matches attached where available','pull');
   render();
 }
@@ -930,10 +1014,13 @@ function requestEvidenceCompletion(){
     ref:C.ref,
     claimant:C.name,
     flight:C.flightNum||C.flight,
-    pack:pack.gold>=100?'Gold review':'Gold',
+    pack:'Gold',
     status:'open',
     priority:C.value&&String(C.value).indexOf('39,000')>=0?'Urgent':'Normal',
     due:C.cprDaysLeft?C.cprDaysLeft+'d':'Next CPR date',
+    requestedBy:C.user||'S. Booth',
+    requestType:'Evidence completion',
+    requestDate:C.flightDate||'',
     missing:missing,
     note:'Legal user requested evidence completion after Pull all in case workspace.'
   };
@@ -941,6 +1028,7 @@ function requestEvidenceCompletion(){
     var reqs=JSON.parse(sessionStorage.getItem('261c_evidence_requests')||'[]');
     reqs.unshift(req);
     sessionStorage.setItem('261c_evidence_requests',JSON.stringify(reqs.slice(0,30)));
+    sessionStorage.setItem('261c_notifications',JSON.stringify(JSON.parse(sessionStorage.getItem('261c_notifications')||'[]').concat([{id:'N-'+Date.now(),to:'EH',type:'evidence-request',ref:C.ref,requestId:req.id,title:'New evidence request',body:(req.requestedBy||'Legal team')+' requests completion for '+C.name,time:new Date().toLocaleString('en-GB',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}),read:false}]).slice(0,40)));
   }catch(e){}
   requestSent=true;
   log('Evidence completion request sent to Evidence Handling queue','action');
@@ -972,8 +1060,14 @@ try{
   if(C.date) D.flightDate = C.date;
 }catch(e){}
 if(C.disruptionType) primaryType=C.disruptionType;
+try{
+  var urlParams=new URLSearchParams(window.location.search);
+  activeRequestId=urlParams.get('request')||sessionStorage.getItem('261c_active_request')||null;
+  if(activeRequestId)sessionStorage.setItem('261c_active_request',activeRequestId);
+}catch(e){}
+loadWorkspaceState();
 /* ── Init ── */
-log('Evidence module opened — '+C.name+' v. TestAirways','create');
+if(!audit.length)log('Evidence module opened — '+C.name+' v. TestAirways','create');
 render();
 </script>
 
@@ -1057,12 +1151,17 @@ setTimeout(_navInit,150);
 function toggleUserMenu(){var m=document.getElementById('user-modal');if(m)m.classList.toggle('open');}
 function closeMenu(){var m=document.getElementById('user-modal');if(m)m.classList.remove('open');}
 function switchUser(id){
+  saveWorkspaceState();
   if(typeof setActiveUser==='function')setActiveUser(id);
   sessionStorage.removeItem('261c_lang');
-  sessionStorage.removeItem('261c_case');
-  sessionStorage.removeItem('aeroCaseData');
+  var isEmbed=new URLSearchParams(window.location.search).get('embed')==='1';
+  if(!isEmbed){
+    sessionStorage.removeItem('261c_case');
+    sessionStorage.removeItem('aeroCaseData');
+  }
   closeMenu();
   if(window.location.pathname.indexOf('workspace')>=0){var ep=new URLSearchParams(window.location.search);if(ep.get('embed')!=='1'){window.location.href='index.html';return;}}
+  if(id==='EH'&&isEmbed){window.parent.location.href='index.html';return;}
   var u=typeof USERS!=='undefined'?USERS[id]:null;
   if(u){
     var av=document.getElementById('nav-av'); if(av)av.textContent=u.initials;

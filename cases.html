@@ -164,12 +164,12 @@ function renderCases(){
   document.getElementById('hdr-sub').textContent=u.name+' · sorted by '+(params.sort==='urgency'?'CPR urgency':params.sort);
 
   var urgN=cases.filter(function(c){return c.cprDaysLeft<=7;}).length;
-  var blockedN=cases.filter(function(c){return getWaitingOnSummary(c);}).length;
+  var draftingN=cases.filter(function(c){return typeof getEffectiveEvidencePct==='function'&&getEffectiveEvidencePct(c)>=100&&c.stage==='evidence';}).length;
   renderFilters();
   document.getElementById('stat-chips').innerHTML=
     '<span class="stat-chip">'+cases.length+' total</span>'
     +(urgN?'<span class="stat-chip urgent">'+urgN+' urgent</span>':'')
-    +(blockedN?'<span class="stat-chip blocked">'+blockedN+' blocked</span>':'');
+    +(draftingN?'<span class="stat-chip" style="background:var(--purple-faint);color:var(--purple)">'+draftingN+' ready to draft</span>':'');
 
   var tbody=document.getElementById('tbody');
   var empty=document.getElementById('empty-state');
@@ -178,7 +178,8 @@ function renderCases(){
 
   tbody.innerHTML=cases.map(function(c){
     var action=getNextAction(c);
-    var blocker=getWaitingOnSummary(c)||(c.stage==='evidence'&&c.evidencePct<70?'Evidence '+c.evidencePct+'%':'');
+    var evPct=typeof getEffectiveEvidencePct==='function'?getEffectiveEvidencePct(c):c.evidencePct||0;
+    var blocker=c.stage==='evidence'?(evPct>=100?'Drafting':('Evidence '+evPct+'%')):(c.classification==='DRAFTING'?'Drafting':'');
     var urg=daysUrgency(c.cprDaysLeft);
     var sc=STAGE_COLORS[c.stage]||STAGE_COLORS.resolve;
     var sl=t('stage_'+c.stage)||c.stage;
