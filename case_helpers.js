@@ -153,7 +153,7 @@ var EVIDENCE_REQUEST_SEED = [
     ref: 'AC-2026-0091',
     claimant: 'Rebecca Walsh',
     flight: 'HC 307 — MAN → AMS',
-    pack: 'Bronze',
+    pack: 'Gold',
     priority: 'Normal',
     due: '7d',
     status: 'open',

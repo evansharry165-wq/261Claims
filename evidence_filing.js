@@ -224,7 +224,6 @@
     var secCount = files.filter(function (f) { return f.tier === 'S'; }).length;
     var totalKey = 8;
     var totalSec = 6;
-    var bronze = Math.min(100, Math.round((keyCount / totalKey) * 100));
     var gold = Math.min(100, Math.round(((keyCount + secCount) / (totalKey + totalSec)) * 100));
     return {
       date: dateIso,
@@ -232,11 +231,9 @@
       fileCount: files.length,
       flights: Object.keys(flights),
       routes: files.length ? files[0].routes : '',
-      bronze: bronze,
       gold: gold,
-      bronzeReady: bronze >= 80,
       goldReady: gold >= 80,
-      completion: Math.round((bronze + gold) / 2),
+      completion: gold,
     };
   }
 
