@@ -569,6 +569,14 @@ function calcBuffer(){
 }
 
 /* ── Verdict ── */
+function evidenceConfidence(id){
+  var item=LIB[id]||{};
+  if(uploads[id]||pullState[id]==='done')return {label:'High confidence',col:'var(--green)',bg:'var(--green-faint)'};
+  if(item.auto)return {label:'API pending',col:'var(--blue-text)',bg:'var(--blue-faint)'};
+  if(item.tier==='K')return {label:'Required before drafting',col:'var(--red)',bg:'var(--red-faint)'};
+  return {label:'Manual review',col:'var(--amber)',bg:'var(--amber-faint)'};
+}
+
 function getVerdict(){
   if(!primaryType)return null;
   var r=getReadiness();
@@ -735,6 +743,8 @@ function renderMain(){
       var upTag=isUp?'<span class="ev-tag tag-up"><i class="ti ti-check" style="font-size:9px"></i> On file</span>':'';
       var srcHtml=item.link?('<a href="'+item.link+'" target="_blank" rel="noopener">'+item.src+' ↗</a>'):item.src;
       var apiPill=item.auto?'<span class="ev-api-pill"><i class="ti ti-plug" style="font-size:9px"></i>API ready</span>':'';
+      var conf=evidenceConfidence(id);
+      var confPill='<span class="ev-api-pill" style="background:'+conf.bg+';color:'+conf.col+'"><i class="ti ti-brain" style="font-size:9px"></i>'+conf.label+'</span>';
       var actionBtn='';
       if(isUp) actionBtn='<button class="btn-ev done"><i class="ti ti-check"></i> On file</button>';
       else if(isPulling) actionBtn='<button class="btn-ev api-btn"><i class="ti ti-loader-2" style="animation:spin 1s linear infinite"></i> Pulling…</button>';
@@ -748,7 +758,7 @@ function renderMain(){
         +'<div class="ev-info">'
         +'<div class="ev-name">'+item.name+tierTag+upTag+'</div>'
         +'<div class="ev-why">'+item.why+'</div>'
-        +'<div class="ev-meta"><div class="ev-source"><i class="ti ti-database" style="font-size:10px"></i>'+srcHtml+'</div>'+apiPill+'</div>'
+        +'<div class="ev-meta"><div class="ev-source"><i class="ti ti-database" style="font-size:10px"></i>'+srcHtml+'</div>'+apiPill+confPill+'</div>'
         +'</div>'
         +'<div class="ev-actions">'+actionBtn+'</div>'
         +'</div>'

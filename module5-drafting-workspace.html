@@ -837,6 +837,12 @@ Date: ${today()}`;
 var currentDocId = null;
 var docEditMode = {};
 var docApproved = {};
+var docVersions = {};
+var caseResolved = false;
+function addVersion(id,label){
+  docVersions[id]=docVersions[id]||[];
+  docVersions[id].unshift({label:label,time:new Date().toLocaleString('en-GB',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}),by:C.assignedTo});
+}
 
 function openDoc(id){
   currentDocId = id;
@@ -902,6 +908,11 @@ function renderWorkspace(){
     : hasContent ? (isEdit ? 'Editing…' : 'Draft — pending solicitor sign-off')
     : 'Not yet generated';
   const statusCls = isApproved ? 'status-text approved' : 'status-text';
+  const versions = docVersions[id]||[];
+  const versionPanel = `<div class="points-ref" style="margin-bottom:14px"><div class="pr-header"><i class="ti ti-history" style="font-size:13px;color:var(--text3)"></i>Document version history</div>`
+    +(versions.length?versions.map(v=>`<div class="pr-item"><div class="pr-dot pr-dot-g"></div><div><div class="pr-num">${v.label}</div><div class="pr-ev">${v.time} · ${v.by}</div></div></div>`).join(''):`<div class="pr-item"><div class="pr-dot pr-dot-a"></div><div><div class="pr-num">No versions saved yet</div><div class="pr-ev">Generate or edit this document to create a version.</div></div></div>`)
+    +`</div>`;
+  const resolutionPanel = `<div class="points-ref"><div class="pr-header"><i class="ti ti-archive" style="font-size:13px;color:var(--text3)"></i>Resolution and repository</div><div class="pr-item"><div class="pr-dot ${caseResolved?'pr-dot-g':'pr-dot-a'}"></div><div style="flex:1"><div class="pr-num">${caseResolved?'Closed and stored in repository':'Ready to close after final document approval'}</div><div class="pr-ev">Outcome, final documents, evidence pack, and AI rationale are retained for search and future similar-case recommendations.</div></div><button class="btn-action ${caseResolved?'success':'primary'}" onclick="resolveCase()">${caseResolved?'Stored':'Close & store'}</button></div></div>`;
 
   m.innerHTML = `
     <div class="case-hdr">
@@ -927,10 +938,12 @@ function renderWorkspace(){
       </div>
     </div>
 
-    <div class="points-ref">
+    ${versionPanel}
+    <div class="points-ref" style="margin-bottom:14px">
       <div class="pr-header"><i class="ti ti-list-check" style="font-size:13px;color:var(--text3)"></i>Points of claim — reference</div>
       ${renderPointsRef()}
-    </div>`;
+    </div>
+    ${resolutionPanel}`;
 }
 
 function renderPointsRef(){
@@ -977,6 +990,7 @@ async function generateDoc(id){
   }
 
   docStates[id].generated = true;
+  addVersion(id,'AI draft generated');
   docStates[id].status = 'draft';
   renderWorkspace();
   updateDocBtn(id,'draft');
@@ -995,6 +1009,7 @@ function saveEdit(id){
   const el=document.getElementById('letter-'+id);
   if(el) docStates[id].edits = el.innerText||el.textContent||docStates[id].edits;
   docEditMode[id] = false;
+  addVersion(id,'Solicitor edits saved');
   renderWorkspace();
 }
 
@@ -1003,7 +1018,19 @@ function approveDoc(id){
   if(el) docStates[id].edits = el.innerText||el.textContent||docStates[id].edits||buildDoc(id);
   docApproved[id] = true;
   docStates[id].status = 'approved';
+  addVersion(id,'Approved and signed off');
   updateDocBtn(id,'approved');
+  renderWorkspace();
+}
+
+
+function resolveCase(){
+  caseResolved=true;
+  try{
+    var repo=JSON.parse(sessionStorage.getItem('261c_repository')||'[]');
+    repo.unshift({ref:C.ref,claimant:C.name,outcome:'Defended / response issued',stored:new Date().toISOString(),documents:Object.keys(docApproved).filter(k=>docApproved[k]),value:C.value});
+    sessionStorage.setItem('261c_repository',JSON.stringify(repo.slice(0,20)));
+  }catch(e){}
   renderWorkspace();
 }
 
