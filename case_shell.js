@@ -96,6 +96,23 @@ var CaseShell = (function () {
     if (state.tab === 'activity') renderActivity();
   }
 
+  function demoStudyStripHtml(c) {
+    var studyId = null;
+    try {
+      studyId = sessionStorage.getItem('261c_active_demo_study');
+    } catch (e) {}
+    if (!studyId || typeof getDemoStudy !== 'function') return '';
+    var study = getDemoStudy(studyId);
+    if (!study || (study.ref && study.ref !== c.ref)) return '';
+    return (
+      '<div class="demo-study-strip"><i class="ti ti-player-play" style="color:var(--blue-text)"></i> <strong>Demo:</strong> ' +
+      escapeHtml(study.title) +
+      ' — ' +
+      escapeHtml(study.narrative) +
+      ' <a href="index.html" onclick="try{sessionStorage.removeItem(\'261c_active_demo_study\')}catch(e){}">All demos</a></div>'
+    );
+  }
+
   function renderHeader(c) {
     var J = typeof getJurisdiction === 'function' ? getJurisdiction(c.jurisdiction) : { name: '', flag: '' };
     var urg = typeof daysUrgency === 'function' ? daysUrgency(c.cprDaysLeft) : 'ok';
@@ -145,7 +162,8 @@ var CaseShell = (function () {
           notifCount +
           ' new</span>'
         : '') +
-      '</div>';
+      '</div>' +
+      demoStudyStripHtml(c);
   }
 
   function renderTabs() {

@@ -46,13 +46,22 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 .search-input:focus{outline:none;border-color:var(--blue)}
 .btn-new{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:var(--r);background:var(--navy);color:#fff;font-size:12px;font-weight:500;text-decoration:none;border:none;cursor:pointer;font-family:var(--font)}
 .btn-new:hover{opacity:0.9}
-.demo-banner{background:linear-gradient(135deg,var(--blue-faint),#fff);border:1px solid #BFDBFE;border-radius:var(--r2);padding:12px 14px;margin-bottom:16px;display:flex;align-items:flex-start;gap:12px}
-.demo-banner.hidden{display:none}
-.demo-text{flex:1;font-size:12px;color:var(--text2);line-height:1.55}
-.demo-title{font-size:11px;font-weight:500;color:var(--blue-text);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px}
-.demo-actions{display:flex;gap:8px;flex-shrink:0;align-items:center}
-.demo-btn{font-size:11px;padding:6px 10px;border-radius:var(--r);border:1px solid var(--border);background:var(--surface);cursor:pointer;font-family:var(--font);color:var(--text2)}
-.demo-btn.primary{background:var(--navy);border-color:var(--navy);color:#fff;text-decoration:none;display:inline-flex;align-items:center;gap:4px}
+.demo-zone{margin-bottom:18px}
+.demo-zone-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.demo-zone-title{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.07em;color:var(--text3);display:flex;align-items:center;gap:6px}
+.demo-zone-sub{font-size:11px;color:var(--text3)}
+.demo-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+@media(max-width:720px){.demo-grid{grid-template-columns:1fr}}
+.demo-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r3);padding:14px 16px;cursor:pointer;transition:border-color .15s,box-shadow .15s;display:flex;flex-direction:column;gap:8px;min-height:140px}
+.demo-card:hover{border-color:#BFDBFE;box-shadow:0 4px 16px rgba(42,111,219,0.08)}
+.demo-card.flagship{border-color:#BFDBFE;background:linear-gradient(135deg,var(--blue-faint),#fff)}
+.demo-card-flag{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:.06em;color:var(--blue-text);background:var(--blue-faint);border-radius:20px;padding:2px 8px;display:inline-flex;align-items:center;gap:4px;width:fit-content}
+.demo-card-title{font-size:13px;font-weight:500;color:var(--text);line-height:1.35}
+.demo-card-sub{font-size:11px;color:var(--text3);line-height:1.45}
+.demo-card-feats{display:flex;flex-wrap:wrap;gap:4px;margin-top:auto}
+.demo-feat{font-size:9px;padding:2px 6px;border-radius:20px;background:var(--surface3);color:var(--text2)}
+.demo-card-meta{display:flex;justify-content:space-between;align-items:center;font-size:10px;color:var(--text3);margin-top:4px}
+.demo-card-play{color:var(--blue-text);font-weight:500;display:flex;align-items:center;gap:3px}
 .search-dropdown{display:none;position:absolute;left:0;right:0;top:calc(100% + 4px);background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);box-shadow:0 8px 24px rgba(0,0,0,0.08);z-index:50;max-height:280px;overflow-y:auto}
 .search-dropdown.open{display:block}
 .zone{margin-bottom:16px}
@@ -105,6 +114,7 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 <body>
 <script src="shared_data.js"></script>
 <script src="case_helpers.js"></script>
+<script src="demo_studies.js"></script>
 
 <nav class="global-nav">
   <a href="index.html" class="gn-logo">
@@ -126,17 +136,20 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 <script>
 function escapeHtml(v){return String(v==null?'':v).replace(/[&<>"']/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch];});}
 
-function dismissDemoGuide(){
-  try{sessionStorage.setItem('261c_demo_dismissed','1');}catch(e){}
-  var el=document.getElementById('demo-banner');
-  if(el)el.classList.add('hidden');
-}
-
-function demoBannerHtml(){
-  var dismissed=false;
-  try{dismissed=sessionStorage.getItem('261c_demo_dismissed')==='1';}catch(e){}
-  if(dismissed)return '';
-  return '<div class="demo-banner" id="demo-banner"><div class="demo-text"><div class="demo-title">'+escapeHtml(t('demoGuideTitle'))+'</div>'+escapeHtml(t('demoGuideText'))+'</div><div class="demo-actions"><a class="demo-btn primary" href="javascript:openCase(\'AC-2026-0089\',\'evidence\')"><i class="ti ti-player-play"></i> '+escapeHtml(t('openDemoCase'))+'</a><button class="demo-btn" onclick="dismissDemoGuide()">Dismiss</button></div></div>';
+function demoStudiesHtml(){
+  if(typeof DEMO_STUDIES==='undefined')return '';
+  var studies=DEMO_STUDIES.slice();
+  return '<div class="demo-zone"><div class="demo-zone-hdr"><div class="demo-zone-title"><i class="ti ti-player-play"></i> Demo case studies</div><span class="demo-zone-sub">Curated paths showing how 261Claims works when set up</span></div><div class="demo-grid">'
+    +studies.map(function(s){
+      return '<div class="demo-card'+(s.flagship?' flagship':'')+'" onclick="openDemoStudy(\''+s.id+'\')">'
+        +(s.flagship?'<span class="demo-card-flag"><i class="ti ti-star" style="font-size:10px"></i> Flagship demo</span>':'')
+        +'<div class="demo-card-title">'+escapeHtml(s.title)+'</div>'
+        +'<div class="demo-card-sub">'+escapeHtml(s.subtitle)+'</div>'
+        +'<div class="demo-card-feats">'+(s.features||[]).slice(0,4).map(function(f){return '<span class="demo-feat">'+escapeHtml(f)+'</span>';}).join('')+'</div>'
+        +'<div class="demo-card-meta"><span>'+escapeHtml(s.duration)+'</span><span class="demo-card-play">Start <i class="ti ti-arrow-right" style="font-size:11px"></i></span></div>'
+        +'</div>';
+    }).join('')
+    +'</div></div>';
 }
 
 function taskRows(tasks){
@@ -205,7 +218,7 @@ function render(){
   document.getElementById('page').innerHTML=
     '<div class="page-header"><div class="greeting">'+greeting+', '+escapeHtml(u.full.split(' ')[0])+'</div><div class="greeting-sub">'+escapeHtml(u.role)+' · '+cases.length+' active case'+(cases.length!==1?'s':'')+'</div></div>'
     +notifBar
-    +demoBannerHtml()
+    +demoStudiesHtml()
     +'<div class="toolbar"><div class="search-wrap"><i class="ti ti-search"></i><input class="search-input" id="work-search" placeholder="'+escapeHtml(t('searchCases'))+'" oninput="searchCases(this.value)" onfocus="if(this.value)searchCases(this.value)"><div class="search-dropdown" id="search-dropdown"></div></div><a class="btn-new" href="intake.html"><i class="ti ti-mail-plus"></i> '+escapeHtml(t('newClaim'))+'</a></div>'
     +'<div class="zone"><div class="zone-hdr"><div class="zone-title"><i class="ti ti-list-check"></i> '+escapeHtml(t('doNow'))+'</div><a class="zone-link" href="cases.html?sort=urgency">'+escapeHtml(t('viewAll'))+' <i class="ti ti-arrow-right"></i></a></div><div class="panel">'+taskRows(tasks)+'</div></div>'
     +'<div class="zone"><div class="zone-hdr"><div class="zone-title"><i class="ti ti-alert-triangle"></i> '+escapeHtml(t('watch'))+'</div></div>'+watchRows(watch)+'</div>'
@@ -230,8 +243,14 @@ function renderEvidenceWork(u){
   var tasks=open.slice(0,5).map(function(r){
     return {ref:r.ref,id:r.id,txt:(r.requestedBy||'Legal')+' — '+(r.requestType||'evidence')+' for '+(r.requestDate||r.flight||''),claimant:r.claimant||r.ref,urg:parseInt(String(r.due||'99'),10)||(r.priority==='Urgent'?3:21),tab:'requests',blocker:'Gold pack'};
   });
+  var ehStudies=typeof DEMO_STUDIES!=='undefined'?DEMO_STUDIES.filter(function(s){return s.user==='EH'||s.id==='flagship-collaboration';}):[];
+  var studyCards=ehStudies.length?'<div class="demo-zone" style="margin-bottom:16px"><div class="demo-zone-hdr"><div class="demo-zone-title"><i class="ti ti-player-play"></i> Demo paths</div></div><div class="demo-grid">'+ehStudies.map(function(s){
+    return '<div class="demo-card" onclick="openDemoStudy(\''+s.id+'\')"><div class="demo-card-title">'+escapeHtml(s.title)+'</div><div class="demo-card-sub">'+escapeHtml(s.subtitle)+'</div><div class="demo-card-meta"><span>'+escapeHtml(s.duration)+'</span><span class="demo-card-play">Start <i class="ti ti-arrow-right" style="font-size:11px"></i></span></div></div>';
+  }).join('')+'</div></div>':'';
+
   document.getElementById('page').innerHTML=
     '<div class="page-header"><div class="greeting">'+escapeHtml(t('work'))+' — '+escapeHtml(u.full)+'</div><div class="greeting-sub">Specialist queue replacing Outlook evidence requests</div></div>'
+    +studyCards
     +notifBar
     +'<div class="zone"><div class="zone-hdr"><div class="zone-title"><i class="ti ti-list-check"></i> '+escapeHtml(t('doNow'))+'</div><a class="zone-link" href="requests.html">'+escapeHtml(t('viewAll'))+' <i class="ti ti-arrow-right"></i></a></div><div class="panel">'+(tasks.length?tasks.map(function(tk){
       return '<div class="task-row" onclick="location.href=\'requests.html\'" style="cursor:pointer"><div class="task-dot '+(tk.urg<=3?'urgent':'warn')+'"></div><div><div class="task-ref">'+escapeHtml(tk.id||tk.ref)+'</div><div class="task-action">'+escapeHtml(tk.txt)+'</div><div class="task-claimant">'+escapeHtml(tk.claimant)+' · '+escapeHtml(tk.blocker)+'</div></div><div class="task-deadline">'+escapeHtml(tk.urg+'d')+'</div><div class="task-open">Open <i class="ti ti-arrow-right"></i></div></div>';
