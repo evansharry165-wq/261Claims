@@ -290,7 +290,7 @@ function buildEvidenceDaysFromFiling(){
   });
 }
 var activeArea='hub', activeOutcome='all', query='', selectedRef='', evidenceFilter='All';
-var filingView='calendar';
+var filingView='browse';
 var filingPath={categoryId:null,year:null,month:null,date:null};
 var filingSearch='';
 var CLOSED_CASES=[
@@ -392,6 +392,7 @@ function toggleUserMenu(){document.getElementById('user-modal').classList.toggle
 function closeMenu(){document.getElementById('user-modal').classList.remove('open');}
 function switchUser(id){setActiveUser(id);sessionStorage.removeItem('261c_lang');closeMenu();render();}
 try{if(sessionStorage.getItem('261c_repo_area')==='evidence'){activeArea='evidence';sessionStorage.removeItem('261c_repo_area');}}catch(e){}
+if(window.location.hash==='#evidence'){activeArea='evidence';filingView='browse';}
 render();
 </script>
 </body>
