@@ -80,7 +80,7 @@
         var tu = USERS[tid];
         var isActive = tid===uid;
         var avCls = tu.lang==='fr' ? ' fr' : tu.lang==='es' ? ' es' : '';
-        html += '<div class="ud-item'+(isActive?' active':'')+' ud-clickable" data-uid="'+tid+'">';
+        html += '<div class="ud-item'+(isActive?' active':'')+' ud-clickable" data-uid="'+tid+'">'
           +'<div class="gn-av'+avCls+'">'+tu.initials+'</div>'
           +'<div><div class="ud-name">'+tu.full+'</div>'
           +'<div class="ud-role">'+tu.role+'</div></div>'

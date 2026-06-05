@@ -88,6 +88,7 @@ tbody tr:hover td{background:var(--surface2);cursor:pointer}
   <a href="index.html" class="nav-logo"><div class="nav-mark"><i class="ti ti-plane"></i></div><span class="nav-name">261Claims</span></a>
   <div class="nav-links">
     <a href="index.html" class="nl"><i class="ti ti-layout-dashboard"></i> <span id="nl-dashboard">Dashboard</span></a>
+    <a href="module1-intake.html" class="nl"><i class="ti ti-file-upload"></i> <span id="nl-intake">Intake</span></a>
     <a href="module2-case-management.html" class="nl"><i class="ti ti-layout-kanban"></i> <span id="nl-cases">Cases</span></a>
     <a href="module3-cpr.html" class="nl active"><i class="ti ti-calendar-due"></i> <span id="nl-cpr">CPR</span></a>
     <a href="module4-evidence.html" class="nl"><i class="ti ti-folder-open"></i> <span id="nl-evidence">Evidence</span></a>
@@ -188,6 +189,7 @@ function getUILang(){return sessionStorage.getItem('261c_lang')||(USERS[getActiv
 function t(key){var d=I18N[getUILang()]||I18N.en;return d[key]||I18N.en[key]||key;}
 
 function openMenu(){document.getElementById('u-modal').classList.add('open');}
+function closeMenu(){var m=document.getElementById('u-modal');if(m)m.classList.remove('open');}
 
 function doSwitch(id){
   setActiveUser(id); sessionStorage.removeItem('261c_lang');
@@ -197,7 +199,7 @@ function _initNav(){
   var uid=getActiveUser(), u=USERS[uid]||USERS.SB;
   var av=document.getElementById('u-av'); if(av)av.textContent=u.initials;
   var un=document.getElementById('u-name'); if(un)un.textContent=u.name;
-  var keys=['dashboard','cases','cpr','evidence','drafting','mi','knowledge'];
+  var keys=['dashboard','intake','cases','cpr','evidence','drafting','mi','knowledge'];
   keys.forEach(function(k){var el=document.getElementById('nl-'+k);if(el)el.textContent=t(k);});
   ['SB','JP','KR','MD','PL','CG','IM'].forEach(function(id){
     var el=document.getElementById('ud-'+id);
@@ -268,64 +270,6 @@ function _render(){
   });
 }
 window.addEventListener('load',function(){_initNav();_render();});
-</script>
-<div id="user-modal" class="user-modal" onclick="if(event.target===this)closeMenu()">
-  <div class="user-dropdown">
-    <div class="ud-header">Switch user — demo</div>
-    <div style="padding:4px 14px 2px;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.06em;color:var(--text3)">UK Litigation</div>
-    <div class="ud-item" id="ud-SB" onclick="switchUser('SB')"><div class="ud-av">SB</div><div><div class="ud-name">Sarah Booth</div><div class="ud-role">Head of Legal Ops</div></div><i class="ti ti-check ud-tick"></i></div>
-    <div class="ud-item" id="ud-JP" onclick="switchUser('JP')"><div class="ud-av">JP</div><div><div class="ud-name">James Patel</div><div class="ud-role">Senior Solicitor</div></div><i class="ti ti-check ud-tick"></i></div>
-    <div class="ud-item" id="ud-KR" onclick="switchUser('KR')"><div class="ud-av">KR</div><div><div class="ud-name">Kiran Rahman</div><div class="ud-role">Solicitor</div></div><i class="ti ti-check ud-tick"></i></div>
-    <div style="height:1px;background:var(--border);margin:4px 0"></div>
-    <div style="padding:4px 14px 2px;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.06em;color:var(--text3)">🇫🇷 Équipe France</div>
-    <div class="ud-item" id="ud-MD" onclick="switchUser('MD')"><div class="ud-av" style="background:#1a3a6b">MD</div><div><div class="ud-name">Marie Dupont</div><div class="ud-role">Juriste senior</div></div><i class="ti ti-check ud-tick"></i></div>
-    <div class="ud-item" id="ud-PL" onclick="switchUser('PL')"><div class="ud-av" style="background:#1a3a6b">PL</div><div><div class="ud-name">Pierre Laurent</div><div class="ud-role">Juriste</div></div><i class="ti ti-check ud-tick"></i></div>
-    <div style="height:1px;background:var(--border);margin:4px 0"></div>
-    <div style="padding:4px 14px 2px;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.06em;color:var(--text3)">🇪🇸 Equipo España</div>
-    <div class="ud-item" id="ud-CG" onclick="switchUser('CG')"><div class="ud-av" style="background:#6b1a1a">CG</div><div><div class="ud-name">Carlos García</div><div class="ud-role">Abogado senior</div></div><i class="ti ti-check ud-tick"></i></div>
-    <div class="ud-item" id="ud-IM" onclick="switchUser('IM')"><div class="ud-av" style="background:#6b1a1a">IM</div><div><div class="ud-name">Isabel Martín</div><div class="ud-role">Abogada</div></div><i class="ti ti-check ud-tick"></i></div>
-  </div>
-</div>
-<script>
-
-function toggleUserMenu(){var m=document.getElementById('user-modal');if(m)m.classList.toggle('open');}
-function closeMenu(){var m=document.getElementById('user-modal');if(m)m.classList.remove('open');}
-function switchUser(id){
-  if(typeof setActiveUser==='function')setActiveUser(id);
-  closeMenu();
-  var u=typeof USERS!=='undefined'?USERS[id]:null;
-  if(u){
-    var av=document.getElementById('nav-av'); if(av)av.textContent=u.initials;
-    var un=document.getElementById('nav-user'); if(un)un.textContent=u.name;
-  }
-  ['SB','JP','KR','MD','PL','CG','IM'].forEach(function(uid){
-    var el=document.getElementById('ud-'+uid);
-    if(el){el.classList.toggle('current',uid===id);}
-  });
-  sessionStorage.removeItem('261c_lang');
-  if(typeof render==='function')render();
-  if(typeof _render==='function')_render();
-}
-(function initNav(){
-  try{
-    var uid=typeof getActiveUser==='function'?getActiveUser():'SB';
-    var u=typeof USERS!=='undefined'?USERS[uid]:null;
-    if(!u)return;
-    var av=document.getElementById('nav-av'); if(av)av.textContent=u.initials;
-    var un=document.getElementById('nav-user'); if(un)un.textContent=u.name;
-    ['SB','JP','KR','MD','PL','CG','IM'].forEach(function(id){
-      var el=document.getElementById('ud-'+id);
-      if(el)el.classList.toggle('current',id===uid);
-    });
-    // Nav badges
-    if(typeof getCasesForUser==='function'){
-      var cases=getCasesForUser(uid);
-      var urgN=cases.filter(function(c){return c.cprDaysLeft<=7&&c.stage!=='resolve';}).length;
-      if(urgN>0){var el=document.querySelector('a[href="module3-cpr.html"]');if(el){var b=el.querySelector('.nav-badge-cpr');if(!b){b=document.createElement('span');b.className='nav-badge-cpr';b.style.cssText='background:#C0392B;color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:10px;margin-left:3px';b.textContent=urgN;el.appendChild(b);}}}
-    }
-  }catch(e){}
-})();
-
 </script>
 </body>
 </html>

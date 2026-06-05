@@ -201,19 +201,20 @@ function t(key){var d=I18N[getUILang()]||I18N.en;return d[key]||I18N.en[key]||ke
 <div class="page">
   <div class="sidebar">
     <div class="sb-section">Legal knowledge</div>
-    <div class="sb-item active" onclick="showSection('regulation')"><i class="ti ti-file-certificate"></i> EC 261/2004 regulation <span class="sb-count">12</span></div>
-    <div class="sb-item" onclick="showSection('caselaw')"><i class="ti ti-gavel"></i> Key case law <span class="sb-count">8</span></div>
-    <div class="sb-item" onclick="showSection('defence')"><i class="ti ti-shield"></i> Defence strategies <span class="sb-count">6</span></div>
-    <div class="sb-item" onclick="showSection('quickref')"><i class="ti ti-table"></i> Quick reference</div>
+    <div class="sb-item active" onclick="showSection('regulation', event)"><i class="ti ti-file-certificate"></i> EC 261/2004 regulation <span class="sb-count">12</span></div>
+    <div class="sb-item" onclick="showSection('caselaw', event)"><i class="ti ti-gavel"></i> Key case law <span class="sb-count">8</span></div>
+    <div class="sb-item" onclick="showSection('defence', event)"><i class="ti ti-shield"></i> Defence strategies <span class="sb-count">6</span></div>
+    <div class="sb-item" onclick="showSection('quickref', event)"><i class="ti ti-table"></i> Quick reference</div>
 
     <div class="sb-section">Operations</div>
-    <div class="sb-item" onclick="showSection('evidence_guides')"><i class="ti ti-folder-open"></i> Evidence guides <span class="sb-count">5</span></div>
-    <div class="sb-item" onclick="showSection('cpr_guide')"><i class="ti ti-calendar-due"></i> CPR obligations</div>
-    <div class="sb-item" onclick="showSection('disruption')"><i class="ti ti-bolt"></i> Disruption types <span class="sb-count">15</span></div>
+    <div class="sb-item" onclick="showSection('evidence_guides', event)"><i class="ti ti-folder-open"></i> Evidence guides <span class="sb-count">5</span></div>
+    <div class="sb-item" onclick="showSection('cpr_guide', event)"><i class="ti ti-calendar-due"></i> CPR obligations</div>
+    <div class="sb-item" onclick="showSection('disruption', event)"><i class="ti ti-bolt"></i> Disruption types <span class="sb-count">15</span></div>
+    <div class="sb-item" onclick="showSection('france-spain', event)"><i class="ti ti-world"></i> France & Spain</div>
 
     <div class="sb-section">Team resources</div>
-    <div class="sb-item" onclick="showSection('templates')"><i class="ti ti-file-text"></i> Document templates</div>
-    <div class="sb-item" onclick="showSection('updates')"><i class="ti ti-news"></i> Legal updates <span class="sb-count" style="background:var(--red-faint);color:var(--red)">3</span></div>
+    <div class="sb-item" onclick="showSection('templates', event)"><i class="ti ti-file-text"></i> Document templates</div>
+    <div class="sb-item" onclick="showSection('updates', event)"><i class="ti ti-news"></i> Legal updates <span class="sb-count" style="background:var(--red-faint);color:var(--red)">3</span></div>
   </div>
 
   <div class="main" id="main"></div>
@@ -222,10 +223,10 @@ function t(key){var d=I18N[getUILang()]||I18N.en;return d[key]||I18N.en[key]||ke
 <script>
 var activeSection = 'regulation';
 
-function showSection(s){
+function showSection(s, ev){
   activeSection = s;
   document.querySelectorAll('.sb-item').forEach(function(el){ el.classList.remove('active'); });
-  event.currentTarget.classList.add('active');
+  if(ev&&ev.currentTarget)ev.currentTarget.classList.add('active');
   render();
 }
 
@@ -413,7 +414,8 @@ templates: {
     ];
     return '<div class="article-grid">'
       +docs.map(function(d){
-        return '<a href="'+d.module+'" class="article-card">'
+        var href=d.module+activeCaseQuery();
+        return '<a href="'+href+'" class="article-card">'
           +'<div class="ac-tag tag-proc"><i class="ti '+d.icon+'" style="font-size:11px"></i>Template</div>'
           +'<div class="ac-title">'+d.name+'</div>'
           +'<div class="ac-summary">'+d.desc+'</div>'
@@ -454,6 +456,13 @@ templates: {
 
 };
 
+function activeCaseQuery(){
+  try{
+    var c=JSON.parse(sessionStorage.getItem('261c_case')||'null');
+    return c&&c.ref?'?ref='+encodeURIComponent(c.ref):'';
+  }catch(e){return '';}
+}
+
 function articleCard(icon, tagCls, tagLabel, title, summary, footer){
   return '<div class="article-card">'
     +'<div class="ac-tag '+tagCls+'"><i class="ti '+icon+'" style="font-size:11px"></i>'+tagLabel+'</div>'
@@ -475,21 +484,6 @@ function render(){
 
 render();
 </script>
-    <div style="padding:4px 14px 2px;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.06em;color:var(--text3)">UK Litigation</div>
-    <div class="ud-item" id="ud-SB" onclick="switchUser('SB')"><div class="ud-av">SB</div><div><div class="ud-name">Sarah Booth</div><div class="ud-role">Head of Legal Ops</div></div><i class="ti ti-check ud-tick"></i></div>
-    <div class="ud-item" id="ud-JP" onclick="switchUser('JP')"><div class="ud-av">JP</div><div><div class="ud-name">James Patel</div><div class="ud-role">Senior Solicitor</div></div><i class="ti ti-check ud-tick"></i></div>
-    <div class="ud-item" id="ud-KR" onclick="switchUser('KR')"><div class="ud-av">KR</div><div><div class="ud-name">Kiran Rahman</div><div class="ud-role">Solicitor</div></div><i class="ti ti-check ud-tick"></i></div>
-    <div style="height:1px;background:var(--border);margin:4px 0"></div>
-    <div style="padding:4px 14px 2px;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.06em;color:var(--text3)">🇫🇷 Équipe France</div>
-    <div class="ud-item" id="ud-MD" onclick="switchUser('MD')"><div class="ud-av" style="background:#1a3a6b">MD</div><div><div class="ud-name">Marie Dupont</div><div class="ud-role">Juriste senior</div></div><i class="ti ti-check ud-tick"></i></div>
-    <div class="ud-item" id="ud-PL" onclick="switchUser('PL')"><div class="ud-av" style="background:#1a3a6b">PL</div><div><div class="ud-name">Pierre Laurent</div><div class="ud-role">Juriste</div></div><i class="ti ti-check ud-tick"></i></div>
-    <div style="height:1px;background:var(--border);margin:4px 0"></div>
-    <div style="padding:4px 14px 2px;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.06em;color:var(--text3)">🇪🇸 Equipo España</div>
-    <div class="ud-item" id="ud-CG" onclick="switchUser('CG')"><div class="ud-av" style="background:#6b1a1a">CG</div><div><div class="ud-name">Carlos García</div><div class="ud-role">Abogado senior</div></div><i class="ti ti-check ud-tick"></i></div>
-    <div class="ud-item" id="ud-IM" onclick="switchUser('IM')"><div class="ud-av" style="background:#6b1a1a">IM</div><div><div class="ud-name">Isabel Martín</div><div class="ud-role">Abogada</div></div><i class="ti ti-check ud-tick"></i></div>
-  </div>
-</div>
-
 <script>
 /* ── Nav + user switcher ── */
 function _navInit(){
@@ -512,8 +506,11 @@ function _navInit(){
       var cases=getCasesForUser(uid);
       var intN=cases.filter(function(c){return c.stage==='intake';}).length;
       var urgN=cases.filter(function(c){return c.cprDaysLeft<=7&&c.stage!=='resolve';}).length;
-      if(intN>0){var il=document.getElementById('gnl-intake');if(il){var b=document.createElement('span');b.style.cssText='background:#C0392B;color:#fff;font-size:9px;font-weight:600;padding:1px 5px;border-radius:10px;margin-left:3px;vertical-align:middle';b.textContent=intN;il.appendChild(b);}}
-      if(urgN>0){var cl=document.getElementById('gnl-cpr');if(cl){var b2=document.createElement('span');b2.style.cssText='background:#C0392B;color:#fff;font-size:9px;font-weight:600;padding:1px 5px;border-radius:10px;margin-left:3px;vertical-align:middle';b2.textContent=urgN;cl.appendChild(b2);}}
+      var badgeCss='background:#C0392B;color:#fff;font-size:9px;font-weight:600;padding:1px 5px;border-radius:10px;margin-left:3px;vertical-align:middle';
+      var il=document.getElementById('gnl-intake');
+      if(il){var oldI=il.querySelector('.gn-badge-intake');if(oldI)oldI.remove();if(intN>0){var b=document.createElement('span');b.className='gn-badge-intake';b.style.cssText=badgeCss;b.textContent=intN;il.appendChild(b);}}
+      var cl=document.getElementById('gnl-cpr');
+      if(cl){var oldC=cl.querySelector('.gn-badge-cpr');if(oldC)oldC.remove();if(urgN>0){var b2=document.createElement('span');b2.className='gn-badge-cpr';b2.style.cssText=badgeCss;b2.textContent=urgN;cl.appendChild(b2);}}
     }
     // Active state
     var p=window.location.pathname.split('/').pop()||'index.html';
@@ -579,12 +576,6 @@ function switchUser(id){
       var el=document.getElementById('ud-'+id);
       if(el)el.classList.toggle('current',id===uid);
     });
-    // Nav badges
-    if(typeof getCasesForUser==='function'){
-      var cases=getCasesForUser(uid);
-      var urgN=cases.filter(function(c){return c.cprDaysLeft<=7&&c.stage!=='resolve';}).length;
-      if(urgN>0){var el=document.querySelector('a[href="module3-cpr.html"]');if(el){var b=el.querySelector('.nav-badge-cpr');if(!b){b=document.createElement('span');b.className='nav-badge-cpr';b.style.cssText='background:#C0392B;color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:10px;margin-left:3px';b.textContent=urgN;el.appendChild(b);}}}
-    }
   }catch(e){}
 })();
 

@@ -233,81 +233,87 @@ function t(key){var d=I18N[getUILang()]||I18N.en;return d[key]||I18N.en[key]||ke
   </div>
 </div>
 
-<!-- User switcher -->
-    <div style="padding:4px 14px 2px;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.06em;color:var(--text3)">UK Litigation</div>
-    <div class="ud-item" id="ud-SB" onclick="switchUser('SB')">
-      <div class="ud-av">SB</div>
-      <div><div class="ud-name">Sarah Booth</div><div class="ud-role">Head of Legal Ops</div></div>
-      <i class="ti ti-check ud-tick"></i>
-    </div>
-    <div class="ud-item" id="ud-JP" onclick="switchUser('JP')">
-      <div class="ud-av">JP</div>
-      <div><div class="ud-name">James Patel</div><div class="ud-role">Senior Solicitor</div></div>
-      <i class="ti ti-check ud-tick"></i>
-    </div>
-    <div class="ud-item" id="ud-KR" onclick="switchUser('KR')">
-      <div class="ud-av">KR</div>
-      <div><div class="ud-name">Kiran Rahman</div><div class="ud-role">Solicitor</div></div>
-      <i class="ti ti-check ud-tick"></i>
-    </div>
-
-    <div style="height:1px;background:var(--border);margin:4px 0"></div>
-    <div style="padding:4px 14px 2px;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.06em;color:var(--text3)">🇫🇷 Équipe France</div>
-    <div class="ud-item" id="ud-MD" onclick="switchUser('MD')">
-      <div class="ud-av" style="background:#1a3a6b">MD</div>
-      <div><div class="ud-name">Marie Dupont</div><div class="ud-role">Juriste senior</div></div>
-      <i class="ti ti-check ud-tick"></i>
-    </div>
-    <div class="ud-item" id="ud-PL" onclick="switchUser('PL')">
-      <div class="ud-av" style="background:#1a3a6b">PL</div>
-      <div><div class="ud-name">Pierre Laurent</div><div class="ud-role">Juriste</div></div>
-      <i class="ti ti-check ud-tick"></i>
-    </div>
-
-    <div style="height:1px;background:var(--border);margin:4px 0"></div>
-    <div style="padding:4px 14px 2px;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.06em;color:var(--text3)">🇪🇸 Equipo España</div>
-    <div class="ud-item" id="ud-CG" onclick="switchUser('CG')">
-      <div class="ud-av" style="background:#6b1a1a">CG</div>
-      <div><div class="ud-name">Carlos García</div><div class="ud-role">Abogado senior</div></div>
-      <i class="ti ti-check ud-tick"></i>
-    </div>
-    <div class="ud-item" id="ud-IM" onclick="switchUser('IM')">
-      <div class="ud-av" style="background:#6b1a1a">IM</div>
-      <div><div class="ud-name">Isabel Martín</div><div class="ud-role">Abogada</div></div>
-      <i class="ti ti-check ud-tick"></i>
-    </div>
-  </div>
-</div>
-    <div class="ud-item" onclick="switchUser('SB')"><div class="ud-av">SB</div><div><div class="ud-name">Sarah Booth</div><div class="ud-role">Head of Legal Ops</div></div></div>
-    <div class="ud-item" onclick="switchUser('JP')"><div class="ud-av">JP</div><div><div class="ud-name">James Patel</div><div class="ud-role">Senior Solicitor</div></div></div>
-    <div class="ud-item" onclick="switchUser('KR')"><div class="ud-av">KR</div><div><div class="ud-name">Kiran Rahman</div><div class="ud-role">Solicitor</div></div></div>
-  </div>
-</div>
 <input type="file" id="file-input" accept=".pdf,.doc,.docx,.txt" onchange="handleUpload(event)">
 
-
-
 <script>
-(function(){
-  try{
-    if(typeof getCasesForUser!=='function') return;
-    var uid = typeof getActiveUser==='function' ? getActiveUser() : 'SB';
-    var cases = getCasesForUser(uid);
-    var intakeN = cases.filter(function(c){return c.stage==='intake';}).length;
-    var urgentN = cases.filter(function(c){return c.cprDaysLeft<=7 && c.stage!=='resolve';}).length;
-    document.querySelectorAll('.gn-link').forEach(function(link){
-      var h = link.getAttribute('href')||'';
-      var n = h.indexOf('module1')>=0?intakeN:h.indexOf('module3-cpr')>=0?urgentN:0;
-      if(n>0){
-        var s=document.createElement('span');
-        s.style.cssText='background:#C0392B;color:#fff;font-size:9px;font-weight:600;padding:1px 5px;border-radius:10px;margin-left:4px;line-height:1.4';
-        s.textContent=n;
-        link.appendChild(s);
-      }
-    });
-  }catch(e){}
-})();
+var uploadedCases=[];
+var selectedRef=(new URLSearchParams(window.location.search).get('ref')||'');
+
+function escapeHtml(v){return String(v==null?'':v).replace(/[&<>"']/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch];});}
+function intakeCases(){
+  var uid=getActiveUser();
+  return getCasesForUser(uid,'intake').concat(uploadedCases.filter(function(c){return c.assignedTo===uid;}));
+}
+function triggerUpload(){document.getElementById('file-input').click();}
+function handleUpload(event){
+  var file=event.target.files&&event.target.files[0];
+  if(!file)return;
+  var uid=getActiveUser();
+  var base=file.name.replace(/\.[^.]+$/,'').replace(/[_-]+/g,' ').trim();
+  var claimant=base?base.replace(/\b\w/g,function(m){return m.toUpperCase();}):'New claimant';
+  var n=uploadedCases.length+1;
+  var c={ref:'UP-2026-'+String(n).padStart(4,'0'),assignedTo:uid,claimant:claimant,solicitor:'Uploaded LOC',flight:'HC TBD — route pending',flightNum:'HC TBD',dep:'TBD',arr:'TBD',flightDate:'Date pending',value:'TBC',type:'EC261 — New claim',locDate:'Today',stage:'intake',cat:'A',jurisdiction:(USERS[uid]&&USERS[uid].lang==='fr')?'france':(USERS[uid]&&USERS[uid].lang==='es')?'spain':'england-wales',lang:(USERS[uid]&&USERS[uid].lang)||'en',disruptionType:'Pending review',classification:'PENDING',evidencePct:0,cprDaysLeft:21,points:[],loaStatus:'',triageNote:'Uploaded from '+file.name,activity:[{text:'LOC uploaded — extraction ready',time:'Just now',type:'upload'}],uploadedFile:file.name};
+  uploadedCases.unshift(c);
+  selectedRef=c.ref;
+  try{sessionStorage.setItem('261c_case',JSON.stringify(c));}catch(e){}
+  render();
+  event.target.value='';
+}
+function selectCase(ref){
+  selectedRef=ref;
+  var c=intakeCases().find(function(x){return x.ref===ref;});
+  if(c){try{sessionStorage.setItem('261c_case',JSON.stringify(c));}catch(e){}}
+  render();
+}
+function startTriage(ref){
+  var c=intakeCases().find(function(x){return x.ref===ref;});
+  if(!c)return;
+  try{sessionStorage.setItem('261c_case',JSON.stringify(c));}catch(e){}
+  window.location.href='module2-case-workspace.html?ref='+encodeURIComponent(c.ref);
+}
+function render(){
+  var cases=intakeCases().sort(function(a,b){return a.cprDaysLeft-b.cprDaysLeft;});
+  var list=document.getElementById('case-list');
+  var uid=getActiveUser();
+  var u=USERS[uid]||USERS.SB;
+  document.querySelector('.lp-title').textContent=t('intakeQueue');
+  document.getElementById('lp-sub').textContent=cases.length+' case'+(cases.length!==1?'s':'')+' assigned to '+u.name;
+  if(!cases.length){
+    selectedRef='';
+    list.innerHTML='<div class="case-list-empty"><i class="ti ti-inbox"></i><div>'+t('noQueue')+'</div></div>';
+    document.getElementById('right-panel').innerHTML='<div class="rp-empty"><i class="ti ti-inbox"></i><p>No intake cases are assigned to '+escapeHtml(u.name)+'. Upload a letter of claim to create a demo intake item.</p></div>';
+    return;
+  }
+  if(!selectedRef||!cases.some(function(c){return c.ref===selectedRef;})) selectedRef=cases[0].ref;
+  list.innerHTML=cases.map(function(c){
+    var urg=daysUrgency(c.cprDaysLeft);
+    return '<div class="case-row '+(c.ref===selectedRef?'active':'')+'" onclick="selectCase(\''+c.ref+'\')">'
+      +'<div class="cr-icon '+(c.uploadedFile?'new':'')+'"><i class="ti '+(c.uploadedFile?'ti-upload':'ti-file-text')+'"></i></div>'
+      +'<div style="min-width:0"><div class="cr-ref">'+escapeHtml(c.ref)+'</div><div class="cr-name">'+escapeHtml(c.claimant)+'</div><div class="cr-meta"><span>'+escapeHtml(c.flightNum)+'</span><span class="cr-badge">'+escapeHtml(c.cat)+'</span></div></div>'
+      +'<div class="cr-right"><span class="cr-days days-'+urg+'">'+urgencyLabel(c.cprDaysLeft)+'</span></div></div>';
+  }).join('');
+  var c=cases.find(function(x){return x.ref===selectedRef;})||cases[0];
+  var J=getJurisdiction(c.jurisdiction);
+  var points=(c.points&&c.points.length)?c.points:[
+    {n:1,claim:'Passenger and flight details extracted',evidenceStatus:'amber',evidenceDoc:'Needs legal review'},
+    {n:2,claim:'Disruption reason identified as '+(c.disruptionType||'pending'),evidenceStatus:'amber',evidenceDoc:'Confirm in triage'},
+    {n:3,claim:'CPR response clock started',evidenceStatus:'green',evidenceDoc:urgencyLabel(c.cprDaysLeft)}
+  ];
+  document.getElementById('right-panel').innerHTML='<div class="cw">'
+    +'<div class="cw-header"><div class="cw-ref">'+escapeHtml(c.ref)+'</div><div style="display:flex;align-items:flex-start;gap:10px"><div style="flex:1"><div class="cw-name">'+escapeHtml(c.claimant)+' v. TestAirways</div><div class="cw-meta"><span><i class="ti ti-building"></i>'+escapeHtml(c.solicitor)+'</span><span><i class="ti ti-plane"></i>'+escapeHtml(c.flight)+'</span><span><i class="ti ti-world"></i>'+J.flag+' '+escapeHtml(J.name)+'</span><span><i class="ti ti-cash"></i>'+escapeHtml(c.value)+'</span></div></div><span class="cw-badge" style="background:'+stageBg('intake')+';color:'+stageColor('intake')+'">'+t('stage_intake')+'</span></div></div>'
+    +'<div class="section-card"><div class="sc-header"><i class="ti ti-scan"></i><div class="sc-title">Extracted claim summary</div></div><div class="sc-body"><div class="field-grid">'
+    +fieldHtml('Claim type',c.type)+fieldHtml('LOC received',c.locDate)+fieldHtml('Disruption',c.disruptionType)+fieldHtml('Jurisdiction',J.name)+'</div></div></div>'
+    +'<div class="section-card"><div class="sc-header"><i class="ti ti-list-check"></i><div class="sc-title">Initial issues for triage</div></div><div class="sc-body">'+points.map(function(p){var cls=p.evidenceStatus==='green'?'g':p.evidenceStatus==='red'?'r':'a';return '<div class="point-item"><div class="pt-dot pt-'+cls+'"></div><div class="pt-n">'+p.n+'</div><div style="flex:1"><div class="pt-claim">'+escapeHtml(p.claim)+'</div><div class="pt-ev">'+escapeHtml(p.evidenceDoc||'Pending')+'</div></div><span class="pt-status ps-'+cls+'">'+(cls==='g'?'Ready':cls==='r'?'Missing':'Review')+'</span></div>';}).join('')+'</div></div>'
+    +'<div class="advance-bar"><div class="adv-text">Open the triage workspace to confirm classification, CPR position, and next module.</div><button class="btn-advance" onclick="startTriage(\''+c.ref+'\')"><i class="ti ti-arrow-right"></i> Start triage</button></div>'
+    +'</div>';
+}
+function fieldHtml(label,value){return '<div class="field-item"><div class="fi-label">'+escapeHtml(label)+'</div><div class="fi-val">'+escapeHtml(value||'Pending')+'</div></div>';}
+window.addEventListener('load',render);
 </script>
+
+
+
+
 
 <script>
 /* ── Nav + user switcher ── */
@@ -331,8 +337,11 @@ function _navInit(){
       var cases=getCasesForUser(uid);
       var intN=cases.filter(function(c){return c.stage==='intake';}).length;
       var urgN=cases.filter(function(c){return c.cprDaysLeft<=7&&c.stage!=='resolve';}).length;
-      if(intN>0){var il=document.getElementById('gnl-intake');if(il){var b=document.createElement('span');b.style.cssText='background:#C0392B;color:#fff;font-size:9px;font-weight:600;padding:1px 5px;border-radius:10px;margin-left:3px;vertical-align:middle';b.textContent=intN;il.appendChild(b);}}
-      if(urgN>0){var cl=document.getElementById('gnl-cpr');if(cl){var b2=document.createElement('span');b2.style.cssText='background:#C0392B;color:#fff;font-size:9px;font-weight:600;padding:1px 5px;border-radius:10px;margin-left:3px;vertical-align:middle';b2.textContent=urgN;cl.appendChild(b2);}}
+      var badgeCss='background:#C0392B;color:#fff;font-size:9px;font-weight:600;padding:1px 5px;border-radius:10px;margin-left:3px;vertical-align:middle';
+      var il=document.getElementById('gnl-intake');
+      if(il){var oldI=il.querySelector('.gn-badge-intake');if(oldI)oldI.remove();if(intN>0){var b=document.createElement('span');b.className='gn-badge-intake';b.style.cssText=badgeCss;b.textContent=intN;il.appendChild(b);}}
+      var cl=document.getElementById('gnl-cpr');
+      if(cl){var oldC=cl.querySelector('.gn-badge-cpr');if(oldC)oldC.remove();if(urgN>0){var b2=document.createElement('span');b2.className='gn-badge-cpr';b2.style.cssText=badgeCss;b2.textContent=urgN;cl.appendChild(b2);}}
     }
     // Active state
     var p=window.location.pathname.split('/').pop()||'index.html';
@@ -398,12 +407,6 @@ function switchUser(id){
       var el=document.getElementById('ud-'+id);
       if(el)el.classList.toggle('current',id===uid);
     });
-    // Nav badges
-    if(typeof getCasesForUser==='function'){
-      var cases=getCasesForUser(uid);
-      var urgN=cases.filter(function(c){return c.cprDaysLeft<=7&&c.stage!=='resolve';}).length;
-      if(urgN>0){var el=document.querySelector('a[href="module3-cpr.html"]');if(el){var b=el.querySelector('.nav-badge-cpr');if(!b){b=document.createElement('span');b.className='nav-badge-cpr';b.style.cssText='background:#C0392B;color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:10px;margin-left:3px';b.textContent=urgN;el.appendChild(b);}}}
-    }
   }catch(e){}
 })();
 

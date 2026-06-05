@@ -244,20 +244,37 @@ function t(key){var d=I18N[getUILang()]||I18N.en;return d[key]||I18N.en[key]||ke
 
 <div class="page" id="page"></div>
 
-    <div style="padding:4px 14px 2px;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.06em;color:var(--text3)">UK Litigation</div>
-    <div class="ud-item" id="ud-SB" onclick="switchUser('SB')"><div class="ud-av">SB</div><div><div class="ud-name">Sarah Booth</div><div class="ud-role">Head of Legal Ops</div></div><i class="ti ti-check ud-tick"></i></div>
-    <div class="ud-item" id="ud-JP" onclick="switchUser('JP')"><div class="ud-av">JP</div><div><div class="ud-name">James Patel</div><div class="ud-role">Senior Solicitor</div></div><i class="ti ti-check ud-tick"></i></div>
-    <div class="ud-item" id="ud-KR" onclick="switchUser('KR')"><div class="ud-av">KR</div><div><div class="ud-name">Kiran Rahman</div><div class="ud-role">Solicitor</div></div><i class="ti ti-check ud-tick"></i></div>
-    <div style="height:1px;background:var(--border);margin:4px 0"></div>
-    <div style="padding:4px 14px 2px;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.06em;color:var(--text3)">🇫🇷 Équipe France</div>
-    <div class="ud-item" id="ud-MD" onclick="switchUser('MD')"><div class="ud-av" style="background:#1a3a6b">MD</div><div><div class="ud-name">Marie Dupont</div><div class="ud-role">Juriste senior</div></div><i class="ti ti-check ud-tick"></i></div>
-    <div class="ud-item" id="ud-PL" onclick="switchUser('PL')"><div class="ud-av" style="background:#1a3a6b">PL</div><div><div class="ud-name">Pierre Laurent</div><div class="ud-role">Juriste</div></div><i class="ti ti-check ud-tick"></i></div>
-    <div style="height:1px;background:var(--border);margin:4px 0"></div>
-    <div style="padding:4px 14px 2px;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.06em;color:var(--text3)">🇪🇸 Equipo España</div>
-    <div class="ud-item" id="ud-CG" onclick="switchUser('CG')"><div class="ud-av" style="background:#6b1a1a">CG</div><div><div class="ud-name">Carlos García</div><div class="ud-role">Abogado senior</div></div><i class="ti ti-check ud-tick"></i></div>
-    <div class="ud-item" id="ud-IM" onclick="switchUser('IM')"><div class="ud-av" style="background:#6b1a1a">IM</div><div><div class="ud-name">Isabel Martín</div><div class="ud-role">Abogada</div></div><i class="ti ti-check ud-tick"></i></div>
-  </div>
-</div>
+<script>
+function escapeHtml(v){return String(v==null?'':v).replace(/[&<>"']/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch];});}
+function routeForStage(stage){return {intake:'module1-intake.html',triage:'module2-case-workspace.html',cpr:'module3-cpr-workspace.html',evidence:'module4-evidence-workspace.html',drafting:'module5-drafting-workspace.html',defence:'module5-drafting-workspace.html',resolve:'module2-case-workspace.html'}[stage]||'module2-case-workspace.html';}
+function openCase(ref){var c=getCase(ref);if(!c)return;try{sessionStorage.setItem('261c_case',JSON.stringify(c));}catch(e){} window.location.href=routeForStage(c.stage)+'?ref='+encodeURIComponent(ref);}
+function caseRows(cases,limit){
+  var rows=cases.slice(0,limit||5);
+  if(!rows.length)return '<div class="empty-row">'+t('noQueue')+'</div>';
+  return rows.map(function(c){var urg=daysUrgency(c.cprDaysLeft);return '<div class="case-row" data-ref="'+escapeHtml(c.ref)+'"><div class="cr-stage-icon" style="background:'+stageBg(c.stage)+';color:'+stageColor(c.stage)+'"><i class="ti '+stageIcon(c.stage)+'"></i></div><div><div class="cr-ref">'+escapeHtml(c.ref)+'</div><div class="cr-name">'+escapeHtml(c.claimant)+'</div><div class="cr-meta">'+escapeHtml(c.flightNum)+' · '+escapeHtml(c.disruptionType)+'</div></div><div class="cr-right"><span class="stage-pill" style="background:'+stageBg(c.stage)+';color:'+stageColor(c.stage)+'">'+escapeHtml(t('stage_'+c.stage)||c.stage)+'</span><span class="days-pill dp-'+urg+'">'+urgencyLabel(c.cprDaysLeft)+'</span></div></div>';}).join('');
+}
+function render(){
+  var uid=getActiveUser();
+  var u=USERS[uid]||USERS.SB;
+  var cases=getCasesForUser(uid).slice().sort(function(a,b){return a.cprDaysLeft-b.cprDaysLeft;});
+  var intake=cases.filter(function(c){return c.stage==='intake';});
+  var urgent=cases.filter(function(c){return c.cprDaysLeft<=7&&c.stage!=='resolve';});
+  var evidence=cases.filter(function(c){return c.stage==='evidence';});
+  var drafting=cases.filter(function(c){return c.stage==='drafting'||c.stage==='defence';});
+  var totalValue=cases.reduce(function(sum,c){var m=String(c.value).replace(/,/g,'').match(/\d+/);return sum+(m?parseInt(m[0],10):0);},0);
+  var greeting=(new Date().getHours()<12?t('goodMorning'):new Date().getHours()<18?t('goodAfternoon'):t('goodEvening'));
+  var stages=['intake','triage','cpr','evidence','drafting','defence','resolve'];
+  var urgentHtml=urgent.length?urgent.slice(0,4).map(function(c){return '<a class="us-chip '+(c.cprDaysLeft<=3?'chip-urgent':'chip-warn')+'" href="javascript:openCase(\''+c.ref+'\')"><i class="ti ti-alarm"></i>'+escapeHtml(c.ref)+' · '+urgencyLabel(c.cprDaysLeft)+'</a>';}).join(''):'<div class="us-clear"><i class="ti ti-circle-check"></i>'+t('noUrgentDeadlines')+'</div>';
+  document.getElementById('page').innerHTML='<div class="page-header"><div class="greeting">'+greeting+', '+escapeHtml(u.full.split(' ')[0])+'</div><div class="greeting-sub">'+escapeHtml(u.role)+' · '+cases.length+' active case'+(cases.length!==1?'s':'')+'</div></div>'
+    +'<div class="urgent-strip"><div class="us-label"><i class="ti ti-alert-triangle"></i> Priority</div>'+urgentHtml+'</div>'
+    +'<div class="grid-4"><div class="pstat"><div class="pstat-top"><div class="pstat-label">'+t('myCases')+'</div><div class="pstat-icon" style="background:var(--blue-faint);color:var(--blue-text)"><i class="ti ti-briefcase"></i></div></div><div class="pstat-val">'+cases.length+'</div><div class="pstat-sub">Assigned to you</div></div><div class="pstat"><div class="pstat-top"><div class="pstat-label">'+t('intakeQueue')+'</div><div class="pstat-icon" style="background:var(--amber-faint);color:var(--amber)"><i class="ti ti-inbox"></i></div></div><div class="pstat-val">'+intake.length+'</div><div class="pstat-sub '+(intake.length?'warn':'good')+'">Awaiting triage</div></div><div class="pstat"><div class="pstat-top"><div class="pstat-label">'+t('cprWatch')+'</div><div class="pstat-icon" style="background:var(--red-faint);color:var(--red)"><i class="ti ti-calendar-due"></i></div></div><div class="pstat-val">'+urgent.length+'</div><div class="pstat-sub '+(urgent.length?'urgent':'good')+'">Due within 7 days</div></div><div class="pstat"><div class="pstat-top"><div class="pstat-label">Exposure</div><div class="pstat-icon" style="background:var(--green-faint);color:var(--green)"><i class="ti ti-cash"></i></div></div><div class="pstat-val">'+(totalValue?totalValue.toLocaleString():'0')+'</div><div class="pstat-sub">Indicative claimed value</div></div></div>'
+    +'<div class="pipeline"><div class="pipe-label">'+t('myPipeline')+'</div>'+stages.map(function(s){var n=cases.filter(function(c){return c.stage===s;}).length;return '<a class="pipe-stage" href="'+(s==='intake'?'module1-intake.html':'module2-case-management.html')+'"><div class="pipe-count '+(n?'':'pipe-zero')+'" style="color:'+(n?stageColor(s):'var(--border2)')+'">'+n+'</div><div class="pipe-name">'+escapeHtml(t('stage_'+s)||s)+'</div></a>';}).join('')+'</div>'
+    +'<div class="grid-2"><div class="panel"><div class="panel-hdr"><div class="panel-title"><i class="ti ti-briefcase"></i>'+t('myCases')+'</div><a class="panel-link" href="module2-case-management.html">'+t('viewAll')+' <i class="ti ti-arrow-right"></i></a></div><div id="dash-cases">'+caseRows(cases,5)+'</div></div><div class="panel"><div class="panel-hdr"><div class="panel-title"><i class="ti ti-folder-open"></i>'+t('evidenceProgress')+'</div><a class="panel-link" href="module4-evidence.html">'+t('viewAll')+' <i class="ti ti-arrow-right"></i></a></div>'+(evidence.length?evidence.map(function(c){return '<div class="ev-row"><div><div class="ev-name">'+escapeHtml(c.claimant)+'</div><div class="ev-meta">'+escapeHtml(c.ref)+' · '+escapeHtml(c.flightNum)+'</div></div><div class="ev-bar-wrap"><div class="ev-bar"><div class="ev-fill" style="width:'+c.evidencePct+'%;background:'+evPctColor(c.evidencePct)+'"></div></div><div class="ev-pct" style="color:'+evPctColor(c.evidencePct)+'">'+c.evidencePct+'%</div></div></div>';}).join(''):'<div class="empty-row">No evidence packs currently assigned.</div>')+'</div></div>'
+    +'<div class="grid-2"><div class="panel"><div class="panel-hdr"><div class="panel-title"><i class="ti ti-calendar-due"></i>'+t('cprDeadlines')+'</div><a class="panel-link" href="module3-cpr.html">'+t('viewAll')+' <i class="ti ti-arrow-right"></i></a></div>'+caseRows(urgent.length?urgent:cases,4)+'</div><div class="panel"><div class="panel-hdr"><div class="panel-title"><i class="ti ti-file-pencil"></i>'+t('drafting')+'</div><a class="panel-link" href="module5-drafting.html">'+t('viewAll')+' <i class="ti ti-arrow-right"></i></a></div>'+caseRows(drafting,4)+'</div></div>';
+  document.querySelectorAll('#page .case-row[data-ref]').forEach(function(row){row.addEventListener('click',function(){openCase(this.getAttribute('data-ref'));});});
+}
+window.addEventListener('load',render);
+</script>
 
 <script>
 /* ── Nav + user switcher ── */
@@ -281,8 +298,11 @@ function _navInit(){
       var cases=getCasesForUser(uid);
       var intN=cases.filter(function(c){return c.stage==='intake';}).length;
       var urgN=cases.filter(function(c){return c.cprDaysLeft<=7&&c.stage!=='resolve';}).length;
-      if(intN>0){var il=document.getElementById('gnl-intake');if(il){var b=document.createElement('span');b.style.cssText='background:#C0392B;color:#fff;font-size:9px;font-weight:600;padding:1px 5px;border-radius:10px;margin-left:3px;vertical-align:middle';b.textContent=intN;il.appendChild(b);}}
-      if(urgN>0){var cl=document.getElementById('gnl-cpr');if(cl){var b2=document.createElement('span');b2.style.cssText='background:#C0392B;color:#fff;font-size:9px;font-weight:600;padding:1px 5px;border-radius:10px;margin-left:3px;vertical-align:middle';b2.textContent=urgN;cl.appendChild(b2);}}
+      var badgeCss='background:#C0392B;color:#fff;font-size:9px;font-weight:600;padding:1px 5px;border-radius:10px;margin-left:3px;vertical-align:middle';
+      var il=document.getElementById('gnl-intake');
+      if(il){var oldI=il.querySelector('.gn-badge-intake');if(oldI)oldI.remove();if(intN>0){var b=document.createElement('span');b.className='gn-badge-intake';b.style.cssText=badgeCss;b.textContent=intN;il.appendChild(b);}}
+      var cl=document.getElementById('gnl-cpr');
+      if(cl){var oldC=cl.querySelector('.gn-badge-cpr');if(oldC)oldC.remove();if(urgN>0){var b2=document.createElement('span');b2.className='gn-badge-cpr';b2.style.cssText=badgeCss;b2.textContent=urgN;cl.appendChild(b2);}}
     }
     // Active state
     var p=window.location.pathname.split('/').pop()||'index.html';
@@ -348,12 +368,6 @@ function switchUser(id){
       var el=document.getElementById('ud-'+id);
       if(el)el.classList.toggle('current',id===uid);
     });
-    // Nav badges
-    if(typeof getCasesForUser==='function'){
-      var cases=getCasesForUser(uid);
-      var urgN=cases.filter(function(c){return c.cprDaysLeft<=7&&c.stage!=='resolve';}).length;
-      if(urgN>0){var el=document.querySelector('a[href="module3-cpr.html"]');if(el){var b=el.querySelector('.nav-badge-cpr');if(!b){b=document.createElement('span');b.className='nav-badge-cpr';b.style.cssText='background:#C0392B;color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:10px;margin-left:3px';b.textContent=urgN;el.appendChild(b);}}}
-    }
   }catch(e){}
 })();
 
