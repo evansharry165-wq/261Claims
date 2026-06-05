@@ -70,6 +70,7 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 .empty-state i{font-size:36px;display:block;margin-bottom:12px;opacity:0.35}
 .empty-state p{font-size:13px;line-height:1.6}
 .stage-icon{width:30px;height:30px;border-radius:var(--r);display:flex;align-items:center;justify-content:center;font-size:13px}
+.handler-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:0 24px 14px}.handler-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:12px}.hc-label{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);font-weight:500;margin-bottom:5px}.hc-val{font-size:22px;font-weight:500}.request-row{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:13px 15px;margin-bottom:10px;display:grid;grid-template-columns:1fr auto;gap:12px}.req-ref{font-family:var(--mono);font-size:10px;color:var(--text3);margin-bottom:3px}.req-title{font-size:13px;font-weight:500}.req-meta{font-size:11px;color:var(--text2);line-height:1.5;margin-top:4px}.req-pill{font-size:10px;font-weight:500;padding:3px 8px;border-radius:20px;background:var(--amber-faint);color:var(--amber);display:inline-flex;margin-left:5px}.req-actions{display:flex;gap:6px;align-items:center}.btn-mini{font-size:11px;border:1px solid var(--border2);border-radius:var(--r);background:var(--surface2);padding:6px 10px;cursor:pointer;font-family:var(--font);color:var(--text2)}.btn-mini.primary{background:var(--navy);color:#fff;border-color:var(--navy)}.btn-mini.done{background:var(--green-faint);color:var(--green);border-color:#BBF7D0}
 /* user modal */
 .user-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.3);z-index:1000;align-items:flex-start;justify-content:flex-end;padding:52px 16px 0}
 .user-modal.open{display:flex}
@@ -93,6 +94,7 @@ const USERS={
   PL:{id:'PL',name:'P. Laurent',full:'Pierre Laurent',role:'Juriste',initials:'PL',lang:'fr'},
   CG:{id:'CG',name:'C. García',full:'Carlos García',role:'Abogado senior',initials:'CG',lang:'es'},
   IM:{id:'IM',name:'I. Martín',full:'Isabel Martín',role:'Abogada',initials:'IM',lang:'es'},
+  EH:{id:'EH',name:'E. Hughes',full:'Emma Hughes',role:'Evidence Handling Specialist',initials:'EH',lang:'en',team:'evidence'},
 };
 const JURISDICTIONS={
   'england-wales':{name:'England & Wales',flag:'🇬🇧',lang:'en',limitationYears:6,limitationNote:'6 years — Limitation Act 1980',court:'County Court',procedureNote:'CPR Pre-Action Protocol. 21-day acknowledgement.',responseWindow:21,mediation:'optional',mediationNote:'ADR available but not mandatory.',keyDates:[{label:'Acknowledge LOC',days:21,urgency:'critical',note:'CPR Pre-Action Protocol'},{label:'Letter of Response',days:91,urgency:'important',note:'3 months from acknowledgement'},{label:'Limitation review',days:120,urgency:'watch',note:'6-year limitation'}],documents:{acknowledgement:'Letter of Acknowledgement',response:'Letter of Response',defence:'Defence (CPR Part 16)',witness:'Witness Statement (CPR Part 32)'},important:null},
@@ -243,6 +245,9 @@ setTimeout(_navInit,150);
     <div style="padding:4px 14px 2px;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.06em;color:var(--text3)">🇪🇸 Equipo España</div>
     <div class="ud-item" id="ud-CG" onclick="switchUser('CG')"><div class="ud-av" style="background:#6b1a1a">CG</div><div><div class="ud-name">Carlos García</div><div class="ud-role">Abogado senior</div></div><i class="ti ti-check ud-tick"></i></div>
     <div class="ud-item" id="ud-IM" onclick="switchUser('IM')"><div class="ud-av" style="background:#6b1a1a">IM</div><div><div class="ud-name">Isabel Martín</div><div class="ud-role">Abogada</div></div><i class="ti ti-check ud-tick"></i></div>
+    <div style="height:1px;background:var(--border);margin:4px 0"></div>
+    <div style="padding:4px 14px 2px;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.06em;color:var(--text3)">Evidence team</div>
+    <div class="ud-item" id="ud-EH" onclick="switchUser('EH')"><div class="ud-av" style="background:#164E63">EH</div><div><div class="ud-name">Emma Hughes</div><div class="ud-role">Evidence Handling Specialist</div></div><i class="ti ti-check ud-tick"></i></div>
   </div>
 </div>
 <script>
@@ -261,7 +266,7 @@ function switchUser(id){
     var av=document.getElementById('nav-av'); if(av)av.textContent=u.initials;
     var un=document.getElementById('nav-user'); if(un)un.textContent=u.name;
   }
-  ['SB','JP','KR','MD','PL','CG','IM'].forEach(function(uid){
+  ['SB','JP','KR','MD','PL','CG','IM','EH'].forEach(function(uid){
     var el=document.getElementById('ud-'+uid);
     if(el){el.classList.toggle('current',uid===id);}
   });
@@ -276,7 +281,7 @@ function switchUser(id){
     if(!u)return;
     var av=document.getElementById('nav-av'); if(av)av.textContent=u.initials;
     var un=document.getElementById('nav-user'); if(un)un.textContent=u.name;
-    ['SB','JP','KR','MD','PL','CG','IM'].forEach(function(id){
+    ['SB','JP','KR','MD','PL','CG','IM','EH'].forEach(function(id){
       var el=document.getElementById('ud-'+id);
       if(el)el.classList.toggle('current',id===uid);
     });
@@ -286,12 +291,31 @@ function switchUser(id){
 </script>
 <script>
 var _activeUser = getActiveUser();
+var DEFAULT_EVIDENCE_REQUESTS=[
+  {id:'REQ-001',ref:'AC-2026-0089',claimant:'Daniel Hartley',flight:'HC 1184',pack:'Gold',status:'open',priority:'Urgent',due:'3d',missing:['Valencia ground handling records','Passenger care evidence','DPM notes'],note:'High value weather/diversion claim. Legal needs gold pack before drafting.'},
+  {id:'REQ-002',ref:'AC-2026-0091',claimant:'Rebecca Walsh',flight:'HC 307',pack:'Bronze',status:'open',priority:'Normal',due:'21d',missing:['Eurocontrol regulation PDF','MAX OPS passenger communications'],note:'ATC delay case. Pull all found TOPS but source gaps remain.'},
+  {id:'REQ-003',ref:'FR-2026-0018',claimant:'Sophie Blanchard',flight:'HC 519',pack:'Gold',status:'in-progress',priority:'Cross-border',due:'32d',missing:['SIGMET Lyon','French care records'],note:'French cancellation case. Check mediation timetable and passenger care files.'}
+];
+function getEvidenceRequests(){
+  try{
+    var stored=JSON.parse(sessionStorage.getItem('261c_evidence_requests')||'[]');
+    var byId={};
+    DEFAULT_EVIDENCE_REQUESTS.concat(stored).forEach(function(r){byId[r.id]=r;});
+    return Object.keys(byId).map(function(k){return byId[k];});
+  }catch(e){return DEFAULT_EVIDENCE_REQUESTS.slice();}
+}
+function saveEvidenceRequests(reqs){try{sessionStorage.setItem('261c_evidence_requests',JSON.stringify(reqs));}catch(e){}}
+function updateRequestStatus(id,status){
+  var reqs=getEvidenceRequests().map(function(r){if(r.id===id){r.status=status;if(status==='complete')r.completed='Just now';}return r;});
+  saveEvidenceRequests(reqs);
+  _render();
+}
 
 function _initNav(){
   var uid=getActiveUser(), u=USERS[uid]||USERS.SB;
   var av=document.getElementById('nav-av'); if(av)av.textContent=u.initials;
   var un=document.getElementById('nav-user'); if(un)un.textContent=u.name;
-  ['SB','JP','KR','MD','PL','CG','IM'].forEach(function(id){
+  ['SB','JP','KR','MD','PL','CG','IM','EH'].forEach(function(id){
     var el=document.getElementById('ud-'+id);
     if(el)el.classList.toggle('current',id===uid);
   });
@@ -300,6 +324,7 @@ function _initNav(){
 function _render(){
   _activeUser = getActiveUser();
   var u = USERS[_activeUser]||USERS.SB;
+  if(_activeUser==='EH'){renderEvidenceHandler(u);return;}
   var cases = getCasesForUser(_activeUser, 'evidence');
   cases.sort(function(a,b){return a.cprDaysLeft-b.cprDaysLeft;});
   var hdr=document.getElementById('ph-title'); if(hdr) hdr.textContent='Evidence — '+u.name;
@@ -334,6 +359,19 @@ function _render(){
       });
     });
   }
+}
+function renderEvidenceHandler(u){
+  var reqs=getEvidenceRequests();
+  var open=reqs.filter(function(r){return r.status!=='complete';});
+  var complete=reqs.filter(function(r){return r.status==='complete';});
+  var urgent=open.filter(function(r){return r.priority==='Urgent';});
+  var hdr=document.getElementById('ph-title'); if(hdr) hdr.textContent='Evidence handling queue — '+u.name;
+  var sub=document.getElementById('ph-sub'); if(sub) sub.textContent='Requests from legal teams where Pull all left missing evidence or interpretation gaps';
+  var stat=document.getElementById('ph-stats'); if(stat) stat.innerHTML='<span style="font-size:11px;color:var(--text2)">'+open.length+' open · '+complete.length+' completed</span>';
+  var wrap=document.querySelector('.case-table-wrap');
+  if(!wrap)return;
+  wrap.innerHTML='<div class="handler-grid"><div class="handler-card"><div class="hc-label">Open requests</div><div class="hc-val">'+open.length+'</div></div><div class="handler-card"><div class="hc-label">Urgent</div><div class="hc-val" style="color:var(--red)">'+urgent.length+'</div></div><div class="handler-card"><div class="hc-label">Completed today</div><div class="hc-val" style="color:var(--green)">'+complete.length+'</div></div></div>'
+    +open.concat(complete).map(function(r){return '<div class="request-row"><div><div class="req-ref">'+r.id+' · '+r.ref+'</div><div class="req-title">'+r.claimant+' · '+r.flight+' <span class="req-pill">'+r.pack+' pack</span><span class="req-pill">'+r.priority+'</span></div><div class="req-meta">'+r.note+'<br><strong>Missing:</strong> '+r.missing.join(', ')+' · Due '+r.due+'</div></div><div class="req-actions">'+(r.status==='complete'?'<button class="btn-mini done"><i class="ti ti-check"></i> Complete</button>':'<button class="btn-mini" onclick="updateRequestStatus(&quot;'+r.id+'&quot;,&quot;in-progress&quot;)">Start</button><button class="btn-mini primary" onclick="updateRequestStatus(&quot;'+r.id+'&quot;,&quot;complete&quot;)">Mark complete</button>')+'</div></div>';}).join('');
 }
 window.renderPage=_render;
 window.addEventListener('load',function(){_initNav();_render();});

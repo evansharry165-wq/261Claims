@@ -93,6 +93,7 @@ const USERS={
   PL:{id:'PL',name:'P. Laurent',full:'Pierre Laurent',role:'Juriste',initials:'PL',lang:'fr'},
   CG:{id:'CG',name:'C. García',full:'Carlos García',role:'Abogado senior',initials:'CG',lang:'es'},
   IM:{id:'IM',name:'I. Martín',full:'Isabel Martín',role:'Abogada',initials:'IM',lang:'es'},
+  EH:{id:'EH',name:'E. Hughes',full:'Emma Hughes',role:'Evidence Handling Specialist',initials:'EH',lang:'en',team:'evidence'},
 };
 const JURISDICTIONS={
   'england-wales':{name:'England & Wales',flag:'🇬🇧',lang:'en',limitationYears:6,limitationNote:'6 years — Limitation Act 1980',court:'County Court',procedureNote:'CPR Pre-Action Protocol. 21-day acknowledgement.',responseWindow:21,mediation:'optional',mediationNote:'ADR available but not mandatory.',keyDates:[{label:'Acknowledge LOC',days:21,urgency:'critical',note:'CPR Pre-Action Protocol'},{label:'Letter of Response',days:91,urgency:'important',note:'3 months from acknowledgement'},{label:'Limitation review',days:120,urgency:'watch',note:'6-year limitation'}],documents:{acknowledgement:'Letter of Acknowledgement',response:'Letter of Response',defence:'Defence (CPR Part 16)',witness:'Witness Statement (CPR Part 32)'},important:null},
@@ -243,6 +244,9 @@ setTimeout(_navInit,150);
     <div style="padding:4px 14px 2px;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.06em;color:var(--text3)">🇪🇸 Equipo España</div>
     <div class="ud-item" id="ud-CG" onclick="switchUser('CG')"><div class="ud-av" style="background:#6b1a1a">CG</div><div><div class="ud-name">Carlos García</div><div class="ud-role">Abogado senior</div></div><i class="ti ti-check ud-tick"></i></div>
     <div class="ud-item" id="ud-IM" onclick="switchUser('IM')"><div class="ud-av" style="background:#6b1a1a">IM</div><div><div class="ud-name">Isabel Martín</div><div class="ud-role">Abogada</div></div><i class="ti ti-check ud-tick"></i></div>
+    <div style="height:1px;background:var(--border);margin:4px 0"></div>
+    <div style="padding:4px 14px 2px;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.06em;color:var(--text3)">Evidence team</div>
+    <div class="ud-item" id="ud-EH" onclick="switchUser('EH')"><div class="ud-av" style="background:#164E63">EH</div><div><div class="ud-name">Emma Hughes</div><div class="ud-role">Evidence Handling Specialist</div></div><i class="ti ti-check ud-tick"></i></div>
   </div>
 </div>
 <script>
@@ -261,7 +265,7 @@ function switchUser(id){
     var av=document.getElementById('nav-av'); if(av)av.textContent=u.initials;
     var un=document.getElementById('nav-user'); if(un)un.textContent=u.name;
   }
-  ['SB','JP','KR','MD','PL','CG','IM'].forEach(function(uid){
+  ['SB','JP','KR','MD','PL','CG','IM','EH'].forEach(function(uid){
     var el=document.getElementById('ud-'+uid);
     if(el){el.classList.toggle('current',uid===id);}
   });
@@ -276,7 +280,7 @@ function switchUser(id){
     if(!u)return;
     var av=document.getElementById('nav-av'); if(av)av.textContent=u.initials;
     var un=document.getElementById('nav-user'); if(un)un.textContent=u.name;
-    ['SB','JP','KR','MD','PL','CG','IM'].forEach(function(id){
+    ['SB','JP','KR','MD','PL','CG','IM','EH'].forEach(function(id){
       var el=document.getElementById('ud-'+id);
       if(el)el.classList.toggle('current',id===uid);
     });
@@ -291,7 +295,7 @@ function _initNav(){
   var uid=getActiveUser(), u=USERS[uid]||USERS.SB;
   var av=document.getElementById('nav-av'); if(av)av.textContent=u.initials;
   var un=document.getElementById('nav-user'); if(un)un.textContent=u.name;
-  ['SB','JP','KR','MD','PL','CG','IM'].forEach(function(id){
+  ['SB','JP','KR','MD','PL','CG','IM','EH'].forEach(function(id){
     var el=document.getElementById('ud-'+id);
     if(el)el.classList.toggle('current',id===uid);
   });

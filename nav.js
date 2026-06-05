@@ -17,6 +17,7 @@
     { label:'UK Litigation',   labelFr:'Équipe Royaume-Uni', labelEs:'Equipo Reino Unido', users:['SB','JP','KR'] },
     { label:'Équipe France',   labelFr:'Équipe France',      labelEs:'Equipo Francia',     users:['MD','PL'] },
     { label:'Equipo España',   labelFr:'Équipe Espagne',     labelEs:'Equipo España',      users:['CG','IM'] },
+    { label:'Evidence team',    labelFr:'Équipe preuves',      labelEs:'Equipo pruebas',     users:['EH'] },
   ];
 
   var ACTIVE_PAGE = (function(){

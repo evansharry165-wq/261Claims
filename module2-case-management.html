@@ -117,6 +117,9 @@ tbody tr:last-child td{border-bottom:none}
     <div class="ud-team">🇪🇸 Equipo España</div>
     <div class="ud-item" id="ud-CG" onclick="doSwitch('CG')"><div class="ud-av" style="background:#6b1a1a">CG</div><div><div class="ud-n">Carlos García</div><div class="ud-r">Abogado senior</div></div></div>
     <div class="ud-item" id="ud-IM" onclick="doSwitch('IM')"><div class="ud-av" style="background:#6b1a1a">IM</div><div><div class="ud-n">Isabel Martín</div><div class="ud-r">Abogada</div></div></div>
+    <div class="ud-sep"></div>
+    <div class="ud-team">Evidence team</div>
+    <div class="ud-item" id="ud-EH" onclick="doSwitch('EH')"><div class="ud-av" style="background:#164E63">EH</div><div><div class="ud-n">Emma Hughes</div><div class="ud-r">Evidence Handling Specialist</div></div></div>
   </div>
 </div>
 <div class="layout">
@@ -148,6 +151,7 @@ const USERS={
   PL:{id:'PL',name:'P. Laurent',full:'Pierre Laurent',role:'Juriste',initials:'PL',lang:'fr'},
   CG:{id:'CG',name:'C. García',full:'Carlos García',role:'Abogado senior',initials:'CG',lang:'es'},
   IM:{id:'IM',name:'I. Martín',full:'Isabel Martín',role:'Abogada',initials:'IM',lang:'es'},
+  EH:{id:'EH',name:'E. Hughes',full:'Emma Hughes',role:'Evidence Handling Specialist',initials:'EH',lang:'en',team:'evidence'},
 };
 const JURISDICTIONS={
   'england-wales':{name:'England & Wales',flag:'🇬🇧',lang:'en',limitationYears:6,limitationNote:'6 years — Limitation Act 1980',court:'County Court',procedureNote:'CPR Pre-Action Protocol. 21-day acknowledgement.',responseWindow:21,mediation:'optional',mediationNote:'ADR available but not mandatory.',keyDates:[{label:'Acknowledge LOC',days:21,urgency:'critical',note:'CPR Pre-Action Protocol'},{label:'Letter of Response',days:91,urgency:'important',note:'3 months from acknowledgement'},{label:'Limitation review',days:120,urgency:'watch',note:'6-year limitation'}],documents:{acknowledgement:'Letter of Acknowledgement',response:'Letter of Response',defence:'Defence (CPR Part 16)',witness:'Witness Statement (CPR Part 32)'},important:null},
@@ -226,7 +230,7 @@ function _initNav(){
   document.getElementById('u-name').textContent = u.name;
   var keys=['dashboard','intake','cases','cpr','evidence','drafting','mi','knowledge'];
   keys.forEach(function(k){var el=document.getElementById('nl-'+k);if(el)el.textContent=t(k);});
-  ['SB','JP','KR','MD','PL','CG','IM'].forEach(function(id){
+  ['SB','JP','KR','MD','PL','CG','IM','EH'].forEach(function(id){
     var el=document.getElementById('ud-'+id);
     if(el)el.classList.toggle('current',id===_uid);
   });

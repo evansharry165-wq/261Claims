@@ -7,6 +7,7 @@ const USERS={
   PL:{id:'PL',name:'P. Laurent',full:'Pierre Laurent',role:'Juriste',initials:'PL',lang:'fr'},
   CG:{id:'CG',name:'C. García',full:'Carlos García',role:'Abogado senior',initials:'CG',lang:'es'},
   IM:{id:'IM',name:'I. Martín',full:'Isabel Martín',role:'Abogada',initials:'IM',lang:'es'},
+  EH:{id:'EH',name:'E. Hughes',full:'Emma Hughes',role:'Evidence Handling Specialist',initials:'EH',lang:'en',team:'evidence'},
 };
 const JURISDICTIONS={
   'england-wales':{name:'England & Wales',flag:'🇬🇧',lang:'en',limitationYears:6,limitationNote:'6 years — Limitation Act 1980',court:'County Court',procedureNote:'CPR Pre-Action Protocol. 21-day acknowledgement.',responseWindow:21,mediation:'optional',mediationNote:'ADR available but not mandatory.',keyDates:[{label:'Acknowledge LOC',days:21,urgency:'critical',note:'CPR Pre-Action Protocol'},{label:'Letter of Response',days:91,urgency:'important',note:'3 months from acknowledgement'},{label:'Limitation review',days:120,urgency:'watch',note:'6-year limitation'}],documents:{acknowledgement:'Letter of Acknowledgement',response:'Letter of Response',defence:'Defence (CPR Part 16)',witness:'Witness Statement (CPR Part 32)'},important:null},
