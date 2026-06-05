@@ -264,13 +264,30 @@ function render(){
   var totalValue=cases.reduce(function(sum,c){var m=String(c.value).replace(/,/g,'').match(/\d+/);return sum+(m?parseInt(m[0],10):0);},0);
   var greeting=(new Date().getHours()<12?t('goodMorning'):new Date().getHours()<18?t('goodAfternoon'):t('goodEvening'));
   var stages=['intake','triage','cpr','evidence','drafting','defence','resolve'];
+  var teamCases=ALL_CASES.slice().sort(function(a,b){return a.cprDaysLeft-b.cprDaysLeft;});
+  var legalNews=[
+    {tag:'law',source:'CJEU',title:'Hidden technical defects require specific evidence of reasonable inspection',date:'Updated today'},
+    {tag:'reg',source:'CAA',title:'UK261 evidence standards: objective records expected for extraordinary circumstances',date:'18 May 2026'},
+    {tag:'ops',source:'Network Ops',title:'ATC flow restrictions continuing across western Europe routes',date:'Live operations'}
+  ];
+  var networkTools=[
+    {icon:'ti-plane',name:'TOPS',sub:'Flight details',url:'module4-evidence.html'},
+    {icon:'ti-tower',name:'Eurocontrol',sub:'ATFM data',url:'module4-evidence.html'},
+    {icon:'ti-cloud-storm',name:'Weather',sub:'METAR / SIGMET',url:'module4-evidence.html'},
+    {icon:'ti-file-text',name:'Templates',sub:'Draft documents',url:'education.html'},
+    {icon:'ti-chart-bar',name:'MI',sub:'Portfolio insight',url:'module6-mi.html'},
+    {icon:'ti-school',name:'Knowledge',sub:'Guidance hub',url:'education.html'}
+  ];
   var urgentHtml=urgent.length?urgent.slice(0,4).map(function(c){return '<a class="us-chip '+(c.cprDaysLeft<=3?'chip-urgent':'chip-warn')+'" href="javascript:openCase(\''+c.ref+'\')"><i class="ti ti-alarm"></i>'+escapeHtml(c.ref)+' · '+urgencyLabel(c.cprDaysLeft)+'</a>';}).join(''):'<div class="us-clear"><i class="ti ti-circle-check"></i>'+t('noUrgentDeadlines')+'</div>';
   document.getElementById('page').innerHTML='<div class="page-header"><div class="greeting">'+greeting+', '+escapeHtml(u.full.split(' ')[0])+'</div><div class="greeting-sub">'+escapeHtml(u.role)+' · '+cases.length+' active case'+(cases.length!==1?'s':'')+'</div></div>'
     +'<div class="urgent-strip"><div class="us-label"><i class="ti ti-alert-triangle"></i> Priority</div>'+urgentHtml+'</div>'
     +'<div class="grid-4"><div class="pstat"><div class="pstat-top"><div class="pstat-label">'+t('myCases')+'</div><div class="pstat-icon" style="background:var(--blue-faint);color:var(--blue-text)"><i class="ti ti-briefcase"></i></div></div><div class="pstat-val">'+cases.length+'</div><div class="pstat-sub">Assigned to you</div></div><div class="pstat"><div class="pstat-top"><div class="pstat-label">'+t('intakeQueue')+'</div><div class="pstat-icon" style="background:var(--amber-faint);color:var(--amber)"><i class="ti ti-inbox"></i></div></div><div class="pstat-val">'+intake.length+'</div><div class="pstat-sub '+(intake.length?'warn':'good')+'">Awaiting triage</div></div><div class="pstat"><div class="pstat-top"><div class="pstat-label">'+t('cprWatch')+'</div><div class="pstat-icon" style="background:var(--red-faint);color:var(--red)"><i class="ti ti-calendar-due"></i></div></div><div class="pstat-val">'+urgent.length+'</div><div class="pstat-sub '+(urgent.length?'urgent':'good')+'">Due within 7 days</div></div><div class="pstat"><div class="pstat-top"><div class="pstat-label">Exposure</div><div class="pstat-icon" style="background:var(--green-faint);color:var(--green)"><i class="ti ti-cash"></i></div></div><div class="pstat-val">'+(totalValue?totalValue.toLocaleString():'0')+'</div><div class="pstat-sub">Indicative claimed value</div></div></div>'
     +'<div class="pipeline"><div class="pipe-label">'+t('myPipeline')+'</div>'+stages.map(function(s){var n=cases.filter(function(c){return c.stage===s;}).length;return '<a class="pipe-stage" href="'+(s==='intake'?'module1-intake.html':'module2-case-management.html')+'"><div class="pipe-count '+(n?'':'pipe-zero')+'" style="color:'+(n?stageColor(s):'var(--border2)')+'">'+n+'</div><div class="pipe-name">'+escapeHtml(t('stage_'+s)||s)+'</div></a>';}).join('')+'</div>'
     +'<div class="grid-2"><div class="panel"><div class="panel-hdr"><div class="panel-title"><i class="ti ti-briefcase"></i>'+t('myCases')+'</div><a class="panel-link" href="module2-case-management.html">'+t('viewAll')+' <i class="ti ti-arrow-right"></i></a></div><div id="dash-cases">'+caseRows(cases,5)+'</div></div><div class="panel"><div class="panel-hdr"><div class="panel-title"><i class="ti ti-folder-open"></i>'+t('evidenceProgress')+'</div><a class="panel-link" href="module4-evidence.html">'+t('viewAll')+' <i class="ti ti-arrow-right"></i></a></div>'+(evidence.length?evidence.map(function(c){return '<div class="ev-row"><div><div class="ev-name">'+escapeHtml(c.claimant)+'</div><div class="ev-meta">'+escapeHtml(c.ref)+' · '+escapeHtml(c.flightNum)+'</div></div><div class="ev-bar-wrap"><div class="ev-bar"><div class="ev-fill" style="width:'+c.evidencePct+'%;background:'+evPctColor(c.evidencePct)+'"></div></div><div class="ev-pct" style="color:'+evPctColor(c.evidencePct)+'">'+c.evidencePct+'%</div></div></div>';}).join(''):'<div class="empty-row">No evidence packs currently assigned.</div>')+'</div></div>'
-    +'<div class="grid-2"><div class="panel"><div class="panel-hdr"><div class="panel-title"><i class="ti ti-calendar-due"></i>'+t('cprDeadlines')+'</div><a class="panel-link" href="module3-cpr.html">'+t('viewAll')+' <i class="ti ti-arrow-right"></i></a></div>'+caseRows(urgent.length?urgent:cases,4)+'</div><div class="panel"><div class="panel-hdr"><div class="panel-title"><i class="ti ti-file-pencil"></i>'+t('drafting')+'</div><a class="panel-link" href="module5-drafting.html">'+t('viewAll')+' <i class="ti ti-arrow-right"></i></a></div>'+caseRows(drafting,4)+'</div></div>';
+    +'<div class="grid-2"><div class="panel"><div class="panel-hdr"><div class="panel-title"><i class="ti ti-calendar-due"></i>'+t('cprDeadlines')+'</div><a class="panel-link" href="module3-cpr.html">'+t('viewAll')+' <i class="ti ti-arrow-right"></i></a></div>'+caseRows(urgent.length?urgent:cases,4)+'</div><div class="panel"><div class="panel-hdr"><div class="panel-title"><i class="ti ti-file-pencil"></i>'+t('drafting')+'</div><a class="panel-link" href="module5-drafting.html">'+t('viewAll')+' <i class="ti ti-arrow-right"></i></a></div>'+caseRows(drafting,4)+'</div></div>'
+    +'<div class="grid-3"><div class="panel"><div class="panel-hdr"><div><div class="panel-title"><i class="ti ti-news"></i>'+t('legalNews')+'</div></div><a class="panel-link" href="education.html">Open hub <i class="ti ti-arrow-right"></i></a></div>'+legalNews.map(function(n){return '<div class="news-item"><div class="news-source">'+escapeHtml(n.source)+' <span class="news-tag '+n.tag+'">'+escapeHtml(n.tag)+'</span></div><div class="news-title">'+escapeHtml(n.title)+'</div><div class="news-date">'+escapeHtml(n.date)+'</div></div>';}).join('')+'</div>'
+    +'<div class="panel"><div class="panel-hdr"><div class="panel-title"><i class="ti ti-world"></i>'+t('networkOps')+'</div><a class="panel-link" href="module4-evidence.html">Evidence <i class="ti ti-arrow-right"></i></a></div><div class="net-grid">'+networkTools.map(function(n){return '<a class="net-link" href="'+n.url+'"><div class="net-icon" style="background:var(--blue-faint);color:var(--blue-text)"><i class="ti '+n.icon+'"></i></div><div><div class="net-name">'+escapeHtml(n.name)+'</div><div class="net-sub">'+escapeHtml(n.sub)+'</div></div></a>';}).join('')+'</div></div>'
+    +'<div class="panel"><div class="panel-hdr"><div class="panel-title"><i class="ti ti-users"></i>Team coverage</div><a class="panel-link" href="module6-mi.html">Portfolio <i class="ti ti-arrow-right"></i></a></div>'+teamCases.slice(0,5).map(function(c){var owner=USERS[c.assignedTo]||{name:c.assignedTo};return '<div class="dl-row"><div class="dl-ref">'+escapeHtml(c.ref)+'</div><div class="dl-name">'+escapeHtml(owner.name)+'</div><div class="dl-type">'+escapeHtml(t('stage_'+c.stage)||c.stage)+' · '+urgencyLabel(c.cprDaysLeft)+'</div></div>';}).join('')+'</div></div>';
   document.querySelectorAll('#page .case-row[data-ref]').forEach(function(row){row.addEventListener('click',function(){openCase(this.getAttribute('data-ref'));});});
 }
 window.addEventListener('load',render);
@@ -293,17 +310,6 @@ function _navInit(){
       var el=document.getElementById('gnl-'+id);
       if(el){ var sp=el.querySelector('.gnl'); if(sp && typeof t==='function') sp.textContent=t(labels[id]); }
     });
-    // Add badge counts
-    if(typeof getCasesForUser==='function'){
-      var cases=getCasesForUser(uid);
-      var intN=cases.filter(function(c){return c.stage==='intake';}).length;
-      var urgN=cases.filter(function(c){return c.cprDaysLeft<=7&&c.stage!=='resolve';}).length;
-      var badgeCss='background:#C0392B;color:#fff;font-size:9px;font-weight:600;padding:1px 5px;border-radius:10px;margin-left:3px;vertical-align:middle';
-      var il=document.getElementById('gnl-intake');
-      if(il){var oldI=il.querySelector('.gn-badge-intake');if(oldI)oldI.remove();if(intN>0){var b=document.createElement('span');b.className='gn-badge-intake';b.style.cssText=badgeCss;b.textContent=intN;il.appendChild(b);}}
-      var cl=document.getElementById('gnl-cpr');
-      if(cl){var oldC=cl.querySelector('.gn-badge-cpr');if(oldC)oldC.remove();if(urgN>0){var b2=document.createElement('span');b2.className='gn-badge-cpr';b2.style.cssText=badgeCss;b2.textContent=urgN;cl.appendChild(b2);}}
-    }
     // Active state
     var p=window.location.pathname.split('/').pop()||'index.html';
     var active=p.indexOf('module1')>=0?'intake':p.indexOf('module2')>=0?'cases':p.indexOf('module3')>=0?'cpr':p.indexOf('module4')>=0?'evidence':p.indexOf('module5')>=0?'drafting':p.indexOf('module6')>=0?'mi':p.indexOf('education')>=0?'knowledge':'dashboard';
@@ -343,7 +349,11 @@ function toggleUserMenu(){var m=document.getElementById('user-modal');if(m)m.cla
 function closeMenu(){var m=document.getElementById('user-modal');if(m)m.classList.remove('open');}
 function switchUser(id){
   if(typeof setActiveUser==='function')setActiveUser(id);
+  sessionStorage.removeItem('261c_lang');
+  sessionStorage.removeItem('261c_case');
+  sessionStorage.removeItem('aeroCaseData');
   closeMenu();
+  if(window.location.pathname.indexOf('workspace')>=0){window.location.href='index.html';return;}
   var u=typeof USERS!=='undefined'?USERS[id]:null;
   if(u){
     var av=document.getElementById('nav-av'); if(av)av.textContent=u.initials;
@@ -353,7 +363,7 @@ function switchUser(id){
     var el=document.getElementById('ud-'+uid);
     if(el){el.classList.toggle('current',uid===id);}
   });
-  sessionStorage.removeItem('261c_lang');
+  if(typeof _navInit==='function')_navInit();
   if(typeof render==='function')render();
   if(typeof _render==='function')_render();
 }

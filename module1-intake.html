@@ -224,6 +224,7 @@ function t(key){var d=I18N[getUILang()]||I18N.en;return d[key]||I18N.en[key]||ke
         <div class="lp-title">Intake queue</div>
         <div class="lp-sub" id="lp-sub">Cases assigned to you awaiting action</div>
         <button class="lp-upload-btn" onclick="triggerUpload()"><i class="ti ti-upload" style="font-size:14px"></i> Upload new letter of claim</button>
+        <button class="lp-upload-btn" onclick="triggerSupportUpload()"><i class="ti ti-file-plus" style="font-size:14px"></i> Deposit document into case file</button>
       </div>
       <div class="case-list" id="case-list"></div>
     </div>
@@ -234,10 +235,14 @@ function t(key){var d=I18N[getUILang()]||I18N.en;return d[key]||I18N.en[key]||ke
 </div>
 
 <input type="file" id="file-input" accept=".pdf,.doc,.docx,.txt" onchange="handleUpload(event)">
+<input type="file" id="support-file-input" accept=".pdf,.doc,.docx,.txt,.png,.jpg,.jpeg" onchange="handleSupportUpload(event)">
 
 <script>
 var uploadedCases=[];
 var selectedRef=(new URLSearchParams(window.location.search).get('ref')||'');
+var pendingSupportFile=null;
+var depositedDocs=[];
+var depositSearch='';
 
 function escapeHtml(v){return String(v==null?'':v).replace(/[&<>"']/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch];});}
 function intakeCases(){
@@ -245,6 +250,11 @@ function intakeCases(){
   return getCasesForUser(uid,'intake').concat(uploadedCases.filter(function(c){return c.assignedTo===uid;}));
 }
 function triggerUpload(){document.getElementById('file-input').click();}
+function triggerSupportUpload(){document.getElementById('support-file-input').click();}
+function userCases(){
+  var uid=getActiveUser();
+  return getCasesForUser(uid).concat(uploadedCases.filter(function(c){return c.assignedTo===uid;}));
+}
 function handleUpload(event){
   var file=event.target.files&&event.target.files[0];
   if(!file)return;
@@ -258,6 +268,41 @@ function handleUpload(event){
   try{sessionStorage.setItem('261c_case',JSON.stringify(c));}catch(e){}
   render();
   event.target.value='';
+}
+function handleSupportUpload(event){
+  var file=event.target.files&&event.target.files[0];
+  if(!file)return;
+  pendingSupportFile={name:file.name,size:file.size,type:file.type||'Document'};
+  render();
+  event.target.value='';
+}
+function setDepositSearch(v){depositSearch=v||'';render();}
+function depositIntoCase(ref){
+  if(!pendingSupportFile)return;
+  var c=userCases().find(function(x){return x.ref===ref;});
+  if(!c)return;
+  var doc={
+    ref:ref,
+    name:pendingSupportFile.name,
+    type:pendingSupportFile.type,
+    size:pendingSupportFile.size,
+    summary:buildDocSummary(pendingSupportFile,c),
+    time:'Just now'
+  };
+  depositedDocs.unshift(doc);
+  pendingSupportFile=null;
+  selectedRef=ref;
+  try{sessionStorage.setItem('261c_case',JSON.stringify(c));}catch(e){}
+  render();
+}
+function buildDocSummary(file,c){
+  var lower=file.name.toLowerCase();
+  var kind=lower.indexOf('metar')>=0||lower.indexOf('weather')>=0?'weather evidence'
+    :lower.indexOf('invoice')>=0||lower.indexOf('receipt')>=0?'expense evidence'
+    :lower.indexOf('eurocontrol')>=0||lower.indexOf('atfm')>=0?'ATC restriction evidence'
+    :lower.indexOf('letter')>=0||lower.indexOf('loc')>=0?'claim correspondence'
+    :'supporting evidence';
+  return 'AI summary: '+file.name+' has been scanned as '+kind+' for '+c.ref+'. Key fields were linked to '+c.claimant+' / '+c.flightNum+' and queued for legal review in the case file.';
 }
 function selectCase(ref){
   selectedRef=ref;
@@ -294,6 +339,11 @@ function render(){
   }).join('');
   var c=cases.find(function(x){return x.ref===selectedRef;})||cases[0];
   var J=getJurisdiction(c.jurisdiction);
+  var candidates=userCases().filter(function(x){
+    var q=depositSearch.toLowerCase();
+    return !q||x.ref.toLowerCase().indexOf(q)>=0||x.claimant.toLowerCase().indexOf(q)>=0||(x.flightNum||'').toLowerCase().indexOf(q)>=0;
+  }).slice(0,6);
+  var docs=depositedDocs.filter(function(d){return d.ref===c.ref;});
   var points=(c.points&&c.points.length)?c.points:[
     {n:1,claim:'Passenger and flight details extracted',evidenceStatus:'amber',evidenceDoc:'Needs legal review'},
     {n:2,claim:'Disruption reason identified as '+(c.disruptionType||'pending'),evidenceStatus:'amber',evidenceDoc:'Confirm in triage'},
@@ -304,6 +354,13 @@ function render(){
     +'<div class="section-card"><div class="sc-header"><i class="ti ti-scan"></i><div class="sc-title">Extracted claim summary</div></div><div class="sc-body"><div class="field-grid">'
     +fieldHtml('Claim type',c.type)+fieldHtml('LOC received',c.locDate)+fieldHtml('Disruption',c.disruptionType)+fieldHtml('Jurisdiction',J.name)+'</div></div></div>'
     +'<div class="section-card"><div class="sc-header"><i class="ti ti-list-check"></i><div class="sc-title">Initial issues for triage</div></div><div class="sc-body">'+points.map(function(p){var cls=p.evidenceStatus==='green'?'g':p.evidenceStatus==='red'?'r':'a';return '<div class="point-item"><div class="pt-dot pt-'+cls+'"></div><div class="pt-n">'+p.n+'</div><div style="flex:1"><div class="pt-claim">'+escapeHtml(p.claim)+'</div><div class="pt-ev">'+escapeHtml(p.evidenceDoc||'Pending')+'</div></div><span class="pt-status ps-'+cls+'">'+(cls==='g'?'Ready':cls==='r'?'Missing':'Review')+'</span></div>';}).join('')+'</div></div>'
+    +'<div class="section-card"><div class="sc-header"><i class="ti ti-file-search"></i><div class="sc-title">Document deposit and AI summary</div></div><div class="sc-body">'
+    +'<div style="font-size:12px;color:var(--text2);line-height:1.5;margin-bottom:10px">Upload supporting documents, search for the correct existing case, and deposit the file into that case file for AI scanning and legal review.</div>'
+    +'<div class="field-grid" style="margin-bottom:10px">'+fieldHtml('Selected document',pendingSupportFile?pendingSupportFile.name:'No document selected')+fieldHtml('Current case documents',docs.length+' deposited')+'</div>'
+    +'<div style="display:flex;gap:8px;margin-bottom:10px"><button class="btn-advance" style="width:auto;padding:7px 12px" onclick="triggerSupportUpload()"><i class="ti ti-upload"></i> Choose document</button><input class="chk-text" style="max-width:none;flex:1" placeholder="Search case ref, claimant, or flight" value="'+escapeHtml(depositSearch)+'" oninput="setDepositSearch(this.value)"></div>'
+    +(pendingSupportFile?'<div style="border:1px solid var(--border);border-radius:var(--r2);overflow:hidden;margin-bottom:10px">'+candidates.map(function(x){return '<div class="point-item" style="padding:9px 10px"><div class="pt-dot pt-a"></div><div style="flex:1"><div class="pt-claim">'+escapeHtml(x.ref)+' · '+escapeHtml(x.claimant)+'</div><div class="pt-ev">'+escapeHtml(x.flightNum)+' · '+escapeHtml(t('stage_'+x.stage)||x.stage)+'</div></div><button class="chk-save" onclick="depositIntoCase(&quot;'+escapeHtml(x.ref)+'&quot;)">Deposit here</button></div>';}).join('')+'</div>':'')
+    +(docs.length?docs.map(function(d){return '<div style="background:var(--green-faint);border:1px solid #BBF7D0;border-radius:var(--r);padding:9px 10px;margin-top:6px"><div style="font-size:12px;font-weight:500;color:var(--green);margin-bottom:3px"><i class="ti ti-file-check"></i> '+escapeHtml(d.name)+'</div><div style="font-size:11px;color:var(--text2);line-height:1.5">'+escapeHtml(d.summary)+'</div></div>';}).join(''):'<div style="font-size:11px;color:var(--text3)">No supporting documents deposited into this case yet.</div>')
+    +'</div></div>'
     +'<div class="advance-bar"><div class="adv-text">Open the triage workspace to confirm classification, CPR position, and next module.</div><button class="btn-advance" onclick="startTriage(\''+c.ref+'\')"><i class="ti ti-arrow-right"></i> Start triage</button></div>'
     +'</div>';
 }
@@ -332,17 +389,6 @@ function _navInit(){
       var el=document.getElementById('gnl-'+id);
       if(el){ var sp=el.querySelector('.gnl'); if(sp && typeof t==='function') sp.textContent=t(labels[id]); }
     });
-    // Add badge counts
-    if(typeof getCasesForUser==='function'){
-      var cases=getCasesForUser(uid);
-      var intN=cases.filter(function(c){return c.stage==='intake';}).length;
-      var urgN=cases.filter(function(c){return c.cprDaysLeft<=7&&c.stage!=='resolve';}).length;
-      var badgeCss='background:#C0392B;color:#fff;font-size:9px;font-weight:600;padding:1px 5px;border-radius:10px;margin-left:3px;vertical-align:middle';
-      var il=document.getElementById('gnl-intake');
-      if(il){var oldI=il.querySelector('.gn-badge-intake');if(oldI)oldI.remove();if(intN>0){var b=document.createElement('span');b.className='gn-badge-intake';b.style.cssText=badgeCss;b.textContent=intN;il.appendChild(b);}}
-      var cl=document.getElementById('gnl-cpr');
-      if(cl){var oldC=cl.querySelector('.gn-badge-cpr');if(oldC)oldC.remove();if(urgN>0){var b2=document.createElement('span');b2.className='gn-badge-cpr';b2.style.cssText=badgeCss;b2.textContent=urgN;cl.appendChild(b2);}}
-    }
     // Active state
     var p=window.location.pathname.split('/').pop()||'index.html';
     var active=p.indexOf('module1')>=0?'intake':p.indexOf('module2')>=0?'cases':p.indexOf('module3')>=0?'cpr':p.indexOf('module4')>=0?'evidence':p.indexOf('module5')>=0?'drafting':p.indexOf('module6')>=0?'mi':p.indexOf('education')>=0?'knowledge':'dashboard';
@@ -382,7 +428,11 @@ function toggleUserMenu(){var m=document.getElementById('user-modal');if(m)m.cla
 function closeMenu(){var m=document.getElementById('user-modal');if(m)m.classList.remove('open');}
 function switchUser(id){
   if(typeof setActiveUser==='function')setActiveUser(id);
+  sessionStorage.removeItem('261c_lang');
+  sessionStorage.removeItem('261c_case');
+  sessionStorage.removeItem('aeroCaseData');
   closeMenu();
+  if(window.location.pathname.indexOf('workspace')>=0){window.location.href='index.html';return;}
   var u=typeof USERS!=='undefined'?USERS[id]:null;
   if(u){
     var av=document.getElementById('nav-av'); if(av)av.textContent=u.initials;
@@ -392,7 +442,7 @@ function switchUser(id){
     var el=document.getElementById('ud-'+uid);
     if(el){el.classList.toggle('current',uid===id);}
   });
-  sessionStorage.removeItem('261c_lang');
+  if(typeof _navInit==='function')_navInit();
   if(typeof render==='function')render();
   if(typeof _render==='function')_render();
 }

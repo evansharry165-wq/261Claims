@@ -20,7 +20,6 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 .nl:hover{background:rgba(255,255,255,0.08);color:#fff}
 .nl.active{background:rgba(42,111,219,0.35);color:#fff}
 .nl i{font-size:13px}
-.nl-badge{background:var(--red);color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:10px;margin-left:2px}
 .nav-right{display:flex;align-items:center;gap:8px;margin-left:8px}
 .user-btn{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:20px;padding:3px 10px 3px 4px;cursor:pointer}
 .u-av{width:24px;height:24px;border-radius:50%;background:#1C2E44;color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500}
@@ -215,6 +214,7 @@ function closeMenu(){var m=document.getElementById('u-modal');if(m)m.classList.r
 
 function doSwitch(id){
   setActiveUser(id); _uid=id; sessionStorage.removeItem('261c_lang');
+  sessionStorage.removeItem('261c_case'); sessionStorage.removeItem('aeroCaseData');
   closeMenu(); _initNav(); _render();
 }
 

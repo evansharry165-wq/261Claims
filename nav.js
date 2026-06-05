@@ -50,21 +50,12 @@
     // Render nav links
     var linksEl = document.getElementById('gn-links');
     if(linksEl){
-      // Count badges
-      var cases = typeof getCasesForUser==='function' ? getCasesForUser(uid) : [];
-      var intakeN  = cases.filter(function(c){return c.stage==='intake';}).length;
-      var urgentN  = cases.filter(function(c){return c.cprDaysLeft<=7&&c.stage!=='resolve';}).length;
 
       linksEl.innerHTML = NAV_LINKS.map(function(l){
         var label = t(l.key) || l.key;
         var isActive = ACTIVE_PAGE === l.key;
-        var badge = l.key==='intake'&&intakeN>0
-          ? '<span class="gn-badge">'+intakeN+'</span>'
-          : l.key==='cpr'&&urgentN>0
-          ? '<span class="gn-badge">'+urgentN+'</span>'
-          : '';
         return '<a href="'+l.href+'" class="gn-link'+(isActive?' active':'')+'">'
-          +'<i class="ti '+l.icon+'"></i> '+label+badge+'</a>';
+          +'<i class="ti '+l.icon+'"></i> '+label+'</a>';
       }).join('');
     }
 

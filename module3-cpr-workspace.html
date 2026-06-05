@@ -351,6 +351,7 @@ if(J&&J.keyDates&&J.keyDates.length){
   });
   d21 = DEADLINES_JUR[0].date; // Override primary deadline
 }
+var DEADLINES_OVERRIDE = DEADLINES_JUR;
 
 var DEADLINES=[
   {id:'response',  label:'LOC response deadline',        date:d21,
@@ -702,7 +703,7 @@ function goToEvidence(){
     d.loaStatus=loaDraftState;
     sessionStorage.setItem('aeroCaseData',JSON.stringify(d));
   }catch(e){}
-  window.location.href='module4-evidence.html';
+  window.location.href='module4-evidence-workspace.html?ref='+encodeURIComponent(C.ref);
 }
 
 function addNote(){
@@ -735,17 +736,6 @@ function _navInit(){
       var el=document.getElementById('gnl-'+id);
       if(el){ var sp=el.querySelector('.gnl'); if(sp && typeof t==='function') sp.textContent=t(labels[id]); }
     });
-    // Add badge counts
-    if(typeof getCasesForUser==='function'){
-      var cases=getCasesForUser(uid);
-      var intN=cases.filter(function(c){return c.stage==='intake';}).length;
-      var urgN=cases.filter(function(c){return c.cprDaysLeft<=7&&c.stage!=='resolve';}).length;
-      var badgeCss='background:#C0392B;color:#fff;font-size:9px;font-weight:600;padding:1px 5px;border-radius:10px;margin-left:3px;vertical-align:middle';
-      var il=document.getElementById('gnl-intake');
-      if(il){var oldI=il.querySelector('.gn-badge-intake');if(oldI)oldI.remove();if(intN>0){var b=document.createElement('span');b.className='gn-badge-intake';b.style.cssText=badgeCss;b.textContent=intN;il.appendChild(b);}}
-      var cl=document.getElementById('gnl-cpr');
-      if(cl){var oldC=cl.querySelector('.gn-badge-cpr');if(oldC)oldC.remove();if(urgN>0){var b2=document.createElement('span');b2.className='gn-badge-cpr';b2.style.cssText=badgeCss;b2.textContent=urgN;cl.appendChild(b2);}}
-    }
     // Active state
     var p=window.location.pathname.split('/').pop()||'index.html';
     var active=p.indexOf('module1')>=0?'intake':p.indexOf('module2')>=0?'cases':p.indexOf('module3')>=0?'cpr':p.indexOf('module4')>=0?'evidence':p.indexOf('module5')>=0?'drafting':p.indexOf('module6')>=0?'mi':p.indexOf('education')>=0?'knowledge':'dashboard';
@@ -785,7 +775,11 @@ function toggleUserMenu(){var m=document.getElementById('user-modal');if(m)m.cla
 function closeMenu(){var m=document.getElementById('user-modal');if(m)m.classList.remove('open');}
 function switchUser(id){
   if(typeof setActiveUser==='function')setActiveUser(id);
+  sessionStorage.removeItem('261c_lang');
+  sessionStorage.removeItem('261c_case');
+  sessionStorage.removeItem('aeroCaseData');
   closeMenu();
+  if(window.location.pathname.indexOf('workspace')>=0){window.location.href='index.html';return;}
   var u=typeof USERS!=='undefined'?USERS[id]:null;
   if(u){
     var av=document.getElementById('nav-av'); if(av)av.textContent=u.initials;
@@ -795,7 +789,7 @@ function switchUser(id){
     var el=document.getElementById('ud-'+uid);
     if(el){el.classList.toggle('current',uid===id);}
   });
-  sessionStorage.removeItem('261c_lang');
+  if(typeof _navInit==='function')_navInit();
   if(typeof render==='function')render();
   if(typeof _render==='function')_render();
 }

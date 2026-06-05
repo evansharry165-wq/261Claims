@@ -21,7 +21,6 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 .nl:hover{background:rgba(255,255,255,0.08);color:#fff}
 .nl.active{background:rgba(42,111,219,0.35);color:#fff}
 .nl i{font-size:13px}
-.nl-badge{background:#C0392B;color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:10px;margin-left:2px}
 .nav-right{display:flex;align-items:center;gap:8px;margin-left:8px}
 .user-btn{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:20px;padding:3px 10px 3px 4px;cursor:pointer}
 .u-av{width:24px;height:24px;border-radius:50%;background:#1C2E44;color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500}
@@ -125,6 +124,7 @@ tbody tr:hover td{background:var(--surface2);cursor:pointer}
   <div class="page-hdr">
     <div><h2 id="hdr-title">CPR deadlines</h2><p id="hdr-sub">All open cases with active CPR obligations</p></div>
   </div>
+  <div id="cpr-summary" style="background:var(--surface);border-bottom:1px solid var(--border);padding:12px 24px;display:grid;grid-template-columns:repeat(4,1fr);gap:10px"></div>
   <div class="urgent-strip" id="urgent-strip"></div>
   <div class="table-wrap">
     <table>
@@ -193,6 +193,7 @@ function closeMenu(){var m=document.getElementById('u-modal');if(m)m.classList.r
 
 function doSwitch(id){
   setActiveUser(id); sessionStorage.removeItem('261c_lang');
+  sessionStorage.removeItem('261c_case'); sessionStorage.removeItem('aeroCaseData');
   closeMenu(); _initNav(); _render();
 }
 function _initNav(){
@@ -205,10 +206,6 @@ function _initNav(){
     var el=document.getElementById('ud-'+id);
     if(el)el.classList.toggle('current',id===getActiveUser());
   });
-  // Badges
-  var cases=getCasesForUser(uid);
-  var urgN=cases.filter(function(c){return c.cprDaysLeft<=7&&c.stage!=='resolve';}).length;
-  if(urgN>0){var el=document.getElementById('nl-cpr');if(el&&!el.querySelector('.nl-badge')){var b=document.createElement('span');b.className='nl-badge';b.textContent=urgN;el.appendChild(b);}}
 }
 
 function _render(){
@@ -219,6 +216,15 @@ function _render(){
 
   document.getElementById('hdr-title').textContent = t('cpr')+' — '+u.name;
   document.getElementById('hdr-sub').textContent = cases.length+' case'+(cases.length!==1?'s':'')+' with active CPR obligations';
+  var pendingLoa=cases.filter(function(c){return c.loaStatus!=='approved'&&c.loaStatus!=='sent';}).length;
+  var crossBorder=cases.filter(function(c){return c.jurisdiction&&c.jurisdiction!=='england-wales';}).length;
+  var due7=cases.filter(function(c){return c.cprDaysLeft<=7;}).length;
+  document.getElementById('cpr-summary').innerHTML=[
+    ['Active obligations',cases.length,'All unresolved assigned cases','ti-calendar-due','var(--blue-text)','var(--blue-faint)'],
+    ['Due within 7 days',due7,'Prioritise acknowledgement or response','ti-alert-triangle','var(--red)','var(--red-faint)'],
+    ['LOA pending',pendingLoa,'Decision still required','ti-mail','var(--amber)','var(--amber-faint)'],
+    ['Cross-border',crossBorder,'France / Spain procedural rules','ti-world','var(--purple,#4338CA)','var(--purple-faint,#EEEDFE)']
+  ].map(function(s){return '<div style="border:1px solid var(--border);border-radius:var(--r2);padding:10px 12px;background:var(--surface2)"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px"><div style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);font-weight:500">'+s[0]+'</div><div style="width:24px;height:24px;border-radius:var(--r);display:flex;align-items:center;justify-content:center;background:'+s[5]+';color:'+s[4]+'"><i class="ti '+s[3]+'"></i></div></div><div style="font-size:22px;font-weight:500;color:var(--text);line-height:1">'+s[1]+'</div><div style="font-size:11px;color:var(--text3);margin-top:4px">'+s[2]+'</div></div>';}).join('');
 
   // Urgent strip
   var urgent=cases.filter(function(c){return c.cprDaysLeft<=3;});
