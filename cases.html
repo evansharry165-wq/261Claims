@@ -184,7 +184,7 @@ function renderCases(){
     var sl=t('stage_'+c.stage)||c.stage;
     return '<tr data-ref="'+escapeHtml(c.ref)+'" data-tab="'+escapeHtml(action.tab)+'">'
       +'<td><div class="td-ref">'+escapeHtml(c.ref)+'</div></td>'
-      +'<td><div class="td-name">'+escapeHtml(c.claimant)+'</div><div class="td-sub">'+escapeHtml(c.solicitor)+'</div></td>'
+      +'<td><div class="td-name">'+escapeHtml(typeof caseTitle==='function'?caseTitle(c):c.claimant)+'</div><div class="td-sub">'+escapeHtml(c.solicitor)+'</div></td>'
       +'<td><div class="td-sub">'+escapeHtml(c.flightNum)+'</div><div class="td-sub">'+escapeHtml(c.dep)+' → '+escapeHtml(c.arr)+'</div></td>'
       +'<td><span class="stage-pill" style="background:'+sc.bg+';color:'+sc.col+'">'+escapeHtml(sl)+'</span></td>'
       +'<td><div class="td-action">'+escapeHtml(action.text)+'</div></td>'

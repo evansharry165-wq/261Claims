@@ -228,7 +228,7 @@ const I18N={
   es:{dashboard:'Panel',intake:'Recepción',cases:'Casos',cpr:'Plazos',evidence:'Pruebas',drafting:'Redacción',mi:'Informes',knowledge:'Recursos',myCases:'Mis casos',intakeQueue:'Cola de recepción',cprWatch:'Vigilancia de plazos',myPipeline:'Mi flujo de trabajo',legalNews:'Noticias jurídicas',networkOps:'Red & operaciones',liveSources:'Fuentes en vivo',goodMorning:'Buenos días',goodAfternoon:'Buenas tardes',goodEvening:'Buenas noches',noUrgentDeadlines:'Sin plazos urgentes esta semana',evidenceProgress:'Progreso de pruebas',cprDeadlines:'Plazos procesales',viewAll:'Ver todo',uploadLOC:'Cargar carta de reclamación',noQueue:'No hay casos en su cola.',stage_intake:'Recepción',stage_triage:'Triaje',stage_cpr:'Plazos',stage_evidence:'Pruebas',stage_drafting:'Redacción',stage_defence:'Defensa',stage_resolve:'Resuelto'},
 };
 const ALL_CASES=[
-  {ref:'AC-2026-0089',assignedTo:'SB',claimant:'Daniel Hartley',solicitor:'Pemberton & Associates',flight:'HC 1184 — LTN → BCN',flightNum:'HC 1184',dep:'LTN',arr:'BCN',flightDate:'14 March 2026',value:'£39,000+',type:'EC261 — Diversion',locDate:'22 May 2026',stage:'evidence',cat:'C',jurisdiction:'england-wales',lang:'en',disruptionType:'Weather',classification:'ESCALATE',evidencePct:35,cprDaysLeft:3,points:[{n:1,claim:'Delay — Art 7(1)(a)',evidenceStatus:'green',evidenceDoc:'TOPS confirmed'},{n:2,claim:'Extraordinary circumstances — weather',evidenceStatus:'amber',evidenceDoc:'METAR/SIGMET pending'},{n:3,claim:'Article 9 — duty of care',evidenceStatus:'red',evidenceDoc:'Valencia ground records outstanding'},{n:4,claim:'Consequential loss — £38,250',evidenceStatus:'red',evidenceDoc:'No counter-evidence'},{n:5,claim:'Travel & subsistence — £141.80',evidenceStatus:'amber',evidenceDoc:'Receipts pending'}],loaStatus:'approved',triageNote:'Complex. Escalate on consequential loss.',activity:[{text:'Evidence module opened',time:'Today 09:14',type:'create'},{text:'AI triage — ESCALATE flagged',time:'Yesterday 16:30',type:'ai'}]},
+  {ref:'AC-2026-0089',assignedTo:'JP',claimant:'Daniel Hartley',solicitor:'Pemberton & Associates',flight:'HC 1184 — LTN → BCN',flightNum:'HC 1184',dep:'LTN',arr:'BCN',flightDate:'14 March 2026',value:'£1,560',type:'EC261 — Diversion',locDate:'22 May 2026',stage:'evidence',cat:'C',jurisdiction:'england-wales',lang:'en',disruptionType:'Weather',classification:'ESCALATE',escalatedTo:'JP',escalatedFrom:'SB',escalatedAt:'2 Jun 2026 14:22',evidencePct:35,cprDaysLeft:3,points:[{n:1,claim:'Delay compensation — Art 7(1)(a) · 4 pax × £220',evidenceStatus:'green',evidenceDoc:'TOPS confirmed · 7h 55m delay'},{n:2,claim:'Extraordinary circumstances — weather',evidenceStatus:'amber',evidenceDoc:'METAR/SIGMET pending'},{n:3,claim:'Article 9 — duty of care · £680',evidenceStatus:'red',evidenceDoc:'Valencia ground records outstanding'},{n:4,claim:'Travel & subsistence — £141.80',evidenceStatus:'amber',evidenceDoc:'Receipts pending'}],loaStatus:'approved',triageNote:'Weather diversion with Article 9 gaps. Escalate for senior review on extraordinary circumstances defence.',activity:[{text:'Evidence module opened',time:'Today 09:14',type:'create'},{text:'AI triage — ESCALATE flagged',time:'Yesterday 16:30',type:'ai'}]},
   {ref:'AC-2026-0101',assignedTo:'SB',claimant:'Angela Foster',solicitor:'Clarke & Partners',flight:'HC 203 — LGW → ALC',flightNum:'HC 203',dep:'LGW',arr:'ALC',flightDate:'20 May 2026',value:'€250',type:'EC261 — Weather delay',locDate:'30 May 2026',stage:'intake',cat:'A',jurisdiction:'england-wales',lang:'en',disruptionType:'Weather',classification:'DEFEND',evidencePct:0,cprDaysLeft:21,points:[],loaStatus:'',triageNote:'',activity:[{text:'LOC received',time:'Today 07:55',type:'create'}]},
   {ref:'AC-2026-0091',assignedTo:'JP',claimant:'Rebecca Walsh',solicitor:'Clarke & Partners',flight:'HC 307 — MAN → AMS',flightNum:'HC 307',dep:'MAN',arr:'AMS',flightDate:'9 April 2026',value:'€250',type:'EC261 — ATC delay',locDate:'4 June 2026',stage:'triage',cat:'A',jurisdiction:'england-wales',lang:'en',disruptionType:'ATC Restrictions',classification:'DEFEND',evidencePct:0,cprDaysLeft:21,points:[{n:1,claim:'Delay 3hrs 36mins — Art 7(1)(a)',evidenceStatus:'green',evidenceDoc:'Confirmed via TOPS'},{n:2,claim:'Extraordinary circumstances — ATC ATFM',evidenceStatus:'amber',evidenceDoc:'Eurocontrol data requested'},{n:3,claim:'Art 9 — refreshments not provided',evidenceStatus:'red',evidenceDoc:'Ground records required'},{n:4,claim:'Expenses — £18.40',evidenceStatus:'amber',evidenceDoc:'Receipts with LOC'}],loaStatus:'',triageNote:'',activity:[{text:'LOC uploaded — triage pending',time:'Today 10:30',type:'create'}]},
   {ref:'AC-2026-0076',assignedTo:'JP',claimant:'Sarah Taylor',solicitor:'Thompsons Solicitors',flight:'HC 330 — LGW → ALC',flightNum:'HC 330',dep:'LGW',arr:'ALC',flightDate:'28 April 2026',value:'€400',type:'EC261 — Weather delay',locDate:'22 May 2026',stage:'drafting',cat:'B',jurisdiction:'england-wales',lang:'en',disruptionType:'Weather',classification:'DEFEND',evidencePct:100,cprDaysLeft:7,points:[{n:1,claim:'Delay 4hrs 10mins — Art 7(1)(b)',evidenceStatus:'green',evidenceDoc:'TOPS confirmed'},{n:2,claim:'Extraordinary circumstances — weather',evidenceStatus:'green',evidenceDoc:'METAR/SIGMET confirmed'}],loaStatus:'sent',triageNote:'Clean weather case. Evidence complete. Draft LOR.',activity:[{text:'Evidence complete — LOR ready',time:'28 May 16:00',type:'stage'}]},
@@ -348,7 +348,7 @@ var C={
   name:  _i.claimant  ||'Daniel Hartley',
   sol:   _i.solicitor ||'Pemberton & Associates Solicitors LLP',
   flight:_i.flight    ||'HC 1184 — LTN to BCN (diverted VLC)',
-  value: _i.value     ||'£39,000+',
+  value: _i.value     ||'£1,560',
   type:  _i.type      ||'EC 261/2004 — delay / diversion',
   date:  _i.date      ||'22 May 2026',
   flightDate: _i.flightDate || '14 March 2026',
@@ -617,7 +617,7 @@ function renderMain(){
   var pTxt=primaryType?(r.up+' / '+r.total+' documents'):'Select disruption type';
   var hdr='<div class="case-hdr"><div class="ch-row">'
     +'<div><div class="ch-ref">'+C.ref+'</div>'
-    +'<div class="ch-name">'+C.name+' v. TestAirways</div>'
+    +'<div class="ch-name">'+C.name.split(' ').pop()+' v National Airways</div>'
     +'<div class="ch-meta">'
     +'<span><i class="ti ti-plane"></i>'+C.flight+'</span>'
     +'<span><i class="ti ti-currency-pound"></i>'+C.value+'</span>'
@@ -742,7 +742,7 @@ function renderMain(){
       +'<div style="border:1px solid #FDE68A;background:#FFFBEB;border-radius:var(--r2);padding:11px 12px"><div style="font-size:12px;font-weight:500;margin-bottom:4px"><i class="ti ti-certificate"></i> Gold pack</div><div style="font-size:22px;font-weight:500;color:var(--amber)">'+pack.gold+'%</div><div style="font-size:11px;color:var(--text2)">Defence-ready evidence and explanations</div></div>'
       +'</div>'
       +'<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn-sm btn-navy" onclick="pullAllEvidence()"><i class="ti ti-cloud-download"></i> Pull all evidence</button><button class="btn-sm btn-navy" onclick="pullFromRepository()" style="background:var(--green);border-color:var(--green)"><i class="ti ti-database"></i> Pull from repository</button><button class="btn-sm" onclick="requestEvidenceCompletion()" style="border:1px solid var(--border2);background:var(--surface2);color:var(--text2)"><i class="ti ti-user-question"></i> Request evidence completion</button><a class="btn-sm" href="repository.html" onclick="sessionStorage.setItem(\'261c_repo_area\',\'evidence\')" style="border:1px solid var(--border2);background:var(--surface2);color:var(--text2);text-decoration:none"><i class="ti ti-database"></i> Open filing system</a></div>'
-      +(requestSent?'<div style="margin-top:9px;font-size:11px;color:var(--green);background:var(--green-faint);border:1px solid #BBF7D0;border-radius:var(--r);padding:7px 9px"><i class="ti ti-check"></i> Evidence completion request sent to Evidence Handling queue.</div>':'')
+      +(requestSent?'<div style="margin-top:9px;font-size:11px;color:var(--blue-text);background:var(--blue-faint);border:1px solid #BFDBFE;border-radius:var(--r);padding:9px 11px;line-height:1.5"><i class="ti ti-user-share"></i> <strong>Evidence request sent to Emma Hughes (Evidence Team).</strong> Switch to E. Hughes on the Work dashboard to complete this request in Repository.</div>':'')
       +(pack.keyMissing.length||pack.secMissing.length?'<div style="margin-top:10px;font-size:11px;color:var(--text2)"><strong>Missing:</strong> '+pack.keyMissing.concat(pack.secMissing).map(function(id){return LIB[id]?LIB[id].name:id;}).join('; ')+'</div>':'<div style="margin-top:10px;font-size:11px;color:var(--green)">All Bronze/Gold pack evidence is currently on file.</div>')
       +'</div></div>';
   }
@@ -924,26 +924,31 @@ function pullAllEvidence(){
 function requestEvidenceCompletion(){
   var pack=packReadiness();
   var missing=pack.keyMissing.concat(pack.secMissing).map(function(id){return LIB[id]?LIB[id].name:id;});
-  if(!missing.length){missing=['Evidence interpretation / gold pack review'];}
+  if(!missing.length){missing=['Valencia ground handling records','Passenger care evidence','DPM notes'];}
   var req={
-    id:'REQ-'+Date.now().toString().slice(-5),
+    id:C.ref==='AC-2026-0089'?'REQ-001':'REQ-'+Date.now().toString().slice(-5),
     ref:C.ref,
     claimant:C.name,
     flight:C.flightNum||C.flight,
     pack:pack.gold>=100?'Gold review':'Gold',
     status:'open',
-    priority:C.value&&String(C.value).indexOf('39,000')>=0?'Urgent':'Normal',
+    priority:(C.cprDaysLeft&&C.cprDaysLeft<=3)?'Urgent':'Normal',
     due:C.cprDaysLeft?C.cprDaysLeft+'d':'Next CPR date',
     missing:missing,
-    note:'Legal user requested evidence completion after Pull all in case workspace.'
+    requestedBy:'S. Booth',
+    note:'Evidence completion requested — assigned to Emma Hughes (Evidence Team).'
   };
   try{
     var reqs=JSON.parse(sessionStorage.getItem('261c_evidence_requests')||'[]');
-    reqs.unshift(req);
+    var exists=reqs.some(function(r){return r.id===req.id;});
+    if(!exists) reqs.unshift(req);
+    else reqs=reqs.map(function(r){return r.id===req.id?Object.assign({},r,req):r;});
     sessionStorage.setItem('261c_evidence_requests',JSON.stringify(reqs.slice(0,30)));
   }catch(e){}
+  if(typeof setDemoEvidenceStep==='function')setDemoEvidenceStep();
   requestSent=true;
-  log('Evidence completion request sent to Evidence Handling queue','action');
+  log('Evidence request sent to Emma Hughes (Evidence Team)','action');
+  if(typeof notifyCaseShell==='function')notifyCaseShell('log',{text:'Evidence request sent to Emma Hughes (Evidence Team)',logType:'action'});
   render();
 }
 
@@ -973,7 +978,7 @@ try{
 }catch(e){}
 if(C.disruptionType) primaryType=C.disruptionType;
 /* ── Init ── */
-log('Evidence module opened — '+C.name+' v. TestAirways','create');
+log('Evidence module opened — '+C.name+' v. National Airways','create');
 render();
 </script>
 

@@ -28,7 +28,7 @@
         style = document.createElement('style');
         style.id = 'embed-style';
         style.textContent =
-          'body.embed-mode .global-nav,body.embed-mode .topbar,body.embed-mode .sidebar,body.embed-mode #user-modal,body.embed-mode .advance-bar{display:none!important}' +
+          'body.embed-mode .global-nav,body.embed-mode .topbar,body.embed-mode .sidebar,body.embed-mode .sidebar-left,body.embed-mode #user-modal,body.embed-mode .advance-bar{display:none!important}' +
           'html.embed-mode,body.embed-mode,body.embed-mode .app{height:100%!important;min-height:0}' +
           'body.embed-mode .body{grid-template-columns:1fr!important;height:100%!important}' +
           'body.embed-mode .main{height:100%;overflow-y:auto}' +

@@ -191,7 +191,7 @@ const I18N={
   es:{dashboard:'Panel',intake:'Recepción',cases:'Casos',cpr:'Plazos',evidence:'Pruebas',drafting:'Redacción',mi:'Informes',knowledge:'Recursos',myCases:'Mis casos',intakeQueue:'Cola de recepción',cprWatch:'Vigilancia de plazos',myPipeline:'Mi flujo de trabajo',legalNews:'Noticias jurídicas',networkOps:'Red & operaciones',liveSources:'Fuentes en vivo',goodMorning:'Buenos días',goodAfternoon:'Buenas tardes',goodEvening:'Buenas noches',noUrgentDeadlines:'Sin plazos urgentes esta semana',evidenceProgress:'Progreso de pruebas',cprDeadlines:'Plazos procesales',viewAll:'Ver todo',uploadLOC:'Cargar carta de reclamación',noQueue:'No hay casos en su cola.',stage_intake:'Recepción',stage_triage:'Triaje',stage_cpr:'Plazos',stage_evidence:'Pruebas',stage_drafting:'Redacción',stage_defence:'Defensa',stage_resolve:'Resuelto'},
 };
 const ALL_CASES=[
-  {ref:'AC-2026-0089',assignedTo:'SB',claimant:'Daniel Hartley',solicitor:'Pemberton & Associates',flight:'HC 1184 — LTN → BCN',flightNum:'HC 1184',dep:'LTN',arr:'BCN',flightDate:'14 March 2026',value:'£39,000+',type:'EC261 — Diversion',locDate:'22 May 2026',stage:'evidence',cat:'C',jurisdiction:'england-wales',lang:'en',disruptionType:'Weather',classification:'ESCALATE',evidencePct:35,cprDaysLeft:3,points:[{n:1,claim:'Delay — Art 7(1)(a)',evidenceStatus:'green',evidenceDoc:'TOPS confirmed'},{n:2,claim:'Extraordinary circumstances — weather',evidenceStatus:'amber',evidenceDoc:'METAR/SIGMET pending'},{n:3,claim:'Article 9 — duty of care',evidenceStatus:'red',evidenceDoc:'Valencia ground records outstanding'},{n:4,claim:'Consequential loss — £38,250',evidenceStatus:'red',evidenceDoc:'No counter-evidence'},{n:5,claim:'Travel & subsistence — £141.80',evidenceStatus:'amber',evidenceDoc:'Receipts pending'}],loaStatus:'approved',triageNote:'Complex. Escalate on consequential loss.',activity:[{text:'Evidence module opened',time:'Today 09:14',type:'create'},{text:'AI triage — ESCALATE flagged',time:'Yesterday 16:30',type:'ai'}]},
+  {ref:'AC-2026-0089',assignedTo:'JP',claimant:'Daniel Hartley',solicitor:'Pemberton & Associates',flight:'HC 1184 — LTN → BCN',flightNum:'HC 1184',dep:'LTN',arr:'BCN',flightDate:'14 March 2026',value:'£1,560',type:'EC261 — Diversion',locDate:'22 May 2026',stage:'evidence',cat:'C',jurisdiction:'england-wales',lang:'en',disruptionType:'Weather',classification:'ESCALATE',escalatedTo:'JP',escalatedFrom:'SB',escalatedAt:'2 Jun 2026 14:22',evidencePct:35,cprDaysLeft:3,points:[{n:1,claim:'Delay compensation — Art 7(1)(a) · 4 pax × £220',evidenceStatus:'green',evidenceDoc:'TOPS confirmed · 7h 55m delay'},{n:2,claim:'Extraordinary circumstances — weather',evidenceStatus:'amber',evidenceDoc:'METAR/SIGMET pending'},{n:3,claim:'Article 9 — duty of care · £680',evidenceStatus:'red',evidenceDoc:'Valencia ground records outstanding'},{n:4,claim:'Travel & subsistence — £141.80',evidenceStatus:'amber',evidenceDoc:'Receipts pending'}],loaStatus:'approved',triageNote:'Weather diversion with Article 9 gaps. Escalate for senior review on extraordinary circumstances defence.',activity:[{text:'Evidence module opened',time:'Today 09:14',type:'create'},{text:'AI triage — ESCALATE flagged',time:'Yesterday 16:30',type:'ai'}]},
   {ref:'AC-2026-0101',assignedTo:'SB',claimant:'Angela Foster',solicitor:'Clarke & Partners',flight:'HC 203 — LGW → ALC',flightNum:'HC 203',dep:'LGW',arr:'ALC',flightDate:'20 May 2026',value:'€250',type:'EC261 — Weather delay',locDate:'30 May 2026',stage:'intake',cat:'A',jurisdiction:'england-wales',lang:'en',disruptionType:'Weather',classification:'DEFEND',evidencePct:0,cprDaysLeft:21,points:[],loaStatus:'',triageNote:'',activity:[{text:'LOC received',time:'Today 07:55',type:'create'}]},
   {ref:'AC-2026-0091',assignedTo:'JP',claimant:'Rebecca Walsh',solicitor:'Clarke & Partners',flight:'HC 307 — MAN → AMS',flightNum:'HC 307',dep:'MAN',arr:'AMS',flightDate:'9 April 2026',value:'€250',type:'EC261 — ATC delay',locDate:'4 June 2026',stage:'triage',cat:'A',jurisdiction:'england-wales',lang:'en',disruptionType:'ATC Restrictions',classification:'DEFEND',evidencePct:0,cprDaysLeft:21,points:[{n:1,claim:'Delay 3hrs 36mins — Art 7(1)(a)',evidenceStatus:'green',evidenceDoc:'Confirmed via TOPS'},{n:2,claim:'Extraordinary circumstances — ATC ATFM',evidenceStatus:'amber',evidenceDoc:'Eurocontrol data requested'},{n:3,claim:'Art 9 — refreshments not provided',evidenceStatus:'red',evidenceDoc:'Ground records required'},{n:4,claim:'Expenses — £18.40',evidenceStatus:'amber',evidenceDoc:'Receipts with LOC'}],loaStatus:'',triageNote:'',activity:[{text:'LOC uploaded — triage pending',time:'Today 10:30',type:'create'}]},
   {ref:'AC-2026-0076',assignedTo:'JP',claimant:'Sarah Taylor',solicitor:'Thompsons Solicitors',flight:'HC 330 — LGW → ALC',flightNum:'HC 330',dep:'LGW',arr:'ALC',flightDate:'28 April 2026',value:'€400',type:'EC261 — Weather delay',locDate:'22 May 2026',stage:'drafting',cat:'B',jurisdiction:'england-wales',lang:'en',disruptionType:'Weather',classification:'DEFEND',evidencePct:100,cprDaysLeft:7,points:[{n:1,claim:'Delay 4hrs 10mins — Art 7(1)(b)',evidenceStatus:'green',evidenceDoc:'TOPS confirmed'},{n:2,claim:'Extraordinary circumstances — weather',evidenceStatus:'green',evidenceDoc:'METAR/SIGMET confirmed'}],loaStatus:'sent',triageNote:'Clean weather case. Evidence complete. Draft LOR.',activity:[{text:'Evidence complete — LOR ready',time:'28 May 16:00',type:'stage'}]},
@@ -307,10 +307,11 @@ try{var _r=sessionStorage.getItem('aeroCaseData');if(_r)_i=JSON.parse(_r);}catch
 var C={
   ref:        _i.ref        ||'AC-2026-0089',
   name:       _i.claimant   ||'Daniel Hartley',
-  sol:        _i.solicitor  ||'Pemberton & Associates Solicitors LLP',
-  solAddr:    'Clarke & Partners Solicitors, 22 Bridge Street, Manchester, M3 3BT',
+  sol:        _i.solicitor  ||'Pemberton & Associates',
+  solAddr:    'Pemberton & Associates LLP\n14 King Street\nManchester M2 6AG',
   flight:     _i.flight     ||'HC 1184 — LTN to BCN (diverted VLC)',
-  value:      _i.value      ||'£39,000+',
+  flightNum:  _i.flightNum  ||'HC 1184',
+  value:      _i.value      ||'£1,560',
   type:       _i.type       ||'EC 261/2004 — delay / diversion',
   date:       _i.date       ||'22 May 2026',
   framework:  _i.framework  ||'EC Regulation 261/2004',
@@ -406,23 +407,22 @@ function buildLOA(){
     +C.sol+'\n'
     +C.solAddr+'\n\n'
     +'Dear Sirs,\n\n'
-    +'RE: '+C.name.toUpperCase()+' v. TESTAIRWAYS — '+C.type.toUpperCase()+'\n'
-    +'YOUR REF: [INSERT CLAIMANT REF]   OUR REF: '+ref+'\n'
-    +'FLIGHT: '+C.flight+'\n\n'
+    +'Re: '+C.name.split(' ').pop()+' v National Airways — Flight '+C.flightNum+' — Your ref: PA/2026/03871/KW\n'
+    +'OUR REF: '+ref+'\n\n'
     +'ACKNOWLEDGEMENT OF LETTER OF CLAIM\n\n'
-    +'We write on behalf of TestAirways in response to your letter of claim dated '+C.date+', received by our Legal Department on '+C.date+'.\n\n'
-    +'We confirm receipt of your letter of claim and write to acknowledge the same in accordance with the Pre-Action Protocol.\n\n'
+    +'We act on behalf of National Airways ("the Defendant") in connection with the above matter.\n\n'
+    +'We confirm receipt of your letter of claim dated '+C.date+', received by our Legal Department on '+C.date+'. We confirm the Defendant in this matter is National Airways and that we are duly authorised to correspond on its behalf.\n\n'
     +'INVESTIGATION\n\n'
     +'We are currently investigating the circumstances surrounding the above-referenced flight disruption. '
     +'The matter has been assigned to our legal team and we are in the process of gathering the relevant operational data, flight records, and evidence necessary to respond substantively to each of your client\'s heads of claim.\n\n'
-    +'In accordance with the Pre-Action Protocol, we will provide a full Letter of Response no later than '+responseBy+', being three months from the date of this acknowledgement. '
+    +'We confirm our substantive response will be provided by '+responseBy+', in accordance with the Pre-Action Protocol. '
     +'We reserve the right to seek an extension of this period by agreement should the investigation require additional time, and we will notify you promptly if this becomes necessary.\n\n'
     +'EXTRAORDINARY CIRCUMSTANCES\n\n'
-    +'Without prejudice to our investigation, we draw your attention to the fact that the disruption to flight '+C.flight+' arose from circumstances beyond the reasonable control of TestAirways. '
+    +'Without prejudice to our investigation, we draw your attention to the fact that the disruption to flight '+C.flight+' arose from circumstances beyond the reasonable control of National Airways. '
     +'We are gathering evidence in respect of the applicable extraordinary circumstances defence under Article 5(3) of EC Regulation 261/2004 (as retained in UK law) and the test established in Wallentin-Hermann v Alitalia (Case C-549/07). '
     +'Our position on liability will be set out in full in our Letter of Response.\n\n'
     +'RESERVATION OF RIGHTS\n\n'
-    +'Nothing in this letter constitutes an admission of liability. TestAirways reserves all rights and defences available to it under EC Regulation 261/2004, the Montreal Convention, and at common law. '
+    +'Nothing in this letter constitutes an admission of liability. National Airways reserves all rights and defences available to it under EC Regulation 261/2004, the Montreal Convention, and at common law. '
     +'We will respond to each of the heads of claim raised in your letter in our substantive Letter of Response.\n\n'
     +'ALTERNATIVE DISPUTE RESOLUTION\n\n'
     +'We note your client\'s right to refer this matter to the Civil Aviation Authority (CAA) or an approved Alternative Dispute Resolution (ADR) scheme. '
@@ -431,9 +431,9 @@ function buildLOA(){
     +'Yours faithfully,\n\n'
     +C.assignedTo+'\n'
     +'Legal Department\n'
-    +'TestAirways\n\n'
+    +'National Airways\n\n'
     +'---\n'
-    +'This letter is sent on behalf of TestAirways. It does not constitute legal advice to the recipient. '
+    +'This letter is sent on behalf of National Airways. It does not constitute legal advice to the recipient. '
     +'The contents are confidential and subject to legal professional privilege.';
 }
 
@@ -446,7 +446,7 @@ function renderMain(){
   /* case header */
   var hdr='<div class="case-hdr">'
     +'<div><div class="ch-ref">'+C.ref+'</div>'
-    +'<div class="ch-name">'+C.name+' v. TestAirways</div>'
+    +'<div class="ch-name">'+C.name.split(' ').pop()+' v National Airways</div>'
     +'<div class="ch-meta">'
     +'<span><i class="ti ti-plane"></i>'+C.flight+'</span>'
     +'<span><i class="ti ti-currency-pound"></i>'+C.value+'</span>'
@@ -665,7 +665,7 @@ function exportICS(id,label,dateStr){
   var ics='BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//261Claims//EN\r\n'
     +'BEGIN:VEVENT\r\nUID:'+C.ref+'-'+id+'@261claims\r\n'
     +'DTSTART:'+fmt(d)+'\r\nDTEND:'+fmt(end)+'\r\n'
-    +'SUMMARY:'+label+' — '+C.name+' v. TestAirways ('+C.ref+')\r\n'
+    +'SUMMARY:'+label+' — '+C.name+' v. National Airways ('+C.ref+')\r\n'
     +'DESCRIPTION:'+C.type+' · Value: '+C.value+' · Ref: '+C.ref+'\r\n'
     +'BEGIN:VALARM\r\nTRIGGER:'+fmt(r14)+'\r\nACTION:DISPLAY\r\nDESCRIPTION:14 days — '+label+' '+C.ref+'\r\nEND:VALARM\r\n'
     +'BEGIN:VALARM\r\nTRIGGER:'+fmt(r7)+'\r\nACTION:DISPLAY\r\nDESCRIPTION:7 days — '+label+' '+C.ref+'\r\nEND:VALARM\r\n'
@@ -686,7 +686,7 @@ function openGCal(id,label,dateStr){
   var d=new Date(dateStr);
   function fmt(dt){return dt.toISOString().replace(/[-:T]/g,'').split('.')[0]+'Z';}
   var end=new Date(d.getTime()+3600000);
-  var text=encodeURIComponent(label+' — '+C.name+' v. TestAirways ('+C.ref+')');
+  var text=encodeURIComponent(label+' — '+C.name+' v. National Airways ('+C.ref+')');
   var details=encodeURIComponent(C.type+' · Value: '+C.value+' · Ref: '+C.ref);
   window.open('https://calendar.google.com/calendar/render?action=TEMPLATE&text='+text+'&dates='+fmt(d)+'/'+fmt(end)+'&details='+details,'_blank');
   calAdded[id]=true;
@@ -718,7 +718,7 @@ function addNote(){
 }
 
 /* ── Init ── */
-log('CPR module opened — '+C.name+' v. TestAirways','create');
+log('CPR module opened — '+C.name+' v. National Airways','create');
 log('LOC received: '+C.date+' · Response deadline: '+fmtDate(d21),'action');
 render();
 </script>

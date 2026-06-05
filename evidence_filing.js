@@ -9,7 +9,7 @@
   'use strict';
 
   var STORAGE_KEY = '261c_evidence_filing';
-  var VERSION = 1;
+  var VERSION = 2;
 
   var FILING_CATEGORIES = [
     { id: 'tops', name: 'TOPS — Flight Details & Legislation', icon: 'ti-report-analytics', libKey: 'tops', tier: 'K', group: 'Always required' },
@@ -86,8 +86,13 @@
 
   function seedAudit() {
     return [
-      { t: 'Evidence filing system initialised — SharePoint mirror structure loaded', type: 'create', time: '05 Jun 2026 09:00', by: 'System' },
-      { t: 'Seeded 24 files across 8 evidence categories for demo operations days', type: 'upload', time: '05 Jun 2026 09:01', by: 'E. Hughes' },
+      { t: 'Ground handling records filed — Valencia, 3 Jun 2026', type: 'upload', time: '03 Jun 2026 16:42', by: 'E. Hughes' },
+      { t: 'METAR/SIGMET weather report filed — LTN, 3 Jun 2026', type: 'upload', time: '03 Jun 2026 11:05', by: 'System' },
+      { t: 'TOPS operational log filed — HC 1184, 2 Jun 2026', type: 'upload', time: '02 Jun 2026 14:18', by: 'E. Hughes' },
+      { t: 'Crew duty records filed — HC 1184, 2 Jun 2026', type: 'upload', time: '02 Jun 2026 09:55', by: 'D. Chen' },
+      { t: 'ATC restriction notice filed — Eurocontrol, 1 Jun 2026', type: 'upload', time: '01 Jun 2026 08:30', by: 'System' },
+      { t: 'DISCO disruption record filed — HC 330, 28 May 2026', type: 'upload', time: '28 May 2026 15:22', by: 'E. Hughes' },
+      { t: 'Eurocontrol ATFM data filed — MAN-AMS sector, 27 May 2026', type: 'upload', time: '27 May 2026 10:40', by: 'E. Hughes' },
     ];
   }
 

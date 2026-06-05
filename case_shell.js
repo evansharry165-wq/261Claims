@@ -140,7 +140,7 @@ var CaseShell = (function () {
       escapeHtml(c.ref) +
       '</span>' +
       '<span class="case-bar-name">' +
-      escapeHtml(c.claimant) +
+      escapeHtml(typeof caseTitle === 'function' ? caseTitle(c) : c.claimant) +
       '</span>' +
       '<span class="case-bar-flight">' +
       escapeHtml(c.flightNum || c.flight) +
@@ -161,6 +161,9 @@ var CaseShell = (function () {
       '</span>' +
       (c.stage === 'evidence' || c.stage === 'drafting'
         ? '<span class="case-bar-ev" style="color:' + evCol + '">Evidence ' + evPct + '%</span>'
+        : '') +
+      (typeof getAssignmentLine === 'function' && c.classification === 'ESCALATE'
+        ? '<span class="case-bar-assign">Assigned: ' + escapeHtml(getAssignmentLine(c)) + '</span>'
         : '') +
       '</div>' +
       primaryCta(c) +
@@ -227,8 +230,21 @@ var CaseShell = (function () {
       return s.id === c.stage || (c.stage === 'defence' && s.id === 'drafting');
     });
 
+    var escalationBanner = '';
+    if (c.classification === 'ESCALATE' && c.escalatedTo) {
+      var toU = USERS[c.escalatedTo] || { full: c.escalatedTo, name: c.escalatedTo };
+      escalationBanner =
+        '<div class="escalation-banner"><i class="ti ti-alert-triangle"></i><div><strong>Escalated to senior review</strong> — assigned to ' +
+        escapeHtml(toU.full || toU.name) +
+        '. Awaiting decision.<span class="esc-time">' +
+        escapeHtml(c.escalatedAt || '') +
+        '</span></div></div>';
+    }
+
     document.getElementById('tab-panel').innerHTML =
-      '<div class="tab-panel-inner"><div class="overview-grid">' +
+      '<div class="tab-panel-inner">' +
+      escalationBanner +
+      '<div class="overview-grid">' +
       '<div class="panel-card highlight">' +
       '<div class="pc-label">Next action</div>' +
       '<div class="pc-title">' +
