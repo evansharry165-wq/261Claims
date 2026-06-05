@@ -221,6 +221,7 @@ input[type=file]{display:none}
 </style>
 </head>
 <body>
+<script src="case_embed.js"></script>
 <script>
 // ALL DATA AND HELPERS — embedded in every page
 const USERS={
@@ -373,8 +374,8 @@ function storeCase(stage){
   var updated=Object.assign({},full,{ref:C.ref,claimant:C.name,solicitor:C.sol,flight:C.flight,flightNum:C.flightNum,dep:C.dep,arr:C.arr,flightDate:C.flightDate,value:C.value,type:C.type,locDate:C.date,stage:stage||full.stage||'triage',jurisdiction:C.jurisdiction,lang:C.lang||J.lang,disruptionType:C.disruptionType,classification:C.classification,triageNote:C.triageNote,points:C.points,assignedTo:full.assignedTo||C.assignedTo||getActiveUser(),cprDaysLeft:full.cprDaysLeft||21,evidencePct:full.evidencePct||0,loaStatus:full.loaStatus||'',activity:(full.activity||[]).concat([{text:'Triage completed — '+(stage||'triage'),time:'Just now',type:'stage'}])});
   try{sessionStorage.setItem('261c_case',JSON.stringify(updated));sessionStorage.setItem('aeroCaseData',JSON.stringify({ref:updated.ref,claimant:updated.claimant,solicitor:updated.solicitor,flight:updated.flight,flightNum:updated.flightNum,dep:updated.dep,arr:updated.arr,flightDate:updated.flightDate,value:updated.value,type:updated.type,date:updated.locDate,framework:'EC Regulation 261/2004',points:updated.points,jurisdiction:updated.jurisdiction,lang:updated.lang,disruptionType:updated.disruptionType,evidencePct:updated.evidencePct,loaStatus:updated.loaStatus,triageNote:updated.triageNote,assignedTo:(USERS[updated.assignedTo]&&USERS[updated.assignedTo].name)||updated.assignedTo}));}catch(e){}
 }
-function advanceToCPR(){if(!allDone())return;storeCase('cpr');window.location.href='module3-cpr-workspace.html?ref='+encodeURIComponent(C.ref);}
-function openEvidence(){storeCase('evidence');window.location.href='module4-evidence-workspace.html?ref='+encodeURIComponent(C.ref);}
+function advanceToCPR(){if(!allDone())return;storeCase('cpr');if(typeof shellGo==='function'&&shellGo('deadlines','Triage completed — proceeding to CPR'))return;window.location.href='module3-cpr-workspace.html?ref='+encodeURIComponent(C.ref);}
+function openEvidence(){storeCase('evidence');if(typeof shellGo==='function'&&shellGo('evidence','Opened evidence from triage'))return;window.location.href='module4-evidence-workspace.html?ref='+encodeURIComponent(C.ref);}
 function addNote(){var el=document.getElementById('note-input');var v=(el.value||'').trim();if(!v)return;log(v,'note');el.value='';}
 function stageRail(){var steps=[['Intake','done','ti-check'],['Triage','active','ti-search'],['CPR','','ti-calendar-due'],['Evidence','','ti-folder-open'],['Drafting','','ti-file-pencil'],['Resolve','','ti-circle-check']];return '<div class="stage-rail">'+steps.map(function(s){return '<div class="rail-step"><div class="rail-pip '+s[1]+'"><i class="ti '+s[2]+'"></i></div><div class="rail-label '+s[1]+'">'+s[0]+'</div></div>';}).join('')+'</div>';}
 

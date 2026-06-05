@@ -767,17 +767,17 @@ Update to reflect:
 - [x] Update `nav.js` / `shared_nav.js` to 4 links
 - [x] Simplify `index.html` to Do now / Watch / Portfolio
 - [x] Add `getNextAction()` and helpers in `case_helpers.js`
-- [x] Update `openCase()` to point at `case.html` (redirect stub to legacy workspaces)
+- [x] Update `openCase()` to point at `case.html` (unified case shell)
 - [x] Add demo guide banner
 
 ### Phase 2 — Unified case shell
-- [ ] Create `case.html` with header, tabs, waiting-on strip
-- [ ] Port triage content into tab
-- [ ] Port deadlines content into tab
-- [ ] Port evidence content into tab (simplified default view)
-- [ ] Port documents content into tab
-- [ ] Add Overview and Activity tabs
-- [ ] Redirect legacy workspace URLs
+- [x] Create `case.html` with header, tabs, waiting-on strip
+- [x] Port triage content into tab (iframe embed of `module2-case-workspace.html`)
+- [x] Port deadlines content into tab (iframe embed of `module3-cpr-workspace.html`)
+- [x] Port evidence content into tab (iframe embed of `module4-evidence-workspace.html`)
+- [x] Port documents content into tab (iframe embed of `module5-drafting-workspace.html`)
+- [x] Add Overview and Activity tabs (inline in `case_shell.js`)
+- [x] Redirect legacy workspace URLs (`case_embed.js` → `case.html?ref=&tab=`)
 
 ### Phase 3 — Cases & intake
 - [ ] Rename/enhance case list (`cases.html`) with next-action columns

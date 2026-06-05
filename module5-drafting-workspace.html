@@ -134,6 +134,7 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 
 </head>
 <body>
+<script src="case_embed.js"></script>
 <script>
 // ALL DATA AND HELPERS — embedded in every page
 const USERS={
@@ -1156,7 +1157,7 @@ function switchUser(id){
   sessionStorage.removeItem('261c_case');
   sessionStorage.removeItem('aeroCaseData');
   closeMenu();
-  if(window.location.pathname.indexOf('workspace')>=0){window.location.href='index.html';return;}
+  if(window.location.pathname.indexOf('workspace')>=0){var ep=new URLSearchParams(window.location.search);if(ep.get('embed')!=='1'){window.location.href='index.html';return;}}
   var u=typeof USERS!=='undefined'?USERS[id]:null;
   if(u){
     var av=document.getElementById('nav-av'); if(av)av.textContent=u.initials;
