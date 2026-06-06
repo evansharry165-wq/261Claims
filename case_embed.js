@@ -21,24 +21,33 @@
 
   if (embed) {
     document.documentElement.classList.add('embed-mode');
+    var isDraftingEmbed = file === 'module5-drafting-workspace.html';
+    if (isDraftingEmbed) {
+      document.documentElement.classList.add('drafting-embed');
+    }
     function applyEmbed() {
       document.body.classList.add('embed-mode');
+      if (isDraftingEmbed) document.body.classList.add('drafting-embed');
       var style = document.getElementById('embed-style');
       if (!style) {
         style = document.createElement('style');
         style.id = 'embed-style';
         style.textContent =
           'body.embed-mode .global-nav,body.embed-mode .topbar,body.embed-mode .sidebar,body.embed-mode #user-modal,body.embed-mode .advance-bar{display:none!important}' +
-          'html.embed-mode,body.embed-mode,body.embed-mode .app{height:100%!important;min-height:0}' +
-          'body.embed-mode .body{grid-template-columns:1fr!important;height:100%!important}' +
-          'body.embed-mode .body.drafting-layout{grid-template-columns:200px 1fr!important}' +
+          'body.embed-mode .stage-rail{display:none!important}' +
+          /* Default embed: scroll the iframe document (reliable wheel/touch in nested iframes) */
+          'html.embed-mode,body.embed-mode{height:100%!important;overflow-y:auto!important;overflow-x:hidden;-webkit-overflow-scrolling:touch}' +
+          'body.embed-mode .app{height:auto!important;min-height:100%!important}' +
+          'body.embed-mode .body{grid-template-columns:1fr!important;display:block!important;height:auto!important;overflow:visible!important;min-height:0!important}' +
+          'body.embed-mode .main{height:auto!important;overflow:visible!important;min-height:0!important}' +
+          /* Drafting keeps nested inner scroll regions */
+          'html.drafting-embed,body.drafting-embed,body.embed-mode.drafting-embed .app{height:100%!important;overflow:hidden!important;min-height:0!important}' +
+          'html.drafting-embed,body.drafting-embed{overflow:hidden!important}' +
+          'body.embed-mode .body.drafting-layout{display:grid!important;height:100%!important;overflow:hidden!important;grid-template-columns:200px 1fr!important;min-height:0!important}' +
           'body.embed-mode .body.drafting-layout.doc-focused{grid-template-columns:1fr!important}' +
           'body.embed-mode .body.drafting-layout.doc-focused .sidebar-left{display:none!important}' +
           'body.embed-mode .drafting-layout .sidebar-right{display:none!important}' +
-          'body.embed-mode .body{min-height:0!important}' +
-          'body.embed-mode .main{height:100%;min-height:0;overflow-y:auto}' +
-          'body.embed-mode .body.drafting-layout .main{overflow:hidden}' +
-          'body.embed-mode .stage-rail{display:none!important}';
+          'body.embed-mode .body.drafting-layout .main{height:100%!important;overflow:hidden!important;min-height:0!important}';
         document.head.appendChild(style);
       }
     }

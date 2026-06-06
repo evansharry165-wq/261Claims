@@ -324,6 +324,39 @@ var CaseShell = (function () {
       '</div></div>';
   }
 
+  function getFrameScrollEl(frame) {
+    if (!frame || !frame.contentDocument) return null;
+    var doc = frame.contentDocument;
+    var main = doc.getElementById('main');
+    if (main) {
+      var mainStyle = frame.contentWindow.getComputedStyle(main);
+      if (main.scrollHeight > main.clientHeight && mainStyle.overflowY !== 'visible') return main;
+    }
+    return doc.scrollingElement || doc.documentElement || doc.body;
+  }
+
+  function bindFrameWheel() {
+    var panel = document.getElementById('tab-panel');
+    if (!panel || panel._wheelBound) return;
+    panel._wheelBound = true;
+    panel.addEventListener(
+      'wheel',
+      function (e) {
+        var frame = document.getElementById('case-frame');
+        var scrollEl = getFrameScrollEl(frame);
+        if (!scrollEl) return;
+        var max = scrollEl.scrollHeight - scrollEl.clientHeight;
+        if (max <= 0) return;
+        var next = scrollEl.scrollTop + e.deltaY;
+        if ((e.deltaY > 0 && scrollEl.scrollTop < max) || (e.deltaY < 0 && scrollEl.scrollTop > 0)) {
+          scrollEl.scrollTop = Math.max(0, Math.min(max, next));
+          e.preventDefault();
+        }
+      },
+      { passive: false }
+    );
+  }
+
   function renderFrame(tab) {
     var src = FRAME_MAP[tab];
     if (!src) return;
@@ -342,6 +375,7 @@ var CaseShell = (function () {
       '" title="' +
       escapeHtml(tab) +
       '"></iframe>';
+    bindFrameWheel();
   }
 
   function renderTabContent() {
@@ -404,6 +438,7 @@ var CaseShell = (function () {
       logActivity('Case workspace opened', 'create');
       state.opened = true;
     }
+    bindFrameWheel();
   }
 
   window.addEventListener('message', function (e) {
