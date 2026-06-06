@@ -22,7 +22,7 @@
   --r:8px;--r2:12px;--r3:16px;
 }
 html,body{height:100%;font-family:var(--font);background:var(--surface2);color:var(--text);font-size:14px}
-.app{display:flex;flex-direction:column;height:100vh}
+.app{display:flex;flex-direction:column;height:calc(100vh - 48px);min-height:0}
 
 .topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px;height:54px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
 .logo{display:flex;align-items:center;gap:10px;text-decoration:none}
@@ -36,8 +36,8 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 .btn-back{font-size:12px;padding:5px 12px;border-radius:var(--r);border:1px solid var(--border);background:var(--surface);cursor:pointer;color:var(--text2);font-family:var(--font);display:flex;align-items:center;gap:5px;text-decoration:none}
 .btn-back:hover{background:var(--surface3)}
 
-.body{flex:1;display:grid;grid-template-columns:1fr 300px;overflow:hidden}
-.main{overflow-y:auto;padding:20px 24px}
+.body{flex:1;display:grid;grid-template-columns:1fr 300px;overflow:hidden;min-height:0}
+.main{overflow-y:auto;padding:20px 24px;min-height:0}
 .sidebar{border-left:1px solid var(--border);background:var(--surface);display:flex;flex-direction:column;overflow:hidden}
 
 /* case header */

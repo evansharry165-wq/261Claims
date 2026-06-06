@@ -35,7 +35,9 @@
           'body.embed-mode .body.drafting-layout.doc-focused{grid-template-columns:1fr!important}' +
           'body.embed-mode .body.drafting-layout.doc-focused .sidebar-left{display:none!important}' +
           'body.embed-mode .drafting-layout .sidebar-right{display:none!important}' +
-          'body.embed-mode .main{height:100%;overflow:hidden}' +
+          'body.embed-mode .body{min-height:0!important}' +
+          'body.embed-mode .main{height:100%;min-height:0;overflow-y:auto}' +
+          'body.embed-mode .body.drafting-layout .main{overflow:hidden}' +
           'body.embed-mode .stage-rail{display:none!important}';
         document.head.appendChild(style);
       }

@@ -23,7 +23,7 @@
   --r:8px;--r2:12px;--r3:16px;
 }
 html,body{height:100%;font-family:var(--font);background:var(--surface2);color:var(--text);font-size:14px}
-.app{display:flex;flex-direction:column;height:calc(100vh - 48px)}
+.app{display:flex;flex-direction:column;height:calc(100vh - 48px);min-height:0}
 
 /* global nav */
 .global-nav{background:var(--navy);height:48px;display:flex;align-items:center;padding:0 20px;gap:0;flex-shrink:0}
@@ -42,9 +42,9 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 .gn-user{font-size:11px;font-weight:500;color:rgba(255,255,255,0.8)}
 
 /* layout */
-.body{flex:1;display:grid;grid-template-columns:320px 1fr;overflow:hidden}
-.left-panel{border-right:1px solid var(--border);background:var(--surface);overflow-y:auto;display:flex;flex-direction:column}
-.right-panel{overflow-y:auto;background:var(--surface2)}
+.body{flex:1;display:grid;grid-template-columns:320px 1fr;overflow:hidden;min-height:0}
+.left-panel{border-right:1px solid var(--border);background:var(--surface);overflow-y:auto;display:flex;flex-direction:column;min-height:0}
+.right-panel{overflow-y:auto;background:var(--surface2);min-height:0}
 
 /* left panel header */
 .lp-header{padding:16px;border-bottom:1px solid var(--border);flex-shrink:0}
