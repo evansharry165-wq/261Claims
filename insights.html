@@ -9,7 +9,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{--navy:#0B1628;--blue:#2A6FDB;--blue-faint:#EFF6FF;--blue-text:#1D4ED8;--green:#1A7A4A;--green-faint:#E6F5EE;--red:#C0392B;--amber:#B45309;--amber-faint:#FEF3C7;--border:#E2E8F0;--text:#0F172A;--text2:#475569;--text3:#94A3B8;--surface:#fff;--surface2:#F8FAFC;--font:'DM Sans',sans-serif;--mono:'DM Mono',monospace;--r:8px;--r2:12px;--r3:16px}
+:root{--navy:#0B1628;--blue:#2A6FDB;--blue-faint:#EFF6FF;--blue-text:#1D4ED8;--green:#1A7A4A;--green-faint:#E6F5EE;--red:#C0392B;--red-faint:#FCF0EF;--amber:#B45309;--amber-faint:#FEF3C7;--border:#E2E8F0;--text:#0F172A;--text2:#475569;--text3:#94A3B8;--surface:#fff;--surface2:#F8FAFC;--font:'DM Sans',sans-serif;--mono:'DM Mono',monospace;--r:8px;--r2:12px;--r3:16px}
 html,body{height:100%;font-family:var(--font);background:var(--surface2);color:var(--text);font-size:14px}
 .global-nav{background:var(--navy);height:48px;display:flex;align-items:center;padding:0 20px}
 .gn-logo{display:flex;align-items:center;gap:8px;text-decoration:none;margin-right:20px}
@@ -47,6 +47,26 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 .p-settled{background:var(--amber-faint);color:var(--amber)}
 .p-paid{background:var(--blue-faint);color:var(--blue-text)}
 .p-withdrawn{background:var(--surface2);color:var(--text2)}
+.p-conceded{background:var(--red-faint);color:var(--red)}
+.past-table{width:100%;border-collapse:collapse;font-size:12px}
+.past-table th{text-align:left;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);padding:10px 12px;border-bottom:1px solid var(--border);background:var(--surface2)}
+.past-table td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:middle}
+.past-table tr:hover td{background:var(--surface2)}
+.past-table .ref{font-family:var(--mono);font-size:10px;color:var(--text3)}
+.guidance-wrap{height:100%;overflow-y:auto;padding:16px 20px}
+.guidance-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+@media(max-width:900px){.guidance-grid{grid-template-columns:1fr}}
+.article-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r3);overflow:hidden}
+.article-hdr{padding:14px 16px;cursor:pointer;display:flex;align-items:flex-start;gap:10px}
+.article-hdr:hover{background:var(--surface2)}
+.article-title{font-size:13px;font-weight:500;flex:1;line-height:1.4}
+.article-summary{font-size:12px;color:var(--text2);line-height:1.5;margin-top:6px}
+.article-tag{font-size:10px;font-weight:500;padding:3px 8px;border-radius:20px;background:var(--blue-faint);color:var(--blue-text);white-space:nowrap}
+.article-expand{font-size:11px;color:var(--blue-text);margin-top:8px;display:flex;align-items:center;gap:4px}
+.article-body{display:none;padding:0 16px 16px;font-size:12px;line-height:1.6;color:var(--text2);border-top:1px solid var(--border)}
+.article-body.open{display:block;padding-top:14px}
+.article-body p{margin-bottom:10px}
+.article-body p:last-child{margin-bottom:0}
 .kv{display:grid;grid-template-columns:110px 1fr;gap:8px;font-size:12px;padding:7px 0;border-bottom:1px solid var(--border)}
 .kv-label{color:var(--text3)}
 .detail-body{padding:14px 16px;font-size:12px;line-height:1.55}
@@ -65,7 +85,6 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 </head>
 <body>
 <script src="shared_data.js"></script>
-<script src="insights_data.js"></script>
 
 <nav class="global-nav">
   <a href="index.html" class="gn-logo"><div class="gn-mark"><i class="ti ti-plane"></i></div><span class="gn-name">261Claims</span></a>
@@ -81,7 +100,13 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 <script>
 var TABS=[{id:'reporting',label:'Reporting'},{id:'past-cases',label:'Past cases'},{id:'guidance',label:'Guidance'}];
 var activeTab=(new URLSearchParams(window.location.search).get('tab')||'reporting');
-var activeOutcome='all', selectedRef='', query='';
+var activeOutcome='all', query='', expandedArticle=null;
+var GUIDANCE_ARTICLES=[
+  {id:'ec261-wallentin',title:'EC261 extraordinary circumstances — the two-limb test',category:'Case law',summary:'Wallentin-Hermann v Alitalia (C-549/07) established the two-limb test for Article 5(3) defences. Airlines must prove both that the event was beyond their control and that all reasonable measures were taken to avoid the delay.',body:['Under Regulation (EC) No 261/2004, compensation is payable unless the operating carrier proves that the cancellation or long delay was caused by extraordinary circumstances which could not have been avoided even if all reasonable measures had been taken (Article 5(3)).','In Wallentin-Hermann, the CJEU confirmed a two-stage test. First, the airline must establish that the disruption resulted from an event not inherent in the normal exercise of its activity — typically weather, ATC restrictions, security threats, or political instability. Technical defects are generally not extraordinary unless they stem from sabotage or hidden manufacturing defects (van der Lans).','Second, even where the event qualifies, the airline must demonstrate it took all reasonable measures. For weather, this includes monitoring METAR/TAF forecasts, dispatching when safe, and re-routing or delaying departure where METAR/SIGMET data supports an unsafe operating environment. Mere assertion is insufficient; contemporaneous operational records are required.','In practice, pull TOPS delay codes, METAR/SIGMET archives, Eurocontrol ATFM data, and crew reports before drafting a Letter of Response. Where the second limb is weak — for example, the same weather affected only your flight while competitors operated — flag the case for escalation rather than a standard defend.']},
+  {id:'uk261-ec261',title:'UK261 vs EC261 post-Brexit differences',category:'Regulatory',summary:'Since 1 January 2021, UK Regulation (EU) 261/2004 was retained as "UK261" for flights departing the UK. The core compensation framework mirrors EC261, but procedural and enforcement routes differ.',body:['UK261 applies to passengers departing from a UK airport on any carrier, and to passengers arriving at a UK airport on a UK or EU carrier where the flight was cancelled or delayed by three hours or more. EC261 continues to apply to EU departures and EU-carrier arrivals into the EU. For Horizon Airways, most claims fall under UK261 when departing LGW, LTN, MAN, or LHR.','The compensation bands (€250 / €400 / €600 by distance) and the three-hour threshold are substantively identical. Extraordinary circumstances under Article 5(3) use the same CJEU case law, which UK courts continue to follow post-Brexit. The key practical difference is the forum: County Court claims under UK261 use the CPR Pre-Action Protocol, while EU claims may involve local procedural rules (French MTV mediation, Spanish AESA complaints).','Enforcement differs. In the UK, the CAA can investigate but has no direct compensation order power equivalent to some EU national bodies. Claimants typically issue in the County Court. Limitation is six years in England & Wales (Limitation Act 1980), compared with five years in France and Spain.','When triaging, check departure airport first to determine applicable regulation, then apply jurisdiction-specific CPR or mediation requirements. Do not assume a UK261 defence template works for a French MTV claim or Spanish mercantile court procedure.']},
+  {id:'cpr-deadlines',title:'CPR response deadlines — clear days calculation',category:'Procedure',summary:'The Pre-Action Protocol for Low Value Personal Injury (Practice Direction) requires a Letter of Acknowledgement within 21 clear days. The Letter of Response is due within three months of acknowledgement.',body:['Under the CPR Pre-Action Protocol, the defendant must send a Letter of Acknowledgement within 21 days of receipt of the Letter of Claim. "Days" means clear days: the day of service does not count, and if the period ends on a weekend or bank holiday, it extends to the next business day (CPR 2.8).','For acknowledgement, day 1 is the day after the LOC is deemed received. Email service on a business day counts from the next day unless the protocol specifies otherwise. Track the date carefully — missing acknowledgement exposes the airline to adverse costs and weakens negotiating position.','The Letter of Response deadline runs from the date of acknowledgement, not from LOC receipt. The protocol allows three months (not three calendar months in all interpretations — check whether the claimant\'s solicitor specifies a date). Extensions should be agreed in writing if evidence gathering requires more time.','In 261Claims, cprDaysLeft reflects working days to the next critical deadline. Cases showing ≤ 7 days require immediate action. Overdue acknowledgements (negative days) should trigger escalation to the supervising solicitor and a without-prejudice extension request where appropriate.']},
+  {id:'part36-offers',title:'Part 36 offers — strategic use in low-value claims',category:'Strategy',summary:'A Part 36 offer can pressure claimants to settle at or below the EC261 tariff plus modest costs. Used correctly, it limits exposure to indemnity costs if the claimant fails to beat the offer at trial.',body:['Part 36 of the CPR allows a defendant to make a formal settlement offer with prescribed cost consequences. If the claimant fails to obtain a judgment more advantageous than the offer, the defendant may recover costs from the expiry date of the relevant period — potentially on an indemnity basis from the date of judgment.','In Cat A €250/£220 claims, a Part 36 offer at the full compensation amount plus a modest contribution to costs (e.g. £50–£150) can be effective where liability is genuinely disputed but trial costs would exceed the claim value. The offer must comply with Part 36 form requirements: clear letter, 21-day minimum acceptance period, and stated intent that it is a Part 36 offer.','Timing matters. Making an offer before disclosure may be premature; making it after a strong Letter of Response and evidence pack is served maximises pressure. For defended cases with strong extraordinary circumstances evidence, an offer at nil compensation (or a token amount) is permissible but carries reputational risk if the court later awards costs against you.','For sub-£500 claims, weigh Part 36 against simple commercial settlement. The administrative cost of drafting and serving a compliant offer must be justified by the costs protection gained. Flag cases to the supervising solicitor where the claimant\'s Part 36 deadline is approaching — missing the window forfeits the cost-shifting advantage.']}
+];
 
 function escapeHtml(v){return String(v==null?'':v).replace(/[&<>"']/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch];});}
 
@@ -97,32 +122,61 @@ function renderTabs(){
   }).join('');
 }
 
+function resolvedCases(){
+  return getResolvedCases().slice().sort(function(a,b){
+    return String(b.closedDate||'').localeCompare(String(a.closedDate||''));
+  });
+}
+
+function outcomeLabel(o){
+  return{DEFENDED:'Defended',SETTLED:'Settled',CONCEDED:'Conceded'}[String(o||'').toUpperCase()]||o;
+}
+
+function outcomeClass(o){
+  var u=String(o||'').toUpperCase();
+  return u==='DEFENDED'?'p-defended':u==='SETTLED'?'p-settled':u==='CONCEDED'?'p-conceded':'p-withdrawn';
+}
+
 function filteredPastCases(){
   var q=query.toLowerCase();
-  return repoCases().filter(function(c){
-    var ok=activeOutcome==='all'||c.outcome===activeOutcome;
-    var hay=[c.ref,c.claimant,c.disruptionType,c.summary].join(' ').toLowerCase();
+  return resolvedCases().filter(function(c){
+    var ok=activeOutcome==='all'||String(c.outcome||'').toLowerCase()===activeOutcome;
+    var hay=[c.ref,c.claimant,c.flight,c.solicitor,c.outcome].join(' ').toLowerCase();
     return ok&&(!q||hay.indexOf(q)>=0);
   });
 }
 
 function renderPastCases(){
   var rows=filteredPastCases();
-  if(!selectedRef&&rows.length)selectedRef=rows[0].ref;
-  var selected=rows.find(function(c){return c.ref===selectedRef;})||rows[0];
-  var tabs=['all','defended','settled','paid','withdrawn'].map(function(o){
+  var tabs=['all','defended','settled','conceded'].map(function(o){
     return '<button class="tab '+(activeOutcome===o?'active':'')+'" onclick="activeOutcome=\''+o+'\';renderPanel()">'+(o==='all'?'All':outcomeLabel(o))+'</button>';
   }).join('');
-  document.getElementById('tab-panel').innerHTML='<div class="past-wrap"><div class="grid-main"><div class="panel"><div class="panel-hdr"><div class="panel-title">Past cases archive</div><div class="tabbar">'+tabs+'</div><input style="margin-top:10px;width:100%;font-size:12px;padding:7px 10px;border:1px solid var(--border);border-radius:var(--r);font-family:var(--font)" placeholder="Search past cases…" value="'+escapeHtml(query)+'" oninput="query=this.value;renderPanel()"></div>'
-    +rows.map(function(c){return '<div class="case-card" onclick="selectedRef=\''+c.ref+'\';renderPanel()"><div class="ref">'+escapeHtml(c.ref)+'</div><div class="name">'+escapeHtml(c.claimant)+' · '+escapeHtml(c.flightNum)+'</div><div class="meta">'+escapeHtml(c.disruptionType)+' · <span class="pill '+outcomeClass(c.outcome)+'">'+outcomeLabel(c.outcome)+'</span> · '+c.confidence+'% confidence</div></div>';}).join('')
-    +'</div><div class="panel">'+(selected?'<div class="panel-hdr"><div class="panel-title">Case insight</div></div><div class="detail-body"><div class="kv"><div class="kv-label">Outcome</div><div><span class="pill '+outcomeClass(selected.outcome)+'">'+outcomeLabel(selected.outcome)+'</span></div></div><div class="kv"><div class="kv-label">Saving</div><div>'+escapeHtml(selected.saving)+'</div></div><div class="kv"><div class="kv-label">Time to close</div><div>'+selected.days+' days</div></div><div style="margin-top:10px">'+escapeHtml(selected.summary)+'</div><div style="margin-top:10px;color:var(--blue-text)"><strong>Recommendation:</strong> '+escapeHtml(selected.recommendation)+'</div></div>':'<div class="detail-body">Select a case.</div>')+'</div></div><p style="margin-top:12px;font-size:12px;color:var(--text3)">Active cases are on <a href="cases.html" style="color:var(--blue-text)">Cases</a>.</p></div>';
+  var tableRows=rows.map(function(c){
+    return '<tr><td class="ref">'+escapeHtml(c.ref)+'</td><td style="font-weight:500">'+escapeHtml(c.claimant)+'</td><td>'+escapeHtml(c.flight)+'</td><td><span class="pill '+outcomeClass(c.outcome)+'">'+outcomeLabel(c.outcome)+'</span></td><td style="font-family:var(--mono)">'+escapeHtml(c.value)+'</td><td>'+escapeHtml(c.closedDate||'—')+'</td><td style="color:var(--text2)">'+escapeHtml(c.solicitor)+'</td></tr>';
+  }).join('');
+  document.getElementById('tab-panel').innerHTML='<div class="past-wrap"><div class="panel"><div class="panel-hdr"><div class="panel-title">Past cases archive</div><div class="tabbar">'+tabs+'</div><input style="margin-top:10px;width:100%;font-size:12px;padding:7px 10px;border:1px solid var(--border);border-radius:var(--r);font-family:var(--font)" placeholder="Search past cases…" value="'+escapeHtml(query)+'" oninput="query=this.value;renderPanel()"></div>'
+    +'<div style="overflow-x:auto"><table class="past-table"><thead><tr><th>Ref</th><th>Claimant</th><th>Flight</th><th>Outcome</th><th>Value</th><th>Closed</th><th>Solicitor</th></tr></thead><tbody>'+(tableRows||'<tr><td colspan="7" style="color:var(--text3);padding:16px">No resolved cases match your filters.</td></tr>')+'</tbody></table></div></div>'
+    +'<p style="margin-top:12px;font-size:12px;color:var(--text3)">'+rows.length+' resolved case'+(rows.length===1?'':'s')+' from live portfolio. Active cases are on <a href="cases.html" style="color:var(--blue-text)">Cases</a>.</p></div>';
+}
+
+function toggleArticle(id){
+  expandedArticle=expandedArticle===id?null:id;
+  renderPanel();
+}
+
+function renderGuidance(){
+  var cards=GUIDANCE_ARTICLES.map(function(a){
+    var open=expandedArticle===a.id;
+    return '<div class="article-card"><div class="article-hdr" onclick="toggleArticle(\''+a.id+'\')"><div style="flex:1"><div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px"><div class="article-title">'+escapeHtml(a.title)+'</div><span class="article-tag">'+escapeHtml(a.category)+'</span></div><div class="article-summary">'+escapeHtml(a.summary)+'</div><div class="article-expand"><i class="ti ti-chevron-'+(open?'up':'down')+'"></i> '+(open?'Collapse':'Expand')+'</div></div></div><div class="article-body'+(open?' open':'')+'">'+a.body.map(function(p){return '<p>'+escapeHtml(p)+'</p>';}).join('')+'</div></div>';
+  }).join('');
+  document.getElementById('tab-panel').innerHTML='<div class="guidance-wrap"><div style="margin-bottom:14px"><div style="font-size:15px;font-weight:500">Legal guidance</div><div style="font-size:12px;color:var(--text3);margin-top:4px">EC261 procedure, case law and strategy notes for the claims team.</div></div><div class="guidance-grid">'+cards+'</div></div>';
 }
 
 function renderPanel(){
   if(activeTab==='reporting'){
     document.getElementById('tab-panel').innerHTML='<iframe class="tab-frame" src="module6-mi.html?embed=1" title="Reporting"></iframe>';
   }else if(activeTab==='guidance'){
-    document.getElementById('tab-panel').innerHTML='<iframe class="tab-frame" src="education.html?embed=1" title="Guidance"></iframe>';
+    renderGuidance();
   }else{
     renderPastCases();
   }

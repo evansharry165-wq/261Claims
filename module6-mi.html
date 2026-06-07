@@ -79,6 +79,9 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 .chart-wrap{position:relative;height:220px}
 .chart-wrap-sm{position:relative;height:180px}
 .chart-wrap-lg{position:relative;height:260px}
+.pipeline-legend{display:flex;flex-wrap:wrap;justify-content:center;gap:12px 16px;margin-top:12px;padding-top:10px;border-top:1px solid var(--border)}
+.pipeline-legend-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2)}
+.pipeline-swatch{width:10px;height:10px;border-radius:2px;flex-shrink:0}
 
 /* table */
 .mi-table{width:100%;border-collapse:collapse;font-size:12px}
@@ -163,68 +166,7 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 </head>
 <body>
 <script src="insights_embed.js"></script>
-<script>
-// ALL DATA AND HELPERS — embedded in every page
-const USERS={
-  SB:{id:'SB',name:'S. Booth',full:'Sarah Booth',role:'Head of Legal Ops',initials:'SB',lang:'en'},
-  JP:{id:'JP',name:'J. Patel',full:'James Patel',role:'Senior Solicitor',initials:'JP',lang:'en'},
-  KR:{id:'KR',name:'K. Rahman',full:'Kiran Rahman',role:'Solicitor',initials:'KR',lang:'en'},
-  MD:{id:'MD',name:'M. Dupont',full:'Marie Dupont',role:'Juriste senior',initials:'MD',lang:'fr'},
-  PL:{id:'PL',name:'P. Laurent',full:'Pierre Laurent',role:'Juriste',initials:'PL',lang:'fr'},
-  CG:{id:'CG',name:'C. García',full:'Carlos García',role:'Abogado senior',initials:'CG',lang:'es'},
-  IM:{id:'IM',name:'I. Martín',full:'Isabel Martín',role:'Abogada',initials:'IM',lang:'es'},
-  EH:{id:'EH',name:'E. Hughes',full:'Emma Hughes',role:'Evidence Handling Specialist',initials:'EH',lang:'en',team:'evidence'},
-};
-const JURISDICTIONS={
-  'england-wales':{name:'England & Wales',flag:'🇬🇧',lang:'en',limitationYears:6,limitationNote:'6 years — Limitation Act 1980',court:'County Court',procedureNote:'CPR Pre-Action Protocol. 21-day acknowledgement.',responseWindow:21,mediation:'optional',mediationNote:'ADR available but not mandatory.',keyDates:[{label:'Acknowledge LOC',days:21,urgency:'critical',note:'CPR Pre-Action Protocol'},{label:'Letter of Response',days:91,urgency:'important',note:'3 months from acknowledgement'},{label:'Limitation review',days:120,urgency:'watch',note:'6-year limitation'}],documents:{acknowledgement:'Letter of Acknowledgement',response:'Letter of Response',defence:'Defence (CPR Part 16)',witness:'Witness Statement (CPR Part 32)'},important:null},
-  'france':{name:'France',flag:'🇫🇷',lang:'fr',limitationYears:5,limitationNote:'5 ans — art. 2224 Code civil',court:'Tribunal Judiciaire',procedureNote:'Médiation préalable OBLIGATOIRE depuis le 6 février 2026. Sans médiation, demande irrecevable.',responseWindow:60,mediation:'mandatory',mediationBody:'Médiateur du Tourisme et du Voyage (MTV)',mediationNote:'Médiation obligatoire depuis le 6 février 2026.',keyDates:[{label:'Répondre à la réclamation',days:60,urgency:'critical',note:'60 jours — avant médiation MTV'},{label:'Médiation préalable (MTV)',days:90,urgency:'critical',note:'OBLIGATOIRE depuis le 6 février 2026'},{label:'Assignation si échec',days:150,urgency:'important',note:'Tribunal Judiciaire par assignation'},{label:'Surveillance prescription',days:180,urgency:'watch',note:'Prescription 5 ans'}],documents:{acknowledgement:'Accusé de réception',response:'Lettre de réponse',defence:'Conclusions en défense',witness:'Attestation de témoin'},important:'ATTENTION : Médiation préalable obligatoire depuis le 6 février 2026. Sans cette étape, la demande est irrecevable.'},
-  'spain':{name:'España',flag:'🇪🇸',lang:'es',limitationYears:5,limitationNote:'5 años — art. 1964 Código Civil',court:'Juzgado de lo Mercantil',procedureNote:'Reclamaciones ante el Juzgado de lo Mercantil. AESA puede iniciar expediente sancionador paralelo.',responseWindow:30,mediation:'available',mediationNote:'Mediación disponible pero no obligatoria.',keyDates:[{label:'Responder a la reclamación',days:30,urgency:'critical',note:'30 días — reclamación AESA'},{label:'Contestación a la demanda',days:20,urgency:'critical',note:'20 días hábiles desde notificación judicial'},{label:'Vigilancia prescripción',days:90,urgency:'watch',note:'Prescripción 5 años'}],documents:{acknowledgement:'Acuse de recibo',response:'Escrito de respuesta',defence:'Contestación a la demanda',witness:'Declaración testifical'},important:'AESA puede iniciar expediente sancionador paralelo, independiente del litigio civil.'},
-};
-const I18N={
-  en:{dashboard:'Dashboard',intake:'Intake',cases:'Cases',cpr:'CPR',evidence:'Evidence',drafting:'Drafting',mi:'MI',knowledge:'Knowledge',myCases:'My cases',intakeQueue:'Intake queue',cprWatch:'CPR watch',myPipeline:'My pipeline',legalNews:'Legal & regulatory',networkOps:'Network & operations',liveSources:'Live sources',goodMorning:'Good morning',goodAfternoon:'Good afternoon',goodEvening:'Good evening',noUrgentDeadlines:'No urgent CPR deadlines this week',evidenceProgress:'Evidence progress',cprDeadlines:'CPR deadlines',viewAll:'View all',uploadLOC:'Upload new letter of claim',noQueue:'No cases in your queue.',stage_intake:'Intake',stage_triage:'Triage',stage_cpr:'CPR',stage_evidence:'Evidence',stage_drafting:'Drafting',stage_defence:'Defence',stage_resolve:'Resolve'},
-  fr:{dashboard:'Tableau de bord',intake:'Réception',cases:'Dossiers',cpr:'Délais',evidence:'Preuves',drafting:'Rédaction',mi:'Reporting',knowledge:'Ressources',myCases:'Mes dossiers',intakeQueue:'File de réception',cprWatch:'Surveillance délais',myPipeline:'Mon pipeline',legalNews:'Actualités juridiques',networkOps:'Réseau & opérations',liveSources:'Sources en direct',goodMorning:'Bonjour',goodAfternoon:'Bon après-midi',goodEvening:'Bonsoir',noUrgentDeadlines:'Aucun délai urgent cette semaine',evidenceProgress:'Avancement des preuves',cprDeadlines:'Délais de procédure',viewAll:'Voir tout',uploadLOC:'Déposer une lettre de réclamation',noQueue:'Aucun dossier dans votre file.',stage_intake:'Réception',stage_triage:'Triage',stage_cpr:'Délais',stage_evidence:'Preuves',stage_drafting:'Rédaction',stage_defence:'Défense',stage_resolve:'Résolu'},
-  es:{dashboard:'Panel',intake:'Recepción',cases:'Casos',cpr:'Plazos',evidence:'Pruebas',drafting:'Redacción',mi:'Informes',knowledge:'Recursos',myCases:'Mis casos',intakeQueue:'Cola de recepción',cprWatch:'Vigilancia de plazos',myPipeline:'Mi flujo de trabajo',legalNews:'Noticias jurídicas',networkOps:'Red & operaciones',liveSources:'Fuentes en vivo',goodMorning:'Buenos días',goodAfternoon:'Buenas tardes',goodEvening:'Buenas noches',noUrgentDeadlines:'Sin plazos urgentes esta semana',evidenceProgress:'Progreso de pruebas',cprDeadlines:'Plazos procesales',viewAll:'Ver todo',uploadLOC:'Cargar carta de reclamación',noQueue:'No hay casos en su cola.',stage_intake:'Recepción',stage_triage:'Triaje',stage_cpr:'Plazos',stage_evidence:'Pruebas',stage_drafting:'Redacción',stage_defence:'Defensa',stage_resolve:'Resuelto'},
-};
-const SPANISH_AIRPORTS=['BCN','ALC','PMI'];
-const HORIZON_AIRWAYS='Horizon Airways';
-const SOLERO_AIR='Solero Air';
-const ALL_CASES=[
-  {ref:'AC-2026-0089',assignedTo:'SB',claimant:'Daniel Hartley',solicitor:'Pemberton & Associates',flight:'HC 1184 — LTN → BCN',flightNum:'HC 1184',dep:'LTN',arr:'BCN',flightDate:'14 March 2026',value:'£3,800',type:'EC261 — Diversion',locDate:'22 May 2026',stage:'evidence',cat:'C',jurisdiction:'england-wales',lang:'en',disruptionType:'Weather',classification:'ESCALATE',evidencePct:35,cprDaysLeft:3,points:[{n:1,claim:'Delay — Art 7(1)(a)',evidenceStatus:'green',evidenceDoc:'TOPS confirmed'},{n:2,claim:'Extraordinary circumstances — weather',evidenceStatus:'amber',evidenceDoc:'METAR/SIGMET pending'},{n:3,claim:'Article 9 — duty of care',evidenceStatus:'red',evidenceDoc:'Valencia ground records outstanding'},{n:4,claim:'Consequential loss — £2,550',evidenceStatus:'red',evidenceDoc:'No counter-evidence'},{n:5,claim:'Travel & subsistence — £141.80',evidenceStatus:'amber',evidenceDoc:'Receipts pending'}],loaStatus:'approved',triageNote:'Complex. Escalate on consequential loss.',activity:[{text:'Evidence module opened',time:'Today 09:14',type:'create'},{text:'AI triage — ESCALATE flagged',time:'Yesterday 16:30',type:'ai'}]},
-  {ref:'AC-2026-0101',assignedTo:'SB',claimant:'Angela Foster',solicitor:'Clarke & Partners',flight:'HC 203 — LGW → ALC',flightNum:'HC 203',dep:'LGW',arr:'ALC',flightDate:'20 May 2026',value:'€250',type:'EC261 — Weather delay',locDate:'30 May 2026',stage:'intake',cat:'A',jurisdiction:'england-wales',lang:'en',disruptionType:'Weather',classification:'DEFEND',evidencePct:0,cprDaysLeft:21,points:[],loaStatus:'',triageNote:'',activity:[{text:'LOC received',time:'Today 07:55',type:'create'}]},
-  {ref:'AC-2026-0091',assignedTo:'JP',claimant:'Rebecca Walsh',solicitor:'Lewin Solicitors',flight:'HC 307 — MAN → AMS',flightNum:'HC 307',dep:'MAN',arr:'AMS',flightDate:'9 April 2026',value:'€250',type:'EC261 — ATC delay',locDate:'4 June 2026',stage:'triage',cat:'A',jurisdiction:'england-wales',lang:'en',disruptionType:'ATC Restrictions',classification:'DEFEND',evidencePct:0,cprDaysLeft:14,points:[{n:1,claim:'Delay 3hrs 36mins — Art 7(1)(a)',evidenceStatus:'green',evidenceDoc:'Confirmed via TOPS'},{n:2,claim:'Extraordinary circumstances — ATC ATFM',evidenceStatus:'amber',evidenceDoc:'Eurocontrol data requested'},{n:3,claim:'Art 9 — refreshments not provided',evidenceStatus:'red',evidenceDoc:'Ground records required'},{n:4,claim:'Expenses — £18.40',evidenceStatus:'amber',evidenceDoc:'Receipts with LOC'}],loaStatus:'',triageNote:'',activity:[{text:'LOC uploaded — triage pending',time:'Today 10:30',type:'create'}]},
-  {ref:'AC-2026-0112',assignedTo:'JP',claimant:'Oliver Grant',solicitor:'CAB Legal',flight:'HC 556 — LTN → DUB',flightNum:'HC 556',dep:'LTN',arr:'DUB',flightDate:'2 June 2026',value:'£400',type:'EC261 — Cancellation',locDate:'5 June 2026',stage:'intake',cat:'A',jurisdiction:'england-wales',lang:'en',disruptionType:'Technical',classification:'DEFEND',evidencePct:0,cprDaysLeft:28,points:[],loaStatus:'',triageNote:'',activity:[{text:'LOC received',time:'Today 08:20',type:'create'}]},
-  {ref:'AC-2026-0076',assignedTo:'JP',claimant:'Sarah Taylor',solicitor:'Bott & Clarke',flight:'HC 330 — LGW → PMI',flightNum:'HC 330',dep:'LGW',arr:'PMI',flightDate:'28 April 2026',value:'£520',type:'EC261 — Weather delay',locDate:'22 May 2026',stage:'evidence',cat:'B',jurisdiction:'england-wales',lang:'en',disruptionType:'Weather',classification:'DEFEND',evidencePct:72,cprDaysLeft:7,points:[{n:1,claim:'Delay 4hrs 10mins — Art 7(1)(b)',evidenceStatus:'green',evidenceDoc:'TOPS confirmed'},{n:2,claim:'Extraordinary circumstances — weather',evidenceStatus:'amber',evidenceDoc:'METAR/SIGMET pending'}],loaStatus:'sent',triageNote:'Weather defence. Finalise SIGMET evidence.',activity:[{text:'Evidence pack in progress',time:'28 May 16:00',type:'stage'}]},
-  {ref:'AC-2026-0042',assignedTo:'SB',claimant:'Helen Marsh',solicitor:'Pemberton & Associates',flight:'HC 881 — MAN → LTN',flightNum:'HC 881',dep:'MAN',arr:'LTN',flightDate:'11 May 2026',value:'€400',type:'EC261 — ATC delay',locDate:'18 May 2026',stage:'drafting',cat:'A',jurisdiction:'england-wales',lang:'en',disruptionType:'ATC Restrictions',classification:'DRAFTING',evidencePct:100,cprDaysLeft:10,points:[{n:1,claim:'Delay 3hrs 28mins — Art 7(1)(a)',evidenceStatus:'green',evidenceDoc:'TOPS confirmed'},{n:2,claim:'Extraordinary circumstances — ATFM',evidenceStatus:'green',evidenceDoc:'Eurocontrol confirmed'}],loaStatus:'sent',triageNote:'Clean ATC case. Draft LOR.',activity:[{text:'Evidence complete — LOR ready',time:'1 Jun 11:00',type:'stage'}]},
-  {ref:'AC-2026-0055',assignedTo:'JP',claimant:'Marcus Webb',solicitor:'Clarke & Partners',flight:'HC 412 — LHR → AMS',flightNum:'HC 412',dep:'LHR',arr:'AMS',flightDate:'6 May 2026',value:'£1,200',type:'EC261 — Diversion',locDate:'15 May 2026',stage:'drafting',cat:'B',jurisdiction:'england-wales',lang:'en',disruptionType:'Weather',classification:'DRAFTING',evidencePct:100,cprDaysLeft:5,points:[{n:1,claim:'Delay 5hrs 05mins — Art 7(1)(b)',evidenceStatus:'green',evidenceDoc:'TOPS confirmed'},{n:2,claim:'Extraordinary circumstances — weather',evidenceStatus:'green',evidenceDoc:'METAR/SIGMET confirmed'},{n:3,claim:'Article 9 care costs — £950',evidenceStatus:'amber',evidenceDoc:'Ground records attached'}],loaStatus:'sent',triageNote:'Draft LOR with care cost position.',activity:[{text:'Drafting workspace opened',time:'2 Jun 09:45',type:'create'}]},
-  {ref:'AC-2026-0058',assignedTo:'SB',claimant:'Priya Nair',solicitor:'Lewin Solicitors',flight:'HC 619 — LGW → DUB',flightNum:'HC 619',dep:'LGW',arr:'DUB',flightDate:'22 January 2026',value:'£250',type:'EC261 — ATC delay',locDate:'1 February 2026',stage:'resolve',cat:'A',jurisdiction:'england-wales',lang:'en',disruptionType:'ATC Restrictions',classification:'DEFEND',evidencePct:100,cprDaysLeft:-4,points:[{n:1,claim:'Delay 3hrs 12mins — Art 7(1)(a)',evidenceStatus:'green',evidenceDoc:'TOPS confirmed'},{n:2,claim:'Extraordinary circumstances — ATC',evidenceStatus:'green',evidenceDoc:'Eurocontrol confirmed'}],loaStatus:'sent',triageNote:'Defended successfully. Closed.',activity:[{text:'Case resolved — defended',time:'20 May 14:30',type:'stage'}]},
-  {ref:'FR-2026-0012',assignedTo:'MD',claimant:'Jean-Pierre Moreau',solicitor:'CAB Legal',flight:'HC 742 — CDG → LTN',flightNum:'HC 742',dep:'CDG',arr:'LTN',flightDate:'3 March 2026',value:'€250',type:'CE 261/2004 — Retard',locDate:'12 Mai 2026',stage:'cpr',cat:'A',jurisdiction:'france',lang:'fr',disruptionType:'ATC Restrictions',classification:'DEFEND',evidencePct:0,cprDaysLeft:-2,points:[{n:1,claim:'Retard de 3h42 — Art 7(1)(a)',evidenceStatus:'green',evidenceDoc:'Données TOPS confirmées'},{n:2,claim:'Circonstances extraordinaires — ATC',evidenceStatus:'amber',evidenceDoc:'Données Eurocontrol demandées'},{n:3,claim:'Art 9 — absence de rafraîchissements',evidenceStatus:'red',evidenceDoc:'Registres requis'}],loaStatus:'',triageNote:'Accusé de réception en retard — MTV à planifier.',activity:[{text:'Lettre de réclamation reçue',time:'12 mai 09:00',type:'create'}]},
-  {ref:'ES-2026-0031',assignedTo:'MD',claimant:'Miguel Torres',solicitor:'Bott & Clarke',flight:'HC 612 — BCN → LGW',flightNum:'HC 612',dep:'BCN',arr:'LGW',flightDate:'5 Marzo 2026',value:'€400',type:'CE 261/2004 — Retraso',locDate:'20 Mayo 2026',stage:'cpr',cat:'A',jurisdiction:'spain',lang:'es',disruptionType:'ATC Restrictions',classification:'DEFEND',evidencePct:0,cprDaysLeft:18,points:[{n:1,claim:'Retraso de 3h52 — Art 7(1)(a)',evidenceStatus:'green',evidenceDoc:'Datos TOPS confirmados'},{n:2,claim:'Circunstancias extraordinarias — ATC',evidenceStatus:'amber',evidenceDoc:'Datos Eurocontrol solicitados'}],loaStatus:'',triageNote:'Responder en 30 días — AESA en paralelo.',activity:[{text:'Carta de reclamación recibida',time:'20 mayo 11:00',type:'create'}]},
-];
-// Helpers
-function getAirlineName(dep,arr){
-  var d=String(dep||'').toUpperCase(),a=String(arr||'').toUpperCase();
-  for(var i=0;i<SPANISH_AIRPORTS.length;i++){
-    var code=SPANISH_AIRPORTS[i];
-    if(d.indexOf(code)>=0||a.indexOf(code)>=0)return SOLERO_AIR;
-  }
-  return HORIZON_AIRWAYS;
-}
-function getCaseAirline(c){return c?getAirlineName(c.dep,c.arr):HORIZON_AIRWAYS;}
-function getCasesForUser(uid,stage){return ALL_CASES.filter(function(c){return c.assignedTo===uid&&(!stage||c.stage===stage);});}
-function getCase(ref){return ALL_CASES.find(function(c){return c.ref===ref;})||null;}
-function getJurisdiction(key){return JURISDICTIONS[key]||JURISDICTIONS['england-wales'];}
-function daysUrgency(d){return d<0?'urgent':d<=3?'urgent':d<=7?'warn':'ok';}
-function urgencyLabel(d){if(d<0)return Math.abs(d)+'d overdue';return d<=3?d+'d — URGENT':d<=7?d+'d':d+'d';}
-function stageIcon(s){var m={intake:'ti-inbox',triage:'ti-search',cpr:'ti-calendar-due',evidence:'ti-folder-open',drafting:'ti-file-pencil',defence:'ti-shield',resolve:'ti-circle-check'};return m[s]||'ti-file';}
-function stageColor(s){var m={intake:'#1D4ED8',triage:'#92400E',cpr:'#B45309',evidence:'#4338CA',drafting:'#065F46',defence:'#1A7A4A',resolve:'#374151'};return m[s]||'#374151';}
-function stageBg(s){var m={intake:'#EFF6FF',triage:'#FEF3C7',cpr:'#FEF9C3',evidence:'#EEEDFE',drafting:'#E6F5EE',defence:'#DCFCE7',resolve:'#F1F5F9'};return m[s]||'#F1F5F9';}
-function evPctColor(p){return p>=70?'#22A863':p>=40?'#F59E0B':'#C0392B';}
-function getActiveUser(){return sessionStorage.getItem('261c_user')||'SB';}
-function setActiveUser(id){sessionStorage.setItem('261c_user',id);}
-function getUILang(){return sessionStorage.getItem('261c_lang')||(USERS[getActiveUser()]&&USERS[getActiveUser()].lang)||'en';}
-function t(key){var d=I18N[getUILang()]||I18N.en;return d[key]||I18N.en[key]||key;}
-
-</script>
+<script src="shared_data.js"></script>
 <nav class="global-nav">
   <a href="index.html" class="gn-logo">
     <div class="gn-mark"><i class="ti ti-plane"></i></div>
@@ -275,10 +217,11 @@ function t(key){var d=I18N[getUILang()]||I18N.en;return d[key]||I18N.en[key]||ke
 /* ── Data ── */
 const DATA = {
   stats:{
-    open:8, defended:18, settled:7, escalated:2, dismissed:3,
-    totalClaims:38, exposureGross:'£284,500', exposureNet:'£3,750',
+    open:0, defended:0, cprAtRisk:0, settled:7, escalated:2, dismissed:3,
+    totalClaims:0, exposureGross:'£0', exposureNet:'£3,750',
     avgClose:24, defenceRate:72, savingYTD:'£280,750'
   },
+  pipeline:[],
   volumeByMonth:{
     labels:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
     received:[4,3,6,5,8,7,null,null,null,null,null,null],
@@ -324,13 +267,7 @@ const DATA = {
     {ref:'ES-2026-0031',name:'Torres v. Solero Air',type:'ATC Restriction',cat:'A',value:'€400',stage:'CPR',days:18,solicitor:'M. Dupont'},
     {ref:'AC-2026-0058',name:'Nair v. Horizon Airways',type:'ATC Restriction',cat:'A',value:'£250',stage:'Closed',days:null,solicitor:'S. Booth',outcome:'defended'},
   ],
-  riskRegister:[
-    {case:'AC-2026-0089 — Hartley',reason:'Consequential loss claim unresolved · Valencia ground records outstanding',level:'high',val:'£3,800'},
-    {case:'FR-2026-0012 — Moreau',reason:'Acknowledgement overdue · MTV mediation clock at risk',level:'high',val:'€250'},
-    {case:'AC-2026-0076 — Taylor',reason:'SIGMET evidence still pending · LOR blocked',level:'med',val:'£520'},
-    {case:'AC-2026-0091 — Walsh',reason:'AI triage pending · Eurocontrol data not yet pulled',level:'med',val:'€250'},
-    {case:'AC-2026-0112 — Grant',reason:'Fresh LOC · Intake extraction awaiting review',level:'low',val:'£400'},
-  ],
+  riskRegister:[],
   cprDeadlines:[
     {ref:'AC-2026-0089',name:'Hartley',days:3},
     {ref:'AC-2026-0055',name:'Webb',days:5},
@@ -361,13 +298,10 @@ function setSolicitor(v){ activeSolicitor=v; applyFilters(); }
 
 function applyFilters(){
   const scale = PERIOD_SCALE[activePeriod]||1;
-  // Update stats
+  buildDynamicStats();
   const d = document.getElementById('content');
   if(!d) return;
-  // Re-render with scaled data
   const scaledData = JSON.parse(JSON.stringify(DATA));
-  scaledData.stats.open = Math.round(DATA.stats.open * (activePeriod==='mtd'?0.3:1));
-  scaledData.stats.defended = Math.round(DATA.stats.defended * scale);
   scaledData.stats.settled = Math.round(DATA.stats.settled * scale);
   scaledData.stats.defenceRate = activePeriod==='mtd'?68:activePeriod==='12m'?75:activePeriod==='all'?74:72;
   scaledData.stats.avgClose = activePeriod==='mtd'?19:activePeriod==='12m'?26:activePeriod==='all'?27:24;
@@ -382,27 +316,39 @@ function applyFilters(){
 }
 
 
+const PIPELINE_STAGES=[
+  {key:'intake',label:'Intake',css:'var(--blue-text)'},
+  {key:'triage',label:'Triage',css:'var(--amber)',also:['cpr']},
+  {key:'evidence',label:'Evidence',css:'var(--purple)'},
+  {key:'drafting',label:'Drafting',css:'#065F46'},
+  {key:'defence',label:'Defence',css:'var(--green)'},
+  {key:'resolve',label:'Resolve',css:'var(--text3)'}
+];
+
+function countPipelineStage(key,also){
+  var keys=[key].concat(also||[]);
+  return ALL_CASES.filter(function(c){return keys.indexOf(c.stage)>=0;}).length;
+}
+
+function buildPipelineData(){
+  return PIPELINE_STAGES.map(function(s){
+    return{label:s.label,count:countPipelineStage(s.key,s.also),color:stageColor(s.key),bg:stageBg(s.key),css:s.css};
+  });
+}
+
 /* ── Dynamic MI from shared_data ── */
 function buildDynamicStats(){
   if(typeof ALL_CASES==='undefined') return;
-  var open   = ALL_CASES.filter(function(c){return c.stage!=='resolve';});
-  var closed = ALL_CASES.filter(function(c){return c.stage==='resolve';});
-  var defended = ALL_CASES.filter(function(c){return c.classification==='DEFEND'&&c.stage!=='resolve';});
-
-  // Update stat cards dynamically
-  var statVals = document.querySelectorAll('.stat-val');
-  if(!statVals.length) return;
-
-  // Count by jurisdiction
-  var byJur = {};
-  ALL_CASES.forEach(function(c){
-    var j = c.jurisdiction||'england-wales';
-    byJur[j] = (byJur[j]||0)+1;
-  });
-
-  // Update overview numbers
-  DATA.stats.open = open.length;
-  DATA.stats.totalClaims = ALL_CASES.length;
+  var openCases=getOpenCases();
+  var defended=ALL_CASES.filter(function(c){return c.classification==='DEFEND';});
+  var cprAtRisk=ALL_CASES.filter(function(c){return c.stage!=='resolve'&&c.cprDaysLeft<=7;});
+  DATA.stats.open=openCases.length;
+  DATA.stats.defended=defended.length;
+  DATA.stats.cprAtRisk=cprAtRisk.length;
+  DATA.stats.exposureGross=formatGBP(sumCasesValueGBP(ALL_CASES));
+  DATA.stats.totalClaims=ALL_CASES.length;
+  DATA.riskRegister=typeof buildRiskRegister==='function'?buildRiskRegister():[];
+  DATA.pipeline=buildPipelineData();
 }
 
 function render(scaledStats){
@@ -417,12 +363,14 @@ function render(scaledStats){
 function buildContent(displayStats){
   displayStats = displayStats || DATA.stats;
   /* stats */
+  const openSub=displayStats.open?displayStats.open+' active in pipeline':'No open cases';
+  const cprSub=displayStats.cprAtRisk?(displayStats.cprAtRisk+' within 7 days'):'None within 7 days';
   const stats = `<div class="stat-row">
-    ${statCard('Open cases','8','ti-briefcase','var(--blue-text)','4 require action','sub-warn')}
-    ${statCard('Defended YTD','18','ti-shield','var(--green)','72% defence rate','sub-up')}
-    ${statCard('Settled YTD','7','ti-scale','var(--amber)','Avg £536 per case','sub-neu')}
-    ${statCard('Gross exposure','£284,500','ti-alert-triangle','var(--red)','Alleged value open cases','sub-red')}
-    ${statCard('Net paid out','£3,750','ti-coin','var(--green)','YTD vs £284,500 alleged','sub-up')}
+    ${statCard('Open cases',String(displayStats.open),'ti-briefcase','var(--blue-text)',openSub,'sub-warn')}
+    ${statCard('Defended YTD',String(displayStats.defended),'ti-shield','var(--green)','DEFEND classification proxy','sub-up')}
+    ${statCard('CPR at risk',String(displayStats.cprAtRisk||0),'ti-calendar-due','var(--red)',cprSub,'sub-red')}
+    ${statCard('Gross exposure',displayStats.exposureGross||'£0','ti-alert-triangle','var(--red)','All cases — EUR at 1.18','sub-red')}
+    ${statCard('Net paid out','£3,750','ti-coin','var(--green)','YTD vs '+displayStats.exposureGross+' alleged','sub-up')}
     ${statCard('Avg days to close','24d','ti-clock','var(--text3)','Target: 28 days','sub-up')}
   </div>`;
 
@@ -504,11 +452,11 @@ function buildContent(displayStats){
   </div>`;
 
   /* urgency row — TOP of page after stats */
-  const riskRows = DATA.riskRegister.map(r=>`
+  const riskRows = (DATA.riskRegister.length?DATA.riskRegister:[{ref:'—',claimant:'No cases at risk',value:'',reason:'All open cases have CPR > 7 days and evidence ≥ 50%',level:'low'}]).map(r=>`
     <div class="risk-item">
       <div class="risk-dot risk-${r.level}"></div>
-      <div style="flex:1"><div class="risk-case">${r.case}</div><div class="risk-reason">${r.reason}</div></div>
-      <div class="risk-val">${r.val}</div>
+      <div style="flex:1"><div class="risk-case">${r.ref} — ${r.claimant}</div><div class="risk-reason">${r.reason}</div></div>
+      <div class="risk-val">${r.value||''}</div>
     </div>`).join('');
 
   const tableRows = DATA.recentCases.map(c=>{
@@ -538,8 +486,10 @@ function buildContent(displayStats){
       <div class="panel-body" style="padding:8px 16px">${riskRows}</div>
     </div>
     <div class="panel">
-      <div class="panel-header"><div class="panel-title"><i class="ti ti-chart-bar"></i>Stage pipeline</div><div class="panel-sub">Visual pipeline by stage</div></div>
-      <div class="panel-body"><div class="chart-wrap"><canvas id="ch-pipeline"></canvas></div></div>
+      <div class="panel-header"><div class="panel-title"><i class="ti ti-chart-bar"></i>Stage pipeline</div><div class="panel-sub">Cases by workflow stage</div></div>
+      <div class="panel-body"><div class="chart-wrap"><canvas id="ch-pipeline"></canvas></div>
+        <div class="pipeline-legend">${(DATA.pipeline||[]).map(s=>'<div class="pipeline-legend-item"><span class="pipeline-swatch" style="background:'+s.color+'"></span>'+s.label+' ('+s.count+')</div>').join('')}</div>
+      </div>
     </div>
   </div>`;
 
@@ -632,13 +582,24 @@ function buildCharts(){
     datasets:[{data:DATA.byCat.counts,backgroundColor:DATA.byCat.colors,borderWidth:2,borderColor:'#fff'}]
   },options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{display:false}}}});}
 
-  // Pipeline — horizontal bar
+  // Pipeline — horizontal bar with stage colours
   destroyIfExists('pipeline');
   const cpipe = document.getElementById('ch-pipeline');
+  const pipeData=DATA.pipeline||buildPipelineData();
   if(cpipe){charts['pipeline'] = new Chart(cpipe,{type:'bar',data:{
-    labels:['Intake','Triage','Evidence','Defence','Resolve'],
-    datasets:[{data:[2,2,2,2,0],backgroundColor:['#EFF6FF','#FEF3C7','#EEEDFE','#E6F5EE','#F1F5F9'],borderColor:['#2A6FDB','#F59E0B','#8B5CF6','#22A863','#94A3B8'],borderWidth:1.5,borderRadius:4}]
-  },options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:gridColor},ticks:{font:fontOpts,color:tickColor,stepSize:1}},y:{grid:{display:false},ticks:{font:fontOpts,color:tickColor}}}}});}
+    labels:pipeData.map(s=>s.label),
+    datasets:[{
+      label:'Cases',
+      data:pipeData.map(s=>s.count),
+      backgroundColor:pipeData.map(s=>s.bg),
+      borderColor:pipeData.map(s=>s.color),
+      borderWidth:1.5,
+      borderRadius:4
+    }]
+  },options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{
+    legend:{display:false},
+    tooltip:{callbacks:{label:function(ctx){return ctx.parsed.x+' case'+(ctx.parsed.x===1?'':'s');}}}
+  },scales:{x:{grid:{color:gridColor},ticks:{font:fontOpts,color:tickColor,stepSize:1}},y:{grid:{display:false},ticks:{font:fontOpts,color:tickColor}}}}});}
 }
 
 function exportReport(){
