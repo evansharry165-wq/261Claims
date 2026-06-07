@@ -30,12 +30,12 @@
         style.textContent =
           'body.embed-mode .global-nav,body.embed-mode .topbar,body.embed-mode .sidebar,body.embed-mode #user-modal,body.embed-mode .advance-bar{display:none!important}' +
           'html.embed-mode,body.embed-mode,body.embed-mode .app{height:100%!important;min-height:0}' +
-          'body.embed-mode .body{grid-template-columns:1fr!important;height:100%!important}' +
+          'body.embed-mode .body{grid-template-columns:1fr!important;height:auto!important;min-height:100%;overflow:visible}' +
           'body.embed-mode .body.drafting-layout{grid-template-columns:200px 1fr!important}' +
           'body.embed-mode .body.drafting-layout.doc-focused{grid-template-columns:1fr!important}' +
           'body.embed-mode .body.drafting-layout.doc-focused .sidebar-left{display:none!important}' +
           'body.embed-mode .drafting-layout .sidebar-right{display:none!important}' +
-          'body.embed-mode .main{height:100%;overflow:hidden}' +
+          'body.embed-mode .main{height:auto;min-height:100%;overflow-y:auto}' +
           'body.embed-mode .stage-rail{display:none!important}';
         document.head.appendChild(style);
       }
