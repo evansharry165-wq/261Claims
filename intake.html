@@ -5,7 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>261Claims — New claim</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -19,9 +20,10 @@
   --border:#E2E8F0;--border2:#CBD5E1;
   --text:#0F172A;--text2:#475569;--text3:#94A3B8;
   --surface:#FFFFFF;--surface2:#F8FAFC;--surface3:#F1F5F9;
-  --font:'DM Sans',sans-serif;--mono:'DM Mono',monospace;
+  --font:'Inter',sans-serif;--mono:'JetBrains Mono',monospace;--font-serif:'Instrument Serif',serif;
   --r:8px;--r2:12px;--r3:16px;
 }
+html{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility}
 html,body{height:100%;font-family:var(--font);background:var(--surface2);color:var(--text);font-size:14px}
 .app{display:flex;flex-direction:column;height:calc(100vh - 48px);min-height:0}
 
@@ -31,7 +33,7 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 .gn-mark{width:28px;height:28px;background:var(--blue);border-radius:6px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px}
 .gn-name{font-size:14px;font-weight:500;color:#fff;letter-spacing:-0.01em}
 .gn-links{display:flex;align-items:center;gap:2px;flex:1}
-.gn-link{display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r);font-size:12px;font-weight:500;color:rgba(255,255,255,0.5);text-decoration:none;transition:all 0.15s;white-space:nowrap}
+.gn-link{display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r);font-size:12px;font-weight:450;color:rgba(255,255,255,0.5);text-decoration:none;transition:all 0.15s;white-space:nowrap}
 .gn-link:hover{background:rgba(255,255,255,0.08);color:#fff}
 .gn-link.active{background:rgba(42,111,219,0.35);color:#fff}
 .gn-link i{font-size:13px}
@@ -48,7 +50,7 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 
 /* left panel header */
 .lp-header{padding:16px;border-bottom:1px solid var(--border);flex-shrink:0}
-.lp-title{font-size:14px;font-weight:500;color:var(--text);margin-bottom:2px}
+.lp-title{font-family:var(--font-serif);font-size:15px;font-weight:400;color:var(--text);margin-bottom:2px}
 .lp-sub{font-size:11px;color:var(--text3)}
 .lp-upload-btn{width:100%;margin-top:10px;padding:8px;border:1.5px dashed var(--border2);border-radius:var(--r2);background:var(--surface2);cursor:pointer;font-size:12px;color:var(--text3);display:flex;align-items:center;justify-content:center;gap:6px;transition:all 0.15s;font-family:var(--font)}
 .lp-upload-btn:hover{border-color:var(--blue);color:var(--blue-text);background:var(--blue-faint)}
@@ -88,7 +90,7 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 .cw{padding:20px}
 .cw-header{background:var(--surface);border:1px solid var(--border);border-radius:var(--r3);padding:14px 16px;margin-bottom:14px}
 .cw-ref{font-size:10px;font-family:var(--mono);color:var(--text3);margin-bottom:2px}
-.cw-name{font-size:16px;font-weight:500;color:var(--text);margin-bottom:5px}
+.cw-name{font-family:var(--font-serif);font-size:17px;font-weight:400;color:var(--text);margin-bottom:5px}
 .cw-meta{display:flex;flex-wrap:wrap;gap:10px;font-size:11px;color:var(--text2)}
 .cw-meta span{display:flex;align-items:center;gap:3px}
 .cw-meta i{font-size:11px;color:var(--text3)}

@@ -5,7 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>261Claims — MI Reporting</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
@@ -20,9 +21,10 @@
   --border:#E2E8F0;--border2:#CBD5E1;
   --text:#0F172A;--text2:#475569;--text3:#94A3B8;
   --surface:#FFFFFF;--surface2:#F8FAFC;--surface3:#F1F5F9;
-  --font:'DM Sans',sans-serif;--mono:'DM Mono',monospace;
+  --font:'Inter',sans-serif;--mono:'JetBrains Mono',monospace;--font-serif:'Instrument Serif',serif;
   --r:8px;--r2:12px;--r3:16px;
 }
+html{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility}
 html,body{height:100%;font-family:var(--font);background:var(--surface2);color:var(--text);font-size:14px}
 .app{display:flex;flex-direction:column;height:calc(100vh - 48px);min-height:0}
 
@@ -82,7 +84,7 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 
 /* table */
 .mi-table{width:100%;border-collapse:collapse;font-size:12px}
-.mi-table th{text-align:left;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.06em;color:var(--text3);padding:0 10px 10px 0;border-bottom:1px solid var(--border)}
+.mi-table th{text-align:left;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.03em;color:var(--text3);padding:0 10px 10px 0;border-bottom:1px solid var(--border)}
 .mi-table td{padding:9px 10px 9px 0;border-bottom:1px solid var(--border);color:var(--text);vertical-align:middle}
 .mi-table tr:last-child td{border-bottom:none}
 .mi-table tr:hover td{background:var(--surface2)}
@@ -138,7 +140,7 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 .gn-mark{width:28px;height:28px;background:var(--blue);border-radius:6px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px}
 .gn-name{font-size:14px;font-weight:500;color:#fff;letter-spacing:-0.01em}
 .gn-links{display:flex;align-items:center;gap:2px;flex:1}
-.gn-link{display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r);font-size:12px;font-weight:500;color:rgba(255,255,255,0.5);text-decoration:none;transition:all 0.15s;white-space:nowrap}
+.gn-link{display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r);font-size:12px;font-weight:450;color:rgba(255,255,255,0.5);text-decoration:none;transition:all 0.15s;white-space:nowrap}
 .gn-link:hover{background:rgba(255,255,255,0.08);color:#fff}
 .gn-link.active{background:rgba(42,111,219,0.35);color:#fff}
 .gn-link i{font-size:13px}
@@ -561,7 +563,7 @@ function statCard(label, val, icon, iconCol, sub, subCls){
 }
 
 function buildCharts(){
-  const fontOpts = {family:'DM Sans',size:11};
+  const fontOpts = {family:'Inter',size:11};
   const gridColor = '#E2E8F0';
   const tickColor = '#94A3B8';
 

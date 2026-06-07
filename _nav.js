@@ -59,24 +59,24 @@ function renderGlobalNav(activeModule){
 .global-nav{background:#0B1628;height:48px;display:flex;align-items:center;padding:0 20px;gap:0;position:sticky;top:0;z-index:200;border-bottom:1px solid rgba(255,255,255,0.06);flex-shrink:0}
 .gn-logo{display:flex;align-items:center;gap:8px;text-decoration:none;margin-right:20px;flex-shrink:0}
 .gn-mark{width:28px;height:28px;background:#2A6FDB;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px}
-.gn-name{font-size:14px;font-weight:600;color:#fff;letter-spacing:-0.02em}
+.gn-name{font-size:14px;font-weight:500;color:#fff;letter-spacing:-0.02em}
 .gn-links{display:flex;align-items:center;gap:2px;flex:1;overflow:hidden}
-.gn-link{display:flex;align-items:center;gap:5px;padding:5px 10px;border-radius:6px;font-size:12px;font-weight:500;color:rgba(255,255,255,0.5);text-decoration:none;white-space:nowrap;transition:all 0.15s;flex-shrink:0}
+.gn-link{display:flex;align-items:center;gap:5px;padding:5px 10px;border-radius:6px;font-size:12px;font-weight:450;color:rgba(255,255,255,0.5);text-decoration:none;white-space:nowrap;transition:all 0.15s;flex-shrink:0}
 .gn-link:hover{background:rgba(255,255,255,0.08);color:#fff}
 .gn-link.active{background:rgba(42,111,219,0.3);color:#fff}
 .gn-link i{font-size:12px}
 .gn-right{display:flex;align-items:center;gap:8px;margin-left:8px;flex-shrink:0}
 .gn-user-btn{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:20px;padding:3px 10px 3px 4px;cursor:pointer;transition:all 0.15s}
 .gn-user-btn:hover{background:rgba(255,255,255,0.12)}
-.gn-av{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:#fff}
+.gn-av{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;color:#fff}
 .gn-user{font-size:11px;font-weight:500;color:rgba(255,255,255,0.8)}
 .gn-user-dropdown{display:none;position:fixed;top:52px;right:14px;background:#fff;border:1px solid #E2E8F0;border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,0.14);width:240px;overflow:hidden;z-index:500}
 .gn-user-dropdown.open{display:block}
-.gn-ud-head{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#94A3B8;padding:10px 14px 6px;border-bottom:1px solid #F1F5F9}
+.gn-ud-head{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:0.03em;color:#94A3B8;padding:10px 14px 6px;border-bottom:1px solid #F1F5F9}
 .gn-ud-item{display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;transition:background 0.1s}
 .gn-ud-item:hover{background:#F8FAFC}
 .gn-ud-active{background:#EFF6FF}
-.gn-ud-av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#fff;flex-shrink:0}
+.gn-ud-av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:#fff;flex-shrink:0}
 .gn-ud-name{font-size:12px;font-weight:500;color:#0F172A}
 .gn-ud-role{font-size:10px;color:#94A3B8}
 .gn-ud-reset{border-top:1px solid #F1F5F9;gap:8px}

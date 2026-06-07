@@ -34,7 +34,7 @@
 
 ### Visual language (unchanged)
 
-Keep existing design tokens: navy `#0B1628`, DM Sans, Tabler icons, `.panel`, `.pstat`, pills, progress bars. Simplify *layout and hierarchy*, not the design system.
+Keep existing design tokens: navy `#0B1628`, Inter / Instrument Serif / JetBrains Mono, Tabler icons, `.panel`, `.pstat`, pills, progress bars. Simplify *layout and hierarchy*, not the design system.
 
 ### New recurring components
 
