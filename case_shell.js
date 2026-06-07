@@ -66,7 +66,8 @@ var CaseShell = (function () {
           triageNote: c.triageNote || '',
           classification: c.classification || '',
           assignedTo: u.name || c.assignedTo,
-          cprDaysLeft: c.cprDaysLeft
+          cprDaysLeft: c.cprDaysLeft,
+          cat: c.cat || ''
         })
       );
     } catch (e) {}
@@ -113,17 +114,25 @@ var CaseShell = (function () {
     );
   }
 
+  function classificationStyle(cls) {
+    var styles = {
+      DEFEND: { bg: 'var(--green-faint)', col: 'var(--green)' },
+      ESCALATE: { bg: 'var(--red-faint)', col: 'var(--red)' },
+      INVESTIGATE: { bg: 'var(--amber-faint)', col: 'var(--amber)' },
+      DRAFTING: { bg: 'var(--purple-faint,#EEEDFE)', col: 'var(--purple,#4338CA)' }
+    };
+    return styles[cls] || { bg: 'var(--surface3)', col: 'var(--text3)' };
+  }
+
   function renderHeader(c) {
     var J = typeof getJurisdiction === 'function' ? getJurisdiction(c.jurisdiction) : { name: '', flag: '' };
-    var urg = typeof daysUrgency === 'function' ? daysUrgency(c.cprDaysLeft) : 'ok';
+    var urg = typeof daysUrgency === 'function' ? daysUrgency(c.cprDaysLeft) : c.cprDaysLeft <= 7 ? 'urgent' : 'ok';
+    var cprLabel = typeof urgencyLabel === 'function' ? urgencyLabel(c.cprDaysLeft) : String(c.cprDaysLeft) + 'd';
     var evPct = typeof getEffectiveEvidencePct === 'function' ? getEffectiveEvidencePct(c) : c.evidencePct || 0;
-    var readyDraft = evPct >= 100 || c.evidenceReady;
-    var cls = readyDraft && c.stage === 'evidence' ? 'DRAFTING' : c.classification || '';
-    var clsBg =
-      cls === 'DRAFTING' ? 'var(--purple-faint)' : cls === 'ESCALATE' ? 'var(--red-faint)' : cls === 'DEFEND' ? 'var(--green-faint)' : 'var(--surface3)';
-    var clsCol =
-      cls === 'DRAFTING' ? 'var(--purple)' : cls === 'ESCALATE' ? 'var(--red)' : cls === 'DEFEND' ? 'var(--green)' : 'var(--text3)';
-    var evCol = typeof evPctColor === 'function' ? evPctColor(evPct) : '#94A3B8';
+    var cls = c.classification || '';
+    var clsStyle = classificationStyle(cls);
+    var evBg = evPct === 0 ? 'var(--amber-faint)' : 'transparent';
+    var evCol = evPct === 0 ? 'var(--amber)' : typeof evPctColor === 'function' ? evPctColor(evPct) : '#94A3B8';
     var notifCount = typeof unreadNotificationCount === 'function' ? unreadNotificationCount(getActiveUser()) : 0;
 
     document.getElementById('case-header').innerHTML =
@@ -147,15 +156,21 @@ var CaseShell = (function () {
       ' ' +
       escapeHtml(J.name) +
       '</span>' +
-      (cls ? '<span class="case-bar-pill" style="background:' + clsBg + ';color:' + clsCol + '">' + escapeHtml(cls) + '</span>' : '') +
+      (cls ? '<span class="case-bar-pill" style="background:' + clsStyle.bg + ';color:' + clsStyle.col + '">' + escapeHtml(cls) + '</span>' : '') +
       '<span class="case-bar-cpr dp-' +
       urg +
       '">CPR ' +
-      escapeHtml(String(c.cprDaysLeft) + 'd') +
+      escapeHtml(cprLabel) +
       '</span>' +
-      (c.stage === 'evidence' || c.stage === 'drafting'
-        ? '<span class="case-bar-ev" style="color:' + evCol + '">Evidence ' + evPct + '%</span>'
-        : '') +
+      '<span class="case-bar-ev dp-' +
+      (evPct === 0 ? 'warn' : urg === 'urgent' ? 'urgent' : 'ok') +
+      '" style="background:' +
+      evBg +
+      ';color:' +
+      evCol +
+      '">Evidence ' +
+      evPct +
+      '%</span>' +
       '</div>' +
       (notifCount
         ? '<span class="case-bar-pill" style="background:var(--blue-faint);color:var(--blue-text);margin-left:auto"><i class="ti ti-bell"></i> ' +
@@ -209,8 +224,15 @@ var CaseShell = (function () {
     if (!c) return;
     var action = typeof getNextAction === 'function' ? getNextAction(c) : { text: 'Review case', tab: 'overview' };
     var J = typeof getJurisdiction === 'function' ? getJurisdiction(c.jurisdiction) : {};
+    var evPct = typeof getEffectiveEvidencePct === 'function' ? getEffectiveEvidencePct(c) : c.evidencePct || 0;
+    var urg = typeof daysUrgency === 'function' ? daysUrgency(c.cprDaysLeft) : 'ok';
+    var cprLabel = typeof urgencyLabel === 'function' ? urgencyLabel(c.cprDaysLeft) : String(c.cprDaysLeft) + 'd';
+    var stageLabel = typeof t === 'function' ? t('stage_' + c.stage) || c.stage : c.stage;
+    var cls = c.classification || '';
+    var clsStyle = classificationStyle(cls);
+    var airline = typeof getCaseAirline === 'function' ? getCaseAirline(c) : 'Horizon Airways';
     var similar = ALL_CASES.filter(function (s) {
-      return s.ref !== c.ref && (s.disruptionType === c.disruptionType || s.jurisdiction === c.jurisdiction);
+      return s.ref !== c.ref && c.disruptionType && s.disruptionType === c.disruptionType;
     }).slice(0, 2);
 
     var stages = [
@@ -226,7 +248,53 @@ var CaseShell = (function () {
     });
 
     document.getElementById('tab-panel').innerHTML =
-      '<div class="tab-panel-inner"><div class="overview-grid">' +
+      '<div class="tab-panel-inner">' +
+      '<div class="panel-card" style="margin-bottom:14px">' +
+      '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap">' +
+      '<div>' +
+      '<div class="pc-label">' +
+      escapeHtml(c.ref) +
+      ' · ' +
+      escapeHtml(airline) +
+      '</div>' +
+      '<div class="pc-title" style="margin-bottom:6px">' +
+      escapeHtml(c.claimant) +
+      '</div>' +
+      '<div style="font-size:12px;color:var(--text2);line-height:1.6">' +
+      escapeHtml(c.flightNum || c.flight) +
+      ' · ' +
+      escapeHtml(c.dep) +
+      ' → ' +
+      escapeHtml(c.arr) +
+      ' · ' +
+      escapeHtml(c.value) +
+      ' · ' +
+      escapeHtml(J.flag) +
+      ' ' +
+      escapeHtml(J.name) +
+      '</div>' +
+      '</div>' +
+      '<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">' +
+      '<span class="case-bar-pill" style="background:var(--blue-faint);color:var(--blue-text)">' +
+      escapeHtml(stageLabel) +
+      '</span>' +
+      (cls ? '<span class="case-bar-pill" style="background:' + clsStyle.bg + ';color:' + clsStyle.col + '">' + escapeHtml(cls) + '</span>' : '') +
+      '<span class="case-bar-cpr dp-' +
+      urg +
+      '">CPR ' +
+      escapeHtml(cprLabel) +
+      '</span>' +
+      '<span class="case-bar-ev dp-' +
+      (evPct === 0 ? 'warn' : 'ok') +
+      '" style="background:' +
+      (evPct === 0 ? 'var(--amber-faint)' : 'var(--surface3)') +
+      ';color:' +
+      (evPct === 0 ? 'var(--amber)' : 'var(--text2)') +
+      '">Evidence ' +
+      evPct +
+      '%</span>' +
+      '</div></div></div>' +
+      '<div class="overview-grid">' +
       '<div class="panel-card highlight">' +
       '<div class="pc-label">Next action</div>' +
       '<div class="pc-title">' +
@@ -394,7 +462,6 @@ var CaseShell = (function () {
       window.location.href = 'cases.html';
       return;
     }
-    if (!params.get('tab') && typeof getPrimaryTab === 'function') tab = getPrimaryTab(c);
     state.tab = tab;
     renderHeader(c);
     renderTabs();

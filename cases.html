@@ -31,6 +31,9 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 .hdr-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .search-input{font-size:12px;padding:6px 12px;border:1px solid var(--border);border-radius:var(--r);background:var(--surface);font-family:var(--font);width:220px}
 .btn-new{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:var(--r);background:var(--navy);color:#fff;font-size:12px;font-weight:500;text-decoration:none}
+.scope-bar{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+.scope-tab{font-size:11px;padding:5px 12px;border-radius:20px;border:1px solid var(--border);background:var(--surface2);color:var(--text2);cursor:pointer;font-family:var(--font);font-weight:500}
+.scope-tab.active{background:var(--blue-faint);border-color:var(--blue);color:var(--blue-text)}
 .filter-bar{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
 .filter-chip{font-size:11px;padding:5px 10px;border-radius:20px;border:1px solid var(--border);background:var(--surface2);color:var(--text2);cursor:pointer;font-family:var(--font)}
 .filter-chip.active{background:var(--navy);border-color:var(--navy);color:#fff}
@@ -94,11 +97,12 @@ tbody tr:hover td{background:var(--surface2);cursor:pointer}
         <a href="intake.html" class="btn-new"><i class="ti ti-mail-plus"></i> New claim</a>
       </div>
     </div>
+    <div class="scope-bar" id="scope-bar"></div>
     <div class="filter-bar" id="filter-bar"></div>
   </div>
   <div class="table-wrap">
     <table>
-      <thead><tr>
+      <thead><tr id="thead-row">
         <th>Ref</th><th>Claimant</th><th>Flight</th><th>Stage</th><th>Next action</th><th>Blocker</th><th>CPR</th><th>Value</th>
       </tr></thead>
       <tbody id="tbody"></tbody>
@@ -128,7 +132,14 @@ function escapeHtml(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c
 
 function getParams(){
   var p=new URLSearchParams(window.location.search);
-  return {filter:p.get('filter')||'',sort:p.get('sort')||'urgency',q:''};
+  return {scope:p.get('scope')||'mine',filter:p.get('filter')||'',sort:p.get('sort')||'urgency',q:''};
+}
+
+function setScope(id){
+  var p=new URLSearchParams(window.location.search);
+  if(id&&id!=='mine')p.set('scope',id);else p.delete('scope');
+  history.replaceState({},'','cases.html'+(p.toString()?'?'+p.toString():''));
+  renderCases();
 }
 
 function setFilter(id){
@@ -136,6 +147,24 @@ function setFilter(id){
   if(id)p.set('filter',id);else p.delete('filter');
   history.replaceState({},'','cases.html'+(p.toString()?'?'+p.toString():''));
   renderCases();
+}
+
+function getCasesPool(scope,uid){
+  if(scope==='all')return ALL_CASES.slice();
+  return getCasesForUser(uid);
+}
+
+function renderScopeTabs(){
+  var uid=getActiveUser();
+  var u=USERS[uid]||USERS.SB;
+  var active=getParams().scope;
+  document.getElementById('scope-bar').innerHTML=[
+    {id:'all',label:'All'},
+    {id:'mine',label:u.name}
+  ].map(function(tab){
+    var on=tab.id===active;
+    return '<button class="scope-tab'+(on?' active':'')+'" onclick="setScope(\''+tab.id+'\')">'+escapeHtml(tab.label)+'</button>';
+  }).join('');
 }
 
 function renderFilters(){
@@ -153,15 +182,22 @@ function renderCases(){
   var u=USERS[uid]||USERS.SB;
   var params=getParams();
   var q=(document.getElementById('search').value||'').toLowerCase();
-  var cases=getCasesForUser(uid);
-  cases=filterCasesByParam(cases,params.filter);
+  var pool=getCasesPool(params.scope,uid);
+  var cases=filterCasesByParam(pool,params.filter);
   cases=sortCases(cases,params.sort);
   if(q)cases=cases.filter(function(c){
     return [c.ref,c.claimant,c.flightNum,c.solicitor,c.disruptionType].join(' ').toLowerCase().indexOf(q)>=0;
   });
 
-  document.getElementById('hdr-title').textContent='Cases · '+cases.length+' assigned';
-  document.getElementById('hdr-sub').textContent=u.name+' · sorted by '+(params.sort==='urgency'?'CPR urgency':params.sort);
+  renderScopeTabs();
+  var showAssignee=params.scope==='all';
+  document.getElementById('thead-row').innerHTML=
+    '<th>Ref</th><th>Claimant</th><th>Flight</th><th>Stage</th><th>Next action</th><th>Blocker</th><th>CPR</th>'
+    +(showAssignee?'<th>Assignee</th>':'')
+    +'<th>Value</th>';
+  var scopeLabel=params.scope==='all'?'All cases':u.name;
+  document.getElementById('hdr-title').textContent='Cases · '+cases.length+(params.scope==='all'?' total':' assigned');
+  document.getElementById('hdr-sub').textContent=scopeLabel+' · sorted by '+(params.sort==='urgency'?'CPR urgency':params.sort);
 
   var urgN=cases.filter(function(c){return c.cprDaysLeft<=7;}).length;
   var draftingN=cases.filter(function(c){return typeof getEffectiveEvidencePct==='function'&&getEffectiveEvidencePct(c)>=100&&c.stage==='evidence';}).length;
@@ -183,6 +219,7 @@ function renderCases(){
     var urg=daysUrgency(c.cprDaysLeft);
     var sc=STAGE_COLORS[c.stage]||STAGE_COLORS.resolve;
     var sl=t('stage_'+c.stage)||c.stage;
+    var assignee=USERS[c.assignedTo]||{name:c.assignedTo};
     return '<tr data-ref="'+escapeHtml(c.ref)+'" data-tab="'+escapeHtml(action.tab)+'">'
       +'<td><div class="td-ref">'+escapeHtml(c.ref)+'</div></td>'
       +'<td><div class="td-name">'+escapeHtml(c.claimant)+'</div><div class="td-sub">'+escapeHtml(c.solicitor)+'</div></td>'
@@ -191,12 +228,13 @@ function renderCases(){
       +'<td><div class="td-action">'+escapeHtml(action.text)+'</div></td>'
       +'<td><div class="td-blocker">'+escapeHtml(blocker||'—')+'</div></td>'
       +'<td><span class="dp dp-'+urg+'">'+escapeHtml(urgencyLabel(c.cprDaysLeft))+'</span></td>'
+      +(showAssignee?'<td><div class="td-sub">'+escapeHtml(assignee.name)+'</div></td>':'')
       +'<td style="font-family:var(--mono);font-weight:500">'+escapeHtml(c.value)+'</td></tr>';
   }).join('');
 
   tbody.querySelectorAll('tr[data-ref]').forEach(function(row){
     row.addEventListener('click',function(){
-      openCase(this.dataset.ref,this.dataset.tab||undefined);
+      openCase(this.dataset.ref);
     });
   });
   if(typeof renderGlobalNav==='function')renderGlobalNav();
