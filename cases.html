@@ -5,18 +5,20 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>261Claims — Cases</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{--navy:#0B1628;--blue:#2A6FDB;--blue-faint:#EFF6FF;--blue-text:#1D4ED8;--green:#1A7A4A;--green-faint:#E6F5EE;--red:#C0392B;--red-faint:#FCF0EF;--amber:#B45309;--amber-faint:#FEF3C7;--border:#E2E8F0;--text:#0F172A;--text2:#475569;--text3:#94A3B8;--surface:#FFFFFF;--surface2:#F8FAFC;--surface3:#F1F5F9;--font:'DM Sans',sans-serif;--mono:'DM Mono',monospace;--r:8px;--r2:12px;--r3:16px}
+:root{--navy:#0B1628;--blue:#2A6FDB;--blue-faint:#EFF6FF;--blue-text:#1D4ED8;--green:#1A7A4A;--green-faint:#E6F5EE;--red:#C0392B;--red-faint:#FCF0EF;--amber:#B45309;--amber-faint:#FEF3C7;--border:#E2E8F0;--text:#0F172A;--text2:#475569;--text3:#94A3B8;--surface:#FFFFFF;--surface2:#F8FAFC;--surface3:#F1F5F9;--font:'Inter',sans-serif;--mono:'JetBrains Mono',monospace;--font-serif:'Instrument Serif',serif;--r:8px;--r2:12px;--r3:16px}
+html{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility}
 html,body{height:100%;font-family:var(--font);background:var(--surface2);color:var(--text);font-size:14px}
 .global-nav{background:var(--navy);height:48px;display:flex;align-items:center;padding:0 20px}
 .gn-logo{display:flex;align-items:center;gap:8px;text-decoration:none;margin-right:20px}
 .gn-mark{width:28px;height:28px;background:var(--blue);border-radius:6px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px}
 .gn-name{font-size:14px;font-weight:500;color:#fff}
 .gn-links{display:flex;align-items:center;gap:2px;flex:1}
-.gn-link{display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r);font-size:12px;font-weight:500;color:rgba(255,255,255,0.5);text-decoration:none}
+.gn-link{display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r);font-size:12px;font-weight:450;color:rgba(255,255,255,0.5);text-decoration:none}
 .gn-link:hover{background:rgba(255,255,255,0.08);color:#fff}
 .gn-link.active{background:rgba(42,111,219,0.35);color:#fff}
 .gn-right{display:flex;align-items:center;gap:8px;margin-left:8px}
@@ -26,7 +28,7 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 .layout{display:flex;flex-direction:column;height:calc(100vh - 48px)}
 .page-hdr{background:var(--surface);border-bottom:1px solid var(--border);padding:12px 24px;flex-shrink:0}
 .page-hdr-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:10px}
-.page-hdr h2{font-size:15px;font-weight:500}
+.page-hdr h2{font-family:var(--font-serif);font-size:16px;font-weight:400}
 .page-hdr p{font-size:11px;color:var(--text3);margin-top:2px}
 .hdr-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .search-input{font-size:12px;padding:6px 12px;border:1px solid var(--border);border-radius:var(--r);background:var(--surface);font-family:var(--font);width:220px}
@@ -40,7 +42,7 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 .stat-chip.blocked{background:var(--amber-faint);color:var(--amber)}
 .table-wrap{flex:1;overflow-y:auto;padding:16px 24px}
 table{width:100%;border-collapse:collapse;font-size:12px}
-th{text-align:left;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);padding:0 12px 10px 0;border-bottom:2px solid var(--border);white-space:nowrap}
+th{text-align:left;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.03em;color:var(--text3);padding:0 12px 10px 0;border-bottom:2px solid var(--border);white-space:nowrap}
 td{padding:10px 12px 10px 0;border-bottom:1px solid var(--border);vertical-align:middle}
 tbody tr:hover td{background:var(--surface2);cursor:pointer}
 .td-ref{font-family:var(--mono);font-size:10px;color:var(--text3)}
