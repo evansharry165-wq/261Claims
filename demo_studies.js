@@ -3,7 +3,7 @@ var DEMO_STUDIES = [
   {
     id: 'flagship-collaboration',
     title: 'Complex diversion — legal & evidence teams',
-    subtitle: 'Daniel Hartley · HC 1184 · £39,000+ weather diversion',
+    subtitle: 'Daniel Hartley · HC 1184 · £3,800 weather diversion',
     ref: 'AC-2026-0089',
     tab: 'evidence',
     user: 'SB',
@@ -24,15 +24,15 @@ var DEMO_STUDIES = [
   {
     id: 'weather-drafting',
     title: 'Clean weather defence → letter of response',
-    subtitle: 'Sarah Taylor · HC 330 · evidence complete',
-    ref: 'AC-2026-0076',
+    subtitle: 'Helen Marsh · HC 881 · evidence complete',
+    ref: 'AC-2026-0042',
     tab: 'documents',
-    user: 'JP',
+    user: 'SB',
     duration: '3 min',
     features: ['100% gold pack', 'AI document generation', 'Points of claim', 'Add to repository'],
     narrative:
       'Shows the drafting payoff when evidence is already complete — recommended documents, LOR generation, and repository storage.',
-    steps: ['JP — Open case → Documents', 'Generate Letter of Response', 'Review recommendations → Approve → Add to repository'],
+    steps: ['SB — Open case → Documents', 'Generate Letter of Response', 'Review recommendations → Approve → Add to repository'],
   },
   {
     id: 'atc-triage',

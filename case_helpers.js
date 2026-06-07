@@ -369,83 +369,145 @@ function openCase(ref, tab) {
   try {
     sessionStorage.setItem('261c_case', JSON.stringify(c));
   } catch (e) {}
-  var targetTab = tab || getPrimaryTab(c);
+  var targetTab = tab || 'overview';
   window.location.href = CASE_ROUTE(ref, targetTab);
 }
 
-function collectDoNowTasks(cases, limit) {
-  var tasks = [];
-  (cases || []).forEach(function (c) {
-    var action = getNextAction(c);
-    tasks.push({
+function classificationUnset(c) {
+  return !c.classification || c.classification === 'PENDING';
+}
+
+function deriveDoNowTask(c) {
+  if (!c || c.stage === 'resolve') return null;
+  var evPct = getEffectiveEvidencePct(c);
+
+  if (c.cprDaysLeft <= 3) {
+    var daysText =
+      c.cprDaysLeft < 0
+        ? Math.abs(c.cprDaysLeft) + ' days overdue'
+        : c.cprDaysLeft + ' day' + (c.cprDaysLeft === 1 ? '' : 's') + ' remaining';
+    return {
       ref: c.ref,
-      txt: action.text,
-      icon: action.icon,
-      urg: action.urgency,
-      tab: action.tab,
       claimant: c.claimant,
-      blocker: action.blocker
-    });
-    if (c.cprDaysLeft <= 7 && c.stage !== 'resolve' && c.stage !== 'intake') {
-      var hasCpr = tasks.some(function (t) {
-        return t.ref === c.ref && t.txt.indexOf('CPR') >= 0;
-      });
-      if (!hasCpr && c.stage !== 'cpr') {
-        tasks.push({
-          ref: c.ref,
-          txt: 'CPR deadline check due',
-          icon: 'ti-calendar-due',
-          urg: c.cprDaysLeft,
-          tab: 'deadlines',
-          claimant: c.claimant,
-          blocker: ''
-        });
-      }
-    }
-  });
-  tasks.sort(function (a, b) {
-    return a.urg - b.urg;
-  });
-  var seen = {};
-  var deduped = [];
-  tasks.forEach(function (t) {
-    var key = t.ref + '|' + t.txt;
-    if (!seen[key]) {
-      seen[key] = true;
-      deduped.push(t);
-    }
-  });
-  return deduped.slice(0, limit || 5);
+      flight: c.flight || c.flightNum,
+      txt: 'File CPR response — ' + daysText,
+      priority: 'URGENT',
+      priorityClass: 'urgent',
+      tab: 'deadlines',
+      sort: c.cprDaysLeft
+    };
+  }
+  if (c.stage === 'evidence' && evPct < 50) {
+    return {
+      ref: c.ref,
+      claimant: c.claimant,
+      flight: c.flight || c.flightNum,
+      txt: 'Complete evidence pack — ' + evPct + '% done',
+      priority: 'ACTION',
+      priorityClass: 'action',
+      tab: 'evidence',
+      sort: 10 + evPct
+    };
+  }
+  if (c.stage === 'intake') {
+    return {
+      ref: c.ref,
+      claimant: c.claimant,
+      flight: c.flight || c.flightNum,
+      txt: 'Review extracted claim and confirm triage',
+      priority: 'ACTION',
+      priorityClass: 'action',
+      tab: 'triage',
+      sort: 20 + c.cprDaysLeft
+    };
+  }
+  if (c.stage === 'triage' && classificationUnset(c)) {
+    return {
+      ref: c.ref,
+      claimant: c.claimant,
+      flight: c.flight || c.flightNum,
+      txt: 'Complete AI triage classification',
+      priority: 'ACTION',
+      priorityClass: 'action',
+      tab: 'triage',
+      sort: 30 + c.cprDaysLeft
+    };
+  }
+  return null;
+}
+
+function collectDoNowTasks(cases, limit) {
+  return (cases || [])
+    .map(deriveDoNowTask)
+    .filter(Boolean)
+    .sort(function (a, b) {
+      return a.sort - b.sort;
+    })
+    .slice(0, limit || 3);
 }
 
 function buildWatchItems(cases) {
   return (cases || [])
     .filter(function (c) {
-      return c.cprDaysLeft <= 7 && c.stage !== 'resolve';
+      if (c.stage === 'resolve') return false;
+      var evPct = getEffectiveEvidencePct(c);
+      var cprWatch = c.cprDaysLeft >= 4 && c.cprDaysLeft <= 14;
+      var evWatch = evPct >= 50 && evPct <= 79;
+      return cprWatch || evWatch;
     })
     .sort(function (a, b) {
       return a.cprDaysLeft - b.cprDaysLeft;
     })
-    .slice(0, 5)
+    .slice(0, 3)
     .map(function (c) {
-      var parts = [c.ref, 'CPR ' + c.cprDaysLeft + 'd'];
-      if (c.stage === 'evidence') parts.push('Evidence ' + getEffectiveEvidencePct(c) + '%');
-      return { ref: c.ref, text: parts.join(' · '), urgency: c.cprDaysLeft, tab: getPrimaryTab(c) };
+      var evPct = getEffectiveEvidencePct(c);
+      var parts = [];
+      if (c.cprDaysLeft >= 4 && c.cprDaysLeft <= 14) {
+        parts.push('CPR ' + c.cprDaysLeft + 'd');
+      }
+      if (evPct >= 50 && evPct <= 79) {
+        parts.push('Evidence ' + evPct + '%');
+      }
+      return {
+        ref: c.ref,
+        claimant: c.claimant,
+        flight: c.flight || c.flightNum,
+        text: c.ref + ' · ' + c.claimant + ' · ' + parts.join(' · '),
+        urgency: c.cprDaysLeft,
+        tab: getPrimaryTab(c)
+      };
     });
 }
 
 function portfolioSummary(cases) {
-  var stages = ['intake', 'triage', 'cpr', 'evidence', 'drafting', 'defence', 'resolve'];
-  var counts = stages.map(function (s) {
-    return { stage: s, n: cases.filter(function (c) {
-      return c.stage === s;
-    }).length };
-  }).filter(function (x) {
-    return x.n > 0;
+  var active = (cases || []).filter(function (c) {
+    return c.stage !== 'resolve';
   });
-  var totalValue = cases.reduce(function (sum, c) {
-    var m = String(c.value).replace(/,/g, '').match(/\d+/);
-    return sum + (m ? parseInt(m[0], 10) : 0);
-  }, 0);
-  return { counts: counts, total: cases.length, totalValue: totalValue };
+  var urgent = active.filter(function (c) {
+    return c.cprDaysLeft <= 7;
+  });
+  var exposure =
+    typeof formatGBP === 'function' && typeof sumCasesValueGBP === 'function'
+      ? formatGBP(sumCasesValueGBP(active))
+      : '£0';
+  var stages = ['intake', 'triage', 'cpr', 'evidence', 'drafting', 'defence'];
+  var counts = stages
+    .map(function (s) {
+      return {
+        stage: s,
+        n: active.filter(function (c) {
+          return c.stage === s;
+        }).length
+      };
+    })
+    .filter(function (x) {
+      return x.n > 0;
+    });
+  return {
+    counts: counts,
+    total: active.length,
+    urgent: urgent.length,
+    exposure: exposure,
+    active: active
+  };
 }
