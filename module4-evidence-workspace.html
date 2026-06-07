@@ -660,7 +660,7 @@ function getVerdict(){
 }
 
 /* ── Render ── */
-function render(){try{renderMain();}catch(e){console.error(e);}renderAudit();}
+function render(){try{renderMain();}catch(e){console.error(e);}renderAudit();if(typeof notifyCaseShell==='function'){setTimeout(function(){notifyCaseShell('resize');},120);}}
 
 function renderMain(){
   var m=document.getElementById('main');

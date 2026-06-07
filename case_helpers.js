@@ -7,7 +7,18 @@ var STAGE_TAB_MAP = {
   evidence: 'evidence',
   drafting: 'documents',
   defence: 'documents',
-  resolve: 'overview'
+  review: 'review',
+  resolve: 'review'
+};
+
+var CASE_DOC_NAMES = {
+  loa: 'Letter of Acknowledgement',
+  lor: 'Letter of Response',
+  defence: 'Defence (CPR Part 16)',
+  witness: 'Witness Statement (CPR Part 32)',
+  n181: 'Directions Questionnaire (N181)',
+  p36: 'Part 36 Offer Letter',
+  settlement: 'Settlement Agreement'
 };
 
 var LEGACY_WORKSPACE_ROUTES = {
@@ -79,6 +90,241 @@ function getEffectiveEvidencePct(c) {
   return stored !== null ? stored : c.evidencePct || 0;
 }
 
+function getRequiredDocumentIds(c) {
+  if (!c) return ['lor'];
+  var ids = ['lor'];
+  if (c.loaStatus === 'sent' || c.loaStatus === 'approved') ids.unshift('loa');
+  if (c.classification === 'DEFEND' || c.classification === 'ESCALATE') {
+    if (ids.indexOf('defence') < 0) ids.push('defence');
+  }
+  return ids;
+}
+
+function loadDraftingState(ref) {
+  try {
+    return JSON.parse(sessionStorage.getItem('261c_drafting_' + ref) || 'null');
+  } catch (e) {
+    return null;
+  }
+}
+
+function saveDraftingState(ref, state) {
+  try {
+    sessionStorage.setItem('261c_drafting_' + ref, JSON.stringify(state));
+  } catch (e) {}
+}
+
+function getDraftingProgress(ref, c) {
+  var base = c || (typeof getCase === 'function' ? getCase(ref) : null);
+  var st = loadDraftingState(ref);
+  var approved = (st && st.docApproved) || {};
+  var docStates = (st && st.docStates) || {};
+  var required = getRequiredDocumentIds(base);
+  var drafted = required.filter(function (id) {
+    var ds = docStates[id];
+    return ds && (ds.generated || ds.status === 'approved' || ds.status === 'draft');
+  });
+  var approvedList = required.filter(function (id) {
+    return approved[id];
+  });
+  return {
+    required: required,
+    drafted: drafted,
+    approved: approvedList,
+    allDrafted: drafted.length === required.length,
+    allApproved: approvedList.length === required.length,
+    docStates: docStates,
+    docApproved: approved
+  };
+}
+
+function getCompletedCases() {
+  try {
+    return JSON.parse(sessionStorage.getItem('261c_completed_cases') || '[]');
+  } catch (e) {
+    return [];
+  }
+}
+
+function isCaseCompleted(ref) {
+  return getCompletedCases().some(function (c) {
+    return c.ref === ref;
+  });
+}
+
+function getMergedCase(ref) {
+  var c = typeof getCase === 'function' ? getCase(ref) : null;
+  if (!c) {
+    return (
+      getCompletedCases().find(function (x) {
+        return x.ref === ref;
+      }) || null
+    );
+  }
+  c = Object.assign({}, c);
+  try {
+    var stored = JSON.parse(sessionStorage.getItem('261c_case') || 'null');
+    if (stored && stored.ref === ref) c = Object.assign(c, stored);
+  } catch (e) {}
+  if (isCaseCompleted(ref)) {
+    var completed = getCompletedCases().find(function (x) {
+      return x.ref === ref;
+    });
+    if (completed) c = Object.assign(c, completed, { stage: 'resolve', completed: true });
+  }
+  return c;
+}
+
+function getReviewChecklist(c) {
+  if (!c) return [];
+  var evPct = getEffectiveEvidencePct(c);
+  var drafting = getDraftingProgress(c.ref, c);
+  var loaOk = c.loaStatus === 'sent' || c.loaStatus === 'approved' || c.stage === 'evidence' || c.stage === 'drafting' || c.stage === 'defence' || c.stage === 'review' || c.stage === 'resolve';
+  var onboarded = c.stage !== 'intake';
+  if (c.stage === 'triage' && !c.triageNote && !c.classification) onboarded = false;
+  if (isCaseCompleted(c.ref)) onboarded = true;
+
+  var cprDetail = 'CPR window — ' + c.cprDaysLeft + ' days remaining';
+  if (c.loaStatus === 'sent' || c.loaStatus === 'approved') {
+    cprDetail = 'Acknowledgement sent · ' + c.cprDaysLeft + ' days to letter of response';
+  }
+
+  return [
+    {
+      id: 'onboarded',
+      label: 'Onboarded',
+      detail: c.claimant + ' · ' + (c.solicitor || 'Claim received'),
+      done: onboarded
+    },
+    {
+      id: 'cpr',
+      label: 'CPR deadline date',
+      detail: cprDetail,
+      done: loaOk
+    },
+    {
+      id: 'evidence',
+      label: 'Evidence collected',
+      detail: evPct + '% of gold evidence pack on file',
+      done: evPct >= 100
+    },
+    {
+      id: 'documents',
+      label: 'Documents drafted',
+      detail:
+        drafting.approved.length +
+        ' of ' +
+        drafting.required.length +
+        ' approved — ' +
+        drafting.required.map(function (id) {
+          return CASE_DOC_NAMES[id] || id;
+        }).join(', '),
+      done: drafting.allApproved
+    }
+  ];
+}
+
+function isReviewReady(c) {
+  return getReviewChecklist(c).every(function (item) {
+    return item.done;
+  });
+}
+
+function completeCaseAndUpload(ref) {
+  var c = getMergedCase(ref);
+  if (!c || !isReviewReady(c)) return null;
+
+  var drafting = getDraftingProgress(ref, c);
+  var evState = loadEvidenceWorkspaceState(ref);
+  var completed = Object.assign({}, c, {
+    ref: ref,
+    stage: 'resolve',
+    completed: true,
+    completedAt: new Date().toISOString(),
+    completedBy: typeof getActiveUser === 'function' ? getActiveUser() : 'SB',
+    evidencePct: getEffectiveEvidencePct(c),
+    documents: drafting.approved.map(function (id) {
+      return CASE_DOC_NAMES[id] || id;
+    }),
+    documentIds: drafting.approved.slice(),
+    draftingSnapshot: loadDraftingState(ref),
+    evidenceSnapshot: evState,
+    outcome: c.classification === 'ESCALATE' ? 'settled' : 'defended',
+    summary:
+      'Completed via Review — intake, CPR, evidence (' +
+      getEffectiveEvidencePct(c) +
+      '%), and approved documents archived to the repository.',
+    saving: c.value,
+    route: c.flight || c.flightNum || 'Case file',
+    confidence: 92,
+    caseLaw: ['Repository learning'],
+    education: 'Internal precedent',
+    recommendation: 'Use this completed file when handling similar ' + (c.disruptionType || 'claims') + '.'
+  });
+
+  var completedList = getCompletedCases().filter(function (x) {
+    return x.ref !== ref;
+  });
+  completedList.unshift(completed);
+  try {
+    sessionStorage.setItem('261c_completed_cases', JSON.stringify(completedList.slice(0, 50)));
+  } catch (e) {}
+
+  try {
+    var repo = JSON.parse(sessionStorage.getItem('261c_repository') || '[]');
+    repo = repo.filter(function (r) {
+      return r.ref !== ref;
+    });
+    repo.unshift({
+      ref: ref,
+      claimant: c.claimant,
+      outcome: 'Completed case',
+      stored: completed.completedAt,
+      documents: completed.documents,
+      value: c.value,
+      flightNum: c.flightNum,
+      disruptionType: c.disruptionType || c.type,
+      solicitor: c.solicitor,
+      completed: true,
+      caseRecord: completed
+    });
+    sessionStorage.setItem('261c_repository', JSON.stringify(repo.slice(0, 50)));
+  } catch (e) {}
+
+  try {
+    sessionStorage.setItem('261c_case', JSON.stringify(Object.assign({}, c, { stage: 'resolve', completed: true })));
+  } catch (e) {}
+
+  return completed;
+}
+
+function searchAllCases(q) {
+  q = (q || '').toLowerCase().trim();
+  if (!q) return [];
+  var hayMatch = function (parts) {
+    return parts.join(' ').toLowerCase().indexOf(q) >= 0;
+  };
+  var active = ALL_CASES.filter(function (c) {
+    var J = typeof getJurisdiction === 'function' ? getJurisdiction(c.jurisdiction) : { name: '' };
+    return hayMatch([c.ref, c.claimant, c.flightNum, c.flight, c.solicitor, c.disruptionType, c.type, J.name]);
+  }).map(function (c) {
+    return { ref: c.ref, claimant: c.claimant, source: 'active', caseData: c };
+  });
+  var completed = getCompletedCases()
+    .filter(function (c) {
+      return hayMatch([c.ref, c.claimant, c.flightNum, c.flight, c.solicitor, c.disruptionType, c.type, c.route || '']);
+    })
+    .map(function (c) {
+      return { ref: c.ref, claimant: c.claimant, source: 'completed', caseData: c };
+    });
+  var seen = {};
+  return active.concat(completed).filter(function (row) {
+    if (seen[row.ref]) return false;
+    seen[row.ref] = true;
+    return true;
+  });
+}
+
 function getNextAction(c) {
   if (!c) return { text: 'Open case', tab: 'overview', icon: 'ti-file', urgency: 99 };
   var tab = getPrimaryTab(c);
@@ -107,12 +353,23 @@ function getNextAction(c) {
     tab = 'documents';
     icon = 'ti-file-pencil';
   } else if (c.stage === 'drafting' || c.stage === 'defence') {
-    text = 'Review AI draft and sign off';
-    tab = 'documents';
-    icon = 'ti-file-pencil';
-  } else if (c.stage === 'resolve') {
-    text = 'Review resolved case';
-    tab = 'overview';
+    var drafting = getDraftingProgress(c.ref, c);
+    if (drafting.allApproved) {
+      text = 'Proceed to final review';
+      tab = 'review';
+      icon = 'ti-list-check';
+    } else {
+      text = 'Review AI draft and sign off';
+      tab = 'documents';
+      icon = 'ti-file-pencil';
+    }
+  } else if (c.stage === 'review') {
+    text = isReviewReady(c) ? 'Complete case and upload to repository' : 'Complete review checklist';
+    tab = 'review';
+    icon = 'ti-list-check';
+  } else if (c.stage === 'resolve' || isCaseCompleted(c.ref)) {
+    text = 'View completed case archive';
+    tab = 'review';
     icon = 'ti-circle-check';
   }
 
@@ -170,6 +427,7 @@ var CASE_FILTER_MAP = {
   deadlines: ['cpr'],
   evidence: ['evidence'],
   drafting: ['drafting', 'defence'],
+  review: ['review'],
   urgent: null
 };
 
@@ -190,7 +448,7 @@ function filterCasesByParam(cases, filter) {
 function sortCases(cases, sort) {
   var list = cases.slice();
   if (sort === 'stage') {
-    var order = ['intake', 'triage', 'cpr', 'evidence', 'drafting', 'defence', 'resolve'];
+    var order = ['intake', 'triage', 'cpr', 'evidence', 'drafting', 'defence', 'review', 'resolve'];
     list.sort(function (a, b) {
       return order.indexOf(a.stage) - order.indexOf(b.stage);
     });
@@ -364,12 +622,12 @@ function loadEvidenceWorkspaceState(ref) {
 }
 
 function openCase(ref, tab) {
-  var c = typeof getCase === 'function' ? getCase(ref) : null;
+  var c = getMergedCase(ref);
   if (!c) return;
   try {
     sessionStorage.setItem('261c_case', JSON.stringify(c));
   } catch (e) {}
-  var targetTab = tab || getPrimaryTab(c);
+  var targetTab = tab || (isCaseCompleted(ref) ? 'review' : getPrimaryTab(c));
   window.location.href = CASE_ROUTE(ref, targetTab);
 }
 
@@ -435,7 +693,7 @@ function buildWatchItems(cases) {
 }
 
 function portfolioSummary(cases) {
-  var stages = ['intake', 'triage', 'cpr', 'evidence', 'drafting', 'defence', 'resolve'];
+  var stages = ['intake', 'triage', 'cpr', 'evidence', 'drafting', 'defence', 'review', 'resolve'];
   var counts = stages.map(function (s) {
     return { stage: s, n: cases.filter(function (c) {
       return c.stage === s;

@@ -187,13 +187,16 @@ function searchCases(q){
   if(!box)return;
   q=(q||'').toLowerCase().trim();
   if(!q){box.classList.remove('open');box.innerHTML='';return;}
-  var matches=ALL_CASES.filter(function(c){
+  var matches=typeof searchAllCases==='function'?searchAllCases(q):ALL_CASES.filter(function(c){
     var J=getJurisdiction(c.jurisdiction);
     return [c.ref,c.claimant,c.flightNum,c.flight,c.solicitor,c.disruptionType,c.type,J.name].join(' ').toLowerCase().indexOf(q)>=0;
-  }).slice(0,6);
-  box.innerHTML=matches.length?matches.map(function(c){
-    var a=getNextAction(c);
-    return '<div class="task-row" data-ref="'+escapeHtml(c.ref)+'" data-tab="'+escapeHtml(a.tab)+'" style="grid-template-columns:auto 1fr auto"><div class="task-dot '+daysUrgency(c.cprDaysLeft)+'"></div><div><div class="task-ref">'+escapeHtml(c.ref)+'</div><div class="task-action">'+escapeHtml(c.claimant)+'</div></div><div class="task-deadline">'+escapeHtml(urgencyLabel(c.cprDaysLeft))+'</div></div>';
+  }).map(function(c){return {ref:c.ref,claimant:c.claimant,source:'active',caseData:c};}).slice(0,6);
+  if(typeof searchAllCases==='function')matches=searchAllCases(q).slice(0,8);
+  box.innerHTML=matches.length?matches.map(function(row){
+    var c=row.caseData||row;
+    var a=typeof getNextAction==='function'?getNextAction(c):{tab:'overview'};
+    var tag=row.source==='completed'?'<span style="font-size:10px;color:var(--green);margin-left:6px">Completed</span>':'';
+    return '<div class="task-row" data-ref="'+escapeHtml(row.ref)+'" data-tab="'+escapeHtml(a.tab)+'" style="grid-template-columns:auto 1fr auto"><div class="task-dot '+(row.source==='completed'?'ok':daysUrgency(c.cprDaysLeft||99))+'"></div><div><div class="task-ref">'+escapeHtml(row.ref)+tag+'</div><div class="task-action">'+escapeHtml(row.claimant)+'</div></div><div class="task-deadline">'+(row.source==='completed'?'Archive':escapeHtml(urgencyLabel(c.cprDaysLeft||99)))+'</div></div>';
   }).join(''):'<div class="empty-row">No matching cases</div>';
   box.classList.add('open');
   bindCaseClicks(box);

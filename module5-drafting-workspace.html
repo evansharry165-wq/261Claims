@@ -150,6 +150,10 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 .doc-btn.rec{border-color:#BFDBFE;background:linear-gradient(135deg,var(--blue-faint),#fff)}
 .doc-btn.rec::after{content:'Recommended';font-size:8px;font-weight:500;background:var(--blue-text);color:#fff;padding:1px 5px;border-radius:8px;margin-left:auto}
 .repo-btn-row{padding:8px 16px;border-top:1px solid var(--border);background:var(--surface2);display:flex;gap:6px;justify-content:flex-end}
+.advance-review-bar{margin-bottom:16px;padding:14px 16px;border-radius:var(--r2);border:1px solid #BBF7D0;background:var(--green-faint);display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.advance-review-bar.pending{border-color:var(--border);background:var(--surface);color:var(--text2)}
+.advance-review-bar strong{display:block;font-size:13px;color:var(--text);margin-bottom:4px}
+.advance-review-bar p{font-size:11px;color:var(--text2);line-height:1.5;max-width:520px;margin:0}
 .draft-toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--navy);color:#fff;padding:10px 18px;border-radius:var(--r2);font-size:12px;box-shadow:0 8px 24px rgba(0,0,0,.18);opacity:0;transition:transform .25s ease,opacity .25s ease;z-index:600;pointer-events:none}
 .draft-toast.show{transform:translateX(-50%) translateY(0);opacity:1}
 .draft-hint{font-size:10px;color:var(--text3);display:flex;align-items:center;gap:4px}
@@ -391,6 +395,70 @@ var docFocused=false;
 var docDirty=false;
 var minimizedDocs={};
 var openDocs={};
+
+function persistDraftingState(){
+  try{
+    sessionStorage.setItem('261c_drafting_'+C.ref,JSON.stringify({
+      docApproved:docApproved,
+      docStates:Object.keys(docStates).reduce(function(o,k){
+        o[k]={status:docStates[k].status,generated:!!docStates[k].generated,edits:(docStates[k].edits||'').slice(0,80000)};
+        return o;
+      },{}),
+      storedInRepo:storedInRepo
+    }));
+    if(window.parent!==window){
+      window.parent.postMessage({type:'case-shell',action:'draftingUpdate',ref:C.ref},'*');
+    }
+  }catch(e){}
+}
+
+function loadPersistedDraftingState(){
+  try{
+    var st=JSON.parse(sessionStorage.getItem('261c_drafting_'+C.ref)||'null');
+    if(!st)return;
+    if(st.docApproved)docApproved=Object.assign(docApproved,st.docApproved);
+    if(st.storedInRepo)storedInRepo=Object.assign(storedInRepo,st.storedInRepo);
+    if(st.docStates){
+      Object.keys(st.docStates).forEach(function(id){
+        if(!docStates[id])docStates[id]={status:'empty',edits:'',generated:false};
+        docStates[id].status=st.docStates[id].status||docStates[id].status;
+        docStates[id].generated=!!st.docStates[id].generated;
+        if(st.docStates[id].edits)docStates[id].edits=st.docStates[id].edits;
+      });
+    }
+  }catch(e){}
+}
+
+function getRequiredDocIds(){
+  var ids=['lor'];
+  try{
+    var c=JSON.parse(sessionStorage.getItem('261c_case')||'null');
+    if(c&&c.ref===C.ref){
+      if(c.loaStatus==='sent'||c.loaStatus==='approved')ids.unshift('loa');
+      if(c.classification==='DEFEND'||c.classification==='ESCALATE'){
+        if(ids.indexOf('defence')<0)ids.push('defence');
+      }
+    }
+  }catch(e){}
+  return ids;
+}
+
+function allRequiredApproved(){
+  return getRequiredDocIds().every(function(id){return !!docApproved[id];});
+}
+
+function proceedToReview(){
+  persistDraftingState();
+  try{
+    var c=JSON.parse(sessionStorage.getItem('261c_case')||'null');
+    if(c&&c.ref===C.ref){
+      c.stage='review';
+      sessionStorage.setItem('261c_case',JSON.stringify(c));
+    }
+  }catch(e){}
+  if(typeof shellGo==='function'&&shellGo('review','All documents approved — proceeding to Review'))return;
+  window.location.href='case.html?ref='+encodeURIComponent(C.ref)+'&tab=review';
+}
 
 function getEvidencePct(){
   try{
@@ -1021,6 +1089,9 @@ function renderLibraryHome(){
     +'<div class="library-stat"><div class="library-stat-label">Drafted</div><div class="library-stat-val">'+drafted+'</div></div>'
     +'<div class="library-stat"><div class="library-stat-label">Approved</div><div class="library-stat-val">'+approved+'</div></div>'
     +'</div>'
+    +(allRequiredApproved()
+      ?'<div class="advance-review-bar"><div><strong>All required documents approved</strong><p>Proceed to the Review tab to confirm intake, CPR, evidence, and documents before uploading to the repository.</p></div><button class="btn-action primary" onclick="proceedToReview()"><i class="ti ti-list-check"></i> Proceed to Review <i class="ti ti-arrow-right"></i></button></div>'
+      :'<div class="advance-review-bar pending"><div><strong>Sign off required documents</strong><p>Approve '+getRequiredDocIds().map(function(id){return DOC_NAMES[id]||id;}).join(', ')+' to unlock Review.</p></div></div>')
     +'<div class="empty-workspace" style="min-height:200px"><i class="ti ti-file-pencil"></i><p>Open a document from the left library. It will fill this workspace until you close, save, or download it.</p></div>'
     +'</div>';
 }
@@ -1147,6 +1218,7 @@ async function generateDoc(id){
   docStates[id].generated = true;
   addVersion(id,'AI draft generated');
   docStates[id].status = 'draft';
+  persistDraftingState();
   renderWorkspace();
   updateDocBtn(id,'draft');
 }
@@ -1178,6 +1250,7 @@ function approveDoc(id){
   docStates[id].status = 'approved';
   addVersion(id,'Approved and signed off');
   updateDocBtn(id,'approved');
+  persistDraftingState();
   renderWorkspace();
 }
 
@@ -1281,6 +1354,10 @@ function applyDocRecommendations(){
 }
 
 /* ── Init ── */
+loadPersistedDraftingState();
+Object.keys(docStates).forEach(function(id){
+  if(docStates[id].status==='approved')docApproved[id]=true;
+});
 renderWorkspace();
 applyDocRecommendations();
 var initPct=getEvidencePct();

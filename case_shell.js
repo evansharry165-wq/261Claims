@@ -6,6 +6,7 @@ var CaseShell = (function () {
     { id: 'deadlines', label: 'Deadlines', icon: 'ti-calendar-due', frame: 'module3-cpr-workspace.html' },
     { id: 'evidence', label: 'Evidence', icon: 'ti-folder-open', frame: 'module4-evidence-workspace.html' },
     { id: 'documents', label: 'Documents', icon: 'ti-file-pencil', frame: 'module5-drafting-workspace.html' },
+    { id: 'review', label: 'Review', icon: 'ti-list-check', frame: false },
     { id: 'activity', label: 'Activity', icon: 'ti-history', frame: false }
   ];
 
@@ -21,7 +22,8 @@ var CaseShell = (function () {
     tab: 'overview',
     caseData: null,
     activity: [],
-    opened: false
+    opened: false,
+    completed: false
   };
 
   function escapeHtml(v) {
@@ -31,13 +33,9 @@ var CaseShell = (function () {
   }
 
   function loadCase(ref) {
-    var stored = null;
-    try {
-      stored = JSON.parse(sessionStorage.getItem('261c_case') || 'null');
-    } catch (e) {}
-    var c = typeof getCase === 'function' ? getCase(ref) : null;
-    if (stored && stored.ref === ref) c = stored;
+    var c = typeof getMergedCase === 'function' ? getMergedCase(ref) : typeof getCase === 'function' ? getCase(ref) : null;
     if (!c) return null;
+    state.completed = !!(c.completed || (typeof isCaseCompleted === 'function' && isCaseCompleted(ref)));
 
     var u = USERS[c.assignedTo] || { name: c.assignedTo };
     try {
@@ -164,11 +162,15 @@ var CaseShell = (function () {
         : '') +
       '</div>' +
       demoStudyStripHtml(c);
+    if (state.completed) {
+      document.getElementById('case-header').innerHTML +=
+        '<div class="completed-banner"><i class="ti ti-archive"></i> <strong>Completed case</strong> — read-only archive. Evidence, documents, and activity are preserved for reference.</div>';
+    }
   }
 
   function renderTabs() {
     var c = state.caseData;
-    var stageOrder = ['intake', 'triage', 'cpr', 'evidence', 'drafting', 'defence', 'resolve'];
+    var stageOrder = ['intake', 'triage', 'cpr', 'evidence', 'drafting', 'defence', 'review', 'resolve'];
     var stageIdx = stageOrder.indexOf(c ? c.stage : 'triage');
 
     document.getElementById('case-tabs').innerHTML = TABS.map(function (tab) {
@@ -183,9 +185,11 @@ var CaseShell = (function () {
                 ? 3
                 : tab.id === 'documents'
                   ? 4
-                  : tab.id === 'activity'
-                    ? 99
-                    : 0;
+                  : tab.id === 'review'
+                    ? 5
+                    : tab.id === 'activity'
+                      ? 99
+                      : 0;
       var done = tabStageIdx >= 0 && tabStageIdx < stageIdx;
       var active = state.tab === tab.id;
       return (
@@ -219,10 +223,11 @@ var CaseShell = (function () {
       { id: 'cpr', label: 'Deadlines', tab: 'deadlines' },
       { id: 'evidence', label: 'Evidence', tab: 'evidence' },
       { id: 'drafting', label: 'Documents', tab: 'documents' },
-      { id: 'resolve', label: 'Resolve', tab: null }
+      { id: 'review', label: 'Review', tab: 'review' },
+      { id: 'resolve', label: 'Complete', tab: 'review' }
     ];
     var stageIdx = stages.findIndex(function (s) {
-      return s.id === c.stage || (c.stage === 'defence' && s.id === 'drafting');
+      return s.id === c.stage || (c.stage === 'defence' && s.id === 'drafting') || (c.stage === 'resolve' && s.id === 'review');
     });
 
     document.getElementById('tab-panel').innerHTML =
@@ -290,6 +295,71 @@ var CaseShell = (function () {
             })
             .join('')
         : '<div class="empty-note">No similar cases in demo data.</div>') +
+      '</div></div></div>';
+  }
+
+  function renderReview() {
+    var c = state.caseData;
+    if (!c) return;
+    var checklist = typeof getReviewChecklist === 'function' ? getReviewChecklist(c) : [];
+    var ready = typeof isReviewReady === 'function' ? isReviewReady(c) : false;
+    var completed = state.completed || c.completed;
+    var completedRecord =
+      typeof getCompletedCases === 'function'
+        ? getCompletedCases().find(function (x) {
+            return x.ref === c.ref;
+          })
+        : null;
+
+    var itemsHtml = checklist
+      .map(function (item) {
+        return (
+          '<div class="review-item' +
+          (item.done ? ' done' : '') +
+          '"><div class="review-icon"><i class="ti ' +
+          (item.done ? 'ti-check' : 'ti-circle') +
+          '"></i></div><div><div class="review-label">' +
+          escapeHtml(item.label) +
+          '</div><div class="review-detail">' +
+          escapeHtml(item.detail) +
+          '</div></div></div>'
+        );
+      })
+      .join('');
+
+    var actionHtml = completed
+      ? '<div class="complete-bar done"><div class="pc-title"><i class="ti ti-circle-check" style="color:var(--green)"></i> Case completed and uploaded</div><p class="review-note">This case is archived in the repository. You can search for it from the dashboard or open it under Completed Cases in the repository.</p><div class="review-actions"><a class="btn-primary" href="repository.html#completed"><i class="ti ti-database"></i> Open repository</a><button class="btn-secondary" onclick="CaseShell.switchTab(\'documents\')">View documents</button><button class="btn-secondary" onclick="CaseShell.switchTab(\'evidence\')">View evidence</button></div></div>'
+      : ready
+        ? '<div class="complete-bar"><div class="pc-title">Ready to complete</div><p class="review-note">All checklist items are satisfied. Uploading will archive the full case file — intake, CPR, evidence pack, and approved documents — to the repository for future reference.</p><button class="btn-primary" onclick="CaseShell.completeCase()"><i class="ti ti-cloud-upload"></i> Complete and upload</button></div>'
+        : '<div class="complete-bar pending"><div class="pc-title">Checklist incomplete</div><p class="review-note">Finish any outstanding items below before uploading to the repository.</p><button class="btn-primary" disabled><i class="ti ti-cloud-upload"></i> Complete and upload</button></div>';
+
+    var archiveHtml = completed
+      ? '<div class="panel-card"><div class="pc-label">Completed case archive</div><p class="review-note">Read-only access to the full case journey. Browse tabs to inspect triage, deadlines, evidence, and documents as they stood at completion.</p><div class="kv"><span>Completed</span><span>' +
+        escapeHtml(
+          completedRecord && completedRecord.completedAt
+            ? new Date(completedRecord.completedAt).toLocaleString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+            : 'Recently'
+        ) +
+        '</span></div><div class="kv"><span>Documents archived</span><span>' +
+        escapeHtml((completedRecord && completedRecord.documents ? completedRecord.documents : []).join(', ') || '—') +
+        '</span></div><div class="kv"><span>Evidence at close</span><span>' +
+        escapeHtml(String(typeof getEffectiveEvidencePct === 'function' ? getEffectiveEvidencePct(c) : c.evidencePct || 0) + '%') +
+        '</span></div></div>'
+      : '';
+
+    document.getElementById('tab-panel').innerHTML =
+      '<div class="tab-panel-inner"><div class="review-grid">' +
+      '<div class="panel-card">' +
+      '<div class="pc-label">Pre-completion checklist</div>' +
+      '<div class="review-checklist">' +
+      itemsHtml +
+      '</div>' +
+      actionHtml +
+      '</div>' +
+      archiveHtml +
+      '<div class="panel-card">' +
+      '<div class="pc-label">What happens next</div>' +
+      '<div class="review-flow"><div class="flow-step"><i class="ti ti-cloud-upload"></i><div><strong>Complete and upload</strong><p>Stores the case in the repository with outcome, evidence list, and approved documents.</p></div></div><div class="flow-step"><i class="ti ti-search"></i><div><strong>Find later</strong><p>Search by reference, claimant, or flight from the dashboard or repository Completed Cases.</p></div></div><div class="flow-step"><i class="ti ti-archive"></i><div><strong>Reuse learning</strong><p>Similar live cases are matched against completed files for strategy and drafting guidance.</p></div></div></div>' +
       '</div></div></div>';
   }
 
@@ -466,12 +536,31 @@ var CaseShell = (function () {
     if (state.tab === 'overview') {
       panel.innerHTML = '';
       renderOverview();
+    } else if (state.tab === 'review') {
+      panel.innerHTML = '';
+      renderReview();
     } else if (state.tab === 'activity') {
       panel.innerHTML = '';
       renderActivity();
     } else if (FRAME_MAP[state.tab]) {
       renderFrame(state.tab);
     }
+  }
+
+  function completeCase() {
+    if (!state.ref || state.completed) return;
+    if (typeof completeCaseAndUpload !== 'function') return;
+    var result = completeCaseAndUpload(state.ref);
+    if (!result) {
+      alert('Complete all checklist items before uploading.');
+      return;
+    }
+    loadCase(state.ref);
+    state.completed = true;
+    logActivity('Case completed and uploaded to repository', 'create');
+    renderHeader(state.caseData);
+    renderTabs();
+    renderReview();
   }
 
   function switchTab(tab, pushState) {
@@ -487,6 +576,8 @@ var CaseShell = (function () {
     }
     renderTabs();
     renderTabContent();
+    var panel = document.getElementById('tab-panel');
+    if (panel) panel.scrollTop = 0;
   }
 
   function addNote() {
@@ -536,6 +627,14 @@ var CaseShell = (function () {
       }
       switchTab(e.data.tab);
     }
+    if (e.data.action === 'draftingUpdate' && e.data.ref === state.ref) {
+      loadCase(state.ref);
+      if (state.caseData) {
+        renderHeader(state.caseData);
+        renderTabs();
+      }
+      if (state.tab === 'review') renderReview();
+    }
     if (e.data.action === 'evidenceUpdate' && e.data.ref === state.ref) {
       if (typeof syncCaseEvidencePct === 'function') {
         syncCaseEvidencePct(e.data.ref, e.data.evidencePct, e.data.readyForDrafting);
@@ -561,7 +660,7 @@ var CaseShell = (function () {
     }
   });
 
-  return { init: init, switchTab: switchTab, addNote: addNote, logActivity: logActivity };
+  return { init: init, switchTab: switchTab, addNote: addNote, logActivity: logActivity, completeCase: completeCase };
 })();
 
 function caseShellNavigate(tab) {

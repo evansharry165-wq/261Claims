@@ -96,6 +96,26 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 .note-form{display:flex;gap:8px}
 .note-form input{flex:1;font-size:12px;padding:8px 10px;border:1px solid var(--border);border-radius:var(--r);font-family:var(--font)}
 .note-form button{font-size:12px;padding:8px 12px;border-radius:var(--r);background:var(--navy);color:#fff;border:none;cursor:pointer;font-family:var(--font)}
+.completed-banner{background:var(--green-faint);border-top:1px solid #BBF7D0;padding:8px 20px;font-size:12px;color:var(--green);display:flex;align-items:center;gap:8px}
+.review-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:14px}
+.review-checklist{margin:8px 0 16px}
+.review-item{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);align-items:flex-start}
+.review-item:last-child{border-bottom:none}
+.review-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--surface3);color:var(--text3);flex-shrink:0;font-size:14px}
+.review-item.done .review-icon{background:var(--green-faint);color:var(--green)}
+.review-label{font-size:13px;font-weight:500;color:var(--text);margin-bottom:2px}
+.review-detail{font-size:11px;color:var(--text2);line-height:1.5}
+.review-note{font-size:12px;color:var(--text2);line-height:1.6;margin:8px 0 12px}
+.complete-bar{margin-top:4px;padding:14px;border-radius:var(--r2);background:var(--surface2);border:1px solid var(--border)}
+.complete-bar.done{background:var(--green-faint);border-color:#BBF7D0}
+.complete-bar.pending{opacity:.92}
+.review-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.btn-secondary{font-size:12px;font-weight:500;padding:8px 14px;border-radius:var(--r);background:var(--surface);color:var(--text2);border:1px solid var(--border);cursor:pointer;font-family:var(--font);display:inline-flex;align-items:center;gap:6px;text-decoration:none}
+.btn-secondary:hover{background:var(--surface3)}
+.review-flow{display:flex;flex-direction:column;gap:12px;margin-top:4px}
+.flow-step{display:flex;gap:10px;font-size:12px;color:var(--text2);line-height:1.55}
+.flow-step i{color:var(--blue-text);font-size:16px;margin-top:2px;flex-shrink:0}
+.flow-step strong{display:block;color:var(--text);font-weight:500;margin-bottom:2px}
 .user-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.3);z-index:1000;align-items:flex-start;justify-content:flex-end;padding:52px 20px 0}
 .user-modal.open{display:flex}
 .user-dropdown{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);width:230px;box-shadow:0 4px 20px rgba(0,0,0,0.12);overflow:hidden}
@@ -107,7 +127,7 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 .ud-role{font-size:10px;color:var(--text3)}
 .ud-tick{margin-left:auto;color:var(--green);font-size:14px;display:none}
 .ud-item.current .ud-tick{display:block}
-@media(max-width:800px){.overview-grid{grid-template-columns:1fr}}
+@media(max-width:800px){.overview-grid,.review-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
