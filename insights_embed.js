@@ -27,6 +27,7 @@
       style.textContent =
         'body.embed-mode .global-nav,body.embed-mode .nav,body.embed-mode .topbar,body.embed-mode #user-modal{display:none!important}' +
         'body.embed-mode .app,body.embed-mode .page{height:100%!important;min-height:0}' +
+        'body.embed-mode .content,body.embed-mode .main{flex:1;overflow-y:auto;min-height:0}' +
         'html.embed-mode,body.embed-mode{height:100%!important}';
       document.head.appendChild(style);
     }
