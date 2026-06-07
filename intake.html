@@ -172,6 +172,7 @@ input[type=file]{display:none}
 <body>
 <script src="shared_data.js"></script>
 <script src="state.js"></script>
+<script src="team_helpers.js"></script>
 <script src="case_helpers.js"></script>
 
 <nav class="global-nav">
@@ -373,7 +374,8 @@ function readExtractedForm(){
 function confirmCreateCase(){
   var data=readExtractedForm();
   if(!data.claimant||!data.flightNum){showToast('Claimant and flight number are required.');return;}
-  var uid=activeUserId();
+  var assignEl=document.getElementById('ext-assignee');
+  var uid=assignEl?assignEl.value:activeUserId();
   var u=USERS[uid]||USERS.SB;
   var ref=STATE.generateNextRef();
   var airline=getCaseAirline({dep:data.dep,arr:data.arr});
@@ -497,6 +499,7 @@ function renderReviewForm(){
     +'<div class="form-field"><label class="form-label" for="ext-disruption">Disruption type</label><select class="form-select" id="ext-disruption">'+disOpts+'</select></div>'
     +'<div class="form-field"><label class="form-label" for="ext-jurisdiction">Jurisdiction</label><select class="form-select" id="ext-jurisdiction">'+jurOpts+'</select></div>'
     +formInput('ext-value','Claim value',e.value)
+    +'<div class="form-field"><label class="form-label" for="ext-assignee">Assign to</label><select class="form-select" id="ext-assignee">'+assigneeOptionsHtml(activeUserId())+'</select></div>'
     +'</div>'
     +'<div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn-primary" onclick="confirmCreateCase()"><i class="ti ti-check"></i> Confirm &amp; create case</button><button class="btn-secondary" onclick="beginNewLoc()">Cancel</button></div>'
     +'</div></div></div>';
@@ -563,6 +566,7 @@ function render(){
     panel.innerHTML=renderUploadZone();
   }
   if(typeof renderGlobalNav==='function')renderGlobalNav();
+  if(typeof renderUserDropdownLabels==='function')renderUserDropdownLabels();
 }
 
 window.addEventListener('load',function(){

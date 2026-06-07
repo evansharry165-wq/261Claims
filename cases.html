@@ -68,11 +68,31 @@ tbody tr:hover td{background:var(--surface2);cursor:pointer}
 .ud-role{font-size:10px;color:var(--text3)}
 .ud-tick{margin-left:auto;color:var(--green);display:none}
 .ud-item.current .ud-tick{display:block}
+.workload-bar{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:12px 16px;margin-bottom:14px}
+.workload-bar-title{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.workload-items{display:flex;flex-wrap:wrap;gap:14px 20px}
+.workload-item{display:flex;align-items:center;gap:8px;min-width:180px;flex:1}
+.wl-av{width:24px;height:24px;border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:500;flex-shrink:0}
+.wl-name{font-size:11px;font-weight:500;color:var(--text);min-width:72px}
+.wl-count{font-size:10px;color:var(--text3);min-width:12px}
+.wl-track{flex:1;height:6px;background:var(--surface3);border-radius:3px;overflow:hidden;min-width:60px}
+.wl-fill{height:100%;border-radius:3px}
+.assign-cell{position:relative;white-space:nowrap}
+.assign-badge{width:28px;height:28px;border-radius:50%;border:none;color:#fff;font-size:10px;font-weight:500;cursor:pointer;display:inline-flex;align-items:center;justify-content:center}
+.assign-badge:hover{opacity:0.9;box-shadow:0 0 0 2px var(--blue-faint)}
+.assign-menu{position:absolute;top:calc(100% + 4px);right:0;z-index:60;background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);box-shadow:0 8px 24px rgba(0,0,0,0.1);min-width:210px;overflow:hidden}
+.assign-opt{display:flex;align-items:center;gap:8px;width:100%;padding:8px 10px;border:none;background:var(--surface);cursor:pointer;font-family:var(--font);text-align:left}
+.assign-opt:hover,.assign-opt.current{background:var(--blue-faint)}
+.assign-opt-av{width:24px;height:24px;border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:500;flex-shrink:0}
+.assign-opt-meta{display:flex;flex-direction:column;gap:1px}
+.assign-opt-name{font-size:12px;font-weight:500;color:var(--text)}
+.assign-opt-load{font-size:10px;color:var(--text3)}
 </style>
 </head>
 <body>
 <script src="shared_data.js"></script>
 <script src="state.js"></script>
+<script src="team_helpers.js"></script>
 <script src="case_helpers.js"></script>
 
 <nav class="global-nav">
@@ -102,6 +122,7 @@ tbody tr:hover td{background:var(--surface2);cursor:pointer}
     <div class="filter-bar" id="filter-bar"></div>
   </div>
   <div class="table-wrap">
+    <div id="workload-bar"></div>
     <table>
       <thead><tr id="thead-row">
         <th>Ref</th><th>Claimant</th><th>Flight</th><th>Stage</th><th>Next action</th><th>Blocker</th><th>CPR</th><th>Value</th>
@@ -119,6 +140,8 @@ var STAGE_COLORS = {
   drafting:{col:'#065F46',bg:'#E6F5EE'},defence:{col:'#1A7A4A',bg:'#DCFCE7'},
   resolve:{col:'#374151',bg:'#F1F5F9'}
 };
+
+var openAssignRef = null;
 
 var FILTERS = [
   { id: '', label: 'All' },
@@ -178,6 +201,19 @@ function renderFilters(){
     +'<div class="stat-chips" id="stat-chips"></div>';
 }
 
+function toggleAssignDropdown(ref, ev){
+  if(ev)ev.stopPropagation();
+  openAssignRef=openAssignRef===ref?null:ref;
+  renderCases();
+}
+
+function assignCaseRow(ref, uid, ev){
+  if(ev)ev.stopPropagation();
+  assignCaseTo(ref, uid);
+  openAssignRef=null;
+  renderCases();
+}
+
 function renderCases(){
   var uid=getActiveUser();
   var u=USERS[uid]||USERS.SB;
@@ -191,11 +227,9 @@ function renderCases(){
   });
 
   renderScopeTabs();
-  var showAssignee=params.scope==='all';
+  document.getElementById('workload-bar').innerHTML=workloadBarHtml();
   document.getElementById('thead-row').innerHTML=
-    '<th>Ref</th><th>Claimant</th><th>Flight</th><th>Stage</th><th>Next action</th><th>Blocker</th><th>CPR</th>'
-    +(showAssignee?'<th>Assignee</th>':'')
-    +'<th>Value</th>';
+    '<th>Ref</th><th>Claimant</th><th>Flight</th><th>Stage</th><th>Next action</th><th>Blocker</th><th>CPR</th><th>Assign</th><th>Value</th>';
   var scopeLabel=params.scope==='all'?'All cases':u.name;
   document.getElementById('hdr-title').textContent='Cases · '+cases.length+(params.scope==='all'?' total':' assigned');
   document.getElementById('hdr-sub').textContent=scopeLabel+' · sorted by '+(params.sort==='urgency'?'CPR urgency':params.sort);
@@ -220,7 +254,8 @@ function renderCases(){
     var urg=daysUrgency(c.cprDaysLeft);
     var sc=STAGE_COLORS[c.stage]||STAGE_COLORS.resolve;
     var sl=t('stage_'+c.stage)||c.stage;
-    var assignee=USERS[c.assignedTo]||{name:c.assignedTo};
+    var assignee=USERS[c.assignedTo]||{initials:c.assignedTo,name:c.assignedTo};
+    var assignOpen=openAssignRef===c.ref;
     return '<tr data-ref="'+escapeHtml(c.ref)+'" data-tab="'+escapeHtml(action.tab)+'">'
       +'<td><div class="td-ref">'+escapeHtml(c.ref)+'</div></td>'
       +'<td><div class="td-name">'+escapeHtml(c.claimant)+'</div><div class="td-sub">'+escapeHtml(c.solicitor)+'</div></td>'
@@ -229,22 +264,32 @@ function renderCases(){
       +'<td><div class="td-action">'+escapeHtml(action.text)+'</div></td>'
       +'<td><div class="td-blocker">'+escapeHtml(blocker||'—')+'</div></td>'
       +'<td><span class="dp dp-'+urg+'">'+escapeHtml(urgencyLabel(c.cprDaysLeft))+'</span></td>'
-      +(showAssignee?'<td><div class="td-sub">'+escapeHtml(assignee.name)+'</div></td>':'')
+      +'<td class="assign-cell" onclick="event.stopPropagation()"><button type="button" class="assign-badge" style="background:'+userBadgeColor(c.assignedTo)+'" title="Assign case" onclick="toggleAssignDropdown(\''+escapeHtml(c.ref)+'\',event)">'+escapeHtml(assignee.initials||c.assignedTo)+'</button>'+(assignOpen?assignDropdownHtml(c.ref,c.assignedTo):'')+'</td>'
       +'<td style="font-family:var(--mono);font-weight:500">'+escapeHtml(c.value)+'</td></tr>';
   }).join('');
 
   tbody.querySelectorAll('tr[data-ref]').forEach(function(row){
     row.addEventListener('click',function(){
-      openCase(this.dataset.ref);
+      openCase(this.dataset.ref, this.dataset.tab || undefined);
     });
   });
   if(typeof renderGlobalNav==='function')renderGlobalNav();
+  if(typeof renderUserDropdownLabels==='function')renderUserDropdownLabels();
 }
+
+document.addEventListener('click',function(){
+  if(openAssignRef){
+    openAssignRef=null;
+    renderCases();
+  }
+});
 
 function toggleUserMenu(){document.getElementById('user-modal').classList.toggle('open');}
 function closeMenu(){document.getElementById('user-modal').classList.remove('open');}
 function switchUser(id){
-  setActiveUser(id);sessionStorage.removeItem('261c_lang');closeMenu();renderCases();
+  if(typeof STATE!=='undefined'&&STATE.setActiveUser)STATE.setActiveUser(id);
+  else setActiveUser(id);
+  sessionStorage.removeItem('261c_lang');closeMenu();renderCases();
   ['SB','JP','KR','MD','PL','CG','IM','EH'].forEach(function(uid){
     var el=document.getElementById('ud-'+uid);if(el)el.classList.toggle('current',uid===id);
   });

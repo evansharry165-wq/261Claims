@@ -21,6 +21,7 @@ var CaseShell = (function () {
     tab: 'overview',
     caseData: null,
     activity: [],
+    notes: [],
     opened: false
   };
 
@@ -78,6 +79,9 @@ var CaseShell = (function () {
     } catch (e) {
       state.activity = [];
     }
+
+    state.notes =
+      typeof STATE !== 'undefined' && STATE.getNotes ? STATE.getNotes(ref) : [];
 
     state.caseData = c;
     state.ref = ref;
@@ -361,12 +365,26 @@ var CaseShell = (function () {
       '</div></div></div>';
   }
 
+  function noteBadgeHtml(userId) {
+    var u = typeof USERS !== 'undefined' ? USERS[userId] : null;
+    var col =
+      typeof userBadgeColor === 'function' ? userBadgeColor(userId) : '#374151';
+    return (
+      '<span class="note-badge" style="background:' +
+      col +
+      '">' +
+      escapeHtml(u ? u.initials : userId || '?') +
+      '</span>'
+    );
+  }
+
   function renderActivity() {
     var rows = state.activity.length
       ? state.activity
       : (state.caseData.activity || []).map(function (a) {
           return { t: a.text, type: a.type || 'action', time: a.time };
         });
+    var notes = state.notes || [];
 
     document.getElementById('tab-panel').innerHTML =
       '<div class="tab-panel-inner"><div class="panel-card">' +
@@ -387,8 +405,27 @@ var CaseShell = (function () {
             })
             .join('')
         : '<div class="empty-note">No activity recorded yet.</div>') +
+      '</div></div>' +
+      '<div class="panel-card" style="margin-top:14px">' +
+      '<div class="pc-label">Notes</div>' +
+      '<div class="notes-list">' +
+      (notes.length
+        ? notes
+            .map(function (n) {
+              return (
+                '<div class="note-row">' +
+                noteBadgeHtml(n.userId) +
+                '<div class="note-body"><div class="note-text">' +
+                escapeHtml(n.text) +
+                '</div><div class="note-time">' +
+                escapeHtml(n.time) +
+                '</div></div></div>'
+              );
+            })
+            .join('')
+        : '<div class="empty-note">No notes yet.</div>') +
       '</div>' +
-      '<div class="note-form"><input id="shell-note" placeholder="Add a note…" onkeydown="if(event.key===\'Enter\')CaseShell.addNote()"><button onclick="CaseShell.addNote()">Add</button></div>' +
+      '<div class="note-form"><input id="shell-note" placeholder="Add a note…" onkeydown="if(event.key===\'Enter\')CaseShell.addNote()"><button onclick="CaseShell.addNote()">Add note</button></div>' +
       '</div></div>';
   }
 
@@ -445,8 +482,18 @@ var CaseShell = (function () {
     if (!el) return;
     var v = (el.value || '').trim();
     if (!v) return;
-    logActivity(v, 'note');
+    var uid =
+      typeof STATE !== 'undefined' && STATE.getActiveUser
+        ? STATE.getActiveUser()
+        : typeof getActiveUser === 'function'
+          ? getActiveUser()
+          : 'SB';
+    if (typeof STATE !== 'undefined' && STATE.addNote) {
+      var entry = STATE.addNote(state.ref, { text: v, userId: uid });
+      state.notes.unshift(entry);
+    }
     el.value = '';
+    renderActivity();
   }
 
   function init() {

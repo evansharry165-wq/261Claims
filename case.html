@@ -93,7 +93,14 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 .act-dot.act-create{background:var(--green)}
 .act-text{font-size:12px;color:var(--text)}
 .act-time{font-size:10px;color:var(--text3);margin-top:2px}
-.note-form{display:flex;gap:8px}
+.notes-list{margin-bottom:12px}
+.note-row{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)}
+.note-row:last-child{border-bottom:none}
+.note-badge{width:26px;height:26px;border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:500;flex-shrink:0;margin-top:2px}
+.note-body{flex:1}
+.note-text{font-size:12px;color:var(--text);line-height:1.5}
+.note-time{font-size:10px;color:var(--text3);margin-top:3px}
+.note-form{display:flex;gap:8px;margin-top:4px}
 .note-form input{flex:1;font-size:12px;padding:8px 10px;border:1px solid var(--border);border-radius:var(--r);font-family:var(--font)}
 .note-form button{font-size:12px;padding:8px 12px;border-radius:var(--r);background:var(--navy);color:#fff;border:none;cursor:pointer;font-family:var(--font)}
 .user-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.3);z-index:1000;align-items:flex-start;justify-content:flex-end;padding:52px 20px 0}
@@ -113,6 +120,7 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 <body>
 <script src="shared_data.js"></script>
 <script src="state.js"></script>
+<script src="team_helpers.js"></script>
 <script src="case_helpers.js"></script>
 <script src="demo_studies.js"></script>
 <script src="case_shell.js"></script>
