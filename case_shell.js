@@ -324,37 +324,116 @@ var CaseShell = (function () {
       '</div></div>';
   }
 
+  function isDraftingFrame(frame) {
+    return frame && (frame.getAttribute('src') || '').indexOf('module5-drafting') >= 0;
+  }
+
   function getFrameScrollEl(frame) {
-    if (!frame || !frame.contentDocument) return null;
+    if (!frame || !frame.contentDocument || !frame.contentWindow) return null;
     var doc = frame.contentDocument;
-    var main = doc.getElementById('main');
-    if (main) {
-      var mainStyle = frame.contentWindow.getComputedStyle(main);
-      if (main.scrollHeight > main.clientHeight && mainStyle.overflowY !== 'visible') return main;
+    var win = frame.contentWindow;
+    var candidates = [
+      doc.querySelector('.doc-focus-scroll'),
+      doc.querySelector('.library-home'),
+      doc.querySelector('.sidebar-left'),
+      doc.querySelector('.sidebar-right'),
+      doc.getElementById('main')
+    ];
+    var i;
+    for (i = 0; i < candidates.length; i++) {
+      var el = candidates[i];
+      if (!el) continue;
+      var style = win.getComputedStyle(el);
+      if (el.scrollHeight > el.clientHeight + 1 && style.overflowY !== 'visible') return el;
     }
     return doc.scrollingElement || doc.documentElement || doc.body;
   }
 
-  function bindFrameWheel() {
+  function syncFrameHeight(frame) {
+    if (!frame || !frame.contentDocument) return;
     var panel = document.getElementById('tab-panel');
-    if (!panel || panel._wheelBound) return;
-    panel._wheelBound = true;
-    panel.addEventListener(
+    if (isDraftingFrame(frame)) {
+      frame.style.height = (panel ? panel.clientHeight : 0) + 'px';
+      frame.setAttribute('data-scroll-mode', 'embed');
+      return;
+    }
+    var doc = frame.contentDocument;
+    var height = Math.max(
+      doc.body ? doc.body.scrollHeight : 0,
+      doc.documentElement ? doc.documentElement.scrollHeight : 0,
+      panel ? panel.clientHeight : 0
+    );
+    frame.style.height = height + 'px';
+    frame.setAttribute('data-scroll-mode', 'panel');
+  }
+
+  function observeFrameResize(frame) {
+    if (!frame || !frame.contentDocument) return;
+    if (frame._resizeObs) {
+      frame._resizeObs.disconnect();
+      frame._resizeObs = null;
+    }
+    syncFrameHeight(frame);
+    if (isDraftingFrame(frame)) return;
+    var timer;
+    frame._resizeObs = new MutationObserver(function () {
+      clearTimeout(timer);
+      timer = setTimeout(function () {
+        syncFrameHeight(frame);
+      }, 80);
+    });
+    frame._resizeObs.observe(frame.contentDocument.body, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      characterData: true
+    });
+  }
+
+  function bindTabScroll() {
+    if (window._caseTabScrollBound) return;
+    window._caseTabScrollBound = true;
+    window.addEventListener(
       'wheel',
       function (e) {
         var frame = document.getElementById('case-frame');
-        var scrollEl = getFrameScrollEl(frame);
-        if (!scrollEl) return;
-        var max = scrollEl.scrollHeight - scrollEl.clientHeight;
-        if (max <= 0) return;
-        var next = scrollEl.scrollTop + e.deltaY;
-        if ((e.deltaY > 0 && scrollEl.scrollTop < max) || (e.deltaY < 0 && scrollEl.scrollTop > 0)) {
-          scrollEl.scrollTop = Math.max(0, Math.min(max, next));
-          e.preventDefault();
+        var panel = document.getElementById('tab-panel');
+        if (!panel) return;
+        var panelRect = panel.getBoundingClientRect();
+        if (e.clientY < panelRect.top || e.clientY > panelRect.bottom || e.clientX < panelRect.left || e.clientX > panelRect.right) {
+          return;
+        }
+
+        var mode = frame ? frame.getAttribute('data-scroll-mode') : null;
+        if (mode === 'embed' && frame) {
+          var scrollEl = getFrameScrollEl(frame);
+          if (!scrollEl) return;
+          var innerMax = scrollEl.scrollHeight - scrollEl.clientHeight;
+          if (innerMax <= 0) return;
+          var innerNext = scrollEl.scrollTop + e.deltaY;
+          if ((e.deltaY > 0 && scrollEl.scrollTop < innerMax) || (e.deltaY < 0 && scrollEl.scrollTop > 0)) {
+            scrollEl.scrollTop = Math.max(0, Math.min(innerMax, innerNext));
+            e.preventDefault();
+          }
+          return;
+        }
+
+        if (mode === 'panel' || !frame) {
+          var max = panel.scrollHeight - panel.clientHeight;
+          if (max <= 0) return;
+          var next = panel.scrollTop + e.deltaY;
+          if ((e.deltaY > 0 && panel.scrollTop < max) || (e.deltaY < 0 && panel.scrollTop > 0)) {
+            panel.scrollTop = Math.max(0, Math.min(max, next));
+            e.preventDefault();
+          }
         }
       },
-      { passive: false }
+      { passive: false, capture: true }
     );
+    window.addEventListener('resize', function () {
+      var activeFrame = document.getElementById('case-frame');
+      if (activeFrame) syncFrameHeight(activeFrame);
+    });
   }
 
   function renderFrame(tab) {
@@ -375,7 +454,11 @@ var CaseShell = (function () {
       '" title="' +
       escapeHtml(tab) +
       '"></iframe>';
-    bindFrameWheel();
+    var frame = document.getElementById('case-frame');
+    frame.addEventListener('load', function () {
+      observeFrameResize(frame);
+    });
+    bindTabScroll();
   }
 
   function renderTabContent() {
@@ -438,7 +521,7 @@ var CaseShell = (function () {
       logActivity('Case workspace opened', 'create');
       state.opened = true;
     }
-    bindFrameWheel();
+    bindTabScroll();
   }
 
   window.addEventListener('message', function (e) {
@@ -462,6 +545,19 @@ var CaseShell = (function () {
         renderHeader(state.caseData);
         renderTabs();
       }
+      var frame = document.getElementById('case-frame');
+      if (frame) syncFrameHeight(frame);
+    }
+    if (e.data.action === 'panelScroll') {
+      var scrollPanel = document.getElementById('tab-panel');
+      if (!scrollPanel) return;
+      var panelMax = scrollPanel.scrollHeight - scrollPanel.clientHeight;
+      scrollPanel.scrollTop = Math.max(0, Math.min(panelMax, scrollPanel.scrollTop + (e.data.deltaY || 0)));
+      return;
+    }
+    if (e.data.action === 'resize') {
+      var resizeFrame = document.getElementById('case-frame');
+      if (resizeFrame) syncFrameHeight(resizeFrame);
     }
   });
 
