@@ -234,7 +234,7 @@ function renderCases(){
 
   tbody.querySelectorAll('tr[data-ref]').forEach(function(row){
     row.addEventListener('click',function(){
-      openCase(this.dataset.ref,this.dataset.tab||undefined);
+      openCase(this.dataset.ref);
     });
   });
   if(typeof renderGlobalNav==='function')renderGlobalNav();
