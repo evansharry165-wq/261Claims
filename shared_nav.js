@@ -81,6 +81,8 @@
 
     var repoLink = document.querySelector('.gn-right .repo-nav');
     if (repoLink) repoLink.style.display = 'none';
+
+    if (typeof renderUserDropdownLabels === 'function') renderUserDropdownLabels();
   }
 
   window.renderGlobalNav = renderGlobalNav;

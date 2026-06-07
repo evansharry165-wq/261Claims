@@ -119,10 +119,41 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 .btn-advance:hover{background:var(--navy2)}
 
 /* extracted fields */
-.field-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.field-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .field-item{padding:8px 10px;background:var(--surface2);border-radius:var(--r);border:1px solid var(--border)}
 .fi-label{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:0.06em;color:var(--text3);margin-bottom:3px}
 .fi-val{font-size:12px;font-weight:500;color:var(--text)}
+.form-field{display:flex;flex-direction:column;gap:4px}
+.form-label{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:0.06em;color:var(--text3)}
+.form-input,.form-select{font-size:12px;padding:8px 10px;border:1px solid var(--border);border-radius:var(--r);font-family:var(--font);background:var(--surface);color:var(--text)}
+.form-input:focus,.form-select:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 2px rgba(42,111,219,0.12)}
+.intake-tabs{display:flex;gap:6px;padding:12px 16px 0;border-bottom:1px solid var(--border);background:var(--surface)}
+.intake-tab{font-size:11px;padding:6px 12px;border-radius:20px;border:1px solid var(--border);background:var(--surface2);color:var(--text2);cursor:pointer;font-family:var(--font)}
+.intake-tab.active{background:var(--blue-faint);border-color:var(--blue);color:var(--blue-text)}
+.extract-loading{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:320px;text-align:center;padding:40px}
+.extract-spinner{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--blue);border-radius:50%;animation:spin 0.8s linear infinite;margin-bottom:14px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.extract-title{font-size:14px;font-weight:500;color:var(--text);margin-bottom:4px}
+.extract-sub{font-size:12px;color:var(--text3)}
+.btn-primary{font-size:12px;font-weight:500;padding:9px 16px;border-radius:var(--r);background:var(--navy);color:#fff;border:none;cursor:pointer;font-family:var(--font);display:inline-flex;align-items:center;gap:6px}
+.btn-primary:hover{background:var(--navy2)}
+.btn-secondary{font-size:12px;font-weight:500;padding:9px 16px;border-radius:var(--r);background:var(--surface);color:var(--text2);border:1px solid var(--border);cursor:pointer;font-family:var(--font);display:inline-flex;align-items:center;gap:6px;text-decoration:none}
+.btn-secondary:hover{background:var(--surface2)}
+.btn-demo{margin-top:10px;font-size:11px;padding:7px 12px;border-radius:var(--r);border:1px solid var(--border);background:var(--surface2);color:var(--text2);cursor:pointer;font-family:var(--font)}
+.btn-demo:hover{border-color:var(--blue);color:var(--blue-text)}
+.success-panel{text-align:center;padding:40px 20px}
+.success-icon{width:48px;height:48px;border-radius:50%;background:var(--green-faint);color:var(--green);display:flex;align-items:center;justify-content:center;font-size:22px;margin:0 auto 14px}
+.success-title{font-size:15px;font-weight:500;color:var(--text);margin-bottom:6px}
+.success-sub{font-size:12px;color:var(--text2);margin-bottom:18px}
+.success-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.toast{position:fixed;bottom:20px;right:20px;background:var(--navy);color:#fff;padding:12px 16px;border-radius:var(--r2);font-size:12px;box-shadow:0 4px 20px rgba(0,0,0,0.15);z-index:2000;max-width:360px;line-height:1.5}
+.deposit-select-wrap{position:relative;margin-bottom:10px}
+.deposit-results{border:1px solid var(--border);border-radius:var(--r2);max-height:220px;overflow-y:auto;background:var(--surface)}
+.deposit-option{padding:10px 12px;border-bottom:1px solid var(--border);cursor:pointer;display:flex;align-items:center;gap:10px}
+.deposit-option:hover,.deposit-option.selected{background:var(--blue-faint)}
+.deposit-option:last-child{border-bottom:none}
+.deposit-empty{padding:14px;font-size:12px;color:var(--text3);text-align:center}
+.deposit-attached{background:var(--green-faint);border:1px solid #BBF7D0;border-radius:var(--r);padding:10px 12px;font-size:12px;color:var(--green);margin-top:10px}
 
 /* user switcher modal */
 .user-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.3);z-index:1000;align-items:flex-start;justify-content:flex-end;padding:52px 16px 0}
@@ -140,6 +171,8 @@ input[type=file]{display:none}
 </head>
 <body>
 <script src="shared_data.js"></script>
+<script src="state.js"></script>
+<script src="team_helpers.js"></script>
 <script src="case_helpers.js"></script>
 
 <nav class="global-nav">
@@ -166,7 +199,7 @@ input[type=file]{display:none}
       <div class="lp-header">
         <div class="lp-title">Intake queue</div>
         <div class="lp-sub" id="lp-sub">Cases assigned to you awaiting action</div>
-        <button class="lp-upload-btn" onclick="triggerUpload()"><i class="ti ti-upload" style="font-size:14px"></i> Upload new letter of claim</button>
+        <button class="lp-upload-btn" onclick="intakeTab='new';triggerUpload()"><i class="ti ti-upload" style="font-size:14px"></i> Upload new letter of claim</button>
         <button class="lp-upload-btn" onclick="triggerSupportUpload()"><i class="ti ti-file-plus" style="font-size:14px"></i> Deposit document into case file</button>
       </div>
       <div class="case-list" id="case-list"></div>
@@ -181,65 +214,101 @@ input[type=file]{display:none}
 <input type="file" id="support-file-input" accept=".pdf,.doc,.docx,.txt,.png,.jpg,.jpeg" onchange="handleSupportUpload(event)">
 
 <script>
-var uploadedCases=[];
 var selectedRef=(new URLSearchParams(window.location.search).get('ref')||'');
-var pendingSupportFile=null;
-var depositedDocs=[];
-var depositSearch='';
 var intakeTab='new';
-function setIntakeTab(tab){intakeTab=tab;render();}
+var locFlow='idle';
+var extracted=null;
+var createdRef='';
+var pendingSupportFile=null;
+var depositSearch='';
+var depositSelectedRef='';
+var depositMessage='';
+var extractTimer=null;
 
+var DEMO_LOC={
+  sourceFile:'LOC_Brennan_v_Horizon.pdf',
+  claimant:'Thomas Brennan',
+  solicitor:'Slater & Gordon',
+  flightNum:'HC 891',
+  dep:'LTN',
+  arr:'BCN',
+  flightDate:'15 May 2026',
+  locDate:'7 June 2026',
+  disruptionType:'Weather',
+  jurisdiction:'england-wales',
+  value:'€400'
+};
+
+var DISRUPTION_TYPES=['Weather','ATC Restrictions','Technical','Cancellation','Birdstrike','Industrial action','Other'];
+var JURISDICTION_OPTIONS=[
+  {id:'england-wales',label:'England & Wales'},
+  {id:'france',label:'France'},
+  {id:'spain',label:'España'}
+];
+
+function activeUserId(){return typeof STATE!=='undefined'?STATE.getActiveUser():getActiveUser();}
 function escapeHtml(v){return String(v==null?'':v).replace(/[&<>"']/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch];});}
+function setIntakeTab(tab){intakeTab=tab;render();}
 function intakeCases(){
-  var uid=getActiveUser();
-  return getCasesForUser(uid,'intake').concat(uploadedCases.filter(function(c){return c.assignedTo===uid;}));
+  return getCasesForUser(activeUserId(),'intake').sort(function(a,b){return a.cprDaysLeft-b.cprDaysLeft;});
+}
+function openCases(){
+  return ALL_CASES.filter(function(c){return c.stage!=='resolve';}).sort(function(a,b){return a.ref.localeCompare(b.ref);});
 }
 function triggerUpload(){document.getElementById('file-input').click();}
 function triggerSupportUpload(){document.getElementById('support-file-input').click();}
-function userCases(){
-  var uid=getActiveUser();
-  return getCasesForUser(uid).concat(uploadedCases.filter(function(c){return c.assignedTo===uid;}));
+
+function buildExtractionFromFile(file){
+  var base=file.name.replace(/\.[^.]+$/,'').replace(/[_-]+/g,' ').trim();
+  var claimant=base?base.replace(/\b\w/g,function(m){return m.toUpperCase();}):'New claimant';
+  return{
+    sourceFile:file.name,
+    claimant:claimant,
+    solicitor:'Uploaded LOC',
+    flightNum:'HC TBD',
+    dep:'TBD',
+    arr:'TBD',
+    flightDate:'Date pending',
+    locDate:new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'}),
+    disruptionType:'Pending review',
+    jurisdiction:(USERS[activeUserId()]&&USERS[activeUserId()].lang==='fr')?'france':(USERS[activeUserId()]&&USERS[activeUserId()].lang==='es')?'spain':'england-wales',
+    value:'€250'
+  };
 }
+
+function startExtraction(data){
+  if(extractTimer)clearTimeout(extractTimer);
+  extracted=JSON.parse(JSON.stringify(data));
+  locFlow='extracting';
+  createdRef='';
+  render();
+  extractTimer=setTimeout(function(){
+    locFlow='review';
+    render();
+  },2000);
+}
+
+function useDemoLoc(){startExtraction(DEMO_LOC);}
 function handleUpload(event){
   var file=event.target.files&&event.target.files[0];
   if(!file)return;
-  var uid=getActiveUser();
-  var base=file.name.replace(/\.[^.]+$/,'').replace(/[_-]+/g,' ').trim();
-  var claimant=base?base.replace(/\b\w/g,function(m){return m.toUpperCase();}):'New claimant';
-  var n=uploadedCases.length+1;
-  var c={ref:'UP-2026-'+String(n).padStart(4,'0'),assignedTo:uid,claimant:claimant,solicitor:'Uploaded LOC',flight:'HC TBD — route pending',flightNum:'HC TBD',dep:'TBD',arr:'TBD',flightDate:'Date pending',value:'TBC',type:'EC261 — New claim',locDate:'Today',stage:'intake',cat:'A',jurisdiction:(USERS[uid]&&USERS[uid].lang==='fr')?'france':(USERS[uid]&&USERS[uid].lang==='es')?'spain':'england-wales',lang:(USERS[uid]&&USERS[uid].lang)||'en',disruptionType:'Pending review',classification:'PENDING',evidencePct:0,cprDaysLeft:21,points:[],loaStatus:'',triageNote:'Uploaded from '+file.name,activity:[{text:'LOC uploaded — extraction ready',time:'Just now',type:'upload'}],uploadedFile:file.name};
-  uploadedCases.unshift(c);
-  selectedRef=c.ref;
-  try{sessionStorage.setItem('261c_case',JSON.stringify(c));}catch(e){}
-  render();
+  intakeTab='new';
+  startExtraction(buildExtractionFromFile(file));
   event.target.value='';
 }
+
 function handleSupportUpload(event){
   var file=event.target.files&&event.target.files[0];
   if(!file)return;
   pendingSupportFile={name:file.name,size:file.size,type:file.type||'Document'};
+  depositMessage='';
   render();
   event.target.value='';
 }
+
 function setDepositSearch(v){depositSearch=v||'';render();}
-function depositIntoCase(ref){
-  if(!pendingSupportFile)return;
-  var c=userCases().find(function(x){return x.ref===ref;});
-  if(!c)return;
-  var doc={
-    ref:ref,
-    name:pendingSupportFile.name,
-    type:pendingSupportFile.type,
-    size:pendingSupportFile.size,
-    summary:buildDocSummary(pendingSupportFile,c),
-    time:'Just now'
-  };
-  depositedDocs.unshift(doc);
-  pendingSupportFile=null;
-  selectedRef=ref;
-  try{sessionStorage.setItem('261c_case',JSON.stringify(c));}catch(e){}
-  render();
-}
+function selectDepositCase(ref){depositSelectedRef=ref;render();}
+
 function buildDocSummary(file,c){
   var lower=file.name.toLowerCase();
   var kind=lower.indexOf('metar')>=0||lower.indexOf('weather')>=0?'weather evidence'
@@ -247,75 +316,263 @@ function buildDocSummary(file,c){
     :lower.indexOf('eurocontrol')>=0||lower.indexOf('atfm')>=0?'ATC restriction evidence'
     :lower.indexOf('letter')>=0||lower.indexOf('loc')>=0?'claim correspondence'
     :'supporting evidence';
-  return 'AI summary: '+file.name+' has been scanned as '+kind+' for '+c.ref+'. Key fields were linked to '+c.claimant+' / '+c.flightNum+' and queued for legal review in the case file.';
+  return file.name+' scanned as '+kind+' and linked to '+c.claimant+' / '+c.flightNum;
 }
+
+function attachToCase(){
+  if(!pendingSupportFile||!depositSelectedRef)return;
+  var c=STATE.getCase(depositSelectedRef);
+  if(!c)return;
+  var summary=buildDocSummary(pendingSupportFile,c);
+  STATE.appendActivity(depositSelectedRef,{
+    text:'Document attached: '+pendingSupportFile.name+' — '+summary,
+    time:'Just now',
+    type:'upload'
+  });
+  depositMessage='Attached '+pendingSupportFile.name+' to '+depositSelectedRef;
+  pendingSupportFile=null;
+  selectedRef=depositSelectedRef;
+  try{sessionStorage.setItem('261c_case',JSON.stringify(STATE.getCase(depositSelectedRef)));}catch(e){}
+  showToast(depositMessage);
+  render();
+}
+
 function selectCase(ref){
   selectedRef=ref;
-  var c=intakeCases().find(function(x){return x.ref===ref;});
+  locFlow='idle';
+  var c=STATE.getCase(ref);
   if(c){try{sessionStorage.setItem('261c_case',JSON.stringify(c));}catch(e){}}
   render();
 }
-function startTriage(ref){
-  openCase(ref,'triage');
+
+function beginNewLoc(){
+  locFlow='idle';
+  extracted=null;
+  createdRef='';
+  selectedRef='';
+  intakeTab='new';
+  render();
 }
-function render(){
-  var cases=intakeCases().sort(function(a,b){return a.cprDaysLeft-b.cprDaysLeft;});
+
+function readExtractedForm(){
+  var g=function(id){var el=document.getElementById(id);return el?el.value.trim():'';};
+  return{
+    sourceFile:extracted&&extracted.sourceFile?extracted.sourceFile:'LOC.pdf',
+    claimant:g('ext-claimant'),
+    solicitor:g('ext-solicitor'),
+    flightNum:g('ext-flightNum'),
+    dep:g('ext-dep'),
+    arr:g('ext-arr'),
+    flightDate:g('ext-flightDate'),
+    locDate:g('ext-locDate'),
+    disruptionType:g('ext-disruption'),
+    jurisdiction:g('ext-jurisdiction'),
+    value:g('ext-value')
+  };
+}
+
+function confirmCreateCase(){
+  var data=readExtractedForm();
+  if(!data.claimant||!data.flightNum){showToast('Claimant and flight number are required.');return;}
+  var assignEl=document.getElementById('ext-assignee');
+  var uid=assignEl?assignEl.value:activeUserId();
+  var u=USERS[uid]||USERS.SB;
+  var ref=STATE.generateNextRef();
+  var airline=getCaseAirline({dep:data.dep,arr:data.arr});
+  var flight=data.flightNum+' — '+data.dep+' → '+data.arr;
+  var lang=(JURISDICTIONS[data.jurisdiction]||JURISDICTIONS['england-wales']).lang||'en';
+  var newCase={
+    ref:ref,
+    assignedTo:uid,
+    claimant:data.claimant,
+    solicitor:data.solicitor,
+    flight:flight,
+    flightNum:data.flightNum,
+    dep:data.dep,
+    arr:data.arr,
+    flightDate:data.flightDate,
+    value:data.value,
+    type:'EC261 — '+data.disruptionType,
+    locDate:data.locDate,
+    stage:'intake',
+    cat:'A',
+    jurisdiction:data.jurisdiction,
+    lang:lang,
+    disruptionType:data.disruptionType,
+    classification:'PENDING',
+    evidencePct:0,
+    cprDaysLeft:28,
+    points:[],
+    loaStatus:'',
+    triageNote:'New intake from '+data.sourceFile,
+    activity:[
+      {text:'LOC received — '+data.sourceFile,time:'Just now',type:'create'},
+      {text:'AI extraction complete — pending confirmation',time:'Just now',type:'ai'}
+    ]
+  };
+  STATE.addCase(newCase);
+  createdRef=ref;
+  selectedRef=ref;
+  locFlow='created';
+  extracted=null;
+  try{sessionStorage.setItem('261c_case',JSON.stringify(newCase));}catch(e){}
+  showToast('Case '+ref+' created and assigned to '+u.name);
+  render();
+}
+
+function showToast(msg){
+  var old=document.getElementById('toast');
+  if(old)old.remove();
+  var el=document.createElement('div');
+  el.id='toast';
+  el.className='toast';
+  el.textContent=msg;
+  document.body.appendChild(el);
+  setTimeout(function(){if(el.parentNode)el.remove();},4500);
+}
+
+function renderSidebar(){
+  var cases=intakeCases();
   var list=document.getElementById('case-list');
-  var uid=getActiveUser();
+  var uid=activeUserId();
   var u=USERS[uid]||USERS.SB;
   document.querySelector('.lp-title').textContent=t('intakeQueue');
   document.getElementById('lp-sub').textContent=cases.length+' case'+(cases.length!==1?'s':'')+' assigned to '+u.name;
   if(!cases.length){
-    selectedRef='';
     list.innerHTML='<div class="case-list-empty"><i class="ti ti-inbox"></i><div>'+t('noQueue')+'</div></div>';
-    document.getElementById('right-panel').innerHTML='<div class="rp-empty"><i class="ti ti-inbox"></i><p>No intake cases are assigned to '+escapeHtml(u.name)+'. Upload a letter of claim to create a demo intake item.</p></div>';
     return;
   }
-  if(!selectedRef||!cases.some(function(c){return c.ref===selectedRef;})) selectedRef=cases[0].ref;
+  if(selectedRef&&!cases.some(function(c){return c.ref===selectedRef;})){
+    if(locFlow!=='review'&&locFlow!=='extracting')selectedRef=cases[0].ref;
+  }
   list.innerHTML=cases.map(function(c){
     var urg=daysUrgency(c.cprDaysLeft);
-    return '<div class="case-row '+(c.ref===selectedRef?'active':'')+'" onclick="selectCase(\''+c.ref+'\')">'
-      +'<div class="cr-icon '+(c.uploadedFile?'new':'')+'"><i class="ti '+(c.uploadedFile?'ti-upload':'ti-file-text')+'"></i></div>'
+    var isNew=c.ref===createdRef;
+    return '<div class="case-row '+(c.ref===selectedRef?'active':'')+'" onclick="selectCase(\''+escapeHtml(c.ref)+'\')">'
+      +'<div class="cr-icon '+(isNew?'new':'')+'"><i class="ti '+(isNew?'ti-sparkles':'ti-file-text')+'"></i></div>'
       +'<div style="min-width:0"><div class="cr-ref">'+escapeHtml(c.ref)+'</div><div class="cr-name">'+escapeHtml(c.claimant)+'</div><div class="cr-meta"><span>'+escapeHtml(c.flightNum)+'</span><span class="cr-badge">'+escapeHtml(c.cat)+'</span></div></div>'
       +'<div class="cr-right"><span class="cr-days days-'+urg+'">'+urgencyLabel(c.cprDaysLeft)+'</span></div></div>';
   }).join('');
-  var c=cases.find(function(x){return x.ref===selectedRef;})||cases[0];
-  var J=getJurisdiction(c.jurisdiction);
-  var candidates=userCases().filter(function(x){
-    var q=depositSearch.toLowerCase();
-    return !q||x.ref.toLowerCase().indexOf(q)>=0||x.claimant.toLowerCase().indexOf(q)>=0||(x.flightNum||'').toLowerCase().indexOf(q)>=0;
-  }).slice(0,6);
-  var docs=depositedDocs.filter(function(d){return d.ref===c.ref;});
-  var points=(c.points&&c.points.length)?c.points:[
-    {n:1,claim:'Passenger and flight details extracted',evidenceStatus:'amber',evidenceDoc:'Needs legal review'},
-    {n:2,claim:'Disruption reason identified as '+(c.disruptionType||'pending'),evidenceStatus:'amber',evidenceDoc:'Confirm in triage'},
-    {n:3,claim:'CPR response clock started',evidenceStatus:'green',evidenceDoc:urgencyLabel(c.cprDaysLeft)}
-  ];
-  var tabBar='<div style="display:flex;gap:6px;padding:12px 16px 0;border-bottom:1px solid var(--border);background:var(--surface)"><button class="lp-upload-btn" style="width:auto;margin:0;border-style:solid;background:'+(intakeTab==='new'?'var(--blue-faint)':'var(--surface2)')+';color:'+(intakeTab==='new'?'var(--blue-text)':'var(--text2)')+'" onclick="setIntakeTab(\'new\')">New LOC</button><button class="lp-upload-btn" style="width:auto;margin:0;border-style:solid;background:'+(intakeTab==='deposit'?'var(--blue-faint)':'var(--surface2)')+';color:'+(intakeTab==='deposit'?'var(--blue-text)':'var(--text2)')+'" onclick="setIntakeTab(\'deposit\')">Add to existing case</button></div>';
-  var newPanel=intakeTab==='new'?('<div class="cw">'
-    +'<div class="cw-header"><div class="cw-ref">'+escapeHtml(c.ref)+'</div><div style="display:flex;align-items:flex-start;gap:10px"><div style="flex:1"><div class="cw-name">'+escapeHtml(c.claimant)+' v. TestAirways</div><div class="cw-meta"><span><i class="ti ti-building"></i>'+escapeHtml(c.solicitor)+'</span><span><i class="ti ti-plane"></i>'+escapeHtml(c.flight)+'</span><span><i class="ti ti-world"></i>'+J.flag+' '+escapeHtml(J.name)+'</span><span><i class="ti ti-cash"></i>'+escapeHtml(c.value)+'</span></div></div><span class="cw-badge" style="background:'+stageBg('intake')+';color:'+stageColor('intake')+'">'+t('stage_intake')+'</span></div></div>'
-    +'<div class="section-card"><div class="sc-header"><i class="ti ti-scan"></i><div class="sc-title">Extracted claim summary</div></div><div class="sc-body"><div class="field-grid">'
-    +fieldHtml('Claim type',c.type)+fieldHtml('LOC received',c.locDate)+fieldHtml('Disruption',c.disruptionType)+fieldHtml('Jurisdiction',J.name)+'</div></div></div>'
-    +'<div class="section-card"><div class="sc-header"><i class="ti ti-list-check"></i><div class="sc-title">Initial issues for triage</div></div><div class="sc-body">'+points.map(function(p){var cls=p.evidenceStatus==='green'?'g':p.evidenceStatus==='red'?'r':'a';return '<div class="point-item"><div class="pt-dot pt-'+cls+'"></div><div class="pt-n">'+p.n+'</div><div style="flex:1"><div class="pt-claim">'+escapeHtml(p.claim)+'</div><div class="pt-ev">'+escapeHtml(p.evidenceDoc||'Pending')+'</div></div><span class="pt-status ps-'+cls+'">'+(cls==='g'?'Ready':cls==='r'?'Missing':'Review')+'</span></div>';}).join('')+'</div></div>'
-    +'<div class="section-card"><div class="sc-header"><i class="ti ti-file-search"></i><div class="sc-title">Document deposit and AI summary</div></div><div class="sc-body">'
-    +'<div style="font-size:12px;color:var(--text2);line-height:1.5;margin-bottom:10px">Upload supporting documents, search for the correct existing case, and deposit the file into that case file for AI scanning and legal review.</div>'
-    +'<div class="field-grid" style="margin-bottom:10px">'+fieldHtml('Selected document',pendingSupportFile?pendingSupportFile.name:'No document selected')+fieldHtml('Current case documents',docs.length+' deposited')+'</div>'
-    +'<div style="display:flex;gap:8px;margin-bottom:10px"><button class="btn-advance" style="width:auto;padding:7px 12px" onclick="triggerSupportUpload()"><i class="ti ti-upload"></i> Choose document</button><input class="chk-text" style="max-width:none;flex:1" placeholder="Search case ref, claimant, or flight" value="'+escapeHtml(depositSearch)+'" oninput="setDepositSearch(this.value)"></div>'
-    +(pendingSupportFile?'<div style="border:1px solid var(--border);border-radius:var(--r2);overflow:hidden;margin-bottom:10px">'+candidates.map(function(x){return '<div class="point-item" style="padding:9px 10px"><div class="pt-dot pt-a"></div><div style="flex:1"><div class="pt-claim">'+escapeHtml(x.ref)+' · '+escapeHtml(x.claimant)+'</div><div class="pt-ev">'+escapeHtml(x.flightNum)+' · '+escapeHtml(t('stage_'+x.stage)||x.stage)+'</div></div><button class="chk-save" onclick="depositIntoCase(&quot;'+escapeHtml(x.ref)+'&quot;)">Deposit here</button></div>';}).join('')+'</div>':'')
-    +(docs.length?docs.map(function(d){return '<div style="background:var(--green-faint);border:1px solid #BBF7D0;border-radius:var(--r);padding:9px 10px;margin-top:6px"><div style="font-size:12px;font-weight:500;color:var(--green);margin-bottom:3px"><i class="ti ti-file-check"></i> '+escapeHtml(d.name)+'</div><div style="font-size:11px;color:var(--text2);line-height:1.5">'+escapeHtml(d.summary)+'</div></div>';}).join(''):'<div style="font-size:11px;color:var(--text3)">No supporting documents deposited into this case yet.</div>')
-    +'</div></div>'
-    +'<div class="advance-bar"><div class="adv-text">Case created · CPR clock started · Hand off to triage.</div><button class="btn-advance" onclick="startTriage(\''+c.ref+'\')"><i class="ti ti-arrow-right"></i> Start triage</button></div>'
-    +'</div>'):'';
-  var depositPanel=intakeTab==='deposit'?('<div class="cw"><div class="section-card"><div class="sc-header"><i class="ti ti-file-search"></i><div class="sc-title">Deposit document into existing case</div></div><div class="sc-body">'
-    +'<div style="font-size:12px;color:var(--text2);line-height:1.5;margin-bottom:10px">Upload supporting documents, search for the correct case, and deposit the file for AI scanning.</div>'
-    +'<div style="display:flex;gap:8px;margin-bottom:10px"><button class="btn-advance" style="width:auto;padding:7px 12px" onclick="triggerSupportUpload()"><i class="ti ti-upload"></i> Choose document</button><input class="chk-text" style="max-width:none;flex:1" placeholder="Search case ref, claimant, or flight" value="'+escapeHtml(depositSearch)+'" oninput="setDepositSearch(this.value)"></div>'
-    +(pendingSupportFile?'<div style="border:1px solid var(--border);border-radius:var(--r2);overflow:hidden">'+candidates.map(function(x){return '<div class="point-item" style="padding:9px 10px"><div class="pt-dot pt-a"></div><div style="flex:1"><div class="pt-claim">'+escapeHtml(x.ref)+' · '+escapeHtml(x.claimant)+'</div><div class="pt-ev">'+escapeHtml(x.flightNum)+'</div></div><button class="chk-save" onclick="depositIntoCase(&quot;'+escapeHtml(x.ref)+'&quot;)">Deposit here</button></div>';}).join('')+'</div>':'<div style="font-size:11px;color:var(--text3)">Select a document to begin.</div>')
-    +'</div></div></div>'):'';
-  document.getElementById('right-panel').innerHTML=tabBar+(newPanel||depositPanel);
-  if(typeof renderGlobalNav==='function')renderGlobalNav();
 }
-function fieldHtml(label,value){return '<div class="field-item"><div class="fi-label">'+escapeHtml(label)+'</div><div class="fi-val">'+escapeHtml(value||'Pending')+'</div></div>';}
-window.addEventListener('load',render);
+
+function renderTabBar(){
+  return '<div class="intake-tabs">'
+    +'<button class="intake-tab'+(intakeTab==='new'?' active':'')+'" onclick="setIntakeTab(\'new\')">New LOC</button>'
+    +'<button class="intake-tab'+(intakeTab==='deposit'?' active':'')+'" onclick="setIntakeTab(\'deposit\')">Add to existing case</button>'
+    +'</div>';
+}
+
+function renderUploadZone(){
+  return renderTabBar()
+    +'<div class="upload-zone" onclick="triggerUpload()"><i class="ti ti-upload"></i><h3>Upload letter of claim</h3><p>PDF, Word or text file — AI will extract claimant, flight and claim details</p><button class="btn-demo" onclick="event.stopPropagation();useDemoLoc()"><i class="ti ti-file-text"></i> Use demo LOC (Brennan v. Horizon)</button></div>';
+}
+
+function renderExtracting(){
+  return renderTabBar()
+    +'<div class="extract-loading"><div class="extract-spinner"></div><div class="extract-title">AI extracting claim details…</div><div class="extract-sub">Reading '+escapeHtml(extracted&&extracted.sourceFile||'document')+'</div></div>';
+}
+
+function formInput(id,label,value,type){
+  type=type||'text';
+  return '<div class="form-field"><label class="form-label" for="'+id+'">'+escapeHtml(label)+'</label><input class="form-input" id="'+id+'" type="'+type+'" value="'+escapeHtml(value||'')+'"></div>';
+}
+
+function renderReviewForm(){
+  var e=extracted||{};
+  var jurOpts=JURISDICTION_OPTIONS.map(function(j){
+    return '<option value="'+j.id+'"'+(e.jurisdiction===j.id?' selected':'')+'>'+escapeHtml(j.label)+'</option>';
+  }).join('');
+  var disOpts=DISRUPTION_TYPES.map(function(d){
+    return '<option value="'+d+'"'+(e.disruptionType===d?' selected':'')+'>'+escapeHtml(d)+'</option>';
+  }).join('');
+  return renderTabBar()
+    +'<div class="cw"><div class="section-card"><div class="sc-header"><i class="ti ti-scan"></i><div class="sc-title">Extracted claim summary</div></div><div class="sc-body">'
+    +'<div style="font-size:11px;color:var(--text3);margin-bottom:12px">Source: '+escapeHtml(e.sourceFile||'LOC')+' — review and edit before creating the case.</div>'
+    +'<div class="field-grid">'
+    +formInput('ext-claimant','Claimant',e.claimant)
+    +formInput('ext-solicitor','Solicitor',e.solicitor)
+    +formInput('ext-flightNum','Flight number',e.flightNum)
+    +formInput('ext-dep','Departure',e.dep)
+    +formInput('ext-arr','Arrival',e.arr)
+    +formInput('ext-flightDate','Flight date',e.flightDate)
+    +formInput('ext-locDate','LOC date',e.locDate)
+    +'<div class="form-field"><label class="form-label" for="ext-disruption">Disruption type</label><select class="form-select" id="ext-disruption">'+disOpts+'</select></div>'
+    +'<div class="form-field"><label class="form-label" for="ext-jurisdiction">Jurisdiction</label><select class="form-select" id="ext-jurisdiction">'+jurOpts+'</select></div>'
+    +formInput('ext-value','Claim value',e.value)
+    +'<div class="form-field"><label class="form-label" for="ext-assignee">Assign to</label><select class="form-select" id="ext-assignee">'+assigneeOptionsHtml(activeUserId())+'</select></div>'
+    +'</div>'
+    +'<div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn-primary" onclick="confirmCreateCase()"><i class="ti ti-check"></i> Confirm &amp; create case</button><button class="btn-secondary" onclick="beginNewLoc()">Cancel</button></div>'
+    +'</div></div></div>';
+}
+
+function renderSuccess(){
+  var u=USERS[activeUserId()]||USERS.SB;
+  return renderTabBar()
+    +'<div class="success-panel"><div class="success-icon"><i class="ti ti-check"></i></div>'
+    +'<div class="success-title">Case '+escapeHtml(createdRef)+' created</div>'
+    +'<div class="success-sub">Assigned to '+escapeHtml(u.name)+' · Stage: Intake · CPR clock: 28 days</div>'
+    +'<div class="success-actions">'
+    +'<a class="btn-primary" href="case.html?ref='+encodeURIComponent(createdRef)+'"><i class="ti ti-arrow-right"></i> Open case</a>'
+    +'<a class="btn-secondary" href="cases.html"><i class="ti ti-briefcase"></i> Back to cases</a>'
+    +'<button class="btn-secondary" onclick="beginNewLoc()"><i class="ti ti-plus"></i> Upload another LOC</button>'
+    +'</div></div>';
+}
+
+function renderSelectedPreview(){
+  var c=STATE.getCase(selectedRef);
+  if(!c)return renderUploadZone();
+  var J=getJurisdiction(c.jurisdiction);
+  return renderTabBar()
+    +'<div class="cw"><div class="cw-header"><div class="cw-ref">'+escapeHtml(c.ref)+'</div><div style="display:flex;align-items:flex-start;gap:10px"><div style="flex:1"><div class="cw-name">'+escapeHtml(c.claimant)+' v. '+escapeHtml(getCaseAirline(c))+'</div><div class="cw-meta"><span><i class="ti ti-building"></i>'+escapeHtml(c.solicitor)+'</span><span><i class="ti ti-plane"></i>'+escapeHtml(c.flight)+'</span><span><i class="ti ti-world"></i>'+J.flag+' '+escapeHtml(J.name)+'</span><span><i class="ti ti-cash"></i>'+escapeHtml(c.value)+'</span></div></div><span class="cw-badge" style="background:'+stageBg('intake')+';color:'+stageColor('intake')+'">'+t('stage_intake')+'</span></div></div>'
+    +'<div class="advance-bar"><div class="adv-text">CPR: '+urgencyLabel(c.cprDaysLeft)+' · Ready for triage when extraction is confirmed.</div><button class="btn-advance" onclick="openCase(\''+escapeHtml(c.ref)+'\',\'triage\')"><i class="ti ti-arrow-right"></i> Start triage</button></div>'
+    +'<div style="text-align:center;padding:8px 0"><button class="btn-secondary" onclick="beginNewLoc()"><i class="ti ti-upload"></i> Upload new LOC</button></div></div>';
+}
+
+function renderDepositPanel(){
+  var q=depositSearch.toLowerCase();
+  var matches=openCases().filter(function(c){
+    return !q||c.ref.toLowerCase().indexOf(q)>=0||c.claimant.toLowerCase().indexOf(q)>=0||(c.flightNum||'').toLowerCase().indexOf(q)>=0||(c.flight||'').toLowerCase().indexOf(q)>=0;
+  });
+  if(!depositSelectedRef&&matches.length)depositSelectedRef=matches[0].ref;
+  var options=matches.length?matches.map(function(c){
+    return '<div class="deposit-option'+(c.ref===depositSelectedRef?' selected':'')+'" onclick="selectDepositCase(\''+escapeHtml(c.ref)+'\')"><div style="flex:1"><div style="font-size:12px;font-weight:500">'+escapeHtml(c.ref)+' · '+escapeHtml(c.claimant)+'</div><div style="font-size:11px;color:var(--text3)">'+escapeHtml(c.flightNum)+' · '+escapeHtml(t('stage_'+c.stage)||c.stage)+'</div></div><i class="ti ti-chevron-right" style="color:var(--text3)"></i></div>';
+  }).join(''):'<div class="deposit-empty">No open cases match your search.</div>';
+  return renderTabBar()
+    +'<div class="cw"><div class="section-card"><div class="sc-header"><i class="ti ti-file-plus"></i><div class="sc-title">Add document to existing case</div></div><div class="sc-body">'
+    +'<div style="font-size:12px;color:var(--text2);line-height:1.5;margin-bottom:12px">Upload a supporting document and attach it to an open case activity log.</div>'
+    +'<div style="display:flex;gap:8px;margin-bottom:10px"><button class="btn-primary" style="width:auto" onclick="triggerSupportUpload()"><i class="ti ti-upload"></i> Choose document</button>'
+    +'<input class="form-input" style="flex:1" placeholder="Search case ref, claimant, or flight…" value="'+escapeHtml(depositSearch)+'" oninput="setDepositSearch(this.value)"></div>'
+    +(pendingSupportFile?'<div class="field-item" style="margin-bottom:10px"><div class="fi-label">Selected document</div><div class="fi-val">'+escapeHtml(pendingSupportFile.name)+'</div></div>':'<div style="font-size:11px;color:var(--text3);margin-bottom:10px">No document selected yet.</div>')
+    +'<div class="deposit-select-wrap"><div class="fi-label" style="margin-bottom:6px">Open cases</div><div class="deposit-results">'+options+'</div></div>'
+    +(depositMessage?'<div class="deposit-attached"><i class="ti ti-check"></i> '+escapeHtml(depositMessage)+'</div>':'')
+    +'<div style="margin-top:12px"><button class="btn-primary" onclick="attachToCase()"'+(pendingSupportFile&&depositSelectedRef?'':' disabled style="opacity:0.5;cursor:not-allowed"')+'><i class="ti ti-paperclip"></i> Attach to selected case</button></div>'
+    +'</div></div></div>';
+}
+
+function render(){
+  renderSidebar();
+  var panel=document.getElementById('right-panel');
+  if(intakeTab==='deposit'){
+    panel.innerHTML=renderDepositPanel();
+  }else if(locFlow==='extracting'){
+    panel.innerHTML=renderExtracting();
+  }else if(locFlow==='review'){
+    panel.innerHTML=renderReviewForm();
+  }else if(locFlow==='created'){
+    panel.innerHTML=renderSuccess();
+  }else if(selectedRef){
+    panel.innerHTML=renderSelectedPreview();
+  }else{
+    panel.innerHTML=renderUploadZone();
+  }
+  if(typeof renderGlobalNav==='function')renderGlobalNav();
+  if(typeof renderUserDropdownLabels==='function')renderUserDropdownLabels();
+}
+
+window.addEventListener('load',function(){
+  if(selectedRef&&STATE.getCase(selectedRef))locFlow='idle';
+  render();
+});
 </script>
 
 
