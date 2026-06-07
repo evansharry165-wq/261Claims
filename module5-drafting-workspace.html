@@ -195,28 +195,36 @@ const I18N={
   fr:{dashboard:'Tableau de bord',intake:'Réception',cases:'Dossiers',cpr:'Délais',evidence:'Preuves',drafting:'Rédaction',mi:'Reporting',knowledge:'Ressources',myCases:'Mes dossiers',intakeQueue:'File de réception',cprWatch:'Surveillance délais',myPipeline:'Mon pipeline',legalNews:'Actualités juridiques',networkOps:'Réseau & opérations',liveSources:'Sources en direct',goodMorning:'Bonjour',goodAfternoon:'Bon après-midi',goodEvening:'Bonsoir',noUrgentDeadlines:'Aucun délai urgent cette semaine',evidenceProgress:'Avancement des preuves',cprDeadlines:'Délais de procédure',viewAll:'Voir tout',uploadLOC:'Déposer une lettre de réclamation',noQueue:'Aucun dossier dans votre file.',stage_intake:'Réception',stage_triage:'Triage',stage_cpr:'Délais',stage_evidence:'Preuves',stage_drafting:'Rédaction',stage_defence:'Défense',stage_resolve:'Résolu'},
   es:{dashboard:'Panel',intake:'Recepción',cases:'Casos',cpr:'Plazos',evidence:'Pruebas',drafting:'Redacción',mi:'Informes',knowledge:'Recursos',myCases:'Mis casos',intakeQueue:'Cola de recepción',cprWatch:'Vigilancia de plazos',myPipeline:'Mi flujo de trabajo',legalNews:'Noticias jurídicas',networkOps:'Red & operaciones',liveSources:'Fuentes en vivo',goodMorning:'Buenos días',goodAfternoon:'Buenas tardes',goodEvening:'Buenas noches',noUrgentDeadlines:'Sin plazos urgentes esta semana',evidenceProgress:'Progreso de pruebas',cprDeadlines:'Plazos procesales',viewAll:'Ver todo',uploadLOC:'Cargar carta de reclamación',noQueue:'No hay casos en su cola.',stage_intake:'Recepción',stage_triage:'Triaje',stage_cpr:'Plazos',stage_evidence:'Pruebas',stage_drafting:'Redacción',stage_defence:'Defensa',stage_resolve:'Resuelto'},
 };
+const SPANISH_AIRPORTS=['BCN','ALC','PMI'];
+const HORIZON_AIRWAYS='Horizon Airways';
+const SOLERO_AIR='Solero Air';
 const ALL_CASES=[
-  {ref:'AC-2026-0089',assignedTo:'SB',claimant:'Daniel Hartley',solicitor:'Pemberton & Associates',flight:'HC 1184 — LTN → BCN',flightNum:'HC 1184',dep:'LTN',arr:'BCN',flightDate:'14 March 2026',value:'£39,000+',type:'EC261 — Diversion',locDate:'22 May 2026',stage:'evidence',cat:'C',jurisdiction:'england-wales',lang:'en',disruptionType:'Weather',classification:'ESCALATE',evidencePct:35,cprDaysLeft:3,points:[{n:1,claim:'Delay — Art 7(1)(a)',evidenceStatus:'green',evidenceDoc:'TOPS confirmed'},{n:2,claim:'Extraordinary circumstances — weather',evidenceStatus:'amber',evidenceDoc:'METAR/SIGMET pending'},{n:3,claim:'Article 9 — duty of care',evidenceStatus:'red',evidenceDoc:'Valencia ground records outstanding'},{n:4,claim:'Consequential loss — £38,250',evidenceStatus:'red',evidenceDoc:'No counter-evidence'},{n:5,claim:'Travel & subsistence — £141.80',evidenceStatus:'amber',evidenceDoc:'Receipts pending'}],loaStatus:'approved',triageNote:'Complex. Escalate on consequential loss.',activity:[{text:'Evidence module opened',time:'Today 09:14',type:'create'},{text:'AI triage — ESCALATE flagged',time:'Yesterday 16:30',type:'ai'}]},
+  {ref:'AC-2026-0089',assignedTo:'SB',claimant:'Daniel Hartley',solicitor:'Pemberton & Associates',flight:'HC 1184 — LTN → BCN',flightNum:'HC 1184',dep:'LTN',arr:'BCN',flightDate:'14 March 2026',value:'£3,800',type:'EC261 — Diversion',locDate:'22 May 2026',stage:'evidence',cat:'C',jurisdiction:'england-wales',lang:'en',disruptionType:'Weather',classification:'ESCALATE',evidencePct:35,cprDaysLeft:3,points:[{n:1,claim:'Delay — Art 7(1)(a)',evidenceStatus:'green',evidenceDoc:'TOPS confirmed'},{n:2,claim:'Extraordinary circumstances — weather',evidenceStatus:'amber',evidenceDoc:'METAR/SIGMET pending'},{n:3,claim:'Article 9 — duty of care',evidenceStatus:'red',evidenceDoc:'Valencia ground records outstanding'},{n:4,claim:'Consequential loss — £2,550',evidenceStatus:'red',evidenceDoc:'No counter-evidence'},{n:5,claim:'Travel & subsistence — £141.80',evidenceStatus:'amber',evidenceDoc:'Receipts pending'}],loaStatus:'approved',triageNote:'Complex. Escalate on consequential loss.',activity:[{text:'Evidence module opened',time:'Today 09:14',type:'create'},{text:'AI triage — ESCALATE flagged',time:'Yesterday 16:30',type:'ai'}]},
   {ref:'AC-2026-0101',assignedTo:'SB',claimant:'Angela Foster',solicitor:'Clarke & Partners',flight:'HC 203 — LGW → ALC',flightNum:'HC 203',dep:'LGW',arr:'ALC',flightDate:'20 May 2026',value:'€250',type:'EC261 — Weather delay',locDate:'30 May 2026',stage:'intake',cat:'A',jurisdiction:'england-wales',lang:'en',disruptionType:'Weather',classification:'DEFEND',evidencePct:0,cprDaysLeft:21,points:[],loaStatus:'',triageNote:'',activity:[{text:'LOC received',time:'Today 07:55',type:'create'}]},
-  {ref:'AC-2026-0091',assignedTo:'JP',claimant:'Rebecca Walsh',solicitor:'Clarke & Partners',flight:'HC 307 — MAN → AMS',flightNum:'HC 307',dep:'MAN',arr:'AMS',flightDate:'9 April 2026',value:'€250',type:'EC261 — ATC delay',locDate:'4 June 2026',stage:'triage',cat:'A',jurisdiction:'england-wales',lang:'en',disruptionType:'ATC Restrictions',classification:'DEFEND',evidencePct:0,cprDaysLeft:21,points:[{n:1,claim:'Delay 3hrs 36mins — Art 7(1)(a)',evidenceStatus:'green',evidenceDoc:'Confirmed via TOPS'},{n:2,claim:'Extraordinary circumstances — ATC ATFM',evidenceStatus:'amber',evidenceDoc:'Eurocontrol data requested'},{n:3,claim:'Art 9 — refreshments not provided',evidenceStatus:'red',evidenceDoc:'Ground records required'},{n:4,claim:'Expenses — £18.40',evidenceStatus:'amber',evidenceDoc:'Receipts with LOC'}],loaStatus:'',triageNote:'',activity:[{text:'LOC uploaded — triage pending',time:'Today 10:30',type:'create'}]},
-  {ref:'AC-2026-0076',assignedTo:'JP',claimant:'Sarah Taylor',solicitor:'Thompsons Solicitors',flight:'HC 330 — LGW → ALC',flightNum:'HC 330',dep:'LGW',arr:'ALC',flightDate:'28 April 2026',value:'€400',type:'EC261 — Weather delay',locDate:'22 May 2026',stage:'drafting',cat:'B',jurisdiction:'england-wales',lang:'en',disruptionType:'Weather',classification:'DEFEND',evidencePct:100,cprDaysLeft:7,points:[{n:1,claim:'Delay 4hrs 10mins — Art 7(1)(b)',evidenceStatus:'green',evidenceDoc:'TOPS confirmed'},{n:2,claim:'Extraordinary circumstances — weather',evidenceStatus:'green',evidenceDoc:'METAR/SIGMET confirmed'}],loaStatus:'sent',triageNote:'Clean weather case. Evidence complete. Draft LOR.',activity:[{text:'Evidence complete — LOR ready',time:'28 May 16:00',type:'stage'}]},
-  {ref:'AC-2026-0094',assignedTo:'KR',claimant:'Thomas Morrison',solicitor:'Irwin Mitchell LLP',flight:'HC 442 — LGW → BCN',flightNum:'HC 442',dep:'LGW',arr:'BCN',flightDate:'15 May 2026',value:'€250',type:'EC261 — ATC delay',locDate:'28 May 2026',stage:'intake',cat:'A',jurisdiction:'england-wales',lang:'en',disruptionType:'ATC Restrictions',classification:'DEFEND',evidencePct:0,cprDaysLeft:15,points:[],loaStatus:'',triageNote:'',activity:[{text:'LOC received',time:'28 May 08:00',type:'create'}]},
-  {ref:'AC-2026-0079',assignedTo:'KR',claimant:'James Singh',solicitor:'Slater & Gordon',flight:'HC 556 — LHR → DUB',flightNum:'HC 556',dep:'LHR',arr:'DUB',flightDate:'10 May 2026',value:'€250',type:'EC261 — ATC delay',locDate:'20 May 2026',stage:'evidence',cat:'A',jurisdiction:'england-wales',lang:'en',disruptionType:'ATC Restrictions',classification:'DEFEND',evidencePct:45,cprDaysLeft:18,points:[{n:1,claim:'Delay 3hrs 15mins — Art 7(1)(a)',evidenceStatus:'green',evidenceDoc:'TOPS confirmed'},{n:2,claim:'Extraordinary circumstances — ATC',evidenceStatus:'amber',evidenceDoc:'Eurocontrol pending'}],loaStatus:'sent',triageNote:'Straightforward ATC.',activity:[{text:'Evidence pack opened',time:'22 May 11:00',type:'action'}]},
-  {ref:'FR-2026-0012',assignedTo:'MD',claimant:'Jean-Pierre Moreau',solicitor:'Cabinet Lefèvre',flight:'HC 742 — CDG → LTN',flightNum:'HC 742',dep:'CDG',arr:'LTN',flightDate:'3 March 2026',value:'250 €',type:'CE 261/2004 — Retard',locDate:'12 Mai 2026',stage:'triage',cat:'A',jurisdiction:'france',lang:'fr',disruptionType:'ATC Restrictions',classification:'DEFEND',evidencePct:0,cprDaysLeft:48,points:[{n:1,claim:'Retard de 3h42 — Art 7(1)(a)',evidenceStatus:'green',evidenceDoc:'Données TOPS confirmées'},{n:2,claim:'Circonstances extraordinaires — ATC',evidenceStatus:'amber',evidenceDoc:'Données Eurocontrol demandées'},{n:3,claim:'Art 9 — absence de rafraîchissements',evidenceStatus:'red',evidenceDoc:'Registres requis'}],loaStatus:'',triageNote:'',activity:[{text:'Lettre de réclamation reçue',time:'12 mai 09:00',type:'create'}]},
-  {ref:'FR-2026-0018',assignedTo:'MD',claimant:'Sophie Blanchard',solicitor:'Maître Rousseau',flight:'HC 519 — LYS → LGW',flightNum:'HC 519',dep:'LYS',arr:'LGW',flightDate:'14 Avril 2026',value:'400 €',type:'CE 261/2004 — Annulation',locDate:'28 Mai 2026',stage:'evidence',cat:'B',jurisdiction:'france',lang:'fr',disruptionType:'Weather',classification:'DEFEND',evidencePct:40,cprDaysLeft:32,points:[{n:1,claim:'Annulation le jour même — Art 5(1)(c)',evidenceStatus:'green',evidenceDoc:'Données TOPS confirmées'},{n:2,claim:'Circonstances extraordinaires — météo',evidenceStatus:'amber',evidenceDoc:'METAR LYS obtenu, SIGMET en attente'},{n:3,claim:'Art 8 — absence de réacheminement',evidenceStatus:'red',evidenceDoc:'Dossier requis'}],loaStatus:'sent',triageNote:'Défense météo. Obtenir SIGMET Lyon.',activity:[{text:'METAR LYS obtenu',time:'2 juin 09:30',type:'upload'}]},
-  {ref:'FR-2026-0009',assignedTo:'PL',claimant:'Isabelle Fontaine',solicitor:'Maître Dumas',flight:'HC 881 — MRS → LGW',flightNum:'HC 881',dep:'MRS',arr:'LGW',flightDate:'18 Fév 2026',value:'250 €',type:'CE 261/2004 — Retard',locDate:'15 Avril 2026',stage:'drafting',cat:'A',jurisdiction:'france',lang:'fr',disruptionType:'ATC Restrictions',classification:'DEFEND',evidencePct:100,cprDaysLeft:14,points:[{n:1,claim:'Retard de 3h28 — Art 7(1)(a)',evidenceStatus:'green',evidenceDoc:'Confirmé'},{n:2,claim:'Circonstances extraordinaires — ATFM',evidenceStatus:'green',evidenceDoc:'Données Eurocontrol confirmées'}],loaStatus:'sent',triageNote:'Dossier propre. Rédiger lettre de réponse.',activity:[{text:'Dossier complet',time:'28 mai 15:00',type:'stage'}]},
-  {ref:'FR-2026-0021',assignedTo:'PL',claimant:'Antoine Renard',solicitor:'Cabinet Girard',flight:'HC 334 — NCE → LTN',flightNum:'HC 334',dep:'NCE',arr:'LTN',flightDate:'22 Avril 2026',value:'250 €',type:'CE 261/2004 — Retard',locDate:'2 Juin 2026',stage:'intake',cat:'A',jurisdiction:'france',lang:'fr',disruptionType:'ATC Restrictions',classification:'DEFEND',evidencePct:0,cprDaysLeft:58,points:[],loaStatus:'',triageNote:'',activity:[{text:'Lettre de réclamation reçue',time:'2 juin 14:00',type:'create'}]},
-  {ref:'ES-2026-0031',assignedTo:'CG',claimant:'Miguel Torres',solicitor:'Bufete Sánchez',flight:'HC 612 — BCN → LGW',flightNum:'HC 612',dep:'BCN',arr:'LGW',flightDate:'5 Marzo 2026',value:'250 €',type:'CE 261/2004 — Retraso',locDate:'20 Mayo 2026',stage:'evidence',cat:'A',jurisdiction:'spain',lang:'es',disruptionType:'ATC Restrictions',classification:'DEFEND',evidencePct:60,cprDaysLeft:10,points:[{n:1,claim:'Retraso de 3h52 — Art 7(1)(a)',evidenceStatus:'green',evidenceDoc:'Datos TOPS confirmados'},{n:2,claim:'Circunstancias extraordinarias — ATC',evidenceStatus:'amber',evidenceDoc:'Datos Eurocontrol solicitados'},{n:3,claim:'Art 9 — ausencia de atención',evidenceStatus:'red',evidenceDoc:'Registros pendientes'}],loaStatus:'sent',triageNote:'Caso ATC. Obtener Eurocontrol.',activity:[{text:'METAR BCN obtenido',time:'27 mayo 09:00',type:'upload'}]},
-  {ref:'ES-2026-0038',assignedTo:'CG',claimant:'Laura Gómez',solicitor:'Despacho Fernández',flight:'HC 228 — MAD → LTN',flightNum:'HC 228',dep:'MAD',arr:'LTN',flightDate:'17 Abril 2026',value:'400 €',type:'CE 261/2004 — Retraso',locDate:'28 Mayo 2026',stage:'triage',cat:'B',jurisdiction:'spain',lang:'es',disruptionType:'Weather',classification:'DEFEND',evidencePct:0,cprDaysLeft:22,points:[{n:1,claim:'Retraso de 4h15 — Art 7(1)(b)',evidenceStatus:'green',evidenceDoc:'Confirmado por TOPS'},{n:2,claim:'Circunstancias extraordinarias — meteorología',evidenceStatus:'amber',evidenceDoc:'METAR/SIGMET pendiente'}],loaStatus:'',triageNote:'',activity:[{text:'Carta de reclamación recibida',time:'28 mayo 11:00',type:'create'}]},
-  {ref:'ES-2026-0044',assignedTo:'IM',claimant:'Roberto Jiménez',solicitor:'Abogados Castellano',flight:'HC 471 — VLC → LGW',flightNum:'HC 471',dep:'VLC',arr:'LGW',flightDate:'2 Mayo 2026',value:'250 €',type:'CE 261/2004 — Retraso',locDate:'1 Junio 2026',stage:'intake',cat:'A',jurisdiction:'spain',lang:'es',disruptionType:'ATC Restrictions',classification:'DEFEND',evidencePct:0,cprDaysLeft:29,points:[],loaStatus:'',triageNote:'',activity:[{text:'Carta de reclamación recibida',time:'1 junio 09:30',type:'create'}]},
-  {ref:'ES-2026-0027',assignedTo:'IM',claimant:'Carmen Ruiz',solicitor:'Bufete Morales',flight:'HC 339 — AGP → LTN',flightNum:'HC 339',dep:'AGP',arr:'LTN',flightDate:'8 Marzo 2026',value:'250 €',type:'CE 261/2004 — Retraso',locDate:'10 Abril 2026',stage:'drafting',cat:'A',jurisdiction:'spain',lang:'es',disruptionType:'Weather',classification:'DEFEND',evidencePct:100,cprDaysLeft:9,points:[{n:1,claim:'Retraso de 3h18 — Art 7(1)(a)',evidenceStatus:'green',evidenceDoc:'Confirmado'},{n:2,claim:'Circunstancias extraordinarias — meteorología',evidenceStatus:'green',evidenceDoc:'METAR/SIGMET confirmados'}],loaStatus:'sent',triageNote:'Caso limpio. Redactar escrito.',activity:[{text:'Expediente completo',time:'20 mayo 14:00',type:'stage'}]},
+  {ref:'AC-2026-0091',assignedTo:'JP',claimant:'Rebecca Walsh',solicitor:'Lewin Solicitors',flight:'HC 307 — MAN → AMS',flightNum:'HC 307',dep:'MAN',arr:'AMS',flightDate:'9 April 2026',value:'€250',type:'EC261 — ATC delay',locDate:'4 June 2026',stage:'triage',cat:'A',jurisdiction:'england-wales',lang:'en',disruptionType:'ATC Restrictions',classification:'DEFEND',evidencePct:0,cprDaysLeft:14,points:[{n:1,claim:'Delay 3hrs 36mins — Art 7(1)(a)',evidenceStatus:'green',evidenceDoc:'Confirmed via TOPS'},{n:2,claim:'Extraordinary circumstances — ATC ATFM',evidenceStatus:'amber',evidenceDoc:'Eurocontrol data requested'},{n:3,claim:'Art 9 — refreshments not provided',evidenceStatus:'red',evidenceDoc:'Ground records required'},{n:4,claim:'Expenses — £18.40',evidenceStatus:'amber',evidenceDoc:'Receipts with LOC'}],loaStatus:'',triageNote:'',activity:[{text:'LOC uploaded — triage pending',time:'Today 10:30',type:'create'}]},
+  {ref:'AC-2026-0112',assignedTo:'JP',claimant:'Oliver Grant',solicitor:'CAB Legal',flight:'HC 556 — LTN → DUB',flightNum:'HC 556',dep:'LTN',arr:'DUB',flightDate:'2 June 2026',value:'£400',type:'EC261 — Cancellation',locDate:'5 June 2026',stage:'intake',cat:'A',jurisdiction:'england-wales',lang:'en',disruptionType:'Technical',classification:'DEFEND',evidencePct:0,cprDaysLeft:28,points:[],loaStatus:'',triageNote:'',activity:[{text:'LOC received',time:'Today 08:20',type:'create'}]},
+  {ref:'AC-2026-0076',assignedTo:'JP',claimant:'Sarah Taylor',solicitor:'Bott & Clarke',flight:'HC 330 — LGW → PMI',flightNum:'HC 330',dep:'LGW',arr:'PMI',flightDate:'28 April 2026',value:'£520',type:'EC261 — Weather delay',locDate:'22 May 2026',stage:'evidence',cat:'B',jurisdiction:'england-wales',lang:'en',disruptionType:'Weather',classification:'DEFEND',evidencePct:72,cprDaysLeft:7,points:[{n:1,claim:'Delay 4hrs 10mins — Art 7(1)(b)',evidenceStatus:'green',evidenceDoc:'TOPS confirmed'},{n:2,claim:'Extraordinary circumstances — weather',evidenceStatus:'amber',evidenceDoc:'METAR/SIGMET pending'}],loaStatus:'sent',triageNote:'Weather defence. Finalise SIGMET evidence.',activity:[{text:'Evidence pack in progress',time:'28 May 16:00',type:'stage'}]},
+  {ref:'AC-2026-0042',assignedTo:'SB',claimant:'Helen Marsh',solicitor:'Pemberton & Associates',flight:'HC 881 — MAN → LTN',flightNum:'HC 881',dep:'MAN',arr:'LTN',flightDate:'11 May 2026',value:'€400',type:'EC261 — ATC delay',locDate:'18 May 2026',stage:'drafting',cat:'A',jurisdiction:'england-wales',lang:'en',disruptionType:'ATC Restrictions',classification:'DRAFTING',evidencePct:100,cprDaysLeft:10,points:[{n:1,claim:'Delay 3hrs 28mins — Art 7(1)(a)',evidenceStatus:'green',evidenceDoc:'TOPS confirmed'},{n:2,claim:'Extraordinary circumstances — ATFM',evidenceStatus:'green',evidenceDoc:'Eurocontrol confirmed'}],loaStatus:'sent',triageNote:'Clean ATC case. Draft LOR.',activity:[{text:'Evidence complete — LOR ready',time:'1 Jun 11:00',type:'stage'}]},
+  {ref:'AC-2026-0055',assignedTo:'JP',claimant:'Marcus Webb',solicitor:'Clarke & Partners',flight:'HC 412 — LHR → AMS',flightNum:'HC 412',dep:'LHR',arr:'AMS',flightDate:'6 May 2026',value:'£1,200',type:'EC261 — Diversion',locDate:'15 May 2026',stage:'drafting',cat:'B',jurisdiction:'england-wales',lang:'en',disruptionType:'Weather',classification:'DRAFTING',evidencePct:100,cprDaysLeft:5,points:[{n:1,claim:'Delay 5hrs 05mins — Art 7(1)(b)',evidenceStatus:'green',evidenceDoc:'TOPS confirmed'},{n:2,claim:'Extraordinary circumstances — weather',evidenceStatus:'green',evidenceDoc:'METAR/SIGMET confirmed'},{n:3,claim:'Article 9 care costs — £950',evidenceStatus:'amber',evidenceDoc:'Ground records attached'}],loaStatus:'sent',triageNote:'Draft LOR with care cost position.',activity:[{text:'Drafting workspace opened',time:'2 Jun 09:45',type:'create'}]},
+  {ref:'AC-2026-0058',assignedTo:'SB',claimant:'Priya Nair',solicitor:'Lewin Solicitors',flight:'HC 619 — LGW → DUB',flightNum:'HC 619',dep:'LGW',arr:'DUB',flightDate:'22 January 2026',value:'£250',type:'EC261 — ATC delay',locDate:'1 February 2026',stage:'resolve',cat:'A',jurisdiction:'england-wales',lang:'en',disruptionType:'ATC Restrictions',classification:'DEFEND',evidencePct:100,cprDaysLeft:-4,points:[{n:1,claim:'Delay 3hrs 12mins — Art 7(1)(a)',evidenceStatus:'green',evidenceDoc:'TOPS confirmed'},{n:2,claim:'Extraordinary circumstances — ATC',evidenceStatus:'green',evidenceDoc:'Eurocontrol confirmed'}],loaStatus:'sent',triageNote:'Defended successfully. Closed.',activity:[{text:'Case resolved — defended',time:'20 May 14:30',type:'stage'}]},
+  {ref:'FR-2026-0012',assignedTo:'MD',claimant:'Jean-Pierre Moreau',solicitor:'CAB Legal',flight:'HC 742 — CDG → LTN',flightNum:'HC 742',dep:'CDG',arr:'LTN',flightDate:'3 March 2026',value:'€250',type:'CE 261/2004 — Retard',locDate:'12 Mai 2026',stage:'cpr',cat:'A',jurisdiction:'france',lang:'fr',disruptionType:'ATC Restrictions',classification:'DEFEND',evidencePct:0,cprDaysLeft:-2,points:[{n:1,claim:'Retard de 3h42 — Art 7(1)(a)',evidenceStatus:'green',evidenceDoc:'Données TOPS confirmées'},{n:2,claim:'Circonstances extraordinaires — ATC',evidenceStatus:'amber',evidenceDoc:'Données Eurocontrol demandées'},{n:3,claim:'Art 9 — absence de rafraîchissements',evidenceStatus:'red',evidenceDoc:'Registres requis'}],loaStatus:'',triageNote:'Accusé de réception en retard — MTV à planifier.',activity:[{text:'Lettre de réclamation reçue',time:'12 mai 09:00',type:'create'}]},
+  {ref:'ES-2026-0031',assignedTo:'MD',claimant:'Miguel Torres',solicitor:'Bott & Clarke',flight:'HC 612 — BCN → LGW',flightNum:'HC 612',dep:'BCN',arr:'LGW',flightDate:'5 Marzo 2026',value:'€400',type:'CE 261/2004 — Retraso',locDate:'20 Mayo 2026',stage:'cpr',cat:'A',jurisdiction:'spain',lang:'es',disruptionType:'ATC Restrictions',classification:'DEFEND',evidencePct:0,cprDaysLeft:18,points:[{n:1,claim:'Retraso de 3h52 — Art 7(1)(a)',evidenceStatus:'green',evidenceDoc:'Datos TOPS confirmados'},{n:2,claim:'Circunstancias extraordinarias — ATC',evidenceStatus:'amber',evidenceDoc:'Datos Eurocontrol solicitados'}],loaStatus:'',triageNote:'Responder en 30 días — AESA en paralelo.',activity:[{text:'Carta de reclamación recibida',time:'20 mayo 11:00',type:'create'}]},
 ];
 // Helpers
+function getAirlineName(dep,arr){
+  var d=String(dep||'').toUpperCase(),a=String(arr||'').toUpperCase();
+  for(var i=0;i<SPANISH_AIRPORTS.length;i++){
+    var code=SPANISH_AIRPORTS[i];
+    if(d.indexOf(code)>=0||a.indexOf(code)>=0)return SOLERO_AIR;
+  }
+  return HORIZON_AIRWAYS;
+}
+function getCaseAirline(c){return c?getAirlineName(c.dep,c.arr):HORIZON_AIRWAYS;}
 function getCasesForUser(uid,stage){return ALL_CASES.filter(function(c){return c.assignedTo===uid&&(!stage||c.stage===stage);});}
 function getCase(ref){return ALL_CASES.find(function(c){return c.ref===ref;})||null;}
 function getJurisdiction(key){return JURISDICTIONS[key]||JURISDICTIONS['england-wales'];}
-function daysUrgency(d){return d<=3?'urgent':d<=7?'warn':'ok';}
-function urgencyLabel(d){return d<=3?d+'d — URGENT':d<=7?d+'d':d+'d';}
+function daysUrgency(d){return d<0?'urgent':d<=3?'urgent':d<=7?'warn':'ok';}
+function urgencyLabel(d){if(d<0)return Math.abs(d)+'d overdue';return d<=3?d+'d — URGENT':d<=7?d+'d':d+'d';}
 function stageIcon(s){var m={intake:'ti-inbox',triage:'ti-search',cpr:'ti-calendar-due',evidence:'ti-folder-open',drafting:'ti-file-pencil',defence:'ti-shield',resolve:'ti-circle-check'};return m[s]||'ti-file';}
 function stageColor(s){var m={intake:'#1D4ED8',triage:'#92400E',cpr:'#B45309',evidence:'#4338CA',drafting:'#065F46',defence:'#1A7A4A',resolve:'#374151'};return m[s]||'#374151';}
 function stageBg(s){var m={intake:'#EFF6FF',triage:'#FEF3C7',cpr:'#FEF9C3',evidence:'#EEEDFE',drafting:'#E6F5EE',defence:'#DCFCE7',resolve:'#F1F5F9'};return m[s]||'#F1F5F9';}
@@ -364,7 +372,7 @@ var C={
   dep:'London Luton Airport (LTN)',
   arr:'Barcelona El Prat Airport (BCN)',
   diverted:'Valencia Airport (VLC)',
-  value:  _i.value     ||'£39,000+',
+  value:  _i.value     ||'£3,800',
   type:   _i.type      ||'EC 261/2004 — delay / diversion',
   date:   _i.date      ||'22 May 2026',
   flightDate:'14 March 2026',
@@ -375,6 +383,7 @@ var C={
   assignedTo:_i.assignedTo||'S. Booth',
   user:'S. Booth'
 };
+var AIRLINE=typeof getAirlineName==='function'?getAirlineName(_i.dep||C.dep,_i.arr||C.arr):'Horizon Airways';
 
 /* ── Document state ── */
 var docStates={
@@ -460,27 +469,27 @@ ${C.solAddr}
 
 Dear Sirs,
 
-RE: ${C.name.toUpperCase()} v. TESTAIRWAYS
+RE: ${C.name.toUpperCase()} v. ${AIRLINE.toUpperCase()}
 YOUR REF: ${C.solRef}    OUR REF: ${C.ref}
 FLIGHT: ${C.flightNum} — ${C.dep} TO ${C.arr}
 DATE OF TRAVEL: ${C.flightDate}
 
 ACKNOWLEDGEMENT OF LETTER OF CLAIM
 
-We act on behalf of TestAirways in connection with the above matter.
+We act on behalf of ${AIRLINE} in connection with the above matter.
 
 We write to acknowledge receipt of your letter of claim dated ${C.date}, received by our Legal Department on ${C.date}. The matter has been assigned to our legal team and we are in the process of investigating the circumstances surrounding the above-referenced flight.
 
 In accordance with the Pre-Action Protocol, we will provide a substantive Letter of Response no later than ${responseBy()}. We will notify you promptly should we require any extension to that period.
 
-Without prejudice to our investigation, we note that the disruption to flight ${C.flightNum} on ${C.flightDate} arose from circumstances which we believe were beyond the reasonable control of TestAirways. Our full position will be set out in our Letter of Response.
+Without prejudice to our investigation, we note that the disruption to flight ${C.flightNum} on ${C.flightDate} arose from circumstances which we believe were beyond the reasonable control of ${AIRLINE}. Our full position will be set out in our Letter of Response.
 
-Nothing in this letter constitutes an admission of liability. TestAirways reserves all rights and defences available to it.
+Nothing in this letter constitutes an admission of liability. ${AIRLINE} reserves all rights and defences available to it.
 
 Yours faithfully,
 
 ${C.assignedTo}
-Legal Department, TestAirways`;
+Legal Department, ${AIRLINE}`;
 }
 
 function buildLOR(){
@@ -494,12 +503,12 @@ ${C.solAddr}
 
 Dear Sirs,
 
-RE: ${C.name.toUpperCase()} v. TESTAIRWAYS — LETTER OF RESPONSE
+RE: ${C.name.toUpperCase()} v. ${AIRLINE.toUpperCase()} — LETTER OF RESPONSE
 YOUR REF: ${C.solRef}    OUR REF: ${C.ref}
 FLIGHT: ${C.flightNum} — ${C.dep} TO ${C.arr}
 DATE OF TRAVEL: ${C.flightDate}
 
-We act on behalf of TestAirways. We refer to your letter of claim dated ${C.date} and to our Letter of Acknowledgement. We now provide our substantive response.
+We act on behalf of ${AIRLINE}. We refer to your letter of claim dated ${C.date} and to our Letter of Acknowledgement. We now provide our substantive response.
 
 BACKGROUND
 
@@ -513,50 +522,50 @@ RESPONSE TO POINTS OF CLAIM
 
 Point 1 — Statutory Compensation: EC Regulation 261/2004, Article 7(1)(a)
 
-4. TestAirways acknowledges that flight ${C.flightNum} arrived at its final destination ${C.delay} after the scheduled arrival time and that, in isolation, this delay would engage the provisions of Article 7(1)(a) of EC Regulation 261/2004. However, TestAirways denies that any compensation is payable by reason of the extraordinary circumstances defence set out below.
+4. ${AIRLINE} acknowledges that flight ${C.flightNum} arrived at its final destination ${C.delay} after the scheduled arrival time and that, in isolation, this delay would engage the provisions of Article 7(1)(a) of EC Regulation 261/2004. However, ${AIRLINE} denies that any compensation is payable by reason of the extraordinary circumstances defence set out below.
 
-5. The distance from ${C.dep} to ${C.arr} is approximately 1,435 kilometres. For the avoidance of doubt, TestAirways notes that the applicable compensation under Article 7(1)(a), if payable, would be €250 and not €400 as asserted in your letter of claim. The €400 figure applies to flights of between 1,500 and 3,500 kilometres under Article 7(1)(b), which is not engaged on the facts of this claim.
+5. The distance from ${C.dep} to ${C.arr} is approximately 1,435 kilometres. For the avoidance of doubt, ${AIRLINE} notes that the applicable compensation under Article 7(1)(a), if payable, would be €250 and not €400 as asserted in your letter of claim. The €400 figure applies to flights of between 1,500 and 3,500 kilometres under Article 7(1)(b), which is not engaged on the facts of this claim.
 
 Point 2 — Extraordinary Circumstances: Article 5(3)
 
-6. TestAirways relies upon the defence of extraordinary circumstances pursuant to Article 5(3) of EC Regulation 261/2004. The diversion of flight ${C.flightNum} was caused by severe meteorological conditions at ${C.arr} on ${C.flightDate} which rendered continued operation to ${C.arr} incompatible with safe flight operations.
+6. ${AIRLINE} relies upon the defence of extraordinary circumstances pursuant to Article 5(3) of EC Regulation 261/2004. The diversion of flight ${C.flightNum} was caused by severe meteorological conditions at ${C.arr} on ${C.flightDate} which rendered continued operation to ${C.arr} incompatible with safe flight operations.
 
-7. The meteorological evidence obtained by TestAirways confirms that at the relevant time, ${C.arr} was subject to active convective activity with embedded cumulonimbus cloud, significant wind shear, and visibility below instrument landing system minima. The relevant METAR and SIGMET records, together with NOTAM documentation for ${C.arr}, are enclosed with this letter as Exhibit TA/1.
+7. The meteorological evidence obtained by ${AIRLINE} confirms that at the relevant time, ${C.arr} was subject to active convective activity with embedded cumulonimbus cloud, significant wind shear, and visibility below instrument landing system minima. The relevant METAR and SIGMET records, together with NOTAM documentation for ${C.arr}, are enclosed with this letter as Exhibit TA/1.
 
-8. TestAirways further relies upon the Eurocontrol Air Traffic Flow Management (ATFM) regulation data confirming that the airspace in the vicinity of ${C.arr} was subject to network-level restrictions at the material time. This data is enclosed as Exhibit TA/2.
+8. ${AIRLINE} further relies upon the Eurocontrol Air Traffic Flow Management (ATFM) regulation data confirming that the airspace in the vicinity of ${C.arr} was subject to network-level restrictions at the material time. This data is enclosed as Exhibit TA/2.
 
-9. The crew of flight ${C.flightNum} acted in accordance with mandatory Air Traffic Control instructions in diverting to ${C.diverted}. The diversion was not a discretionary operational decision but a safety imperative imposed by external circumstances entirely beyond TestAirways' control. TestAirways relies upon the two-limb test established in Wallentin-Hermann v Alitalia (Case C-549/07): the circumstances were (a) not inherent in the normal exercise of the carrier's activity, and (b) beyond its actual control.
+9. The crew of flight ${C.flightNum} acted in accordance with mandatory Air Traffic Control instructions in diverting to ${C.diverted}. The diversion was not a discretionary operational decision but a safety imperative imposed by external circumstances entirely beyond ${AIRLINE}' control. ${AIRLINE} relies upon the two-limb test established in Wallentin-Hermann v Alitalia (Case C-549/07): the circumstances were (a) not inherent in the normal exercise of the carrier's activity, and (b) beyond its actual control.
 
-10. TestAirways further avers that all reasonable measures were taken to avoid the resulting delay. Pre-departure weather monitoring was conducted, fuel loads were calculated to permit diversion to an alternate aerodrome, and the crew were briefed on potential meteorological conditions on the route. Once the decision to divert was made, the crew operated expeditiously to minimise further delay to passengers.
+10. ${AIRLINE} further avers that all reasonable measures were taken to avoid the resulting delay. Pre-departure weather monitoring was conducted, fuel loads were calculated to permit diversion to an alternate aerodrome, and the crew were briefed on potential meteorological conditions on the route. Once the decision to divert was made, the crew operated expeditiously to minimise further delay to passengers.
 
 Point 3 — Duty of Care: Article 9
 
-11. TestAirways denies that it failed to fulfil its obligations under Article 9 of EC Regulation 261/2004. Ground handling arrangements at ${C.diverted} were activated promptly following the diversion decision. TestAirways will adduce evidence from ground handling records at Valencia Airport confirming the provision of refreshments and written information to passengers during the ground delay.
+11. ${AIRLINE} denies that it failed to fulfil its obligations under Article 9 of EC Regulation 261/2004. Ground handling arrangements at ${C.diverted} were activated promptly following the diversion decision. ${AIRLINE} will adduce evidence from ground handling records at Valencia Airport confirming the provision of refreshments and written information to passengers during the ground delay.
 
-12. In the event that the Court finds any shortfall in the provision of Article 9 care — which is denied — TestAirways avers that any such shortfall arose from the extraordinary and unanticipated nature of the diversion and not from any failure of duty on the part of TestAirways or its handling agents.
+12. In the event that the Court finds any shortfall in the provision of Article 9 care — which is denied — ${AIRLINE} avers that any such shortfall arose from the extraordinary and unanticipated nature of the diversion and not from any failure of duty on the part of ${AIRLINE} or its handling agents.
 
 Point 4 — Consequential Losses: £38,250
 
-13. TestAirways denies liability for the consequential losses alleged in Point 4 of your letter of claim. Pursuant to Article 12 of EC Regulation 261/2004, any further compensation available to a passenger under national law is that available under the Montreal Convention. The Montreal Convention does not provide for recovery of the alleged loss of a commercial contract.
+13. ${AIRLINE} denies liability for the consequential losses alleged in Point 4 of your letter of claim. Pursuant to Article 12 of EC Regulation 261/2004, any further compensation available to a passenger under national law is that available under the Montreal Convention. The Montreal Convention does not provide for recovery of the alleged loss of a commercial contract.
 
-14. Further and in any event, TestAirways puts your client to strict proof of (a) the existence of the alleged contractual arrangement with Meridian Consulting SL; (b) that any contract was lost solely by reason of your client's non-attendance at the meeting on ${C.flightDate}; (c) that your client took all reasonable steps to mitigate his alleged loss, including by seeking to reschedule the meeting; and (d) that the quantum of £38,250 accurately reflects the net loss alleged.
+14. Further and in any event, ${AIRLINE} puts your client to strict proof of (a) the existence of the alleged contractual arrangement with Meridian Consulting SL; (b) that any contract was lost solely by reason of your client's non-attendance at the meeting on ${C.flightDate}; (c) that your client took all reasonable steps to mitigate his alleged loss, including by seeking to reschedule the meeting; and (d) that the quantum of £38,250 accurately reflects the net loss alleged.
 
-15. TestAirways will seek independent verification of the letter from Meridian Consulting SL relied upon by your client and reserves the right to challenge the authenticity and contents of that document.
+15. ${AIRLINE} will seek independent verification of the letter from Meridian Consulting SL relied upon by your client and reserves the right to challenge the authenticity and contents of that document.
 
 Point 5 — Travel and Subsistence Costs: £141.80
 
-16. TestAirways does not dispute that your client incurred additional travel costs as a result of the diversion, subject to verification of the receipts stated to be enclosed with your letter of claim. TestAirways will consider these costs upon receipt of the supporting documentation and will address them in any schedule of agreed or disputed sums.
+16. ${AIRLINE} does not dispute that your client incurred additional travel costs as a result of the diversion, subject to verification of the receipts stated to be enclosed with your letter of claim. ${AIRLINE} will consider these costs upon receipt of the supporting documentation and will address them in any schedule of agreed or disputed sums.
 
 CONCLUSION
 
-17. For the reasons set out above, TestAirways denies liability to pay statutory compensation under EC Regulation 261/2004 by reason of the extraordinary circumstances defence. TestAirways further denies liability for the consequential losses alleged. TestAirways is prepared to give consideration to the reasonable Article 9 care costs and verified travel and subsistence costs upon production of supporting documentation.
+17. For the reasons set out above, ${AIRLINE} denies liability to pay statutory compensation under EC Regulation 261/2004 by reason of the extraordinary circumstances defence. ${AIRLINE} further denies liability for the consequential losses alleged. ${AIRLINE} is prepared to give consideration to the reasonable Article 9 care costs and verified travel and subsistence costs upon production of supporting documentation.
 
-18. TestAirways remains open to resolving this matter by way of Alternative Dispute Resolution. Any proposal for settlement should be directed to the undersigned.
+18. ${AIRLINE} remains open to resolving this matter by way of Alternative Dispute Resolution. Any proposal for settlement should be directed to the undersigned.
 
 Yours faithfully,
 
 ${C.assignedTo}
-Legal Department, TestAirways
+Legal Department, ${AIRLINE}
 
 ENCLOSURES:
 Exhibit TA/1: METAR, SIGMET and NOTAM records for BCN, ${C.flightDate}
@@ -576,7 +585,7 @@ BETWEEN:
 
                               — and —
 
-                         TESTAIRWAYS
+                         ${AIRLINE.toUpperCase()}
                                                                         Defendant
 
 ─────────────────────────────────────────
@@ -585,7 +594,7 @@ BETWEEN:
 
 INTRODUCTION
 
-1. The Defendant is TestAirways, a commercial airline operating scheduled passenger services. The Defendant denies that it is liable to pay compensation to the Claimant pursuant to EC Regulation 261/2004 (as retained in UK law following the end of the Brexit transition period) or at all, for the reasons set out below.
+1. The Defendant is ${AIRLINE}, a commercial airline operating scheduled passenger services. The Defendant denies that it is liable to pay compensation to the Claimant pursuant to EC Regulation 261/2004 (as retained in UK law following the end of the Brexit transition period) or at all, for the reasons set out below.
 
 ADMISSIONS AND DENIALS
 
@@ -647,11 +656,11 @@ I believe that the facts stated in this Defence are true. I understand that proc
 
 Signed: ___________________________
 Name:   ${C.assignedTo}
-Position: Legal Department, TestAirways
+Position: Legal Department, ${AIRLINE}
 Date:   ${today()}
 
-Defendant's solicitors: TestAirways Legal Department
-Address for service: TestAirways Legal Department, Aviation House, Luton Airport, Luton LU2 9LY`;
+Defendant's solicitors: ${AIRLINE} Legal Department
+Address for service: ${AIRLINE} Legal Department, Aviation House, Luton Airport, Luton LU2 9LY`;
 }
 
 function buildWitness(){
@@ -666,20 +675,20 @@ BETWEEN:
 
                               — and —
 
-                         TESTAIRWAYS
+                         ${AIRLINE.toUpperCase()}
                                                                         Defendant
 
 ─────────────────────────────────────────────────────────────
           WITNESS STATEMENT OF [CAPTAIN / SENIOR CABIN CREW]
 ─────────────────────────────────────────────────────────────
 
-I, [FULL NAME], of TestAirways, WILL SAY as follows:
+I, [FULL NAME], of ${AIRLINE}, WILL SAY as follows:
 
 INTRODUCTION
 
-1. I am employed by TestAirways as [Captain / Senior First Officer / Senior Cabin Crew Member]. I have been employed in this role for [X] years. I make this statement from my own knowledge and from records available to me in my professional capacity.
+1. I am employed by ${AIRLINE} as [Captain / Senior First Officer / Senior Cabin Crew Member]. I have been employed in this role for [X] years. I make this statement from my own knowledge and from records available to me in my professional capacity.
 
-2. I make this statement in support of the Defence of TestAirways in the above proceedings. The matters set out in this statement are within my own knowledge unless otherwise stated.
+2. I make this statement in support of the Defence of ${AIRLINE} in the above proceedings. The matters set out in this statement are within my own knowledge unless otherwise stated.
 
 BACKGROUND: FLIGHT ${C.flightNum}, ${C.flightDate}
 
@@ -689,7 +698,7 @@ BACKGROUND: FLIGHT ${C.flightNum}, ${C.flightDate}
 
 PRE-DEPARTURE PREPARATIONS
 
-5. In accordance with TestAirways standard operating procedures, the aircraft was fuelled to the planned fuel figure plus [X] kg diversion fuel for ${C.diverted} as the designated alternate aerodrome. This decision was made by me [or: the captain] on the basis of the meteorological forecast received prior to departure.
+5. In accordance with ${AIRLINE} standard operating procedures, the aircraft was fuelled to the planned fuel figure plus [X] kg diversion fuel for ${C.diverted} as the designated alternate aerodrome. This decision was made by me [or: the captain] on the basis of the meteorological forecast received prior to departure.
 
 6. Passengers were boarded and the flight departed at ${C.atd}. The minor delay against the scheduled departure time of ${C.std} was attributable to [boarding procedures / minor technical check — to be confirmed from TOPS data].
 
@@ -704,7 +713,7 @@ THE DIVERSION DECISION
    (c) Air Traffic Control advice; and
    (d) My professional assessment of the conditions as an experienced [Captain].
 
-9. In the circumstances, I determined that continuation to ${C.arr} was not compatible with the safe operation of the flight. I declared the diversion to ${C.diverted} in accordance with my duties and TestAirways operating procedures.
+9. In the circumstances, I determined that continuation to ${C.arr} was not compatible with the safe operation of the flight. I declared the diversion to ${C.diverted} in accordance with my duties and ${AIRLINE} operating procedures.
 
 THE DIVERSION AND GROUND DELAY
 
@@ -716,9 +725,9 @@ THE DIVERSION AND GROUND DELAY
 
 CONCLUSION
 
-13. It is my professional opinion that the diversion of flight ${C.flightNum} on ${C.flightDate} was necessitated by meteorological conditions at ${C.arr} which were beyond the control of TestAirways and which were not inherent in the normal exercise of our operations as an air carrier. The decision to divert was made in the interests of passenger safety and in accordance with mandatory operational requirements.
+13. It is my professional opinion that the diversion of flight ${C.flightNum} on ${C.flightDate} was necessitated by meteorological conditions at ${C.arr} which were beyond the control of ${AIRLINE} and which were not inherent in the normal exercise of our operations as an air carrier. The decision to divert was made in the interests of passenger safety and in accordance with mandatory operational requirements.
 
-14. All reasonable measures available to me as [Captain] and to TestAirways were taken to minimise the impact of the diversion on passengers.
+14. All reasonable measures available to me as [Captain] and to ${AIRLINE} were taken to minimise the impact of the diversion on passengers.
 
 STATEMENT OF TRUTH
 
@@ -743,34 +752,34 @@ ${C.solAddr}
 
 Dear Sirs,
 
-RE: ${C.name.toUpperCase()} v. TESTAIRWAYS
+RE: ${C.name.toUpperCase()} v. ${AIRLINE.toUpperCase()}
 YOUR REF: ${C.solRef}    OUR REF: ${C.ref}
 
 PART 36 OFFER TO SETTLE
 
-1. This letter constitutes a formal offer to settle the above claim pursuant to CPR Part 36. This offer is made without prejudice to TestAirways' primary position that no compensation is payable by reason of the extraordinary circumstances defence.
+1. This letter constitutes a formal offer to settle the above claim pursuant to CPR Part 36. This offer is made without prejudice to ${AIRLINE}' primary position that no compensation is payable by reason of the extraordinary circumstances defence.
 
-2. TestAirways offers to pay to the Claimant the sum of £[AMOUNT] in full and final settlement of all claims arising from the disruption to flight ${C.flightNum} on ${C.flightDate}, inclusive of interest and costs.
+2. ${AIRLINE} offers to pay to the Claimant the sum of £[AMOUNT] in full and final settlement of all claims arising from the disruption to flight ${C.flightNum} on ${C.flightDate}, inclusive of interest and costs.
 
 3. This offer is intended to have the consequences set out in CPR Part 36 if accepted.
 
-4. This offer remains open for acceptance for a period of 21 days from the date of this letter (the "Relevant Period"). If the offer is not accepted within the Relevant Period, it may be withdrawn or amended at TestAirways' discretion, subject to the provisions of CPR Part 36.
+4. This offer remains open for acceptance for a period of 21 days from the date of this letter (the "Relevant Period"). If the offer is not accepted within the Relevant Period, it may be withdrawn or amended at ${AIRLINE}' discretion, subject to the provisions of CPR Part 36.
 
 5. If accepted, payment will be made within 14 days of acceptance.
 
 COSTS CONSEQUENCES
 
-6. TestAirways draws your attention to the costs consequences set out in CPR Part 36.17. In the event that the Claimant fails to obtain a judgment more advantageous than this offer, the Court will, unless it considers it unjust to do so, order that:
+6. ${AIRLINE} draws your attention to the costs consequences set out in CPR Part 36.17. In the event that the Claimant fails to obtain a judgment more advantageous than this offer, the Court will, unless it considers it unjust to do so, order that:
 
    (a) the Claimant is entitled to costs up to the date on which the Relevant Period expired; and
-   (b) TestAirways is entitled to costs from that date.
+   (b) ${AIRLINE} is entitled to costs from that date.
 
 7. This letter should be read carefully by your client. We recommend that your client takes independent legal advice on the implications of this offer before deciding whether to accept or reject it.
 
 Yours faithfully,
 
 ${C.assignedTo}
-Legal Department, TestAirways`;
+Legal Department, ${AIRLINE}`;
 }
 
 function buildSettlement(){
@@ -781,7 +790,7 @@ THIS AGREEMENT is made on ${today()}
 BETWEEN:
 
 (1) ${C.name} of [ADDRESS] ("the Claimant"); and
-(2) TestAirways, Aviation House, Luton Airport, Luton LU2 9LY ("the Defendant").
+(2) ${AIRLINE}, Aviation House, Luton Airport, Luton LU2 9LY ("the Defendant").
 
 BACKGROUND
 
@@ -815,7 +824,7 @@ SIGNED for and on behalf of the Defendant:
 
 Signed: ___________________________
 Name: ${C.assignedTo}
-Position: Legal Department, TestAirways
+Position: Legal Department, ${AIRLINE}
 Date: ${today()}`;
 }
 
@@ -826,7 +835,7 @@ Claim number: [TO BE INSERTED]
 Last date for filing: [TO BE INSERTED]
 
 Claimant: ${C.name}
-Defendant: TestAirways
+Defendant: ${AIRLINE}
 
 ─────────────────────────────────────
 A — SETTLEMENT
@@ -834,7 +843,7 @@ A — SETTLEMENT
 A1. Do you wish there to be a one month stay to attempt settlement?
 [ ] Yes   [X] No
 
-Reason: TestAirways has provided a substantive Letter of Response and remains open to ADR. A stay is not considered necessary at this stage.
+Reason: ${AIRLINE} has provided a substantive Letter of Response and remains open to ADR. A stay is not considered necessary at this stage.
 
 ─────────────────────────────────────
 B — COURT
@@ -895,7 +904,7 @@ I believe that the facts stated in this Directions Questionnaire are true.
 
 Signed: ___________________________
 Name: ${C.assignedTo}
-Position: For and on behalf of TestAirways (Defendant)
+Position: For and on behalf of ${AIRLINE} (Defendant)
 Date: ${today()}`;
 }
 
@@ -1012,7 +1021,7 @@ function renderLibraryHome(){
   }).join('');
   return '<div class="library-home">'
     +'<div class="library-hero"><div class="ch-ref">'+C.ref+'</div>'
-    +'<h2>'+C.name+' v. TestAirways</h2>'
+    +'<h2>'+C.name+' v. '+AIRLINE+'</h2>'
     +'<p>Select a document from the library to open it in full-screen drafting view. Close, save, or download to return here.</p>'
     +(openChips?'<div class="open-docs-strip">'+openChips+'</div>':'')
     +'</div>'
@@ -1134,7 +1143,7 @@ async function generateDoc(id){
         model:'claude-sonnet-4-20250514',
         max_tokens:2000,
         system:`You are a senior aviation solicitor at an airline's in-house legal team. Draft professional, legally accurate documents in response to EC261 flight delay claims. Use precise legal language appropriate for England and Wales civil litigation. Address each point of claim specifically. Do not include markdown formatting or backticks. Return only the document text.`,
-        messages:[{role:'user',content:`Draft a ${docNames[id]||id} for this case. Use the base template provided and enhance the legal arguments based on the case details.\n\nCase: ${C.name} v. TestAirways\nRef: ${C.ref}\nFlight: ${C.flightNum} ${C.dep} to ${C.arr}, ${C.flightDate}\nDisruption: Diverted to ${C.diverted} due to weather\nDelay: ${C.delay}\nClaim value: ${C.value}\nAssigned to: ${C.assignedTo}\n\nBase template:\n${baseDoc.slice(0,3000)}`}]
+        messages:[{role:'user',content:`Draft a ${docNames[id]||id} for this case. Use the base template provided and enhance the legal arguments based on the case details.\n\nCase: ${C.name} v. ${AIRLINE}\nRef: ${C.ref}\nFlight: ${C.flightNum} ${C.dep} to ${C.arr}, ${C.flightDate}\nDisruption: Diverted to ${C.diverted} due to weather\nDelay: ${C.delay}\nClaim value: ${C.value}\nAssigned to: ${C.assignedTo}\n\nBase template:\n${baseDoc.slice(0,3000)}`}]
       })
     });
     const data = await resp.json();

@@ -369,7 +369,7 @@ function openCase(ref, tab) {
   try {
     sessionStorage.setItem('261c_case', JSON.stringify(c));
   } catch (e) {}
-  var targetTab = tab || getPrimaryTab(c);
+  var targetTab = tab || 'overview';
   window.location.href = CASE_ROUTE(ref, targetTab);
 }
 
