@@ -1,20 +1,13 @@
 /* Unified case workspace shell — Phase 2 */
 var CaseShell = (function () {
   var TABS = [
-    { id: 'overview', label: 'Overview', icon: 'ti-layout-dashboard', frame: false },
-    { id: 'triage', label: 'Triage', icon: 'ti-search', frame: 'module2-case-workspace.html' },
-    { id: 'deadlines', label: 'Deadlines', icon: 'ti-calendar-due', frame: 'module3-cpr-workspace.html' },
-    { id: 'evidence', label: 'Evidence', icon: 'ti-folder-open', frame: 'module4-evidence-workspace.html' },
-    { id: 'documents', label: 'Documents', icon: 'ti-file-pencil', frame: 'module5-drafting-workspace.html' },
-    { id: 'activity', label: 'Activity', icon: 'ti-history', frame: false }
+    { id: 'overview', label: 'Overview', icon: 'ti-layout-dashboard' },
+    { id: 'triage', label: 'Triage', icon: 'ti-search' },
+    { id: 'deadlines', label: 'Deadlines', icon: 'ti-calendar-due' },
+    { id: 'evidence', label: 'Evidence', icon: 'ti-folder-open' },
+    { id: 'documents', label: 'Documents', icon: 'ti-file-pencil' },
+    { id: 'activity', label: 'Activity', icon: 'ti-history' }
   ];
-
-  var FRAME_MAP = {
-    triage: 'module2-case-workspace.html',
-    deadlines: 'module3-cpr-workspace.html',
-    evidence: 'module4-evidence-workspace.html',
-    documents: 'module5-drafting-workspace.html'
-  };
 
   var state = {
     ref: null,
@@ -324,36 +317,120 @@ var CaseShell = (function () {
       '</div></div>';
   }
 
-  function renderFrame(tab) {
-    var src = FRAME_MAP[tab];
-    if (!src) return;
-    var extra = '';
-    try {
-      var params = new URLSearchParams(window.location.search);
-      if (params.get('request')) extra += '&request=' + encodeURIComponent(params.get('request'));
-    } catch (e) {}
+  function renderTriage() {
+    var c = state.caseData;
+    if (!c) return;
     document.getElementById('tab-panel').innerHTML =
-      '<iframe id="case-frame" class="case-frame" src="' +
-      src +
-      '?ref=' +
-      encodeURIComponent(state.ref) +
-      '&embed=1' +
-      extra +
-      '" title="' +
-      escapeHtml(tab) +
-      '"></iframe>';
+      '<div class="tab-panel-inner">' +
+      '<div class="panel-card" style="margin-bottom:14px">' +
+      '<div class="pc-label">AI Triage Assessment</div>' +
+      '<div class="kv"><span>Classification</span><span style="font-weight:600;color:' + (c.classification==='DEFEND'?'var(--green)':c.classification==='ESCALATE'?'var(--red)':'var(--amber)') + '">' + escapeHtml(c.classification||'Pending') + '</span></div>' +
+      '<div class="kv"><span>Disruption type</span><span>' + escapeHtml(c.disruptionType||'—') + '</span></div>' +
+      '<div class="kv"><span>Jurisdiction</span><span>' + escapeHtml(c.jurisdiction||'—') + '</span></div>' +
+      '<div class="kv"><span>Category</span><span>' + escapeHtml(c.cat||'—') + '</span></div>' +
+      '</div>' +
+      '<div class="panel-card" style="margin-bottom:14px">' +
+      '<div class="pc-label">Points of claim</div>' +
+      (c.points&&c.points.length ? c.points.map(function(p){
+        var col=p.evidenceStatus==='green'?'var(--green)':p.evidenceStatus==='amber'?'var(--amber)':'var(--red)';
+        var icon=p.evidenceStatus==='green'?'ti-circle-check':p.evidenceStatus==='amber'?'ti-clock':'ti-circle-x';
+        return '<div class="kv"><span style="display:flex;align-items:center;gap:6px"><i class="ti '+icon+'" style="color:'+col+'"></i>'+escapeHtml(p.claim)+'</span><span style="color:var(--text3);font-size:11px">'+escapeHtml(p.evidenceDoc||'')+'</span></div>';
+      }).join('') : '<div class="empty-note">No points of claim recorded.</div>') +
+      '</div>' +
+      (c.triageNote?'<div class="panel-card"><div class="pc-label">Triage note</div><p style="font-size:13px;line-height:1.6;color:var(--text2)">'+escapeHtml(c.triageNote)+'</p></div>':'') +
+      '</div>';
+  }
+
+  function renderDeadlines() {
+    var c = state.caseData;
+    if (!c) return;
+    var urg = typeof daysUrgency==='function' ? daysUrgency(c.cprDaysLeft) : 'ok';
+    document.getElementById('tab-panel').innerHTML =
+      '<div class="tab-panel-inner">' +
+      '<div class="panel-card" style="margin-bottom:14px">' +
+      '<div class="pc-label">CPR Deadline</div>' +
+      '<div class="kv"><span>Days remaining</span><span class="dp-'+urg+'" style="font-weight:600;padding:2px 8px;border-radius:20px">'+escapeHtml(String(c.cprDaysLeft))+' days</span></div>' +
+      '<div class="kv"><span>LOC received</span><span>'+escapeHtml(c.locDate||'—')+'</span></div>' +
+      '<div class="kv"><span>Jurisdiction</span><span>'+escapeHtml(c.jurisdiction||'—')+'</span></div>' +
+      '</div>' +
+      '<div class="panel-card">' +
+      '<div class="pc-label">CPR Checklist</div>' +
+      '<div class="kv"><span>Letter of Acknowledgement</span><span style="color:'+(c.loaStatus==='approved'?'var(--green)':'var(--amber)')+'">'+escapeHtml(c.loaStatus==='approved'?'✓ Sent':'Pending')+'</span></div>' +
+      '<div class="kv"><span>Triage complete</span><span style="color:'+(c.classification?'var(--green)':'var(--amber)')+'">'+escapeHtml(c.classification?'✓ '+c.classification:'Pending')+'</span></div>' +
+      '<div class="kv"><span>Evidence pack</span><span style="color:'+((c.evidencePct||0)>=100?'var(--green)':'var(--amber)')+'">'+escapeHtml((c.evidencePct||0)+'%')+'</span></div>' +
+      '</div>' +
+      '</div>';
+  }
+
+  function renderEvidence() {
+    var c = state.caseData;
+    if (!c) return;
+    var pct = c.evidencePct||0;
+    var pctColor = pct>=100?'var(--green)':pct>=50?'var(--amber)':'var(--red)';
+    document.getElementById('tab-panel').innerHTML =
+      '<div class="tab-panel-inner">' +
+      '<div class="panel-card" style="margin-bottom:14px">' +
+      '<div class="pc-label">Pack readiness</div>' +
+      '<div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">' +
+      '<div style="flex:1;height:8px;border-radius:4px;background:var(--border)"><div style="width:'+pct+'%;height:100%;border-radius:4px;background:'+pctColor+'"></div></div>' +
+      '<span style="font-weight:600;color:'+pctColor+'">'+pct+'%</span>' +
+      '</div>' +
+      '<div class="kv"><span>Disruption type</span><span>'+escapeHtml(c.disruptionType||'—')+'</span></div>' +
+      '<div class="kv"><span>Classification</span><span>'+escapeHtml(c.classification||'Pending')+'</span></div>' +
+      '</div>' +
+      '<div class="panel-card">' +
+      '<div class="pc-label">Evidence checklist</div>' +
+      (c.points&&c.points.length ? c.points.map(function(p){
+        var col=p.evidenceStatus==='green'?'var(--green)':p.evidenceStatus==='amber'?'var(--amber)':'var(--red)';
+        var icon=p.evidenceStatus==='green'?'ti-circle-check':p.evidenceStatus==='amber'?'ti-clock':'ti-circle-x';
+        return '<div class="kv"><span style="display:flex;align-items:center;gap:8px"><i class="ti '+icon+'" style="color:'+col+'"></i>'+escapeHtml(p.claim)+'</span><span style="color:var(--text3);font-size:11px">'+escapeHtml(p.evidenceDoc||'Outstanding')+'</span></div>';
+      }).join('') : '<div class="empty-note">No evidence items defined.</div>') +
+      '</div>' +
+      '</div>';
+  }
+
+  function renderDocuments() {
+    var c = state.caseData;
+    if (!c) return;
+    document.getElementById('tab-panel').innerHTML =
+      '<div class="tab-panel-inner">' +
+      '<div class="panel-card" style="margin-bottom:14px">' +
+      '<div class="pc-label">Document status</div>' +
+      '<div class="kv"><span>Letter of Acknowledgement</span><span style="color:'+(c.loaStatus==='approved'?'var(--green)':'var(--text3)')+'">'+escapeHtml(c.loaStatus==='approved'?'✓ Sent':'○ Not sent')+'</span></div>' +
+      '<div class="kv"><span>Letter of Response</span><span style="color:var(--text3)">○ Not drafted</span></div>' +
+      '<div class="kv"><span>Defence</span><span style="color:var(--text3)">○ Not started</span></div>' +
+      '<div class="kv"><span>Part 36 Offer</span><span style="color:var(--text3)">○ Not considered</span></div>' +
+      '</div>' +
+      '<div class="panel-card">' +
+      '<div class="pc-label">Generate document</div>' +
+      '<p style="font-size:12px;color:var(--text2);margin-bottom:12px">AI-assisted drafting available when evidence pack is complete ('+(c.evidencePct||0)+'% done).</p>' +
+      '<button class="btn-primary" '+(((c.evidencePct||0)<100)?'style="opacity:0.5;cursor:not-allowed" disabled':'')+' onclick="CaseShell.logActivity(\'Document generation initiated\',\'action\')"><i class="ti ti-file-pencil"></i> Generate Letter of Response</button>' +
+      '</div>' +
+      '</div>';
+  }
+
+  function renderFrame(tab) {
+    if (tab === 'triage') { renderTriage(); return; }
+    if (tab === 'deadlines') { renderDeadlines(); return; }
+    if (tab === 'evidence') { renderEvidence(); return; }
+    if (tab === 'documents') { renderDocuments(); return; }
   }
 
   function renderTabContent() {
     var panel = document.getElementById('tab-panel');
+    panel.innerHTML = '';
     if (state.tab === 'overview') {
-      panel.innerHTML = '';
       renderOverview();
+    } else if (state.tab === 'triage') {
+      renderTriage();
+    } else if (state.tab === 'deadlines') {
+      renderDeadlines();
+    } else if (state.tab === 'evidence') {
+      renderEvidence();
+    } else if (state.tab === 'documents') {
+      renderDocuments();
     } else if (state.tab === 'activity') {
-      panel.innerHTML = '';
       renderActivity();
-    } else if (FRAME_MAP[state.tab]) {
-      renderFrame(state.tab);
     }
   }
 
