@@ -23,7 +23,7 @@
   --r:8px;--r2:12px;--r3:16px;
 }
 html,body{height:100%;font-family:var(--font);background:var(--surface2);color:var(--text);font-size:14px}
-.app{display:flex;flex-direction:column;height:100vh}
+.app{display:flex;flex-direction:column;height:calc(100vh - 48px);min-height:0}
 
 /* topbar */
 .topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px;height:54px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
@@ -39,7 +39,7 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 .btn-back:hover{background:var(--surface3)}
 
 /* layout */
-.body{flex:1;display:grid;grid-template-columns:240px 1fr 200px;overflow:hidden;min-height:0;transition:grid-template-columns .2s ease}
+.body{flex:1;display:grid;grid-template-columns:240px 1fr 200px;grid-template-rows:minmax(0,1fr);overflow:hidden;min-height:0;transition:grid-template-columns .2s ease}
 .body.doc-focused{grid-template-columns:220px 1fr 0}
 .body.doc-focused .sidebar-right{opacity:0;pointer-events:none;overflow:hidden;border:none;padding:0}
 .sidebar-left{border-right:1px solid var(--border);background:var(--surface);overflow-y:auto;padding:14px;min-height:0}
