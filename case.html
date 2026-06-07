@@ -20,7 +20,7 @@
   --font:'DM Sans',sans-serif;--mono:'DM Mono',monospace;
   --r:8px;--r2:12px;--r3:16px;
 }
-html,body{min-height:100%;font-family:var(--font);background:var(--surface2);color:var(--text);font-size:14px}
+html,body{min-height:100%;height:auto;font-family:var(--font);background:var(--surface2);color:var(--text);font-size:14px}
 .global-nav{background:var(--navy);height:48px;display:flex;align-items:center;padding:0 20px;flex-shrink:0}
 .gn-logo{display:flex;align-items:center;gap:8px;text-decoration:none;margin-right:20px}
 .gn-mark{width:28px;height:28px;background:var(--blue);border-radius:6px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px}
@@ -33,7 +33,7 @@ html,body{min-height:100%;font-family:var(--font);background:var(--surface2);col
 .gn-user-btn{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:20px;padding:3px 10px 3px 4px;cursor:pointer}
 .gn-av{width:24px;height:24px;border-radius:50%;background:var(--navy3);color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500}
 .gn-user{font-size:11px;font-weight:500;color:rgba(255,255,255,0.8)}
-.shell{display:flex;flex-direction:column;min-height:calc(100vh - 48px)}
+.shell{display:flex;flex-direction:column;min-height:calc(100vh - 48px);height:auto}
 .case-header{background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0}
 .case-bar-top{display:flex;align-items:center;gap:12px;padding:10px 20px;flex-wrap:wrap}
 .case-back{font-size:12px;color:var(--text2);text-decoration:none;display:flex;align-items:center;gap:4px}
@@ -59,7 +59,7 @@ html,body{min-height:100%;font-family:var(--font);background:var(--surface2);col
 .stage-tab:hover{color:var(--text)}
 .stage-tab.active{color:var(--blue-text);border-bottom-color:var(--blue)}
 .stage-tab.done{color:var(--green)}
-.tab-panel{flex:1;overflow:visible;min-height:0}
+.tab-panel{flex:1;overflow:visible;min-height:0;height:auto}
 .tab-panel-inner{height:100%;overflow-y:auto;padding:16px 20px}
 .case-frame{width:100%;height:100%;border:none;background:var(--surface2)}
 .overview-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
