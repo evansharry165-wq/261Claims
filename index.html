@@ -30,77 +30,114 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 .gn-link{display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r);font-size:12px;font-weight:500;color:rgba(255,255,255,0.5);text-decoration:none;transition:all 0.15s;white-space:nowrap}
 .gn-link:hover{background:rgba(255,255,255,0.08);color:#fff}
 .gn-link.active{background:rgba(42,111,219,0.35);color:#fff}
-.gn-link i{font-size:13px}
 .gn-right{display:flex;align-items:center;gap:8px;margin-left:8px}
 .gn-user-btn{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:20px;padding:3px 10px 3px 4px;cursor:pointer}
 .gn-av{width:24px;height:24px;border-radius:50%;background:var(--navy3);color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500}
 .gn-user{font-size:11px;font-weight:500;color:rgba(255,255,255,0.8)}
-.page{height:calc(100vh - 48px);overflow-y:auto;padding:20px 24px;max-width:960px}
-.page-header{margin-bottom:16px}
-.greeting{font-size:20px;font-weight:500;color:var(--text);letter-spacing:-0.02em;margin-bottom:2px}
-.greeting-sub{font-size:12px;color:var(--text3)}
+
+.page{height:calc(100vh - 48px);overflow-y:auto;padding:20px 24px 32px;max-width:1140px;margin:0 auto}
+.page-header{margin-bottom:16px;display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.greeting{font-size:22px;font-weight:500;color:var(--text);letter-spacing:-0.02em;margin-bottom:3px}
+.greeting-sub{font-size:12px;color:var(--text3);line-height:1.5}
+.stat-bar{display:flex;flex-wrap:wrap;gap:8px}
+.stat-chip{font-size:11px;font-weight:500;padding:5px 11px;border-radius:20px;border:1px solid var(--border);background:var(--surface);color:var(--text2);display:inline-flex;align-items:center;gap:5px}
+.stat-chip.urgent{background:var(--red-faint);border-color:#FECACA;color:var(--red)}
+.stat-chip.new{background:var(--blue-faint);border-color:#BFDBFE;color:var(--blue-text)}
+.stat-chip.active{background:var(--green-faint);border-color:#BBF7D0;color:var(--green)}
+
 .toolbar{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap}
-.search-wrap{flex:1;min-width:200px;position:relative}
+.search-wrap{flex:1;min-width:180px;position:relative}
 .search-wrap i{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:14px}
 .search-input{width:100%;height:36px;border:1px solid var(--border);border-radius:var(--r);padding:0 12px 0 34px;font-family:var(--font);font-size:12px;background:var(--surface)}
 .search-input:focus{outline:none;border-color:var(--blue)}
-.btn-new{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:var(--r);background:var(--navy);color:#fff;font-size:12px;font-weight:500;text-decoration:none;border:none;cursor:pointer;font-family:var(--font)}
-.btn-new:hover{opacity:0.9}
-.demo-zone{margin-bottom:18px}
-.demo-zone-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
-.demo-zone-title{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.07em;color:var(--text3);display:flex;align-items:center;gap:6px}
-.demo-zone-sub{font-size:11px;color:var(--text3)}
-.demo-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
-@media(max-width:720px){.demo-grid{grid-template-columns:1fr}}
-.demo-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r3);padding:14px 16px;cursor:pointer;transition:border-color .15s,box-shadow .15s;display:flex;flex-direction:column;gap:8px;min-height:140px}
-.demo-card:hover{border-color:#BFDBFE;box-shadow:0 4px 16px rgba(42,111,219,0.08)}
-.demo-card.flagship{border-color:#BFDBFE;background:linear-gradient(135deg,var(--blue-faint),#fff)}
-.demo-card-flag{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:.06em;color:var(--blue-text);background:var(--blue-faint);border-radius:20px;padding:2px 8px;display:inline-flex;align-items:center;gap:4px;width:fit-content}
-.demo-card-title{font-size:13px;font-weight:500;color:var(--text);line-height:1.35}
-.demo-card-sub{font-size:11px;color:var(--text3);line-height:1.45}
-.demo-card-feats{display:flex;flex-wrap:wrap;gap:4px;margin-top:auto}
-.demo-feat{font-size:9px;padding:2px 6px;border-radius:20px;background:var(--surface3);color:var(--text2)}
-.demo-card-meta{display:flex;justify-content:space-between;align-items:center;font-size:10px;color:var(--text3);margin-top:4px}
-.demo-card-play{color:var(--blue-text);font-weight:500;display:flex;align-items:center;gap:3px}
-.search-dropdown{display:none;position:absolute;left:0;right:0;top:calc(100% + 4px);background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);box-shadow:0 8px 24px rgba(0,0,0,0.08);z-index:50;max-height:280px;overflow-y:auto}
-.search-dropdown.open{display:block}
-.zone{margin-bottom:16px}
-.zone-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:var(--r);font-size:12px;font-weight:500;font-family:var(--font);cursor:pointer;text-decoration:none;border:1px solid transparent}
+.btn-primary{background:var(--navy);color:#fff}
+.btn-primary:hover{opacity:.92}
+.btn-outline{background:var(--surface);border-color:var(--border2);color:var(--text2)}
+.btn-outline:hover{background:var(--surface3)}
+
+.work-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+@media(max-width:860px){.work-grid{grid-template-columns:1fr}}
+.zone{margin-bottom:14px}
+.zone-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;gap:8px}
 .zone-title{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.07em;color:var(--text3);display:flex;align-items:center;gap:6px}
 .zone-link{font-size:11px;color:var(--blue-text);text-decoration:none}
 .zone-link:hover{text-decoration:underline}
 .panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--r3);overflow:hidden}
-.task-row{display:grid;grid-template-columns:auto 1fr auto auto;gap:10px;align-items:center;padding:12px 16px;border-bottom:1px solid var(--border);cursor:pointer;transition:background 0.15s}
+
+.task-row{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;padding:11px 14px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s}
 .task-row:last-child{border-bottom:none}
 .task-row:hover{background:var(--surface2)}
 .task-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-.task-dot.urgent{background:var(--red)}
-.task-dot.warn{background:var(--amber)}
-.task-dot.ok{background:var(--green)}
+.task-dot.urgent{background:var(--red)}.task-dot.warn{background:var(--amber)}.task-dot.ok{background:var(--green)}
 .task-ref{font-size:10px;font-family:var(--mono);color:var(--text3)}
-.task-action{font-size:13px;font-weight:500;color:var(--text)}
-.task-claimant{font-size:11px;color:var(--text3);margin-top:1px}
-.task-deadline{font-size:11px;font-weight:500;white-space:nowrap}
-.task-deadline.urgent{color:var(--red)}
-.task-deadline.warn{color:var(--amber)}
-.task-open{font-size:11px;color:var(--blue-text);font-weight:500}
-.watch-row{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--border);cursor:pointer;font-size:12px}
-.watch-row:last-child{border-bottom:none}
-.watch-row:hover{background:var(--surface2)}
-.watch-icon{color:var(--amber);flex-shrink:0}
-.watch-text{flex:1;color:var(--text2);line-height:1.4}
-.portfolio-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);overflow:hidden}
-.portfolio-wrap summary{padding:12px 16px;cursor:pointer;font-size:12px;font-weight:500;color:var(--text2);list-style:none;display:flex;align-items:center;gap:8px}
-.portfolio-wrap summary::-webkit-details-marker{display:none}
-.portfolio-wrap summary::before{content:'';width:0;height:0;border-left:5px solid var(--text3);border-top:4px solid transparent;border-bottom:4px solid transparent;transition:transform 0.15s}
-.portfolio-wrap[open] summary::before{transform:rotate(90deg)}
-.portfolio-body{padding:0 16px 14px;font-size:12px;color:var(--text2);line-height:1.6}
-.pipeline-line{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
-.pipe-chip{font-size:11px;padding:3px 8px;border-radius:20px;background:var(--surface3);color:var(--text2)}
-.empty-row{padding:24px 16px;text-align:center;color:var(--text3);font-size:12px}
+.task-action{font-size:12px;font-weight:500;color:var(--text);line-height:1.35}
+.task-claimant{font-size:11px;color:var(--text3);margin-top:2px}
+.task-meta{font-size:10px;color:var(--text3);white-space:nowrap;text-align:right}
+.task-deadline{font-size:11px;font-weight:500}
+.task-deadline.urgent{color:var(--red)}.task-deadline.warn{color:var(--amber)}
+
+.update-row{display:flex;gap:10px;padding:11px 14px;border-bottom:1px solid var(--border);cursor:pointer;align-items:flex-start}
+.update-row:last-child{border-bottom:none}
+.update-row:hover{background:var(--surface2)}
+.update-row.unread{background:var(--blue-faint)}
+.update-icon{width:28px;height:28px;border-radius:var(--r);background:var(--surface3);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:13px;color:var(--text3)}
+.update-body{flex:1;min-width:0}
+.update-text{font-size:12px;color:var(--text);line-height:1.45}
+.update-meta{font-size:10px;color:var(--text3);margin-top:3px}
+
+.ongoing-table{width:100%;border-collapse:collapse;font-size:12px}
+.ongoing-table th{text-align:left;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);padding:10px 14px;border-bottom:2px solid var(--border);background:var(--surface2)}
+.ongoing-table td{padding:10px 14px;border-bottom:1px solid var(--border);vertical-align:middle}
+.ongoing-table tr:hover td{background:var(--surface2);cursor:pointer}
+.stage-pill{font-size:10px;font-weight:500;padding:2px 7px;border-radius:20px;background:var(--surface3);color:var(--text2)}
+
+.cal-panel{padding:14px 16px}
+.cal-toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:10px;flex-wrap:wrap}
+.cal-month{font-size:15px;font-weight:500;letter-spacing:-.02em}
+.cal-nav{display:flex;gap:4px}
+.cal-nav button{width:32px;height:32px;border:1px solid var(--border);border-radius:var(--r);background:var(--surface);cursor:pointer;color:var(--text2);font-family:var(--font)}
+.cal-nav button:hover{background:var(--surface3)}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:12px}
+.cal-dow{font-size:10px;font-weight:500;text-transform:uppercase;color:var(--text3);text-align:center;padding:4px 0}
+.cal-day{min-height:52px;border:1px solid var(--border);border-radius:var(--r);padding:5px 6px;font-size:11px;background:var(--surface);cursor:pointer;transition:all .12s}
+.cal-day:hover{border-color:var(--blue);background:var(--blue-faint)}
+.cal-day.empty{background:transparent;border-color:transparent;cursor:default}
+.cal-day.today{border-color:var(--blue);box-shadow:inset 0 0 0 1px var(--blue)}
+.cal-day.selected{background:var(--navy);border-color:var(--navy);color:#fff}
+.cal-day.selected .cal-ev-dot{background:rgba(255,255,255,.7)}
+.cal-day-num{font-weight:500;margin-bottom:3px}
+.cal-ev-dots{display:flex;gap:3px;flex-wrap:wrap}
+.cal-ev-dot{width:6px;height:6px;border-radius:50%;background:var(--blue-text)}
+.cal-ev-dot.urgent{background:var(--red)}.cal-ev-dot.warn{background:var(--amber)}
+.cal-day-detail{border-top:1px solid var(--border);padding-top:12px}
+.cal-event{padding:10px 12px;border:1px solid var(--border);border-radius:var(--r2);margin-bottom:8px;background:var(--surface2);cursor:pointer}
+.cal-event:hover{border-color:var(--border2);background:#fff}
+.cal-event.urgent{border-left:3px solid var(--red)}
+.cal-event.warn{border-left:3px solid var(--amber)}
+.cal-event-label{font-size:12px;font-weight:500;margin-bottom:2px}
+.cal-event-note{font-size:11px;color:var(--text2);line-height:1.45}
+.cal-event-meta{font-size:10px;color:var(--text3);margin-top:4px;font-family:var(--mono)}
+
+.demo-wrap{margin-top:8px}
+.demo-wrap summary{padding:12px 14px;cursor:pointer;font-size:12px;font-weight:500;color:var(--text2);list-style:none;display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r2)}
+.demo-wrap summary::-webkit-details-marker{display:none}
+.demo-wrap summary::before{content:'';width:0;height:0;border-left:5px solid var(--text3);border-top:4px solid transparent;border-bottom:4px solid transparent}
+.demo-wrap[open] summary::before{transform:rotate(90deg)}
+.demo-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;padding:12px 0 4px}
+@media(max-width:720px){.demo-grid{grid-template-columns:1fr}}
+.demo-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:12px 14px;cursor:pointer}
+.demo-card:hover{border-color:#BFDBFE;background:var(--blue-faint)}
+.demo-card-title{font-size:12px;font-weight:500;margin-bottom:3px}
+.demo-card-sub{font-size:11px;color:var(--text3);line-height:1.4}
+
+.empty-row{padding:22px 16px;text-align:center;color:var(--text3);font-size:12px;line-height:1.55}
+.search-dropdown{display:none;position:absolute;left:0;right:0;top:calc(100% + 4px);background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);box-shadow:0 8px 24px rgba(0,0,0,0.08);z-index:50;max-height:280px;overflow-y:auto}
+.search-dropdown.open{display:block}
+
 .user-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.3);z-index:1000;align-items:flex-start;justify-content:flex-end;padding:52px 20px 0}
 .user-modal.open{display:flex}
-.user-dropdown{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);width:230px;box-shadow:0 4px 20px rgba(0,0,0,0.12);overflow:hidden}
+.user-dropdown{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);width:230px;box-shadow:0 4px 20px rgba(0,0,0,0.12);overflow:hidden;max-height:calc(100vh - 70px);overflow-y:auto}
 .ud-header{padding:10px 14px;border-bottom:1px solid var(--border);font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.07em;color:var(--text3)}
 .ud-item{display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer}
 .ud-item:hover,.ud-item.current{background:var(--blue-faint)}
@@ -110,73 +147,30 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 .ud-tick{margin-left:auto;color:var(--green);font-size:14px;display:none}
 .ud-item.current .ud-tick{display:block}
 
-/* Instrument Serif headings */
-.greeting, .page-title, h1, .zone-title, .hdr-title { font-family: var(--font-serif) !important; font-weight: 400; letter-spacing: -0.02em; }
-
+.greeting,.page-title,h1,.zone-title,.hdr-title,.cal-month{font-family:var(--font-serif)!important;font-weight:400;letter-spacing:-0.02em}
 </style>
 </head>
 <body>
 <script src="shared_data.js"></script>
 <script src="case_helpers.js"></script>
+<script src="case_filing.js"></script>
+<script src="work_dashboard.js"></script>
 <script src="demo_studies.js"></script>
 
 <nav class="global-nav">
-  <a href="index.html" class="gn-logo">
-    <div class="gn-mark"><i class="ti ti-plane"></i></div>
-    <span class="gn-name">261Claims</span>
-  </a>
+  <a href="index.html" class="gn-logo"><div class="gn-mark"><i class="ti ti-plane"></i></div><span class="gn-name">261Claims</span></a>
   <div class="gn-links" id="gn-links"></div>
   <div class="gn-right">
-    <div class="gn-user-btn" onclick="toggleUserMenu()">
-      <div class="gn-av" id="nav-av">SB</div>
-      <span class="gn-user" id="nav-user">S. Booth</span>
-      <i class="ti ti-chevron-down" style="font-size:10px;color:rgba(255,255,255,0.4);margin-left:2px"></i>
-    </div>
+    <div class="gn-user-btn" onclick="toggleUserMenu()"><div class="gn-av" id="nav-av">SB</div><span class="gn-user" id="nav-user">S. Booth</span><i class="ti ti-chevron-down" style="font-size:10px;color:rgba(255,255,255,0.4)"></i></div>
   </div>
 </nav>
 
 <div class="page" id="page"></div>
 
 <script>
+var calYear=2026, calMonth=5, selectedCalDay='2026-06-09';
+
 function escapeHtml(v){return String(v==null?'':v).replace(/[&<>"']/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch];});}
-
-function demoStudiesHtml(){
-  if(typeof DEMO_STUDIES==='undefined')return '';
-  var studies=DEMO_STUDIES.slice();
-  return '<div class="demo-zone"><div class="demo-zone-hdr"><div class="demo-zone-title"><i class="ti ti-player-play"></i> Demo case studies</div><span class="demo-zone-sub">Curated paths showing how 261Claims works when set up</span></div><div class="demo-grid">'
-    +studies.map(function(s){
-      return '<div class="demo-card'+(s.flagship?' flagship':'')+'" onclick="openDemoStudy(\''+s.id+'\')">'
-        +(s.flagship?'<span class="demo-card-flag"><i class="ti ti-star" style="font-size:10px"></i> Flagship demo</span>':'')
-        +'<div class="demo-card-title">'+escapeHtml(s.title)+'</div>'
-        +'<div class="demo-card-sub">'+escapeHtml(s.subtitle)+'</div>'
-        +'<div class="demo-card-feats">'+(s.features||[]).slice(0,4).map(function(f){return '<span class="demo-feat">'+escapeHtml(f)+'</span>';}).join('')+'</div>'
-        +'<div class="demo-card-meta"><span>'+escapeHtml(s.duration)+'</span><span class="demo-card-play">Start <i class="ti ti-arrow-right" style="font-size:11px"></i></span></div>'
-        +'</div>';
-    }).join('')
-    +'</div></div>';
-}
-
-function taskRows(tasks){
-  if(!tasks.length)return '<div class="empty-row">'+escapeHtml(t('noTasks'))+'</div>';
-  return tasks.map(function(tk){
-    var urg=daysUrgency(tk.urg);
-    return '<div class="task-row" data-ref="'+escapeHtml(tk.ref)+'" data-tab="'+escapeHtml(tk.tab||'')+'"><div class="task-dot '+urg+'"></div><div><div class="task-ref">'+escapeHtml(tk.ref)+'</div><div class="task-action">'+escapeHtml(tk.txt)+'</div><div class="task-claimant">'+escapeHtml(tk.claimant||'')+(tk.blocker?' · '+escapeHtml(tk.blocker):'')+'</div></div><div class="task-deadline '+urg+'">'+escapeHtml(urgencyLabel(tk.urg))+'</div><div class="task-open">Open <i class="ti ti-arrow-right"></i></div></div>';
-  }).join('');
-}
-
-function watchRows(items){
-  if(!items.length)return '<div class="panel"><div class="empty-row"><i class="ti ti-circle-check" style="color:var(--green);margin-right:4px"></i>'+escapeHtml(t('noUrgentDeadlines'))+'</div></div>';
-  return '<div class="panel">'+items.map(function(w){
-    return '<div class="watch-row" data-ref="'+escapeHtml(w.ref)+'" data-tab="'+escapeHtml(w.tab||'')+'"><i class="ti ti-alert-triangle watch-icon"></i><span class="watch-text">'+escapeHtml(w.text)+'</span><span class="task-deadline '+daysUrgency(w.urgency)+'">'+escapeHtml(urgencyLabel(w.urgency))+'</span></div>';
-  }).join('')+'</div>';
-}
-
-function portfolioHtml(cases, uid, expanded){
-  var p=portfolioSummary(cases);
-  var line=p.counts.map(function(x){return x.n+' '+escapeHtml(t('stage_'+x.stage)||x.stage);}).join(' · ');
-  var openAttr=expanded?' open':'';
-  return '<details class="portfolio-wrap zone"'+openAttr+'><summary><i class="ti ti-chart-bar"></i> '+escapeHtml(t('portfolio'))+' — '+p.total+' case'+(p.total!==1?'s':'')+'</summary><div class="portfolio-body"><div>'+line+'</div><div style="margin-top:6px">Indicative exposure: '+(p.totalValue?p.totalValue.toLocaleString():'0')+'</div><div class="pipeline-line">'+p.counts.map(function(x){var filt=x.stage==='cpr'?'deadlines':x.stage;return '<a class="pipe-chip" href="cases.html?filter='+filt+'" style="text-decoration:none">'+escapeHtml(t('stage_'+x.stage)||x.stage)+' ('+x.n+')</a>';}).join('')+'</div></div></details>';
-}
 
 function bindCaseClicks(root){
   (root||document).querySelectorAll('[data-ref]').forEach(function(row){
@@ -197,87 +191,160 @@ function searchCases(q){
   }).slice(0,6);
   box.innerHTML=matches.length?matches.map(function(c){
     var a=getNextAction(c);
-    return '<div class="task-row" data-ref="'+escapeHtml(c.ref)+'" data-tab="'+escapeHtml(a.tab)+'" style="grid-template-columns:auto 1fr auto"><div class="task-dot '+daysUrgency(c.cprDaysLeft)+'"></div><div><div class="task-ref">'+escapeHtml(c.ref)+'</div><div class="task-action">'+escapeHtml(c.claimant)+'</div></div><div class="task-deadline">'+escapeHtml(urgencyLabel(c.cprDaysLeft))+'</div></div>';
+    return '<div class="task-row" data-ref="'+escapeHtml(c.ref)+'" data-tab="'+escapeHtml(a.tab)+'"><div class="task-dot '+daysUrgency(c.cprDaysLeft)+'"></div><div><div class="task-ref">'+escapeHtml(c.ref)+'</div><div class="task-action">'+escapeHtml(c.claimant)+'</div></div><div class="task-deadline">'+escapeHtml(urgencyLabel(c.cprDaysLeft))+'</div></div>';
   }).join(''):'<div class="empty-row">No matching cases</div>';
   box.classList.add('open');
   bindCaseClicks(box);
 }
 
-function render(){
+function shiftCalMonth(delta){
+  calMonth+=delta;
+  if(calMonth<0){calMonth=11;calYear--;}
+  if(calMonth>11){calMonth=0;calYear++;}
+  render();
+}
+
+function selectCalDay(iso){
+  selectedCalDay=iso;
+  render();
+}
+
+function downloadWorkCalendar(){
   var uid=getActiveUser();
-  var u=USERS[uid]||USERS.SB;
-  if(uid==='EH'){renderEvidenceWork(u);return;}
+  var cases=getCasesForUser(uid);
+  var events=WorkDashboard.buildCalendarEvents(cases);
+  WorkDashboard.downloadCalendarIcs(events,'261Claims-CPR-deadlines-'+uid+'.ics');
+}
 
-  var cases=getCasesForUser(uid).slice().sort(function(a,b){return a.cprDaysLeft-b.cprDaysLeft;});
-  var tasks=collectDoNowTasks(cases,5);
-  var watch=buildWatchItems(cases);
+function updatesHtml(updates){
+  if(!updates.length)return '<div class="empty-row">Nothing new since your last visit.</div>';
+  return updates.slice(0,8).map(function(u){
+    var icon=u.type==='notification'?'ti-bell':u.type==='upload'?'ti-upload':u.type==='ai'?'ti-sparkles':'ti-activity';
+    return '<div class="update-row'+(u.unread?' unread':'')+'" data-ref="'+escapeHtml(u.ref)+'" data-tab="'+escapeHtml(u.tab||'overview')+'"><div class="update-icon"><i class="ti '+icon+'"></i></div><div class="update-body"><div class="update-text">'+escapeHtml(u.text)+'</div><div class="update-meta">'+escapeHtml(u.ref||'')+(u.ref?' · ':'')+escapeHtml(u.time)+'</div></div></div>';
+  }).join('');
+}
+
+function tasksHtml(tasks){
+  if(!tasks.length)return '<div class="empty-row">'+escapeHtml(t('noTasks'))+'</div>';
+  return tasks.map(function(tk){
+    var urg=daysUrgency(tk.urg);
+    return '<div class="task-row" data-ref="'+escapeHtml(tk.ref)+'" data-tab="'+escapeHtml(tk.tab||'')+'"><div class="task-dot '+urg+'"></div><div><div class="task-ref">'+escapeHtml(tk.ref)+'</div><div class="task-action">'+escapeHtml(tk.txt)+'</div><div class="task-claimant">'+escapeHtml(tk.claimant||'')+(tk.blocker?' · '+escapeHtml(tk.blocker):'')+'</div></div><div class="task-meta"><div class="task-deadline '+urg+'">'+escapeHtml(urgencyLabel(tk.urg))+'</div></div></div>';
+  }).join('');
+}
+
+function ongoingHtml(rows){
+  if(!rows.length)return '<div class="empty-row">No active cases assigned.</div>';
+  return '<table class="ongoing-table"><thead><tr><th>Case</th><th>Stage</th><th>Next action</th><th>CPR</th><th>Evidence</th></tr></thead><tbody>'
+    +rows.map(function(r){
+      return '<tr data-ref="'+escapeHtml(r.ref)+'" data-tab="'+escapeHtml(r.tab)+'"><td><div class="task-ref">'+escapeHtml(r.ref)+'</div><div class="task-action">'+escapeHtml(r.claimant)+'</div><div class="task-claimant">'+escapeHtml(r.flightNum)+'</div></td><td><span class="stage-pill">'+escapeHtml(t('stage_'+r.stage)||r.stage)+'</span></td><td style="font-size:12px">'+escapeHtml(r.action)+'</td><td><span class="task-deadline '+r.urgency+'">'+escapeHtml(urgencyLabel(r.cprDaysLeft))+'</span></td><td>'+r.evidencePct+'%</td></tr>';
+    }).join('')+'</tbody></table>';
+}
+
+function calendarHtml(events){
+  var cells=WorkDashboard.buildMonthGrid(calYear,calMonth,events,selectedCalDay);
+  var monthLabel=WorkDashboard.MONTHS[calMonth]+' '+calYear;
+  var dows=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  var dayEvents=WorkDashboard.eventsOnDate(events,selectedCalDay);
+  var detailLabel=selectedCalDay?new Date(selectedCalDay+'T12:00:00').toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'}):'Select a day';
+
+  return '<div class="cal-panel"><div class="cal-toolbar"><div class="cal-month">'+escapeHtml(monthLabel)+'</div><div class="cal-nav"><button type="button" onclick="shiftCalMonth(-1)" aria-label="Previous month"><i class="ti ti-chevron-left"></i></button><button type="button" onclick="shiftCalMonth(1)" aria-label="Next month"><i class="ti ti-chevron-right"></i></button></div><button type="button" class="btn btn-outline" onclick="downloadWorkCalendar()"><i class="ti ti-calendar-down"></i> Download .ics</button></div>'
+    +'<div class="cal-grid">'+dows.map(function(d){return '<div class="cal-dow">'+d+'</div>';}).join('')
+    +cells.map(function(c){
+      if(c.empty)return '<div class="cal-day empty"></div>';
+      var cls='cal-day'+(c.isToday?' today':'')+(c.isSelected?' selected':'');
+      var dots=c.events.slice(0,4).map(function(e){return '<span class="cal-ev-dot '+e.urgency+'"></span>';}).join('');
+      return '<div class="'+cls+'" onclick="selectCalDay(\''+c.iso+'\')"><div class="cal-day-num">'+c.day+'</div><div class="cal-ev-dots">'+dots+'</div></div>';
+    }).join('')+'</div>'
+    +'<div class="cal-day-detail"><div class="zone-title" style="margin-bottom:8px"><i class="ti ti-calendar-event"></i> '+escapeHtml(detailLabel)+'</div>'
+    +(dayEvents.length?dayEvents.map(function(e){
+      return '<div class="cal-event '+e.urgency+'" data-ref="'+escapeHtml(e.ref)+'" data-tab="'+escapeHtml(e.tab)+'"><div class="cal-event-label">'+escapeHtml(e.label)+'</div><div class="cal-event-note">'+escapeHtml(e.note)+'</div><div class="cal-event-meta">'+escapeHtml(e.ref)+' · '+escapeHtml(e.claimant)+'</div></div>';
+    }).join(''):'<div class="empty-row" style="padding:12px">No deadlines or notes on this day.</div>')
+    +'</div></div>';
+}
+
+function demoToursHtml(){
+  if(typeof DEMO_STUDIES==='undefined')return '';
+  return '<details class="demo-wrap"><summary><i class="ti ti-player-play"></i> Guided demo tours</summary><div class="demo-grid">'
+    +DEMO_STUDIES.slice(0,4).map(function(s){
+      return '<div class="demo-card" onclick="openDemoStudy(\''+s.id+'\')"><div class="demo-card-title">'+escapeHtml(s.title)+'</div><div class="demo-card-sub">'+escapeHtml(s.subtitle)+' · '+escapeHtml(s.duration)+'</div></div>';
+    }).join('')+'</div></details>';
+}
+
+function renderLegalWork(uid,u,cases){
+  var tasks=collectDoNowTasks(cases,6);
+  var updates=WorkDashboard.getUpdatesSinceLogin(cases,uid);
+  var ongoing=WorkDashboard.getOngoingCases(cases);
+  var events=WorkDashboard.buildCalendarEvents(cases);
+  var summary=WorkDashboard.roleSummary(uid,cases,updates,tasks);
   var greeting=(new Date().getHours()<12?t('goodMorning'):new Date().getHours()<18?t('goodAfternoon'):t('goodEvening'));
-  var portfolioExpanded=(uid==='SB');
-
-  var notifs=typeof getNotifications==='function'?getNotifications(uid).filter(function(n){return !n.read;}):[];
-  var notifBar=notifs.length?'<div class="zone" style="margin-bottom:14px"><div class="panel" style="padding:12px 16px;background:var(--blue-faint);border-color:#BFDBFE"><div style="font-size:12px;font-weight:500;color:var(--blue-text);margin-bottom:6px"><i class="ti ti-bell"></i> '+notifs.length+' notification'+(notifs.length!==1?'s':'')+'</div>'+notifs.slice(0,3).map(function(n){
-    return '<div class="task-row" data-ref="'+escapeHtml(n.ref||'')+'" data-tab="'+escapeHtml(n.tab||'evidence')+'" style="margin-top:6px;cursor:pointer"><div class="task-dot urgent"></div><div><div class="task-action">'+escapeHtml(n.title)+'</div><div class="task-claimant">'+escapeHtml(n.body)+'</div></div></div>';
-  }).join('')+'</div></div>':'';
 
   document.getElementById('page').innerHTML=
-    '<div class="page-header"><div class="greeting">'+greeting+', '+escapeHtml(u.full.split(' ')[0])+'</div><div class="greeting-sub">'+escapeHtml(u.role)+' · '+cases.length+' active case'+(cases.length!==1?'s':'')+'</div></div>'
-    +notifBar
-    +demoStudiesHtml()
-    +'<div class="toolbar"><div class="search-wrap"><i class="ti ti-search"></i><input class="search-input" id="work-search" placeholder="'+escapeHtml(t('searchCases'))+'" oninput="searchCases(this.value)" onfocus="if(this.value)searchCases(this.value)"><div class="search-dropdown" id="search-dropdown"></div></div><a class="btn-new" href="intake.html"><i class="ti ti-mail-plus"></i> '+escapeHtml(t('newClaim'))+'</a></div>'
-    +'<div class="zone"><div class="zone-hdr"><div class="zone-title"><i class="ti ti-list-check"></i> '+escapeHtml(t('doNow'))+'</div><a class="zone-link" href="cases.html?sort=urgency">'+escapeHtml(t('viewAll'))+' <i class="ti ti-arrow-right"></i></a></div><div class="panel">'+taskRows(tasks)+'</div></div>'
-    +'<div class="zone"><div class="zone-hdr"><div class="zone-title"><i class="ti ti-alert-triangle"></i> '+escapeHtml(t('watch'))+'</div></div>'+watchRows(watch)+'</div>'
-    +portfolioHtml(cases,uid,portfolioExpanded);
+    '<div class="page-header"><div><div class="greeting">'+greeting+', '+escapeHtml(u.full.split(' ')[0])+'</div><div class="greeting-sub">'+escapeHtml(u.role)+' — your work queue, updates and CPR calendar</div></div>'
+    +'<div class="stat-bar">'
+    +(summary.urgent?'<span class="stat-chip urgent"><i class="ti ti-alert-circle"></i> '+summary.urgent+' urgent</span>':'')
+    +(summary.updates?'<span class="stat-chip new"><i class="ti ti-bell"></i> '+summary.updates+' since last visit</span>':'')
+    +'<span class="stat-chip active"><i class="ti ti-briefcase"></i> '+summary.active+' active cases</span>'
+    +'</div></div>'
+    +'<div class="toolbar"><div class="search-wrap"><i class="ti ti-search"></i><input class="search-input" id="work-search" placeholder="'+escapeHtml(t('searchCases'))+'" oninput="searchCases(this.value)" onfocus="if(this.value)searchCases(this.value)"><div class="search-dropdown" id="search-dropdown"></div></div>'
+    +'<a class="btn btn-primary" href="intake.html"><i class="ti ti-mail-plus"></i> '+escapeHtml(t('newClaim'))+'</a>'
+    +'<button type="button" class="btn btn-outline" onclick="downloadWorkCalendar()"><i class="ti ti-calendar-down"></i> CPR calendar (.ics)</button></div>'
+    +'<div class="work-grid">'
+    +'<div class="zone"><div class="zone-hdr"><div class="zone-title"><i class="ti ti-sparkles"></i> Since you last logged in</div></div><div class="panel">'+updatesHtml(updates)+'</div></div>'
+    +'<div class="zone"><div class="zone-hdr"><div class="zone-title"><i class="ti ti-list-check"></i> '+escapeHtml(t('doNow'))+'</div><a class="zone-link" href="cases.html?sort=urgency">'+escapeHtml(t('viewAll'))+'</a></div><div class="panel">'+tasksHtml(tasks)+'</div></div>'
+    +'</div>'
+    +'<div class="zone"><div class="zone-hdr"><div class="zone-title"><i class="ti ti-briefcase"></i> Ongoing cases</div><a class="zone-link" href="cases.html">'+escapeHtml(t('viewAll'))+'</a></div><div class="panel">'+ongoingHtml(ongoing)+'</div></div>'
+    +'<div class="zone"><div class="zone-hdr"><div class="zone-title"><i class="ti ti-calendar"></i> Work &amp; CPR calendar</div><span class="zone-link" style="cursor:default;color:var(--text3)">Deadlines, case notes and comments by month</span></div><div class="panel">'+calendarHtml(events)+'</div></div>'
+    +demoToursHtml();
 
   bindCaseClicks(document.getElementById('page'));
-  document.addEventListener('click',function closeSearch(e){
-    var wrap=document.querySelector('.search-wrap');
-    if(wrap&&!wrap.contains(e.target)){
-      var dd=document.getElementById('search-dropdown');
-      if(dd)dd.classList.remove('open');
-    }
-  },{once:true});
-  if(typeof renderGlobalNav==='function')renderGlobalNav();
+  WorkDashboard.recordVisit(uid);
 }
 
 function renderEvidenceWork(u){
+  var uid=getActiveUser();
   var open=getEvidenceRequests().filter(function(r){return r.status!=='complete';});
-  var ehUid=getActiveUser();
-  var notifs=typeof getNotifications==='function'?getNotifications(ehUid).filter(function(n){return !n.read;}):[];
-  var notifBar=notifs.length?'<div class="zone" style="margin-bottom:14px"><div class="panel" style="padding:12px 16px;background:var(--blue-faint);border-color:#BFDBFE"><div style="font-size:12px;font-weight:500;color:var(--blue-text);margin-bottom:6px"><i class="ti ti-bell"></i> '+notifs.length+' new request'+(notifs.length!==1?'s':'')+'</div>'+notifs.slice(0,2).map(function(n){return '<div style="font-size:12px;color:var(--text2);margin-top:4px">'+escapeHtml(n.body)+'</div>';}).join('')+'</div></div>':'';
-  var tasks=open.slice(0,5).map(function(r){
-    return {ref:r.ref,id:r.id,txt:(r.requestedBy||'Legal')+' — '+(r.requestType||'evidence')+' for '+(r.requestDate||r.flight||''),claimant:r.claimant||r.ref,urg:parseInt(String(r.due||'99'),10)||(r.priority==='Urgent'?3:21),tab:'requests',blocker:'Gold pack'};
+  var tasks=open.slice(0,6).map(function(r){
+    return {ref:r.ref,id:r.id,txt:(r.requestedBy||'Legal')+' — '+(r.requestType||'evidence'),claimant:r.claimant||r.ref,urg:parseInt(String(r.due||'99'),10)||(r.priority==='Urgent'?3:21),tab:'requests',blocker:r.priority||'Evidence'};
   });
-  var ehStudies=typeof DEMO_STUDIES!=='undefined'?DEMO_STUDIES.filter(function(s){return s.user==='EH'||s.id==='flagship-collaboration';}):[];
-  var studyCards=ehStudies.length?'<div class="demo-zone" style="margin-bottom:16px"><div class="demo-zone-hdr"><div class="demo-zone-title"><i class="ti ti-player-play"></i> Demo paths</div></div><div class="demo-grid">'+ehStudies.map(function(s){
-    return '<div class="demo-card" onclick="openDemoStudy(\''+s.id+'\')"><div class="demo-card-title">'+escapeHtml(s.title)+'</div><div class="demo-card-sub">'+escapeHtml(s.subtitle)+'</div><div class="demo-card-meta"><span>'+escapeHtml(s.duration)+'</span><span class="demo-card-play">Start <i class="ti ti-arrow-right" style="font-size:11px"></i></span></div></div>';
-  }).join('')+'</div></div>':'';
+  var updates=WorkDashboard.getUpdatesSinceLogin([],uid);
+  getNotifications(uid).filter(function(n){return !n.read;}).forEach(function(n){
+    updates.unshift({id:n.id,ref:n.ref,text:(n.title||'')+' — '+(n.body||''),time:n.time||'Today',unread:true,tab:n.tab||'requests',type:'notification'});
+  });
 
   document.getElementById('page').innerHTML=
-    '<div class="page-header"><div class="greeting">'+escapeHtml(t('work'))+' — '+escapeHtml(u.full)+'</div><div class="greeting-sub">Specialist queue replacing Outlook evidence requests</div></div>'
-    +studyCards
-    +notifBar
-    +'<div class="zone"><div class="zone-hdr"><div class="zone-title"><i class="ti ti-list-check"></i> '+escapeHtml(t('doNow'))+'</div><a class="zone-link" href="requests.html">'+escapeHtml(t('viewAll'))+' <i class="ti ti-arrow-right"></i></a></div><div class="panel">'+(tasks.length?tasks.map(function(tk){
-      return '<div class="task-row" onclick="location.href=\'requests.html\'" style="cursor:pointer"><div class="task-dot '+(tk.urg<=3?'urgent':'warn')+'"></div><div><div class="task-ref">'+escapeHtml(tk.id||tk.ref)+'</div><div class="task-action">'+escapeHtml(tk.txt)+'</div><div class="task-claimant">'+escapeHtml(tk.claimant)+' · '+escapeHtml(tk.blocker)+'</div></div><div class="task-deadline">'+escapeHtml(tk.urg+'d')+'</div><div class="task-open">Open <i class="ti ti-arrow-right"></i></div></div>';
-    }).join(''):'<div class="empty-row">'+escapeHtml(t('noTasks'))+'</div>')+'</div></div>'
-    +'<div class="zone"><div class="zone-hdr"><div class="zone-title"><i class="ti ti-database"></i> '+escapeHtml(t('repository'))+'</div><a class="zone-link" href="repository.html">'+escapeHtml(t('viewAll'))+' <i class="ti ti-arrow-right"></i></a></div><div class="panel"><div class="watch-row" onclick="location.href=\'repository.html\'"><i class="ti ti-calendar watch-icon" style="color:var(--blue-text)"></i><span class="watch-text">14 Mar 2026 · HC 1184 evidence day — passenger care records outstanding</span></div><div class="watch-row" onclick="location.href=\'repository.html\'"><i class="ti ti-circle-check watch-icon" style="color:var(--green)"></i><span class="watch-text">28 Apr 2026 · HC 330 weather gold pack ready for legal</span></div></div></div>';
+    '<div class="page-header"><div><div class="greeting">'+escapeHtml(t('work'))+' — '+escapeHtml(u.full)+'</div><div class="greeting-sub">Evidence specialist queue — requests, filing updates and deadlines</div></div>'
+    +'<div class="stat-bar"><span class="stat-chip urgent"><i class="ti ti-user-question"></i> '+open.length+' open requests</span>'
+    +(updates.length?'<span class="stat-chip new"><i class="ti ti-bell"></i> '+updates.length+' new</span>':'')
+    +'</div></div>'
+    +'<div class="work-grid">'
+    +'<div class="zone"><div class="zone-hdr"><div class="zone-title"><i class="ti ti-sparkles"></i> Since you last logged in</div></div><div class="panel">'+updatesHtml(updates)+'</div></div>'
+    +'<div class="zone"><div class="zone-hdr"><div class="zone-title"><i class="ti ti-list-check"></i> '+escapeHtml(t('doNow'))+'</div><a class="zone-link" href="requests.html">'+escapeHtml(t('viewAll'))+'</a></div><div class="panel">'+tasksHtml(tasks)+'</div></div>'
+    +'</div>'
+    +'<div class="zone"><div class="zone-hdr"><div class="zone-title"><i class="ti ti-database"></i> Repository filing</div><a class="zone-link" href="repository.html">Open repository</a></div><div class="panel"><div class="update-row" onclick="location.href=\'repository.html\'"><div class="update-icon"><i class="ti ti-calendar"></i></div><div class="update-body"><div class="update-text">14 Mar 2026 · HC 1184 — passenger care records outstanding</div><div class="update-meta">Evidence filing · Legal pull pending</div></div></div><div class="update-row" onclick="location.href=\'repository.html\'"><div class="update-icon"><i class="ti ti-circle-check"></i></div><div class="update-body"><div class="update-text">28 Apr 2026 · HC 330 weather gold pack ready</div><div class="update-meta">Ready for legal team</div></div></div></div></div>'
+    +demoToursHtml();
+
   bindCaseClicks(document.getElementById('page'));
+  document.querySelectorAll('.task-row').forEach(function(row){
+    if(!row.getAttribute('data-ref'))row.onclick=function(){location.href='requests.html';};
+  });
+  WorkDashboard.recordVisit(uid);
+}
+
+function render(){
+  var uid=getActiveUser();
+  var u=USERS[uid]||USERS.SB;
+  if(WorkDashboard.isEvidenceUser(uid)){renderEvidenceWork(u);if(typeof renderGlobalNav==='function')renderGlobalNav();return;}
+  var cases=getCasesForUser(uid).slice().sort(function(a,b){return a.cprDaysLeft-b.cprDaysLeft;});
+  renderLegalWork(uid,u,cases);
   if(typeof renderGlobalNav==='function')renderGlobalNav();
 }
 
-window.addEventListener('load', function(){
-  try {
-    // Wait for case_helpers.js to be ready
-    if(typeof collectDoNowTasks !== 'function'){
-      setTimeout(render, 200);
-    } else {
-      render();
-    }
-  } catch(e) {
-    console.error('Dashboard render error:', e);
-    // Show a fallback message
-    var page = document.getElementById('page');
-    if(page) page.innerHTML = '<div style="padding:40px;color:var(--text3);text-align:center"><p>Loading dashboard...</p></div>';
-    setTimeout(render, 500);
+window.addEventListener('load',function(){
+  try{
+    if(typeof collectDoNowTasks!=='function')setTimeout(render,200);
+    else render();
+  }catch(e){
+    setTimeout(render,500);
   }
 });
 </script>
@@ -315,17 +382,15 @@ function switchUser(id){
   closeMenu();
   if(window.location.pathname.indexOf('workspace')>=0||window.location.pathname.indexOf('case.html')>=0){window.location.href='index.html';return;}
   var u=typeof USERS!=='undefined'?USERS[id]:null;
-  if(u){
-    var av=document.getElementById('nav-av');if(av)av.textContent=u.initials;
-    var un=document.getElementById('nav-user');if(un)un.textContent=u.name;
-  }
-  ['SB','JP','KR','MD','PL','CG','IM','EH'].forEach(function(uid){
-    var el=document.getElementById('ud-'+uid);
-    if(el)el.classList.toggle('current',uid===id);
-  });
+  if(u){var av=document.getElementById('nav-av');if(av)av.textContent=u.initials;var un=document.getElementById('nav-user');if(un)un.textContent=u.name;}
+  ['SB','JP','KR','MD','PL','CG','IM','EH'].forEach(function(uid){var el=document.getElementById('ud-'+uid);if(el)el.classList.toggle('current',uid===id);});
   if(typeof renderGlobalNav==='function')renderGlobalNav();
   if(typeof render==='function')render();
 }
+document.addEventListener('click',function(e){
+  var wrap=document.querySelector('.search-wrap');
+  if(wrap&&!wrap.contains(e.target)){var dd=document.getElementById('search-dropdown');if(dd)dd.classList.remove('open');}
+});
 </script>
 </body>
 </html>
