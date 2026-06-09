@@ -1,5 +1,14 @@
 /* Embed mode + redirect for legacy case workspaces */
 (function () {
+  ['shared_theme.js', 'demo_reset.js', 'shared_user_menu.js'].forEach(function (src) {
+    var id = '261c-' + src.replace('.js', '');
+    if (document.getElementById(id)) return;
+    var s = document.createElement('script');
+    s.id = id;
+    s.src = src;
+    document.head.appendChild(s);
+  });
+
   var params = new URLSearchParams(window.location.search);
   var ref = params.get('ref');
   var embed = params.get('embed') === '1';

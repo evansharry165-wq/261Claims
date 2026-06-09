@@ -100,7 +100,29 @@
 
   window.renderGlobalNav = renderGlobalNav;
 
+  function loadSharedAssets() {
+    if (!document.getElementById('261c-theme-loader')) {
+      var theme = document.createElement('script');
+      theme.id = '261c-theme-loader';
+      theme.src = 'shared_theme.js';
+      document.head.appendChild(theme);
+    }
+    if (!document.getElementById('261c-demo-reset')) {
+      var reset = document.createElement('script');
+      reset.id = '261c-demo-reset';
+      reset.src = 'demo_reset.js';
+      document.head.appendChild(reset);
+    }
+    if (!document.getElementById('261c-user-menu')) {
+      var menu = document.createElement('script');
+      menu.id = '261c-user-menu';
+      menu.src = 'shared_user_menu.js';
+      document.head.appendChild(menu);
+    }
+  }
+
   function init() {
+    loadSharedAssets();
     renderGlobalNav();
   }
 

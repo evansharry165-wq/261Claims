@@ -1,0 +1,100 @@
+/**
+ * 261Claims — legal typography (Source Sans 3 + Libre Baskerville)
+ */
+:root {
+  --font: 'Source Sans 3', 'Segoe UI', system-ui, sans-serif;
+  --font-serif: 'Libre Baskerville', Georgia, 'Times New Roman', serif;
+  --font-doc: 'Libre Baskerville', Georgia, 'Times New Roman', serif;
+  --mono: 'DM Mono', 'Courier New', monospace;
+}
+
+html,
+body {
+  font-family: var(--font) !important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.greeting,
+.page-title,
+h1,
+h2,
+h3,
+.zone-title,
+.hdr-title,
+.cal-month,
+.gw-title,
+.panel-title,
+.ch-name,
+.case-bar-name,
+.demo-card-title,
+.ins-tab,
+.hero h1 {
+  font-family: var(--font-serif) !important;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+
+.letter-body,
+.loa-letter,
+.case-preview,
+.case-doc-preview,
+.pr-claim,
+.case-law {
+  font-family: var(--font-doc) !important;
+}
+
+.ref,
+.task-ref,
+.case-bar-ref,
+.td-ref,
+.ch-ref,
+.cr-ref,
+.cw-ref,
+.lp-ref {
+  font-family: var(--mono) !important;
+}
+
+/* Profile menu — reset demo */
+.ud-divider {
+  height: 1px;
+  background: var(--border, #e2e8f0);
+  margin: 4px 0;
+}
+.ud-reset-demo {
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 11px 14px;
+  border: none;
+  background: var(--surface2, #f8fafc);
+  cursor: pointer;
+  text-align: left;
+  font-family: var(--font);
+  transition: background 0.15s;
+}
+.ud-reset-demo:hover {
+  background: var(--amber-faint, #fef3c7);
+}
+.ud-reset-demo i {
+  font-size: 15px;
+  color: var(--amber, #b45309);
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+.ud-reset-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.ud-reset-text strong {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text, #0f172a);
+}
+.ud-reset-text small {
+  font-size: 10px;
+  color: var(--text3, #94a3b8);
+  line-height: 1.4;
+}
