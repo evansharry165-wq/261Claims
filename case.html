@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>261Claims — Case</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -17,7 +17,7 @@
   --amber:#B45309;--amber-faint:#FEF3C7;
   --border:#E2E8F0;--text:#0F172A;--text2:#475569;--text3:#94A3B8;
   --surface:#FFFFFF;--surface2:#F8FAFC;--surface3:#F1F5F9;
-  --font:'DM Sans',sans-serif;--mono:'DM Mono',monospace;
+  --font:'Inter',sans-serif;--font-serif:'Instrument Serif',Georgia,serif;--mono:'DM Mono',monospace;
   --r:8px;--r2:12px;--r3:16px;
 }
 html,body{height:100%;font-family:var(--font);background:var(--surface2);color:var(--text);font-size:14px}
@@ -108,6 +108,10 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 .ud-tick{margin-left:auto;color:var(--green);font-size:14px;display:none}
 .ud-item.current .ud-tick{display:block}
 @media(max-width:800px){.overview-grid{grid-template-columns:1fr}}
+
+/* Instrument Serif headings */
+.greeting, .page-title, h1, .zone-title, .hdr-title { font-family: var(--font-serif) !important; font-weight: 400; letter-spacing: -0.02em; }
+
 </style>
 </head>
 <body>

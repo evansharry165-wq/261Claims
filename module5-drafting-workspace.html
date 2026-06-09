@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>261Claims — Module 5: Document Drafting</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -19,7 +19,7 @@
   --border:#E2E8F0;--border2:#CBD5E1;
   --text:#0F172A;--text2:#475569;--text3:#94A3B8;
   --surface:#FFFFFF;--surface2:#F8FAFC;--surface3:#F1F5F9;
-  --font:'DM Sans',sans-serif;--mono:'DM Mono',monospace;
+  --font:'Inter',sans-serif;--font-serif:'Instrument Serif',Georgia,serif;--mono:'DM Mono',monospace;
   --r:8px;--r2:12px;--r3:16px;
 }
 html,body{height:100%;font-family:var(--font);background:var(--surface2);color:var(--text);font-size:14px}
@@ -167,6 +167,10 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 .ud-role{font-size:10px;color:var(--text3)}
 .ud-tick{margin-left:auto;color:var(--green);font-size:14px;display:none}
 .ud-item.current .ud-tick{display:block}
+
+
+/* Instrument Serif headings */
+.greeting, .page-title, h1, .zone-title, .hdr-title { font-family: var(--font-serif) !important; font-weight: 400; letter-spacing: -0.02em; }
 
 </style>
 
@@ -1063,7 +1067,7 @@ function renderDocFocus(){
   var statusCls=isApproved?'status-text approved':'status-text';
   var versions=docVersions[id]||[];
   var versionNote=versions.length?'<span class="draft-hint"><i class="ti ti-history"></i>'+versions[0].label+' · '+versions[0].time+'</span>':'';
-  var repoRow=isApproved?'<div class="repo-btn-row">'+(storedInRepo[id]?'<span class="btn-action success"><i class="ti ti-check"></i> In repository</span>':'<button class="btn-action primary" onclick="addToRepository(\''+id+'\')"><i class="ti ti-database"></i> Add to repository</button>')+'</div>':'';
+  var repoRow=isApproved?'<div class="repo-btn-row">'+(storedInRepo[id]?'<span class="btn-action success"><i class="ti ti-check"></i> Saved to case</span>':'<button class="btn-action primary" onclick="addToRepository(\''+id+'\')"><i class="ti ti-folder-symlink"></i> Save to case file</button>')+'</div>':'';
 
   return '<div class="doc-focus">'
     +'<div class="doc-focus-toolbar">'
@@ -1199,6 +1203,12 @@ function addToRepository(id){
     storedInRepo[id]=true;
     if(window.parent!==window){window.parent.postMessage({type:'case-shell',action:'log',text:'Document stored in repository: '+(names[id]||id),logType:'upload'},'*');}
   }catch(e){}
+  // Show success toast
+  var toast = document.createElement('div');
+  toast.style.cssText = 'position:fixed;bottom:20px;right:20px;background:var(--navy);color:#fff;padding:10px 16px;border-radius:var(--r2);font-size:12px;font-weight:500;z-index:999;display:flex;align-items:center;gap:8px;box-shadow:0 4px 16px rgba(0,0,0,0.2)';
+  toast.innerHTML = '<i class="ti ti-folder-symlink" style="font-size:14px"></i> Document saved to case file';
+  document.body.appendChild(toast);
+  setTimeout(function(){ toast.remove(); }, 3000);
   renderWorkspace();
   updateDocBtn(id,'approved');
 }
