@@ -40,6 +40,13 @@
     return 'work';
   }
 
+  function urgentCaseCount(uid) {
+    if (typeof getCasesForUser !== 'function' || typeof ALL_CASES === 'undefined') return 0;
+    return getCasesForUser(uid).filter(function (c) {
+      return c.cprDaysLeft <= 7 && c.stage !== 'resolve';
+    }).length;
+  }
+
   function renderGlobalNav() {
     if (typeof t !== 'function') return;
 
@@ -48,6 +55,7 @@
     var isEvidence = u && u.team === 'evidence';
     var links = isEvidence ? EVIDENCE_NAV : LEGAL_NAV;
     var active = activePageKey();
+    var urgentN = !isEvidence ? urgentCaseCount(uid) : 0;
 
     var avEl = document.getElementById('nav-av') || document.getElementById('u-av');
     var unEl = document.getElementById('nav-user') || document.getElementById('u-name');
@@ -61,6 +69,12 @@
         .map(function (l) {
           var label = (typeof t === 'function' ? t(l.key) : null) || FALLBACK[l.key] || l.key;
           var isActive = active === l.key;
+          var badge =
+            l.key === 'cases' && urgentN > 0
+              ? ' <span class="gn-badge" style="margin-left:4px;font-size:9px;font-weight:600;background:#C0392B;color:#fff;border-radius:10px;padding:1px 6px;line-height:1.4">' +
+                urgentN +
+                '</span>'
+              : '';
           return (
             '<a href="' +
             l.href +
@@ -73,6 +87,7 @@
             l.icon +
             '"></i> <span class="gnl">' +
             label +
+            badge +
             '</span></a>'
           );
         })
