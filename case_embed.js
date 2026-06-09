@@ -43,7 +43,7 @@
           /* Drafting tab: fixed viewport with inner scroll panes */
           'html.drafting-embed,body.drafting-embed{height:100%!important;overflow:hidden!important}' +
           'body.drafting-embed .app{height:100%!important;overflow:hidden!important;min-height:0!important;display:flex!important;flex-direction:column!important}' +
-          'body.drafting-embed .body.drafting-layout{display:grid!important;height:100%!important;overflow:hidden!important;grid-template-columns:200px 1fr!important;grid-template-rows:minmax(0,1fr)!important;min-height:0!important}' +
+          'body.drafting-embed .body.drafting-layout{display:grid!important;height:100%!important;overflow:hidden!important;grid-template-columns:minmax(280px,300px) 1fr!important;grid-template-rows:minmax(0,1fr)!important;min-height:0!important}' +
           'body.drafting-embed .body.drafting-layout.doc-focused{grid-template-columns:1fr!important}' +
           'body.drafting-embed .body.drafting-layout.doc-focused .sidebar-left{display:none!important}' +
           'body.drafting-embed .drafting-layout .sidebar-right{display:none!important}' +

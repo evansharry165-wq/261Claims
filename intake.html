@@ -140,6 +140,7 @@ input[type=file]{display:none}
 </head>
 <body>
 <script src="shared_data.js"></script>
+<script src="case_filing.js"></script>
 <script src="case_helpers.js"></script>
 
 <nav class="global-nav">
@@ -211,6 +212,22 @@ function handleUpload(event){
   uploadedCases.unshift(c);
   selectedRef=c.ref;
   try{sessionStorage.setItem('261c_case',JSON.stringify(c));}catch(e){}
+  if(typeof CaseFiling!=='undefined'){
+    var u=USERS[uid]||{};
+    CaseFiling.ensureCaseFile({
+      ref:c.ref,claimant:c.claimant,solicitor:c.solicitor,flightNum:c.flightNum,
+      route:c.dep+'–'+c.arr,jurisdiction:c.jurisdiction,stage:'intake',
+      disruptionType:c.disruptionType,value:c.value,assignedTo:uid,
+      uploadedByName:u.full||u.name
+    });
+    CaseFiling.addDocument(c.ref,{
+      folderId:'intake',name:'Letter of Claim — '+c.claimant,
+      filename:file.name,content:'LOC uploaded from intake: '+file.name+'\n\nClaimant: '+c.claimant+'\nFlight: '+c.flightNum+'\nValue: '+c.value+'\n\nAI extraction queued for triage.',
+      status:'on_file',source:'intake',mimeType:file.type||'application/pdf',size:file.size,
+      uploadedBy:uid,uploadedByName:u.full||u.name
+    });
+    CaseFiling.addActivity(c.ref,'LOC uploaded — live case file created','upload',u.full||u.name);
+  }
   render();
   event.target.value='';
 }
@@ -238,6 +255,21 @@ function depositIntoCase(ref){
   pendingSupportFile=null;
   selectedRef=ref;
   try{sessionStorage.setItem('261c_case',JSON.stringify(c));}catch(e){}
+  if(typeof CaseFiling!=='undefined'){
+    var uid=getActiveUser();
+    var u=USERS[uid]||{};
+    CaseFiling.ensureCaseFile({
+      ref:c.ref,claimant:c.claimant,solicitor:c.solicitor,flightNum:c.flightNum,
+      jurisdiction:c.jurisdiction,stage:c.stage||'intake',assignedTo:uid
+    });
+    var lower=doc.name.toLowerCase();
+    var folder=lower.indexOf('letter')>=0||lower.indexOf('loc')>=0?'correspondence':'evidence_index';
+    CaseFiling.addDocument(ref,{
+      folderId:folder,name:doc.name,filename:doc.name,content:doc.summary,
+      status:'on_file',source:'intake',size:doc.size,uploadedBy:uid,uploadedByName:u.full||u.name
+    });
+    CaseFiling.addActivity(ref,'Supporting document deposited: '+doc.name,'upload',u.full||u.name);
+  }
   render();
 }
 function buildDocSummary(file,c){
@@ -256,6 +288,12 @@ function selectCase(ref){
   render();
 }
 function startTriage(ref){
+  if(typeof CaseFiling!=='undefined'){
+    var uid=getActiveUser();
+    var u=USERS[uid]||{};
+    CaseFiling.updateCaseMeta(ref,{stage:'triage'});
+    CaseFiling.addActivity(ref,'Case moved to triage','stage',u.full||u.name);
+  }
   openCase(ref,'triage');
 }
 function render(){

@@ -100,11 +100,25 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 .folder-card .fc-count{font-size:10px;color:var(--text3);margin-top:4px}
 input[type=file].filing-file-input{display:none}
 
+/* ── Live case files ── */
+.case-preview{padding:14px 16px;font-size:12px;line-height:1.65;color:var(--text);white-space:pre-wrap;font-family:Georgia,serif;max-height:420px;overflow-y:auto;background:var(--surface)}
+.case-preview[contenteditable=true]{box-shadow:inset 0 0 0 2px var(--blue);outline:none}
+.case-meta-strip{display:flex;flex-wrap:wrap;gap:6px;padding:10px 14px;border-bottom:1px solid var(--border);background:var(--surface2)}
+.case-meta-chip{font-size:10px;padding:3px 8px;border-radius:20px;background:var(--surface3);color:var(--text2)}
+.case-meta-chip.live{background:var(--green-faint);color:var(--green)}
+.case-file-row{cursor:pointer}
+.case-file-row.active td{background:var(--blue-faint)}
+.stage-intake{background:var(--purple-faint);color:var(--purple)}
+.stage-triage,.stage-cpr{background:var(--amber-faint);color:var(--amber)}
+.stage-evidence{background:var(--blue-faint);color:var(--blue-text)}
+.stage-drafting{background:var(--green-faint);color:var(--green)}
+
 </style>
 </head>
 <body>
 <script src="shared_data.js"></script>
 <script src="evidence_filing.js"></script>
+<script src="case_filing.js"></script>
 <nav class="global-nav">
   <a href="index.html" class="gn-logo"><div class="gn-mark"><i class="ti ti-plane"></i></div><span class="gn-name">261Claims</span></a>
   <div class="gn-links" id="gn-links"></div>
@@ -335,6 +349,7 @@ function buildEvidenceDaysFromFiling(){
   });
 }
 var activeArea='evidence', activeOutcome='all', query='', selectedRef='', evidenceFilter='All';
+var caseFilingTab='live', caseFilingRef='', caseFilingFolder='all', caseFilingDocId='', caseFilingSearch='', caseFilingEditing=false;
 var filingView='browse';
 var filingPath={categoryId:null,year:null,month:null,date:null};
 var filingSearch='';
@@ -398,8 +413,98 @@ function setArea(area){activeArea=area;render();}
 function select(ref){selectedRef=ref;render();}
 function shell(content){return '<div class="area-nav"><button class="area-btn '+(activeArea==='cases'?'active':'')+'" onclick="setArea(\'cases\')"><i class="ti ti-briefcase"></i>Cases</button><button class="area-btn '+(activeArea==='evidence'?'active':'')+'" onclick="setArea(\'evidence\')"><i class="ti ti-folder-open"></i>Evidence</button><button class="area-btn '+(activeArea==='education'?'active':'')+'" onclick="setArea(\'education\')"><i class="ti ti-school"></i>Education</button><button class="area-btn home" onclick="setArea(\'hub\')"><i class="ti ti-layout-grid"></i>Repository home</button></div>'+content;}
 function render(){var uid=getActiveUser(), u=USERS[uid]||USERS.SB;document.getElementById('nav-av').textContent=u.initials;document.getElementById('nav-user').textContent=u.name;document.querySelectorAll('.ud-item').forEach(function(el){el.classList.toggle('current',el.id==='ud-'+uid);});if(activeArea==='cases')return renderCases();if(activeArea==='evidence')return renderEvidence();if(activeArea==='education')return renderEducation();renderEvidence();}
-function renderHub(){var all=repoCases(), defended=all.filter(c=>c.outcome==='defended').length, settled=all.filter(c=>c.outcome==='settled').length;document.getElementById('page').innerHTML='<div class="hero"><div><h1>Repository Command Centre</h1><p>The repository is split into three working areas: closed case outcomes, reusable evidence file structures, and education generated from case law applied in real aviation claims.</p></div><div class="hero-actions"><a class="hero-btn" href="module1-intake.html"><i class="ti ti-upload"></i>Ingest claim</a><a class="hero-btn" href="module4-evidence.html"><i class="ti ti-folder-open"></i>Evidence module</a></div></div><div class="gateway-grid"><div class="gateway" onclick="setArea(\'cases\')"><div><div class="gw-icon" style="background:var(--green-faint);color:var(--green)"><i class="ti ti-briefcase"></i></div><div class="gw-title">1. Cases</div><div class="gw-copy">Settled, defended, paid and withdrawn claims are stored, analysed and made searchable for future case strategy.</div></div><div class="gw-meta"><span class="gw-chip">'+all.length+' records</span><span class="gw-chip">'+defended+' defended</span><span class="gw-chip">'+settled+' settled</span></div></div><div class="gateway" onclick="setArea(\'evidence\')"><div><div class="gw-icon" style="background:var(--purple-faint);color:var(--purple)"><i class="ti ti-folder-open"></i></div><div class="gw-title">2. Evidence filing</div><div class="gw-copy">SharePoint-mirror filing system: evidence types organised by year, month and operation date. Evidence team uploads; legal team pulls into packs.</div></div><div class="gw-meta"><span class="gw-chip">SharePoint mirror</span><span class="gw-chip">Gold packs</span><span class="gw-chip">Direct pull</span></div></div><div class="gateway" onclick="setArea(\'education\')"><div><div class="gw-icon" style="background:var(--blue-faint);color:var(--blue-text)"><i class="ti ti-school"></i></div><div class="gw-title">3. Education</div><div class="gw-copy">AI summaries explain the law, how it applied to closed cases, and what users should do next time.</div></div><div class="gw-meta"><span class="gw-chip">Case law</span><span class="gw-chip">Playbooks</span><span class="gw-chip">Training</span></div></div></div>'+renderLiveSuggestions();}
-function renderCases(){var all=repoCases(), rows=filteredCases();if(!selectedRef&&rows.length)selectedRef=rows[0].ref;var selected=all.find(c=>c.ref===selectedRef)||rows[0];var stats='<div class="grid-4"><div class="stat"><div class="stat-label">Case records</div><div class="stat-val">'+all.length+'</div><div class="stat-sub">Closed or stored</div></div><div class="stat"><div class="stat-label">Defended</div><div class="stat-val">'+all.filter(c=>c.outcome==='defended').length+'</div><div class="stat-sub">Reusable playbooks</div></div><div class="stat"><div class="stat-label">Settled / paid</div><div class="stat-val">'+all.filter(c=>c.outcome==='settled'||c.outcome==='paid').length+'</div><div class="stat-sub">Risk learning</div></div><div class="stat"><div class="stat-label">Avg confidence</div><div class="stat-val">'+Math.round(all.reduce((s,c)=>s+c.confidence,0)/all.length)+'%</div><div class="stat-sub">AI matching</div></div></div>';var tabs=['all','defended','settled','paid','withdrawn'].map(o=>'<button class="tab '+(activeOutcome===o?'active':'')+'" onclick="activeOutcome=&quot;'+o+'&quot;;render()">'+(o==='all'?'All':outcomeLabel(o))+'</button>').join('');var list='<div class="grid-main"><div class="panel"><div class="panel-hdr"><div><div class="panel-title"><i class="ti ti-briefcase"></i>Case outcome library</div><div class="panel-sub">Search closed claims by outcome, issue, evidence, case law or solicitor</div></div><div class="tabbar">'+tabs+'</div></div><div class="search-row"><input placeholder="Search cases..." value="'+escapeHtml(query)+'" oninput="query=this.value;render()"><select onchange="query=this.value;render()"><option value="">Filter evidence</option><option>Eurocontrol</option><option>METAR</option><option>AMOS</option><option>SafetyNet</option><option>TOPS</option></select></div>'+rows.map(c=>caseCard(c)).join('')+'</div><div class="panel detail"><div class="panel-hdr"><div><div class="panel-title"><i class="ti ti-brain"></i>Case insight</div><div class="panel-sub">Outcome, evidence and legal learning</div></div></div>'+(selected?detailHtml(selected):'<div class="detail-empty">Select a case.</div>')+'</div></div>';document.getElementById('page').innerHTML=shell(stats+list+renderLiveSuggestions());}
+function renderHub(){var all=repoCases(), defended=all.filter(c=>c.outcome==='defended').length, settled=all.filter(c=>c.outcome==='settled').length;document.getElementById('page').innerHTML='<div class="hero"><div><h1>Repository Command Centre</h1><p>The repository is split into three working areas: closed case outcomes, reusable evidence file structures, and education generated from case law applied in real aviation claims.</p></div><div class="hero-actions"><a class="hero-btn" href="module1-intake.html"><i class="ti ti-upload"></i>Ingest claim</a><a class="hero-btn" href="module4-evidence.html"><i class="ti ti-folder-open"></i>Evidence module</a></div></div><div class="gateway-grid"><div class="gateway" onclick="setArea(\'cases\')"><div><div class="gw-icon" style="background:var(--green-faint);color:var(--green)"><i class="ti ti-briefcase"></i></div><div class="gw-title">1. Cases</div><div class="gw-copy">Live case files for active matters — browse, view and edit documents created from intake and drafting. Closed outcomes remain searchable for strategy.</div></div><div class="gw-meta"><span class="gw-chip">'+(typeof CaseFiling!=='undefined'?CaseFiling.listCases().length:0)+' live files</span><span class="gw-chip">'+all.length+' closed</span><span class="gw-chip">Team access</span></div></div><div class="gateway" onclick="setArea(\'evidence\')"><div><div class="gw-icon" style="background:var(--purple-faint);color:var(--purple)"><i class="ti ti-folder-open"></i></div><div class="gw-title">2. Evidence filing</div><div class="gw-copy">SharePoint-mirror filing system: evidence types organised by year, month and operation date. Evidence team uploads; legal team pulls into packs.</div></div><div class="gw-meta"><span class="gw-chip">SharePoint mirror</span><span class="gw-chip">Gold packs</span><span class="gw-chip">Direct pull</span></div></div><div class="gateway" onclick="setArea(\'education\')"><div><div class="gw-icon" style="background:var(--blue-faint);color:var(--blue-text)"><i class="ti ti-school"></i></div><div class="gw-title">3. Education</div><div class="gw-copy">AI summaries explain the law, how it applied to closed cases, and what users should do next time.</div></div><div class="gw-meta"><span class="gw-chip">Case law</span><span class="gw-chip">Playbooks</span><span class="gw-chip">Training</span></div></div></div>'+renderLiveSuggestions();}
+function setCaseFilingRef(ref){caseFilingRef=ref;caseFilingFolder='all';caseFilingDocId='';caseFilingEditing=false;render();}
+function setCaseFilingFolder(folder){caseFilingFolder=folder;caseFilingDocId='';caseFilingEditing=false;render();}
+function selectCaseDoc(docId){caseFilingDocId=docId;caseFilingEditing=false;render();}
+function toggleCaseDocEdit(){caseFilingEditing=!caseFilingEditing;render();}
+function saveCaseDocEdit(){
+  if(!caseFilingRef||!caseFilingDocId)return;
+  var el=document.getElementById('case-doc-preview');
+  if(!el)return;
+  var uid=getActiveUser(), u=USERS[uid]||{};
+  CaseFiling.updateDocument(caseFilingRef,caseFilingDocId,{content:el.innerText||el.textContent||'',uploadedByName:u.full||u.name});
+  CaseFiling.addActivity(caseFilingRef,'Document edited in repository','edit',u.full||u.name);
+  caseFilingEditing=false;
+  render();
+}
+function renderCaseFileTree(){
+  var cases=CaseFiling.listCases({query:caseFilingSearch});
+  if(!caseFilingRef&&cases.length)caseFilingRef=cases[0].ref;
+  return cases.map(function(c){
+    var docCount=(c.documents||[]).length;
+    var active=caseFilingRef===c.ref?' active':'';
+    return '<div class="tree-item'+active+'" onclick="setCaseFilingRef(&quot;'+escapeHtml(c.ref)+'&quot;)"><i class="ti ti-briefcase"></i><span>'+escapeHtml(c.ref)+'</span><span class="tree-count">'+docCount+'</span></div>'
+      +'<div class="tree-nested"'+(caseFilingRef===c.ref?'':' style="display:none"')+'>'
+      +'<div style="font-size:10px;color:var(--text3);padding:4px 14px 6px 28px">'+escapeHtml(c.claimant)+' · '+escapeHtml(c.flightNum)+'</div></div>';
+  }).join('')||'<div class="empty-note">No live case files yet. Upload a LOC in Intake to create one.</div>';
+}
+function renderCaseFolderNav(){
+  if(!caseFilingRef)return '';
+  var counts=CaseFiling.getFolderCounts(caseFilingRef);
+  return CaseFiling.CASE_FOLDERS.map(function(f){
+  var active=caseFilingFolder===f.id?' active':'';
+  return '<div class="tree-item tree-nested'+active+'" onclick="setCaseFilingFolder(&quot;'+f.id+'&quot;)"><i class="ti '+f.icon+'"></i><span>'+escapeHtml(f.name)+'</span><span class="tree-count">'+(counts[f.id]||0)+'</span></div>';
+  }).join('');
+}
+function renderCaseFileTable(){
+  if(!caseFilingRef)return '<div class="empty-note">Select a case from the left to browse its live file.</div>';
+  var c=CaseFiling.getCase(caseFilingRef);
+  if(!c)return '<div class="empty-note">Case file not found.</div>';
+  var docs=CaseFiling.getDocuments(caseFilingRef,caseFilingFolder);
+  if(caseFilingSearch){
+    var q=caseFilingSearch.toLowerCase();
+    docs=docs.filter(function(d){return [d.name,d.filename,d.content].join(' ').toLowerCase().indexOf(q)>=0;});
+  }
+  var folder=caseFilingFolder==='all'?'All folders':(CaseFiling.folderById(caseFilingFolder)||{}).name||caseFilingFolder;
+  var header='<div class="case-meta-strip">'
+    +'<span class="case-meta-chip live"><i class="ti ti-circle-filled" style="font-size:7px"></i> Live case file</span>'
+    +'<span class="case-meta-chip">'+escapeHtml(c.claimant)+'</span>'
+    +'<span class="case-meta-chip">'+escapeHtml(c.flightNum)+'</span>'
+    +'<span class="case-meta-chip stage-'+escapeHtml(c.stage)+'">'+escapeHtml(CaseFiling.stageLabel(c.stage))+'</span>'
+    +'<span class="case-meta-chip">Evidence '+((c.evidencePct||0)+'%')+'</span>'
+    +'<a class="mini-btn" href="case.html?ref='+encodeURIComponent(c.ref)+'" style="margin-left:auto"><i class="ti ti-external-link"></i>Open case workspace</a>'
+    +'</div>';
+  if(!docs.length)return header+'<div class="empty-note">No documents in '+escapeHtml(folder)+' yet.</div>';
+  var rows=docs.map(function(d){
+    var active=caseFilingDocId===d.id?' active':'';
+    return '<tr class="case-file-row'+active+'" onclick="selectCaseDoc(&quot;'+escapeHtml(d.id)+'&quot;)"><td><div class="file-name"><i class="ti ti-file-text"></i>'+escapeHtml(d.name)+'</div><div class="file-meta">'+escapeHtml(d.filename)+' · '+escapeHtml(d.uploadedAt)+'</div></td><td><span class="pill '+(d.status==='approved'?'p-defended':'status-wait')+'">'+escapeHtml(d.status||'on file')+'</span></td><td>'+escapeHtml(d.uploadedByName||'')+'</td><td>'+CaseFiling.formatSize(d.size)+'</td></tr>';
+  }).join('');
+  return header+'<table class="file-table"><thead><tr><th>Document</th><th>Status</th><th>Added by</th><th>Size</th></tr></thead><tbody>'+rows+'</tbody></table>';
+}
+function renderCaseDocPreview(){
+  if(!caseFilingRef||!caseFilingDocId)return '<div class="panel-body"><div class="detail-empty">Select a document to view or edit its contents.</div></div>';
+  var d=CaseFiling.getDocument(caseFilingRef,caseFilingDocId);
+  if(!d)return '<div class="panel-body"><div class="detail-empty">Document not found.</div></div>';
+  var safe=(d.content||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  return '<div class="panel-hdr"><div><div class="panel-title"><i class="ti ti-file-text"></i>'+escapeHtml(d.name)+'</div><div class="panel-sub">'+escapeHtml(d.filename)+' · '+escapeHtml(d.source||'case file')+'</div></div>'
+    +(caseFilingEditing
+      ?'<button class="mini-btn primary" onclick="saveCaseDocEdit()"><i class="ti ti-device-floppy"></i>Save</button>'
+      :'<button class="mini-btn" onclick="toggleCaseDocEdit()"><i class="ti ti-pencil"></i>Edit</button>')
+    +'</div><div class="case-preview" id="case-doc-preview"'+(caseFilingEditing?' contenteditable="true"':'')+'>'+safe+'</div>';
+}
+function renderLiveCaseFiles(){
+  var live=CaseFiling.listCases();
+  var docTotal=live.reduce(function(s,c){return s+(c.documents||[]).length;},0);
+  var stats='<div class="grid-4"><div class="stat"><div class="stat-label">Live case files</div><div class="stat-val">'+live.length+'</div><div class="stat-sub">Created from intake</div></div><div class="stat"><div class="stat-label">Documents on file</div><div class="stat-val">'+docTotal+'</div><div class="stat-sub">View &amp; edit by team</div></div><div class="stat"><div class="stat-label">In drafting</div><div class="stat-val">'+live.filter(function(c){return c.stage==='drafting';}).length+'</div><div class="stat-sub">Legal documents active</div></div><div class="stat"><div class="stat-label">At intake</div><div class="stat-val">'+live.filter(function(c){return c.stage==='intake'||c.stage==='triage';}).length+'</div><div class="stat-sub">New matters</div></div></div>';
+  var layout='<div class="filing-layout"><div class="filing-tree"><div class="filing-tree-hdr"><i class="ti ti-briefcase"></i> Live cases</div><div class="filing-tree-body">'+renderCaseFileTree()+'</div>'
+    +(caseFilingRef?'<div style="border-top:1px solid var(--border);padding:8px 0"><div style="font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);padding:6px 14px">Folders</div>'+renderCaseFolderNav()+'<div class="tree-item tree-nested'+(caseFilingFolder==='all'?' active':'')+'" onclick="setCaseFilingFolder(&quot;all&quot;)"><i class="ti ti-folders"></i><span>All documents</span></div></div>':'')
+    +'</div><div class="filing-main"><div class="filing-toolbar"><div class="breadcrumb"><span onclick="setCaseFilingFolder(&quot;all&quot;)">Case files</span><span class="bc-sep">›</span><span>'+escapeHtml(caseFilingRef||'Select case')+'</span>'+(caseFilingFolder!=='all'?'<span class="bc-sep">›</span><span>'+escapeHtml((CaseFiling.folderById(caseFilingFolder)||{}).name||caseFilingFolder)+'</span>':'')+'</div><input class="filing-search" placeholder="Search documents…" value="'+escapeHtml(caseFilingSearch)+'" oninput="caseFilingSearch=this.value;render()"></div><div class="pull-banner" style="margin:12px 14px 0"><strong>Team access:</strong> Every LOC upload creates a live case file here. Approved drafts from the Documents tab are added automatically — no manual re-upload.</div><div class="filing-body">'+renderCaseFileTable()+'</div></div><div class="filing-sidebar">'+renderCaseDocPreview()+'<div class="panel-hdr" style="border-top:1px solid var(--border)"><div class="panel-title"><i class="ti ti-history"></i>Case activity</div></div><div class="panel-body">'+(caseFilingRef?(CaseFiling.getCase(caseFilingRef).activity||[]).slice(0,8).map(function(a){return '<div class="insight" style="margin-bottom:6px;padding:8px 10px"><div style="font-size:11px;line-height:1.45">'+escapeHtml(a.text)+'</div><div style="font-size:10px;color:var(--text3);margin-top:3px">'+escapeHtml(a.time)+' · '+escapeHtml(a.by)+'</div></div>';}).join(''):'<div class="detail-empty">Select a case.</div>')+'</div></div></div>';
+  return stats+layout;
+}
+function renderClosedOutcomes(){
+  var all=repoCases(), rows=filteredCases();
+  if(!selectedRef&&rows.length)selectedRef=rows[0].ref;
+  var selected=all.find(function(c){return c.ref===selectedRef;})||rows[0];
+  var tabs=['all','defended','settled','paid','withdrawn'].map(function(o){return '<button class="tab '+(activeOutcome===o?'active':'')+'" onclick="activeOutcome=&quot;'+o+'&quot;;render()">'+(o==='all'?'All':outcomeLabel(o))+'</button>';}).join('');
+  return '<div class="grid-main"><div class="panel"><div class="panel-hdr"><div><div class="panel-title"><i class="ti ti-archive"></i>Closed outcome library</div><div class="panel-sub">Settled, defended, paid and withdrawn claims for strategy matching</div></div><div class="tabbar">'+tabs+'</div></div><div class="search-row"><input placeholder="Search closed cases..." value="'+escapeHtml(query)+'" oninput="query=this.value;render()"></div>'+rows.map(function(c){return caseCard(c);}).join('')+'</div><div class="panel detail"><div class="panel-hdr"><div><div class="panel-title"><i class="ti ti-brain"></i>Case insight</div><div class="panel-sub">Outcome, evidence and legal learning</div></div></div>'+(selected?detailHtml(selected):'<div class="detail-empty">Select a case.</div>')+'</div></div>';
+}
+function renderCases(){
+  var tabBar='<div class="tabbar" style="margin-bottom:14px"><button class="tab '+(caseFilingTab==='live'?'active':'')+'" onclick="caseFilingTab=&quot;live&quot;;render()"><i class="ti ti-folder-symlink"></i> Live case files</button><button class="tab '+(caseFilingTab==='closed'?'active':'')+'" onclick="caseFilingTab=&quot;closed&quot;;render()"><i class="ti ti-archive"></i> Closed outcomes</button></div>';
+  var hero='<div class="hero"><div><h1>'+(caseFilingTab==='live'?'Live Case Files':'Closed Case Outcomes')+'</h1><p>'+(caseFilingTab==='live'?'Find, access, view and edit active case files — the team equivalent of the evidence filing system. Created automatically when a LOC is uploaded in Intake; updated when drafts are approved in Documents.':'Search closed claims by outcome, issue, evidence, case law or solicitor for strategy and training.')+'</p></div><div class="hero-actions"><a class="hero-btn" href="intake.html"><i class="ti ti-upload"></i>New claim intake</a>'+(caseFilingTab==='live'?'<a class="hero-btn" href="case.html?ref=AC-2026-0089"><i class="ti ti-file-pencil"></i>Open drafting</a>':'')+'</div></div>';
+  var body=caseFilingTab==='live'?renderLiveCaseFiles():renderClosedOutcomes();
+  document.getElementById('page').innerHTML=shell(hero+tabBar+body+(caseFilingTab==='closed'?renderLiveSuggestions():''));
+}
 function caseCard(c){return '<div class="case-card" onclick="select(&quot;'+c.ref+'&quot;)"><div><div class="ref">'+escapeHtml(c.ref)+'</div><div class="name">'+escapeHtml(c.claimant)+' · '+escapeHtml(c.flightNum)+'</div><div class="meta">'+escapeHtml(c.route)+' · '+escapeHtml(c.disruptionType)+' · '+escapeHtml(c.solicitor)+'<br>'+escapeHtml(c.summary)+'</div></div><div style="text-align:right"><span class="pill '+outcomeClass(c.outcome)+'">'+outcomeLabel(c.outcome)+'</span><div style="font-size:10px;color:var(--text3);margin-top:6px">'+c.confidence+'% confidence</div></div></div>';}
 function detailHtml(c){return '<div class="panel-body"><div class="kv"><div class="kv-label">Outcome</div><div class="kv-val"><span class="pill '+outcomeClass(c.outcome)+'">'+outcomeLabel(c.outcome)+'</span></div></div><div class="kv"><div class="kv-label">Saving</div><div class="kv-val">'+escapeHtml(c.saving)+'</div></div><div class="kv"><div class="kv-label">Time to close</div><div class="kv-val">'+c.days+' days</div></div><div class="kv"><div class="kv-label">Jurisdiction</div><div class="kv-val">'+escapeHtml(getJurisdiction(c.jurisdiction).name)+'</div></div><div class="case-law"><strong>Learning:</strong> '+escapeHtml(c.recommendation)+'</div><div class="ev-list">'+c.evidence.map(e=>'<span class="ev">'+escapeHtml(e)+'</span>').join('')+'</div><div class="case-law"><strong>Case law applied:</strong> '+escapeHtml(c.caseLaw.join(', '))+'</div></div>';}
 function renderEvidence(){
@@ -437,7 +542,9 @@ function toggleUserMenu(){document.getElementById('user-modal').classList.toggle
 function closeMenu(){document.getElementById('user-modal').classList.remove('open');}
 function switchUser(id){setActiveUser(id);sessionStorage.removeItem('261c_lang');closeMenu();if(typeof renderGlobalNav==='function')renderGlobalNav();render();}
 try{if(sessionStorage.getItem('261c_repo_area')==='evidence'){activeArea='evidence';sessionStorage.removeItem('261c_repo_area');}}catch(e){}
+try{var repoCase=sessionStorage.getItem('261c_repo_case');if(repoCase){caseFilingRef=repoCase;caseFilingTab='live';activeArea='cases';sessionStorage.removeItem('261c_repo_case');}}catch(e){}
 if(window.location.hash==='#evidence'){activeArea='evidence';filingView='browse';}
+if(window.location.hash==='#cases'){activeArea='cases';caseFilingTab='live';}
 render();
 </script>
 <script src="shared_nav.js"></script>

@@ -39,10 +39,14 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 .btn-back:hover{background:var(--surface3)}
 
 /* layout */
-.body{flex:1;display:grid;grid-template-columns:240px 1fr 200px;grid-template-rows:minmax(0,1fr);overflow:hidden;min-height:0;transition:grid-template-columns .2s ease}
-.body.doc-focused{grid-template-columns:220px 1fr 0}
+.body{flex:1;display:grid;grid-template-columns:minmax(300px,340px) 1fr minmax(220px,260px);grid-template-rows:minmax(0,1fr);overflow:hidden;min-height:0;transition:grid-template-columns .2s ease}
+.body.doc-focused{grid-template-columns:minmax(280px,300px) 1fr 0}
 .body.doc-focused .sidebar-right{opacity:0;pointer-events:none;overflow:hidden;border:none;padding:0}
-.sidebar-left{border-right:1px solid var(--border);background:var(--surface);overflow-y:auto;padding:14px;min-height:0}
+.sidebar-left{border-right:1px solid var(--border);background:var(--surface);overflow-y:auto;padding:16px;min-height:0;min-width:0}
+.sidebar-case-link{margin-bottom:14px;padding:10px 12px;border:1px solid var(--border);border-radius:var(--r2);background:linear-gradient(135deg,var(--green-faint),#fff);font-size:11px;color:var(--text2);line-height:1.5}
+.sidebar-case-link strong{color:var(--green);display:block;font-size:12px;margin-bottom:3px}
+.sidebar-case-link a{color:var(--blue-text);text-decoration:none;font-weight:500}
+.sidebar-case-link a:hover{text-decoration:underline}
 .main{overflow:hidden;padding:0;min-height:0;min-width:0;display:flex;flex-direction:column}
 .sidebar-right{border-left:1px solid var(--border);background:var(--surface);overflow-y:auto;padding:10px 12px;min-height:0;transition:opacity .2s ease}
 
@@ -57,15 +61,17 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 /* document library */
 .lib-section{margin-bottom:16px}
 .lib-label{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.07em;color:var(--text3);margin-bottom:8px}
-.doc-btn{width:100%;display:flex;align-items:center;gap:9px;padding:9px 10px;border:1px solid var(--border);border-radius:var(--r2);margin-bottom:5px;cursor:pointer;text-align:left;font-family:var(--font);background:var(--surface);transition:all 0.15s}
+.doc-btn{width:100%;display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border:1px solid var(--border);border-radius:var(--r2);margin-bottom:6px;cursor:pointer;text-align:left;font-family:var(--font);background:var(--surface);transition:all 0.15s}
 .doc-btn:hover{border-color:var(--border2);background:var(--surface2)}
 .doc-btn.active{border-color:var(--blue);background:var(--blue-faint)}
 .doc-btn.minimized{border-color:var(--amber);background:var(--amber-faint)}
 .doc-btn.minimized .doc-btn-sub::before{content:'Minimised · '}
 .doc-btn.open{border-left:3px solid var(--blue)}
 .doc-btn-icon{width:28px;height:28px;border-radius:var(--r);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
-.doc-btn-name{font-size:12px;font-weight:500;color:var(--text);margin-bottom:1px}
-.doc-btn-sub{font-size:10px;color:var(--text3)}
+.doc-btn-name{font-size:12px;font-weight:500;color:var(--text);margin-bottom:2px;line-height:1.35}
+.doc-btn-sub{font-size:10px;color:var(--text3);line-height:1.4}
+.doc-btn .doc-btn-text{flex:1;min-width:0}
+.doc-btn.saved-case{border-color:#BBF7D0;background:linear-gradient(135deg,var(--green-faint),#fff)}
 .doc-status{margin-left:auto;font-size:10px;font-weight:500;padding:2px 6px;border-radius:20px;white-space:nowrap}
 .ds-draft{background:var(--amber-faint);color:var(--amber)}
 .ds-approved{background:var(--green-faint);color:var(--green)}
@@ -136,6 +142,18 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 .empty-workspace{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;text-align:center;background:var(--surface);border:1px solid var(--border);border-radius:var(--r3)}
 .empty-workspace i{font-size:36px;color:var(--text3);margin-bottom:12px;opacity:0.4;display:block}
 .empty-workspace p{font-size:13px;color:var(--text3);max-width:260px;line-height:1.6}
+.doc-card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
+.doc-card{border:1px solid var(--border);border-radius:var(--r2);padding:14px;background:var(--surface);cursor:pointer;transition:all .15s;text-align:left;font-family:var(--font)}
+.doc-card:hover{border-color:var(--blue);background:var(--blue-faint);transform:translateY(-1px)}
+.doc-card h4{font-size:13px;font-weight:500;margin-bottom:4px;display:flex;align-items:center;gap:6px}
+.doc-card p{font-size:11px;color:var(--text3);line-height:1.45}
+.doc-card .dc-status{margin-top:8px;font-size:10px;font-weight:500;padding:2px 7px;border-radius:20px;display:inline-block}
+.btn-casefile{font-size:11px;padding:6px 12px;border-radius:var(--r);border:1px solid var(--green);background:var(--green-faint);color:var(--green);cursor:pointer;font-family:var(--font);display:inline-flex;align-items:center;gap:5px;font-weight:500}
+.btn-casefile:hover{background:#D1FAE5}
+.btn-casefile.done{background:var(--green);color:#fff;border-color:var(--green);cursor:default}
+.approve-prompt{margin:14px 16px;padding:12px 14px;border:1px solid #BBF7D0;border-radius:var(--r2);background:linear-gradient(135deg,var(--green-faint),#fff);display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.approve-prompt-text{flex:1;min-width:180px;font-size:12px;color:var(--text2);line-height:1.5}
+.approve-prompt-text strong{color:var(--green);display:block;font-size:13px;margin-bottom:2px}
 
 /* points of claim reference */
 .points-ref{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);overflow:hidden}
@@ -177,6 +195,7 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 </head>
 <body>
 <script src="case_embed.js"></script>
+<script src="case_filing.js"></script>
 <script>
 // ALL DATA AND HELPERS — embedded in every page
 const USERS={
@@ -296,6 +315,7 @@ function t(key){var d=I18N[getUILang()]||I18N.en;return d[key]||I18N.en[key]||ke
   <div class="body drafting-layout" id="draft-body">
     <!-- Document library sidebar -->
     <div class="sidebar-left">
+      <div class="sidebar-case-link" id="sidebar-case-link"></div>
       <div class="lib-section">
         <div class="lib-label">Pre-action</div>
         <button class="doc-btn" onclick="openDoc('loa',this)">
@@ -919,6 +939,34 @@ var DOC_ICONS = {
   loa:'ti-mail',lor:'ti-file-text',defence:'ti-shield',
   witness:'ti-user',n181:'ti-forms',p36:'ti-scale',settlement:'ti-file-check'
 };
+var DOC_SECTIONS = {
+  loa:'Pre-action · CPR Protocol',lor:'Substantive reply to LOC',
+  defence:'CPR Part 16 · County Court',witness:'CPR Part 32 · Crew / Ops',
+  n181:'Form N181',p36:'CPR Part 36 · Costs protection',
+  settlement:'Full and final settlement'
+};
+var DOC_FILE_NAMES = {
+  loa:'Letter-of-Acknowledgement',lor:'Letter-of-Response',defence:'Defence',
+  witness:'Witness-Statement',n181:'Directions-Questionnaire-N181',
+  p36:'Part-36-Offer',settlement:'Settlement-Agreement'
+};
+
+function syncStoredFromCaseFile(){
+  if(typeof CaseFiling==='undefined')return;
+  Object.keys(DOC_NAMES).forEach(function(id){
+    if(CaseFiling.isDocInCaseFile(C.ref,id))storedInRepo[id]=true;
+  });
+}
+
+function renderSidebarCaseLink(){
+  var el=document.getElementById('sidebar-case-link');
+  if(!el)return;
+  var saved=Object.keys(storedInRepo).filter(function(k){return storedInRepo[k];}).length;
+  el.innerHTML='<strong><i class="ti ti-folder-symlink"></i> Live case file</strong>'
+    +(saved?saved+' document'+(saved===1?'':'s')+' saved · ':'')
+    +'Team can view and edit in Repository → Cases. '
+    +'<a href="repository.html#cases" target="_top">Open case file</a>';
+}
 
 function addVersion(id,label){
   docVersions[id]=docVersions[id]||[];
@@ -949,6 +997,12 @@ function syncDocBtnStates(){
     btn.classList.toggle('active',docFocused&&currentDocId===id);
     btn.classList.toggle('open',!!openDocs[id]);
     btn.classList.toggle('minimized',!!minimizedDocs[id]&&!docFocused);
+    btn.classList.toggle('saved-case',!!storedInRepo[id]);
+    var tagEl=btn.querySelector('.doc-status');
+    if(tagEl&&storedInRepo[id]&&docApproved[id]){
+      tagEl.className='doc-status ds-approved';
+      tagEl.textContent='In case file';
+    }
   });
 }
 
@@ -1011,21 +1065,36 @@ function renderLibraryHome(){
   var pct=getEvidencePct();
   var drafted=Object.keys(docStates).filter(function(k){return docStates[k].generated||docStates[k].status==='approved';}).length;
   var approved=Object.keys(docApproved).filter(function(k){return docApproved[k];}).length;
+  var savedCount=Object.keys(storedInRepo).filter(function(k){return storedInRepo[k];}).length;
   var openChips=Object.keys(openDocs).concat(Object.keys(minimizedDocs)).filter(function(id,i,a){return a.indexOf(id)===i;}).map(function(id){
     return '<button class="open-doc-chip" onclick="openDoc(\''+id+'\')"><i class="ti ti-file-text"></i>'+(DOC_NAMES[id]||id)+'</button>';
+  }).join('');
+  var docIds=['loa','lor','defence','witness','n181','p36','settlement'];
+  var cards=docIds.map(function(id){
+    var st=docStates[id]||{};
+    var isAp=!!docApproved[id];
+    var inCase=!!storedInRepo[id];
+    var statusCls=isAp?'ds-approved':(st.generated||st.status==='draft')?'ds-draft':'ds-empty';
+    var statusTxt=isAp?(inCase?'Approved · in case file':'Approved'):(st.generated||st.status==='draft')?'Draft':'Not started';
+    return '<button class="doc-card" onclick="openDoc(\''+id+'\')">'
+      +'<h4><i class="ti '+DOC_ICONS[id]+'"></i>'+(DOC_NAMES[id]||id)+'</h4>'
+      +'<p>'+(DOC_SECTIONS[id]||'Legal document')+'</p>'
+      +'<span class="dc-status '+statusCls+'">'+statusTxt+'</span>'
+      +'</button>';
   }).join('');
   return '<div class="library-home">'
     +'<div class="library-hero"><div class="ch-ref">'+C.ref+'</div>'
     +'<h2>'+C.name+' v. TestAirways</h2>'
-    +'<p>Select a document from the library to open it in full-screen drafting view. Close, save, or download to return here.</p>'
+    +'<p>Open a document to draft in full-screen view. After approval, add it to the live case file so the whole team can access it in the Repository — no manual re-upload.</p>'
     +(openChips?'<div class="open-docs-strip">'+openChips+'</div>':'')
     +'</div>'
     +'<div class="library-stats">'
     +'<div class="library-stat"><div class="library-stat-label">Evidence</div><div class="library-stat-val">'+pct+'%</div></div>'
     +'<div class="library-stat"><div class="library-stat-label">Drafted</div><div class="library-stat-val">'+drafted+'</div></div>'
-    +'<div class="library-stat"><div class="library-stat-label">Approved</div><div class="library-stat-val">'+approved+'</div></div>'
+    +'<div class="library-stat"><div class="library-stat-label">In case file</div><div class="library-stat-val">'+savedCount+'</div></div>'
     +'</div>'
-    +'<div class="empty-workspace" style="min-height:200px"><i class="ti ti-file-pencil"></i><p>Open a document from the left library. It will fill this workspace until you close, save, or download it.</p></div>'
+    +'<div class="lib-label" style="margin-bottom:10px">Document library</div>'
+    +'<div class="doc-card-grid">'+cards+'</div>'
     +'</div>';
 }
 
@@ -1046,7 +1115,10 @@ function renderDocFocus(){
     actions='<button class="btn-action primary" onclick="generateDoc(\''+id+'\')"><i class="ti ti-sparkles"></i> Generate draft</button>';
   }else if(isApproved){
     actions='<span class="btn-action success"><i class="ti ti-check"></i> Approved</span>'
-      +'<button class="btn-action" onclick="downloadDoc(\''+id+'\',true)"><i class="ti ti-download"></i> Download & close</button>';
+      +(storedInRepo[id]
+        ?'<span class="btn-casefile done"><i class="ti ti-check"></i> In case file</span>'
+        :'<button class="btn-casefile" onclick="addToRepository(\''+id+'\')"><i class="ti ti-folder-symlink"></i> Add to case file</button>')
+      +'<button class="btn-action" onclick="downloadDoc(\''+id+'\',true)"><i class="ti ti-download"></i> Download</button>';
   }else{
     actions=(isEdit
       ?'<button class="btn-action primary" onclick="saveEdit(\''+id+'\')"><i class="ti ti-device-floppy"></i> Save & close</button>'
@@ -1067,7 +1139,10 @@ function renderDocFocus(){
   var statusCls=isApproved?'status-text approved':'status-text';
   var versions=docVersions[id]||[];
   var versionNote=versions.length?'<span class="draft-hint"><i class="ti ti-history"></i>'+versions[0].label+' · '+versions[0].time+'</span>':'';
-  var repoRow=isApproved?'<div class="repo-btn-row">'+(storedInRepo[id]?'<span class="btn-action success"><i class="ti ti-check"></i> Saved to case</span>':'<button class="btn-action primary" onclick="addToRepository(\''+id+'\')"><i class="ti ti-folder-symlink"></i> Save to case file</button>')+'</div>':'';
+  var approvePrompt='';
+  if(isApproved&&!storedInRepo[id]){
+    approvePrompt='<div class="approve-prompt"><div class="approve-prompt-text"><strong>Ready for the team</strong>Add this approved document to the live case file in the Repository. The whole legal team can then view and edit it — no download and re-upload via intake.</div><button class="btn-casefile" onclick="addToRepository(\''+id+'\')"><i class="ti ti-folder-symlink"></i> Add to case file</button><button class="btn-action" onclick="openCaseFileInRepo()"><i class="ti ti-external-link"></i> View in Repository</button></div>';
+  }
 
   return '<div class="doc-focus">'
     +'<div class="doc-focus-toolbar">'
@@ -1079,7 +1154,7 @@ function renderDocFocus(){
     +'<p>'+C.ref+' · '+C.name+' · Evidence '+getEvidencePct()+'%</p></div>'
     +'<div class="doc-focus-actions">'+actions+'</div>'
     +'</div>'
-    +'<div class="doc-focus-scroll">'+evStrip+letterHtml+repoRow+'</div>'
+    +'<div class="doc-focus-scroll">'+evStrip+approvePrompt+letterHtml+'</div>'
     +'<div class="doc-focus-footer"><div class="'+statusCls+'">'+statusTxt+'</div>'+versionNote+'<span class="draft-hint"><i class="ti ti-info-circle"></i>Close, save, or download to return to library</span></div>'
     +'</div>';
 }
@@ -1104,6 +1179,7 @@ function renderWorkspace(){
   }
   syncDocBtnStates();
   renderPointsRefSidebar();
+  renderSidebarCaseLink();
 }
 
 function renderPointsRef(){
@@ -1183,32 +1259,56 @@ function approveDoc(id){
   addVersion(id,'Approved and signed off');
   updateDocBtn(id,'approved');
   renderWorkspace();
+  if(!storedInRepo[id]){
+    setTimeout(function(){
+      if(confirm('Document approved.\n\nAdd "'+(DOC_NAMES[id]||id)+'" to the live case file now?\n\nThis makes it available to the whole team in Repository → Cases.')){
+        addToRepository(id);
+      }
+    },200);
+  }
 }
 
+function openCaseFileInRepo(){
+  try{sessionStorage.setItem('261c_repo_case',C.ref);}catch(e){}
+  var url='repository.html#cases';
+  if(window.parent!==window){window.parent.location.href=url;}
+  else{window.open(url,'_blank');}
+}
 
 function addToRepository(id){
-  var names={loa:'Letter-of-Acknowledgement',lor:'Letter-of-Response',defence:'Defence',witness:'Witness-Statement',n181:'Directions-Questionnaire-N181',p36:'Part-36-Offer',settlement:'Settlement-Agreement'};
   var text=docStates[id].edits||buildDoc(id);
+  var uid=typeof getActiveUser==='function'?getActiveUser():'SB';
+  var u=(typeof USERS!=='undefined'?USERS[uid]:null)||{full:'User',name:'User'};
+  var docName=DOC_NAMES[id]||id;
+  var folderId=(id==='loa')?'correspondence':'legal_drafts';
   try{
+    if(typeof CaseFiling!=='undefined'){
+      CaseFiling.ensureCaseFile({
+        ref:C.ref,claimant:C.name,solicitor:C.sol,flightNum:C.flightNum,
+        route:(C.dep&&C.arr)?C.dep+'–'+C.arr:'',jurisdiction:'england-wales',
+        stage:'drafting',disruptionType:C.type,value:C.value,assignedTo:uid,
+        evidencePct:getEvidencePct()
+      });
+      CaseFiling.saveDraftToCaseFile(C.ref,id,docName,text,{
+        status:'approved',folderId:folderId,uploadedBy:uid,uploadedByName:u.full||u.name
+      });
+      CaseFiling.addActivity(C.ref,docName+' added to case file from drafting','upload',u.full||u.name);
+      CaseFiling.updateCaseMeta(C.ref,{stage:'drafting',evidencePct:getEvidencePct()});
+    }
     var repo=JSON.parse(sessionStorage.getItem('261c_repository')||'[]');
     repo.unshift({
       ref:C.ref,claimant:C.name,outcome:'Draft document',
       stored:new Date().toISOString(),
-      documents:[names[id]||id],
+      documents:[DOC_FILE_NAMES[id]||id],
       value:C.value,flightNum:C.flightNum,
       disruptionType:C.type,solicitor:C.sol,
-      docType:names[id],docText:text.slice(0,500)
+      docType:DOC_FILE_NAMES[id],docText:text.slice(0,500)
     });
     sessionStorage.setItem('261c_repository',JSON.stringify(repo.slice(0,30)));
     storedInRepo[id]=true;
-    if(window.parent!==window){window.parent.postMessage({type:'case-shell',action:'log',text:'Document stored in repository: '+(names[id]||id),logType:'upload'},'*');}
+    if(window.parent!==window){window.parent.postMessage({type:'case-shell',action:'log',text:'Document added to case file: '+docName,logType:'upload'},'*');}
   }catch(e){}
-  // Show success toast
-  var toast = document.createElement('div');
-  toast.style.cssText = 'position:fixed;bottom:20px;right:20px;background:var(--navy);color:#fff;padding:10px 16px;border-radius:var(--r2);font-size:12px;font-weight:500;z-index:999;display:flex;align-items:center;gap:8px;box-shadow:0 4px 16px rgba(0,0,0,0.2)';
-  toast.innerHTML = '<i class="ti ti-folder-symlink" style="font-size:14px"></i> Document saved to case file';
-  document.body.appendChild(toast);
-  setTimeout(function(){ toast.remove(); }, 3000);
+  showDraftToast(docName+' added to case file — team can access in Repository');
   renderWorkspace();
   updateDocBtn(id,'approved');
 }
@@ -1298,7 +1398,12 @@ function applyDocRecommendations(){
     docStates.lor.status='draft';
     updateDocBtn('lor','draft');
   }
+  if(C.ref==='AC-2026-0089'){
+    docApproved.loa=true;
+    updateDocBtn('loa','approved');
+  }
 })();
+syncStoredFromCaseFile();
 renderWorkspace();
 applyDocRecommendations();
 var initPct=getEvidencePct();
