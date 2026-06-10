@@ -119,7 +119,7 @@
         }),
         mkDoc('cf-h-003', 'evidence_index', 'Evidence pack index — HC 1184', {
           filename: 'AC-2026-0089-Evidence-Index.txt',
-          content: 'Evidence on file (70%):\n• TOPS flight details — on file\n• DISCO disruption record — on file\n• METAR/SIGMET BCN — on file\n• Eurocontrol ATFM — on file\n• Valencia ground records — requested',
+          content: 'Evidence on file (70%):\n• Operational delay records system flight details — on file\n• Disruption data system disruption record — on file\n• METAR/SIGMET BCN — on file\n• Eurocontrol ATFM — on file\n• Valencia ground records — requested',
           status: 'on_file',
           source: 'evidence',
           uploadedBy: 'EH',
