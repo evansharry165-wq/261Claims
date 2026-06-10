@@ -7,6 +7,7 @@
   var DEMO_TODAY = new Date(2026, 5, 9, 9, 0, 0); // 9 Jun 2026 — demo anchor
   var LAST_VISIT_KEY = '261c_last_visit_';
   var WORK_NOTES_KEY = '261c_work_notes';
+  var CALENDAR_ADD_KEY = '261c_cpr_calendar';
 
   var MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
   var MONTHS_SHORT = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -170,12 +171,101 @@
     return events;
   }
 
+  function loadCalendarAdditions() {
+    try {
+      var raw = localStorage.getItem(CALENDAR_ADD_KEY);
+      if (raw) {
+        var data = JSON.parse(raw);
+        if (Array.isArray(data)) return data;
+      }
+    } catch (e) {}
+    return [];
+  }
+
+  function saveCalendarAdditions(items) {
+    try {
+      localStorage.setItem(CALENDAR_ADD_KEY, JSON.stringify(items));
+    } catch (e) {}
+  }
+
+  function eventFromAddition(item) {
+    var d = new Date(item.iso + 'T12:00:00');
+    return {
+      id: item.ref + '-' + item.deadlineId,
+      ref: item.ref,
+      claimant: item.claimant || '',
+      date: d,
+      iso: item.iso,
+      label: item.label,
+      note: item.note || '',
+      type: 'cpr-tracked',
+      urgency: item.urgency || 'ok',
+      tab: 'deadlines',
+      tracked: true,
+    };
+  }
+
+  function addCaseDeadline(meta) {
+    var items = loadCalendarAdditions();
+    var key = meta.ref + '-' + meta.deadlineId;
+    if (
+      items.some(function (it) {
+        return it.ref + '-' + it.deadlineId === key;
+      })
+    ) {
+      return false;
+    }
+    items.push({
+      ref: meta.ref,
+      deadlineId: meta.deadlineId,
+      label: meta.label,
+      iso: meta.iso,
+      note: meta.note || '',
+      claimant: meta.claimant || '',
+      urgency: meta.urgency || 'ok',
+      addedAt: new Date().toISOString(),
+      addedBy: meta.addedBy || '',
+    });
+    saveCalendarAdditions(items);
+    return true;
+  }
+
+  function isCaseDeadlineAdded(ref, deadlineId) {
+    return loadCalendarAdditions().some(function (it) {
+      return it.ref === ref && it.deadlineId === deadlineId;
+    });
+  }
+
+  function getCaseCalendarAdditions(ref) {
+    return loadCalendarAdditions().filter(function (it) {
+      return it.ref === ref;
+    });
+  }
+
+  function mergeCalendarEvents(baseEvents, addedEvents) {
+    var seen = {};
+    baseEvents.forEach(function (e) {
+      seen[e.id] = true;
+    });
+    addedEvents.forEach(function (e) {
+      if (!seen[e.id]) {
+        baseEvents.push(e);
+        seen[e.id] = true;
+      }
+    });
+    return baseEvents;
+  }
+
   function buildCalendarEvents(cases) {
     var events = [];
     (cases || []).forEach(function (c) {
       if (c.stage === 'resolve') return;
       events = events.concat(buildCprEventsForCase(c));
     });
+    events = mergeCalendarEvents(
+      events,
+      loadCalendarAdditions().map(eventFromAddition)
+    );
     return events.sort(function (a, b) {
       return a.date - b.date;
     });
@@ -386,6 +476,9 @@
     recordVisit: recordVisit,
     isEvidenceUser: isEvidenceUser,
     buildCalendarEvents: buildCalendarEvents,
+    addCaseDeadline: addCaseDeadline,
+    isCaseDeadlineAdded: isCaseDeadlineAdded,
+    getCaseCalendarAdditions: getCaseCalendarAdditions,
     collectActivity: collectActivity,
     getUpdatesSinceLogin: getUpdatesSinceLogin,
     getOngoingCases: getOngoingCases,

@@ -86,6 +86,36 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 .btn-cal:hover{background:var(--surface3)}
 .btn-cal.added{background:var(--green-faint);border-color:#BBF7D0;color:var(--green);cursor:default}
 
+/* case CPR calendar */
+.case-cal-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r3);padding:14px 16px;margin-bottom:14px}
+.case-cal-title{font-size:13px;font-weight:500;color:var(--text);margin-bottom:4px;display:flex;align-items:center;gap:7px}
+.case-cal-sub{font-size:11px;color:var(--text3);margin-bottom:12px;line-height:1.5}
+.cal-panel{padding:0}
+.cal-toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:8px;flex-wrap:wrap}
+.cal-month{font-size:14px;font-weight:500;letter-spacing:-.02em}
+.cal-nav{display:flex;gap:4px}
+.cal-nav button{width:28px;height:28px;border:1px solid var(--border);border-radius:var(--r);background:var(--surface);cursor:pointer;color:var(--text2);font-family:var(--font)}
+.cal-nav button:hover{background:var(--surface3)}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:10px}
+.cal-dow{font-size:9px;font-weight:500;text-transform:uppercase;color:var(--text3);text-align:center;padding:3px 0}
+.cal-day{min-height:44px;border:1px solid var(--border);border-radius:var(--r);padding:4px 5px;font-size:10px;background:var(--surface2);cursor:pointer;transition:all .12s}
+.cal-day:hover{border-color:var(--blue);background:var(--blue-faint)}
+.cal-day.empty{background:transparent;border-color:transparent;cursor:default}
+.cal-day.today{border-color:var(--blue);box-shadow:inset 0 0 0 1px var(--blue)}
+.cal-day.selected{background:var(--navy);border-color:var(--navy);color:#fff}
+.cal-day.selected .cal-ev-dot{background:rgba(255,255,255,.7)}
+.cal-day-num{font-weight:500;margin-bottom:2px}
+.cal-ev-dots{display:flex;gap:2px;flex-wrap:wrap}
+.cal-ev-dot{width:5px;height:5px;border-radius:50%;background:var(--blue-text)}
+.cal-ev-dot.urgent{background:var(--red)}.cal-ev-dot.warn{background:var(--amber)}
+.cal-day-detail{border-top:1px solid var(--border);padding-top:10px}
+.cal-event{padding:8px 10px;border:1px solid var(--border);border-radius:var(--r2);margin-bottom:6px;background:var(--surface2)}
+.cal-event.urgent{border-left:3px solid var(--red)}
+.cal-event.warn{border-left:3px solid var(--amber)}
+.cal-event-label{font-size:11px;font-weight:500;margin-bottom:2px}
+.cal-event-note{font-size:10px;color:var(--text2);line-height:1.45}
+.cal-event-meta{font-size:9px;color:var(--text3);margin-top:3px;font-family:var(--mono)}
+
 /* checklist card */
 .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r3);padding:16px 18px;margin-bottom:14px}
 .card-title{font-size:13px;font-weight:500;color:var(--text);margin-bottom:12px;display:flex;align-items:center;gap:7px}
@@ -172,6 +202,7 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 </head>
 <body>
 <script src="case_embed.js"></script>
+<script src="work_dashboard.js"></script>
 <script>
 // ALL DATA AND HELPERS — embedded in every page
 const USERS={
@@ -378,6 +409,9 @@ var DEADLINES=[
 var checked={};
 var loaChoice=_i.loaChoice||'';
 var calAdded={};
+var calYear=new Date().getFullYear();
+var calMonth=new Date().getMonth();
+var selectedCalDay=typeof WorkDashboard!=='undefined'?WorkDashboard.isoDate(new Date()):'';
 var loaDraftState='';  // '' | 'draft' | 'editing' | 'approved'
 var loaEdits='';
 var audit=[];
@@ -388,7 +422,7 @@ function log(t,type){audit.push({t:t,type:type||'action',time:ts(),by:C.user});r
 /* ── Checklist ── */
 var CHECKS=[
   {id:'c_deadlines',label:'CPR deadlines reviewed',           sub:'Confirm you have reviewed all four deadlines and understand the obligations for this case.',req:true},
-  {id:'c_calendar', label:'Response deadline added to calendar',sub:'Export the 21-day response deadline using the calendar buttons below.',req:true},
+  {id:'c_calendar', label:'Response deadline added to calendar',sub:'Add the 21-day response deadline to the case calendar below.',req:true},
   {id:'c_loa',      label:'Letter of Acknowledgement decision made',sub:'Select your decision below — draft available if needed.',req:true},
   {id:'c_sol',      label:'Claimant solicitor details confirmed', sub:C.sol+' confirmed as acting for the claimant.',req:true},
   {id:'c_counsel',  label:'Assigned solicitor briefed',          sub:C.assignedTo+' informed of all CPR obligations.',req:false},
@@ -477,7 +511,7 @@ function renderMain(){
   /* purpose */
   var purpose='<div class="purpose">'
     +'<div class="purpose-label"><i class="ti ti-calendar-due" style="font-size:11px"></i>Module 3 — CPR deadlines</div>'
-    +'<div class="purpose-text">Confirm all CPR obligations are tracked before evidence gathering begins. Set calendar reminders for each deadline, confirm the Letter of Acknowledgement position, and if sending one, review and approve the draft below.</div>'
+    +'<div class="purpose-text">Confirm all CPR obligations are tracked before evidence gathering begins. Add deadlines to the case calendar below, confirm the Letter of Acknowledgement position, and if sending one, review and approve the draft below.</div>'
     +'</div>';
 
   /* jurisdiction banner */
@@ -510,9 +544,8 @@ function renderMain(){
                  :'Due in '+days+' day'+(days!==1?'s':'');
       var isAdded=!!calAdded[dl.id];
       var calBtns=isAdded
-        ?'<button class="btn-cal added"><i class="ti ti-check" style="font-size:10px"></i> Added</button>'
-        :'<button class="btn-cal" onclick="exportICS(\''+dl.id+'\',\''+dl.label+'\',\''+dl.date.toISOString()+'\')"><i class="ti ti-calendar-plus" style="font-size:10px"></i> .ics</button>'
-         +'<button class="btn-cal" onclick="openGCal(\''+dl.id+'\',\''+dl.label+'\',\''+dl.date.toISOString()+'\')"><i class="ti ti-brand-google" style="font-size:10px"></i> Google</button>';
+        ?'<button class="btn-cal added"><i class="ti ti-check" style="font-size:10px"></i> On calendar</button>'
+        :'<button class="btn-cal" onclick="addToCalendar('+JSON.stringify(dl.id)+','+JSON.stringify(dl.label)+','+JSON.stringify(dl.date.toISOString())+','+JSON.stringify(dl.desc)+')"><i class="ti ti-calendar-plus" style="font-size:10px"></i> Add to calendar</button>';
       return '<div class="dl-card '+urg+'">'
         +'<div class="dl-label '+urg+'"><i class="ti ti-clock" style="font-size:10px"></i>'+dl.label+'</div>'
         +'<div class="dl-date '+urg+'">'+fmtDate(dl.date)+'</div>'
@@ -600,7 +633,7 @@ function renderMain(){
     +'<div class="advance-hint">'+hint+'</div>'
     +'</div></div>';
 
-  m.innerHTML=hdr+rail+jurBanner+purpose+dlCards+chkCard;
+  m.innerHTML=hdr+rail+jurBanner+purpose+dlCards+renderCaseCalendar(deadlinesToShow)+chkCard;
 }
 
 function renderAudit(){
@@ -659,43 +692,99 @@ function downloadLOA(){
   log('LOA draft downloaded: '+C.ref+'-Letter-of-Acknowledgement.txt','draft');
 }
 
-function exportICS(id,label,dateStr){
-  var d=new Date(dateStr);
-  function fmt(dt){return dt.toISOString().replace(/[-:]/g,'').split('.')[0]+'Z';}
-  var end=new Date(d.getTime()+3600000);
-  var r14=new Date(d.getTime()-14*86400000);
-  var r7=new Date(d.getTime()-7*86400000);
-  var r3=new Date(d.getTime()-3*86400000);
-  var ics='BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//261Claims//EN\r\n'
-    +'BEGIN:VEVENT\r\nUID:'+C.ref+'-'+id+'@261claims\r\n'
-    +'DTSTART:'+fmt(d)+'\r\nDTEND:'+fmt(end)+'\r\n'
-    +'SUMMARY:'+label+' — '+C.name+' v. TestAirways ('+C.ref+')\r\n'
-    +'DESCRIPTION:'+C.type+' · Value: '+C.value+' · Ref: '+C.ref+'\r\n'
-    +'BEGIN:VALARM\r\nTRIGGER:'+fmt(r14)+'\r\nACTION:DISPLAY\r\nDESCRIPTION:14 days — '+label+' '+C.ref+'\r\nEND:VALARM\r\n'
-    +'BEGIN:VALARM\r\nTRIGGER:'+fmt(r7)+'\r\nACTION:DISPLAY\r\nDESCRIPTION:7 days — '+label+' '+C.ref+'\r\nEND:VALARM\r\n'
-    +'BEGIN:VALARM\r\nTRIGGER:'+fmt(r3)+'\r\nACTION:DISPLAY\r\nDESCRIPTION:3 days — '+label+' '+C.ref+'\r\nEND:VALARM\r\n'
-    +'END:VEVENT\r\nEND:VCALENDAR';
-  var blob=new Blob([ics],{type:'text/calendar'});
-  var a=document.createElement('a');
-  a.href=URL.createObjectURL(blob);
-  a.download=C.ref+'-'+id+'.ics';
-  a.click();
-  calAdded[id]=true;
-  if(id==='response') checked['c_calendar']=true;
-  log('Calendar export: '+label+' — '+fmtDate(new Date(dateStr)),'cal');
+function syncCalAdded(deadlines){
+  calAdded={};
+  if(typeof WorkDashboard==='undefined')return;
+  (deadlines||[]).forEach(function(dl){
+    if(WorkDashboard.isCaseDeadlineAdded(C.ref,dl.id)) calAdded[dl.id]=true;
+  });
+}
+
+function buildCaseCalendarEvents(deadlines){
+  var events=[];
+  (deadlines||[]).forEach(function(dl){
+    if(!calAdded[dl.id])return;
+    var days=daysFrom(dl.date);
+    events.push({
+      id:C.ref+'-'+dl.id,
+      ref:C.ref,
+      claimant:C.name,
+      date:dl.date,
+      iso:WorkDashboard.isoDate(dl.date),
+      label:dl.label,
+      note:dl.desc||dl.rule||'',
+      type:'cpr-tracked',
+      urgency:urgency(days),
+      tab:'deadlines'
+    });
+  });
+  return events;
+}
+
+function renderCaseCalendar(deadlines){
+  if(typeof WorkDashboard==='undefined')return '';
+  var events=buildCaseCalendarEvents(deadlines);
+  var cells=WorkDashboard.buildMonthGrid(calYear,calMonth,events,selectedCalDay);
+  var monthLabel=WorkDashboard.MONTHS[calMonth]+' '+calYear;
+  var dows=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  var dayEvents=WorkDashboard.eventsOnDate(events,selectedCalDay);
+  var detailLabel=selectedCalDay
+    ?new Date(selectedCalDay+'T12:00:00').toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'})
+    :'Select a day';
+  var tracked=Object.keys(calAdded).filter(function(k){return calAdded[k];}).length;
+
+  return '<div class="case-cal-card">'
+    +'<div class="case-cal-title"><i class="ti ti-calendar" style="color:var(--amber);font-size:14px"></i>Case CPR calendar</div>'
+    +'<div class="case-cal-sub">'+tracked+' deadline'+(tracked===1?'':'s')+' tracked for this case. Added dates appear here and on your Work dashboard calendar.</div>'
+    +'<div class="cal-panel"><div class="cal-toolbar"><div class="cal-month">'+monthLabel+'</div>'
+    +'<div class="cal-nav"><button type="button" onclick="shiftCprCalMonth(-1)" aria-label="Previous month"><i class="ti ti-chevron-left"></i></button>'
+    +'<button type="button" onclick="shiftCprCalMonth(1)" aria-label="Next month"><i class="ti ti-chevron-right"></i></button></div></div>'
+    +'<div class="cal-grid">'+dows.map(function(d){return '<div class="cal-dow">'+d+'</div>';}).join('')
+    +cells.map(function(c){
+      if(c.empty)return '<div class="cal-day empty"></div>';
+      var cls='cal-day'+(c.isToday?' today':'')+(c.isSelected?' selected':'');
+      var dots=c.events.slice(0,4).map(function(e){return '<span class="cal-ev-dot '+e.urgency+'"></span>';}).join('');
+      return '<div class="'+cls+'" onclick="selectCprCalDay(\''+c.iso+'\')"><div class="cal-day-num">'+c.day+'</div><div class="cal-ev-dots">'+dots+'</div></div>';
+    }).join('')+'</div>'
+    +'<div class="cal-day-detail"><div style="font-size:11px;font-weight:500;margin-bottom:8px;color:var(--text2)"><i class="ti ti-calendar-event" style="font-size:11px"></i> '+detailLabel+'</div>'
+    +(dayEvents.length?dayEvents.map(function(e){
+      return '<div class="cal-event '+e.urgency+'"><div class="cal-event-label">'+e.label+'</div><div class="cal-event-note">'+e.note+'</div><div class="cal-event-meta">'+e.ref+' · '+e.claimant+'</div></div>';
+    }).join(''):'<div style="font-size:11px;color:var(--text3);padding:4px 0">No tracked deadlines on this day. Use Add to calendar on a deadline card above.</div>')
+    +'</div></div></div>';
+}
+
+function shiftCprCalMonth(delta){
+  calMonth+=delta;
+  if(calMonth<0){calMonth=11;calYear--;}
+  if(calMonth>11){calMonth=0;calYear++;}
   render();
 }
 
-function openGCal(id,label,dateStr){
+function selectCprCalDay(iso){
+  selectedCalDay=iso;
+  render();
+}
+
+function addToCalendar(id,label,dateStr,desc){
+  if(typeof WorkDashboard==='undefined')return;
   var d=new Date(dateStr);
-  function fmt(dt){return dt.toISOString().replace(/[-:T]/g,'').split('.')[0]+'Z';}
-  var end=new Date(d.getTime()+3600000);
-  var text=encodeURIComponent(label+' — '+C.name+' v. TestAirways ('+C.ref+')');
-  var details=encodeURIComponent(C.type+' · Value: '+C.value+' · Ref: '+C.ref);
-  window.open('https://calendar.google.com/calendar/render?action=TEMPLATE&text='+text+'&dates='+fmt(d)+'/'+fmt(end)+'&details='+details,'_blank');
+  var days=daysFrom(d);
+  var added=WorkDashboard.addCaseDeadline({
+    ref:C.ref,
+    deadlineId:id,
+    label:label,
+    iso:WorkDashboard.isoDate(d),
+    note:desc||'',
+    claimant:C.name,
+    urgency:urgency(days),
+    addedBy:C.user
+  });
   calAdded[id]=true;
-  if(id==='response') checked['c_calendar']=true;
-  log('Google Calendar: '+label,'cal');
+  selectedCalDay=WorkDashboard.isoDate(d);
+  calYear=d.getFullYear();
+  calMonth=d.getMonth();
+  if(id==='response'||id==='jd-21') checked['c_calendar']=true;
+  log((added?'Added to calendar: ':'Already on calendar: ')+label+' — '+fmtDate(d),'cal');
   render();
 }
 
@@ -722,6 +811,12 @@ function addNote(){
 }
 
 /* ── Init ── */
+var _deadlinesInit=DEADLINES_OVERRIDE.length?DEADLINES_OVERRIDE:DEADLINES;
+syncCalAdded(_deadlinesInit);
+if(checked['c_calendar']!==true){
+  var _respId=calAdded['response']?'response':calAdded['jd-21']?'jd-21':null;
+  if(_respId) checked['c_calendar']=true;
+}
 log('CPR module opened — '+C.name+' v. TestAirways','create');
 log('LOC received: '+C.date+' · Response deadline: '+fmtDate(d21),'action');
 render();
