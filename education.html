@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>261Claims — Knowledge Hub</title>
+<title>261Claims — Education Hub</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
@@ -193,6 +193,10 @@ function t(key){var d=I18N[getUILang()]||I18N.en;return d[key]||I18N.en[key]||ke
 
 <div class="page">
   <div class="sidebar">
+    <div style="padding:0 16px 14px;border-bottom:1px solid var(--border);margin-bottom:6px">
+      <div style="font-size:14px;font-weight:500;color:var(--text);letter-spacing:-0.01em">Education Hub</div>
+      <div style="font-size:11px;color:var(--text3);line-height:1.45;margin-top:3px">Guidance, case law, and operational training for the legal team</div>
+    </div>
     <div class="sb-section">Legal knowledge</div>
     <div class="sb-item active" onclick="showSection('regulation', event)"><i class="ti ti-file-certificate"></i> EC 261/2004 regulation <span class="sb-count">12</span></div>
     <div class="sb-item" onclick="showSection('caselaw', event)"><i class="ti ti-gavel"></i> Key case law <span class="sb-count">8</span></div>
@@ -513,7 +517,7 @@ function _navInit(){
     });
     // Active state
     var p=window.location.pathname.split('/').pop()||'index.html';
-    var active=p.indexOf('module1')>=0?'intake':p.indexOf('module2')>=0?'cases':p.indexOf('module3')>=0?'cpr':p.indexOf('module4')>=0?'evidence':p.indexOf('module5')>=0?'drafting':p.indexOf('module6')>=0?'mi':p.indexOf('education')>=0?'knowledge':'dashboard';
+    var active=p.indexOf('module1')>=0?'intake':p.indexOf('module2')>=0?'cases':p.indexOf('module3')>=0?'cpr':p.indexOf('module4')>=0?'evidence':p.indexOf('module5')>=0?'drafting':p.indexOf('module6')>=0?'mi':p.indexOf('education')>=0||p.indexOf('module7')>=0?'education':'dashboard';
     var al=document.getElementById('gnl-'+active); if(al) al.classList.add('active');
     // Active user tick
     document.querySelectorAll('.ud-item').forEach(function(el){el.classList.remove('current');});

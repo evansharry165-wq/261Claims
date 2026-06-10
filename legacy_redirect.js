@@ -17,8 +17,7 @@
     'module4-evidence.html': 'cases.html?filter=evidence',
     'module5-drafting.html': 'cases.html?filter=drafting',
     'module6-mi.html': 'insights.html?tab=reporting',
-    'education.html': 'insights.html?tab=guidance',
-    'module7-education.html': 'insights.html?tab=guidance'
+    'module7-education.html': 'education.html'
   };
 
   var target = MAP[file];

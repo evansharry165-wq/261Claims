@@ -80,8 +80,10 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 </div>
 
 <script>
-var TABS=[{id:'reporting',label:'Reporting'},{id:'past-cases',label:'Past cases'},{id:'guidance',label:'Guidance'}];
-var activeTab=(new URLSearchParams(window.location.search).get('tab')||'reporting');
+var TABS=[{id:'reporting',label:'Reporting'},{id:'past-cases',label:'Past cases'}];
+var _tabParam=new URLSearchParams(window.location.search).get('tab')||'reporting';
+if(_tabParam==='guidance'){window.location.replace('education.html');}
+var activeTab=_tabParam==='guidance'?'reporting':_tabParam;
 var activeOutcome='all', selectedRef='', query='';
 
 function escapeHtml(v){return String(v==null?'':v).replace(/[&<>"']/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch];});}
@@ -122,8 +124,6 @@ function renderPastCases(){
 function renderPanel(){
   if(activeTab==='reporting'){
     document.getElementById('tab-panel').innerHTML='<iframe class="tab-frame" src="module6-mi.html?embed=1" title="Reporting"></iframe>';
-  }else if(activeTab==='guidance'){
-    document.getElementById('tab-panel').innerHTML='<iframe class="tab-frame" src="education.html?embed=1" title="Guidance"></iframe>';
   }else{
     renderPastCases();
   }

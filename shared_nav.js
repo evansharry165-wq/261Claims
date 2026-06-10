@@ -5,6 +5,7 @@
     cases: 'Cases',
     repository: 'Repository',
     insights: 'Insights',
+    education: 'Education',
     requests: 'Requests'
   };
 
@@ -12,14 +13,16 @@
     { key: 'work', icon: 'ti-layout-dashboard', href: 'index.html' },
     { key: 'cases', icon: 'ti-briefcase', href: 'cases.html' },
     { key: 'repository', icon: 'ti-database', href: 'repository.html' },
-    { key: 'insights', icon: 'ti-chart-dots', href: 'insights.html' }
+    { key: 'insights', icon: 'ti-chart-dots', href: 'insights.html' },
+    { key: 'education', icon: 'ti-school', href: 'education.html' }
   ];
 
   var EVIDENCE_NAV = [
     { key: 'work', icon: 'ti-layout-dashboard', href: 'index.html' },
     { key: 'requests', icon: 'ti-user-question', href: 'requests.html' },
     { key: 'repository', icon: 'ti-database', href: 'repository.html' },
-    { key: 'insights', icon: 'ti-chart-dots', href: 'insights.html' }
+    { key: 'insights', icon: 'ti-chart-dots', href: 'insights.html' },
+    { key: 'education', icon: 'ti-school', href: 'education.html' }
   ];
 
   function activePageKey() {
@@ -35,7 +38,8 @@
       return u && u.team === 'evidence' ? 'requests' : 'cases';
     }
     if (p.indexOf('module5') >= 0) return 'cases';
-    if (p === 'insights.html' || p.indexOf('module6') >= 0 || p.indexOf('education') >= 0 || p.indexOf('module7') >= 0) return 'insights';
+    if (p === 'insights.html' || p.indexOf('module6') >= 0) return 'insights';
+    if (p === 'education.html' || p.indexOf('module7') >= 0 || p.indexOf('education') >= 0) return 'education';
     if (p.indexOf('repository') >= 0) return 'repository';
     return 'work';
   }

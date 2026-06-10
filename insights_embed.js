@@ -9,8 +9,8 @@
       window.location.replace('insights.html?tab=reporting');
       return;
     }
-    if (file === 'education.html' || file === 'module7-education.html') {
-      window.location.replace('insights.html?tab=guidance');
+    if (file === 'module7-education.html') {
+      window.location.replace('education.html');
       return;
     }
     return;
