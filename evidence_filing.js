@@ -15,7 +15,7 @@
     { id: 'tops', name: 'Operational delay records system — Flight Details & Legislation', icon: 'ti-report-analytics', libKey: 'tops', tier: 'K', group: 'Always required' },
     { id: 'disco', name: 'Disruption data system — Disruption Records', icon: 'ti-timeline-event', libKey: 'disco', tier: 'K', group: 'Always required' },
     { id: 'aims', name: 'Crew scheduling system — Crew Route & FDP', icon: 'ti-users', libKey: 'aims', tier: 'K', group: 'Always required' },
-    { id: 'safetynet', name: 'Safety reporting system Reports', icon: 'ti-shield-check', libKey: 'safetynet', tier: 'K', group: 'Always required' },
+    { id: 'safetynet', name: 'Safety reporting system — Event Records', icon: 'ti-shield-check', libKey: 'safetynet', tier: 'K', group: 'Always required' },
     { id: 'eurocontrol', name: 'Eurocontrol — ATFM & Flight Data', icon: 'ti-radar', libKey: 'eurocontrol', tier: 'K', group: 'ATC' },
     { id: 'weather', name: 'Weather — METAR, TAF & SIGMET', icon: 'ti-cloud-rain', libKey: 'ogimet', tier: 'K', group: 'Weather' },
     { id: 'met_office', name: 'Met Office — Hazard Forecasts', icon: 'ti-temperature', libKey: 'met_office', tier: 'K', group: 'Weather' },
