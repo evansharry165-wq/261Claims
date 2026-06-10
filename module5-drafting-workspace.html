@@ -484,27 +484,27 @@ ${C.solAddr}
 
 Dear Sirs,
 
-RE: ${C.name.toUpperCase()} v. TESTAIRWAYS
+RE: ${C.name.toUpperCase()} v. [AIRLINE]
 YOUR REF: ${C.solRef}    OUR REF: ${C.ref}
 FLIGHT: ${C.flightNum} — ${C.dep} TO ${C.arr}
 DATE OF TRAVEL: ${C.flightDate}
 
 ACKNOWLEDGEMENT OF LETTER OF CLAIM
 
-We act on behalf of TestAirways in connection with the above matter.
+We act on behalf of [Airline] in connection with the above matter.
 
 We write to acknowledge receipt of your letter of claim dated ${C.date}, received by our Legal Department on ${C.date}. The matter has been assigned to our legal team and we are in the process of investigating the circumstances surrounding the above-referenced flight.
 
 In accordance with the Pre-Action Protocol, we will provide a substantive Letter of Response no later than ${responseBy()}. We will notify you promptly should we require any extension to that period.
 
-Without prejudice to our investigation, we note that the disruption to flight ${C.flightNum} on ${C.flightDate} arose from circumstances which we believe were beyond the reasonable control of TestAirways. Our full position will be set out in our Letter of Response.
+Without prejudice to our investigation, we note that the disruption to flight ${C.flightNum} on ${C.flightDate} arose from circumstances which we believe were beyond the reasonable control of [Airline]. Our full position will be set out in our Letter of Response.
 
-Nothing in this letter constitutes an admission of liability. TestAirways reserves all rights and defences available to it.
+Nothing in this letter constitutes an admission of liability. [Airline] reserves all rights and defences available to it.
 
 Yours faithfully,
 
 ${C.assignedTo}
-Legal Department, TestAirways`;
+Legal Department, [Airline]`;
 }
 
 function buildLOR(){
@@ -518,12 +518,12 @@ ${C.solAddr}
 
 Dear Sirs,
 
-RE: ${C.name.toUpperCase()} v. TESTAIRWAYS — LETTER OF RESPONSE
+RE: ${C.name.toUpperCase()} v. [AIRLINE] — LETTER OF RESPONSE
 YOUR REF: ${C.solRef}    OUR REF: ${C.ref}
 FLIGHT: ${C.flightNum} — ${C.dep} TO ${C.arr}
 DATE OF TRAVEL: ${C.flightDate}
 
-We act on behalf of TestAirways. We refer to your letter of claim dated ${C.date} and to our Letter of Acknowledgement. We now provide our substantive response.
+We act on behalf of [Airline]. We refer to your letter of claim dated ${C.date} and to our Letter of Acknowledgement. We now provide our substantive response.
 
 BACKGROUND
 
@@ -537,50 +537,50 @@ RESPONSE TO POINTS OF CLAIM
 
 Point 1 — Statutory Compensation: EC Regulation 261/2004, Article 7(1)(a)
 
-4. TestAirways acknowledges that flight ${C.flightNum} arrived at its final destination ${C.delay} after the scheduled arrival time and that, in isolation, this delay would engage the provisions of Article 7(1)(a) of EC Regulation 261/2004. However, TestAirways denies that any compensation is payable by reason of the extraordinary circumstances defence set out below.
+4. [Airline] acknowledges that flight ${C.flightNum} arrived at its final destination ${C.delay} after the scheduled arrival time and that, in isolation, this delay would engage the provisions of Article 7(1)(a) of EC Regulation 261/2004. However, [Airline] denies that any compensation is payable by reason of the extraordinary circumstances defence set out below.
 
-5. The distance from ${C.dep} to ${C.arr} is approximately 1,435 kilometres. For the avoidance of doubt, TestAirways notes that the applicable compensation under Article 7(1)(a), if payable, would be €250 and not €400 as asserted in your letter of claim. The €400 figure applies to flights of between 1,500 and 3,500 kilometres under Article 7(1)(b), which is not engaged on the facts of this claim.
+5. The distance from ${C.dep} to ${C.arr} is approximately 1,435 kilometres. For the avoidance of doubt, [Airline] notes that the applicable compensation under Article 7(1)(a), if payable, would be €250 and not €400 as asserted in your letter of claim. The €400 figure applies to flights of between 1,500 and 3,500 kilometres under Article 7(1)(b), which is not engaged on the facts of this claim.
 
 Point 2 — Extraordinary Circumstances: Article 5(3)
 
-6. TestAirways relies upon the defence of extraordinary circumstances pursuant to Article 5(3) of EC Regulation 261/2004. The diversion of flight ${C.flightNum} was caused by severe meteorological conditions at ${C.arr} on ${C.flightDate} which rendered continued operation to ${C.arr} incompatible with safe flight operations.
+6. [Airline] relies upon the defence of extraordinary circumstances pursuant to Article 5(3) of EC Regulation 261/2004. The diversion of flight ${C.flightNum} was caused by severe meteorological conditions at ${C.arr} on ${C.flightDate} which rendered continued operation to ${C.arr} incompatible with safe flight operations.
 
-7. The meteorological evidence obtained by TestAirways confirms that at the relevant time, ${C.arr} was subject to active convective activity with embedded cumulonimbus cloud, significant wind shear, and visibility below instrument landing system minima. The relevant METAR and SIGMET records, together with NOTAM documentation for ${C.arr}, are enclosed with this letter as Exhibit TA/1.
+7. The meteorological evidence obtained by [Airline] confirms that at the relevant time, ${C.arr} was subject to active convective activity with embedded cumulonimbus cloud, significant wind shear, and visibility below instrument landing system minima. The relevant METAR and SIGMET records, together with NOTAM documentation for ${C.arr}, are enclosed with this letter as Exhibit TA/1.
 
-8. TestAirways further relies upon the Eurocontrol Air Traffic Flow Management (ATFM) regulation data confirming that the airspace in the vicinity of ${C.arr} was subject to network-level restrictions at the material time. This data is enclosed as Exhibit TA/2.
+8. [Airline] further relies upon the Eurocontrol Air Traffic Flow Management (ATFM) regulation data confirming that the airspace in the vicinity of ${C.arr} was subject to network-level restrictions at the material time. This data is enclosed as Exhibit TA/2.
 
-9. The crew of flight ${C.flightNum} acted in accordance with mandatory Air Traffic Control instructions in diverting to ${C.diverted}. The diversion was not a discretionary operational decision but a safety imperative imposed by external circumstances entirely beyond TestAirways' control. TestAirways relies upon the two-limb test established in Wallentin-Hermann v Alitalia (Case C-549/07): the circumstances were (a) not inherent in the normal exercise of the carrier's activity, and (b) beyond its actual control.
+9. The crew of flight ${C.flightNum} acted in accordance with mandatory Air Traffic Control instructions in diverting to ${C.diverted}. The diversion was not a discretionary operational decision but a safety imperative imposed by external circumstances entirely beyond [Airline]' control. [Airline] relies upon the two-limb test established in Wallentin-Hermann v Alitalia (Case C-549/07): the circumstances were (a) not inherent in the normal exercise of the carrier's activity, and (b) beyond its actual control.
 
-10. TestAirways further avers that all reasonable measures were taken to avoid the resulting delay. Pre-departure weather monitoring was conducted, fuel loads were calculated to permit diversion to an alternate aerodrome, and the crew were briefed on potential meteorological conditions on the route. Once the decision to divert was made, the crew operated expeditiously to minimise further delay to passengers.
+10. [Airline] further avers that all reasonable measures were taken to avoid the resulting delay. Pre-departure weather monitoring was conducted, fuel loads were calculated to permit diversion to an alternate aerodrome, and the crew were briefed on potential meteorological conditions on the route. Once the decision to divert was made, the crew operated expeditiously to minimise further delay to passengers.
 
 Point 3 — Duty of Care: Article 9
 
-11. TestAirways denies that it failed to fulfil its obligations under Article 9 of EC Regulation 261/2004. Ground handling arrangements at ${C.diverted} were activated promptly following the diversion decision. TestAirways will adduce evidence from ground handling records at Valencia Airport confirming the provision of refreshments and written information to passengers during the ground delay.
+11. [Airline] denies that it failed to fulfil its obligations under Article 9 of EC Regulation 261/2004. Ground handling arrangements at ${C.diverted} were activated promptly following the diversion decision. [Airline] will adduce evidence from ground handling records at Valencia Airport confirming the provision of refreshments and written information to passengers during the ground delay.
 
-12. In the event that the Court finds any shortfall in the provision of Article 9 care — which is denied — TestAirways avers that any such shortfall arose from the extraordinary and unanticipated nature of the diversion and not from any failure of duty on the part of TestAirways or its handling agents.
+12. In the event that the Court finds any shortfall in the provision of Article 9 care — which is denied — [Airline] avers that any such shortfall arose from the extraordinary and unanticipated nature of the diversion and not from any failure of duty on the part of [Airline] or its handling agents.
 
 Point 4 — Consequential Losses: £38,250
 
-13. TestAirways denies liability for the consequential losses alleged in Point 4 of your letter of claim. Pursuant to Article 12 of EC Regulation 261/2004, any further compensation available to a passenger under national law is that available under the Montreal Convention. The Montreal Convention does not provide for recovery of the alleged loss of a commercial contract.
+13. [Airline] denies liability for the consequential losses alleged in Point 4 of your letter of claim. Pursuant to Article 12 of EC Regulation 261/2004, any further compensation available to a passenger under national law is that available under the Montreal Convention. The Montreal Convention does not provide for recovery of the alleged loss of a commercial contract.
 
-14. Further and in any event, TestAirways puts your client to strict proof of (a) the existence of the alleged contractual arrangement with Meridian Consulting SL; (b) that any contract was lost solely by reason of your client's non-attendance at the meeting on ${C.flightDate}; (c) that your client took all reasonable steps to mitigate his alleged loss, including by seeking to reschedule the meeting; and (d) that the quantum of £38,250 accurately reflects the net loss alleged.
+14. Further and in any event, [Airline] puts your client to strict proof of (a) the existence of the alleged contractual arrangement with Meridian Consulting SL; (b) that any contract was lost solely by reason of your client's non-attendance at the meeting on ${C.flightDate}; (c) that your client took all reasonable steps to mitigate his alleged loss, including by seeking to reschedule the meeting; and (d) that the quantum of £38,250 accurately reflects the net loss alleged.
 
-15. TestAirways will seek independent verification of the letter from Meridian Consulting SL relied upon by your client and reserves the right to challenge the authenticity and contents of that document.
+15. [Airline] will seek independent verification of the letter from Meridian Consulting SL relied upon by your client and reserves the right to challenge the authenticity and contents of that document.
 
 Point 5 — Travel and Subsistence Costs: £141.80
 
-16. TestAirways does not dispute that your client incurred additional travel costs as a result of the diversion, subject to verification of the receipts stated to be enclosed with your letter of claim. TestAirways will consider these costs upon receipt of the supporting documentation and will address them in any schedule of agreed or disputed sums.
+16. [Airline] does not dispute that your client incurred additional travel costs as a result of the diversion, subject to verification of the receipts stated to be enclosed with your letter of claim. [Airline] will consider these costs upon receipt of the supporting documentation and will address them in any schedule of agreed or disputed sums.
 
 CONCLUSION
 
-17. For the reasons set out above, TestAirways denies liability to pay statutory compensation under EC Regulation 261/2004 by reason of the extraordinary circumstances defence. TestAirways further denies liability for the consequential losses alleged. TestAirways is prepared to give consideration to the reasonable Article 9 care costs and verified travel and subsistence costs upon production of supporting documentation.
+17. For the reasons set out above, [Airline] denies liability to pay statutory compensation under EC Regulation 261/2004 by reason of the extraordinary circumstances defence. [Airline] further denies liability for the consequential losses alleged. [Airline] is prepared to give consideration to the reasonable Article 9 care costs and verified travel and subsistence costs upon production of supporting documentation.
 
-18. TestAirways remains open to resolving this matter by way of Alternative Dispute Resolution. Any proposal for settlement should be directed to the undersigned.
+18. [Airline] remains open to resolving this matter by way of Alternative Dispute Resolution. Any proposal for settlement should be directed to the undersigned.
 
 Yours faithfully,
 
 ${C.assignedTo}
-Legal Department, TestAirways
+Legal Department, [Airline]
 
 ENCLOSURES:
 Exhibit TA/1: METAR, SIGMET and NOTAM records for BCN, ${C.flightDate}
@@ -600,7 +600,7 @@ BETWEEN:
 
                               — and —
 
-                         TESTAIRWAYS
+                         [AIRLINE]
                                                                         Defendant
 
 ─────────────────────────────────────────
@@ -609,7 +609,7 @@ BETWEEN:
 
 INTRODUCTION
 
-1. The Defendant is TestAirways, a commercial airline operating scheduled passenger services. The Defendant denies that it is liable to pay compensation to the Claimant pursuant to EC Regulation 261/2004 (as retained in UK law following the end of the Brexit transition period) or at all, for the reasons set out below.
+1. The Defendant is [Airline], a commercial airline operating scheduled passenger services. The Defendant denies that it is liable to pay compensation to the Claimant pursuant to EC Regulation 261/2004 (as retained in UK law following the end of the Brexit transition period) or at all, for the reasons set out below.
 
 ADMISSIONS AND DENIALS
 
@@ -671,11 +671,11 @@ I believe that the facts stated in this Defence are true. I understand that proc
 
 Signed: ___________________________
 Name:   ${C.assignedTo}
-Position: Legal Department, TestAirways
+Position: Legal Department, [Airline]
 Date:   ${today()}
 
-Defendant's solicitors: TestAirways Legal Department
-Address for service: TestAirways Legal Department, Aviation House, Luton Airport, Luton LU2 9LY`;
+Defendant's solicitors: [Airline] Legal Department
+Address for service: [Airline] Legal Department, Aviation House, Luton Airport, Luton LU2 9LY`;
 }
 
 function buildWitness(){
@@ -690,20 +690,20 @@ BETWEEN:
 
                               — and —
 
-                         TESTAIRWAYS
+                         [AIRLINE]
                                                                         Defendant
 
 ─────────────────────────────────────────────────────────────
           WITNESS STATEMENT OF [CAPTAIN / SENIOR CABIN CREW]
 ─────────────────────────────────────────────────────────────
 
-I, [FULL NAME], of TestAirways, WILL SAY as follows:
+I, [FULL NAME], of [Airline], WILL SAY as follows:
 
 INTRODUCTION
 
-1. I am employed by TestAirways as [Captain / Senior First Officer / Senior Cabin Crew Member]. I have been employed in this role for [X] years. I make this statement from my own knowledge and from records available to me in my professional capacity.
+1. I am employed by [Airline] as [Captain / Senior First Officer / Senior Cabin Crew Member]. I have been employed in this role for [X] years. I make this statement from my own knowledge and from records available to me in my professional capacity.
 
-2. I make this statement in support of the Defence of TestAirways in the above proceedings. The matters set out in this statement are within my own knowledge unless otherwise stated.
+2. I make this statement in support of the Defence of [Airline] in the above proceedings. The matters set out in this statement are within my own knowledge unless otherwise stated.
 
 BACKGROUND: FLIGHT ${C.flightNum}, ${C.flightDate}
 
@@ -713,7 +713,7 @@ BACKGROUND: FLIGHT ${C.flightNum}, ${C.flightDate}
 
 PRE-DEPARTURE PREPARATIONS
 
-5. In accordance with TestAirways standard operating procedures, the aircraft was fuelled to the planned fuel figure plus [X] kg diversion fuel for ${C.diverted} as the designated alternate aerodrome. This decision was made by me [or: the captain] on the basis of the meteorological forecast received prior to departure.
+5. In accordance with [Airline] standard operating procedures, the aircraft was fuelled to the planned fuel figure plus [X] kg diversion fuel for ${C.diverted} as the designated alternate aerodrome. This decision was made by me [or: the captain] on the basis of the meteorological forecast received prior to departure.
 
 6. Passengers were boarded and the flight departed at ${C.atd}. The minor delay against the scheduled departure time of ${C.std} was attributable to [boarding procedures / minor technical check — to be confirmed from Operational delay records system data].
 
@@ -728,7 +728,7 @@ THE DIVERSION DECISION
    (c) Air Traffic Control advice; and
    (d) My professional assessment of the conditions as an experienced [Captain].
 
-9. In the circumstances, I determined that continuation to ${C.arr} was not compatible with the safe operation of the flight. I declared the diversion to ${C.diverted} in accordance with my duties and TestAirways operating procedures.
+9. In the circumstances, I determined that continuation to ${C.arr} was not compatible with the safe operation of the flight. I declared the diversion to ${C.diverted} in accordance with my duties and [Airline] operating procedures.
 
 THE DIVERSION AND GROUND DELAY
 
@@ -740,9 +740,9 @@ THE DIVERSION AND GROUND DELAY
 
 CONCLUSION
 
-13. It is my professional opinion that the diversion of flight ${C.flightNum} on ${C.flightDate} was necessitated by meteorological conditions at ${C.arr} which were beyond the control of TestAirways and which were not inherent in the normal exercise of our operations as an air carrier. The decision to divert was made in the interests of passenger safety and in accordance with mandatory operational requirements.
+13. It is my professional opinion that the diversion of flight ${C.flightNum} on ${C.flightDate} was necessitated by meteorological conditions at ${C.arr} which were beyond the control of [Airline] and which were not inherent in the normal exercise of our operations as an air carrier. The decision to divert was made in the interests of passenger safety and in accordance with mandatory operational requirements.
 
-14. All reasonable measures available to me as [Captain] and to TestAirways were taken to minimise the impact of the diversion on passengers.
+14. All reasonable measures available to me as [Captain] and to [Airline] were taken to minimise the impact of the diversion on passengers.
 
 STATEMENT OF TRUTH
 
@@ -767,34 +767,34 @@ ${C.solAddr}
 
 Dear Sirs,
 
-RE: ${C.name.toUpperCase()} v. TESTAIRWAYS
+RE: ${C.name.toUpperCase()} v. [AIRLINE]
 YOUR REF: ${C.solRef}    OUR REF: ${C.ref}
 
 PART 36 OFFER TO SETTLE
 
-1. This letter constitutes a formal offer to settle the above claim pursuant to CPR Part 36. This offer is made without prejudice to TestAirways' primary position that no compensation is payable by reason of the extraordinary circumstances defence.
+1. This letter constitutes a formal offer to settle the above claim pursuant to CPR Part 36. This offer is made without prejudice to [Airline]' primary position that no compensation is payable by reason of the extraordinary circumstances defence.
 
-2. TestAirways offers to pay to the Claimant the sum of £[AMOUNT] in full and final settlement of all claims arising from the disruption to flight ${C.flightNum} on ${C.flightDate}, inclusive of interest and costs.
+2. [Airline] offers to pay to the Claimant the sum of £[AMOUNT] in full and final settlement of all claims arising from the disruption to flight ${C.flightNum} on ${C.flightDate}, inclusive of interest and costs.
 
 3. This offer is intended to have the consequences set out in CPR Part 36 if accepted.
 
-4. This offer remains open for acceptance for a period of 21 days from the date of this letter (the "Relevant Period"). If the offer is not accepted within the Relevant Period, it may be withdrawn or amended at TestAirways' discretion, subject to the provisions of CPR Part 36.
+4. This offer remains open for acceptance for a period of 21 days from the date of this letter (the "Relevant Period"). If the offer is not accepted within the Relevant Period, it may be withdrawn or amended at [Airline]' discretion, subject to the provisions of CPR Part 36.
 
 5. If accepted, payment will be made within 14 days of acceptance.
 
 COSTS CONSEQUENCES
 
-6. TestAirways draws your attention to the costs consequences set out in CPR Part 36.17. In the event that the Claimant fails to obtain a judgment more advantageous than this offer, the Court will, unless it considers it unjust to do so, order that:
+6. [Airline] draws your attention to the costs consequences set out in CPR Part 36.17. In the event that the Claimant fails to obtain a judgment more advantageous than this offer, the Court will, unless it considers it unjust to do so, order that:
 
    (a) the Claimant is entitled to costs up to the date on which the Relevant Period expired; and
-   (b) TestAirways is entitled to costs from that date.
+   (b) [Airline] is entitled to costs from that date.
 
 7. This letter should be read carefully by your client. We recommend that your client takes independent legal advice on the implications of this offer before deciding whether to accept or reject it.
 
 Yours faithfully,
 
 ${C.assignedTo}
-Legal Department, TestAirways`;
+Legal Department, [Airline]`;
 }
 
 function buildSettlement(){
@@ -805,7 +805,7 @@ THIS AGREEMENT is made on ${today()}
 BETWEEN:
 
 (1) ${C.name} of [ADDRESS] ("the Claimant"); and
-(2) TestAirways, Aviation House, Luton Airport, Luton LU2 9LY ("the Defendant").
+(2) [Airline], Aviation House, Luton Airport, Luton LU2 9LY ("the Defendant").
 
 BACKGROUND
 
@@ -839,7 +839,7 @@ SIGNED for and on behalf of the Defendant:
 
 Signed: ___________________________
 Name: ${C.assignedTo}
-Position: Legal Department, TestAirways
+Position: Legal Department, [Airline]
 Date: ${today()}`;
 }
 
@@ -850,7 +850,7 @@ Claim number: [TO BE INSERTED]
 Last date for filing: [TO BE INSERTED]
 
 Claimant: ${C.name}
-Defendant: TestAirways
+Defendant: [Airline]
 
 ─────────────────────────────────────
 A — SETTLEMENT
@@ -858,7 +858,7 @@ A — SETTLEMENT
 A1. Do you wish there to be a one month stay to attempt settlement?
 [ ] Yes   [X] No
 
-Reason: TestAirways has provided a substantive Letter of Response and remains open to ADR. A stay is not considered necessary at this stage.
+Reason: [Airline] has provided a substantive Letter of Response and remains open to ADR. A stay is not considered necessary at this stage.
 
 ─────────────────────────────────────
 B — COURT
@@ -919,7 +919,7 @@ I believe that the facts stated in this Directions Questionnaire are true.
 
 Signed: ___________________________
 Name: ${C.assignedTo}
-Position: For and on behalf of TestAirways (Defendant)
+Position: For and on behalf of [Airline] (Defendant)
 Date: ${today()}`;
 }
 
@@ -1084,7 +1084,7 @@ function renderLibraryHome(){
   }).join('');
   return '<div class="library-home">'
     +'<div class="library-hero"><div class="ch-ref">'+C.ref+'</div>'
-    +'<h2>'+C.name+' v. TestAirways</h2>'
+    +'<h2>'+C.name+' v. [Airline]</h2>'
     +'<p>Open a document to draft in full-screen view. After approval, add it to the live case file so the whole team can access it in the Repository — no manual re-upload.</p>'
     +(openChips?'<div class="open-docs-strip">'+openChips+'</div>':'')
     +'</div>'
@@ -1214,7 +1214,7 @@ async function generateDoc(id){
         model:'claude-sonnet-4-20250514',
         max_tokens:2000,
         system:`You are a senior aviation solicitor at an airline's in-house legal team. Draft professional, legally accurate documents in response to EC261 flight delay claims. Use precise legal language appropriate for England and Wales civil litigation. Address each point of claim specifically. Do not include markdown formatting or backticks. Return only the document text.`,
-        messages:[{role:'user',content:`Draft a ${docNames[id]||id} for this case. Use the base template provided and enhance the legal arguments based on the case details.\n\nCase: ${C.name} v. TestAirways\nRef: ${C.ref}\nFlight: ${C.flightNum} ${C.dep} to ${C.arr}, ${C.flightDate}\nDisruption: Diverted to ${C.diverted} due to weather\nDelay: ${C.delay}\nClaim value: ${C.value}\nAssigned to: ${C.assignedTo}\n\nBase template:\n${baseDoc.slice(0,3000)}`}]
+        messages:[{role:'user',content:`Draft a ${docNames[id]||id} for this case. Use the base template provided and enhance the legal arguments based on the case details.\n\nCase: ${C.name} v. [Airline]\nRef: ${C.ref}\nFlight: ${C.flightNum} ${C.dep} to ${C.arr}, ${C.flightDate}\nDisruption: Diverted to ${C.diverted} due to weather\nDelay: ${C.delay}\nClaim value: ${C.value}\nAssigned to: ${C.assignedTo}\n\nBase template:\n${baseDoc.slice(0,3000)}`}]
       })
     });
     const data = await resp.json();
