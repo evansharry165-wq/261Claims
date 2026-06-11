@@ -409,6 +409,7 @@ function render(scaledStats){
 
 function buildContent(displayStats){
   displayStats = displayStats || DATA.stats;
+  var parentTarget = new URLSearchParams(window.location.search).get('embed') === '1' ? ' target="_parent"' : '';
   /* stats */
   const stats = `<div class="stat-row">
     ${statCard('Open cases','8','ti-briefcase','var(--blue-text)','4 require action','sub-warn')}
@@ -478,7 +479,7 @@ function buildContent(displayStats){
   const cprRows = DATA.cprDeadlines.map(d=>{
     const cls = d.days<=3?'cpr-urgent':d.days<=7?'cpr-warn':'cpr-ok';
     const txt = d.days<=3?d.days+'d — URGENT':d.days<=7?d.days+'d — this week':d.days+'d';
-    return `<div class="cpr-item"><div class="cpr-ref">${d.ref}</div><div class="cpr-name">${d.name}</div><span class="cpr-days ${cls}">${txt}</span></div>`;
+    return `<a href="case.html?ref=${encodeURIComponent(d.ref)}&tab=deadlines"${parentTarget} class="cpr-item" style="text-decoration:none;color:inherit"><div class="cpr-ref">${d.ref}</div><div class="cpr-name">${d.name}</div><span class="cpr-days ${cls}">${txt}</span></a>`;
   }).join('');
 
   const row3 = `<div class="chart-grid-3">
@@ -504,27 +505,6 @@ function buildContent(displayStats){
       <div class="risk-val">${r.val}</div>
     </div>`).join('');
 
-  const tableRows = DATA.recentCases.map(c=>{
-    const isOpen = c.stage !== 'Closed';
-    const stageHtml = isOpen
-      ? `<span class="outcome-pill op-open">${c.stage}</span>`
-      : `<span class="outcome-pill op-${c.outcome}">${c.outcome.charAt(0).toUpperCase()+c.outcome.slice(1)}</span>`;
-    const catCls = c.cat==='A'?'cat-a':c.cat==='B'?'cat-b':'cat-c';
-    const daysHtml = isOpen && c.days
-      ? `<span class="cpr-days ${c.days<=3?'cpr-urgent':c.days<=7?'cpr-warn':'cpr-ok'}">${c.days}d</span>`
-      : '—';
-    return `<tr>
-      <td style="font-family:var(--mono);font-size:10px;color:var(--text3)">${c.ref}</td>
-      <td style="font-weight:500">${c.name}</td>
-      <td>${c.type}</td>
-      <td><span class="cat-pill ${catCls}">${c.cat}</span></td>
-      <td style="font-family:var(--mono)">${c.value}</td>
-      <td>${stageHtml}</td>
-      <td>${daysHtml}</td>
-      <td style="color:var(--text2)">${c.solicitor}</td>
-    </tr>`;
-  }).join('');
-
   const row4 = `<div class="chart-grid-2">
     <div class="panel">
       <div class="panel-header"><div class="panel-title"><i class="ti ti-alert-triangle" style="color:var(--red)"></i>Risk register</div><div class="panel-sub">Cases requiring immediate attention</div></div>
@@ -536,20 +516,19 @@ function buildContent(displayStats){
     </div>
   </div>`;
 
-  const tablePanel = `<div class="panel chart-grid-full">
-    <div class="panel-header"><div class="panel-title"><i class="ti ti-table"></i>Full case register</div><div class="panel-sub">All cases — open and closed</div></div>
-    <div class="panel-body" style="padding:0 16px">
-      <table class="mi-table">
-        <thead><tr>
-          <th>Ref</th><th>Case</th><th>Type</th><th>Cat</th><th>Value</th><th>Status</th><th>CPR</th><th>Solicitor</th>
-        </tr></thead>
-        <tbody>${tableRows}</tbody>
-      </table>
+  const casesLinkPanel = `<div class="panel chart-grid-full">
+    <div class="panel-header"><div class="panel-title"><i class="ti ti-briefcase"></i>Active case register</div><div class="panel-sub">Full register with next actions lives on Cases — not duplicated here</div></div>
+    <div class="panel-body" style="display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap">
+      <div style="font-size:12px;color:var(--text2);line-height:1.6;max-width:520px">Use the Cases page for day-to-day work: filters by stage, CPR urgency, next action and blockers. Closed outcomes are in Insights → Past cases.</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <a href="cases.html" class="btn-back" style="text-decoration:none"${parentTarget}><i class="ti ti-briefcase"></i>Open Cases</a>
+        <a href="insights.html?tab=past-cases" class="btn-back" style="text-decoration:none"${parentTarget}><i class="ti ti-archive"></i>Past cases</a>
+      </div>
     </div>
   </div>`;
 
   const urgencyRow = row4; // risk register + pipeline — shown first
-  return stats + urgencyRow + row1 + row2 + row3 + tablePanel;
+  return stats + urgencyRow + row1 + row2 + row3 + casesLinkPanel;
 }
 
 function statCard(label, val, icon, iconCol, sub, subCls){

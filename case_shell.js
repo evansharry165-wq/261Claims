@@ -212,6 +212,16 @@ var CaseShell = (function () {
     var similar = ALL_CASES.filter(function (s) {
       return s.ref !== c.ref && (s.disruptionType === c.disruptionType || s.jurisdiction === c.jurisdiction);
     }).slice(0, 2);
+    var archiveBest = null;
+    var archiveScore = 0;
+    if (typeof repoCases === 'function' && typeof similarityScore === 'function') {
+      archiveBest = repoCases()
+        .slice()
+        .sort(function (a, b) {
+          return similarityScore(b, c) - similarityScore(a, c);
+        })[0];
+      archiveScore = archiveBest ? similarityScore(archiveBest, c) : 0;
+    }
 
     var stages = [
       { id: 'intake', label: 'Intake', tab: null },
@@ -290,6 +300,19 @@ var CaseShell = (function () {
             })
             .join('')
         : '<div class="empty-note">No similar cases in demo data.</div>') +
+      (archiveBest && archiveScore >= 40
+        ? '<div class="similar-row" style="margin-top:10px;border-top:1px dashed var(--border);padding-top:10px" onclick="window.location.href=\'insights.html?tab=past-cases&ref=' +
+          encodeURIComponent(archiveBest.ref) +
+          '\'"><div class="sim-ref">' +
+          escapeHtml(archiveBest.ref) +
+          ' · ' +
+          archiveScore +
+          '% archive match</div><div class="sim-name">' +
+          escapeHtml(archiveBest.claimant) +
+          '</div><div class="sim-meta">' +
+          escapeHtml(archiveBest.recommendation) +
+          ' · <span style="color:var(--blue-text)">View in Insights</span></div></div>'
+        : '') +
       '</div></div></div>';
   }
 

@@ -9,7 +9,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{--navy:#0B1628;--blue:#2A6FDB;--blue-faint:#EFF6FF;--blue-text:#1D4ED8;--green:#1A7A4A;--green-faint:#E6F5EE;--red:#C0392B;--amber:#B45309;--amber-faint:#FEF3C7;--border:#E2E8F0;--text:#0F172A;--text2:#475569;--text3:#94A3B8;--surface:#fff;--surface2:#F8FAFC;--font:'Inter',sans-serif;--font-serif:'Instrument Serif',Georgia,serif;--mono:'DM Mono',monospace;--r:8px;--r2:12px;--r3:16px}
+:root{--navy:#0B1628;--blue:#2A6FDB;--blue-faint:#EFF6FF;--blue-text:#1D4ED8;--green:#1A7A4A;--green-faint:#E6F5EE;--red:#C0392B;--amber:#B45309;--amber-faint:#FEF3C7;--purple:#4338CA;--purple-faint:#EEEDFE;--border:#E2E8F0;--text:#0F172A;--text2:#475569;--text3:#94A3B8;--surface:#fff;--surface2:#F8FAFC;--surface3:#F1F5F9;--font:'Inter',sans-serif;--font-serif:'Instrument Serif',Georgia,serif;--mono:'DM Mono',monospace;--r:8px;--r2:12px;--r3:16px}
 html,body{height:100%;font-family:var(--font);background:var(--surface2);color:var(--text);font-size:14px}
 .global-nav{background:var(--navy);height:48px;display:flex;align-items:center;padding:0 20px}
 .gn-logo{display:flex;align-items:center;gap:8px;text-decoration:none;margin-right:20px}
@@ -24,32 +24,67 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 .gn-av{width:24px;height:24px;border-radius:50%;background:#1C2E44;color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px}
 .gn-user{font-size:11px;color:rgba(255,255,255,0.85)}
 .shell{display:flex;flex-direction:column;height:calc(100vh - 48px);min-height:0}
-.insights-tabs{display:flex;gap:0;background:var(--surface);border-bottom:1px solid var(--border);padding:0 16px}
-.ins-tab{padding:11px 14px;font-size:12px;font-weight:500;color:var(--text3);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;font-family:var(--font)}
+.page-hdr{background:var(--surface);border-bottom:1px solid var(--border);padding:16px 20px 0;flex-shrink:0}
+.page-hdr-top{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:12px}
+.page-title{font-family:var(--font-serif);font-size:22px;font-weight:400;letter-spacing:-0.02em}
+.page-sub{font-size:12px;color:var(--text2);line-height:1.55;margin-top:4px;max-width:640px}
+.page-actions{display:flex;gap:8px;flex-wrap:wrap;flex-shrink:0}
+.page-link{font-size:11px;text-decoration:none;color:var(--blue-text);border:1px solid var(--border);background:var(--surface2);padding:6px 10px;border-radius:var(--r);display:inline-flex;align-items:center;gap:5px}
+.page-link:hover{background:var(--blue-faint);border-color:#BFDBFE}
+.insights-tabs{display:flex;gap:0;border-bottom:1px solid var(--border);padding:0 4px}
+.ins-tab{padding:11px 14px;font-size:12px;font-weight:500;color:var(--text3);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;font-family:var(--font);display:inline-flex;align-items:center;gap:6px}
 .ins-tab.active{color:var(--blue-text);border-bottom-color:var(--blue)}
 .tab-panel{flex:1;overflow:hidden;min-height:0}
-.tab-frame{width:100%;height:100%;border:none;background:var(--surface2)}
-.past-wrap{height:100%;overflow-y:auto;padding:16px 20px}
+.tab-frame{width:100%;height:100%;border:none;background:var(--surface2);display:block}
+.past-wrap{height:100%;overflow-y:auto;padding:16px 20px 24px}
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:12px 14px}
+.stat-label{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);font-weight:500;margin-bottom:6px}
+.stat-val{font-size:22px;font-weight:500;line-height:1}
+.stat-sub{font-size:11px;color:var(--text3);margin-top:4px}
 .grid-main{display:grid;grid-template-columns:1.2fr .8fr;gap:14px}
 .panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--r3);overflow:hidden}
-.panel-hdr{padding:12px 16px;border-bottom:1px solid var(--border)}
-.panel-title{font-size:13px;font-weight:500}
+.panel-hdr{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.panel-title{font-size:13px;font-weight:500;display:flex;align-items:center;gap:7px}
+.panel-sub{font-size:11px;color:var(--text3);margin-top:3px;line-height:1.45}
 .tabbar{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
-.tab{font-size:11px;border:1px solid var(--border);background:var(--surface2);padding:5px 10px;border-radius:20px;cursor:pointer;font-family:var(--font)}
+.tab{font-size:11px;border:1px solid var(--border);background:var(--surface2);padding:5px 10px;border-radius:20px;cursor:pointer;font-family:var(--font);color:var(--text2)}
 .tab.active{background:var(--navy);color:#fff;border-color:var(--navy)}
-.case-card{padding:12px 16px;border-bottom:1px solid var(--border);cursor:pointer}
-.case-card:hover{background:var(--surface2)}
+.search-row{padding:12px 16px;border-bottom:1px solid var(--border);background:var(--surface2)}
+.search-row input{width:100%;font-size:12px;padding:8px 10px;border:1px solid var(--border);border-radius:var(--r);font-family:var(--font);color:var(--text)}
+.case-list{max-height:calc(100vh - 360px);overflow-y:auto}
+.case-card{padding:12px 16px;border-bottom:1px solid var(--border);cursor:pointer;display:grid;grid-template-columns:1fr auto;gap:12px}
+.case-card:hover,.case-card.selected{background:var(--surface2)}
+.case-card:last-child{border-bottom:none}
 .ref{font-family:var(--mono);font-size:10px;color:var(--text3)}
 .name{font-size:13px;font-weight:500;margin-top:2px}
 .meta{font-size:11px;color:var(--text2);line-height:1.5;margin-top:3px}
-.pill{font-size:10px;font-weight:500;padding:3px 8px;border-radius:20px;display:inline-block}
+.pill{font-size:10px;font-weight:500;padding:3px 8px;border-radius:20px;display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
 .p-defended{background:var(--green-faint);color:var(--green)}
 .p-settled{background:var(--amber-faint);color:var(--amber)}
 .p-paid{background:var(--blue-faint);color:var(--blue-text)}
-.p-withdrawn{background:var(--surface2);color:var(--text2)}
-.kv{display:grid;grid-template-columns:110px 1fr;gap:8px;font-size:12px;padding:7px 0;border-bottom:1px solid var(--border)}
-.kv-label{color:var(--text3)}
+.p-withdrawn{background:var(--surface3);color:var(--text2)}
+.detail{position:sticky;top:12px}
 .detail-body{padding:14px 16px;font-size:12px;line-height:1.55}
+.detail-empty{font-size:12px;color:var(--text3);line-height:1.6;padding:28px 16px;text-align:center}
+.kv{display:grid;grid-template-columns:110px 1fr;gap:8px;font-size:12px;padding:7px 0;border-bottom:1px solid var(--border)}
+.kv:last-child{border-bottom:none}
+.kv-label{color:var(--text3)}
+.kv-val{font-weight:500}
+.ev-list{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px}
+.ev{font-size:10px;padding:3px 7px;border-radius:20px;background:var(--purple-faint);color:var(--purple)}
+.case-law{font-size:11px;color:var(--text2);line-height:1.55;margin-top:10px;padding:8px 10px;border-left:3px solid var(--blue);background:var(--blue-faint);border-radius:0 var(--r) var(--r) 0}
+.learn-box{margin-top:10px;padding:10px 12px;border:1px solid #BFDBFE;background:linear-gradient(135deg,var(--blue-faint),#fff);border-radius:var(--r2);font-size:11px;color:var(--text2);line-height:1.55}
+.learn-box a{color:var(--blue-text);font-weight:500;text-decoration:none}
+.learn-box a:hover{text-decoration:underline}
+.empty-note{font-size:12px;color:var(--text3);padding:28px 16px;text-align:center;line-height:1.6}
+.footer-note{margin-top:14px;font-size:12px;color:var(--text3);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.footer-note a{color:var(--blue-text);text-decoration:none}
+.footer-note a:hover{text-decoration:underline}
+.similar-panel{margin-top:14px}
+.similar-card{padding:11px 14px;border-bottom:1px solid var(--border);display:grid;grid-template-columns:1fr auto;gap:10px;font-size:11px}
+.similar-card:last-child{border-bottom:none}
+.similar-card:hover{background:var(--surface2)}
 .user-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.3);z-index:500;justify-content:flex-end;padding:52px 20px 0}
 .user-modal.open{display:flex}
 .user-dropdown{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);width:230px;overflow:hidden}
@@ -61,6 +96,12 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 .ud-role{font-size:10px;color:var(--text3)}
 .ud-tick{margin-left:auto;color:var(--green);display:none}
 .ud-item.current .ud-tick{display:block}
+@media (max-width:960px){
+  .stats-row{grid-template-columns:repeat(2,1fr)}
+  .grid-main{grid-template-columns:1fr}
+  .detail{position:static}
+  .case-list{max-height:none}
+}
 </style>
 </head>
 <body>
@@ -75,70 +116,397 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 </nav>
 
 <div class="shell">
-  <div class="insights-tabs" id="insights-tabs"></div>
+  <div class="page-hdr">
+    <div class="page-hdr-top">
+      <div>
+        <div class="page-title" id="page-title">Insights</div>
+        <div class="page-sub" id="page-sub">Management reporting and closed-case learning for strategy and training.</div>
+      </div>
+      <div class="page-actions" id="page-actions"></div>
+    </div>
+    <div class="insights-tabs" id="insights-tabs"></div>
+  </div>
   <div class="tab-panel" id="tab-panel"></div>
 </div>
 
 <script>
-var TABS=[{id:'reporting',label:'Reporting'},{id:'past-cases',label:'Past cases'}];
-var _tabParam=new URLSearchParams(window.location.search).get('tab')||'reporting';
-if(_tabParam==='guidance'){window.location.replace('education.html');}
-var activeTab=_tabParam==='guidance'?'reporting':_tabParam;
-var activeOutcome='all', selectedRef='', query='';
+var TAB_DEFS = [
+  { id: 'reporting', labelKey: 'reporting', icon: 'ti-chart-bar', fallback: 'Reporting' },
+  { id: 'past-cases', labelKey: 'pastCases', icon: 'ti-archive', fallback: 'Past cases' }
+];
 
-function escapeHtml(v){return String(v==null?'':v).replace(/[&<>"']/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch];});}
+var VALID_TABS = TAB_DEFS.map(function (t) {
+  return t.id;
+});
 
-function switchTab(tab){
-  activeTab=tab;
-  history.replaceState({},'','insights.html?tab='+tab);
-  renderTabs();renderPanel();
+var _tabParam = new URLSearchParams(window.location.search).get('tab') || 'reporting';
+var _refParam = new URLSearchParams(window.location.search).get('ref') || '';
+if (_tabParam === 'guidance') {
+  window.location.replace('education.html');
+}
+var activeTab = VALID_TABS.indexOf(_tabParam) >= 0 ? _tabParam : _refParam ? 'past-cases' : 'reporting';
+var activeOutcome = 'all';
+var selectedRef = _refParam;
+var query = '';
+
+function label(key, fallback) {
+  if (typeof t === 'function') {
+    var v = t(key);
+    if (v && v !== key) return v;
+  }
+  return fallback;
 }
 
-function renderTabs(){
-  document.getElementById('insights-tabs').innerHTML=TABS.map(function(t){
-    return '<button class="ins-tab'+(activeTab===t.id?' active':'')+'" onclick="switchTab(\''+t.id+'\')">'+escapeHtml(t.label)+'</button>';
-  }).join('');
-}
-
-function filteredPastCases(){
-  var q=query.toLowerCase();
-  return repoCases().filter(function(c){
-    var ok=activeOutcome==='all'||c.outcome===activeOutcome;
-    var hay=[c.ref,c.claimant,c.disruptionType,c.summary].join(' ').toLowerCase();
-    return ok&&(!q||hay.indexOf(q)>=0);
+function escapeHtml(v) {
+  return String(v == null ? '' : v).replace(/[&<>"']/g, function (ch) {
+    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch];
   });
 }
 
-function renderPastCases(){
-  var rows=filteredPastCases();
-  if(!selectedRef&&rows.length)selectedRef=rows[0].ref;
-  var selected=rows.find(function(c){return c.ref===selectedRef;})||rows[0];
-  var tabs=['all','defended','settled','paid','withdrawn'].map(function(o){
-    return '<button class="tab '+(activeOutcome===o?'active':'')+'" onclick="activeOutcome=\''+o+'\';renderPanel()">'+(o==='all'?'All':outcomeLabel(o))+'</button>';
-  }).join('');
-  document.getElementById('tab-panel').innerHTML='<div class="past-wrap"><div class="grid-main"><div class="panel"><div class="panel-hdr"><div class="panel-title">Past cases archive</div><div class="tabbar">'+tabs+'</div><input style="margin-top:10px;width:100%;font-size:12px;padding:7px 10px;border:1px solid var(--border);border-radius:var(--r);font-family:var(--font)" placeholder="Search past cases…" value="'+escapeHtml(query)+'" oninput="query=this.value;renderPanel()"></div>'
-    +rows.map(function(c){return '<div class="case-card" onclick="selectedRef=\''+c.ref+'\';renderPanel()"><div class="ref">'+escapeHtml(c.ref)+'</div><div class="name">'+escapeHtml(c.claimant)+' · '+escapeHtml(c.flightNum)+'</div><div class="meta">'+escapeHtml(c.disruptionType)+' · <span class="pill '+outcomeClass(c.outcome)+'">'+outcomeLabel(c.outcome)+'</span> · '+c.confidence+'% confidence</div></div>';}).join('')
-    +'</div><div class="panel">'+(selected?'<div class="panel-hdr"><div class="panel-title">Case insight</div></div><div class="detail-body"><div class="kv"><div class="kv-label">Outcome</div><div><span class="pill '+outcomeClass(selected.outcome)+'">'+outcomeLabel(selected.outcome)+'</span></div></div><div class="kv"><div class="kv-label">Saving</div><div>'+escapeHtml(selected.saving)+'</div></div><div class="kv"><div class="kv-label">Time to close</div><div>'+selected.days+' days</div></div><div style="margin-top:10px">'+escapeHtml(selected.summary)+'</div><div style="margin-top:10px;color:var(--blue-text)"><strong>Recommendation:</strong> '+escapeHtml(selected.recommendation)+'</div></div>':'<div class="detail-body">Select a case.</div>')+'</div></div><p style="margin-top:12px;font-size:12px;color:var(--text3)">Active cases are on <a href="cases.html" style="color:var(--blue-text)">Cases</a>.</p></div>';
-}
-
-function renderPanel(){
-  if(activeTab==='reporting'){
-    document.getElementById('tab-panel').innerHTML='<iframe class="tab-frame" src="module6-mi.html?embed=1" title="Reporting"></iframe>';
-  }else{
-    renderPastCases();
-  }
-  if(typeof renderGlobalNav==='function')renderGlobalNav();
-}
-
-function toggleUserMenu(){document.getElementById('user-modal').classList.toggle('open');}
-function closeMenu(){document.getElementById('user-modal').classList.remove('open');}
-function switchUser(id){
-  setActiveUser(id);sessionStorage.removeItem('261c_lang');closeMenu();
-  var u=USERS[id];if(u){document.getElementById('nav-av').textContent=u.initials;document.getElementById('nav-user').textContent=u.name;}
-  ['SB','JP','KR','MD','PL','CG','IM','EH'].forEach(function(uid){var el=document.getElementById('ud-'+uid);if(el)el.classList.toggle('current',uid===id);});
+function switchTab(tab) {
+  if (VALID_TABS.indexOf(tab) < 0) tab = 'reporting';
+  activeTab = tab;
+  history.replaceState({}, '', 'insights.html?tab=' + tab);
+  renderTabs();
+  renderHeader();
   renderPanel();
 }
-window.addEventListener('load',function(){renderTabs();renderPanel();});
+
+function renderTabs() {
+  document.getElementById('insights-tabs').innerHTML = TAB_DEFS.map(function (t) {
+    return (
+      '<button type="button" class="ins-tab' +
+      (activeTab === t.id ? ' active' : '') +
+      '" onclick="switchTab(\'' +
+      t.id +
+      '\')"><i class="ti ' +
+      t.icon +
+      '"></i> ' +
+      escapeHtml(label(t.labelKey, t.fallback)) +
+      '</button>'
+    );
+  }).join('');
+}
+
+function renderHeader() {
+  var titleEl = document.getElementById('page-title');
+  var subEl = document.getElementById('page-sub');
+  var actionsEl = document.getElementById('page-actions');
+  if (activeTab === 'past-cases') {
+    titleEl.textContent = label('pastCases', 'Past cases');
+    subEl.textContent =
+      'Search closed claims by outcome, issue, evidence or case law. Use repository learning when handling similar active matters.';
+    actionsEl.innerHTML =
+      '<a class="page-link" href="education.html"><i class="ti ti-school"></i> ' +
+      escapeHtml(label('education', 'Education')) +
+      '</a><a class="page-link" href="cases.html"><i class="ti ti-briefcase"></i> ' +
+      escapeHtml(label('cases', 'Cases')) +
+      '</a>';
+  } else {
+    titleEl.textContent = label('insights', 'Insights');
+    subEl.textContent =
+      'Portfolio KPIs, risk register and CPR tracker for management review. Active case work stays on Cases.';
+    actionsEl.innerHTML =
+      '<a class="page-link" href="cases.html"><i class="ti ti-briefcase"></i> ' +
+      escapeHtml(label('cases', 'Cases')) +
+      '</a><a class="page-link" href="insights.html?tab=past-cases"><i class="ti ti-archive"></i> ' +
+      escapeHtml(label('pastCases', 'Past cases')) +
+      '</a>';
+  }
+}
+
+function filteredRows() {
+  return filterPastCases(repoCases(), query, activeOutcome);
+}
+
+function selectCase(ref) {
+  selectedRef = ref;
+  renderPanel();
+}
+
+function setOutcome(outcome) {
+  activeOutcome = outcome;
+  renderPanel();
+}
+
+function setQuery(value) {
+  query = value;
+  renderPanel();
+}
+
+function renderPastStats() {
+  var s = pastCaseStats();
+  return (
+    '<div class="stats-row">' +
+    '<div class="stat"><div class="stat-label">' +
+    escapeHtml(label('pastCasesTotal', 'Archive total')) +
+    '</div><div class="stat-val">' +
+    s.total +
+    '</div><div class="stat-sub">' +
+    escapeHtml(label('pastCasesStored', 'Seed + stored outcomes')) +
+    '</div></div>' +
+    '<div class="stat"><div class="stat-label">' +
+    escapeHtml(outcomeLabel('defended')) +
+    '</div><div class="stat-val">' +
+    s.defended +
+    '</div><div class="stat-sub">' +
+    Math.round((s.defended / Math.max(s.total, 1)) * 100) +
+    '% of archive</div></div>' +
+    '<div class="stat"><div class="stat-label">' +
+    escapeHtml(outcomeLabel('settled')) +
+    '</div><div class="stat-val">' +
+    s.settled +
+    '</div><div class="stat-sub">' +
+    escapeHtml(outcomeLabel('paid')) +
+    ': ' +
+    s.paid +
+    '</div></div>' +
+    '<div class="stat"><div class="stat-label">' +
+    escapeHtml(label('pastCasesMatch', 'Live matches')) +
+    '</div><div class="stat-val">' +
+    getLiveSimilarCases(99).length +
+    '</div><div class="stat-sub">' +
+    escapeHtml(label('pastCasesMatchSub', 'Active cases with ≥40% similarity')) +
+    '</div></div>' +
+    '</div>'
+  );
+}
+
+function renderCaseCard(c) {
+  var selected = c.ref === selectedRef ? ' selected' : '';
+  return (
+    '<div class="case-card' +
+    selected +
+    '" data-ref="' +
+    escapeHtml(c.ref) +
+    '" onclick="selectCase(this.dataset.ref)"><div><div class="ref">' +
+    escapeHtml(c.ref) +
+    '</div><div class="name">' +
+    escapeHtml(c.claimant) +
+    ' · ' +
+    escapeHtml(c.flightNum) +
+    '</div><div class="meta">' +
+    escapeHtml(c.route) +
+    ' · ' +
+    escapeHtml(c.disruptionType) +
+    ' · ' +
+    escapeHtml(c.solicitor) +
+    '<br>' +
+    escapeHtml(c.summary) +
+    '</div></div><div style="text-align:right"><span class="pill ' +
+    outcomeClass(c.outcome) +
+    '">' +
+    escapeHtml(outcomeLabel(c.outcome)) +
+    '</span><div style="font-size:10px;color:var(--text3);margin-top:6px">' +
+    c.confidence +
+    '% confidence</div></div></div>'
+  );
+}
+
+function renderCaseDetail(c) {
+  if (!c) {
+    return '<div class="detail-empty">' + escapeHtml(label('pastCasesSelect', 'Select a case to view outcome learning.')) + '</div>';
+  }
+  var eduLink = c.education
+    ? '<div class="learn-box"><strong>' +
+      escapeHtml(label('pastCasesTraining', 'Training material')) +
+      ':</strong> ' +
+      escapeHtml(c.education) +
+      ' — <a href="education.html">' +
+      escapeHtml(label('education', 'Education Hub')) +
+      '</a></div>'
+    : '';
+  return (
+    '<div class="detail-body">' +
+    '<div class="kv"><div class="kv-label">' +
+    escapeHtml(label('pastCasesOutcome', 'Outcome')) +
+    '</div><div class="kv-val"><span class="pill ' +
+    outcomeClass(c.outcome) +
+    '">' +
+    escapeHtml(outcomeLabel(c.outcome)) +
+    '</span></div></div>' +
+    '<div class="kv"><div class="kv-label">' +
+    escapeHtml(label('pastCasesSaving', 'Saving')) +
+    '</div><div class="kv-val">' +
+    escapeHtml(c.saving) +
+    '</div></div>' +
+    '<div class="kv"><div class="kv-label">' +
+    escapeHtml(label('pastCasesDays', 'Time to close')) +
+    '</div><div class="kv-val">' +
+    c.days +
+    ' days</div></div>' +
+    '<div class="kv"><div class="kv-label">' +
+    escapeHtml(label('pastCasesJurisdiction', 'Jurisdiction')) +
+    '</div><div class="kv-val">' +
+    escapeHtml(jurisdictionDisplay(c.jurisdiction)) +
+    '</div></div>' +
+    '<div class="kv"><div class="kv-label">' +
+    escapeHtml(label('pastCasesValue', 'Claim value')) +
+    '</div><div class="kv-val">' +
+    escapeHtml(c.value) +
+    '</div></div>' +
+    '<div class="case-law"><strong>' +
+    escapeHtml(label('pastCasesSummary', 'Summary')) +
+    ':</strong> ' +
+    escapeHtml(c.summary) +
+    '</div>' +
+    '<div class="case-law"><strong>' +
+    escapeHtml(label('pastCasesRecommendation', 'Recommendation')) +
+    ':</strong> ' +
+    escapeHtml(c.recommendation) +
+    '</div>' +
+    '<div class="ev-list">' +
+    (c.evidence || [])
+      .map(function (e) {
+        return '<span class="ev">' + escapeHtml(e) + '</span>';
+      })
+      .join('') +
+    '</div>' +
+    '<div class="case-law"><strong>' +
+    escapeHtml(label('pastCasesCaseLaw', 'Case law applied')) +
+    ':</strong> ' +
+    escapeHtml((c.caseLaw || []).join(', ')) +
+    '</div>' +
+    eduLink +
+    '</div>'
+  );
+}
+
+function renderSimilarPanel() {
+  var matches = getLiveSimilarCases(4);
+  if (!matches.length) return '';
+  var rows = matches
+    .map(function (x) {
+      return (
+        '<div class="similar-card"><div><div class="ref">' +
+        escapeHtml(x.live.ref) +
+        ' → ' +
+        escapeHtml(x.best.ref) +
+        '</div><div class="name">' +
+        escapeHtml(x.live.claimant) +
+        ' · ' +
+        escapeHtml(x.live.disruptionType) +
+        '</div><div class="meta"><strong>' +
+        escapeHtml(label('pastCasesSuggested', 'Suggested')) +
+        ':</strong> ' +
+        escapeHtml(x.best.recommendation) +
+        '</div></div><div><span class="pill p-defended">' +
+        x.score +
+        '% match</span><div style="margin-top:6px"><a href="case.html?ref=' +
+        encodeURIComponent(x.live.ref) +
+        '" style="font-size:10px;color:var(--blue-text);text-decoration:none">' +
+        escapeHtml(label('openCase', 'Open case')) +
+        ' →</a></div></div></div>'
+      );
+    })
+    .join('');
+  return (
+    '<div class="panel similar-panel"><div class="panel-hdr"><div><div class="panel-title"><i class="ti ti-sparkles"></i> ' +
+    escapeHtml(label('pastCasesSimilar', 'Live-case similarity')) +
+    '</div><div class="panel-sub">' +
+    escapeHtml(label('pastCasesSimilarSub', 'Active matters matched to archive outcomes')) +
+    '</div></div></div>' +
+    rows +
+    '</div>'
+  );
+}
+
+function renderPastCases() {
+  var rows = filteredRows();
+  if (!selectedRef || !rows.some(function (c) { return c.ref === selectedRef; })) {
+    selectedRef = rows.length ? rows[0].ref : '';
+  }
+  var selected = rows.find(function (c) { return c.ref === selectedRef; }) || null;
+  var tabs = ['all', 'defended', 'settled', 'paid', 'withdrawn']
+    .map(function (o) {
+      return (
+        '<button type="button" class="tab ' +
+        (activeOutcome === o ? 'active' : '') +
+        '" onclick="setOutcome(\'' +
+        o +
+        '\')">' +
+        (o === 'all' ? escapeHtml(label('pastCasesAll', 'All')) : escapeHtml(outcomeLabel(o))) +
+        '</button>'
+      );
+    })
+    .join('');
+  var listHtml = rows.length
+    ? rows.map(renderCaseCard).join('')
+    : '<div class="empty-note">' +
+      escapeHtml(label('pastCasesEmpty', 'No closed cases match your filters.')) +
+      '</div>';
+
+  document.getElementById('tab-panel').innerHTML =
+    '<div class="past-wrap">' +
+    renderPastStats() +
+    '<div class="grid-main"><div class="panel"><div class="panel-hdr"><div><div class="panel-title"><i class="ti ti-archive"></i> ' +
+    escapeHtml(label('pastCasesArchive', 'Past cases archive')) +
+    '</div><div class="panel-sub">' +
+    escapeHtml(label('pastCasesArchiveSub', 'Settled, defended, paid and withdrawn claims for strategy matching')) +
+    '</div><div class="tabbar">' +
+    tabs +
+    '</div></div></div><div class="search-row"><input placeholder="' +
+    escapeHtml(label('pastCasesSearch', 'Search past cases…')) +
+    '" value="' +
+    escapeHtml(query) +
+    '" oninput="setQuery(this.value)"></div><div class="case-list">' +
+    listHtml +
+    '</div></div><div class="panel detail"><div class="panel-hdr"><div><div class="panel-title"><i class="ti ti-brain"></i> ' +
+    escapeHtml(label('pastCasesInsight', 'Case insight')) +
+    '</div><div class="panel-sub">' +
+    escapeHtml(label('pastCasesInsightSub', 'Outcome, evidence and legal learning')) +
+    '</div></div></div>' +
+    renderCaseDetail(selected) +
+    '</div></div>' +
+    renderSimilarPanel() +
+    '<div class="footer-note"><span>' +
+    escapeHtml(label('pastCasesActiveNote', 'Active cases are on Cases.')) +
+    ' <a href="cases.html">' +
+    escapeHtml(label('cases', 'Cases')) +
+    '</a></span><a href="repository.html#cases">' +
+    escapeHtml(label('pastCasesRepoLink', 'Live case files in Repository')) +
+    ' →</a></div></div>';
+}
+
+function renderPanel() {
+  if (activeTab === 'reporting') {
+    document.getElementById('tab-panel').innerHTML =
+      '<iframe class="tab-frame" src="module6-mi.html?embed=1" title="Reporting"></iframe>';
+  } else {
+    renderPastCases();
+  }
+  if (typeof renderGlobalNav === 'function') renderGlobalNav();
+}
+
+function toggleUserMenu() {
+  document.getElementById('user-modal').classList.toggle('open');
+}
+function closeMenu() {
+  document.getElementById('user-modal').classList.remove('open');
+}
+function switchUser(id) {
+  setActiveUser(id);
+  sessionStorage.removeItem('261c_lang');
+  closeMenu();
+  var u = USERS[id];
+  if (u) {
+    document.getElementById('nav-av').textContent = u.initials;
+    document.getElementById('nav-user').textContent = u.name;
+  }
+  ['SB', 'JP', 'KR', 'MD', 'PL', 'CG', 'IM', 'EH'].forEach(function (uid) {
+    var el = document.getElementById('ud-' + uid);
+    if (el) el.classList.toggle('current', uid === id);
+  });
+  renderTabs();
+  renderHeader();
+  renderPanel();
+}
+
+window.addEventListener('load', function () {
+  renderTabs();
+  renderHeader();
+  renderPanel();
+});
 </script>
 <script src="shared_nav.js"></script>
 
