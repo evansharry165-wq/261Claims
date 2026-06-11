@@ -71,7 +71,8 @@
       var linkCls = linksEl.classList.contains('nav-links') ? 'nl' : 'gn-link';
       linksEl.innerHTML = links
         .map(function (l) {
-          var label = (typeof t === 'function' ? t(l.key) : null) || FALLBACK[l.key] || l.key;
+          var label = typeof t === 'function' ? t(l.key) : null;
+          if (!label || label === l.key) label = FALLBACK[l.key] || l.key;
           var isActive = active === l.key;
           var badge =
             l.key === 'cases' && urgentN > 0

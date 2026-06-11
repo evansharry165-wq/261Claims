@@ -29,6 +29,8 @@ h3,
 .case-bar-name,
 .demo-card-title,
 .ins-tab,
+.pg-title,
+.sb-header-title,
 .hero h1 {
   font-family: var(--font-serif) !important;
   font-weight: 400;
