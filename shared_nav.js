@@ -45,6 +45,11 @@
   }
 
   function urgentCaseCount(uid) {
+    if (typeof getMergedCasesForUser === 'function') {
+      return getMergedCasesForUser(uid).filter(function (c) {
+        return c.cprDaysLeft <= 7 && c.stage !== 'resolve';
+      }).length;
+    }
     if (typeof getCasesForUser !== 'function' || typeof ALL_CASES === 'undefined') return 0;
     return getCasesForUser(uid).filter(function (c) {
       return c.cprDaysLeft <= 7 && c.stage !== 'resolve';

@@ -239,8 +239,11 @@ function depositIntakeCase(row,assigneeId,fileMeta,leadUid,activityPrefix){
   if(typeof CaseFiling!=='undefined'){
     CaseFiling.ensureCaseFile({
       ref:c.ref,claimant:c.claimant,solicitor:c.solicitor,flightNum:c.flightNum,
-      route:c.route,jurisdiction:c.jurisdiction,stage:'intake',
-      disruptionType:c.disruptionType,value:c.value,assignedTo:assigneeId,
+      route:c.route,dep:c.dep,arr:c.arr,flight:c.flight,flightDate:c.flightDate,
+      jurisdiction:c.jurisdiction,lang:c.lang,stage:c.stage||'intake',
+      disruptionType:c.disruptionType,value:c.value,type:c.type,locDate:c.locDate,
+      classification:c.classification,cat:c.cat,cprDaysLeft:c.cprDaysLeft,
+      triageNote:c.triageNote,assignedTo:assigneeId,
       uploadedByName:c.uploadedByName||lead.full||lead.name
     });
     if(fileMeta){
@@ -259,13 +262,15 @@ function depositIntakeCase(row,assigneeId,fileMeta,leadUid,activityPrefix){
 function escapeHtml(v){return String(v==null?'':v).replace(/[&<>"']/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch];});}
 function intakeCases(){
   var uid=getActiveUser();
-  return getCasesForUser(uid,'intake').concat(uploadedCases.filter(function(c){return c.assignedTo===uid;}));
+  return typeof getMergedCasesForUser==='function'
+    ?getMergedCasesForUser(uid,'intake')
+    :getCasesForUser(uid,'intake').concat(uploadedCases.filter(function(c){return c.assignedTo===uid;}));
 }
 function triggerUpload(){document.getElementById('file-input').click();}
 function triggerSupportUpload(){document.getElementById('support-file-input').click();}
 function userCases(){
   var uid=getActiveUser();
-  return getCasesForUser(uid).concat(uploadedCases.filter(function(c){return c.assignedTo===uid;}));
+  return typeof getMergedCasesForUser==='function'?getMergedCasesForUser(uid):getCasesForUser(uid).concat(uploadedCases.filter(function(c){return c.assignedTo===uid;}));
 }
 function buildLocRowFromFile(file, ref, uid){
   var base=file.name.replace(/\.[^.]+$/,'').replace(/[_-]+/g,' ').trim();
