@@ -136,6 +136,15 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 .ud-name{font-size:12px;font-weight:500;color:var(--text)}
 .ud-role{font-size:10px;color:var(--text3)}
 input[type=file]{display:none}
+.mass-banner{background:var(--purple-faint);border:1px solid #DDD6FE;border-radius:var(--r2);padding:10px 12px;font-size:12px;color:var(--text2);margin-bottom:12px;line-height:1.5}
+.batch-table{width:100%;border-collapse:collapse;font-size:12px}
+.batch-table th,.batch-table td{padding:8px 10px;border-bottom:1px solid var(--border);text-align:left;vertical-align:middle}
+.batch-table th{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.05em;color:var(--text3);background:var(--surface2)}
+.batch-select{width:100%;padding:6px 8px;border:1px solid var(--border);border-radius:var(--r);font-size:11px;font-family:var(--font);background:var(--surface)}
+.extract-loading{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:240px;text-align:center;padding:32px}
+.extract-spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--blue);border-radius:50%;animation:spin .8s linear infinite;margin-bottom:12px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.toast{position:fixed;bottom:20px;right:20px;background:var(--navy);color:#fff;padding:10px 14px;border-radius:var(--r2);font-size:12px;z-index:2000;box-shadow:0 4px 16px rgba(0,0,0,.15)}
 </style>
 </head>
 <body>
@@ -143,6 +152,7 @@ input[type=file]{display:none}
 <script src="shared_theme.js"></script>
 <script src="case_filing.js"></script>
 <script src="case_helpers.js"></script>
+<script src="team_helpers.js"></script>
 
 <nav class="global-nav">
   <a href="index.html" class="gn-logo">
@@ -169,6 +179,7 @@ input[type=file]{display:none}
         <div class="lp-title">Intake queue</div>
         <div class="lp-sub" id="lp-sub">Cases assigned to you awaiting action</div>
         <button class="lp-upload-btn" onclick="triggerUpload()"><i class="ti ti-upload" style="font-size:14px"></i> Upload new letter of claim</button>
+        <button class="lp-upload-btn" id="mass-upload-btn" style="display:none" onclick="setIntakeTab('mass')"><i class="ti ti-stack-2" style="font-size:14px"></i> Mass upload (lead review)</button>
         <button class="lp-upload-btn" onclick="triggerSupportUpload()"><i class="ti ti-file-plus" style="font-size:14px"></i> Deposit document into case file</button>
       </div>
       <div class="case-list" id="case-list"></div>
@@ -180,6 +191,7 @@ input[type=file]{display:none}
 </div>
 
 <input type="file" id="file-input" accept=".pdf,.doc,.docx,.txt" onchange="handleUpload(event)">
+<input type="file" id="mass-file-input" accept=".pdf,.doc,.docx,.txt" multiple onchange="handleMassUpload(event)">
 <input type="file" id="support-file-input" accept=".pdf,.doc,.docx,.txt,.png,.jpg,.jpeg" onchange="handleSupportUpload(event)">
 
 <script>
@@ -189,7 +201,63 @@ var pendingSupportFile=null;
 var depositedDocs=[];
 var depositSearch='';
 var intakeTab='new';
-function setIntakeTab(tab){intakeTab=tab;render();}
+var massBatch=null;
+var massExtractTimer=null;
+var DEMO_BATCH=[
+  {ref:'',surname:'Angela',firstName:'Foster',solicitor:'Clarke & Partners',flightNum:'HC 203',dep:'LGW',arr:'ALC',flightDate:'20 May 2026',currency:'EUR',compSought:'250',claimType:'EC261 — Weather delay',jurisdictionCode:'EW',disruptionType:'Weather',triage:'DEFEND',complexity:'Standard',dateReceived:'28 May 2026',notes:'Mailbox batch — Foster LOC'},
+  {ref:'',surname:'Thomas',firstName:'Morrison',solicitor:'Irwin Mitchell LLP',flightNum:'HC 442',dep:'LGW',arr:'BCN',flightDate:'15 May 2026',currency:'EUR',compSought:'250',claimType:'EC261 — ATC delay',jurisdictionCode:'EW',disruptionType:'ATC Restrictions',triage:'DEFEND',complexity:'Standard',dateReceived:'28 May 2026',notes:'Mailbox batch — Morrison LOC'},
+  {ref:'',surname:'Jean-Pierre',firstName:'Moreau',solicitor:'Cabinet Lefèvre',flightNum:'HC 742',dep:'CDG',arr:'LTN',flightDate:'3 March 2026',currency:'EUR',compSought:'250',claimType:'CE 261/2004 — Retard',jurisdictionCode:'FR',disruptionType:'ATC Restrictions',triage:'DEFEND',complexity:'Standard',dateReceived:'12 May 2026',notes:'Mailbox batch — Moreau LOC'}
+];
+function setIntakeTab(tab){
+  if(tab==='mass'&&!isIntakeLead(getActiveUser())){showToast('Mass upload is restricted to team leads.');return;}
+  intakeTab=tab;
+  render();
+}
+function showToast(msg){
+  var old=document.getElementById('toast');
+  if(old)old.remove();
+  var el=document.createElement('div');
+  el.id='toast';
+  el.className='toast';
+  el.textContent=msg;
+  document.body.appendChild(el);
+  setTimeout(function(){if(el.parentNode)el.remove();},4500);
+}
+function nextUploadRef(offset){
+  var n=uploadedCases.length+1+(offset||0);
+  return 'UP-2026-'+String(n).padStart(4,'0');
+}
+function depositIntakeCase(row,assigneeId,fileMeta,leadUid,activityPrefix){
+  var parsedDateReceived=parseLocDateReceived(row.dateReceived);
+  var c=buildCaseFromRow(row,assigneeId,parsedDateReceived);
+  var lead=USERS[leadUid]||{};
+  c.points=[];
+  c.loaStatus='';
+  c.activity=[
+    {text:(activityPrefix||'LOC deposited')+' — '+(row.notes||row.ref),time:'Just now',type:'upload'},
+    {text:'Assigned to '+(USERS[assigneeId]?USERS[assigneeId].name:assigneeId)+' · confirmed by '+(lead.name||leadUid),time:'Just now',type:'action'}
+  ];
+  if(fileMeta&&fileMeta.name)c.uploadedFile=fileMeta.name;
+  uploadedCases.unshift(c);
+  if(typeof CaseFiling!=='undefined'){
+    CaseFiling.ensureCaseFile({
+      ref:c.ref,claimant:c.claimant,solicitor:c.solicitor,flightNum:c.flightNum,
+      route:c.route,jurisdiction:c.jurisdiction,stage:'intake',
+      disruptionType:c.disruptionType,value:c.value,assignedTo:assigneeId,
+      uploadedByName:c.uploadedByName||lead.full||lead.name
+    });
+    if(fileMeta){
+      CaseFiling.addDocument(c.ref,{
+        folderId:'intake',name:'Letter of Claim — '+c.claimant,
+        filename:fileMeta.name,content:'LOC deposited from intake batch: '+fileMeta.name+'\n\nClaimant: '+c.claimant+'\nFlight: '+c.flightNum+'\nValue: '+c.value+'\n\nAssignment confirmed by '+(lead.full||lead.name)+'.',
+        status:'on_file',source:'intake',mimeType:fileMeta.type||'application/pdf',size:fileMeta.size||0,
+        uploadedBy:leadUid,uploadedByName:lead.full||lead.name
+      });
+    }
+    CaseFiling.addActivity(c.ref,'Case deposited — assigned to '+(USERS[assigneeId]?USERS[assigneeId].name:assigneeId),'upload',lead.full||lead.name);
+  }
+  return c;
+}
 
 function escapeHtml(v){return String(v==null?'':v).replace(/[&<>"']/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch];});}
 function intakeCases(){
@@ -233,36 +301,116 @@ function handleUpload(event){
   var file=event.target.files&&event.target.files[0];
   if(!file)return;
   var uid=getActiveUser();
-  var n=uploadedCases.length+1;
-  var ref='UP-2026-'+String(n).padStart(4,'0');
-  var row=buildLocRowFromFile(file,ref,uid);
-  var parsedDateReceived=parseLocDateReceived(row.dateReceived);
-  var c=buildCaseFromRow(row,uid,parsedDateReceived);
-  c.points=[];
-  c.loaStatus='';
-  c.activity=[{text:'LOC uploaded — extraction ready',time:'Just now',type:'upload'}];
-  c.uploadedFile=file.name;
-  uploadedCases.unshift(c);
+  var row=buildLocRowFromFile(file,nextUploadRef(0),uid);
+  var c=depositIntakeCase(row,uid,{name:file.name,size:file.size,type:file.type},uid,'LOC uploaded');
   selectedRef=c.ref;
   try{sessionStorage.setItem('261c_case',JSON.stringify(c));}catch(e){}
-  if(typeof CaseFiling!=='undefined'){
-    var u=USERS[uid]||{};
-    CaseFiling.ensureCaseFile({
-      ref:c.ref,claimant:c.claimant,solicitor:c.solicitor,flightNum:c.flightNum,
-      route:c.route,jurisdiction:c.jurisdiction,stage:'intake',
-      disruptionType:c.disruptionType,value:c.value,assignedTo:uid,
-      uploadedByName:c.uploadedByName||u.full||u.name
-    });
-    CaseFiling.addDocument(c.ref,{
-      folderId:'intake',name:'Letter of Claim — '+c.claimant,
-      filename:file.name,content:'LOC uploaded from intake: '+file.name+'\n\nClaimant: '+c.claimant+'\nFlight: '+c.flightNum+'\nValue: '+c.value+'\n\nAI extraction queued for triage.',
-      status:'on_file',source:'intake',mimeType:file.type||'application/pdf',size:file.size,
-      uploadedBy:uid,uploadedByName:u.full||u.name
-    });
-    CaseFiling.addActivity(c.ref,'LOC uploaded — live case file created','upload',u.full||u.name);
-  }
   render();
   event.target.value='';
+}
+function triggerMassUpload(){
+  if(!isIntakeLead(getActiveUser())){showToast('Mass upload is restricted to team leads.');return;}
+  intakeTab='mass';
+  document.getElementById('mass-file-input').click();
+}
+function buildMassBatchItems(files){
+  var leadUid=getActiveUser();
+  var items=[];
+  for(var i=0;i<files.length;i++){
+    var file=files[i];
+    var row=buildLocRowFromFile(file,nextUploadRef(i),leadUid);
+    items.push({
+      row:row,
+      file:{name:file.name,size:file.size,type:file.type||'application/pdf'},
+      assignee:suggestAssignee(row.jurisdictionCode,[])
+    });
+  }
+  return items;
+}
+function startMassExtraction(items){
+  if(massExtractTimer)clearTimeout(massExtractTimer);
+  massBatch={status:'extracting',items:items};
+  intakeTab='mass';
+  render();
+  massExtractTimer=setTimeout(function(){
+    if(!massBatch)return;
+    massBatch.status='review';
+    render();
+  },2000);
+}
+function handleMassUpload(event){
+  var leadUid=getActiveUser();
+  if(!isIntakeLead(leadUid)){showToast('Mass upload is restricted to team leads.');return;}
+  var files=event.target.files;
+  if(!files||!files.length)return;
+  var list=[];
+  for(var i=0;i<files.length;i++)list.push(files[i]);
+  startMassExtraction(buildMassBatchItems(list));
+  event.target.value='';
+}
+function useDemoMassBatch(){
+  if(!isIntakeLead(getActiveUser())){showToast('Mass upload is restricted to team leads.');return;}
+  var items=DEMO_BATCH.map(function(row,i){
+    var copy=JSON.parse(JSON.stringify(row));
+    copy.ref=nextUploadRef(i);
+    return{
+      row:copy,
+      file:{name:copy.surname+'_'+copy.firstName+'_LOC.pdf',size:120000,type:'application/pdf'},
+      assignee:suggestAssignee(copy.jurisdictionCode,[])
+    };
+  });
+  startMassExtraction(items);
+}
+function setMassAssignee(index,uid){
+  if(!massBatch||!massBatch.items[index])return;
+  massBatch.items[index].assignee=uid;
+  render();
+}
+function cancelMassBatch(){
+  if(massExtractTimer)clearTimeout(massExtractTimer);
+  massBatch=null;
+  render();
+}
+function confirmMassBatch(){
+  var leadUid=getActiveUser();
+  if(!isIntakeLead(leadUid)){showToast('Batch deposit requires team lead approval.');return;}
+  if(!massBatch||massBatch.status!=='review'||!massBatch.items.length){showToast('No batch ready to deposit.');return;}
+  var created=[];
+  massBatch.items.forEach(function(item){
+    created.push(depositIntakeCase(item.row,item.assignee,item.file,leadUid,'Batch LOC deposited'));
+  });
+  massBatch=null;
+  if(created.length){
+    selectedRef=created[0].ref;
+    try{sessionStorage.setItem('261c_case',JSON.stringify(created[0]));}catch(e){}
+  }
+  showToast('Deposited '+created.length+' case'+(created.length!==1?'s':'')+' with reviewed assignments.');
+  intakeTab='new';
+  render();
+}
+function renderMassPanel(){
+  var leadUid=getActiveUser();
+  if(!isIntakeLead(leadUid)){
+    return '<div class="cw"><div class="mass-banner"><i class="ti ti-lock"></i> Mass upload is available to team leads only (Head of Legal Ops and regional leads). Switch to Sarah Booth, Marie Dupont, or Carlos García to review batch assignments.</div></div>';
+  }
+  if(!massBatch||massBatch.status==='extracting'){
+    return '<div class="cw"><div class="mass-banner"><strong>Lead review required.</strong> Upload multiple letters of claim, review AI extraction and solicitor assignments, then deposit the batch into intake.</div>'
+      +'<div class="upload-zone" onclick="triggerMassUpload()"><i class="ti ti-files"></i><h3>Mass upload — letters of claim</h3><p>Select multiple PDF, Word or text files. Assignments are suggested by workload and jurisdiction.</p>'
+      +'<button class="lp-upload-btn" style="width:auto;margin:12px auto 0;border-style:solid" onclick="event.stopPropagation();useDemoMassBatch()"><i class="ti ti-stack-2"></i> Load demo mailbox batch (3 LOCs)</button></div>'
+      +(massBatch&&massBatch.status==='extracting'?'<div class="extract-loading"><div class="extract-spinner"></div><div style="font-size:13px;font-weight:500">Extracting '+massBatch.items.length+' letters…</div><div style="font-size:11px;color:var(--text3);margin-top:4px">AI reading claimant, flight and jurisdiction fields</div></div>':'')
+      +'</div>';
+  }
+  var rows=massBatch.items.map(function(item,idx){
+    var r=item.row;
+    var claimant=r.surname+' '+r.firstName;
+    return '<tr><td><div class="cr-ref">'+escapeHtml(r.ref)+'</div><div style="font-size:11px;color:var(--text3)">'+escapeHtml(item.file.name)+'</div></td>'
+      +'<td>'+escapeHtml(claimant)+'</td><td>'+escapeHtml(r.flightNum)+'</td><td>'+escapeHtml(r.jurisdictionCode)+'</td><td>'+escapeHtml(r.complexity||'Standard')+'</td>'
+      +'<td><select class="batch-select" onchange="setMassAssignee('+idx+',this.value)">'+assigneeOptionsHtml(item.assignee,r.jurisdictionCode)+'</select></td></tr>';
+  }).join('');
+  return '<div class="cw"><div class="mass-banner"><strong>Assignment review</strong> — confirm workload-balanced assignments before depositing '+massBatch.items.length+' case'+(massBatch.items.length!==1?'s':'')+' into intake.</div>'
+    +'<div class="section-card"><div class="sc-header"><i class="ti ti-users"></i><div class="sc-title">Batch assignment review</div></div><div class="sc-body" style="padding:0;overflow-x:auto"><table class="batch-table"><thead><tr><th>Ref / file</th><th>Claimant</th><th>Flight</th><th>Juris.</th><th>Cat.</th><th>Assign to</th></tr></thead><tbody>'+rows+'</tbody></table></div></div>'
+    +'<div class="advance-bar"><div class="adv-text">Lead approval required · CPR clocks start on deposit · Cases enter assignee intake queues.</div>'
+    +'<div style="display:flex;gap:8px"><button class="lp-upload-btn" style="width:auto;margin:0;border-style:solid" onclick="cancelMassBatch()">Cancel</button><button class="btn-advance" onclick="confirmMassBatch()"><i class="ti ti-circle-check"></i> Deposit batch</button></div></div></div>';
 }
 function handleSupportUpload(event){
   var file=event.target.files&&event.target.files[0];
@@ -334,12 +482,31 @@ function render(){
   var list=document.getElementById('case-list');
   var uid=getActiveUser();
   var u=USERS[uid]||USERS.SB;
+  var lead=isIntakeLead(uid);
+  var massBtn=document.getElementById('mass-upload-btn');
+  if(massBtn)massBtn.style.display=lead?'flex':'none';
   document.querySelector('.lp-title').textContent=t('intakeQueue');
   document.getElementById('lp-sub').textContent=cases.length+' case'+(cases.length!==1?'s':'')+' assigned to '+u.name;
+  var tabBar='<div style="display:flex;gap:6px;padding:12px 16px 0;border-bottom:1px solid var(--border);background:var(--surface)"><button class="lp-upload-btn" style="width:auto;margin:0;border-style:solid;background:'+(intakeTab==='new'?'var(--blue-faint)':'var(--surface2)')+';color:'+(intakeTab==='new'?'var(--blue-text)':'var(--text2)')+'" onclick="setIntakeTab(\'new\')">New LOC</button><button class="lp-upload-btn" style="width:auto;margin:0;border-style:solid;background:'+(intakeTab==='deposit'?'var(--blue-faint)':'var(--surface2)')+';color:'+(intakeTab==='deposit'?'var(--blue-text)':'var(--text2)')+'" onclick="setIntakeTab(\'deposit\')">Add to existing case</button>'
+    +(lead?'<button class="lp-upload-btn" style="width:auto;margin:0;border-style:solid;background:'+(intakeTab==='mass'?'var(--blue-faint)':'var(--surface2)')+';color:'+(intakeTab==='mass'?'var(--blue-text)':'var(--text2)')+'" onclick="setIntakeTab(\'mass\')">Mass upload</button>':'')
+    +'</div>';
+  if(intakeTab==='mass'){
+    list.innerHTML=cases.length?cases.map(function(c){
+      var urg=daysUrgency(c.cprDaysLeft);
+      return '<div class="case-row '+(c.ref===selectedRef?'active':'')+'" onclick="selectCase(\''+c.ref+'\')">'
+        +'<div class="cr-icon '+(c.uploadedFile?'new':'')+'"><i class="ti '+(c.uploadedFile?'ti-upload':'ti-file-text')+'"></i></div>'
+        +'<div style="min-width:0"><div class="cr-ref">'+escapeHtml(c.ref)+'</div><div class="cr-name">'+escapeHtml(c.claimant)+'</div><div class="cr-meta"><span>'+escapeHtml(c.flightNum)+'</span><span class="cr-badge">'+escapeHtml(c.cat)+'</span></div></div>'
+        +'<div class="cr-right"><span class="cr-days days-'+urg+'">'+urgencyLabel(c.cprDaysLeft)+'</span></div></div>';
+    }).join(''):'<div class="case-list-empty"><i class="ti ti-stack-2"></i><div>Batch deposit queue</div></div>';
+    document.getElementById('right-panel').innerHTML=tabBar+renderMassPanel();
+    if(typeof renderGlobalNav==='function')renderGlobalNav();
+    return;
+  }
   if(!cases.length){
     selectedRef='';
     list.innerHTML='<div class="case-list-empty"><i class="ti ti-inbox"></i><div>'+t('noQueue')+'</div></div>';
-    document.getElementById('right-panel').innerHTML='<div class="rp-empty"><i class="ti ti-inbox"></i><p>No intake cases are assigned to '+escapeHtml(u.name)+'. Upload a letter of claim to create a demo intake item.</p></div>';
+    document.getElementById('right-panel').innerHTML=tabBar+'<div class="rp-empty"><i class="ti ti-inbox"></i><p>No intake cases are assigned to '+escapeHtml(u.name)+'. Upload a letter of claim to create a demo intake item.</p></div>';
+    if(typeof renderGlobalNav==='function')renderGlobalNav();
     return;
   }
   if(!selectedRef||!cases.some(function(c){return c.ref===selectedRef;})) selectedRef=cases[0].ref;
@@ -362,7 +529,6 @@ function render(){
     {n:2,claim:'Disruption reason identified as '+(c.disruptionType||'pending'),evidenceStatus:'amber',evidenceDoc:'Confirm in triage'},
     {n:3,claim:'CPR response clock started',evidenceStatus:'green',evidenceDoc:urgencyLabel(c.cprDaysLeft)}
   ];
-  var tabBar='<div style="display:flex;gap:6px;padding:12px 16px 0;border-bottom:1px solid var(--border);background:var(--surface)"><button class="lp-upload-btn" style="width:auto;margin:0;border-style:solid;background:'+(intakeTab==='new'?'var(--blue-faint)':'var(--surface2)')+';color:'+(intakeTab==='new'?'var(--blue-text)':'var(--text2)')+'" onclick="setIntakeTab(\'new\')">New LOC</button><button class="lp-upload-btn" style="width:auto;margin:0;border-style:solid;background:'+(intakeTab==='deposit'?'var(--blue-faint)':'var(--surface2)')+';color:'+(intakeTab==='deposit'?'var(--blue-text)':'var(--text2)')+'" onclick="setIntakeTab(\'deposit\')">Add to existing case</button></div>';
   var newPanel=intakeTab==='new'?('<div class="cw">'
     +'<div class="cw-header"><div class="cw-ref">'+escapeHtml(c.ref)+'</div><div style="display:flex;align-items:flex-start;gap:10px"><div style="flex:1"><div class="cw-name">'+escapeHtml(c.claimant)+' v. TestAirways</div><div class="cw-meta"><span><i class="ti ti-building"></i>'+escapeHtml(c.solicitor)+'</span><span><i class="ti ti-plane"></i>'+escapeHtml(c.flight)+'</span><span><i class="ti ti-world"></i>'+J.flag+' '+escapeHtml(J.name)+'</span><span><i class="ti ti-cash"></i>'+escapeHtml(c.value)+'</span></div></div><span class="cw-badge" style="background:'+stageBg('intake')+';color:'+stageColor('intake')+'">'+t('stage_intake')+'</span></div></div>'
     +'<div class="section-card"><div class="sc-header"><i class="ti ti-scan"></i><div class="sc-title">Extracted claim summary</div></div><div class="sc-body"><div class="field-grid">'
