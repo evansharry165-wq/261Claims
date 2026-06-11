@@ -1066,6 +1066,8 @@ function renderLibraryHome(){
   var drafted=Object.keys(docStates).filter(function(k){return docStates[k].generated||docStates[k].status==='approved';}).length;
   var approved=Object.keys(docApproved).filter(function(k){return docApproved[k];}).length;
   var savedCount=Object.keys(storedInRepo).filter(function(k){return storedInRepo[k];}).length;
+  var ins=(typeof getInsightSuggestions==='function'?getInsightSuggestions(C.ref):null);
+  var hintBar=ins&&ins.draftingHint?'<div style="background:var(--blue-faint);border:1px solid #BFDBFE;border-radius:var(--r2);padding:10px 12px;margin-bottom:12px;font-size:11px;color:var(--text2);line-height:1.55"><i class="ti ti-pencil" style="color:var(--blue-text)"></i> <strong>Insights drafting hint:</strong> '+ins.draftingHint+' <a href="'+ins.exploreUrl+'" target="_parent" style="color:var(--blue-text);margin-left:6px">Explore →</a></div>':'';
   var openChips=Object.keys(openDocs).concat(Object.keys(minimizedDocs)).filter(function(id,i,a){return a.indexOf(id)===i;}).map(function(id){
     return '<button class="open-doc-chip" onclick="openDoc(\''+id+'\')"><i class="ti ti-file-text"></i>'+(DOC_NAMES[id]||id)+'</button>';
   }).join('');
@@ -1083,6 +1085,7 @@ function renderLibraryHome(){
       +'</button>';
   }).join('');
   return '<div class="library-home">'
+    +hintBar
     +'<div class="library-hero"><div class="ch-ref">'+C.ref+'</div>'
     +'<h2>'+C.name+' v. [Airline]</h2>'
     +'<p>Open a document to draft in full-screen view. After approval, add it to the live case file so the whole team can access it in the Repository — no manual re-upload.</p>'
@@ -1316,8 +1319,31 @@ function addToRepository(id){
 function resolveCase(){
   caseResolved=true;
   try{
+    var ins=typeof getInsightSuggestions==='function'?getInsightSuggestions(C.ref):null;
+    var similar=ins&&ins.similar?ins.similar.case:null;
     var repo=JSON.parse(sessionStorage.getItem('261c_repository')||'[]');
-    repo.unshift({ref:C.ref,claimant:C.name,outcome:'Defended / response issued',stored:new Date().toISOString(),documents:Object.keys(docApproved).filter(k=>docApproved[k]),value:C.value,flightNum:C.flightNum,disruptionType:C.type,solicitor:C.sol});
+    repo.unshift({
+      ref:C.ref,
+      claimant:C.name,
+      outcome:'Defended / response issued',
+      stored:new Date().toISOString(),
+      closedAt:new Date().toISOString().slice(0,10),
+      documents:Object.keys(docApproved).filter(k=>docApproved[k]),
+      value:C.value,
+      flightNum:C.flightNum,
+      disruptionType:C.type,
+      solicitor:C.sol,
+      jurisdiction:(typeof getCase==='function'&&getCase(C.ref)?getCase(C.ref).jurisdiction:'england-wales'),
+      court:similar?similar.court:'',
+      courtId:similar?similar.courtId:'',
+      judge:similar?similar.judge:'',
+      judgeId:similar?similar.judgeId:'',
+      strategyTags:similar?similar.strategyTags:[],
+      evidenceTags:similar?similar.evidenceTags:[],
+      draftingTags:similar?similar.draftingTags:[],
+      recommendation:similar?similar.recommendation:'',
+      summary:'Case resolved from drafting workspace with approved response on file.'
+    });
     sessionStorage.setItem('261c_repository',JSON.stringify(repo.slice(0,20)));
   }catch(e){}
   renderWorkspace();

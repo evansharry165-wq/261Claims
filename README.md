@@ -17,7 +17,7 @@ GitHub Pages: [https://evansharry165-wq.github.io/261Claims/index.html](https://
 | `intake.html` | New claim intake (New LOC / Add to existing case) |
 | `requests.html` | Evidence team request queue (EH user) |
 | `repository.html` | Evidence filing store (SharePoint mirror) |
-| `insights.html` | Reporting and past cases archive (guidance lives in Education Hub) |
+| `insights.html` | Reporting, faceted past cases archive, and legal intelligence |
 
 Navigation: **Work · Cases · Repository · Insights** (Evidence team sees **Requests** instead of Cases).
 

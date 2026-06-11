@@ -118,7 +118,12 @@ input[type=file].filing-file-input{display:none}
 <body>
 <script src="shared_data.js"></script>
 <script src="shared_theme.js"></script>
+<script src="legal_updates.js"></script>
+<script src="court_profiles.js"></script>
+<script src="insights_search.js"></script>
+<script src="insight_tags.js"></script>
 <script src="insights_data.js"></script>
+<script src="insight_engine.js"></script>
 <script src="evidence_filing.js"></script>
 <script src="case_filing.js"></script>
 <nav class="global-nav">
@@ -398,7 +403,7 @@ var LAW_SUMMARIES=[
   {law:'Sturgeon',caseRef:'REP-2025-0142',title:'Arrival delay threshold and compensation exposure',summary:'The weather defence acknowledged the Sturgeon three-hour arrival threshold but avoided compensation through Article 5(3). This teaches users to separate threshold analysis from the extraordinary circumstances defence.',application:'Confirm arrival delay first, then test whether objective evidence supports Article 5(3).'}
 ];
 function escapeHtml(v){return String(v==null?'':v).replace(/[&<>"']/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch];});}
-function filteredCases(){return filterPastCases(repoCases(),query,activeOutcome);}
+function filteredCases(){return InsightsSearch.filterCases(repoCases(),InsightsSearch.normalizeFilters({q:query,outcome:activeOutcome}));}
 function setArea(area){activeArea=area;render();}
 function select(ref){selectedRef=ref;render();}
 function shell(content){return '<div class="area-nav"><button class="area-btn '+(activeArea==='cases'?'active':'')+'" onclick="setArea(\'cases\')"><i class="ti ti-briefcase"></i>Cases</button><button class="area-btn '+(activeArea==='evidence'?'active':'')+'" onclick="setArea(\'evidence\')"><i class="ti ti-folder-open"></i>Evidence</button><button class="area-btn '+(activeArea==='education'?'active':'')+'" onclick="setArea(\'education\')"><i class="ti ti-school"></i>Education</button><button class="area-btn home" onclick="setArea(\'hub\')"><i class="ti ti-layout-grid"></i>Repository home</button></div>'+content;}
@@ -496,7 +501,10 @@ function renderCases(){
   document.getElementById('page').innerHTML=shell(hero+tabBar+body+(caseFilingTab==='closed'?renderLiveSuggestions():''));
 }
 function caseCard(c){return '<div class="case-card" onclick="select(&quot;'+c.ref+'&quot;)"><div><div class="ref">'+escapeHtml(c.ref)+'</div><div class="name">'+escapeHtml(c.claimant)+' · '+escapeHtml(c.flightNum)+'</div><div class="meta">'+escapeHtml(c.route)+' · '+escapeHtml(c.disruptionType)+' · '+escapeHtml(c.solicitor)+'<br>'+escapeHtml(c.summary)+'</div></div><div style="text-align:right"><span class="pill '+outcomeClass(c.outcome)+'">'+outcomeLabel(c.outcome)+'</span><div style="font-size:10px;color:var(--text3);margin-top:6px">'+c.confidence+'% confidence</div></div></div>';}
-function detailHtml(c){return '<div class="panel-body"><div class="kv"><div class="kv-label">Outcome</div><div class="kv-val"><span class="pill '+outcomeClass(c.outcome)+'">'+outcomeLabel(c.outcome)+'</span></div></div><div class="kv"><div class="kv-label">Saving</div><div class="kv-val">'+escapeHtml(c.saving)+'</div></div><div class="kv"><div class="kv-label">Time to close</div><div class="kv-val">'+c.days+' days</div></div><div class="kv"><div class="kv-label">Jurisdiction</div><div class="kv-val">'+escapeHtml(getJurisdiction(c.jurisdiction).name)+'</div></div><div class="case-law"><strong>Learning:</strong> '+escapeHtml(c.recommendation)+'</div><div class="ev-list">'+c.evidence.map(e=>'<span class="ev">'+escapeHtml(e)+'</span>').join('')+'</div><div class="case-law"><strong>Case law applied:</strong> '+escapeHtml(c.caseLaw.join(', '))+'</div></div>';}
+function detailHtml(c){
+  if(typeof renderClosedCaseDetail==='function')return renderClosedCaseDetail(c);
+  return '<div class="panel-body"><div class="kv"><div class="kv-label">Outcome</div><div class="kv-val"><span class="pill '+outcomeClass(c.outcome)+'">'+outcomeLabel(c.outcome)+'</span></div></div><div class="kv"><div class="kv-label">Saving</div><div class="kv-val">'+escapeHtml(c.saving)+'</div></div><div class="kv"><div class="kv-label">Time to close</div><div class="kv-val">'+c.days+' days</div></div><div class="kv"><div class="kv-label">Jurisdiction</div><div class="kv-val">'+escapeHtml(getJurisdiction(c.jurisdiction).name)+'</div></div><div class="case-law"><strong>Learning:</strong> '+escapeHtml(c.recommendation)+'</div><div class="ev-list">'+c.evidence.map(e=>'<span class="ev">'+escapeHtml(e)+'</span>').join('')+'</div><div class="case-law"><strong>Case law applied:</strong> '+escapeHtml(c.caseLaw.join(', '))+'</div></div>';
+}
 function renderEvidence(){
   var eh=isEvidenceTeam();
   var allFiles=EvidenceFiling.getAllFiles();

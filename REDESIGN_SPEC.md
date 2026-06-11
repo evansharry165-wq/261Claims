@@ -796,6 +796,16 @@ Update to reflect:
 - [x] Legacy module list pages redirect to new URLs (workspace iframes retained)
 - [x] Update README
 
+### Phase 6 — Insights Intelligence
+- [x] `insights_search.js` — faceted search + URL-synced filters
+- [x] `court_profiles.js` — mock court/judge profiles + `CourtDataAdapter` stub
+- [x] `insight_engine.js` — similarity, court stats, improvement suggestions
+- [x] `insight_tags.js` + `legal_updates.js` — taxonomy + Education cross-links
+- [x] `insights.html` — Reporting, Past cases (faceted), Legal intelligence tabs
+- [x] Enriched `insights_data.js` schema (court, judge, tags, closedAt)
+- [x] Case Overview / Evidence / Drafting integration via `getInsightSuggestions()`
+- [ ] Stage 5 live data — replace mock profiles when public API access confirmed
+
 ---
 
 ## 9. Feature retention matrix

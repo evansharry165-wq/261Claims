@@ -235,6 +235,40 @@ var CaseShell = (function () {
       return s.id === c.stage || (c.stage === 'defence' && s.id === 'drafting');
     });
 
+    var insight =
+      typeof getInsightSuggestions === 'function' ? getInsightSuggestions(c.ref) : null;
+    var strategyCard = '';
+    if (insight && insight.similar) {
+      var sim = insight.similar;
+      strategyCard =
+        '<div class="panel-card" style="border-color:#BFDBFE;background:linear-gradient(135deg,var(--blue-faint),#fff)">' +
+        '<div class="pc-label">Strategy insight</div>' +
+        '<div class="pc-title" style="font-size:13px;line-height:1.55">' +
+        escapeHtml(insight.recommendation || sim.case.recommendation) +
+        '</div>' +
+        (insight.court
+          ? '<div class="kv" style="margin-top:8px"><span>Court pattern</span><span>' +
+            escapeHtml(insight.court.name) +
+            ' · ' +
+            (insight.court.rates ? insight.court.rates.defended : '—') +
+            '% defended</span></div>'
+          : '') +
+        (insight.missingEvidence && insight.missingEvidence.length
+          ? '<div style="font-size:11px;color:var(--text2);margin-top:8px"><strong>Key evidence from archive:</strong> ' +
+            escapeHtml(insight.missingEvidence.join(' · ')) +
+            '</div>'
+          : '') +
+        (insight.draftingHint
+          ? '<div style="font-size:11px;color:var(--text2);margin-top:6px"><strong>Drafting:</strong> ' +
+            escapeHtml(insight.draftingHint) +
+            '</div>'
+          : '') +
+        '<a href="' +
+        escapeHtml(insight.exploreUrl) +
+        '" style="display:inline-flex;align-items:center;gap:5px;margin-top:10px;font-size:11px;color:var(--blue-text);text-decoration:none;font-weight:500">Explore in Insights <i class="ti ti-arrow-right"></i></a>' +
+        '</div>';
+    }
+
     document.getElementById('tab-panel').innerHTML =
       '<div class="tab-panel-inner"><div class="overview-grid">' +
       '<div class="panel-card highlight">' +
@@ -313,6 +347,8 @@ var CaseShell = (function () {
           escapeHtml(archiveBest.recommendation) +
           ' · <span style="color:var(--blue-text)">View in Insights</span></div></div>'
         : '') +
+      '</div>' +
+      strategyCard +
       '</div></div></div>';
   }
 

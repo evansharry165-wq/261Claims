@@ -1,5 +1,25 @@
 /* Embed mode + redirect for legacy case workspaces */
 (function () {
+  var insightScripts = [
+    'legal_updates.js',
+    'court_profiles.js',
+    'insights_search.js',
+    'insight_tags.js',
+    'insights_data.js',
+    'insight_engine.js'
+  ];
+  var fileEarly = window.location.pathname.split('/').pop() || '';
+  if (fileEarly.indexOf('module4') >= 0 || fileEarly.indexOf('module5') >= 0) {
+    insightScripts.forEach(function (src) {
+      var iid = '261c-' + src.replace('.js', '');
+      if (document.getElementById(iid)) return;
+      var is = document.createElement('script');
+      is.id = iid;
+      is.src = src;
+      document.head.appendChild(is);
+    });
+  }
+
   ['shared_theme.js', 'demo_reset.js', 'shared_user_menu.js'].forEach(function (src) {
     var id = '261c-' + src.replace('.js', '');
     if (document.getElementById(id)) return;
