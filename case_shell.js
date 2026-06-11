@@ -35,7 +35,7 @@ var CaseShell = (function () {
     try {
       stored = JSON.parse(sessionStorage.getItem('261c_case') || 'null');
     } catch (e) {}
-    var c = typeof getCase === 'function' ? getCase(ref) : null;
+    var c = typeof resolveCase === 'function' ? resolveCase(ref) : (typeof getCase === 'function' ? getCase(ref) : null);
     if (stored && stored.ref === ref) c = stored;
     if (!c) return null;
 
