@@ -1,0 +1,4 @@
+ref,surname,firstName,solicitor,flightNum,dep,arr,flightDate,currency,compSought,claimType,jurisdictionCode,disruptionType,triage,complexity,dateReceived,notes
+,Angela,Foster,Clarke & Partners,HC 203,LGW,ALC,20 May 2026,EUR,250,EC261 — Weather delay,EW,Weather,DEFEND,Standard,28 May 2026,Mailbox batch — Foster LOC
+,Thomas,Morrison,Irwin Mitchell LLP,HC 442,LGW,BCN,15 May 2026,EUR,250,EC261 — ATC delay,EW,ATC Restrictions,DEFEND,Standard,28 May 2026,Mailbox batch — Morrison LOC
+,Jean-Pierre,Moreau,Cabinet Lefèvre,HC 742,CDG,LTN,3 March 2026,EUR,250,CE 261/2004 — Retard,FR,ATC Restrictions,DEFEND,Standard,12 May 2026,Mailbox batch — Moreau LOC

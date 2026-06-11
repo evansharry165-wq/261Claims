@@ -33,10 +33,17 @@ function getCaseLoad(uid, extraCases) {
 }
 
 function suggestAssignee(jurisdictionCode, extraCases) {
+  return pickDeterministicAssignee(jurisdictionCode, extraCases);
+}
+
+function pickDeterministicAssignee(jurisdictionCode, extraCases) {
   var pool = getAssignableUsers(jurisdictionCode);
   if (!pool.length) return 'SB';
   pool.sort(function (a, b) {
-    return getCaseLoad(a, extraCases) - getCaseLoad(b, extraCases);
+    var loadA = getCaseLoad(a, extraCases);
+    var loadB = getCaseLoad(b, extraCases);
+    if (loadA !== loadB) return loadA - loadB;
+    return a.localeCompare(b);
   });
   return pool[0];
 }

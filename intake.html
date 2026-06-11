@@ -153,6 +153,7 @@ input[type=file]{display:none}
 <script src="case_filing.js"></script>
 <script src="case_helpers.js"></script>
 <script src="team_helpers.js"></script>
+<script src="intake_template.js"></script>
 
 <nav class="global-nav">
   <a href="index.html" class="gn-logo">
@@ -192,6 +193,7 @@ input[type=file]{display:none}
 
 <input type="file" id="file-input" accept=".pdf,.doc,.docx,.txt" onchange="handleUpload(event)">
 <input type="file" id="mass-file-input" accept=".pdf,.doc,.docx,.txt" multiple onchange="handleMassUpload(event)">
+<input type="file" id="spreadsheet-input" accept=".csv,.txt" onchange="handleSpreadsheetUpload(event)">
 <input type="file" id="support-file-input" accept=".pdf,.doc,.docx,.txt,.png,.jpg,.jpeg" onchange="handleSupportUpload(event)">
 
 <script>
@@ -203,11 +205,6 @@ var depositSearch='';
 var intakeTab='new';
 var massBatch=null;
 var massExtractTimer=null;
-var DEMO_BATCH=[
-  {ref:'',surname:'Angela',firstName:'Foster',solicitor:'Clarke & Partners',flightNum:'HC 203',dep:'LGW',arr:'ALC',flightDate:'20 May 2026',currency:'EUR',compSought:'250',claimType:'EC261 — Weather delay',jurisdictionCode:'EW',disruptionType:'Weather',triage:'DEFEND',complexity:'Standard',dateReceived:'28 May 2026',notes:'Mailbox batch — Foster LOC'},
-  {ref:'',surname:'Thomas',firstName:'Morrison',solicitor:'Irwin Mitchell LLP',flightNum:'HC 442',dep:'LGW',arr:'BCN',flightDate:'15 May 2026',currency:'EUR',compSought:'250',claimType:'EC261 — ATC delay',jurisdictionCode:'EW',disruptionType:'ATC Restrictions',triage:'DEFEND',complexity:'Standard',dateReceived:'28 May 2026',notes:'Mailbox batch — Morrison LOC'},
-  {ref:'',surname:'Jean-Pierre',firstName:'Moreau',solicitor:'Cabinet Lefèvre',flightNum:'HC 742',dep:'CDG',arr:'LTN',flightDate:'3 March 2026',currency:'EUR',compSought:'250',claimType:'CE 261/2004 — Retard',jurisdictionCode:'FR',disruptionType:'ATC Restrictions',triage:'DEFEND',complexity:'Standard',dateReceived:'12 May 2026',notes:'Mailbox batch — Moreau LOC'}
-];
 function setIntakeTab(tab){
   if(tab==='mass'&&!isIntakeLead(getActiveUser())){showToast('Mass upload is restricted to team leads.');return;}
   intakeTab=tab;
@@ -313,30 +310,31 @@ function triggerMassUpload(){
   intakeTab='mass';
   document.getElementById('mass-file-input').click();
 }
-function buildMassBatchItems(files){
-  var leadUid=getActiveUser();
-  var items=[];
-  for(var i=0;i<files.length;i++){
-    var file=files[i];
-    var row=buildLocRowFromFile(file,nextUploadRef(i),leadUid);
-    items.push({
-      row:row,
-      file:{name:file.name,size:file.size,type:file.type||'application/pdf'},
-      assignee:suggestAssignee(row.jurisdictionCode,[])
-    });
-  }
-  return items;
+function triggerSpreadsheetUpload(){
+  if(!isIntakeLead(getActiveUser())){showToast('Mass upload is restricted to team leads.');return;}
+  intakeTab='mass';
+  document.getElementById('spreadsheet-input').click();
 }
-function startMassExtraction(items){
+function buildMassBatchItemsFromLocFiles(files){
+  var rows=[];
+  for(var i=0;i<files.length;i++){
+    rows.push(buildLocRowFromFile(files[i],nextUploadRef(i),getActiveUser()));
+  }
+  return buildMassItemsFromRows(rows,function(i){return nextUploadRef(i);}).map(function(item,idx){
+    item.file={name:files[idx].name,size:files[idx].size,type:files[idx].type||'application/pdf'};
+    return item;
+  });
+}
+function startMassExtraction(items,sourceLabel){
   if(massExtractTimer)clearTimeout(massExtractTimer);
-  massBatch={status:'extracting',items:items};
+  massBatch={status:'extracting',items:items,source:sourceLabel||'batch'};
   intakeTab='mass';
   render();
   massExtractTimer=setTimeout(function(){
     if(!massBatch)return;
     massBatch.status='review';
     render();
-  },2000);
+  },sourceLabel==='master template'?800:2000);
 }
 function handleMassUpload(event){
   var leadUid=getActiveUser();
@@ -345,21 +343,38 @@ function handleMassUpload(event){
   if(!files||!files.length)return;
   var list=[];
   for(var i=0;i<files.length;i++)list.push(files[i]);
-  startMassExtraction(buildMassBatchItems(list));
+  startMassExtraction(buildMassBatchItemsFromLocFiles(list),'LOC documents');
   event.target.value='';
 }
-function useDemoMassBatch(){
-  if(!isIntakeLead(getActiveUser())){showToast('Mass upload is restricted to team leads.');return;}
-  var items=DEMO_BATCH.map(function(row,i){
-    var copy=JSON.parse(JSON.stringify(row));
-    copy.ref=nextUploadRef(i);
-    return{
-      row:copy,
-      file:{name:copy.surname+'_'+copy.firstName+'_LOC.pdf',size:120000,type:'application/pdf'},
-      assignee:suggestAssignee(copy.jurisdictionCode,[])
-    };
+function handleSpreadsheetUpload(event){
+  var leadUid=getActiveUser();
+  if(!isIntakeLead(leadUid)){showToast('Mass upload is restricted to team leads.');return;}
+  var file=event.target.files&&event.target.files[0];
+  if(!file)return;
+  readSpreadsheetFile(file,function(err,rows,srcFile){
+    if(err){showToast(err);render();return;}
+    var items=buildMassItemsFromRows(rows,function(i){return nextUploadRef(i);});
+    items.forEach(function(item){
+      item.file={name:srcFile.name,size:srcFile.size,type:srcFile.type||'text/csv'};
+    });
+    startMassExtraction(items,'master template');
   });
-  startMassExtraction(items);
+  event.target.value='';
+}
+function loadMasterTemplateDemo(){
+  if(!isIntakeLead(getActiveUser())){showToast('Mass upload is restricted to team leads.');return;}
+  fetch('templates/'+INTAKE_TEMPLATE_FILENAME)
+    .then(function(r){return r.text();})
+    .then(function(text){
+      var result=rowsFromSpreadsheetText(text);
+      if(result.error){showToast(result.error);return;}
+      var items=buildMassItemsFromRows(result.rows,function(i){return nextUploadRef(i);});
+      items.forEach(function(item){
+        item.file={name:INTAKE_TEMPLATE_FILENAME,size:text.length,type:'text/csv'};
+      });
+      startMassExtraction(items,'master template');
+    })
+    .catch(function(){showToast('Could not load master template.');});
 }
 function setMassAssignee(index,uid){
   if(!massBatch||!massBatch.items[index])return;
@@ -394,21 +409,28 @@ function renderMassPanel(){
     return '<div class="cw"><div class="mass-banner"><i class="ti ti-lock"></i> Mass upload is available to team leads only (Head of Legal Ops and regional leads). Switch to Sarah Booth, Marie Dupont, or Carlos García to review batch assignments.</div></div>';
   }
   if(!massBatch||massBatch.status==='extracting'){
-    return '<div class="cw"><div class="mass-banner"><strong>Lead review required.</strong> Upload multiple letters of claim, review AI extraction and solicitor assignments, then deposit the batch into intake.</div>'
-      +'<div class="upload-zone" onclick="triggerMassUpload()"><i class="ti ti-files"></i><h3>Mass upload — letters of claim</h3><p>Select multiple PDF, Word or text files. Assignments are suggested by workload and jurisdiction.</p>'
-      +'<button class="lp-upload-btn" style="width:auto;margin:12px auto 0;border-style:solid" onclick="event.stopPropagation();useDemoMassBatch()"><i class="ti ti-stack-2"></i> Load demo mailbox batch (3 LOCs)</button></div>'
-      +(massBatch&&massBatch.status==='extracting'?'<div class="extract-loading"><div class="extract-spinner"></div><div style="font-size:13px;font-weight:500">Extracting '+massBatch.items.length+' letters…</div><div style="font-size:11px;color:var(--text3);margin-top:4px">AI reading claimant, flight and jurisdiction fields</div></div>':'')
+    return '<div class="cw"><div class="mass-banner"><strong>Master template v'+INTAKE_TEMPLATE_VERSION+'</strong> — download the fixed-column spreadsheet, fill claim rows in Excel, then upload. Cases are sorted deterministically (jurisdiction → LOC date → name) and assigned to the lowest-workload solicitor in each jurisdiction pool.</div>'
+      +'<div class="section-card" style="margin-bottom:12px"><div class="sc-header"><i class="ti ti-table"></i><div class="sc-title">Spreadsheet intake (primary)</div></div><div class="sc-body">'
+      +'<div style="font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:12px">Use the master CSV template in Excel. Do not rename or reorder columns. Leave <code style="font-family:var(--mono);font-size:11px">ref</code> blank to auto-generate on deposit.</div>'
+      +'<div style="display:flex;flex-wrap:wrap;gap:8px"><button class="btn-advance" style="width:auto" onclick="downloadMasterTemplate()"><i class="ti ti-download"></i> Download master template</button>'
+      +'<button class="btn-advance" style="width:auto;background:var(--blue)" onclick="triggerSpreadsheetUpload()"><i class="ti ti-upload"></i> Upload completed spreadsheet</button>'
+      +'<button class="lp-upload-btn" style="width:auto;margin:0;border-style:solid" onclick="loadMasterTemplateDemo()"><i class="ti ti-stack-2"></i> Preview demo batch</button></div></div></div>'
+      +'<div class="section-card"><div class="sc-header"><i class="ti ti-files"></i><div class="sc-title">LOC document batch (secondary)</div></div><div class="sc-body">'
+      +'<div class="upload-zone" onclick="triggerMassUpload()"><i class="ti ti-files"></i><h3>Mass upload — letters of claim</h3><p>Alternative path: select multiple PDF, Word or text LOCs. Fields are inferred from filenames; assignments still follow workload rules.</p></div>'
+      +'</div></div>'
+      +(massBatch&&massBatch.status==='extracting'?'<div class="extract-loading"><div class="extract-spinner"></div><div style="font-size:13px;font-weight:500">'+(massBatch.source==='master template'?'Parsing master template…':'Extracting '+massBatch.items.length+' letters…')+'</div><div style="font-size:11px;color:var(--text3);margin-top:4px">'+(massBatch.source==='master template'?'Sorting rows and calculating workload assignments':'AI reading claimant, flight and jurisdiction fields')+'</div></div>':'')
       +'</div>';
   }
   var rows=massBatch.items.map(function(item,idx){
     var r=item.row;
     var claimant=r.surname+' '+r.firstName;
-    return '<tr><td><div class="cr-ref">'+escapeHtml(r.ref)+'</div><div style="font-size:11px;color:var(--text3)">'+escapeHtml(item.file.name)+'</div></td>'
-      +'<td>'+escapeHtml(claimant)+'</td><td>'+escapeHtml(r.flightNum)+'</td><td>'+escapeHtml(r.jurisdictionCode)+'</td><td>'+escapeHtml(r.complexity||'Standard')+'</td>'
+    return '<tr><td style="font-family:var(--mono);font-size:11px;color:var(--text3)">'+escapeHtml(String(item.sortOrder||idx+1))+'</td>'
+      +'<td><div class="cr-ref">'+escapeHtml(r.ref)+'</div><div style="font-size:11px;color:var(--text3)">'+escapeHtml(item.file.name)+'</div></td>'
+      +'<td>'+escapeHtml(claimant)+'</td><td>'+escapeHtml(r.flightNum)+'</td><td>'+escapeHtml(r.jurisdictionCode)+'</td><td>'+escapeHtml(r.triage||'INVESTIGATE')+'</td><td>'+escapeHtml(r.complexity||'Standard')+'</td>'
       +'<td><select class="batch-select" onchange="setMassAssignee('+idx+',this.value)">'+assigneeOptionsHtml(item.assignee,r.jurisdictionCode)+'</select></td></tr>';
   }).join('');
-  return '<div class="cw"><div class="mass-banner"><strong>Assignment review</strong> — confirm workload-balanced assignments before depositing '+massBatch.items.length+' case'+(massBatch.items.length!==1?'s':'')+' into intake.</div>'
-    +'<div class="section-card"><div class="sc-header"><i class="ti ti-users"></i><div class="sc-title">Batch assignment review</div></div><div class="sc-body" style="padding:0;overflow-x:auto"><table class="batch-table"><thead><tr><th>Ref / file</th><th>Claimant</th><th>Flight</th><th>Juris.</th><th>Cat.</th><th>Assign to</th></tr></thead><tbody>'+rows+'</tbody></table></div></div>'
+  return '<div class="cw"><div class="mass-banner"><strong>Assignment review</strong> — '+escapeHtml(massBatch.source||'batch')+' · '+massBatch.items.length+' case'+(massBatch.items.length!==1?'s':'')+' sorted by deterministic rules and pre-assigned to lowest workload. Adjust if needed, then deposit.</div>'
+    +'<div class="section-card"><div class="sc-header"><i class="ti ti-users"></i><div class="sc-title">Batch assignment review</div></div><div class="sc-body" style="padding:0;overflow-x:auto"><table class="batch-table"><thead><tr><th>#</th><th>Ref / source</th><th>Claimant</th><th>Flight</th><th>Juris.</th><th>Triage</th><th>Cat.</th><th>Assign to</th></tr></thead><tbody>'+rows+'</tbody></table></div></div>'
     +'<div class="advance-bar"><div class="adv-text">Lead approval required · CPR clocks start on deposit · Cases enter assignee intake queues.</div>'
     +'<div style="display:flex;gap:8px"><button class="lp-upload-btn" style="width:auto;margin:0;border-style:solid" onclick="cancelMassBatch()">Cancel</button><button class="btn-advance" onclick="confirmMassBatch()"><i class="ti ti-circle-check"></i> Deposit batch</button></div></div></div>';
 }
