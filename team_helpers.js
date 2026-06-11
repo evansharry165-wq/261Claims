@@ -20,6 +20,11 @@ function getAssignableUsers(jurisdictionCode) {
 }
 
 function getCaseLoad(uid, extraCases) {
+  if (typeof getAllCasesForUser === 'function') {
+    return getAllCasesForUser(uid).filter(function (c) {
+      return c.stage !== 'resolve';
+    }).length;
+  }
   var count = (ALL_CASES || []).filter(function (c) {
     return c.assignedTo === uid && c.stage !== 'resolve';
   }).length;

@@ -74,6 +74,7 @@ tbody tr:hover td{background:var(--surface2);cursor:pointer}
 <body>
 <script src="shared_data.js"></script>
 <script src="shared_theme.js"></script>
+<script src="case_filing.js"></script>
 <script src="case_helpers.js"></script>
 
 <nav class="global-nav">
@@ -158,7 +159,7 @@ function renderCases(){
   var u=USERS[uid]||USERS.SB;
   var params=getParams();
   var q=(document.getElementById('search').value||'').toLowerCase();
-  var cases=getCasesForUser(uid);
+  var cases=typeof getAllCasesForUser==='function'?getAllCasesForUser(uid):getCasesForUser(uid);
   cases=filterCasesByParam(cases,params.filter);
   cases=sortCases(cases,params.sort);
   if(q)cases=cases.filter(function(c){

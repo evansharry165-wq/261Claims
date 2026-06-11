@@ -502,3 +502,87 @@ function buildCaseFromRow(row, confirmedAssigneeId, parsedDateReceived) {
     uploadedByName: uploader.full || uploader.name || 'User'
   };
 }
+
+function normaliseCaseFilingRecord(c) {
+  var locDate = c.locDate || c.createdAt || '';
+  var rcvd = locDate ? parseLocDateReceived(locDate) : new Date();
+  var cprDue = new Date(rcvd.getTime() + 21 * 86400000);
+  var daysLeft = Math.max(0, Math.round((cprDue - Date.now()) / 86400000));
+  return {
+    ref: c.ref,
+    assignedTo: c.assignedTo || 'SB',
+    claimant: c.claimant || 'Unknown',
+    solicitor: c.solicitor || '',
+    flight: c.flight || (c.flightNum && c.route ? c.flightNum + ' — ' + c.route : c.flightNum || ''),
+    flightNum: c.flightNum || '',
+    dep: c.dep || (c.route ? c.route.split('–')[0] : ''),
+    arr: c.arr || (c.route ? c.route.split('–')[1] : ''),
+    flightDate: c.flightDate || '',
+    value: c.value || '',
+    type: c.type || c.claimType || 'EC261',
+    locDate: locDate,
+    stage: c.stage || 'intake',
+    cat: c.cat || 'B',
+    jurisdiction: c.jurisdiction || 'england-wales',
+    lang: c.lang || 'en',
+    disruptionType: c.disruptionType || '',
+    classification: c.classification || 'INVESTIGATE',
+    evidencePct: c.evidencePct || 0,
+    cprDaysLeft: c.cprDaysLeft != null ? c.cprDaysLeft : daysLeft,
+    points: c.points || [],
+    loaStatus: c.loaStatus || '',
+    triageNote: c.triageNote || '',
+    activity: c.activity || [],
+    _source: 'filing'
+  };
+}
+
+function mergeCaseSources() {
+  var map = {};
+  (typeof ALL_CASES !== 'undefined' ? ALL_CASES : []).forEach(function (c) {
+    map[c.ref] = Object.assign({}, c, { _source: 'seed' });
+  });
+
+  if (typeof CaseFiling !== 'undefined') {
+    try {
+      CaseFiling.listCases().forEach(function (cf) {
+        var norm = normaliseCaseFilingRecord(cf);
+        if (map[norm.ref]) {
+          map[norm.ref] = Object.assign({}, map[norm.ref], norm, {
+            points: map[norm.ref].points && map[norm.ref].points.length ? map[norm.ref].points : norm.points,
+            loaStatus: map[norm.ref].loaStatus || norm.loaStatus,
+            triageNote: map[norm.ref].triageNote || norm.triageNote,
+            classification: map[norm.ref].classification || norm.classification,
+            _source: 'merged'
+          });
+        } else {
+          map[norm.ref] = norm;
+        }
+      });
+    } catch (e) { /* filing store unavailable */ }
+  }
+
+  if (typeof uploadedCases !== 'undefined') {
+    uploadedCases.forEach(function (c) {
+      map[c.ref] = Object.assign({}, map[c.ref] || {}, c, { _source: c._source || 'upload' });
+    });
+  }
+
+  return Object.keys(map).map(function (ref) {
+    return map[ref];
+  });
+}
+
+function getAllCasesForUser(uid, stage) {
+  return mergeCaseSources().filter(function (c) {
+    return c.assignedTo === uid && (!stage || c.stage === stage);
+  });
+}
+
+function resolveCase(ref) {
+  var merged = mergeCaseSources().find(function (c) {
+    return c.ref === ref;
+  });
+  if (merged) return merged;
+  return typeof getCase === 'function' ? getCase(ref) : null;
+}

@@ -259,12 +259,14 @@ function depositIntakeCase(row,assigneeId,fileMeta,leadUid,activityPrefix){
 function escapeHtml(v){return String(v==null?'':v).replace(/[&<>"']/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch];});}
 function intakeCases(){
   var uid=getActiveUser();
+  if(typeof getAllCasesForUser==='function')return getAllCasesForUser(uid,'intake');
   return getCasesForUser(uid,'intake').concat(uploadedCases.filter(function(c){return c.assignedTo===uid;}));
 }
 function triggerUpload(){document.getElementById('file-input').click();}
 function triggerSupportUpload(){document.getElementById('support-file-input').click();}
 function userCases(){
   var uid=getActiveUser();
+  if(typeof getAllCasesForUser==='function')return getAllCasesForUser(uid);
   return getCasesForUser(uid).concat(uploadedCases.filter(function(c){return c.assignedTo===uid;}));
 }
 function buildLocRowFromFile(file, ref, uid){

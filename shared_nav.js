@@ -45,8 +45,10 @@
   }
 
   function urgentCaseCount(uid) {
-    if (typeof getCasesForUser !== 'function' || typeof ALL_CASES === 'undefined') return 0;
-    return getCasesForUser(uid).filter(function (c) {
+    if (typeof ALL_CASES === 'undefined') return 0;
+    var casesFn = typeof getAllCasesForUser === 'function' ? getAllCasesForUser : getCasesForUser;
+    if (typeof casesFn !== 'function') return 0;
+    return casesFn(uid).filter(function (c) {
       return c.cprDaysLeft <= 7 && c.stage !== 'resolve';
     }).length;
   }
