@@ -202,14 +202,46 @@ function userCases(){
   var uid=getActiveUser();
   return getCasesForUser(uid).concat(uploadedCases.filter(function(c){return c.assignedTo===uid;}));
 }
+function buildLocRowFromFile(file, ref, uid){
+  var base=file.name.replace(/\.[^.]+$/,'').replace(/[_-]+/g,' ').trim();
+  var tokens=base?base.split(/\s+/):[];
+  var firstName=tokens.length>1?tokens.pop():'';
+  var surname=tokens.join(' ')||'Claimant';
+  if(!firstName){firstName=surname;surname='';}
+  var titleCase=function(s){return s.replace(/\b\w/g,function(m){return m.toUpperCase();});};
+  return{
+    ref:ref,
+    surname:titleCase(surname),
+    firstName:titleCase(firstName),
+    solicitor:'Uploaded LOC',
+    flightNum:'HC TBD',
+    dep:'TBD',
+    arr:'TBD',
+    flightDate:'Date pending',
+    currency:'EUR',
+    compSought:'250',
+    claimType:'EC261 — New claim',
+    jurisdictionCode:(USERS[uid]&&USERS[uid].lang==='fr')?'FR':(USERS[uid]&&USERS[uid].lang==='es')?'ES':'EW',
+    disruptionType:'Pending review',
+    triage:'INVESTIGATE',
+    complexity:'Standard',
+    dateReceived:new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'}),
+    notes:'Uploaded from '+file.name
+  };
+}
 function handleUpload(event){
   var file=event.target.files&&event.target.files[0];
   if(!file)return;
   var uid=getActiveUser();
-  var base=file.name.replace(/\.[^.]+$/,'').replace(/[_-]+/g,' ').trim();
-  var claimant=base?base.replace(/\b\w/g,function(m){return m.toUpperCase();}):'New claimant';
   var n=uploadedCases.length+1;
-  var c={ref:'UP-2026-'+String(n).padStart(4,'0'),assignedTo:uid,claimant:claimant,solicitor:'Uploaded LOC',flight:'HC TBD — route pending',flightNum:'HC TBD',dep:'TBD',arr:'TBD',flightDate:'Date pending',value:'TBC',type:'EC261 — New claim',locDate:'Today',stage:'intake',cat:'A',jurisdiction:(USERS[uid]&&USERS[uid].lang==='fr')?'france':(USERS[uid]&&USERS[uid].lang==='es')?'spain':'england-wales',lang:(USERS[uid]&&USERS[uid].lang)||'en',disruptionType:'Pending review',classification:'PENDING',evidencePct:0,cprDaysLeft:21,points:[],loaStatus:'',triageNote:'Uploaded from '+file.name,activity:[{text:'LOC uploaded — extraction ready',time:'Just now',type:'upload'}],uploadedFile:file.name};
+  var ref='UP-2026-'+String(n).padStart(4,'0');
+  var row=buildLocRowFromFile(file,ref,uid);
+  var parsedDateReceived=parseLocDateReceived(row.dateReceived);
+  var c=buildCaseFromRow(row,uid,parsedDateReceived);
+  c.points=[];
+  c.loaStatus='';
+  c.activity=[{text:'LOC uploaded — extraction ready',time:'Just now',type:'upload'}];
+  c.uploadedFile=file.name;
   uploadedCases.unshift(c);
   selectedRef=c.ref;
   try{sessionStorage.setItem('261c_case',JSON.stringify(c));}catch(e){}
@@ -217,9 +249,9 @@ function handleUpload(event){
     var u=USERS[uid]||{};
     CaseFiling.ensureCaseFile({
       ref:c.ref,claimant:c.claimant,solicitor:c.solicitor,flightNum:c.flightNum,
-      route:c.dep+'–'+c.arr,jurisdiction:c.jurisdiction,stage:'intake',
+      route:c.route,jurisdiction:c.jurisdiction,stage:'intake',
       disruptionType:c.disruptionType,value:c.value,assignedTo:uid,
-      uploadedByName:u.full||u.name
+      uploadedByName:c.uploadedByName||u.full||u.name
     });
     CaseFiling.addDocument(c.ref,{
       folderId:'intake',name:'Letter of Claim — '+c.claimant,

@@ -449,3 +449,56 @@ function portfolioSummary(cases) {
   }, 0);
   return { counts: counts, total: cases.length, totalValue: totalValue };
 }
+
+function parseLocDateReceived(dateStr) {
+  if (!dateStr || dateStr === 'Today') return new Date();
+  var direct = new Date(dateStr);
+  if (!isNaN(direct.getTime())) return direct;
+  var match = String(dateStr).match(/(\d{1,2})\s+(\w+)\s+(\d{4})/);
+  if (match) {
+    var parsed = new Date(match[1] + ' ' + match[2] + ' ' + match[3]);
+    if (!isNaN(parsed.getTime())) return parsed;
+  }
+  return new Date();
+}
+
+function buildCaseFromRow(row, confirmedAssigneeId, parsedDateReceived) {
+  row = row || {};
+  var jurisMap = { EW: 'england-wales', FR: 'france', ES: 'spain', EU: 'england-wales' };
+  var langMap = { EW: 'en', FR: 'fr', ES: 'es', EU: 'en' };
+  var catMap = { Standard: 'B', Complex: 'C', 'High Value': 'C' };
+  var jCode = row.jurisdictionCode || 'EW';
+  var parsed = parsedDateReceived instanceof Date && !isNaN(parsedDateReceived.getTime())
+    ? parsedDateReceived
+    : parseLocDateReceived(row.dateReceived);
+  var uid = typeof getActiveUser === 'function' ? getActiveUser() : 'SB';
+  var uploader = USERS[uid] || {};
+  var comp = parseFloat(row.compSought);
+  if (isNaN(comp)) comp = 0;
+
+  return {
+    ref: row.ref,
+    claimant: row.surname + ' ' + row.firstName,
+    solicitor: row.solicitor,
+    flightNum: row.flightNum,
+    dep: row.dep,
+    arr: row.arr,
+    route: row.dep + '–' + row.arr,
+    flight: row.flightNum + ' — ' + row.dep + ' → ' + row.arr,
+    flightDate: row.flightDate,
+    value: (row.currency === 'GBP' ? '£' : '€') + comp.toFixed(0),
+    type: row.claimType,
+    jurisdiction: jurisMap[jCode] || 'england-wales',
+    lang: langMap[jCode] || 'en',
+    disruptionType: row.disruptionType,
+    classification: row.triage || 'INVESTIGATE',
+    cat: catMap[row.complexity] || 'B',
+    stage: 'intake',
+    assignedTo: confirmedAssigneeId,
+    locDate: row.dateReceived,
+    triageNote: row.notes,
+    evidencePct: 0,
+    cprDaysLeft: Math.max(0, Math.round((new Date(parsed.getTime() + 21 * 86400000) - Date.now()) / 86400000)),
+    uploadedByName: uploader.full || uploader.name || 'User'
+  };
+}
