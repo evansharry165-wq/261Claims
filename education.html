@@ -130,6 +130,7 @@ html.embed-mode .page{height:100%!important}
 <script src="insights_embed.js"></script>
 <script src="shared_data.js"></script>
 <script src="shared_theme.js"></script>
+<script src="legal_updates.js"></script>
 
 <nav class="global-nav">
   <a href="index.html" class="gn-logo">
@@ -423,9 +424,16 @@ repository_learning: {
   sub: 'Recent developments in EC261 law, CAA guidance, and aviation regulation',
   content: function(){
     return '<div class="article-grid">'
-      + articleCard('ti-gavel','tag-case','CJEU · 22 May 2026','Flightright v Iberia: Hidden defects clarification','The Court confirmed that a technical defect caused by a component failure unknown to the manufacturer does not automatically qualify as extraordinary. The carrier must still prove the defect could not have been discovered through reasonable maintenance inspection.',  'New judgment · Must read')
-      + articleCard('ti-building-government','tag-reg','CAA · 18 May 2026','UK261 evidence standards — updated guidance','The CAA has published updated enforcement guidance requiring airlines to provide specific evidence of extraordinary circumstances rather than general assertions. ATFM data, METAR records, and crew statements are specifically referenced as expected evidence.','Regulatory update · Read now')
-      + articleCard('ti-gavel','tag-case','UK Supreme Court · 12 May 2026','Lipton v BA Cityflyer — pilot illness judgment','The Supreme Court confirmed that pilot illness is not an extraordinary circumstance. The shortage of crew to replace the absent pilot was within the carrier\'s control through adequate rostering. Full judgment with costs guidance now published.','Key judgment · Read now')
+      + (typeof LEGAL_UPDATES !== 'undefined' ? LEGAL_UPDATES : []).map(function(u){
+        return articleCard(
+          u.source.indexOf('CJEU')>=0||u.source.indexOf('Court')>=0?'ti-gavel':'ti-building-government',
+          u.source.indexOf('CAA')>=0?'tag-reg':'tag-case',
+          u.source,
+          u.title,
+          u.summary,
+          u.date + ' · ' + (u.tags||[]).slice(0,2).join(', ')
+        );
+      }).join('')
       + '</div>';
   }
 },

@@ -9,7 +9,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{--navy:#0B1628;--blue:#2A6FDB;--blue-faint:#EFF6FF;--blue-text:#1D4ED8;--green:#1A7A4A;--green-faint:#E6F5EE;--red:#C0392B;--amber:#B45309;--amber-faint:#FEF3C7;--border:#E2E8F0;--text:#0F172A;--text2:#475569;--text3:#94A3B8;--surface:#fff;--surface2:#F8FAFC;--font:'Inter',sans-serif;--font-serif:'Instrument Serif',Georgia,serif;--mono:'DM Mono',monospace;--r:8px;--r2:12px;--r3:16px}
+:root{--navy:#0B1628;--blue:#2A6FDB;--blue-faint:#EFF6FF;--blue-text:#1D4ED8;--green:#1A7A4A;--green-faint:#E6F5EE;--red:#C0392B;--red-faint:#FCF0EF;--amber:#B45309;--amber-faint:#FEF3C7;--purple:#4338CA;--purple-faint:#EEEDFE;--border:#E2E8F0;--text:#0F172A;--text2:#475569;--text3:#94A3B8;--surface:#fff;--surface2:#F8FAFC;--surface3:#F1F5F9;--font:'Inter',sans-serif;--font-serif:'Instrument Serif',Georgia,serif;--mono:'DM Mono',monospace;--r:8px;--r2:12px;--r3:16px}
 html,body{height:100%;font-family:var(--font);background:var(--surface2);color:var(--text);font-size:14px}
 .global-nav{background:var(--navy);height:48px;display:flex;align-items:center;padding:0 20px}
 .gn-logo{display:flex;align-items:center;gap:8px;text-decoration:none;margin-right:20px}
@@ -24,32 +24,73 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 .gn-av{width:24px;height:24px;border-radius:50%;background:#1C2E44;color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px}
 .gn-user{font-size:11px;color:rgba(255,255,255,0.85)}
 .shell{display:flex;flex-direction:column;height:calc(100vh - 48px);min-height:0}
-.insights-tabs{display:flex;gap:0;background:var(--surface);border-bottom:1px solid var(--border);padding:0 16px}
-.ins-tab{padding:11px 14px;font-size:12px;font-weight:500;color:var(--text3);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;font-family:var(--font)}
+.page-hdr{background:var(--surface);border-bottom:1px solid var(--border);padding:16px 20px 0;flex-shrink:0}
+.page-hdr-top{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:12px}
+.page-title{font-family:var(--font-serif);font-size:22px;font-weight:400;letter-spacing:-0.02em}
+.page-sub{font-size:12px;color:var(--text2);line-height:1.55;margin-top:4px;max-width:680px}
+.page-actions{display:flex;gap:8px;flex-wrap:wrap;flex-shrink:0;align-items:center}
+.page-link,.sync-badge{font-size:11px;text-decoration:none;color:var(--blue-text);border:1px solid var(--border);background:var(--surface2);padding:6px 10px;border-radius:var(--r);display:inline-flex;align-items:center;gap:5px}
+.sync-badge{color:var(--text2);font-size:10px}
+.insights-tabs{display:flex;gap:0;border-bottom:1px solid var(--border);padding:0 4px;overflow-x:auto}
+.ins-tab{padding:11px 14px;font-size:12px;font-weight:500;color:var(--text3);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;font-family:var(--font);display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
 .ins-tab.active{color:var(--blue-text);border-bottom-color:var(--blue)}
 .tab-panel{flex:1;overflow:hidden;min-height:0}
-.tab-frame{width:100%;height:100%;border:none;background:var(--surface2)}
-.past-wrap{height:100%;overflow-y:auto;padding:16px 20px}
+.tab-frame{width:100%;height:100%;border:none;background:var(--surface2);display:block}
+.past-wrap{height:100%;overflow-y:auto;padding:16px 20px 24px}
+.facet-bar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;padding:12px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r2)}
+.facet-bar input,.facet-bar select{font-size:11px;border:1px solid var(--border);border-radius:var(--r);padding:7px 9px;font-family:var(--font);color:var(--text);background:var(--surface2)}
+.facet-search{flex:1;min-width:180px}
+.facet-clear{font-size:11px;border:1px solid var(--border);background:var(--surface);border-radius:var(--r);padding:7px 10px;cursor:pointer;color:var(--text2);font-family:var(--font)}
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:12px 14px}
+.stat-label{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);font-weight:500;margin-bottom:6px}
+.stat-val{font-size:22px;font-weight:500;line-height:1}
+.stat-sub{font-size:11px;color:var(--text3);margin-top:4px}
 .grid-main{display:grid;grid-template-columns:1.2fr .8fr;gap:14px}
+.intel-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 .panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--r3);overflow:hidden}
-.panel-hdr{padding:12px 16px;border-bottom:1px solid var(--border)}
-.panel-title{font-size:13px;font-weight:500}
-.tabbar{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
-.tab{font-size:11px;border:1px solid var(--border);background:var(--surface2);padding:5px 10px;border-radius:20px;cursor:pointer;font-family:var(--font)}
-.tab.active{background:var(--navy);color:#fff;border-color:var(--navy)}
-.case-card{padding:12px 16px;border-bottom:1px solid var(--border);cursor:pointer}
-.case-card:hover{background:var(--surface2)}
+.panel-hdr{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.panel-title{font-size:13px;font-weight:500;display:flex;align-items:center;gap:7px}
+.panel-body{padding:14px 16px}
+.panel-sub{font-size:11px;color:var(--text3);margin-top:3px;line-height:1.45}
+.case-list{max-height:420px;overflow-y:auto}
+.case-card{padding:12px 16px;border-bottom:1px solid var(--border);cursor:pointer;display:grid;grid-template-columns:1fr auto;gap:12px}
+.case-card:hover,.case-card.selected{background:var(--surface2)}
 .ref{font-family:var(--mono);font-size:10px;color:var(--text3)}
 .name{font-size:13px;font-weight:500;margin-top:2px}
 .meta{font-size:11px;color:var(--text2);line-height:1.5;margin-top:3px}
-.pill{font-size:10px;font-weight:500;padding:3px 8px;border-radius:20px;display:inline-block}
+.pill{font-size:10px;font-weight:500;padding:3px 8px;border-radius:20px;display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
 .p-defended{background:var(--green-faint);color:var(--green)}
 .p-settled{background:var(--amber-faint);color:var(--amber)}
 .p-paid{background:var(--blue-faint);color:var(--blue-text)}
-.p-withdrawn{background:var(--surface2);color:var(--text2)}
+.p-withdrawn{background:var(--surface3);color:var(--text2)}
+.detail{position:sticky;top:12px}
+.detail-body{padding:14px 16px;font-size:12px;line-height:1.55}
+.detail-empty,.empty-note{font-size:12px;color:var(--text3);line-height:1.6;padding:28px 16px;text-align:center}
 .kv{display:grid;grid-template-columns:110px 1fr;gap:8px;font-size:12px;padding:7px 0;border-bottom:1px solid var(--border)}
 .kv-label{color:var(--text3)}
-.detail-body{padding:14px 16px;font-size:12px;line-height:1.55}
+.kv-val{font-weight:500}
+.ev-list,.tag-row{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px}
+.ev,.tag-chip{font-size:10px;padding:3px 7px;border-radius:20px;background:var(--purple-faint);color:var(--purple);text-decoration:none}
+.case-law{font-size:11px;color:var(--text2);line-height:1.55;margin-top:10px;padding:8px 10px;border-left:3px solid var(--blue);background:var(--blue-faint);border-radius:0 var(--r) var(--r) 0}
+.learn-box{margin-top:10px;padding:10px 12px;border:1px solid #BFDBFE;background:linear-gradient(135deg,var(--blue-faint),#fff);border-radius:var(--r2);font-size:11px;color:var(--text2);line-height:1.55}
+.learn-box a{color:var(--blue-text);font-weight:500;text-decoration:none}
+.updates-strip{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:12px 14px;margin-bottom:14px}
+.updates-title{font-size:12px;font-weight:500;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.update-chip{display:block;padding:8px 0;border-top:1px solid var(--border);text-decoration:none;color:var(--text);font-size:11px;line-height:1.5}
+.update-chip:first-of-type{border-top:none;padding-top:0}
+.update-chip span{display:block;color:var(--text3);margin-top:2px}
+.sugg-item{font-size:12px;line-height:1.55;padding:9px 0;border-bottom:1px solid var(--border)}
+.sugg-item.urgent{color:var(--red);font-weight:500}
+.sugg-item.high{color:var(--green)}
+.sugg-item a{color:var(--blue-text);margin-left:4px}
+.intel-cards{display:grid;gap:10px}
+.intel-card{border:1px solid var(--border);border-radius:var(--r2);padding:11px 12px;background:var(--surface2)}
+.intel-title{font-size:12px;font-weight:500;margin-bottom:4px}
+.intel-meta{font-size:10px;color:var(--text3);margin-bottom:6px}
+.intel-stat{font-size:11px;color:var(--green);margin-bottom:6px}
+.intel-note,.intel-list{font-size:11px;color:var(--text2);line-height:1.55}
+.intel-list{padding-left:16px;margin:0}
 .user-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.3);z-index:500;justify-content:flex-end;padding:52px 20px 0}
 .user-modal.open{display:flex}
 .user-dropdown{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);width:230px;overflow:hidden}
@@ -61,12 +102,18 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 .ud-role{font-size:10px;color:var(--text3)}
 .ud-tick{margin-left:auto;color:var(--green);display:none}
 .ud-item.current .ud-tick{display:block}
+@media (max-width:960px){.stats-row{grid-template-columns:repeat(2,1fr)}.grid-main,.intel-grid{grid-template-columns:1fr}.detail{position:static}}
 </style>
 </head>
 <body>
 <script src="shared_data.js"></script>
 <script src="shared_theme.js"></script>
+<script src="legal_updates.js"></script>
+<script src="court_profiles.js"></script>
+<script src="insights_search.js"></script>
+<script src="insight_tags.js"></script>
 <script src="insights_data.js"></script>
+<script src="insight_engine.js"></script>
 
 <nav class="global-nav">
   <a href="index.html" class="gn-logo"><div class="gn-mark"><i class="ti ti-plane"></i></div><span class="gn-name">261Claims</span></a>
@@ -75,74 +122,23 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 </nav>
 
 <div class="shell">
-  <div class="insights-tabs" id="insights-tabs"></div>
+  <div class="page-hdr">
+    <div class="page-hdr-top">
+      <div>
+        <div class="page-title" id="page-title">Insights</div>
+        <div class="page-sub" id="page-sub">Management reporting, closed-case learning, and legal intelligence.</div>
+      </div>
+      <div class="page-actions" id="page-actions"></div>
+    </div>
+    <div class="insights-tabs" id="insights-tabs"></div>
+  </div>
   <div class="tab-panel" id="tab-panel"></div>
 </div>
 
-<script>
-var TABS=[{id:'reporting',label:'Reporting'},{id:'past-cases',label:'Past cases'}];
-var _tabParam=new URLSearchParams(window.location.search).get('tab')||'reporting';
-if(_tabParam==='guidance'){window.location.replace('education.html');}
-var activeTab=_tabParam==='guidance'?'reporting':_tabParam;
-var activeOutcome='all', selectedRef='', query='';
-
-function escapeHtml(v){return String(v==null?'':v).replace(/[&<>"']/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch];});}
-
-function switchTab(tab){
-  activeTab=tab;
-  history.replaceState({},'','insights.html?tab='+tab);
-  renderTabs();renderPanel();
-}
-
-function renderTabs(){
-  document.getElementById('insights-tabs').innerHTML=TABS.map(function(t){
-    return '<button class="ins-tab'+(activeTab===t.id?' active':'')+'" onclick="switchTab(\''+t.id+'\')">'+escapeHtml(t.label)+'</button>';
-  }).join('');
-}
-
-function filteredPastCases(){
-  var q=query.toLowerCase();
-  return repoCases().filter(function(c){
-    var ok=activeOutcome==='all'||c.outcome===activeOutcome;
-    var hay=[c.ref,c.claimant,c.disruptionType,c.summary].join(' ').toLowerCase();
-    return ok&&(!q||hay.indexOf(q)>=0);
-  });
-}
-
-function renderPastCases(){
-  var rows=filteredPastCases();
-  if(!selectedRef&&rows.length)selectedRef=rows[0].ref;
-  var selected=rows.find(function(c){return c.ref===selectedRef;})||rows[0];
-  var tabs=['all','defended','settled','paid','withdrawn'].map(function(o){
-    return '<button class="tab '+(activeOutcome===o?'active':'')+'" onclick="activeOutcome=\''+o+'\';renderPanel()">'+(o==='all'?'All':outcomeLabel(o))+'</button>';
-  }).join('');
-  document.getElementById('tab-panel').innerHTML='<div class="past-wrap"><div class="grid-main"><div class="panel"><div class="panel-hdr"><div class="panel-title">Past cases archive</div><div class="tabbar">'+tabs+'</div><input style="margin-top:10px;width:100%;font-size:12px;padding:7px 10px;border:1px solid var(--border);border-radius:var(--r);font-family:var(--font)" placeholder="Search past cases…" value="'+escapeHtml(query)+'" oninput="query=this.value;renderPanel()"></div>'
-    +rows.map(function(c){return '<div class="case-card" onclick="selectedRef=\''+c.ref+'\';renderPanel()"><div class="ref">'+escapeHtml(c.ref)+'</div><div class="name">'+escapeHtml(c.claimant)+' · '+escapeHtml(c.flightNum)+'</div><div class="meta">'+escapeHtml(c.disruptionType)+' · <span class="pill '+outcomeClass(c.outcome)+'">'+outcomeLabel(c.outcome)+'</span> · '+c.confidence+'% confidence</div></div>';}).join('')
-    +'</div><div class="panel">'+(selected?'<div class="panel-hdr"><div class="panel-title">Case insight</div></div><div class="detail-body"><div class="kv"><div class="kv-label">Outcome</div><div><span class="pill '+outcomeClass(selected.outcome)+'">'+outcomeLabel(selected.outcome)+'</span></div></div><div class="kv"><div class="kv-label">Saving</div><div>'+escapeHtml(selected.saving)+'</div></div><div class="kv"><div class="kv-label">Time to close</div><div>'+selected.days+' days</div></div><div style="margin-top:10px">'+escapeHtml(selected.summary)+'</div><div style="margin-top:10px;color:var(--blue-text)"><strong>Recommendation:</strong> '+escapeHtml(selected.recommendation)+'</div></div>':'<div class="detail-body">Select a case.</div>')+'</div></div><p style="margin-top:12px;font-size:12px;color:var(--text3)">Active cases are on <a href="cases.html" style="color:var(--blue-text)">Cases</a>.</p></div>';
-}
-
-function renderPanel(){
-  if(activeTab==='reporting'){
-    document.getElementById('tab-panel').innerHTML='<iframe class="tab-frame" src="module6-mi.html?embed=1" title="Reporting"></iframe>';
-  }else{
-    renderPastCases();
-  }
-  if(typeof renderGlobalNav==='function')renderGlobalNav();
-}
-
-function toggleUserMenu(){document.getElementById('user-modal').classList.toggle('open');}
-function closeMenu(){document.getElementById('user-modal').classList.remove('open');}
-function switchUser(id){
-  setActiveUser(id);sessionStorage.removeItem('261c_lang');closeMenu();
-  var u=USERS[id];if(u){document.getElementById('nav-av').textContent=u.initials;document.getElementById('nav-user').textContent=u.name;}
-  ['SB','JP','KR','MD','PL','CG','IM','EH'].forEach(function(uid){var el=document.getElementById('ud-'+uid);if(el)el.classList.toggle('current',uid===id);});
-  renderPanel();
-}
-window.addEventListener('load',function(){renderTabs();renderPanel();});
-</script>
+<script src="insights_ui.js"></script>
 <script src="shared_nav.js"></script>
 
-<div id="user-modal" class="user-modal" onclick="if(event.target===this)closeMenu()">
+<div id="user-modal" class="user-modal" onclick="if(event.target===this)document.getElementById('user-modal').classList.remove('open')">
   <div class="user-dropdown">
     <div class="ud-header">Switch user — demo</div>
     <div class="ud-item" id="ud-SB" onclick="switchUser('SB')"><div class="ud-av">SB</div><div><div class="ud-name">Sarah Booth</div><div class="ud-role">Head of Legal Ops</div></div><i class="ti ti-check ud-tick"></i></div>

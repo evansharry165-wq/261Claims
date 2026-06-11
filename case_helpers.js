@@ -434,6 +434,13 @@ function buildWatchItems(cases) {
     });
 }
 
+function getInsightSuggestions(ref) {
+  if (typeof InsightEngine !== 'undefined' && InsightEngine.getInsightSuggestions) {
+    return InsightEngine.getInsightSuggestions(ref);
+  }
+  return null;
+}
+
 function portfolioSummary(cases) {
   var stages = ['intake', 'triage', 'cpr', 'evidence', 'drafting', 'defence', 'resolve'];
   var counts = stages.map(function (s) {
