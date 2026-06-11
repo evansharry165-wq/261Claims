@@ -186,8 +186,7 @@ function searchCases(q){
   if(!box)return;
   q=(q||'').toLowerCase().trim();
   if(!q){box.classList.remove('open');box.innerHTML='';return;}
-  var pool=typeof mergeCaseSources==='function'?mergeCaseSources():(typeof ALL_CASES!=='undefined'?ALL_CASES:[]);
-  var matches=pool.filter(function(c){
+  var matches=(typeof getMergedCasesForUser==='function'?getMergedCasesForUser(getActiveUser()):ALL_CASES).filter(function(c){
     var J=getJurisdiction(c.jurisdiction);
     return [c.ref,c.claimant,c.flightNum,c.flight,c.solicitor,c.disruptionType,c.type,J.name].join(' ').toLowerCase().indexOf(q)>=0;
   }).slice(0,6);
@@ -213,7 +212,7 @@ function selectCalDay(iso){
 
 function downloadWorkCalendar(){
   var uid=getActiveUser();
-  var cases=typeof getAllCasesForUser==='function'?getAllCasesForUser(uid):getCasesForUser(uid);
+  var cases=typeof getMergedCasesForUser==='function'?getMergedCasesForUser(uid):getCasesForUser(uid);
   var events=WorkDashboard.buildCalendarEvents(cases);
   WorkDashboard.downloadCalendarIcs(events,'261Claims-CPR-deadlines-'+uid+'.ics');
 }
@@ -336,7 +335,7 @@ function render(){
   var uid=getActiveUser();
   var u=USERS[uid]||USERS.SB;
   if(WorkDashboard.isEvidenceUser(uid)){renderEvidenceWork(u);if(typeof renderGlobalNav==='function')renderGlobalNav();return;}
-  var cases=(typeof getAllCasesForUser==='function'?getAllCasesForUser(uid):getCasesForUser(uid)).slice().sort(function(a,b){return a.cprDaysLeft-b.cprDaysLeft;});
+  var cases=(typeof getMergedCasesForUser==='function'?getMergedCasesForUser(uid):getCasesForUser(uid)).slice().sort(function(a,b){return a.cprDaysLeft-b.cprDaysLeft;});
   renderLegalWork(uid,u,cases);
   if(typeof renderGlobalNav==='function')renderGlobalNav();
 }
