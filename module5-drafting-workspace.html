@@ -190,6 +190,32 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 /* Instrument Serif headings */
 .greeting, .page-title, h1, .zone-title, .hdr-title { font-family: var(--font-serif) !important; font-weight: 400; letter-spacing: -0.02em; }
 
+/* gathering panel — pre-generation solicitor inputs */
+.gathering-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:16px;margin-bottom:16px}
+.gp-header{margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--border)}
+.gp-title{font-size:14px;font-weight:500;color:var(--text);display:flex;align-items:center;gap:7px;margin-bottom:3px}
+.gp-sub{font-size:12px;color:var(--text2);line-height:1.5}
+.gp-section-label{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-bottom:8px}
+.gp-known{background:var(--surface2);border-radius:var(--r);padding:10px 12px;margin-bottom:4px}
+.gp-facts{display:flex;flex-direction:column;gap:4px}
+.gp-fact{display:flex;gap:12px;font-size:12px;padding:3px 0;border-bottom:1px solid var(--border)}
+.gp-fact:last-child{border:none}
+.gp-fact-label{width:120px;flex-shrink:0;color:var(--text3);font-size:11px}
+.gp-fact-value{color:var(--text);font-weight:500}
+.gp-question{margin-bottom:14px}
+.gp-q-label{font-size:12px;font-weight:500;color:var(--text);margin-bottom:3px}
+.gp-q-hint{font-size:11px;color:var(--text3);margin-bottom:8px;line-height:1.4}
+.gp-options{display:flex;flex-direction:column;gap:6px}
+.gp-option{font-size:12px;padding:8px 12px;border:1px solid var(--border2);border-radius:var(--r);background:var(--surface);cursor:pointer;text-align:left;color:var(--text2);font-family:var(--font);transition:all .1s}
+.gp-option:hover{border-color:var(--blue);color:var(--text)}
+.gp-option.selected{border-color:var(--blue);background:var(--blue-faint);color:var(--blue-text);font-weight:500}
+.gp-textarea{width:100%;font-size:12px;padding:9px 11px;border:1px solid var(--border2);border-radius:var(--r);background:var(--surface);color:var(--text);font-family:var(--font);resize:vertical;min-height:72px;margin-top:4px;line-height:1.5}
+.gp-textarea:focus{outline:none;border-color:var(--blue)}
+.gp-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:16px;padding-top:12px;border-top:1px solid var(--border)}
+.gp-btn-skip{font-size:12px;padding:7px 14px;border:1px solid var(--border2);border-radius:var(--r);background:var(--surface);cursor:pointer;color:var(--text2);font-family:var(--font)}
+.gp-btn-generate{font-size:12px;padding:7px 16px;border:none;border-radius:var(--r);background:var(--blue);color:#fff;cursor:pointer;font-family:var(--font);font-weight:500;display:flex;align-items:center;gap:6px}
+.gp-btn-generate:hover{opacity:.9}
+
 </style>
 
 </head>
@@ -397,7 +423,12 @@ var C={
   framework: _i.framework||'EC Regulation 261/2004',
   points: _i.points    ||[],
   assignedTo:_i.assignedTo||'S. Booth',
-  user:'S. Booth'
+  user:'S. Booth',
+  disruptionType:_i.disruptionType||'Weather',
+  classification:_i.classification||'DEFEND',
+  jurisdiction:_i.jurisdiction||'england-wales',
+  triageNote:_i.triageNote||'',
+  evidencePct:_i.evidencePct
 };
 
 /* ── Document state ── */
@@ -415,6 +446,39 @@ var docFocused=false;
 var docDirty=false;
 var minimizedDocs={};
 var openDocs={};
+
+var gatheringState={
+  active:false,
+  docId:null,
+  responses:{},
+  additionalContext:''
+};
+
+var GATHERING_QUESTIONS={
+  lor:[
+    {id:'ec_position',label:'Extraordinary circumstances position',type:'select',options:['Strong — ATFM/weather evidence confirmed','Moderate — evidence pending','Weak — no extraordinary circumstances'],hint:'This determines the core defence argument in the LOR'},
+    {id:'without_prejudice',label:'Include without prejudice offer?',type:'select',options:['No offer at this stage','Yes — include commercial settlement offer','Yes — include Part 36 offer'],hint:'Only include if classification is DEFEND with strong evidence'},
+    {id:'additional_facts',label:'Any additional facts to include?',type:'textarea',placeholder:'e.g. Aircraft swapped, crew called in, weather certificate obtained from...',hint:'Anything not in the case file that should influence the letter'}
+  ],
+  defence:[
+    {id:'limitation_point',label:'Limitation defence available?',type:'select',options:['No — within limitation period','Yes — claim appears out of time','Uncertain — raise without prejudice'],hint:'6 years EW, 5 years France, 1 year Spain from date of flight'},
+    {id:'extraordinary_evidence',label:'Current extraordinary circumstances evidence status',type:'select',options:['Complete — METAR/ATFM/NOTAM all obtained','Partial — some evidence outstanding','Not yet obtained — draft without EC plea'],hint:'Defence should only plead EC where evidence supports it'},
+    {id:'counterclaim_risk',label:'Any counterclaim risk?',type:'select',options:['None identified','Article 9 expenses claimed','Consequential loss alleged (Montreal Convention)','Multiple passenger group — multiplied liability'],hint:'Affects the defence scope and escalation threshold'}
+  ],
+  witness:[
+    {id:'witness_role',label:'Witness role',type:'select',options:['Operational duty manager — disruption decision','Flight operations controller — ATFM data','Customer services — duty of care delivery','Technical — maintenance records keeper'],hint:'Role determines what the witness can speak to'},
+    {id:'key_evidence',label:'Key evidence the witness will exhibit',type:'textarea',placeholder:'e.g. ATFM slot confirmation, METAR printout, crew roster...',hint:'List the documents this witness will produce as exhibits'}
+  ],
+  p36:[
+    {id:'offer_amount',label:'Offer amount',type:'select',options:['Nil — contest liability entirely','25% of claim — nuisance value','50% of claim — reasonable compromise','Full amount — commercial settlement'],hint:'Part 36 offers must be genuine — tactical nil offers are risky'},
+    {id:'acceptance_window',label:'Acceptance window',type:'select',options:['21 days (standard)','28 days','14 days (shorter — time pressure)'],hint:'21 days is standard CPR Part 36 minimum'}
+  ]
+};
+
+function escapeHtml(str){
+  if(str==null)return'';
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
 
 function getEvidencePct(){
   try{
@@ -1112,7 +1176,7 @@ function renderDocFocus(){
 
   var actions='';
   if(!hasContent){
-    actions='<button class="btn-action primary" onclick="generateDoc(\''+id+'\')"><i class="ti ti-sparkles"></i> Generate draft</button>';
+    actions='<button class="btn-action primary" onclick="startGathering(\''+id+'\')"><i class="ti ti-sparkles"></i> Generate draft</button>';
   }else if(isApproved){
     actions='<span class="btn-action success"><i class="ti ti-check"></i> Approved</span>'
       +(storedInRepo[id]
@@ -1131,7 +1195,7 @@ function renderDocFocus(){
   var safeText=letterText.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   var letterHtml=hasContent
     ?'<div class="letter-body" id="letter-'+id+'" '+(isEdit?'contenteditable="true"':'')+'>'+safeText+'</div>'
-    :'<div class="letter-empty"><i class="ti ti-sparkles"></i><p>Generate a draft from case data and evidence on file, then review it here in full-screen view.</p><button class="btn-action primary" style="margin-top:14px" onclick="generateDoc(\''+id+'\')"><i class="ti ti-sparkles"></i> Generate draft</button></div>';
+    :'<div class="letter-empty"><i class="ti ti-sparkles"></i><p>Generate a draft from case data and evidence on file, then review it here in full-screen view.</p><button class="btn-action primary" style="margin-top:14px" onclick="startGathering(\''+id+'\')"><i class="ti ti-sparkles"></i> Generate draft</button></div>';
 
   var statusTxt=isApproved?'Approved — ready for use'
     :hasContent?(isEdit?'Editing — save or close to exit':'Draft — pending solicitor sign-off')
@@ -1197,50 +1261,159 @@ function renderPointsRef(){
   }).join('');
 }
 
+function startGathering(id){
+  if(!GATHERING_QUESTIONS[id]||!GATHERING_QUESTIONS[id].length){
+    generateDoc(id);
+    return;
+  }
+  gatheringState.active=true;
+  gatheringState.docId=id;
+  gatheringState.responses={};
+  gatheringState.additionalContext='';
+  renderGatheringPanel(id);
+}
+
+function renderGatheringPanel(id){
+  var docNames={lor:'Letter of Response',defence:'Defence',witness:'Witness Statement',p36:'Part 36 Offer'};
+  var qs=GATHERING_QUESTIONS[id]||[];
+  var evPct=getEvidencePct();
+
+  var knownFacts=[
+    {label:'Claimant',value:C.name},
+    {label:'Flight',value:C.flightNum+' — '+C.dep+' to '+C.arr+', '+C.flightDate},
+    {label:'Disruption',value:C.disruptionType||'Not specified'},
+    {label:'Claim value',value:C.value},
+    {label:'Classification',value:C.classification},
+    {label:'Evidence readiness',value:evPct+'% complete'},
+    {label:'Jurisdiction',value:C.jurisdiction||'england-wales'}
+  ].filter(function(f){return f.value&&f.value!=='undefined';});
+
+  var html='<div class="gathering-panel" id="gathering-panel">';
+  html+='<div class="gp-header">';
+  html+='<div class="gp-title"><i class="ti ti-writing"></i> Before we draft — '+(docNames[id]||id)+'</div>';
+  html+='<div class="gp-sub">The system already knows the following from this case file. Confirm or add to it before generation.</div>';
+  html+='</div>';
+
+  html+='<div class="gp-known"><div class="gp-section-label">From the case file</div>';
+  html+='<div class="gp-facts">';
+  knownFacts.forEach(function(f){
+    html+='<div class="gp-fact"><span class="gp-fact-label">'+f.label+'</span><span class="gp-fact-value">'+escapeHtml(f.value)+'</span></div>';
+  });
+  if(C.points&&C.points.length){
+    html+='<div class="gp-fact" style="align-items:flex-start"><span class="gp-fact-label">Points of claim</span><div>';
+    C.points.forEach(function(p){
+      var dot=p.evidenceStatus==='green'?'#22A863':p.evidenceStatus==='amber'?'#D97706':'#E24B4A';
+      html+='<div style="font-size:11px;color:var(--text2);margin-bottom:2px"><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:'+dot+';margin-right:5px"></span>'+escapeHtml(p.claim)+'</div>';
+    });
+    html+='</div></div>';
+  }
+  html+='</div></div>';
+
+  if(qs.length){
+    html+='<div class="gp-section-label" style="margin-top:12px">A few questions before drafting</div>';
+    qs.forEach(function(q){
+      html+='<div class="gp-question" id="gpq-'+q.id+'">';
+      html+='<div class="gp-q-label">'+escapeHtml(q.label)+'</div>';
+      if(q.hint)html+='<div class="gp-q-hint">'+escapeHtml(q.hint)+'</div>';
+      if(q.type==='select'){
+        html+='<div class="gp-options">';
+        q.options.forEach(function(opt){
+          var selected=gatheringState.responses[q.id]===opt;
+          html+='<button type="button" class="gp-option'+(selected?' selected':'')+'" onclick="selectGatheringOption(\''+q.id+'\',this,\''+opt.replace(/'/g,"\\'")+'\')">'+escapeHtml(opt)+'</button>';
+        });
+        html+='</div>';
+      }else if(q.type==='textarea'){
+        html+='<textarea class="gp-textarea" id="gpt-'+q.id+'" placeholder="'+(q.placeholder||'')+'" onchange="gatheringState.responses[\''+q.id+'\']=this.value">'+(gatheringState.responses[q.id]||'')+'</textarea>';
+      }
+      html+='</div>';
+    });
+  }
+
+  html+='<div class="gp-section-label" style="margin-top:12px">Anything else to include?</div>';
+  html+='<textarea class="gp-textarea" id="gpt-additional" placeholder="Any additional facts, instructions or context not captured above..." onchange="gatheringState.additionalContext=this.value"></textarea>';
+
+  html+='<div class="gp-actions">';
+  html+='<button type="button" class="gp-btn-skip" onclick="generateDoc(gatheringState.docId)">Skip — generate from case file only</button>';
+  html+='<button type="button" class="gp-btn-generate" onclick="generateFromGathering()"><i class="ti ti-sparkles"></i> Generate with these inputs</button>';
+  html+='</div></div>';
+
+  var workspace=document.querySelector('.drafting-workspace')||document.getElementById('workspace')||document.getElementById('main');
+  if(workspace){
+    var existing=document.getElementById('gathering-panel');
+    if(existing)existing.remove();
+    workspace.insertAdjacentHTML('afterbegin',html);
+    var panel=document.getElementById('gathering-panel');
+    if(panel)panel.scrollIntoView({behavior:'smooth',block:'start'});
+  }
+}
+
+function selectGatheringOption(qId,btn,value){
+  gatheringState.responses[qId]=value;
+  var parent=btn.closest('.gp-options');
+  if(parent)parent.querySelectorAll('.gp-option').forEach(function(b){b.classList.toggle('selected',b===btn);});
+}
+
+function generateFromGathering(){
+  var qs=GATHERING_QUESTIONS[gatheringState.docId]||[];
+  qs.forEach(function(q){
+    if(q.type==='textarea'){
+      var el=document.getElementById('gpt-'+q.id);
+      if(el)gatheringState.responses[q.id]=el.value;
+    }
+  });
+  var additionalEl=document.getElementById('gpt-additional');
+  if(additionalEl)gatheringState.additionalContext=additionalEl.value;
+
+  var panel=document.getElementById('gathering-panel');
+  if(panel)panel.remove();
+  gatheringState.active=false;
+
+  generateDocWithContext(gatheringState.docId,gatheringState.responses,gatheringState.additionalContext);
+}
+
 async function generateDoc(id){
+  var panel=document.getElementById('gathering-panel');
+  if(panel)panel.remove();
+  gatheringState.active=false;
+  await generateDocWithContext(id,{},'');
+}
+
+async function generateDocWithContext(id,responses,additionalContext){
+  responses=responses||{};
+  additionalContext=additionalContext||'';
+
   var actionsEl=document.querySelector('.doc-focus-actions');
   if(actionsEl)actionsEl.innerHTML='<div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--blue-text)"><div class="ai-spinner"></div>Generating from case data…</div>';
 
-  // Call Claude API for AI-enhanced generation
-  const docNames = {lor:'Letter of Response',defence:'Defence (CPR Part 16)',witness:'Witness Statement',p36:'Part 36 Offer',settlement:'Settlement Agreement',n181:'Directions Questionnaire'};
+  var docNames={lor:'Letter of Response',defence:'Defence (CPR Part 16)',witness:'Witness Statement',p36:'Part 36 Offer',settlement:'Settlement Agreement',n181:'Directions Questionnaire'};
+  var baseDoc=buildDoc(id);
 
-  const baseDoc = buildDoc(id);
+  var solicitorInputs='';
+  var entries=Object.entries(responses).filter(function(e){return e[1];});
+  if(entries.length)solicitorInputs='\n\nSOLICITOR INPUTS:\n'+entries.map(function(e){return e[0]+': '+e[1];}).join('\n');
+  if(additionalContext)solicitorInputs+='\n\nADDITIONAL CONTEXT:\n'+additionalContext;
 
-  try {
-    const resp = await fetch('https://api.anthropic.com/v1/messages',{
+  try{
+    var resp=await fetch('https://api.anthropic.com/v1/messages',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
         model:'claude-sonnet-4-6',
         max_tokens:2000,
-        system:`You are a senior aviation solicitor at an airline's in-house legal team. Draft professional, legally accurate documents in response to EC261 flight delay claims. Use precise legal language appropriate for England and Wales civil litigation. Address each point of claim specifically. Do not include markdown formatting or backticks. Return only the document text.`,
-        messages:[{role:'user',content:`Draft a ${docNames[id]||id} for the following aviation compensation defence matter. Return only the final document text. No markdown, no backticks, no preamble. Formal legal language only.
-
-CASE: ${C.name} v. [Airline] | Ref: ${C.ref}
-SOLICITOR: ${C.sol}
-FLIGHT: ${C.flightNum} — ${C.dep} to ${C.arr} | ${C.flightDate}
-DISRUPTION: ${C.disruptionType||'Delay/cancellation'} | ${C.value}
-JURISDICTION: ${C.jurisdiction||'england-wales'}
-CLASSIFICATION: ${C.classification||'DEFEND'}
-TRIAGE NOTE: ${C.triageNote||'Extraordinary circumstances defence.'}
-
-POINTS OF CLAIM:
-${(C.points||[]).map(function(p,i){return 'Point '+(i+1)+': '+p.claim+' ['+p.evidenceStatus+'] — '+p.evidenceDoc;}).join('\n')}
-
-BASE TEMPLATE:
-${baseDoc.slice(0,3000)}`}]
+        system:'You are a senior aviation solicitor at an airline\'s in-house legal team. Draft professional, legally accurate documents in response to EC261 flight delay claims. Use precise legal language appropriate for England and Wales civil litigation. Address each point of claim specifically. Do not include markdown formatting or backticks. Return only the document text.',
+        messages:[{role:'user',content:'Draft a '+(docNames[id]||id)+' for the following aviation compensation defence matter. Return only the final document text. No markdown, no backticks, no preamble. Formal legal language only.\n\nCASE: '+C.name+' v. [Airline] | Ref: '+C.ref+'\nSOLICITOR: '+C.sol+'\nFLIGHT: '+C.flightNum+' — '+C.dep+' to '+C.arr+' | '+C.flightDate+'\nDISRUPTION: '+(C.disruptionType||'Delay/cancellation')+' | '+C.value+'\nJURISDICTION: '+(C.jurisdiction||'england-wales')+'\nCLASSIFICATION: '+(C.classification||'DEFEND')+'\nTRIAGE NOTE: '+(C.triageNote||'Extraordinary circumstances defence.')+'\n\nPOINTS OF CLAIM:\n'+((C.points||[]).map(function(p,i){return 'Point '+(i+1)+': '+p.claim+' ['+p.evidenceStatus+'] — '+p.evidenceDoc;}).join('\n'))+'\n\nBASE TEMPLATE:\n'+baseDoc.slice(0,3000)+solicitorInputs}]
       })
     });
-    const data = await resp.json();
-    const aiText = data.content?.find(b=>b.type==='text')?.text||'';
-    docStates[id].edits = aiText.trim()||baseDoc;
-  } catch(e) {
-    docStates[id].edits = baseDoc;
+    var data=await resp.json();
+    var aiText=(data.content&&data.content.find(function(b){return b.type==='text';})||{}).text||'';
+    docStates[id].edits=aiText.trim()||baseDoc;
+  }catch(e){
+    docStates[id].edits=baseDoc;
   }
 
-  docStates[id].generated = true;
+  docStates[id].generated=true;
   addVersion(id,'AI draft generated');
-  docStates[id].status = 'draft';
+  docStates[id].status='draft';
   renderWorkspace();
   updateDocBtn(id,'draft');
 }
