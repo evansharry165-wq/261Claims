@@ -174,6 +174,15 @@ html.embed-mode .page{height:100%!important}
 </div>
 
 <script>
+var CASE_LAW_INDEX = [
+  {id:'wallentin', title:'Wallentin-Hermann v Alitalia', jurisdiction:['all'], disruptionType:['all'], anchor:'#case-law'},
+  {id:'sturgeon', title:'Sturgeon v Condor', jurisdiction:['all'], disruptionType:['all'], anchor:'#case-law'},
+  {id:'peskova', title:'Pešková v Travel Service', jurisdiction:['all'], disruptionType:['Birdstrike','Technical Issues'], anchor:'#case-law'},
+  {id:'lipton', title:'Lipton v BA Cityflyer [2024] UKSC 24', jurisdiction:['england-wales'], disruptionType:['all'], anchor:'#case-law'},
+  {id:'huzar', title:'Huzar v Jet2 [2014]', jurisdiction:['england-wales'], disruptionType:['Technical Issues'], anchor:'#case-law'}
+];
+window.CASE_LAW_INDEX = CASE_LAW_INDEX;
+
 var activeSection = 'regulation';
 
 function showSection(s, ev){
@@ -461,7 +470,8 @@ function render(){
 (function initEducation(){
   var params=new URLSearchParams(window.location.search);
   var section=params.get('section');
-  if(section&&SECTIONS[section])activeSection=section;
+  if(window.location.hash==='#case-law')activeSection='caselaw';
+  else if(section&&SECTIONS[section])activeSection=section;
   render();
   if(section&&SECTIONS[section]){
     document.querySelectorAll('.sb-item').forEach(function(el){el.classList.remove('active');});

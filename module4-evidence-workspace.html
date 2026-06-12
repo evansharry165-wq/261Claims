@@ -137,6 +137,8 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 .ev-info{flex:1;min-width:0}
 .ev-name{font-size:12px;font-weight:500;color:var(--text);margin-bottom:2px;display:flex;align-items:center;gap:5px;flex-wrap:wrap}
 .ev-why{font-size:11px;color:var(--text2);line-height:1.5;margin-bottom:4px}
+.ev-flash-tag{font-size:10px;padding:2px 8px;border-radius:10px;background:#EEF2FF;color:#4338CA;border:1px solid #C7D2FE;text-decoration:none;display:inline-flex;align-items:center;gap:4px;margin-top:4px;margin-right:4px}
+.ev-flash-tag:hover{background:#E0E7FF}
 .ev-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .ev-source{font-size:10px;color:var(--text3);display:flex;align-items:center;gap:3px}
 .ev-source a{color:var(--blue-text);text-decoration:none}
@@ -359,8 +361,36 @@ var C={
   flightNum: _i.flightNum || 'HC 1184',
   disruptionType: _i.disruptionType || '',
   classification: _i.classification || '',
+  jurisdiction: _jKey,
   user:  'S. Booth'
 };
+
+var CASE_LAW_INDEX = [
+  {id:'wallentin', title:'Wallentin-Hermann v Alitalia', jurisdiction:['all'], disruptionType:['all'], anchor:'#case-law'},
+  {id:'sturgeon', title:'Sturgeon v Condor', jurisdiction:['all'], disruptionType:['all'], anchor:'#case-law'},
+  {id:'peskova', title:'Pešková v Travel Service', jurisdiction:['all'], disruptionType:['Birdstrike','Technical Issues'], anchor:'#case-law'},
+  {id:'lipton', title:'Lipton v BA Cityflyer [2024] UKSC 24', jurisdiction:['england-wales'], disruptionType:['all'], anchor:'#case-law'},
+  {id:'huzar', title:'Huzar v Jet2 [2014]', jurisdiction:['england-wales'], disruptionType:['Technical Issues'], anchor:'#case-law'}
+];
+window.CASE_LAW_INDEX = CASE_LAW_INDEX;
+
+function getCaseLawMatches(jurisdiction, disruptionType){
+  if(!disruptionType)return [];
+  var jur=jurisdiction||'england-wales';
+  return CASE_LAW_INDEX.filter(function(c){
+    var jurOk=c.jurisdiction.indexOf('all')>=0||c.jurisdiction.indexOf(jur)>=0;
+    var dtOk=c.disruptionType.indexOf('all')>=0||c.disruptionType.indexOf(disruptionType)>=0;
+    return jurOk&&dtOk;
+  }).sort(function(a,b){
+    function score(c){
+      var s=0;
+      if(c.jurisdiction.indexOf('all')<0)s+=10;
+      if(c.disruptionType.indexOf('all')<0)s+=5;
+      return s;
+    }
+    return score(b)-score(a);
+  }).slice(0,2);
+}
 
 /* ── Pre-fill from case ── */
 var fm=C.flight.match(/([A-Z]{2,3}\s?\d{3,4})/i);
@@ -871,12 +901,17 @@ function renderMain(){
       if(item.components&&item.components.length){
         compRow='<div style="padding:0 12px 8px 29px;font-size:10px;color:var(--text3);line-height:1.6">'+item.components.map(function(c){return '<span style="display:inline-block;background:var(--surface3);border-radius:10px;padding:2px 7px;margin:2px 4px 2px 0">'+c+'</span>';}).join('')+'</div>';
       }
+      var flashTags=getCaseLawMatches(C.jurisdiction,primaryType).map(function(match){
+        return '<a href="education.html'+match.anchor+'" target="_blank" class="ev-flash-tag"><i class="ti ti-gavel"></i> '+match.title+'</a>';
+      }).join('');
+      var flashRow=flashTags?'<div class="ev-flash-tags">'+flashTags+'</div>':'';
       return '<div class="ev-item'+(isUp?' ev-uploaded':(item.auto?' ev-api':''))+'">'
         +'<div class="ev-row">'
         +'<div class="ev-dot '+dotCls+'"></div>'
         +'<div class="ev-info">'
         +'<div class="ev-name">'+item.name+tierTag+upTag+'</div>'
         +'<div class="ev-why">'+item.why+'</div>'
+        +flashRow
         +'<div class="ev-meta"><div class="ev-source"><i class="ti ti-database" style="font-size:10px"></i>'+srcHtml+'</div>'+apiPill+confPill+'</div>'
         +'</div>'
         +'<div class="ev-actions">'+actionBtn+'</div>'
