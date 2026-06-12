@@ -1211,10 +1211,24 @@ async function generateDoc(id){
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
-        model:'claude-sonnet-4-20250514',
+        model:'claude-sonnet-4-6',
         max_tokens:2000,
         system:`You are a senior aviation solicitor at an airline's in-house legal team. Draft professional, legally accurate documents in response to EC261 flight delay claims. Use precise legal language appropriate for England and Wales civil litigation. Address each point of claim specifically. Do not include markdown formatting or backticks. Return only the document text.`,
-        messages:[{role:'user',content:`Draft a ${docNames[id]||id} for this case. Use the base template provided and enhance the legal arguments based on the case details.\n\nCase: ${C.name} v. [Airline]\nRef: ${C.ref}\nFlight: ${C.flightNum} ${C.dep} to ${C.arr}, ${C.flightDate}\nDisruption: Diverted to ${C.diverted} due to weather\nDelay: ${C.delay}\nClaim value: ${C.value}\nAssigned to: ${C.assignedTo}\n\nBase template:\n${baseDoc.slice(0,3000)}`}]
+        messages:[{role:'user',content:`Draft a ${docNames[id]||id} for the following aviation compensation defence matter. Return only the final document text. No markdown, no backticks, no preamble. Formal legal language only.
+
+CASE: ${C.name} v. [Airline] | Ref: ${C.ref}
+SOLICITOR: ${C.sol}
+FLIGHT: ${C.flightNum} — ${C.dep} to ${C.arr} | ${C.flightDate}
+DISRUPTION: ${C.disruptionType||'Delay/cancellation'} | ${C.value}
+JURISDICTION: ${C.jurisdiction||'england-wales'}
+CLASSIFICATION: ${C.classification||'DEFEND'}
+TRIAGE NOTE: ${C.triageNote||'Extraordinary circumstances defence.'}
+
+POINTS OF CLAIM:
+${(C.points||[]).map(function(p,i){return 'Point '+(i+1)+': '+p.claim+' ['+p.evidenceStatus+'] — '+p.evidenceDoc;}).join('\n')}
+
+BASE TEMPLATE:
+${baseDoc.slice(0,3000)}`}]
       })
     });
     const data = await resp.json();
