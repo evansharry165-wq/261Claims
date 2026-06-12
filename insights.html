@@ -125,9 +125,9 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 <body>
 <script src="shared_data.js"></script>
 <script src="shared_theme.js"></script>
+<script src="case_helpers.js"></script>
 <script src="case_filing.js"></script>
 <script src="team_helpers.js"></script>
-<script src="case_helpers.js"></script>
 <script src="intake_template.js"></script>
 <script src="insights_data.js"></script>
 
@@ -275,7 +275,12 @@ function formatExposure(amount,currency){
 
 function computeCorrelations(cases){
   var cards=[];
-  var delayCases=cases.filter(function(c){return /delay/i.test(c.disruptionType||'');});
+  function isDelayLikeCase(c){
+    var hay=((c.disruptionType||'')+' '+(c.type||'')).toLowerCase();
+    if(/cancellation|annulation|annulaci|denied boarding|downgrade/.test(hay))return false;
+    return /delay|diversion|retard|retraso|atc|weather|atfm|ec261|ce 261|uk261/.test(hay);
+  }
+  var delayCases=cases.filter(isDelayLikeCase);
   if(delayCases.length){
     var defendPct=Math.round(100*delayCases.filter(function(c){return c.classification==='DEFEND';}).length/delayCases.length);
     if(defendPct>50){

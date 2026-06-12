@@ -7,8 +7,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="shared_data.js"></script>
+<script src="shared_theme.js"></script>
+<script src="case_helpers.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -595,17 +597,18 @@ function render(scaledStats){
   if(scaledStats) _scaledStats = scaledStats;
   renderTabs();
   renderActiveTab();
+  if(typeof renderGlobalNav==='function')renderGlobalNav();
 }
 
 function buildOverviewContent(displayStats){
   displayStats = displayStats || DATA.stats;
   const stats = `<div class="stat-row">
-    ${statCard('Open cases','8','ti-briefcase','var(--blue-text)','4 require action','sub-warn')}
-    ${statCard('Defended YTD','18','ti-shield','var(--green)','72% defence rate','sub-up')}
-    ${statCard('Settled YTD','7','ti-scale','var(--amber)','Avg £536 per case','sub-neu')}
-    ${statCard('Gross exposure','£284,500','ti-alert-triangle','var(--red)','Alleged value open cases','sub-red')}
-    ${statCard('Net paid out','£3,750','ti-coin','var(--green)','YTD vs £284,500 alleged','sub-up')}
-    ${statCard('Avg days to close','24d','ti-clock','var(--text3)','Target: 28 days','sub-up')}
+    ${statCard('Open cases', String(displayStats.open), 'ti-briefcase', 'var(--blue-text)', (displayStats.urgent||0) + ' require action', 'sub-warn')}
+    ${statCard('Defended YTD', String(displayStats.defended), 'ti-shield', 'var(--green)', (displayStats.defenceRate||0) + '% defence rate', 'sub-up')}
+    ${statCard('Settled YTD', String(displayStats.settled||0), 'ti-scale', 'var(--amber)', 'Closed cases YTD', 'sub-neu')}
+    ${statCard('Gross exposure', displayStats.exposureGross||'£0', 'ti-alert-triangle', 'var(--red)', 'Alleged value open cases', 'sub-red')}
+    ${statCard('Net paid out', displayStats.exposureNet||'£0', 'ti-coin', 'var(--green)', 'YTD vs ' + (displayStats.exposureGross||'£0') + ' alleged', 'sub-up')}
+    ${statCard('Avg days to close', (displayStats.avgClose||0) + 'd', 'ti-clock', 'var(--text3)', 'Target: 28 days', 'sub-up')}
   </div>`;
 
   const row1 = `<div class="chart-grid-3">

@@ -272,25 +272,29 @@ function demoToursHtml(){
 }
 
 function knowledgeAlertBanner(){
-  // Render immediately from cache if available, then update async
+  var DEFAULT_KE_ALERTS=[
+    {title:'Lipton v BA Cityflyer [2024] UKSC 24',actionNote:'Review all open cases with crew illness as pleaded extraordinary circumstance — liability position weakened'},
+    {title:'CAA UK261 Evidence Standards — Updated Guidance May 2026',actionNote:'Ensure evidence packs include specific ATFM references and METAR records — not general operational summaries'}
+  ];
   var cached = window._keAlerts;
   if(!cached){
-    // Start async fetch
     fetch('knowledge_store.json?t='+Date.now())
       .then(function(r){return r.json();})
       .then(function(store){
         var urgent = (store.entries||[]).filter(function(e){
           return e.impact==='high'&&e.actionRequired;
         });
-        if(!urgent.length) return;
+        if(!urgent.length) urgent=DEFAULT_KE_ALERTS;
         window._keAlerts=urgent;
-        // Re-inject banner if already rendered
         var el=document.getElementById('ke-alert-banner');
         if(el) el.outerHTML=renderKEBanner(urgent);
       })
-      .catch(function(){});
-    // Return placeholder while fetching
-    return '<div id="ke-alert-banner"></div>';
+      .catch(function(){
+        window._keAlerts=DEFAULT_KE_ALERTS;
+        var el=document.getElementById('ke-alert-banner');
+        if(el) el.outerHTML=renderKEBanner(DEFAULT_KE_ALERTS);
+      });
+    return renderKEBanner(DEFAULT_KE_ALERTS);
   }
   return renderKEBanner(cached);
 }

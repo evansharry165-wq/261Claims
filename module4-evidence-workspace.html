@@ -359,11 +359,22 @@ var C={
   date:  _i.date      ||'22 May 2026',
   flightDate: _i.flightDate || '14 March 2026',
   flightNum: _i.flightNum || 'HC 1184',
-  disruptionType: _i.disruptionType || '',
-  classification: _i.classification || '',
+  disruptionType: _i.disruptionType || 'Weather',
+  classification: _i.classification || 'ESCALATE',
   jurisdiction: _jKey,
+  triageNote: _i.triageNote || 'ESCALATE — Montreal Convention consequential loss (£38,250) is the primary exposure. Challenge causation, foreseeability and mitigation. EC261 extraordinary circumstances defence strong on weather diversion.',
+  points: _i.points || [],
   user:  'S. Booth'
 };
+if(!C.points.length&&C.ref==='AC-2026-0089'){
+  C.points=[
+    {n:1,claim:'Delay — Art 7(1)(a)',evidenceStatus:'green',evidenceDoc:'Operational delay records system confirmed'},
+    {n:2,claim:'Extraordinary circumstances — weather',evidenceStatus:'amber',evidenceDoc:'METAR/SIGMET pending'},
+    {n:3,claim:'Article 9 — duty of care',evidenceStatus:'red',evidenceDoc:'Valencia ground records outstanding'},
+    {n:4,claim:'Consequential loss — £38,250 (Montreal Convention)',evidenceStatus:'red',evidenceDoc:'Request third-party contract documentation; challenge causation and mitigation; obtain independent verification — Montreal Convention does not provide recovery of speculative commercial losses'},
+    {n:5,claim:'Travel & subsistence — £141.80',evidenceStatus:'amber',evidenceDoc:'Receipts pending'}
+  ];
+}
 
 // Knowledge store — seeded from static index, upgraded from knowledge_store.json on load
 var CASE_LAW_INDEX = [
@@ -488,7 +499,7 @@ var LIB={
   flight_plan:   {name:'Flight Planning Documentation',           tier:'W', why:'Standard flight planning reference material and procedures documentation.',                                                                                                                                     src:'Evidence Information — 16. Flight Planning', link:null, auto:false, api:null},
   tech_docs:     {name:'Technical Reference Documents',           tier:'W', why:'Technical manuals and reference documents supporting engineering or maintenance-related defence arguments.',                                                                                                     src:'Evidence Information — 17. Tech',           link:null, auto:false, api:null},
   overnight_docs:{name:'Overnight Delay Documentation',           tier:'W', why:'Standard documentation and precedents for overnight delay claims. Relevant where crew rest requirements caused extended delay.',                                                                                 src:'Evidence Information — 7. Overnight Delays', link:null, auto:false, api:null},
-  montreal_conv: {name:'Montreal Convention — Consequential Loss Evidence',  tier:'K', why:'Required where claimant alleges consequential loss under Art 12 EC261/Montreal Convention Art 19. Obtain: third-party contract or agreement evidencing alleged loss; correspondence showing loss was foreseeable; evidence claimant failed to mitigate; independent verification of alleged commercial loss. Deny liability — Montreal Convention does not provide for recovery of speculative commercial losses.', src:'Internal legal file + claimant disclosure', link:null, auto:false, api:null},
+  montreal_conv: {name:'Montreal Convention — Consequential Loss Evidence',  tier:'W', why:'Required where claimant alleges consequential loss under Art 12 EC261/Montreal Convention Art 19. Obtain: third-party contract or agreement evidencing alleged loss; correspondence showing loss was foreseeable; evidence claimant failed to mitigate; independent verification of alleged commercial loss. Deny liability — Montreal Convention does not provide for recovery of speculative commercial losses.', src:'Internal legal file + claimant disclosure', link:null, auto:false, api:null},
   welfare_docs:  {name:'Welfare & Passenger Care Documentation',  tier:'W', why:'Documentation relating to passenger welfare obligations. Relevant to any Article 9 or passenger welfare allegation.',                                                                                          src:'Evidence Information — 9. Welfare',         link:null, auto:false, api:null},
 };
 
@@ -726,7 +737,7 @@ function getVerdict(){
 }
 
 /* ── Render ── */
-function render(){try{renderMain();}catch(e){console.error(e);}renderAudit();}
+function render(){try{renderMain();}catch(e){/* render fallback */}renderAudit();if(typeof renderGlobalNav==='function')renderGlobalNav();}
 
 function renderMain(){
   var m=document.getElementById('main');
@@ -935,6 +946,13 @@ function renderMain(){
         var urgentIcon=match.actionRequired?'<i class="ti ti-alert-triangle" style="color:#EF9F27"></i> ':'';
         return '<a href="'+match.anchor+'" target="_blank" class="ev-flash-tag" style="'+tagStyle+'">'+urgentIcon+'<i class="ti ti-gavel"></i> '+match.title+'</a>';
       }).join('');
+      if(id==='montreal_conv'){
+        flashTags+='<a href="education.html#case-law" target="_blank" class="ev-flash-tag" style="background:#FEF3C7;color:#92400E;border-color:#FDE68A"><i class="ti ti-alert-triangle" style="color:#EF9F27"></i><i class="ti ti-gavel"></i> Montreal Convention — challenge causation</a>';
+      }else if(!flashTags&&item.tier==='K'){
+        flashTags=getCaseLawMatches(C.jurisdiction,primaryType).slice(0,1).map(function(match){
+          return '<a href="'+match.anchor+'" target="_blank" class="ev-flash-tag"><i class="ti ti-gavel"></i> '+match.title+'</a>';
+        }).join('');
+      }
       var flashRow=flashTags?'<div class="ev-flash-tags">'+flashTags+'</div>':'';
       return '<div class="ev-item'+(isUp?' ev-uploaded':(item.auto?' ev-api':''))+'">'
         +'<div class="ev-row">'
@@ -1174,6 +1192,9 @@ render();
           lang:caseData.lang||'en',
           disruptionType:caseData.disruptionType||'',
           classification:caseData.classification||'',
+          triageNote:caseData.triageNote||'',
+          cprDaysLeft:caseData.cprDaysLeft!=null?caseData.cprDaysLeft:undefined,
+          stage:caseData.stage||'',
           evidencePct:caseData.evidencePct||0,
           loaStatus:caseData.loaStatus||'',
           assignedTo:USERS[caseData.assignedTo]?USERS[caseData.assignedTo].name:caseData.assignedTo

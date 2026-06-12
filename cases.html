@@ -52,6 +52,9 @@ tbody tr:hover td{background:var(--surface2);cursor:pointer}
 .dp-urgent{background:var(--red-faint);color:var(--red)}
 .dp-warn{background:var(--amber-faint);color:var(--amber)}
 .dp-ok{background:var(--green-faint);color:var(--green)}
+.cl-escalate{font-size:10px;font-weight:600;padding:2px 7px;border-radius:20px;background:var(--red-faint);color:var(--red);margin-left:6px;vertical-align:middle}
+tr.row-urgent td{background:linear-gradient(90deg,rgba(252,240,239,0.85),transparent)}
+tr.row-urgent .td-name{font-weight:600;color:var(--text)}
 .stage-pill{font-size:10px;font-weight:500;padding:2px 7px;border-radius:20px}
 .empty{text-align:center;padding:60px;color:var(--text3)}
 .user-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.3);z-index:500;justify-content:flex-end;padding:52px 20px 0}
@@ -189,9 +192,11 @@ function renderCases(){
     var urg=daysUrgency(c.cprDaysLeft);
     var sc=STAGE_COLORS[c.stage]||STAGE_COLORS.resolve;
     var sl=t('stage_'+c.stage)||c.stage;
-    return '<tr data-ref="'+escapeHtml(c.ref)+'" data-tab="'+escapeHtml(action.tab)+'">'
+    var escBadge=c.classification==='ESCALATE'?'<span class="cl-escalate">ESCALATE</span>':'';
+    var rowCls=(c.ref==='AC-2026-0089'||urg==='urgent')?'row-urgent':'';
+    return '<tr data-ref="'+escapeHtml(c.ref)+'" data-tab="'+escapeHtml(action.tab)+'"'+(rowCls?' class="'+rowCls+'"':'')+'>'
       +'<td><div class="td-ref">'+escapeHtml(c.ref)+'</div></td>'
-      +'<td><div class="td-name">'+escapeHtml(c.claimant)+'</div><div class="td-sub">'+escapeHtml(c.solicitor)+'</div></td>'
+      +'<td><div class="td-name">'+escapeHtml(c.claimant)+escBadge+'</div><div class="td-sub">'+escapeHtml(c.solicitor)+'</div></td>'
       +'<td><div class="td-sub">'+escapeHtml(c.flightNum)+'</div><div class="td-sub">'+escapeHtml(c.dep)+' → '+escapeHtml(c.arr)+'</div></td>'
       +'<td><span class="stage-pill" style="background:'+sc.bg+';color:'+sc.col+'">'+escapeHtml(sl)+'</span></td>'
       +'<td><div class="td-action">'+escapeHtml(action.text)+'</div></td>'

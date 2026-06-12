@@ -95,10 +95,20 @@
 
     if (cases['AC-2026-0089']) {
       var h = cases['AC-2026-0089'];
+      h.classification = 'ESCALATE';
+      h.cprDaysLeft = 3;
+      h.triageNote = 'ESCALATE — Montreal Convention consequential loss (£38,250) is the primary exposure. Challenge causation, foreseeability and mitigation. EC261 extraordinary circumstances defence strong on weather diversion.';
+      h.points = [
+        { n: 1, claim: 'Delay — Art 7(1)(a)', evidenceStatus: 'green', evidenceDoc: 'Operational delay records system confirmed' },
+        { n: 2, claim: 'Extraordinary circumstances — weather', evidenceStatus: 'amber', evidenceDoc: 'METAR/SIGMET pending' },
+        { n: 3, claim: 'Article 9 — duty of care', evidenceStatus: 'red', evidenceDoc: 'Valencia ground records outstanding' },
+        { n: 4, claim: 'Consequential loss — £38,250 (Montreal Convention)', evidenceStatus: 'red', evidenceDoc: 'Request third-party contract documentation; challenge causation and mitigation; obtain independent verification — Montreal Convention does not provide recovery of speculative commercial losses' },
+        { n: 5, claim: 'Travel & subsistence — £141.80', evidenceStatus: 'amber', evidenceDoc: 'Receipts pending' }
+      ];
       h.documents = [
         mkDoc('cf-h-001', 'intake', 'Letter of Claim — Hartley', {
           filename: 'Hartley_LOC_22May2026.pdf',
-          content: 'LETTER OF CLAIM\n\nDaniel Hartley v. [Airline]\nFlight HC 1184 LTN–BCN, 14 March 2026\n\nClaim for delay, diversion to Valencia, consequential loss £38,250 and expenses £141.80 under EC Regulation 261/2004.',
+          content: 'LETTER OF CLAIM\n\nDaniel Hartley v. [Airline]\nFlight HC 1184 LTN–BCN, 14 March 2026\n\nClaim for delay, diversion to Valencia, consequential loss £38,250 under the Montreal Convention (causation and mitigation to be challenged) and expenses £141.80 under EC Regulation 261/2004.',
           status: 'on_file',
           source: 'intake',
           uploadedBy: 'SB',

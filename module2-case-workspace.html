@@ -316,6 +316,8 @@ function t(key){var d=I18N[getUILang()]||I18N.en;return d[key]||I18N.en[key]||ke
         date:stored.locDate||stored.date,framework:'EC Regulation 261/2004',
         points:stored.points||[],jurisdiction:stored.jurisdiction||'england-wales',
         lang:stored.lang||'en',disruptionType:stored.disruptionType||'',
+        classification:stored.classification||'',stage:stored.stage||'',
+        cprDaysLeft:stored.cprDaysLeft!=null?stored.cprDaysLeft:undefined,
         evidencePct:stored.evidencePct||0,loaStatus:stored.loaStatus||'',
         triageNote:stored.triageNote||'',
         assignedTo:stored.assignedTo||(stored.assignedTo_name||'')
@@ -334,6 +336,8 @@ function t(key){var d=I18N[getUILang()]||I18N.en;return d[key]||I18N.en[key]||ke
       date:cd.locDate,framework:'EC Regulation 261/2004',
       points:cd.points||[],jurisdiction:cd.jurisdiction||'england-wales',
       lang:cd.lang||'en',disruptionType:cd.disruptionType||'',
+      classification:cd.classification||'',stage:cd.stage||'',
+      cprDaysLeft:cd.cprDaysLeft!=null?cd.cprDaysLeft:undefined,
       evidencePct:cd.evidencePct||0,loaStatus:cd.loaStatus||'',
       triageNote:cd.triageNote||'',assignedTo:u
     };
@@ -395,7 +399,7 @@ function saveTriageNote(){var el=document.getElementById('triage-note');C.triage
 function storeCase(stage){
   var full=getCase(C.ref)||{};
   var updated=Object.assign({},full,{ref:C.ref,claimant:C.name,solicitor:C.sol,flight:C.flight,flightNum:C.flightNum,dep:C.dep,arr:C.arr,flightDate:C.flightDate,value:C.value,type:C.type,locDate:C.date,stage:stage||full.stage||'triage',jurisdiction:C.jurisdiction,lang:C.lang||J.lang,disruptionType:C.disruptionType,classification:C.classification,triageNote:C.triageNote,points:C.points,assignedTo:full.assignedTo||C.assignedTo||getActiveUser(),cprDaysLeft:full.cprDaysLeft||21,evidencePct:full.evidencePct||0,loaStatus:full.loaStatus||'',activity:(full.activity||[]).concat([{text:'Triage completed — '+(stage||'triage'),time:'Just now',type:'stage'}])});
-  try{sessionStorage.setItem('261c_case',JSON.stringify(updated));sessionStorage.setItem('aeroCaseData',JSON.stringify({ref:updated.ref,claimant:updated.claimant,solicitor:updated.solicitor,flight:updated.flight,flightNum:updated.flightNum,dep:updated.dep,arr:updated.arr,flightDate:updated.flightDate,value:updated.value,type:updated.type,date:updated.locDate,framework:'EC Regulation 261/2004',points:updated.points,jurisdiction:updated.jurisdiction,lang:updated.lang,disruptionType:updated.disruptionType,evidencePct:updated.evidencePct,loaStatus:updated.loaStatus,triageNote:updated.triageNote,assignedTo:(USERS[updated.assignedTo]&&USERS[updated.assignedTo].name)||updated.assignedTo}));}catch(e){}
+  try{sessionStorage.setItem('261c_case',JSON.stringify(updated));sessionStorage.setItem('aeroCaseData',JSON.stringify({ref:updated.ref,claimant:updated.claimant,solicitor:updated.solicitor,flight:updated.flight,flightNum:updated.flightNum,dep:updated.dep,arr:updated.arr,flightDate:updated.flightDate,value:updated.value,type:updated.type,date:updated.locDate,framework:'EC Regulation 261/2004',points:updated.points,jurisdiction:updated.jurisdiction,lang:updated.lang,disruptionType:updated.disruptionType,classification:updated.classification||'',stage:updated.stage||'',cprDaysLeft:updated.cprDaysLeft!=null?updated.cprDaysLeft:undefined,evidencePct:updated.evidencePct,loaStatus:updated.loaStatus,triageNote:updated.triageNote,assignedTo:(USERS[updated.assignedTo]&&USERS[updated.assignedTo].name)||updated.assignedTo}));}catch(e){}
 }
 function advanceToCPR(){if(!allDone())return;storeCase('cpr');if(typeof shellGo==='function'&&shellGo('deadlines','Triage completed — proceeding to CPR'))return;window.location.href='module3-cpr-workspace.html?ref='+encodeURIComponent(C.ref);}
 function openEvidence(){storeCase('evidence');if(typeof shellGo==='function'&&shellGo('evidence','Opened evidence from triage'))return;window.location.href='module4-evidence-workspace.html?ref='+encodeURIComponent(C.ref);}

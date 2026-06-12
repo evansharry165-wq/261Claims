@@ -295,6 +295,8 @@ function t(key){var d=I18N[getUILang()]||I18N.en;return d[key]||I18N.en[key]||ke
         date:stored.locDate||stored.date,framework:'EC Regulation 261/2004',
         points:stored.points||[],jurisdiction:stored.jurisdiction||'england-wales',
         lang:stored.lang||'en',disruptionType:stored.disruptionType||'',
+        classification:stored.classification||'',stage:stored.stage||'',
+        cprDaysLeft:stored.cprDaysLeft!=null?stored.cprDaysLeft:undefined,
         evidencePct:stored.evidencePct||0,loaStatus:stored.loaStatus||'',
         triageNote:stored.triageNote||'',
         assignedTo:stored.assignedTo||(stored.assignedTo_name||'')
@@ -313,6 +315,8 @@ function t(key){var d=I18N[getUILang()]||I18N.en;return d[key]||I18N.en[key]||ke
       date:cd.locDate,framework:'EC Regulation 261/2004',
       points:cd.points||[],jurisdiction:cd.jurisdiction||'england-wales',
       lang:cd.lang||'en',disruptionType:cd.disruptionType||'',
+      classification:cd.classification||'',stage:cd.stage||'',
+      cprDaysLeft:cd.cprDaysLeft!=null?cd.cprDaysLeft:undefined,
       evidencePct:cd.evidencePct||0,loaStatus:cd.loaStatus||'',
       triageNote:cd.triageNote||'',assignedTo:u
     };
@@ -425,11 +429,22 @@ var C={
   assignedTo:_i.assignedTo||'S. Booth',
   user:'S. Booth',
   disruptionType:_i.disruptionType||'Weather',
-  classification:_i.classification||'DEFEND',
+  classification:_i.classification||'ESCALATE',
   jurisdiction:_i.jurisdiction||'england-wales',
-  triageNote:_i.triageNote||'',
-  evidencePct:_i.evidencePct
+  triageNote:_i.triageNote||'ESCALATE — Montreal Convention consequential loss (£38,250) is the primary exposure. Challenge causation, foreseeability and mitigation. EC261 extraordinary circumstances defence strong on weather diversion.',
+  evidencePct:_i.evidencePct,
+  cprDaysLeft:_i.cprDaysLeft!=null?_i.cprDaysLeft:3,
+  stage:_i.stage||'evidence'
 };
+if(!C.points.length&&C.ref==='AC-2026-0089'){
+  C.points=[
+    {n:1,claim:'Delay — Art 7(1)(a)',evidenceStatus:'green',evidenceDoc:'Operational delay records system confirmed'},
+    {n:2,claim:'Extraordinary circumstances — weather',evidenceStatus:'amber',evidenceDoc:'METAR/SIGMET pending'},
+    {n:3,claim:'Article 9 — duty of care',evidenceStatus:'red',evidenceDoc:'Valencia ground records outstanding'},
+    {n:4,claim:'Consequential loss — £38,250 (Montreal Convention)',evidenceStatus:'red',evidenceDoc:'Request third-party contract documentation; challenge causation and mitigation; obtain independent verification — Montreal Convention does not provide recovery of speculative commercial losses'},
+    {n:5,claim:'Travel & subsistence — £141.80',evidenceStatus:'amber',evidenceDoc:'Receipts pending'}
+  ];
+}
 
 /* ── Document state ── */
 var docStates={

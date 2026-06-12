@@ -128,9 +128,10 @@ html.embed-mode .page{height:100%!important}
 </style>
 </head>
 <body>
-<script src="insights_embed.js"></script>
 <script src="shared_data.js"></script>
 <script src="shared_theme.js"></script>
+<script src="case_helpers.js"></script>
+<script src="insights_embed.js"></script>
 
 <nav class="global-nav">
   <a href="index.html" class="gn-logo">
@@ -546,6 +547,7 @@ function render(){
   document.getElementById('main').innerHTML =
     '<div class="pg-hdr"><div class="pg-title">'+s.title+'</div><div class="pg-sub">'+s.sub+'</div></div>'
     + s.content();
+  if(typeof renderGlobalNav==='function')renderGlobalNav();
 }
 
 
