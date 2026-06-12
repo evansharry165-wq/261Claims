@@ -1,0 +1,267 @@
+{
+  "reportId": "LIT-REPORT-2026-06",
+  "reportMonth": "June 2026",
+  "generatedAt": "2026-06-12T12:00:00Z",
+  "generatedBy": "261Claims Platform \u2014 auto-generated",
+  "period": {
+    "from": "2026-06-01",
+    "to": "2026-06-30"
+  },
+  "executive_summary": {
+    "totalActive": 114,
+    "newThisMonth": 103,
+    "closedThisMonth": 4,
+    "totalExposureGross": 960180,
+    "totalExposureNet": 4250,
+    "defendRate": 29,
+    "escalateCount": 13,
+    "urgentCPR": 13,
+    "savedVsSettled": 187500
+  },
+  "by_jurisdiction": [
+    {
+      "name": "England & Wales",
+      "code": "EW",
+      "active": 70,
+      "new": 52,
+      "closed": 3,
+      "avgDaysOpen": 18,
+      "defendRate": 31
+    },
+    {
+      "name": "France",
+      "code": "FR",
+      "active": 19,
+      "new": 15,
+      "closed": 1,
+      "avgDaysOpen": 22,
+      "defendRate": 26
+    },
+    {
+      "name": "Spain",
+      "code": "ES",
+      "active": 19,
+      "new": 15,
+      "closed": 0,
+      "avgDaysOpen": 19,
+      "defendRate": 26
+    },
+    {
+      "name": "EU (Other)",
+      "code": "EU",
+      "active": 6,
+      "new": 21,
+      "closed": 0,
+      "avgDaysOpen": 12,
+      "defendRate": 33
+    }
+  ],
+  "by_disruption_type": [
+    {
+      "type": "Delay >3hrs",
+      "count": 44,
+      "avgValue": 275,
+      "defendRate": 68,
+      "extraordinaryCirc": 38
+    },
+    {
+      "type": "Cancellation",
+      "count": 35,
+      "avgValue": 310,
+      "defendRate": 54,
+      "extraordinaryCirc": 22
+    },
+    {
+      "type": "Denied Boarding",
+      "count": 15,
+      "avgValue": 400,
+      "defendRate": 20,
+      "extraordinaryCirc": 4
+    },
+    {
+      "type": "Downgrade",
+      "count": 6,
+      "avgValue": 850,
+      "defendRate": 50,
+      "extraordinaryCirc": 2
+    }
+  ],
+  "by_solicitor_firm": [
+    {
+      "firm": "AirHelp EU",
+      "claims": 12,
+      "jurisdiction": "EW/EU",
+      "avgValue": 290,
+      "triage_split": {
+        "DEFEND": 7,
+        "INVESTIGATE": 4,
+        "ESCALATE": 1
+      }
+    },
+    {
+      "firm": "Bott & Co",
+      "claims": 9,
+      "jurisdiction": "EW",
+      "avgValue": 265,
+      "triage_split": {
+        "DEFEND": 5,
+        "INVESTIGATE": 4,
+        "ESCALATE": 0
+      }
+    },
+    {
+      "firm": "FACUA",
+      "claims": 8,
+      "jurisdiction": "ES",
+      "avgValue": 1240,
+      "triage_split": {
+        "DEFEND": 4,
+        "INVESTIGATE": 3,
+        "ESCALATE": 1
+      }
+    },
+    {
+      "firm": "Flightright",
+      "claims": 7,
+      "jurisdiction": "EU",
+      "avgValue": 310,
+      "triage_split": {
+        "DEFEND": 3,
+        "INVESTIGATE": 3,
+        "ESCALATE": 1
+      }
+    },
+    {
+      "firm": "ECC Network",
+      "claims": 7,
+      "jurisdiction": "EW/EU",
+      "avgValue": 275,
+      "triage_split": {
+        "DEFEND": 4,
+        "INVESTIGATE": 2,
+        "ESCALATE": 1
+      }
+    },
+    {
+      "firm": "Other / unrepresented",
+      "claims": 61,
+      "jurisdiction": "Mixed",
+      "avgValue": 890,
+      "triage_split": {
+        "DEFEND": 6,
+        "INVESTIGATE": 44,
+        "ESCALATE": 11
+      }
+    }
+  ],
+  "workload_by_solicitor": [
+    {
+      "name": "Sarah Booth",
+      "id": "SB",
+      "team": "UK Litigation",
+      "active": 18,
+      "urgent": 3,
+      "avgEvidencePct": 42
+    },
+    {
+      "name": "James Patel",
+      "id": "JP",
+      "team": "UK Litigation",
+      "active": 17,
+      "urgent": 4,
+      "avgEvidencePct": 38
+    },
+    {
+      "name": "Kiran Rahman",
+      "id": "KR",
+      "team": "UK Litigation",
+      "active": 18,
+      "urgent": 3,
+      "avgEvidencePct": 35
+    },
+    {
+      "name": "Marie Dupont",
+      "id": "MD",
+      "team": "\u00c9quipe France",
+      "active": 10,
+      "urgent": 2,
+      "avgEvidencePct": 44
+    },
+    {
+      "name": "Pierre Laurent",
+      "id": "PL",
+      "team": "\u00c9quipe France",
+      "active": 9,
+      "urgent": 1,
+      "avgEvidencePct": 51
+    },
+    {
+      "name": "Carlos Garc\u00eda",
+      "id": "CG",
+      "team": "Equipo Espa\u00f1a",
+      "active": 10,
+      "urgent": 1,
+      "avgEvidencePct": 39
+    },
+    {
+      "name": "Isabel Mart\u00edn",
+      "id": "IM",
+      "team": "Equipo Espa\u00f1a",
+      "active": 9,
+      "urgent": 2,
+      "avgEvidencePct": 33
+    }
+  ],
+  "risk_register": [
+    {
+      "ref": "AC-2026-0089",
+      "claimant": "Daniel Hartley",
+      "value": "\u00a339,000+",
+      "issue": "Montreal Convention consequential loss \u2014 \u00a338,250 disputed",
+      "cprDaysLeft": 3,
+      "classification": "ESCALATE",
+      "action": "Senior counsel review \u2014 respond by Friday"
+    },
+    {
+      "ref": "EZY-2026-B0013",
+      "claimant": "Lars O'Brien",
+      "value": "\u20ac8,200",
+      "issue": "Group booking \u2014 5 passengers, Denied Boarding",
+      "cprDaysLeft": 1,
+      "classification": "ESCALATE",
+      "action": "Urgent \u2014 LOA response required today"
+    },
+    {
+      "ref": "EZY-2026-B0047",
+      "claimant": "Yuki Tanaka",
+      "value": "\u00a3204,360",
+      "issue": "High value \u2014 consequential loss alleged, Montreal Convention",
+      "cprDaysLeft": 2,
+      "classification": "ESCALATE",
+      "action": "Immediate escalation \u2014 highest value claim in batch"
+    }
+  ],
+  "key_legal_developments": [
+    {
+      "title": "Lipton v BA Cityflyer [2024] UKSC 24",
+      "impact": "Pilot illness not extraordinary circumstances \u2014 review open crew illness cases"
+    },
+    {
+      "title": "CAA UK261 Evidence Standards (May 2026)",
+      "impact": "Specific ATFM/METAR evidence now required \u2014 general assertions insufficient"
+    },
+    {
+      "title": "AviationADR portal update (Q2 2026)",
+      "impact": "Single merged PDF bundle required for ADR submissions"
+    }
+  ],
+  "financial_summary": {
+    "totalClaimedGross": 960180,
+    "estimatedDefenceCost": 142000,
+    "projectedLiability": 4250,
+    "savingsVsFullSettlement": 955930,
+    "avgCostPerCase": 1246,
+    "highValueThreshold": 10000,
+    "highValueCaseCount": 12
+  }
+}
