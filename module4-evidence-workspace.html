@@ -365,14 +365,43 @@ var C={
   user:  'S. Booth'
 };
 
+// Knowledge store — seeded from static index, upgraded from knowledge_store.json on load
 var CASE_LAW_INDEX = [
-  {id:'wallentin', title:'Wallentin-Hermann v Alitalia', jurisdiction:['all'], disruptionType:['all'], anchor:'#case-law'},
-  {id:'sturgeon', title:'Sturgeon v Condor', jurisdiction:['all'], disruptionType:['all'], anchor:'#case-law'},
-  {id:'peskova', title:'Pešková v Travel Service', jurisdiction:['all'], disruptionType:['Birdstrike','Technical Issues'], anchor:'#case-law'},
-  {id:'lipton', title:'Lipton v BA Cityflyer [2024] UKSC 24', jurisdiction:['england-wales'], disruptionType:['all'], anchor:'#case-law'},
-  {id:'huzar', title:'Huzar v Jet2 [2014]', jurisdiction:['england-wales'], disruptionType:['Technical Issues'], anchor:'#case-law'}
+  {id:'wallentin', title:'Wallentin-Hermann v Alitalia', jurisdiction:['all'], disruptionType:['all'], anchor:'education.html#case-law', impact:'high'},
+  {id:'sturgeon', title:'Sturgeon v Condor', jurisdiction:['all'], disruptionType:['all'], anchor:'education.html#case-law', impact:'high'},
+  {id:'peskova', title:'Pešková v Travel Service', jurisdiction:['all'], disruptionType:['Birdstrike','Technical Issues'], anchor:'education.html#case-law', impact:'medium'},
+  {id:'lipton', title:'Lipton v BA Cityflyer [2024] UKSC 24', jurisdiction:['england-wales'], disruptionType:['all'], anchor:'education.html?section=live-updates', impact:'high'},
+  {id:'huzar', title:'Huzar v Jet2 [2014]', jurisdiction:['england-wales'], disruptionType:['Technical Issues'], anchor:'education.html#case-law', impact:'medium'}
 ];
 window.CASE_LAW_INDEX = CASE_LAW_INDEX;
+
+// Upgrade CASE_LAW_INDEX from live knowledge_store.json
+(function loadKnowledgeStore(){
+  fetch('knowledge_store.json?t='+Date.now())
+    .then(function(r){return r.json();})
+    .then(function(store){
+      if(!store||!store.entries)return;
+      store.entries.forEach(function(entry){
+        if(entry.type!=='judgment'&&entry.type!=='regulatory')return;
+        var existing=CASE_LAW_INDEX.find(function(c){return c.id===entry.id;});
+        if(!existing){
+          CASE_LAW_INDEX.push({
+            id:entry.id,
+            title:entry.title,
+            jurisdiction:entry.jurisdiction||['all'],
+            disruptionType:entry.disruptionTypes||['all'],
+            anchor:'education.html?section=live-updates',
+            impact:entry.impact||'medium',
+            actionRequired:entry.actionRequired||false
+          });
+        }
+      });
+      window.CASE_LAW_INDEX=CASE_LAW_INDEX;
+      // Re-render evidence items if already mounted to pick up new tags
+      if(typeof renderAll==='function')renderAll();
+    })
+    .catch(function(){/* fail silently — static index still works */});
+})();
 
 function getCaseLawMatches(jurisdiction, disruptionType){
   if(!disruptionType)return [];
@@ -902,7 +931,9 @@ function renderMain(){
         compRow='<div style="padding:0 12px 8px 29px;font-size:10px;color:var(--text3);line-height:1.6">'+item.components.map(function(c){return '<span style="display:inline-block;background:var(--surface3);border-radius:10px;padding:2px 7px;margin:2px 4px 2px 0">'+c+'</span>';}).join('')+'</div>';
       }
       var flashTags=getCaseLawMatches(C.jurisdiction,primaryType).map(function(match){
-        return '<a href="education.html'+match.anchor+'" target="_blank" class="ev-flash-tag"><i class="ti ti-gavel"></i> '+match.title+'</a>';
+        var tagStyle=match.actionRequired?'background:#FEF3C7;color:#92400E;border-color:#FDE68A':'';
+        var urgentIcon=match.actionRequired?'<i class="ti ti-alert-triangle" style="color:#EF9F27"></i> ':'';
+        return '<a href="'+match.anchor+'" target="_blank" class="ev-flash-tag" style="'+tagStyle+'">'+urgentIcon+'<i class="ti ti-gavel"></i> '+match.title+'</a>';
       }).join('');
       var flashRow=flashTags?'<div class="ev-flash-tags">'+flashTags+'</div>':'';
       return '<div class="ev-item'+(isUp?' ev-uploaded':(item.auto?' ev-api':''))+'">'
