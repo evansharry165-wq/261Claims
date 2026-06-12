@@ -1,5 +1,5 @@
-/* Master intake spreadsheet — v1.0 deterministic column schema */
-var INTAKE_TEMPLATE_VERSION = '1.0';
+/* Master intake spreadsheet — v1.1 deterministic column schema */
+var INTAKE_TEMPLATE_VERSION = '1.1';
 var INTAKE_TEMPLATE_FILENAME = '261claims-intake-master.csv';
 
 var INTAKE_TEMPLATE_COLUMNS = [
@@ -26,8 +26,21 @@ var INTAKE_ALLOWED = {
   jurisdictionCode: ['EW', 'FR', 'ES', 'EU'],
   triage: ['DEFEND', 'INVESTIGATE', 'ESCALATE'],
   complexity: ['Standard', 'Complex', 'High Value'],
-  currency: ['GBP', 'EUR']
+  currency: ['GBP', 'EUR'],
+  disruptionType: ['Delay', 'Cancellation', 'Denied Boarding', 'Downgrade']
 };
+
+var INTAKE_DISRUPTION_MAP = {
+  'Delay >3hrs': 'Delay',
+  'Cancellation': 'Cancellation',
+  'Denied Boarding': 'Denied Boarding',
+  'Downgrade': 'Downgrade'
+};
+
+function mapDisruptionType(raw) {
+  var key = String(raw || '').trim();
+  return INTAKE_DISRUPTION_MAP[key] || key || 'Pending review';
+}
 
 function parseCsvLine(line) {
   var out = [];
@@ -98,6 +111,7 @@ function normalizeIntakeRow(row) {
   out.triage = (out.triage || 'INVESTIGATE').toUpperCase();
   if (INTAKE_ALLOWED.triage.indexOf(out.triage) < 0) out.triage = 'INVESTIGATE';
   if (!out.complexity) out.complexity = 'Standard';
+  out.disruptionType = mapDisruptionType(out.disruptionType);
   return out;
 }
 

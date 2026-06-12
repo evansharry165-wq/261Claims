@@ -588,7 +588,7 @@ function buildCaseFromRow(row, confirmedAssigneeId, parsedDateReceived) {
     type: row.claimType,
     jurisdiction: jurisMap[jCode] || 'england-wales',
     lang: langMap[jCode] || 'en',
-    disruptionType: row.disruptionType,
+    disruptionType: typeof mapDisruptionType === 'function' ? mapDisruptionType(row.disruptionType) : (row.disruptionType || 'Pending review'),
     classification: row.triage || 'INVESTIGATE',
     cat: catMap[row.complexity] || 'B',
     stage: 'intake',

@@ -381,6 +381,21 @@ function loadMasterTemplateDemo(){
     })
     .catch(function(){showToast('Could not load master template.');});
 }
+function loadDemoBatch(){
+  if(!isIntakeLead(getActiveUser())){showToast('Mass upload is restricted to team leads.');return;}
+  fetch('templates/261claims-batch-demo.csv')
+    .then(function(r){return r.text();})
+    .then(function(text){
+      var result=rowsFromSpreadsheetText(text);
+      if(result.error){showToast(result.error);return;}
+      var items=buildMassItemsFromRows(result.rows,function(i){return nextUploadRef(i);});
+      items.forEach(function(item){
+        item.file={name:'261claims-batch-demo.csv',size:text.length,type:'text/csv'};
+      });
+      startMassExtraction(items,'BATCH_20260612_HL — 100 claims');
+    })
+    .catch(function(e){showToast('Could not load demo batch: '+e.message);});
+}
 function setMassAssignee(index,uid){
   if(!massBatch||!massBatch.items[index])return;
   massBatch.items[index].assignee=uid;
@@ -419,7 +434,8 @@ function renderMassPanel(){
       +'<div style="font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:12px">Use the master CSV template in Excel. Do not rename or reorder columns. Leave <code style="font-family:var(--mono);font-size:11px">ref</code> blank to auto-generate on deposit.</div>'
       +'<div style="display:flex;flex-wrap:wrap;gap:8px"><button class="btn-advance" style="width:auto" onclick="downloadMasterTemplate()"><i class="ti ti-download"></i> Download master template</button>'
       +'<button class="btn-advance" style="width:auto;background:var(--blue)" onclick="triggerSpreadsheetUpload()"><i class="ti ti-upload"></i> Upload completed spreadsheet</button>'
-      +'<button class="lp-upload-btn" style="width:auto;margin:0;border-style:solid" onclick="loadMasterTemplateDemo()"><i class="ti ti-stack-2"></i> Preview demo batch</button></div></div></div>'
+      +'<button class="lp-upload-btn" style="width:auto;margin:0;border-style:solid" onclick="loadMasterTemplateDemo()"><i class="ti ti-stack-2"></i> Preview demo batch</button>'
+      +'<button class="btn-advance" style="width:auto;background:var(--purple)" onclick="loadDemoBatch()"><i class="ti ti-stack-2"></i> Load 100-claim demo batch</button></div></div></div>'
       +'<div class="section-card"><div class="sc-header"><i class="ti ti-files"></i><div class="sc-title">LOC document batch (secondary)</div></div><div class="sc-body">'
       +'<div class="upload-zone" onclick="triggerMassUpload()"><i class="ti ti-files"></i><h3>Mass upload — letters of claim</h3><p>Alternative path: select multiple PDF, Word or text LOCs. Fields are inferred from filenames; assignments still follow workload rules.</p></div>'
       +'</div></div>'
@@ -435,7 +451,7 @@ function renderMassPanel(){
       +'<td><select class="batch-select" onchange="setMassAssignee('+idx+',this.value)">'+assigneeOptionsHtml(item.assignee,r.jurisdictionCode)+'</select></td></tr>';
   }).join('');
   return '<div class="cw"><div class="mass-banner"><strong>Assignment review</strong> — '+escapeHtml(massBatch.source||'batch')+' · '+massBatch.items.length+' case'+(massBatch.items.length!==1?'s':'')+' sorted by deterministic rules and pre-assigned to lowest workload. Adjust if needed, then deposit.</div>'
-    +'<div class="section-card"><div class="sc-header"><i class="ti ti-users"></i><div class="sc-title">Batch assignment review</div></div><div class="sc-body" style="padding:0;overflow-x:auto"><table class="batch-table"><thead><tr><th>#</th><th>Ref / source</th><th>Claimant</th><th>Flight</th><th>Juris.</th><th>Triage</th><th>Cat.</th><th>Assign to</th></tr></thead><tbody>'+rows+'</tbody></table></div></div>'
+    +'<div class="section-card"><div class="sc-header"><i class="ti ti-users"></i><div class="sc-title">Batch assignment review</div></div><div class="sc-body" style="padding:0;overflow-x:auto;max-height:60vh;overflow-y:auto"><table class="batch-table"><thead><tr><th>#</th><th>Ref / source</th><th>Claimant</th><th>Flight</th><th>Juris.</th><th>Triage</th><th>Cat.</th><th>Assign to</th></tr></thead><tbody>'+rows+'</tbody></table></div></div>'
     +'<div class="advance-bar"><div class="adv-text">Lead approval required · CPR clocks start on deposit · Cases enter assignee intake queues.</div>'
     +'<div style="display:flex;gap:8px"><button class="lp-upload-btn" style="width:auto;margin:0;border-style:solid" onclick="cancelMassBatch()">Cancel</button><button class="btn-advance" onclick="confirmMassBatch()"><i class="ti ti-circle-check"></i> Deposit batch</button></div></div></div>';
 }
