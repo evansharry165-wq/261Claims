@@ -8,6 +8,7 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="shared_data.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -264,77 +265,148 @@ function t(key){var d=I18N[getUILang()]||I18N.en;return d[key]||I18N.en[key]||ke
 </div>
 
 <script>
-/* ── Data ── */
-const DATA = {
-  stats:{
-    open:8, defended:18, settled:7, escalated:2, dismissed:3,
-    totalClaims:38, exposureGross:'£284,500', exposureNet:'£3,750',
-    avgClose:24, defenceRate:72, savingYTD:'£280,750'
-  },
-  volumeByMonth:{
-    labels:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
-    received:[4,3,6,5,8,7,null,null,null,null,null,null],
-    closed:[2,4,4,6,7,5,null,null,null,null,null,null]
-  },
-  byType:{
-    labels:['ATC','Weather','Industrial action','Technical','Birdstrike','Other'],
-    counts:[14,10,6,4,2,2],
-    colors:['#2A6FDB','#5B4FCF','#B45309','#C0392B','#1A7A4A','#94A3B8']
-  },
-  outcomes:{
-    labels:['Defended','Settled','Escalated','Dismissed','Open'],
-    counts:[18,7,2,3,8],
-    colors:['#22A863','#F59E0B','#C0392B','#94A3B8','#2A6FDB']
-  },
-  byCat:{
-    labels:['Cat A — €250','Cat B — €400','Cat C — Complex'],
-    counts:[22,10,6],
-    colors:['#2A6FDB','#B45309','#C0392B']
-  },
-  timeToClose:{
-    labels:['<7d','7–14d','14–21d','21–30d','>30d'],
-    defended:[2,5,6,3,2],
-    settled:[0,1,2,2,2]
-  },
-  exposure:{
-    labels:['Jan','Feb','Mar','Apr','May'],
-    alleged:[48000,52000,71000,63000,50500],
-    actual:[250,500,750,1500,750]
-  },
-  workload:[
-    {name:'S. Booth',     cases:11, open:4, color:'#2A6FDB'},
-    {name:'J. Patel',     cases:10, open:2, color:'#5B4FCF'},
-    {name:'K. Rahman',    cases:9,  open:1, color:'#1A7A4A'},
-    {name:'M. Dupont',    cases:4,  open:2, color:'#1a3a6b'},
-  ],
-  recentCases:[
-    {ref:'AC-2026-0089',name:'Hartley v. [Airline]',type:'Weather/Diversion',cat:'C',value:'£39,000+',stage:'Evidence',days:3,solicitor:'S. Booth'},
-    {ref:'AC-2026-0076',name:'Taylor v. [Airline]',type:'Weather',cat:'A',value:'€250',stage:'Drafting',days:7,solicitor:'J. Patel'},
-    {ref:'AC-2026-0091',name:'Walsh v. [Airline]',type:'ATC Restriction',cat:'A',value:'€250',stage:'Triage',days:21,solicitor:'J. Patel'},
-    {ref:'AC-2026-0094',name:'Morrison v. [Airline]',type:'ATC',cat:'A',value:'€250',stage:'Intake',days:15,solicitor:'K. Rahman'},
-    {ref:'FR-2026-0012',name:'Moreau v. [Airline]',type:'ATC Restriction',cat:'A',value:'250 €',stage:'Triage',days:48,solicitor:'M. Dupont'},
-    {ref:'ES-2026-0031',name:'Torres v. [Airline]',type:'ATC Restriction',cat:'A',value:'250 €',stage:'Evidence',days:10,solicitor:'C. García'},
-    {ref:'AC-2025-0044',name:'Williams v. [Airline]',type:'ATC Restriction',cat:'A',value:'€250',stage:'Closed',days:null,solicitor:'S. Booth',outcome:'defended'},
-    {ref:'AC-2025-0038',name:'Brown v. [Airline]',type:'Weather',cat:'A',value:'€250',stage:'Closed',days:null,solicitor:'J. Patel',outcome:'defended'},
-  ],
-  riskRegister:[
-    {case:'AC-2026-0089 — Hartley',reason:'Consequential loss claim unresolved · No FDR data on file',level:'high',val:'£39,000+'},
-    {case:'AC-2026-0076 — Taylor',reason:'CPR response deadline in 7 days · LOR ready for sign-off',level:'high',val:'€250'},
-    {case:'ES-2026-0031 — Torres',reason:'Eurocontrol data outstanding · Art 9 records pending',level:'med',val:'250 €'},
-    {case:'AC-2026-0091 — Walsh',reason:'AI triage pending · Evidence checklist not started',level:'med',val:'€250'},
-    {case:'AC-2026-0094 — Morrison',reason:'LOC received · Intake review pending',level:'low',val:'€250'},
-  ],
-  cprDeadlines:[
-    {ref:'AC-2026-0089',name:'Hartley',days:3},
-    {ref:'AC-2026-0076',name:'Taylor',days:7},
-    {ref:'ES-2026-0031',name:'Torres',days:10},
-    {ref:'ES-2026-0027',name:'Ruiz',days:9},
-    {ref:'AC-2026-0094',name:'Morrison',days:15},
-    {ref:'AC-2026-0079',name:'Singh',days:18},
-    {ref:'AC-2026-0091',name:'Walsh',days:21},
-  ]
-};
+/* ── Data — computed from live case pool ── */
+function buildMIData(){
+  var cases = (typeof ALL_CASES !== 'undefined') ? ALL_CASES : [];
+  var open = cases.filter(function(c){return c.stage!=='resolve'&&c.stage!=='closed';});
+  var closed = cases.filter(function(c){return c.stage==='resolve'||c.classification==='DEFEND'&&c.evidencePct===100;});
+  var defended = cases.filter(function(c){return c.classification==='DEFEND';}).length;
+  var escalated = cases.filter(function(c){return c.classification==='ESCALATE';}).length;
+  var investigate = cases.filter(function(c){return c.classification==='INVESTIGATE';}).length;
 
+  // By disruption type
+  var typeCount = {};
+  cases.forEach(function(c){
+    var t = c.disruptionType||'Other';
+    typeCount[t] = (typeCount[t]||0)+1;
+  });
+  var typeLabels = Object.keys(typeCount).sort(function(a,b){return typeCount[b]-typeCount[a];});
+  var typeCols = ['#2A6FDB','#5B4FCF','#B45309','#C0392B','#1A7A4A','#94A3B8','#F59E0B','#0F6E56'];
+
+  // By jurisdiction
+  var jurCount = {EW:0,FR:0,ES:0,EU:0};
+  cases.forEach(function(c){
+    if(c.jurisdiction==='france') jurCount.FR++;
+    else if(c.jurisdiction==='spain') jurCount.ES++;
+    else jurCount.EW++;
+  });
+
+  // CPR urgency
+  var urgent=0,watch=0,normal=0;
+  cases.forEach(function(c){
+    if(c.cprDaysLeft<=3) urgent++;
+    else if(c.cprDaysLeft<=10) watch++;
+    else normal++;
+  });
+
+  // Workload by user
+  var userMap = {};
+  cases.forEach(function(c){
+    if(!userMap[c.assignedTo]) userMap[c.assignedTo]={cases:0,open:0,urgent:0};
+    userMap[c.assignedTo].cases++;
+    if(c.stage!=='resolve') userMap[c.assignedTo].open++;
+    if(c.cprDaysLeft<=3) userMap[c.assignedTo].urgent++;
+  });
+  var userColors={'SB':'#2A6FDB','JP':'#5B4FCF','KR':'#1A7A4A','MD':'#B45309','PL':'#C0392B','CG':'#0F6E56','IM':'#854F0B'};
+  var userNames={'SB':'S. Booth','JP':'J. Patel','KR':'K. Rahman','MD':'M. Dupont','PL':'P. Laurent','CG':'C. García','IM':'I. Martín'};
+  var workload = Object.keys(userMap).filter(function(u){return u!=='EH';}).map(function(u){
+    return {name:userNames[u]||u, cases:userMap[u].cases, open:userMap[u].open, urgent:userMap[u].urgent, color:userColors[u]||'#94A3B8'};
+  }).sort(function(a,b){return b.cases-a.cases;});
+
+  // Recent high-priority cases
+  var recentCases = cases
+    .filter(function(c){return c.cprDaysLeft<=10||c.classification==='ESCALATE';})
+    .sort(function(a,b){return a.cprDaysLeft-b.cprDaysLeft;})
+    .slice(0,8)
+    .map(function(c){
+      var uName = userNames[c.assignedTo]||c.assignedTo;
+      return {ref:c.ref, name:c.claimant+' v. [Airline]', type:c.disruptionType, cat:c.cat, value:c.value, stage:c.stage, days:c.cprDaysLeft, solicitor:uName};
+    });
+
+  // Volume by month (from locDate)
+  var monthVol = [0,0,0,0,0,0,0,0,0,0,0,0];
+  cases.forEach(function(c){
+    if(!c.locDate) return;
+    var s = String(c.locDate);
+    var months = {Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
+    var match = s.match(/([A-Z][a-z]{2})/);
+    if(match && months[match[1]]!==undefined) monthVol[months[match[1]]]++;
+  });
+
+  // Total exposure
+  var totalComp = 0;
+  cases.forEach(function(c){
+    var v = String(c.value).replace(/[£€,+]/g,'').trim();
+    var n = parseFloat(v);
+    if(!isNaN(n)) totalComp += n;
+  });
+
+  return {
+    stats:{
+      open: open.length,
+      defended: defended,
+      escalated: escalated,
+      investigate: investigate,
+      totalClaims: cases.length,
+      exposureGross: '£' + Math.round(totalComp).toLocaleString(),
+      exposureNet: '£3,750',
+      avgClose: 24,
+      defenceRate: cases.length ? Math.round(defended/cases.length*100) : 0,
+      savingYTD: '£280,750',
+      urgent: urgent,
+      watch: watch
+    },
+    volumeByMonth:{
+      labels:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+      received: monthVol,
+      closed:[2,4,4,6,7,5,null,null,null,null,null,null]
+    },
+    byType:{
+      labels: typeLabels,
+      counts: typeLabels.map(function(t){return typeCount[t];}),
+      colors: typeLabels.map(function(_,i){return typeCols[i]||'#94A3B8';})
+    },
+    outcomes:{
+      labels:['Defend','Investigate','Escalate'],
+      counts:[defended,investigate,escalated],
+      colors:['#22A863','#F59E0B','#C0392B']
+    },
+    byCat:{
+      labels:['Cat A — €250','Cat B — €400','Cat C — Complex'],
+      counts:[
+        cases.filter(function(c){return c.cat==='A';}).length,
+        cases.filter(function(c){return c.cat==='B';}).length,
+        cases.filter(function(c){return c.cat==='C';}).length
+      ],
+      colors:['#2A6FDB','#B45309','#C0392B']
+    },
+    jurisdiction:{
+      labels:['England & Wales','France','Spain'],
+      counts:[jurCount.EW+jurCount.EU, jurCount.FR, jurCount.ES],
+      colors:['#2A6FDB','#1A7A4A','#C0392B']
+    },
+    timeToClose:{
+      labels:['<7d','7–14d','14–21d','21–30d','>30d'],
+      defended:[2,5,6,3,2],
+      settled:[0,1,2,2,2]
+    },
+    exposure:{
+      labels:['Jan','Feb','Mar','Apr','May'],
+      alleged:[48000,52000,71000,63000,50500],
+      actual:[250,500,750,1500,750]
+    },
+    workload: workload,
+    recentCases: recentCases,
+    riskRegister: cases
+      .filter(function(c){return c.classification==='ESCALATE'||c.cprDaysLeft<=3;})
+      .sort(function(a,b){return a.cprDaysLeft-b.cprDaysLeft;})
+      .slice(0,6)
+      .map(function(c){
+        return {ref:c.ref, issue: c.classification==='ESCALATE'?'Escalation required':'CPR deadline critical', days:c.cprDaysLeft, risk:'high', note:c.triageNote||'Review required'};
+      })
+  };
+}
+const DATA = buildMIData();
 let charts = {};
 let activePeriod = 'ytd';
 let activeType = 'all';
