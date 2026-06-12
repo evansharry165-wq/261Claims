@@ -145,6 +145,41 @@ input[type=file]{display:none}
 .extract-spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--blue);border-radius:50%;animation:spin .8s linear infinite;margin-bottom:12px}
 @keyframes spin{to{transform:rotate(360deg)}}
 .toast{position:fixed;bottom:20px;right:20px;background:var(--navy);color:#fff;padding:10px 14px;border-radius:var(--r2);font-size:12px;z-index:2000;box-shadow:0 4px 16px rgba(0,0,0,.15)}
+
+/* email connector */
+.ec-inbox-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r3);overflow:hidden;margin-bottom:14px}
+.ec-inbox-header{padding:12px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:10px}
+.ec-connected{font-size:10px;font-weight:500;padding:2px 8px;border-radius:20px;background:var(--green-faint);color:var(--green);display:flex;align-items:center;gap:4px}
+.ec-connected::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--green-l)}
+.ec-email{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:12px 14px;margin-bottom:8px;border-left:3px solid var(--blue)}
+.ec-email.read{border-left-color:var(--border2);opacity:.85}
+.ec-email.unread .ec-subject{font-weight:500;color:var(--text)}
+.ec-from{font-size:11px;color:var(--text3);margin-bottom:2px}
+.ec-subject{font-size:12px;color:var(--text);margin-bottom:4px}
+.ec-preview{font-size:11px;color:var(--text2);line-height:1.45;margin-bottom:8px}
+.ec-meta{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.ec-time{font-size:10px;color:var(--text3)}
+.ec-status{font-size:10px;font-weight:500;color:var(--green)}
+.ec-parse-btn{font-size:11px;padding:5px 10px;border-radius:var(--r);border:1px solid var(--border);background:var(--surface2);cursor:pointer;font-family:var(--font);color:var(--blue-text);display:inline-flex;align-items:center;gap:4px}
+.ec-parse-btn:hover{background:var(--blue-faint);border-color:var(--blue)}
+.ec-split{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+@media(max-width:900px){.ec-split{grid-template-columns:1fr}}
+.ec-raw{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r2);padding:12px;font-family:var(--mono);font-size:11px;line-height:1.55;color:var(--text2);white-space:pre-wrap;max-height:420px;overflow-y:auto}
+.ec-field{display:flex;align-items:flex-start;gap:8px;padding:8px 0;border-bottom:1px solid var(--border);font-size:12px}
+.ec-field:last-child{border-bottom:none}
+.ec-field-icon{width:18px;flex-shrink:0;text-align:center;font-size:13px;line-height:1.4}
+.ec-field-icon.ok{color:var(--green)}
+.ec-field-icon.warn{color:var(--amber)}
+.ec-field-icon.miss{color:var(--red)}
+.ec-field-label{color:var(--text3);font-size:10px;text-transform:uppercase;letter-spacing:.05em;margin-bottom:1px}
+.ec-field-val{color:var(--text);font-weight:500}
+.ec-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.btn-outline{font-size:12px;font-weight:500;padding:8px 14px;border-radius:var(--r);background:var(--surface);color:var(--text2);border:1px solid var(--border2);cursor:pointer;font-family:var(--font);display:inline-flex;align-items:center;gap:6px}
+.btn-outline:hover{background:var(--surface3)}
+.ec-draft-wrap{position:relative;margin-top:14px}
+.ec-draft-toolbar{position:absolute;top:8px;right:8px;display:flex;gap:6px;z-index:1}
+.ec-draft-ta{width:100%;min-height:220px;padding:12px 14px;padding-top:40px;border:1px solid var(--border);border-radius:var(--r2);font-family:var(--mono);font-size:11px;line-height:1.55;color:var(--text);background:var(--surface);resize:vertical}
+.ec-beta{font-size:9px;font-weight:500;padding:1px 6px;border-radius:20px;background:var(--amber-faint);color:var(--amber);margin-left:4px;vertical-align:middle}
 </style>
 </head>
 <body>
@@ -205,6 +240,8 @@ var depositSearch='';
 var intakeTab='new';
 var massBatch=null;
 var massExtractTimer=null;
+var emailConnectorParsed=null;
+var emailConnectorDraft=false;
 function setIntakeTab(tab){
   if(tab==='mass'&&!isIntakeLead(getActiveUser())){showToast('Mass upload is restricted to team leads.');return;}
   intakeTab=tab;
@@ -423,6 +460,107 @@ function confirmMassBatch(){
   intakeTab='new';
   render();
 }
+
+var EMAIL_RAW_HARTLEY='From: clerk@pemberton-associates.co.uk\nTo: legal@[airline].com\nDate: 12 June 2026, 09:14\nSubject: Letter of Claim — Hartley, Daniel — Flight HC1184 13 March 2026\n\nDear Legal Department,\n\nWe write on behalf of our client Mr Daniel Hartley in respect of flight HC1184 operated on 13 March 2026 from London Luton (LTN) to Barcelona (BCN).\n\nOur client seeks compensation pursuant to EC Regulation 261/2004 / UK261 in the sum of £39,000 together with consequential losses of £38,250 arising from a business contract that was unable to be fulfilled as a direct result of the diversion of flight HC1184 to Valencia.\n\nWe invite your response within 14 days.\n\nYours faithfully,\nPemberton & Associates';
+
+var EMAIL_GAP_FILL_DRAFT='To: clerk@pemberton-associates.co.uk\nSubject: RE: Letter of Claim — Hartley, Daniel — Flight HC1184 13 March 2026\n\nDear Sir/Madam,\n\nThank you for your letter of claim dated 12 June 2026 in respect of Mr Daniel Hartley and flight HC1184 on 13 March 2026.\n\nTo enable us to process your client\'s claim, we require the following additional information:\n\n1. Booking reference number\n2. Number of passengers travelling under the same booking\n\nWe will revert with our substantive response upon receipt of the above.\n\nYours faithfully,\nLegal Department';
+
+function parseEmailConnector(emailId){
+  emailConnectorParsed=emailId;
+  emailConnectorDraft=false;
+  render();
+}
+
+function showGapFillDraft(){
+  emailConnectorDraft=true;
+  render();
+}
+
+function copyGapFillEmail(){
+  var ta=document.getElementById('ec-gap-draft');
+  if(!ta)return;
+  ta.select();
+  try{
+    navigator.clipboard.writeText(ta.value);
+    showToast('Draft email copied to clipboard.');
+  }catch(e){
+    document.execCommand('copy');
+    showToast('Draft email copied to clipboard.');
+  }
+}
+
+function createCaseFromEmail(){
+  var existing=typeof getCase==='function'?getCase('AC-2026-0089'):null;
+  if(existing){
+    selectedRef='AC-2026-0089';
+    try{sessionStorage.setItem('261c_case',JSON.stringify(existing));}catch(e){}
+    intakeTab='new';
+    showToast('Case AC-2026-0089 already exists — opened in intake queue.');
+    render();
+    return;
+  }
+  showToast('Case created from email — AC-2026-0089 (Daniel Hartley).');
+  intakeTab='new';
+  render();
+}
+
+function parsedFieldRow(status,label,value){
+  var icon=status==='ok'?'<i class="ti ti-check ec-field-icon ok"></i>':status==='warn'?'<i class="ti ti-alert-triangle ec-field-icon warn"></i>':'<i class="ti ti-x ec-field-icon miss"></i>';
+  return '<div class="ec-field">'+icon+'<div><div class="ec-field-label">'+escapeHtml(label)+'</div><div class="ec-field-val">'+escapeHtml(value)+'</div></div></div>';
+}
+
+function renderEmailParseResult(){
+  var fields=[
+    parsedFieldRow('ok','Claimant','Daniel Hartley'),
+    parsedFieldRow('ok','Solicitor','Pemberton & Associates'),
+    parsedFieldRow('ok','Flight','HC1184'),
+    parsedFieldRow('ok','Date','13 March 2026'),
+    parsedFieldRow('ok','Route','LTN → BCN'),
+    parsedFieldRow('ok','Claim type','EC261 / UK261 — Diversion'),
+    parsedFieldRow('ok','Compensation','£39,000'),
+    parsedFieldRow('warn','Consequential loss','£38,250 (Montreal Convention — flag for senior review)'),
+    parsedFieldRow('miss','Booking reference','NOT FOUND — gap identified'),
+    parsedFieldRow('miss','Passenger count','NOT FOUND — gap identified')
+  ].join('');
+  var mailtoSubject=encodeURIComponent('RE: Letter of Claim — Hartley, Daniel — Flight HC1184 13 March 2026');
+  var mailtoBody=encodeURIComponent(EMAIL_GAP_FILL_DRAFT.replace(/\n/g,'\r\n'));
+  return '<div class="section-card" style="margin-bottom:12px"><div class="sc-header"><i class="ti ti-scan"></i><div class="sc-title">Email parsing result</div></div><div class="sc-body">'
+    +'<div class="ec-split">'
+    +'<div><div style="font-size:11px;font-weight:500;color:var(--text3);margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em">Raw email</div><div class="ec-raw">'+escapeHtml(EMAIL_RAW_HARTLEY)+'</div></div>'
+    +'<div><div style="font-size:11px;font-weight:500;color:var(--text3);margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em">Parsed fields — ready to create case</div><div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r2);padding:4px 12px">'+fields+'</div></div>'
+    +'</div>'
+    +'<div class="ec-actions">'
+    +'<button class="btn-advance" style="width:auto" onclick="createCaseFromEmail()"><i class="ti ti-arrow-right"></i> Create case →</button>'
+    +'<button class="btn-outline" onclick="showGapFillDraft()"><i class="ti ti-mail"></i> Draft gap-filling email →</button>'
+    +'<button class="lp-upload-btn" style="width:auto;margin:0;border-style:solid" onclick="emailConnectorParsed=null;emailConnectorDraft=false;render()"><i class="ti ti-arrow-left"></i> Back to inbox</button>'
+    +'</div>'
+    +(emailConnectorDraft?'<div class="ec-draft-wrap"><div class="ec-draft-toolbar"><button class="btn-outline" style="padding:4px 8px;font-size:10px" onclick="copyGapFillEmail()"><i class="ti ti-copy"></i> Copy to clipboard</button><a class="btn-outline" style="padding:4px 8px;font-size:10px;text-decoration:none" href="mailto:clerk@pemberton-associates.co.uk?subject='+mailtoSubject+'&body='+mailtoBody+'" target="_blank"><i class="ti ti-brand-windows"></i> Open in Outlook →</a></div><textarea id="ec-gap-draft" class="ec-draft-ta">'+escapeHtml(EMAIL_GAP_FILL_DRAFT)+'</textarea></div>':'')
+    +'</div></div>';
+}
+
+function renderEmailConnector(){
+  var inboxHtml='<div class="ec-inbox-card"><div class="ec-inbox-header"><div><div style="font-size:12px;font-weight:500;color:var(--text)"><i class="ti ti-mail" style="color:var(--blue-text);margin-right:4px"></i>Legal inbox — legal@[airline].com</div><div style="font-size:10px;color:var(--text3);margin-top:2px">Outlook connector · Microsoft Graph API (demo simulation)</div></div><span class="ec-connected">Connected</span></div>'
+    +'<div style="padding:12px 14px">'
+    +'<div class="ec-email unread"><div class="ec-from">clerk@pemberton-associates.co.uk</div><div class="ec-subject">Letter of Claim — Hartley, Daniel — Flight HC1184 13 March 2026</div><div class="ec-preview">"Dear Legal Department, We write on behalf of our client Mr Daniel Hartley..."</div><div class="ec-meta"><span class="ec-time">Today 09:14</span><button class="ec-parse-btn" onclick="parseEmailConnector(\'hartley\')">Parse &amp; create case →</button></div></div>'
+    +'<div class="ec-email unread"><div class="ec-from">claims@airhelp.com</div><div class="ec-subject">RE: EC261 Compensation Claim — Walsh, Rebecca — EZY2847</div><div class="ec-preview">"Please find attached our Letter of Claim in respect of..."</div><div class="ec-meta"><span class="ec-time">Yesterday 16:30</span><button class="ec-parse-btn" onclick="showToast(\'Parsing demo available for Hartley email only.\')">Parse &amp; create case →</button></div></div>'
+    +'<div class="ec-email read"><div class="ec-from">info@bottandco.com</div><div class="ec-subject">Letter of Claim — Morrison, Thomas — Flight HC442</div><div class="ec-preview">"We act on behalf of Thomas Morrison in connection with..."</div><div class="ec-meta"><span class="ec-time">10 Jun 2026</span><span class="ec-status"><i class="ti ti-circle-check"></i> Case created — AC-2026-0094</span></div></div>'
+    +'</div></div>';
+
+  if(emailConnectorParsed==='hartley'){
+    return '<div class="cw"><div class="mass-banner"><i class="ti ti-plug-connected"></i> <strong>Email connector</strong> — simulates Outlook MCP / Microsoft Graph parsing. In production, incoming LOCs at legal@[airline].com would auto-create intake records.</div>'
+      +renderEmailParseResult()
+      +'</div>';
+  }
+
+  return '<div class="cw"><div class="mass-banner"><i class="ti ti-plug-connected"></i> <strong>Email connector</strong> — simulates Outlook MCP / Microsoft Graph parsing. In production, incoming LOCs at legal@[airline].com would auto-create intake records.</div>'
+    +inboxHtml
+    +'<div class="section-card"><div class="sc-header"><i class="ti ti-info-circle"></i><div class="sc-title">How it works</div></div><div class="sc-body" style="font-size:12px;color:var(--text2);line-height:1.6">'
+    +'<p style="margin-bottom:8px">1. Incoming LOCs arrive at the connected legal inbox.</p>'
+    +'<p style="margin-bottom:8px">2. AI extracts claimant, flight, route, compensation and flags gaps (booking ref, passenger count).</p>'
+    +'<p>3. Missing fields trigger a gap-filling email draft before the case enters triage.</p>'
+    +'</div></div></div>';
+}
+
 function renderMassPanel(){
   var leadUid=getActiveUser();
   if(!isIntakeLead(leadUid)){
@@ -530,9 +668,22 @@ function render(){
   if(massBtn)massBtn.style.display=lead?'flex':'none';
   document.querySelector('.lp-title').textContent=t('intakeQueue');
   document.getElementById('lp-sub').textContent=cases.length+' case'+(cases.length!==1?'s':'')+' assigned to '+u.name;
-  var tabBar='<div style="display:flex;gap:6px;padding:12px 16px 0;border-bottom:1px solid var(--border);background:var(--surface)"><button class="lp-upload-btn" style="width:auto;margin:0;border-style:solid;background:'+(intakeTab==='new'?'var(--blue-faint)':'var(--surface2)')+';color:'+(intakeTab==='new'?'var(--blue-text)':'var(--text2)')+'" onclick="setIntakeTab(\'new\')">New LOC</button><button class="lp-upload-btn" style="width:auto;margin:0;border-style:solid;background:'+(intakeTab==='deposit'?'var(--blue-faint)':'var(--surface2)')+';color:'+(intakeTab==='deposit'?'var(--blue-text)':'var(--text2)')+'" onclick="setIntakeTab(\'deposit\')">Add to existing case</button>'
+  var tabBar='<div style="display:flex;gap:6px;padding:12px 16px 0;border-bottom:1px solid var(--border);background:var(--surface);flex-wrap:wrap"><button class="lp-upload-btn" style="width:auto;margin:0;border-style:solid;background:'+(intakeTab==='new'?'var(--blue-faint)':'var(--surface2)')+';color:'+(intakeTab==='new'?'var(--blue-text)':'var(--text2)')+'" onclick="setIntakeTab(\'new\')">New LOC</button><button class="lp-upload-btn" style="width:auto;margin:0;border-style:solid;background:'+(intakeTab==='deposit'?'var(--blue-faint)':'var(--surface2)')+';color:'+(intakeTab==='deposit'?'var(--blue-text)':'var(--text2)')+'" onclick="setIntakeTab(\'deposit\')">Add to existing case</button>'
     +(lead?'<button class="lp-upload-btn" style="width:auto;margin:0;border-style:solid;background:'+(intakeTab==='mass'?'var(--blue-faint)':'var(--surface2)')+';color:'+(intakeTab==='mass'?'var(--blue-text)':'var(--text2)')+'" onclick="setIntakeTab(\'mass\')">Mass upload</button>':'')
+    +'<button class="lp-upload-btn" style="width:auto;margin:0;border-style:solid;background:'+(intakeTab==='email'?'var(--blue-faint)':'var(--surface2)')+';color:'+(intakeTab==='email'?'var(--blue-text)':'var(--text2)')+'" onclick="setIntakeTab(\'email\')"><i class="ti ti-mail" style="font-size:13px"></i> Email connector<span class="ec-beta">Beta</span></button>'
     +'</div>';
+  if(intakeTab==='email'){
+    list.innerHTML=cases.length?cases.map(function(c){
+      var urg=daysUrgency(c.cprDaysLeft);
+      return '<div class="case-row '+(c.ref===selectedRef?'active':'')+'" onclick="selectCase(\''+c.ref+'\')">'
+        +'<div class="cr-icon '+(c.uploadedFile?'new':'')+'"><i class="ti '+(c.uploadedFile?'ti-upload':'ti-file-text')+'"></i></div>'
+        +'<div style="min-width:0"><div class="cr-ref">'+escapeHtml(c.ref)+'</div><div class="cr-name">'+escapeHtml(c.claimant)+'</div><div class="cr-meta"><span>'+escapeHtml(c.flightNum)+'</span><span class="cr-badge">'+escapeHtml(c.cat)+'</span></div></div>'
+        +'<div class="cr-right"><span class="cr-days days-'+urg+'">'+urgencyLabel(c.cprDaysLeft)+'</span></div></div>';
+    }).join(''):'<div class="case-list-empty"><i class="ti ti-mail"></i><div>Email connector inbox</div></div>';
+    document.getElementById('right-panel').innerHTML=tabBar+renderEmailConnector();
+    if(typeof renderGlobalNav==='function')renderGlobalNav();
+    return;
+  }
   if(intakeTab==='mass'){
     list.innerHTML=cases.length?cases.map(function(c){
       var urg=daysUrgency(c.cprDaysLeft);
