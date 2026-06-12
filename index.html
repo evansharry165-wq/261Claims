@@ -271,6 +271,47 @@ function demoToursHtml(){
     }).join('')+'</div></details>';
 }
 
+function knowledgeAlertBanner(){
+  // Render immediately from cache if available, then update async
+  var cached = window._keAlerts;
+  if(!cached){
+    // Start async fetch
+    fetch('knowledge_store.json?t='+Date.now())
+      .then(function(r){return r.json();})
+      .then(function(store){
+        var urgent = (store.entries||[]).filter(function(e){
+          return e.impact==='high'&&e.actionRequired;
+        });
+        if(!urgent.length) return;
+        window._keAlerts=urgent;
+        // Re-inject banner if already rendered
+        var el=document.getElementById('ke-alert-banner');
+        if(el) el.outerHTML=renderKEBanner(urgent);
+      })
+      .catch(function(){});
+    // Return placeholder while fetching
+    return '<div id="ke-alert-banner"></div>';
+  }
+  return renderKEBanner(cached);
+}
+
+function renderKEBanner(alerts){
+  if(!alerts||!alerts.length) return '';
+  var html='<div id="ke-alert-banner" style="background:#FFFBEB;border:1px solid #FDE68A;border-radius:var(--r2);padding:10px 14px;margin-bottom:14px">';
+  html+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">';
+  html+='<i class="ti ti-bell-ringing" style="color:#D97706;font-size:14px"></i>';
+  html+='<span style="font-size:12px;font-weight:500;color:#92400E">'+alerts.length+' legal intelligence alert'+(alerts.length>1?'s':'')+' require action</span>';
+  html+='<a href="education.html?section=live-updates" style="font-size:11px;color:#D97706;margin-left:auto;text-decoration:none">View all <i class="ti ti-arrow-right" style="font-size:10px"></i></a>';
+  html+='</div>';
+  alerts.slice(0,2).forEach(function(e){
+    html+='<div style="font-size:11px;color:#78350F;padding:3px 0;border-top:1px solid #FDE68A">';
+    html+='<strong>'+e.title+'</strong> — '+e.actionNote;
+    html+='</div>';
+  });
+  html+='</div>';
+  return html;
+}
+
 function renderLegalWork(uid,u,cases){
   var tasks=collectDoNowTasks(cases,6);
   var updates=WorkDashboard.getUpdatesSinceLogin(cases,uid);
@@ -289,6 +330,7 @@ function renderLegalWork(uid,u,cases){
     +'<div class="toolbar"><div class="search-wrap"><i class="ti ti-search"></i><input class="search-input" id="work-search" placeholder="'+escapeHtml(t('searchCases'))+'" oninput="searchCases(this.value)" onfocus="if(this.value)searchCases(this.value)"><div class="search-dropdown" id="search-dropdown"></div></div>'
     +'<a class="btn btn-primary" href="intake.html"><i class="ti ti-mail-plus"></i> '+escapeHtml(t('newClaim'))+'</a>'
     +'<button type="button" class="btn btn-outline" onclick="downloadWorkCalendar()"><i class="ti ti-calendar-down"></i> CPR calendar (.ics)</button></div>'
+    +knowledgeAlertBanner()
     +'<div class="work-grid">'
     +'<div class="zone"><div class="zone-hdr"><div class="zone-title"><i class="ti ti-sparkles"></i> Since you last logged in</div></div><div class="panel">'+updatesHtml(updates)+'</div></div>'
     +'<div class="zone"><div class="zone-hdr"><div class="zone-title"><i class="ti ti-list-check"></i> '+escapeHtml(t('doNow'))+'</div><a class="zone-link" href="cases.html?sort=urgency">'+escapeHtml(t('viewAll'))+'</a></div><div class="panel">'+tasksHtml(tasks)+'</div></div>'
@@ -317,6 +359,7 @@ function renderEvidenceWork(u){
     +'<div class="stat-bar"><span class="stat-chip urgent"><i class="ti ti-user-question"></i> '+open.length+' open requests</span>'
     +(updates.length?'<span class="stat-chip new"><i class="ti ti-bell"></i> '+updates.length+' new</span>':'')
     +'</div></div>'
+    +knowledgeAlertBanner()
     +'<div class="work-grid">'
     +'<div class="zone"><div class="zone-hdr"><div class="zone-title"><i class="ti ti-sparkles"></i> Since you last logged in</div></div><div class="panel">'+updatesHtml(updates)+'</div></div>'
     +'<div class="zone"><div class="zone-hdr"><div class="zone-title"><i class="ti ti-list-check"></i> '+escapeHtml(t('doNow'))+'</div><a class="zone-link" href="requests.html">'+escapeHtml(t('viewAll'))+'</a></div><div class="panel">'+tasksHtml(tasks)+'</div></div>'
