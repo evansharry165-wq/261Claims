@@ -9,7 +9,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{--navy:#0B1628;--blue:#2A6FDB;--blue-faint:#EFF6FF;--blue-text:#1D4ED8;--green:#1A7A4A;--green-faint:#E6F5EE;--red:#C0392B;--amber:#B45309;--amber-faint:#FEF3C7;--border:#E2E8F0;--text:#0F172A;--text2:#475569;--text3:#94A3B8;--surface:#fff;--surface2:#F8FAFC;--font:'Inter',sans-serif;--font-serif:'Instrument Serif',Georgia,serif;--mono:'DM Mono',monospace;--r:8px;--r2:12px;--r3:16px}
+:root{--navy:#0B1628;--blue:#2A6FDB;--blue-faint:#EFF6FF;--blue-text:#1D4ED8;--green:#1A7A4A;--green-faint:#E6F5EE;--red:#C0392B;--red-faint:#FCF0EF;--amber:#B45309;--amber-faint:#FEF3C7;--purple:#4338CA;--purple-faint:#EEEDFE;--border:#E2E8F0;--text:#0F172A;--text2:#475569;--text3:#94A3B8;--surface:#fff;--surface2:#F8FAFC;--font:'Inter',sans-serif;--font-serif:'Instrument Serif',Georgia,serif;--mono:'DM Mono',monospace;--r:8px;--r2:12px;--r3:16px}
 html,body{height:100%;font-family:var(--font);background:var(--surface2);color:var(--text);font-size:14px}
 .global-nav{background:var(--navy);height:48px;display:flex;align-items:center;padding:0 20px}
 .gn-logo{display:flex;align-items:center;gap:8px;text-decoration:none;margin-right:20px}
@@ -61,11 +61,74 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 .ud-role{font-size:10px;color:var(--text3)}
 .ud-tick{margin-left:auto;color:var(--green);display:none}
 .ud-item.current .ud-tick{display:block}
+.intel-wrap{height:100%;overflow-y:auto;padding:16px 20px 28px}
+.intel-section{margin-bottom:18px}
+.intel-section-hdr{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.intel-section-hdr i{font-size:16px;color:var(--purple)}
+.intel-section-title{font-size:14px;font-weight:500;color:var(--text)}
+.intel-section-sub{font-size:11px;color:var(--text3);margin-left:auto}
+.filter-bar{background:var(--surface);border:1px solid var(--border);border-radius:var(--r3);padding:14px 16px;display:grid;gap:12px}
+.filter-group{display:flex;flex-direction:column;gap:6px}
+.filter-label{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.06em;color:var(--text3)}
+.filter-pills,.filter-toggles{display:flex;flex-wrap:wrap;gap:6px}
+.fpill,.ftoggle{font-size:11px;border:1px solid var(--border);background:var(--surface2);padding:5px 10px;border-radius:20px;cursor:pointer;font-family:var(--font);color:var(--text2);transition:all .15s}
+.fpill.active,.ftoggle.active{background:var(--purple);color:#fff;border-color:var(--purple)}
+.filter-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.filter-input{font-size:12px;padding:7px 10px;border:1px solid var(--border);border-radius:var(--r);font-family:var(--font);width:100%}
+.intel-count{font-size:12px;color:var(--text2);margin:10px 0 8px;font-weight:500}
+.intel-list{background:var(--surface);border:1px solid var(--border);border-radius:var(--r3);overflow:hidden}
+.intel-row{display:grid;grid-template-columns:minmax(90px,1fr) minmax(110px,.9fr) minmax(90px,.7fr) minmax(80px,.6fr) minmax(70px,.5fr) minmax(60px,.45fr) minmax(70px,.55fr) minmax(90px,.8fr);gap:8px;align-items:center;padding:9px 12px;border-bottom:1px solid var(--border);cursor:pointer;font-size:11px;transition:background .15s}
+.intel-row:hover{background:var(--surface2)}
+.intel-row:last-child{border-bottom:none}
+.intel-row .ir-ref{font-family:var(--mono);font-size:10px;color:var(--text3)}
+.intel-row .ir-name{font-weight:500;color:var(--text);font-size:12px}
+.ir-muted{color:var(--text2)}
+.ir-sol{color:var(--text3);font-size:10px}
+.p-triage{font-size:10px;font-weight:500;padding:2px 7px;border-radius:20px;display:inline-block}
+.pt-defend{background:var(--green-faint);color:var(--green)}
+.pt-investigate{background:var(--amber-faint);color:var(--amber)}
+.pt-escalate{background:var(--red-faint);color:var(--red)}
+.p-cpr{font-size:10px;font-weight:500;padding:2px 7px;border-radius:20px;display:inline-block}
+.pc-urgent{background:var(--red-faint);color:var(--red)}
+.pc-warn{background:var(--amber-faint);color:var(--amber)}
+.pc-ok{background:var(--green-faint);color:var(--green)}
+.corr-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.corr-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r3);padding:14px 16px;display:flex;flex-direction:column;gap:8px;min-height:170px}
+.corr-card.urgent{border-color:#FECACA;background:linear-gradient(135deg,#fff,var(--red-faint))}
+.corr-hdr{display:flex;align-items:flex-start;gap:8px}
+.corr-icon{width:32px;height:32px;border-radius:var(--r2);background:var(--purple-faint);color:var(--purple);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px}
+.corr-title{font-size:12px;font-weight:600;color:var(--text);line-height:1.35}
+.corr-finding{font-size:11px;color:var(--text2);line-height:1.55;flex:1}
+.corr-metric{font-size:28px;font-weight:600;line-height:1;font-family:var(--mono)}
+.corr-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:4px}
+.corr-btn{font-size:11px;font-weight:500;padding:6px 10px;border-radius:var(--r);background:var(--navy);color:#fff;border:none;cursor:pointer;font-family:var(--font)}
+.corr-btn:hover{opacity:.9}
+.urgent-badge{font-size:10px;font-weight:600;padding:3px 8px;border-radius:20px;background:var(--red);color:#fff;text-transform:uppercase;letter-spacing:.04em}
+.jur-table{width:100%;border-collapse:collapse;font-size:11px;margin-top:4px}
+.jur-table th,.jur-table td{padding:6px 8px;border-bottom:1px solid var(--border);text-align:left}
+.jur-table th{font-size:10px;text-transform:uppercase;color:var(--text3);font-weight:500}
+.agency-table{width:100%;border-collapse:collapse;font-size:11px}
+.agency-table th,.agency-table td{padding:9px 10px;border-bottom:1px solid var(--border);text-align:left;vertical-align:middle}
+.agency-table th{font-size:10px;text-transform:uppercase;color:var(--text3);font-weight:500;background:var(--surface2)}
+.triage-bar{display:flex;height:8px;border-radius:4px;overflow:hidden;background:var(--surface2);min-width:80px}
+.tb-def{background:var(--green)}
+.tb-inv{background:var(--amber)}
+.tb-esc{background:var(--red)}
+.intel-empty{padding:24px;text-align:center;color:var(--text3);font-size:12px}
+@media(max-width:900px){
+  .intel-row{grid-template-columns:1fr 1fr;gap:6px;padding:12px}
+  .intel-row>span:nth-child(n+5){display:none}
+  .filter-row{grid-template-columns:1fr}
+}
 </style>
 </head>
 <body>
 <script src="shared_data.js"></script>
 <script src="shared_theme.js"></script>
+<script src="case_filing.js"></script>
+<script src="team_helpers.js"></script>
+<script src="case_helpers.js"></script>
+<script src="intake_template.js"></script>
 <script src="insights_data.js"></script>
 
 <nav class="global-nav">
@@ -80,11 +143,15 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 </div>
 
 <script>
-var TABS=[{id:'reporting',label:'Reporting'},{id:'past-cases',label:'Past cases'}];
-var _tabParam=new URLSearchParams(window.location.search).get('tab')||'reporting';
+var TABS=[{id:'intelligence',label:'Intelligence'},{id:'reporting',label:'Reporting'},{id:'past-cases',label:'Past cases'}];
+var _tabParam=new URLSearchParams(window.location.search).get('tab')||'intelligence';
 if(_tabParam==='guidance'){window.location.replace('education.html');}
-var activeTab=_tabParam==='guidance'?'reporting':_tabParam;
+var activeTab=_tabParam==='guidance'?'intelligence':_tabParam;
 var activeOutcome='all', selectedRef='', query='';
+var _intelCaseCache=null;
+var _intelHydrated=false;
+var intelFilters={disruptionTypes:[],jurisdictions:[],triage:[],cprBands:[],solicitor:'',valueMin:'',valueMax:'',groupOnly:false};
+var _correlations=[];
 
 function escapeHtml(v){return String(v==null?'':v).replace(/[&<>"']/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch];});}
 
@@ -98,6 +165,256 @@ function renderTabs(){
   document.getElementById('insights-tabs').innerHTML=TABS.map(function(t){
     return '<button class="ins-tab'+(activeTab===t.id?' active':'')+'" onclick="switchTab(\''+t.id+'\')">'+escapeHtml(t.label)+'</button>';
   }).join('');
+}
+
+function parseCaseValue(c){
+  var raw=c.compSought!=null?c.compSought:(c.value||'');
+  var s=String(raw).trim().replace(/,/g,'');
+  var m=s.match(/([\d]+(?:\.\d+)?)/);
+  var amount=m?parseFloat(m[1]):0;
+  var currency=/€|eur/i.test(s)?'EUR':'GBP';
+  return {amount:amount,currency:currency,display:s||'—'};
+}
+
+function normalizeInsightCase(c){
+  var v=parseCaseValue(c);
+  return {
+    ref:c.ref,claimant:c.claimant||'Unknown',solicitor:c.solicitor||'Unknown',
+    disruptionType:c.disruptionType||'Unknown',jurisdiction:c.jurisdiction||'england-wales',
+    classification:String(c.classification||'INVESTIGATE').toUpperCase(),
+    cprDaysLeft:c.cprDaysLeft!=null?c.cprDaysLeft:21,value:c.value||v.display,
+    compNumeric:v.amount,compCurrency:v.currency,triageNote:c.triageNote||'',assignedTo:c.assignedTo||''
+  };
+}
+
+function getIntelligenceCases(){
+  if(_intelCaseCache)return _intelCaseCache.slice();
+  var seen={}, out=[];
+  function add(c){if(!c||!c.ref||seen[c.ref])return;seen[c.ref]=true;out.push(normalizeInsightCase(c));}
+  (window.ALL_CASES||[]).forEach(add);
+  if(typeof CaseFiling!=='undefined'){
+    try{CaseFiling.listCases({}).forEach(function(cf){if(typeof caseFromFilingRecord==='function')add(caseFromFilingRecord(cf));});}catch(e){}
+  }
+  _intelCaseCache=out;
+  return out.slice();
+}
+
+function hydrateBatchDemoCases(done){
+  if(_intelHydrated){if(done)done();return;}
+  var cases=getIntelligenceCases();
+  if(cases.filter(function(c){return/^UP-2026-/.test(c.ref);}).length>=50||typeof rowsFromSpreadsheetText!=='function'){
+    _intelHydrated=true;if(done)done();return;
+  }
+  fetch('templates/261claims-batch-demo.csv').then(function(r){return r.text();}).then(function(text){
+    var result=rowsFromSpreadsheetText(text);
+    if(!result.error&&result.rows.length){
+      var seen={}, merged=getIntelligenceCases();
+      merged.forEach(function(c){seen[c.ref]=true;});
+      var batchAssigned=[];
+      result.rows.forEach(function(row,i){
+        var ref=row.ref||('UP-2026-'+String(merged.length+i+1).padStart(4,'0'));
+        if(seen[ref])return;
+        var parsed=typeof parseLocDateReceived==='function'?parseLocDateReceived(row.dateReceived):new Date();
+        var assignee=typeof pickDeterministicAssignee==='function'?pickDeterministicAssignee(row.jurisdictionCode,batchAssigned):'SB';
+        batchAssigned.push({assignedTo:assignee,stage:'intake'});
+        var built=typeof buildCaseFromRow==='function'?buildCaseFromRow(row,assignee,parsed):null;
+        if(built){built.ref=ref;seen[ref]=true;merged.push(normalizeInsightCase(built));}
+      });
+      _intelCaseCache=merged;
+    }
+    _intelHydrated=true;if(done)done();
+  }).catch(function(){_intelHydrated=true;if(done)done();});
+}
+
+function jurisdictionLabel(key){return {'england-wales':'England & Wales',france:'France',spain:'Spain'}[key]||key;}
+function cprBand(days){return days<=3?'urgent':days<=10?'watch':'normal';}
+function triageClass(t){return t==='DEFEND'?'pt-defend':t==='ESCALATE'?'pt-escalate':'pt-investigate';}
+function cprClass(days){var u=typeof daysUrgency==='function'?daysUrgency(days):cprBand(days);return u==='urgent'?'pc-urgent':u==='warn'?'pc-warn':'pc-ok';}
+
+function uniqueDisruptionTypes(cases){
+  var set={}, preferred=['Delay','Cancellation','Denied Boarding','Downgrade'];
+  cases.forEach(function(c){set[c.disruptionType]=true;});
+  var all=Object.keys(set).sort();
+  preferred.forEach(function(p){if(set[p]){var idx=all.indexOf(p);if(idx>=0){all.splice(idx,1);all.unshift(p);}}});
+  return all;
+}
+
+function toggleIntelFilter(kind,value){
+  var list=intelFilters[kind];if(!Array.isArray(list))return;
+  var idx=list.indexOf(value);if(idx>=0)list.splice(idx,1);else list.push(value);
+  intelFilters.groupOnly=false;renderPanel();
+}
+function setIntelText(field,value){intelFilters[field]=value;intelFilters.groupOnly=false;renderPanel();}
+function clearIntelFilters(){intelFilters={disruptionTypes:[],jurisdictions:[],triage:[],cprBands:[],solicitor:'',valueMin:'',valueMax:'',groupOnly:false};renderPanel();}
+
+function matchesDisruption(c,selected){
+  if(!selected.length)return true;
+  return selected.some(function(t){return (c.disruptionType||'').toLowerCase().indexOf(String(t).toLowerCase())>=0;});
+}
+
+function filterIntelligenceCases(cases){
+  var min=intelFilters.valueMin!==''?parseFloat(intelFilters.valueMin):null;
+  var max=intelFilters.valueMax!==''?parseFloat(intelFilters.valueMax):null;
+  return cases.filter(function(c){
+    if(intelFilters.groupOnly&&!/(group|pax)/i.test(c.triageNote||''))return false;
+    if(!matchesDisruption(c,intelFilters.disruptionTypes))return false;
+    if(intelFilters.jurisdictions.length&&intelFilters.jurisdictions.indexOf(c.jurisdiction)<0)return false;
+    if(intelFilters.triage.length&&intelFilters.triage.indexOf(c.classification)<0)return false;
+    if(intelFilters.cprBands.length&&intelFilters.cprBands.indexOf(cprBand(c.cprDaysLeft))<0)return false;
+    if(intelFilters.solicitor&&(c.solicitor||'').toLowerCase().indexOf(intelFilters.solicitor.toLowerCase())<0)return false;
+    if(min!=null&&!isNaN(min)&&c.compNumeric<min)return false;
+    if(max!=null&&!isNaN(max)&&c.compNumeric>max)return false;
+    return true;
+  });
+}
+
+function formatExposure(amount,currency){
+  if(currency==='EUR')return '€'+Math.round(amount).toLocaleString('en-GB');
+  return '£'+Math.round(amount).toLocaleString('en-GB');
+}
+
+function computeCorrelations(cases){
+  var cards=[];
+  var delayCases=cases.filter(function(c){return /delay/i.test(c.disruptionType||'');});
+  if(delayCases.length){
+    var defendPct=Math.round(100*delayCases.filter(function(c){return c.classification==='DEFEND';}).length/delayCases.length);
+    if(defendPct>50){
+      cards.push({id:'atfm',icon:'ti-radar',urgent:false,title:'ATFM extraordinary circumstances cohort',
+        finding:'Strong ATFM extraordinary circumstances cohort — '+delayCases.length+' delay cases, '+defendPct+'% recommended DEFEND. Prioritise METAR/Eurocontrol evidence on these.',
+        metric:defendPct+'%',metricColor:'var(--green)',preset:{disruptionTypes:['Delay']}});
+    }
+  }
+  var byFirm={};
+  cases.forEach(function(c){
+    var f=c.solicitor||'Unknown';
+    if(!byFirm[f])byFirm[f]={count:0,types:{},juris:{}};
+    byFirm[f].count++;byFirm[f].types[c.disruptionType]=(byFirm[f].types[c.disruptionType]||0)+1;
+    byFirm[f].juris[c.jurisdiction]=(byFirm[f].juris[c.jurisdiction]||0)+1;
+  });
+  var topFirm=null,topCount=0;
+  Object.keys(byFirm).forEach(function(f){if(byFirm[f].count>topCount){topCount=byFirm[f].count;topFirm=f;}});
+  if(topFirm&&topCount>1){
+    var tf=byFirm[topFirm], topType='',topTypeN=0,topJur='',topJurN=0;
+    Object.keys(tf.types).forEach(function(t){if(tf.types[t]>topTypeN){topTypeN=tf.types[t];topType=t;}});
+    Object.keys(tf.juris).forEach(function(j){if(tf.juris[j]>topJurN){topJurN=tf.juris[j];topJur=j;}});
+    cards.push({id:'cmc',icon:'ti-building-bank',urgent:false,title:'High-volume CMC activity',
+      finding:topFirm+' — '+topCount+' claims filed, '+topType+' concentrated, '+jurisdictionLabel(topJur)+'. Monitor for pattern litigation.',
+      metric:String(topCount),metricColor:'var(--purple)',preset:{solicitor:topFirm}});
+  }
+  var urgentCases=cases.filter(function(c){return c.cprDaysLeft<=3;});
+  if(urgentCases.length){
+    cards.push({id:'cpr',icon:'ti-alarm',urgent:true,title:'Urgent CPR cluster',
+      finding:urgentCases.length+' cases require LOA within 3 days. Immediate action required.',
+      metric:String(urgentCases.length),metricColor:'var(--red)',preset:{cprBands:['urgent']}});
+  }
+  var groupCases=cases.filter(function(c){return /group|pax/i.test(c.triageNote||'');});
+  if(groupCases.length){
+    var exposure=groupCases.reduce(function(sum,c){return sum+(c.compCurrency==='EUR'?Math.round(c.compNumeric*0.86):c.compNumeric);},0);
+    cards.push({id:'group',icon:'ti-users-group',urgent:false,title:'Group passenger multiplier',
+      finding:'Group passenger cases represent '+groupCases.length+' claims and '+formatExposure(exposure,'GBP')+' total exposure. Each group case multiplies liability.',
+      metric:String(groupCases.length),metricColor:'var(--amber)',preset:{groupOnly:true}});
+  }
+  var jurRows=['england-wales','france','spain'].map(function(j){
+    var subset=cases.filter(function(c){return c.jurisdiction===j;});
+    if(!subset.length)return null;
+    var typeCounts={};subset.forEach(function(c){typeCounts[c.disruptionType]=(typeCounts[c.disruptionType]||0)+1;});
+    var bestType='',bestN=0;Object.keys(typeCounts).forEach(function(t){if(typeCounts[t]>bestN){bestN=typeCounts[t];bestType=t;}});
+    var defendN=subset.filter(function(c){return c.classification==='DEFEND';}).length;
+    return {jurisdiction:j,label:jurisdictionLabel(j),type:bestType,count:bestN,
+      approach:defendN/subset.length>0.5?'Prioritise extraordinary circumstances defence':'Mixed triage — review individually',
+      preset:{jurisdictions:[j],disruptionTypes:[bestType]}};
+  }).filter(Boolean);
+  if(jurRows.length)cards.push({id:'jurisdiction',icon:'ti-world',urgent:false,type:'table',title:'Jurisdiction × disruption correlation',rows:jurRows});
+  return cards;
+}
+
+function applyCorrelationPreset(preset){
+  intelFilters={disruptionTypes:(preset.disruptionTypes||[]).slice(),jurisdictions:(preset.jurisdictions||[]).slice(),triage:(preset.triage||[]).slice(),cprBands:(preset.cprBands||[]).slice(),solicitor:preset.solicitor||'',valueMin:'',valueMax:'',groupOnly:!!preset.groupOnly};
+  renderPanel();
+  var el=document.getElementById('intel-search');if(el)el.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function triageSplitBar(cases){
+  var total=cases.length||1,d=cases.filter(function(c){return c.classification==='DEFEND';}).length;
+  var i=cases.filter(function(c){return c.classification==='INVESTIGATE';}).length,e=total-d-i;
+  return '<div class="triage-bar" title="DEFEND / INVESTIGATE / ESCALATE"><span class="tb-def" style="width:'+(100*d/total)+'%"></span><span class="tb-inv" style="width:'+(100*i/total)+'%"></span><span class="tb-esc" style="width:'+(100*e/total)+'%"></span></div>';
+}
+
+function buildAgencyRows(cases){
+  var byFirm={};
+  cases.forEach(function(c){
+    var f=c.solicitor||'Unknown';
+    if(!byFirm[f])byFirm[f]={cases:[],juris:{},types:{}};
+    byFirm[f].cases.push(c);byFirm[f].juris[c.jurisdiction]=(byFirm[f].juris[c.jurisdiction]||0)+1;
+    byFirm[f].types[c.disruptionType]=(byFirm[f].types[c.disruptionType]||0)+1;
+  });
+  return Object.keys(byFirm).map(function(name){
+    var b=byFirm[name],avg=b.cases.reduce(function(s,c){return s+c.compNumeric;},0)/(b.cases.length||1);
+    return {name:name,count:b.cases.length,
+      jurisdictions:Object.keys(b.juris).sort(function(a,bk){return b.juris[bk]-b.juris[a];}).map(jurisdictionLabel).join(', '),
+      types:Object.keys(b.types).sort(function(a,bk){return b.types[bk]-b.types[a];}).slice(0,3).join(', '),
+      avgValue:formatExposure(avg,b.cases[0]?b.cases[0].compCurrency:'GBP'),cases:b.cases};
+  }).sort(function(a,b){return b.count-a.count;});
+}
+
+function renderCorrelationCards(cards){
+  return cards.map(function(card){
+    if(card.type==='table'){
+      var rows=(card.rows||[]).map(function(r){
+        return '<tr><td>'+escapeHtml(r.label)+'</td><td>'+escapeHtml(r.type)+'</td><td>'+r.count+'</td><td>'+escapeHtml(r.approach)+'</td>'
+          +'<td><button type="button" class="corr-btn" data-preset="'+encodeURIComponent(JSON.stringify(r.preset))+'" onclick="applyCorrelationPreset(JSON.parse(decodeURIComponent(this.dataset.preset)))">View</button></td></tr>';
+      }).join('');
+      return '<div class="corr-card"><div class="corr-hdr"><div class="corr-icon"><i class="ti '+card.icon+'"></i></div><div class="corr-title">'+escapeHtml(card.title)+'</div></div>'
+        +'<table class="jur-table"><thead><tr><th>Jurisdiction</th><th>Most common type</th><th>Count</th><th>Recommended approach</th><th></th></tr></thead><tbody>'+rows+'</tbody></table></div>';
+    }
+    return '<div class="corr-card'+(card.urgent?' urgent':'')+'"><div class="corr-hdr"><div class="corr-icon"><i class="ti '+card.icon+'"></i></div><div><div class="corr-title">'+escapeHtml(card.title)+'</div>'
+      +(card.urgent?'<span class="urgent-badge">Urgent</span>':'')+'</div></div>'
+      +'<div class="corr-metric" style="color:'+card.metricColor+'">'+escapeHtml(card.metric)+'</div>'
+      +'<div class="corr-finding">'+escapeHtml(card.finding)+'</div>'
+      +'<div class="corr-foot"><button type="button" class="corr-btn" data-preset="'+encodeURIComponent(JSON.stringify(card.preset||{}))+'" onclick="applyCorrelationPreset(JSON.parse(decodeURIComponent(this.dataset.preset)))">View cases</button></div></div>';
+  }).join('');
+}
+
+function renderIntelligence(){
+  var allCases=getIntelligenceCases();
+  _correlations=computeCorrelations(allCases);
+  var filtered=filterIntelligenceCases(allCases);
+  var disruptionOpts=uniqueDisruptionTypes(allCases);
+  var jurOpts=[{key:'england-wales',label:'England & Wales'},{key:'france',label:'France'},{key:'spain',label:'Spain'}];
+  var triageOpts=['DEFEND','INVESTIGATE','ESCALATE'];
+  var cprOpts=[{key:'urgent',label:'Urgent ≤3d'},{key:'watch',label:'Watch 4–10d'},{key:'normal',label:'Normal >10d'}];
+  function pillHtml(kind,items,keyFn,labelFn){
+    return items.map(function(item){
+      var key=keyFn?keyFn(item):item,label=labelFn?labelFn(item):item;
+      var active=(intelFilters[kind]||[]).indexOf(key)>=0;
+      return '<button type="button" class="fpill'+(active?' active':'')+'" onclick="toggleIntelFilter(\''+kind+'\',\''+String(key).replace(/'/g,'\\\'')+'\')">'+escapeHtml(label)+'</button>';
+    }).join('');
+  }
+  var caseRows=filtered.map(function(c){
+    return '<div class="intel-row" onclick="window.location.href=\'case.html?ref='+encodeURIComponent(c.ref)+'\'">'
+      +'<div><div class="ir-ref">'+escapeHtml(c.ref)+'</div><div class="ir-name">'+escapeHtml(c.claimant)+'</div></div>'
+      +'<div class="ir-muted">'+escapeHtml(c.disruptionType)+'</div><div class="ir-muted">'+escapeHtml(jurisdictionLabel(c.jurisdiction))+'</div>'
+      +'<div><span class="p-triage '+triageClass(c.classification)+'">'+escapeHtml(c.classification)+'</span></div>'
+      +'<div><span class="p-cpr '+cprClass(c.cprDaysLeft)+'">'+c.cprDaysLeft+'d</span></div>'
+      +'<div class="ir-muted">'+escapeHtml(c.value||'—')+'</div><div><div class="ir-sol">'+escapeHtml(c.solicitor)+'</div></div></div>';
+  }).join('');
+  var agencyRows=buildAgencyRows(allCases).map(function(r){
+    return '<tr><td><strong>'+escapeHtml(r.name)+'</strong></td><td>'+r.count+'</td><td>'+escapeHtml(r.jurisdictions)+'</td><td>'+escapeHtml(r.types)+'</td><td>'+escapeHtml(r.avgValue)+'</td><td>'+triageSplitBar(r.cases)+'</td></tr>';
+  }).join('');
+  document.getElementById('tab-panel').innerHTML=
+    '<div class="intel-wrap"><div class="intel-section" id="intel-search"><div class="intel-section-hdr"><i class="ti ti-filter"></i><div class="intel-section-title">Live search &amp; filter</div><div class="intel-section-sub">Correlation engine · '+allCases.length+' active cases</div></div>'
+    +'<div class="filter-bar"><div class="filter-group"><div class="filter-label">Disruption type</div><div class="filter-pills">'+pillHtml('disruptionTypes',disruptionOpts)+'</div></div>'
+    +'<div class="filter-group"><div class="filter-label">Jurisdiction</div><div class="filter-pills">'+pillHtml('jurisdictions',jurOpts,function(o){return o.key;},function(o){return o.label;})+'</div></div>'
+    +'<div class="filter-group"><div class="filter-label">Triage</div><div class="filter-pills">'+pillHtml('triage',triageOpts)+'</div></div>'
+    +'<div class="filter-group"><div class="filter-label">CPR urgency</div><div class="filter-toggles">'+pillHtml('cprBands',cprOpts,function(o){return o.key;},function(o){return o.label;})+'</div></div>'
+    +'<div class="filter-row"><div class="filter-group"><div class="filter-label">Solicitor / CMC</div><input class="filter-input" placeholder="Filter by firm name…" value="'+escapeHtml(intelFilters.solicitor)+'" oninput="setIntelText(\'solicitor\',this.value)"></div>'
+    +'<div class="filter-group"><div class="filter-label">Claim value (min / max)</div><div class="filter-row"><input class="filter-input" type="number" placeholder="Min" value="'+escapeHtml(intelFilters.valueMin)+'" oninput="setIntelText(\'valueMin\',this.value)"><input class="filter-input" type="number" placeholder="Max" value="'+escapeHtml(intelFilters.valueMax)+'" oninput="setIntelText(\'valueMax\',this.value)"></div></div></div>'
+    +'<div><button type="button" class="fpill" onclick="clearIntelFilters()">Clear all filters</button></div></div>'
+    +'<div class="intel-count">Showing '+filtered.length+' of '+allCases.length+' cases</div>'
+    +'<div class="intel-list">'+(caseRows||'<div class="intel-empty">No cases match the current filters.</div>')+'</div></div>'
+    +'<div class="intel-section"><div class="intel-section-hdr"><i class="ti ti-brain"></i><div class="intel-section-title">AI-surfaced correlations</div></div><div class="corr-grid">'+renderCorrelationCards(_correlations)+'</div></div>'
+    +'<div class="intel-section"><div class="intel-section-hdr"><i class="ti ti-flag"></i><div class="intel-section-title">Agency / CMC tracker</div><div class="intel-section-sub">Flags by agency — focus defence strategy</div></div>'
+    +'<div class="panel"><table class="agency-table"><thead><tr><th>Firm name</th><th>Claims filed</th><th>Jurisdictions</th><th>Disruption types</th><th>Avg claim value</th><th>Triage split</th></tr></thead><tbody>'+agencyRows+'</tbody></table></div></div></div>';
 }
 
 function filteredPastCases(){
@@ -124,6 +441,8 @@ function renderPastCases(){
 function renderPanel(){
   if(activeTab==='reporting'){
     document.getElementById('tab-panel').innerHTML='<iframe class="tab-frame" src="module6-mi.html?embed=1" title="Reporting"></iframe>';
+  }else if(activeTab==='intelligence'){
+    renderIntelligence();
   }else{
     renderPastCases();
   }
@@ -138,7 +457,11 @@ function switchUser(id){
   ['SB','JP','KR','MD','PL','CG','IM','EH'].forEach(function(uid){var el=document.getElementById('ud-'+uid);if(el)el.classList.toggle('current',uid===id);});
   renderPanel();
 }
-window.addEventListener('load',function(){renderTabs();renderPanel();});
+window.addEventListener('load',function(){
+  renderTabs();
+  renderPanel();
+  hydrateBatchDemoCases(function(){renderPanel();});
+});
 </script>
 <script src="shared_nav.js"></script>
 
