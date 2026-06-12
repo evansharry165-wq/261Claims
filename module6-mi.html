@@ -160,6 +160,25 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 .ud-tick{margin-left:auto;color:var(--green);font-size:14px;display:none}
 .ud-item.current .ud-tick{display:block}
 
+
+
+/* ── DataBricks concept ── */
+.db-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);margin-bottom:18px;overflow:hidden}
+.db-header{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:linear-gradient(135deg,#FF3621 0%,#FF8C00 100%)}
+.db-title{font-size:13px;font-weight:600;color:#fff;display:flex;align-items:center;gap:8px}
+.db-badge{font-size:10px;padding:2px 8px;border-radius:10px;background:rgba(255,255,255,0.2);color:#fff;font-weight:500}
+.db-body{padding:14px 16px}
+.db-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px}
+.db-metric{background:var(--surface2);border-radius:var(--r);padding:10px 12px;border:1px solid var(--border)}
+.db-metric-val{font-size:20px;font-weight:500;color:var(--text);margin-bottom:2px}
+.db-metric-lbl{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.04em}
+.db-metric-delta{font-size:11px;margin-top:3px}
+.db-delta-up{color:var(--red)}.db-delta-down{color:var(--green)}
+.db-insight{background:var(--surface2);border-radius:var(--r);padding:10px 12px;border-left:3px solid var(--amber);margin-bottom:8px}
+.db-insight-title{font-size:12px;font-weight:500;color:var(--text);margin-bottom:3px}
+.db-insight-body{font-size:11px;color:var(--text2);line-height:1.5}
+.db-cta{font-size:11px;color:var(--amber);font-weight:500;margin-top:5px}
+.db-connect-note{font-size:11px;color:var(--text3);padding:10px 12px;background:var(--surface2);border-radius:var(--r);border:1px dashed var(--border2);display:flex;align-items:center;gap:8px}
 </style>
 </head>
 <body>
@@ -470,6 +489,80 @@ function buildDynamicStats(){
   DATA.stats.totalClaims = ALL_CASES.length;
 }
 
+
+function buildDataBricksPanel(){
+  return `<div class="db-panel">
+    <div class="db-header">
+      <div class="db-title">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+        </svg>
+        Databricks — Operational intelligence
+        <span class="db-badge">CONNECTED</span>
+      </div>
+      <div style="font-size:11px;color:rgba(255,255,255,0.7)">Live feed · Updated 06:00 UTC daily</div>
+    </div>
+    <div class="db-body">
+      <div style="font-size:11px;color:var(--text3);margin-bottom:12px">
+        Operational disruption data from the airline's Databricks environment — fuel costs, route disruption rates, 
+        cancellation costs and ATFM impact. Use this to inform the defend vs. settle decision at a strategic level.
+      </div>
+      <div class="db-grid">
+        <div class="db-metric">
+          <div class="db-metric-val">£187m</div>
+          <div class="db-metric-lbl">EC261 liability FY2024</div>
+          <div class="db-metric-delta db-delta-down">↓ £24m vs FY2023</div>
+        </div>
+        <div class="db-metric">
+          <div class="db-metric-val">23.4%</div>
+          <div class="db-metric-lbl">Flights disrupted YTD</div>
+          <div class="db-metric-delta db-delta-up">↑ 2.1% vs same period</div>
+        </div>
+        <div class="db-metric">
+          <div class="db-metric-val">£4.20</div>
+          <div class="db-metric-lbl">Avg fuel cost/seat (Jun)</div>
+          <div class="db-metric-delta db-delta-up">↑ 8% vs May — cost pressure</div>
+        </div>
+        <div class="db-metric">
+          <div class="db-metric-val">847</div>
+          <div class="db-metric-lbl">ATFM delays this month</div>
+          <div class="db-metric-delta db-delta-down">↓ 12% — strong EC defence</div>
+        </div>
+        <div class="db-metric">
+          <div class="db-metric-val">£1,240</div>
+          <div class="db-metric-lbl">Avg cancellation cost/pax</div>
+          <div class="db-metric-delta" style="color:var(--text3)">Rebooking + hotel + comp</div>
+        </div>
+        <div class="db-metric">
+          <div class="db-metric-val">62%</div>
+          <div class="db-metric-lbl">ATFM extraordinary circ rate</div>
+          <div class="db-metric-delta db-delta-down">↑ 5% — stronger defence position</div>
+        </div>
+      </div>
+      <div style="font-size:11px;font-weight:500;color:var(--text);margin-bottom:8px;display:flex;align-items:center;gap:5px"><i class="ti ti-bulb" style="color:var(--amber)"></i> Strategic insights</div>
+      <div class="db-insight">
+        <div class="db-insight-title">Fuel cost pressure → consider route-level litigation threshold</div>
+        <div class="db-insight-body">BCN and AGP routes showing 31% fuel cost increase this quarter. At £4.20/seat average, a 4-hour delay on a 180-seat aircraft represents £756 operational cost before litigation spend. Low-value EC261 claims on these routes may be better settled commercially.</div>
+        <div class="db-cta">→ Apply to 23 open BCN/AGP delay cases in the system</div>
+      </div>
+      <div class="db-insight">
+        <div class="db-insight-title">ATFM extraordinary circumstances rate is at 62% — defend aggressively</div>
+        <div class="db-insight-body">This month's ATFM data shows 847 slot restrictions logged by Eurocontrol. 62% qualify as extraordinary circumstances under the EC261 defence framework. All 44 delay cases in the current batch should have ATFM data requested as a first step.</div>
+        <div class="db-cta">→ 44 delay cases flagged for ATFM evidence — view in Insights</div>
+      </div>
+      <div class="db-insight">
+        <div class="db-insight-title">Cancel or litigate? June disruption event analysis</div>
+        <div class="db-insight-body">4 June disruption event (ATFM slot restrictions, Gatwick): estimated 1,200 affected passengers. Full liability exposure: £300,000. Projected defence rate at 70% extraordinary circumstances: net liability £90,000. Alternative: proactive goodwill (£50 voucher): estimated cost £60,000. Litigation is marginally preferred at current ATFM evidence strength.</div>
+        <div class="db-cta">→ 12 claims from this event are in the current batch</div>
+      </div>
+      <div class="db-connect-note">
+        <i class="ti ti-info-circle" style="color:var(--text3);font-size:14px"></i>
+        <span>Databricks connection reads operational data from the airline's existing Databricks environment. No data duplication — 261Claims queries, not stores. Full integration available as part of the founding partnership build.</span>
+      </div>
+    </div>
+  </div>`;
+}
+
 function render(scaledStats){
   buildDynamicStats();
   var displayStats = scaledStats || DATA.stats;
@@ -621,7 +714,7 @@ function buildContent(displayStats){
   </div>`;
 
   const urgencyRow = row4; // risk register + pipeline — shown first
-  return stats + urgencyRow + row1 + row2 + row3 + tablePanel;
+  return stats + urgencyRow + row1 + row2 + row3 + tablePanel + buildDataBricksPanel();
 }
 
 function statCard(label, val, icon, iconCol, sub, subCls){
