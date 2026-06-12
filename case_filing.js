@@ -98,7 +98,7 @@
       h.documents = [
         mkDoc('cf-h-001', 'intake', 'Letter of Claim — Hartley', {
           filename: 'Hartley_LOC_22May2026.pdf',
-          content: 'LETTER OF CLAIM\n\nDaniel Hartley v TestAirways\nFlight HC 1184 LTN–BCN, 14 March 2026\n\nClaim for delay, diversion to Valencia, consequential loss £38,250 and expenses £141.80 under EC Regulation 261/2004.',
+          content: 'LETTER OF CLAIM\n\nDaniel Hartley v. [Airline]\nFlight HC 1184 LTN–BCN, 14 March 2026\n\nClaim for delay, diversion to Valencia, consequential loss £38,250 and expenses £141.80 under EC Regulation 261/2004.',
           status: 'on_file',
           source: 'intake',
           uploadedBy: 'SB',
@@ -119,7 +119,7 @@
         }),
         mkDoc('cf-h-003', 'evidence_index', 'Evidence pack index — HC 1184', {
           filename: 'AC-2026-0089-Evidence-Index.txt',
-          content: 'Evidence on file (70%):\n• Operational delay records system flight details — on file\n• Disruption data system disruption record — on file\n• METAR/SIGMET BCN — on file\n• Eurocontrol ATFM — on file\n• Valencia ground records — requested',
+          content: 'Evidence on file (35%):\n• Operational delay records system flight details — on file\n• Disruption data system disruption record — on file\n• METAR/SIGMET BCN — on file\n• Eurocontrol ATFM — on file\n• Valencia ground records — requested',
           status: 'on_file',
           source: 'evidence',
           uploadedBy: 'EH',
@@ -130,10 +130,10 @@
       h.activity.push(
         { text: 'LOC deposited — AI extraction complete', time: '22 May 2026 09:14', type: 'upload', by: 'S. Booth' },
         { text: 'Letter of Acknowledgement approved', time: '24 May 2026 11:30', type: 'approve', by: 'S. Booth' },
-        { text: 'Evidence pack 70% — drafting in progress', time: '04 Jun 2026 14:20', type: 'stage', by: 'E. Hughes' }
+        { text: 'Evidence pack 35% — evidence gathering in progress', time: '04 Jun 2026 14:20', type: 'stage', by: 'E. Hughes' }
       );
-      h.evidencePct = 70;
-      h.stage = 'drafting';
+      h.evidencePct = 35;
+      h.stage = 'evidence';
     }
 
     if (cases['AC-2026-0076']) {

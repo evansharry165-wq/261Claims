@@ -339,7 +339,7 @@ function t(key){var d=I18N[getUILang()]||I18N.en;return d[key]||I18N.en[key]||ke
     };
     sessionStorage.setItem('aeroCaseData',JSON.stringify(payload));
     sessionStorage.setItem('261c_case',JSON.stringify(cd));
-  }catch(e){console.warn('URL reader:',e);}
+  }catch(e){}
 })();
 </script>
 
@@ -429,7 +429,7 @@ function parseClaimValue(val){
 function claimToGbp(parsed){return parsed.currency==='EUR'?Math.round(parsed.amount*0.86):parsed.amount;}
 function formatGbp(n){return '£'+n.toLocaleString('en-GB');}
 function defenceCostForCase(){
-  if(C.classification==='ESCALATE')return {low:5000,high:8000,label:'£5,000–£8,000',mid:6500,escalate:true};
+  if(C.classification==='ESCALATE')return {low:3500,high:8000,label:'£3,500–£8,000',mid:5750,escalate:true};
   var costs={A:800,B:1500,C:3500};
   var n=costs[C.cat]||costs.A;
   return {low:n,high:n,label:formatGbp(n),mid:n,escalate:false};

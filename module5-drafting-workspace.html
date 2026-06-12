@@ -292,7 +292,7 @@ function t(key){var d=I18N[getUILang()]||I18N.en;return d[key]||I18N.en[key]||ke
     };
     sessionStorage.setItem('aeroCaseData',JSON.stringify(payload));
     sessionStorage.setItem('261c_case',JSON.stringify(cd));
-  }catch(e){console.warn('URL reader:',e);}
+  }catch(e){}
 })();
 </script>
 
@@ -382,7 +382,7 @@ var C={
   name:   _i.claimant  ||'Daniel Hartley',
   sol:    _i.solicitor ||'Pemberton & Associates Solicitors LLP',
   solRef: 'PA/2026/03871/KW',
-  solAddr:'Clarke & Partners Solicitors, 22 Bridge Street, Manchester, M3 3BT',
+  solAddr:'Pemberton & Associates, 14 Chancery Lane, London, WC2A 1LG',
   flight: _i.flight    ||'HC 1184 — LTN to BCN (diverted VLC)',
   flightNum:'HC 1184',
   dep:'London Luton Airport (LTN)',

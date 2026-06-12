@@ -9,7 +9,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{--navy:#0B1628;--blue:#2A6FDB;--blue-faint:#EFF6FF;--blue-text:#1D4ED8;--green:#1A7A4A;--green-faint:#E6F5EE;--red:#C0392B;--red-faint:#FCF0EF;--amber:#B45309;--amber-faint:#FEF3C7;--border:#E2E8F0;--text:#0F172A;--text2:#475569;--text3:#94A3B8;--surface:#FFFFFF;--surface2:#F8FAFC;--surface3:#F1F5F9;--font:'Inter',sans-serif;--font-serif:'Instrument Serif',Georgia,serif;--mono:'DM Mono',monospace;--r:8px;--r2:12px;--r3:16px}
+:root{--navy:#0B1628;--blue:#2A6FDB;--blue-faint:#EFF6FF;--blue-text:#1D4ED8;--green:#1A7A4A;--green-faint:#E6F5EE;--red:#C0392B;--red-faint:#FCF0EF;--amber:#B45309;--amber-faint:#FEF3C7;--purple:#4338CA;--purple-faint:#EEEDFE;--border:#E2E8F0;--text:#0F172A;--text2:#475569;--text3:#94A3B8;--surface:#FFFFFF;--surface2:#F8FAFC;--surface3:#F1F5F9;--font:'Inter',sans-serif;--font-serif:'Instrument Serif',Georgia,serif;--mono:'DM Mono',monospace;--r:8px;--r2:12px;--r3:16px}
 html,body{height:100%;font-family:var(--font);background:var(--surface2);color:var(--text);font-size:14px}
 .global-nav{background:var(--navy);height:48px;display:flex;align-items:center;padding:0 20px}
 .gn-logo{display:flex;align-items:center;gap:8px;text-decoration:none;margin-right:20px}
@@ -216,6 +216,7 @@ function switchUser(id){
     var el=document.getElementById('ud-'+uid);if(el)el.classList.toggle('current',uid===id);
   });
   var u=USERS[id];if(u){document.getElementById('nav-av').textContent=u.initials;document.getElementById('nav-user').textContent=u.name;}
+  if(typeof renderGlobalNav==='function')renderGlobalNav();
 }
 
 window.addEventListener('load', function(){

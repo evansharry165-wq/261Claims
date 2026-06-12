@@ -160,8 +160,6 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 .ud-tick{margin-left:auto;color:var(--green);font-size:14px;display:none}
 .ud-item.current .ud-tick{display:block}
 
-
-
 /* ── DataBricks concept ── */
 .db-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);margin-bottom:18px;overflow:hidden}
 .db-header{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:linear-gradient(135deg,#FF3621 0%,#FF8C00 100%)}
@@ -179,65 +177,24 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 .db-insight-body{font-size:11px;color:var(--text2);line-height:1.5}
 .db-cta{font-size:11px;color:var(--amber);font-weight:500;margin-top:5px}
 .db-connect-note{font-size:11px;color:var(--text3);padding:10px 12px;background:var(--surface2);border-radius:var(--r);border:1px dashed var(--border2);display:flex;align-items:center;gap:8px}
+
+/* mi tabs */
+.mi-tabs{background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px;height:42px;display:flex;align-items:center;gap:4px;flex-shrink:0;overflow-x:auto}
+.mi-tab-btn{font-size:12px;padding:6px 12px;border-radius:var(--r);border:none;background:transparent;cursor:pointer;color:var(--text2);font-family:var(--font);display:flex;align-items:center;gap:5px;white-space:nowrap;transition:all .15s}
+.mi-tab-btn:hover{background:var(--surface3);color:var(--text)}
+.mi-tab-btn.on{background:var(--blue-faint);color:var(--blue-text);font-weight:500}
+.mi-tab-btn i{font-size:13px}
+
+</style>
+<style media="print">
+  .mi-sidebar, .mi-tabs, button, .nav-bar { display: none !important; }
+  .mi-content { padding: 0 !important; }
+  body { background: white !important; }
 </style>
 </head>
 <body>
 <script src="insights_embed.js"></script>
-<script>
-// ALL DATA AND HELPERS — embedded in every page
-const USERS={
-  SB:{id:'SB',name:'S. Booth',full:'Sarah Booth',role:'Head of Legal Ops',initials:'SB',lang:'en'},
-  JP:{id:'JP',name:'J. Patel',full:'James Patel',role:'Senior Solicitor',initials:'JP',lang:'en'},
-  KR:{id:'KR',name:'K. Rahman',full:'Kiran Rahman',role:'Solicitor',initials:'KR',lang:'en'},
-  MD:{id:'MD',name:'M. Dupont',full:'Marie Dupont',role:'Juriste senior',initials:'MD',lang:'fr'},
-  PL:{id:'PL',name:'P. Laurent',full:'Pierre Laurent',role:'Juriste',initials:'PL',lang:'fr'},
-  CG:{id:'CG',name:'C. García',full:'Carlos García',role:'Abogado senior',initials:'CG',lang:'es'},
-  IM:{id:'IM',name:'I. Martín',full:'Isabel Martín',role:'Abogada',initials:'IM',lang:'es'},
-  EH:{id:'EH',name:'E. Hughes',full:'Emma Hughes',role:'Evidence Handling Specialist',initials:'EH',lang:'en',team:'evidence'},
-};
-const JURISDICTIONS={
-  'england-wales':{name:'England & Wales',flag:'🇬🇧',lang:'en',limitationYears:6,limitationNote:'6 years — Limitation Act 1980',court:'County Court',procedureNote:'CPR Pre-Action Protocol. 21-day acknowledgement.',responseWindow:21,mediation:'optional',mediationNote:'ADR available but not mandatory.',keyDates:[{label:'Acknowledge LOC',days:21,urgency:'critical',note:'CPR Pre-Action Protocol'},{label:'Letter of Response',days:91,urgency:'important',note:'3 months from acknowledgement'},{label:'Limitation review',days:120,urgency:'watch',note:'6-year limitation'}],documents:{acknowledgement:'Letter of Acknowledgement',response:'Letter of Response',defence:'Defence (CPR Part 16)',witness:'Witness Statement (CPR Part 32)'},important:null},
-  'france':{name:'France',flag:'🇫🇷',lang:'fr',limitationYears:5,limitationNote:'5 ans — art. 2224 Code civil',court:'Tribunal Judiciaire',procedureNote:'Médiation préalable OBLIGATOIRE depuis le 6 février 2026. Sans médiation, demande irrecevable.',responseWindow:60,mediation:'mandatory',mediationBody:'Médiateur du Tourisme et du Voyage (MTV)',mediationNote:'Médiation obligatoire depuis le 6 février 2026.',keyDates:[{label:'Répondre à la réclamation',days:60,urgency:'critical',note:'60 jours — avant médiation MTV'},{label:'Médiation préalable (MTV)',days:90,urgency:'critical',note:'OBLIGATOIRE depuis le 6 février 2026'},{label:'Assignation si échec',days:150,urgency:'important',note:'Tribunal Judiciaire par assignation'},{label:'Surveillance prescription',days:180,urgency:'watch',note:'Prescription 5 ans'}],documents:{acknowledgement:'Accusé de réception',response:'Lettre de réponse',defence:'Conclusions en défense',witness:'Attestation de témoin'},important:'ATTENTION : Médiation préalable obligatoire depuis le 6 février 2026. Sans cette étape, la demande est irrecevable.'},
-  'spain':{name:'España',flag:'🇪🇸',lang:'es',limitationYears:5,limitationNote:'5 años — art. 1964 Código Civil',court:'Juzgado de lo Mercantil',procedureNote:'Reclamaciones ante el Juzgado de lo Mercantil. AESA puede iniciar expediente sancionador paralelo.',responseWindow:30,mediation:'available',mediationNote:'Mediación disponible pero no obligatoria.',keyDates:[{label:'Responder a la reclamación',days:30,urgency:'critical',note:'30 días — reclamación AESA'},{label:'Contestación a la demanda',days:20,urgency:'critical',note:'20 días hábiles desde notificación judicial'},{label:'Vigilancia prescripción',days:90,urgency:'watch',note:'Prescripción 5 años'}],documents:{acknowledgement:'Acuse de recibo',response:'Escrito de respuesta',defence:'Contestación a la demanda',witness:'Declaración testifical'},important:'AESA puede iniciar expediente sancionador paralelo, independiente del litigio civil.'},
-};
-const I18N={
-  en:{dashboard:'Dashboard',intake:'Intake',cases:'Cases',cpr:'CPR',evidence:'Evidence',drafting:'Drafting',mi:'MI',knowledge:'Knowledge',myCases:'My cases',intakeQueue:'Intake queue',cprWatch:'CPR watch',myPipeline:'My pipeline',legalNews:'Legal & regulatory',networkOps:'Network & operations',liveSources:'Live sources',goodMorning:'Good morning',goodAfternoon:'Good afternoon',goodEvening:'Good evening',noUrgentDeadlines:'No urgent CPR deadlines this week',evidenceProgress:'Evidence progress',cprDeadlines:'CPR deadlines',viewAll:'View all',uploadLOC:'Upload new letter of claim',noQueue:'No cases in your queue.',stage_intake:'Intake',stage_triage:'Triage',stage_cpr:'CPR',stage_evidence:'Evidence',stage_drafting:'Drafting',stage_defence:'Defence',stage_resolve:'Resolve'},
-  fr:{dashboard:'Tableau de bord',intake:'Réception',cases:'Dossiers',cpr:'Délais',evidence:'Preuves',drafting:'Rédaction',mi:'Reporting',knowledge:'Ressources',myCases:'Mes dossiers',intakeQueue:'File de réception',cprWatch:'Surveillance délais',myPipeline:'Mon pipeline',legalNews:'Actualités juridiques',networkOps:'Réseau & opérations',liveSources:'Sources en direct',goodMorning:'Bonjour',goodAfternoon:'Bon après-midi',goodEvening:'Bonsoir',noUrgentDeadlines:'Aucun délai urgent cette semaine',evidenceProgress:'Avancement des preuves',cprDeadlines:'Délais de procédure',viewAll:'Voir tout',uploadLOC:'Déposer une lettre de réclamation',noQueue:'Aucun dossier dans votre file.',stage_intake:'Réception',stage_triage:'Triage',stage_cpr:'Délais',stage_evidence:'Preuves',stage_drafting:'Rédaction',stage_defence:'Défense',stage_resolve:'Résolu'},
-  es:{dashboard:'Panel',intake:'Recepción',cases:'Casos',cpr:'Plazos',evidence:'Pruebas',drafting:'Redacción',mi:'Informes',knowledge:'Recursos',myCases:'Mis casos',intakeQueue:'Cola de recepción',cprWatch:'Vigilancia de plazos',myPipeline:'Mi flujo de trabajo',legalNews:'Noticias jurídicas',networkOps:'Red & operaciones',liveSources:'Fuentes en vivo',goodMorning:'Buenos días',goodAfternoon:'Buenas tardes',goodEvening:'Buenas noches',noUrgentDeadlines:'Sin plazos urgentes esta semana',evidenceProgress:'Progreso de pruebas',cprDeadlines:'Plazos procesales',viewAll:'Ver todo',uploadLOC:'Cargar carta de reclamación',noQueue:'No hay casos en su cola.',stage_intake:'Recepción',stage_triage:'Triaje',stage_cpr:'Plazos',stage_evidence:'Pruebas',stage_drafting:'Redacción',stage_defence:'Defensa',stage_resolve:'Resuelto'},
-};
-const ALL_CASES=[
-  {ref:'AC-2026-0089',assignedTo:'SB',claimant:'Daniel Hartley',solicitor:'Pemberton & Associates',flight:'HC 1184 — LTN → BCN',flightNum:'HC 1184',dep:'LTN',arr:'BCN',flightDate:'14 March 2026',value:'£39,000+',type:'EC261 — Diversion',locDate:'22 May 2026',stage:'evidence',cat:'C',jurisdiction:'england-wales',lang:'en',disruptionType:'Weather',classification:'ESCALATE',evidencePct:35,cprDaysLeft:3,points:[{n:1,claim:'Delay — Art 7(1)(a)',evidenceStatus:'green',evidenceDoc:'Operational delay records system confirmed'},{n:2,claim:'Extraordinary circumstances — weather',evidenceStatus:'amber',evidenceDoc:'METAR/SIGMET pending'},{n:3,claim:'Article 9 — duty of care',evidenceStatus:'red',evidenceDoc:'Valencia ground records outstanding'},{n:4,claim:'Consequential loss — £38,250 (Montreal Convention)',evidenceStatus:'red',evidenceDoc:'Request third-party contract documentation; challenge causation and mitigation; obtain independent verification — Montreal Convention does not provide recovery of speculative commercial losses'},{n:5,claim:'Travel & subsistence — £141.80',evidenceStatus:'amber',evidenceDoc:'Receipts pending'}],loaStatus:'approved',triageNote:'ESCALATE — Montreal Convention consequential loss (£38,250) is the primary exposure. Challenge causation, foreseeability and mitigation. EC261 extraordinary circumstances defence strong on weather diversion.',activity:[{text:'Evidence module opened',time:'Today 09:14',type:'create'},{text:'AI triage — ESCALATE flagged',time:'Yesterday 16:30',type:'ai'}]},
-  {ref:'AC-2026-0101',assignedTo:'SB',claimant:'Angela Foster',solicitor:'Clarke & Partners',flight:'HC 203 — LGW → ALC',flightNum:'HC 203',dep:'LGW',arr:'ALC',flightDate:'20 May 2026',value:'€250',type:'EC261 — Weather delay',locDate:'30 May 2026',stage:'intake',cat:'A',jurisdiction:'england-wales',lang:'en',disruptionType:'Weather',classification:'DEFEND',evidencePct:0,cprDaysLeft:21,points:[],loaStatus:'',triageNote:'',activity:[{text:'LOC received',time:'Today 07:55',type:'create'}]},
-  {ref:'AC-2026-0091',assignedTo:'JP',claimant:'Rebecca Walsh',solicitor:'Clarke & Partners',flight:'HC 307 — MAN → AMS',flightNum:'HC 307',dep:'MAN',arr:'AMS',flightDate:'9 April 2026',value:'€250',type:'EC261 — ATC delay',locDate:'4 June 2026',stage:'triage',cat:'A',jurisdiction:'england-wales',lang:'en',disruptionType:'ATC Restrictions',classification:'DEFEND',evidencePct:0,cprDaysLeft:21,points:[{n:1,claim:'Delay 3hrs 36mins — Art 7(1)(a)',evidenceStatus:'green',evidenceDoc:'Confirmed via Operational delay records system'},{n:2,claim:'Extraordinary circumstances — ATC ATFM',evidenceStatus:'amber',evidenceDoc:'Eurocontrol data requested'},{n:3,claim:'Art 9 — refreshments not provided',evidenceStatus:'red',evidenceDoc:'Ground records required'},{n:4,claim:'Expenses — £18.40',evidenceStatus:'amber',evidenceDoc:'Receipts with LOC'}],loaStatus:'',triageNote:'',activity:[{text:'LOC uploaded — triage pending',time:'Today 10:30',type:'create'}]},
-  {ref:'AC-2026-0076',assignedTo:'JP',claimant:'Sarah Taylor',solicitor:'Thompsons Solicitors',flight:'HC 330 — LGW → ALC',flightNum:'HC 330',dep:'LGW',arr:'ALC',flightDate:'28 April 2026',value:'€250',type:'EC261 — Weather delay',locDate:'22 May 2026',stage:'drafting',cat:'A',jurisdiction:'england-wales',lang:'en',disruptionType:'Weather',classification:'DEFEND',evidencePct:100,cprDaysLeft:7,points:[{n:1,claim:'Delay 4hrs 10mins — Art 7(1)(a)',evidenceStatus:'green',evidenceDoc:'Operational delay records system confirmed'},{n:2,claim:'Extraordinary circumstances — weather',evidenceStatus:'green',evidenceDoc:'METAR/SIGMET confirmed'}],loaStatus:'sent',triageNote:'Clean weather case. Evidence complete. Draft LOR.',activity:[{text:'Evidence complete — LOR ready',time:'28 May 16:00',type:'stage'}]},
-  {ref:'AC-2026-0094',assignedTo:'KR',claimant:'Thomas Morrison',solicitor:'Irwin Mitchell LLP',flight:'HC 442 — LGW → BCN',flightNum:'HC 442',dep:'LGW',arr:'BCN',flightDate:'15 May 2026',value:'€250',type:'EC261 — ATC delay',locDate:'28 May 2026',stage:'intake',cat:'A',jurisdiction:'england-wales',lang:'en',disruptionType:'ATC Restrictions',classification:'DEFEND',evidencePct:0,cprDaysLeft:15,points:[],loaStatus:'',triageNote:'',activity:[{text:'LOC received',time:'28 May 08:00',type:'create'}]},
-  {ref:'AC-2026-0079',assignedTo:'KR',claimant:'James Singh',solicitor:'Slater & Gordon',flight:'HC 556 — LHR → DUB',flightNum:'HC 556',dep:'LHR',arr:'DUB',flightDate:'10 May 2026',value:'€250',type:'EC261 — ATC delay',locDate:'20 May 2026',stage:'evidence',cat:'A',jurisdiction:'england-wales',lang:'en',disruptionType:'ATC Restrictions',classification:'DEFEND',evidencePct:45,cprDaysLeft:18,points:[{n:1,claim:'Delay 3hrs 15mins — Art 7(1)(a)',evidenceStatus:'green',evidenceDoc:'Operational delay records system confirmed'},{n:2,claim:'Extraordinary circumstances — ATC',evidenceStatus:'amber',evidenceDoc:'Eurocontrol pending'}],loaStatus:'sent',triageNote:'Straightforward ATC.',activity:[{text:'Evidence pack opened',time:'22 May 11:00',type:'action'}]},
-  {ref:'FR-2026-0012',assignedTo:'MD',claimant:'Jean-Pierre Moreau',solicitor:'Cabinet Lefèvre',flight:'HC 742 — CDG → LTN',flightNum:'HC 742',dep:'CDG',arr:'LTN',flightDate:'3 March 2026',value:'250 €',type:'CE 261/2004 — Retard',locDate:'12 Mai 2026',stage:'triage',cat:'A',jurisdiction:'france',lang:'fr',disruptionType:'ATC Restrictions',classification:'DEFEND',evidencePct:0,cprDaysLeft:48,points:[{n:1,claim:'Retard de 3h42 — Art 7(1)(a)',evidenceStatus:'green',evidenceDoc:'Données Operational delay records system confirmées'},{n:2,claim:'Circonstances extraordinaires — ATC',evidenceStatus:'amber',evidenceDoc:'Données Eurocontrol demandées'},{n:3,claim:'Art 9 — absence de rafraîchissements',evidenceStatus:'red',evidenceDoc:'Registres requis'}],loaStatus:'',triageNote:'',activity:[{text:'Lettre de réclamation reçue',time:'12 mai 09:00',type:'create'}]},
-  {ref:'FR-2026-0018',assignedTo:'MD',claimant:'Sophie Blanchard',solicitor:'Maître Rousseau',flight:'HC 519 — LYS → LGW',flightNum:'HC 519',dep:'LYS',arr:'LGW',flightDate:'14 Avril 2026',value:'250 €',type:'CE 261/2004 — Annulation',locDate:'28 Mai 2026',stage:'evidence',cat:'A',jurisdiction:'france',lang:'fr',disruptionType:'Weather',classification:'DEFEND',evidencePct:40,cprDaysLeft:32,points:[{n:1,claim:'Annulation le jour même — Art 5(1)(c)',evidenceStatus:'green',evidenceDoc:'Données Operational delay records system confirmées'},{n:2,claim:'Circonstances extraordinaires — météo',evidenceStatus:'amber',evidenceDoc:'METAR LYS obtenu, SIGMET en attente'},{n:3,claim:'Art 8 — absence de réacheminement',evidenceStatus:'red',evidenceDoc:'Dossier requis'}],loaStatus:'sent',triageNote:'Défense météo. Obtenir SIGMET Lyon.',activity:[{text:'METAR LYS obtenu',time:'2 juin 09:30',type:'upload'}]},
-  {ref:'FR-2026-0009',assignedTo:'PL',claimant:'Isabelle Fontaine',solicitor:'Maître Dumas',flight:'HC 881 — MRS → LGW',flightNum:'HC 881',dep:'MRS',arr:'LGW',flightDate:'18 Fév 2026',value:'250 €',type:'CE 261/2004 — Retard',locDate:'15 Avril 2026',stage:'drafting',cat:'A',jurisdiction:'france',lang:'fr',disruptionType:'ATC Restrictions',classification:'DEFEND',evidencePct:100,cprDaysLeft:14,points:[{n:1,claim:'Retard de 3h28 — Art 7(1)(a)',evidenceStatus:'green',evidenceDoc:'Confirmé'},{n:2,claim:'Circonstances extraordinaires — ATFM',evidenceStatus:'green',evidenceDoc:'Données Eurocontrol confirmées'}],loaStatus:'sent',triageNote:'Dossier propre. Rédiger lettre de réponse.',activity:[{text:'Dossier complet',time:'28 mai 15:00',type:'stage'}]},
-  {ref:'FR-2026-0021',assignedTo:'PL',claimant:'Antoine Renard',solicitor:'Cabinet Girard',flight:'HC 334 — NCE → LTN',flightNum:'HC 334',dep:'NCE',arr:'LTN',flightDate:'22 Avril 2026',value:'250 €',type:'CE 261/2004 — Retard',locDate:'2 Juin 2026',stage:'intake',cat:'A',jurisdiction:'france',lang:'fr',disruptionType:'ATC Restrictions',classification:'DEFEND',evidencePct:0,cprDaysLeft:58,points:[],loaStatus:'',triageNote:'',activity:[{text:'Lettre de réclamation reçue',time:'2 juin 14:00',type:'create'}]},
-  {ref:'ES-2026-0031',assignedTo:'CG',claimant:'Miguel Torres',solicitor:'Bufete Sánchez',flight:'HC 612 — BCN → LGW',flightNum:'HC 612',dep:'BCN',arr:'LGW',flightDate:'5 Marzo 2026',value:'250 €',type:'CE 261/2004 — Retraso',locDate:'20 Mayo 2026',stage:'evidence',cat:'A',jurisdiction:'spain',lang:'es',disruptionType:'ATC Restrictions',classification:'DEFEND',evidencePct:60,cprDaysLeft:10,points:[{n:1,claim:'Retraso de 3h52 — Art 7(1)(a)',evidenceStatus:'green',evidenceDoc:'Datos Operational delay records system confirmados'},{n:2,claim:'Circunstancias extraordinarias — ATC',evidenceStatus:'amber',evidenceDoc:'Datos Eurocontrol solicitados'},{n:3,claim:'Art 9 — ausencia de atención',evidenceStatus:'red',evidenceDoc:'Registros pendientes'}],loaStatus:'sent',triageNote:'Caso ATC. Obtener Eurocontrol.',activity:[{text:'METAR BCN obtenido',time:'27 mayo 09:00',type:'upload'}]},
-  {ref:'ES-2026-0038',assignedTo:'CG',claimant:'Laura Gómez',solicitor:'Despacho Fernández',flight:'HC 228 — MAD → LTN',flightNum:'HC 228',dep:'MAD',arr:'LTN',flightDate:'17 Abril 2026',value:'250 €',type:'CE 261/2004 — Retraso',locDate:'28 Mayo 2026',stage:'triage',cat:'A',jurisdiction:'spain',lang:'es',disruptionType:'Weather',classification:'DEFEND',evidencePct:0,cprDaysLeft:22,points:[{n:1,claim:'Retraso de 4h15 — Art 7(1)(a)',evidenceStatus:'green',evidenceDoc:'Confirmado por Operational delay records system'},{n:2,claim:'Circunstancias extraordinarias — meteorología',evidenceStatus:'amber',evidenceDoc:'METAR/SIGMET pendiente'}],loaStatus:'',triageNote:'',activity:[{text:'Carta de reclamación recibida',time:'28 mayo 11:00',type:'create'}]},
-  {ref:'ES-2026-0044',assignedTo:'IM',claimant:'Roberto Jiménez',solicitor:'Abogados Castellano',flight:'HC 471 — VLC → LGW',flightNum:'HC 471',dep:'VLC',arr:'LGW',flightDate:'2 Mayo 2026',value:'250 €',type:'CE 261/2004 — Retraso',locDate:'1 Junio 2026',stage:'intake',cat:'A',jurisdiction:'spain',lang:'es',disruptionType:'ATC Restrictions',classification:'DEFEND',evidencePct:0,cprDaysLeft:29,points:[],loaStatus:'',triageNote:'',activity:[{text:'Carta de reclamación recibida',time:'1 junio 09:30',type:'create'}]},
-  {ref:'ES-2026-0027',assignedTo:'IM',claimant:'Carmen Ruiz',solicitor:'Bufete Morales',flight:'HC 339 — AGP → LTN',flightNum:'HC 339',dep:'AGP',arr:'LTN',flightDate:'8 Marzo 2026',value:'250 €',type:'CE 261/2004 — Retraso',locDate:'10 Abril 2026',stage:'drafting',cat:'A',jurisdiction:'spain',lang:'es',disruptionType:'Weather',classification:'DEFEND',evidencePct:100,cprDaysLeft:9,points:[{n:1,claim:'Retraso de 3h18 — Art 7(1)(a)',evidenceStatus:'green',evidenceDoc:'Confirmado'},{n:2,claim:'Circunstancias extraordinarias — meteorología',evidenceStatus:'green',evidenceDoc:'METAR/SIGMET confirmados'}],loaStatus:'sent',triageNote:'Caso limpio. Redactar escrito.',activity:[{text:'Expediente completo',time:'20 mayo 14:00',type:'stage'}]},
-];
-// Helpers
-function getCasesForUser(uid,stage){return ALL_CASES.filter(function(c){return c.assignedTo===uid&&(!stage||c.stage===stage);});}
-function getCase(ref){return ALL_CASES.find(function(c){return c.ref===ref;})||null;}
-function getJurisdiction(key){return JURISDICTIONS[key]||JURISDICTIONS['england-wales'];}
-function daysUrgency(d){return d<=3?'urgent':d<=7?'warn':'ok';}
-function urgencyLabel(d){return d<=3?d+'d — URGENT':d<=7?d+'d':d+'d';}
-function stageIcon(s){var m={intake:'ti-inbox',triage:'ti-search',cpr:'ti-calendar-due',evidence:'ti-folder-open',drafting:'ti-file-pencil',defence:'ti-shield',resolve:'ti-circle-check'};return m[s]||'ti-file';}
-function stageColor(s){var m={intake:'#1D4ED8',triage:'#92400E',cpr:'#B45309',evidence:'#4338CA',drafting:'#065F46',defence:'#1A7A4A',resolve:'#374151'};return m[s]||'#374151';}
-function stageBg(s){var m={intake:'#EFF6FF',triage:'#FEF3C7',cpr:'#FEF9C3',evidence:'#EEEDFE',drafting:'#E6F5EE',defence:'#DCFCE7',resolve:'#F1F5F9'};return m[s]||'#F1F5F9';}
-function evPctColor(p){return p>=70?'#22A863':p>=40?'#F59E0B':'#C0392B';}
-function getActiveUser(){return sessionStorage.getItem('261c_user')||'SB';}
-function setActiveUser(id){sessionStorage.setItem('261c_user',id);}
-function getUILang(){return sessionStorage.getItem('261c_lang')||(USERS[getActiveUser()]&&USERS[getActiveUser()].lang)||'en';}
-function t(key){var d=I18N[getUILang()]||I18N.en;return d[key]||I18N.en[key]||key;}
-
-</script>
-<nav class="global-nav">
+<nav class="global-nav nav-bar">
   <a href="index.html" class="gn-logo">
     <div class="gn-mark"><i class="ti ti-plane"></i></div>
     <span class="gn-name">261Claims</span>
@@ -280,7 +237,8 @@ function t(key){var d=I18N[getUILang()]||I18N.en;return d[key]||I18N.en[key]||ke
     </select>
   </div>
 
-  <div class="content" id="content"></div>
+  <div class="mi-tabs" id="mi-tabs"></div>
+  <div class="content mi-content" id="tab-content"></div>
 </div>
 
 <script>
@@ -372,6 +330,7 @@ function buildMIData(){
       avgClose: 24,
       defenceRate: cases.length ? Math.round(defended/cases.length*100) : 0,
       savingYTD: '£280,750',
+      settled: closed.length,
       urgent: urgent,
       watch: watch
     },
@@ -422,6 +381,13 @@ function buildMIData(){
       .slice(0,6)
       .map(function(c){
         return {ref:c.ref, issue: c.classification==='ESCALATE'?'Escalation required':'CPR deadline critical', days:c.cprDaysLeft, risk:'high', note:c.triageNote||'Review required'};
+      }),
+    cprDeadlines: cases
+      .filter(function(c){return c.stage!=='resolve'&&c.stage!=='closed';})
+      .sort(function(a,b){return a.cprDaysLeft-b.cprDaysLeft;})
+      .slice(0,10)
+      .map(function(c){
+        return {ref:c.ref, name:c.claimant, days:c.cprDaysLeft};
       })
   };
 }
@@ -430,6 +396,41 @@ let charts = {};
 let activePeriod = 'ytd';
 let activeType = 'all';
 let activeSolicitor = 'all';
+let _scaledStats = null;
+
+var TABS=[
+  {id:'overview',label:'Overview',icon:'ti-layout-dashboard'},
+  {id:'team-workload',label:'Team workload',icon:'ti-users'},
+  {id:'risk-register',label:'Risk register',icon:'ti-alert-triangle'},
+  {id:'recent-cases',label:'Recent cases',icon:'ti-table'},
+  {id:'exposure-trend',label:'Exposure trend',icon:'ti-trending-up'},
+  {id:'monthly-report',label:'Monthly report',icon:'ti-file-analytics'}
+];
+var activeTab='overview';
+
+function renderTabs(){
+  var bar=document.getElementById('mi-tabs');
+  if(!bar) return;
+  bar.innerHTML=TABS.map(function(t){
+    return '<button class="mi-tab-btn'+(activeTab===t.id?' on':'')+'" onclick="switchTab(\''+t.id+'\')"><i class="ti '+t.icon+'"></i> '+t.label+'</button>';
+  }).join('');
+}
+
+function switchTab(tab){
+  activeTab=tab;
+  renderTabs();
+  renderActiveTab();
+}
+
+function renderActiveTab(){
+  var displayStats=_scaledStats||DATA.stats;
+  if(activeTab==='overview') renderOverview(displayStats);
+  else if(activeTab==='team-workload') renderTeamWorkload(displayStats);
+  else if(activeTab==='risk-register') renderRiskRegister(displayStats);
+  else if(activeTab==='recent-cases') renderRecentCases(displayStats);
+  else if(activeTab==='exposure-trend') renderExposureTrend(displayStats);
+  else if(activeTab==='monthly-report') renderMonthlyReport();
+}
 
 // Period multipliers for demo data scaling
 const PERIOD_SCALE = {mtd:0.2, ytd:1, '12m':1.4, all:1.8};
@@ -445,14 +446,13 @@ function setSolicitor(v){ activeSolicitor=v; applyFilters(); }
 
 function applyFilters(){
   const scale = PERIOD_SCALE[activePeriod]||1;
-  // Update stats
-  const d = document.getElementById('content');
+  const d = document.getElementById('tab-content');
   if(!d) return;
   // Re-render with scaled data
   const scaledData = JSON.parse(JSON.stringify(DATA));
   scaledData.stats.open = Math.round(DATA.stats.open * (activePeriod==='mtd'?0.3:1));
   scaledData.stats.defended = Math.round(DATA.stats.defended * scale);
-  scaledData.stats.settled = Math.round(DATA.stats.settled * scale);
+  scaledData.stats.settled = Math.round((DATA.stats.settled||0) * scale);
   scaledData.stats.defenceRate = activePeriod==='mtd'?68:activePeriod==='12m'?75:activePeriod==='all'?74:72;
   scaledData.stats.avgClose = activePeriod==='mtd'?19:activePeriod==='12m'?26:activePeriod==='all'?27:24;
   scaledData.stats.exposureNet = activePeriod==='mtd'?'£620':activePeriod==='12m'?'£5,200':activePeriod==='all'?'£9,800':'£3,750';
@@ -462,7 +462,8 @@ function applyFilters(){
     const map={sb:'S. Booth',jp:'J. Patel',kr:'K. Rahman',al:'A. Lewis'};
     scaledData.workload = DATA.workload.filter(w=>w.name===map[activeSolicitor]);
   }
-  render(scaledData.stats);
+  _scaledStats = scaledData.stats;
+  renderActiveTab();
 }
 
 
@@ -488,7 +489,6 @@ function buildDynamicStats(){
   DATA.stats.open = open.length;
   DATA.stats.totalClaims = ALL_CASES.length;
 }
-
 
 function buildDataBricksPanel(){
   return `<div class="db-panel">
@@ -563,18 +563,42 @@ function buildDataBricksPanel(){
   </div>`;
 }
 
-function render(scaledStats){
+function renderOverview(scaledStats){
   buildDynamicStats();
   var displayStats = scaledStats || DATA.stats;
-  document.getElementById('content').innerHTML = buildContent(displayStats);
+  document.getElementById('tab-content').innerHTML = buildOverviewContent(displayStats);
   requestAnimationFrame(function(){
     buildCharts();
   });
 }
 
-function buildContent(displayStats){
+function renderTeamWorkload(scaledStats){
+  document.getElementById('tab-content').innerHTML = buildTeamWorkloadContent(scaledStats || DATA.stats);
+}
+
+function renderRiskRegister(scaledStats){
+  document.getElementById('tab-content').innerHTML = buildRiskRegisterContent(scaledStats || DATA.stats);
+}
+
+function renderRecentCases(scaledStats){
+  document.getElementById('tab-content').innerHTML = buildRecentCasesContent(scaledStats || DATA.stats);
+}
+
+function renderExposureTrend(scaledStats){
+  document.getElementById('tab-content').innerHTML = buildExposureContent(scaledStats || DATA.stats);
+  requestAnimationFrame(function(){
+    buildExposureCharts();
+  });
+}
+
+function render(scaledStats){
+  if(scaledStats) _scaledStats = scaledStats;
+  renderTabs();
+  renderActiveTab();
+}
+
+function buildOverviewContent(displayStats){
   displayStats = displayStats || DATA.stats;
-  /* stats */
   const stats = `<div class="stat-row">
     ${statCard('Open cases','8','ti-briefcase','var(--blue-text)','4 require action','sub-warn')}
     ${statCard('Defended YTD','18','ti-shield','var(--green)','72% defence rate','sub-up')}
@@ -584,7 +608,6 @@ function buildContent(displayStats){
     ${statCard('Avg days to close','24d','ti-clock','var(--text3)','Target: 28 days','sub-up')}
   </div>`;
 
-  /* row 1 — volume + outcomes + category */
   const row1 = `<div class="chart-grid-3">
     <div class="panel">
       <div class="panel-header"><div class="panel-title"><i class="ti ti-trending-up"></i>Claim volume</div><div class="panel-sub">Claims received vs closed by month</div></div>
@@ -600,12 +623,7 @@ function buildContent(displayStats){
     </div>
   </div>`;
 
-  /* row 2 — exposure + time to close + category split */
-  const row2 = `<div class="chart-grid-3">
-    <div class="panel">
-      <div class="panel-header"><div class="panel-title"><i class="ti ti-currency-pound"></i>Financial exposure</div><div class="panel-sub">Alleged vs actual paid out</div></div>
-      <div class="panel-body"><div class="chart-wrap"><canvas id="ch-exposure"></canvas></div></div>
-    </div>
+  const row2 = `<div class="chart-grid-2">
     <div class="panel">
       <div class="panel-header"><div class="panel-title"><i class="ti ti-clock-hour-4"></i>Time to close</div><div class="panel-sub">Days from intake to resolution</div></div>
       <div class="panel-body"><div class="chart-wrap"><canvas id="ch-ttc"></canvas></div></div>
@@ -620,7 +638,29 @@ function buildContent(displayStats){
     </div>
   </div>`;
 
-  /* row 3 — workload + metrics + CPR */
+  const metricsHtml = `<div class="metric-tiles">
+    <div class="metric-tile"><div class="mt-label">Defence rate</div><div class="mt-val">72%</div><div class="mt-sub">18 of 25 closed cases</div></div>
+    <div class="metric-tile"><div class="mt-label">Avg claim value</div><div class="mt-val">€318</div><div class="mt-sub">Across all open cases</div></div>
+    <div class="metric-tile"><div class="mt-label">EC261 saving YTD</div><div class="mt-val">£280,750</div><div class="mt-sub">Alleged vs actual paid</div></div>
+    <div class="metric-tile"><div class="mt-label">CPR compliance</div><div class="mt-val">100%</div><div class="mt-sub">No missed deadlines</div></div>
+    <div class="metric-tile"><div class="mt-label">Cat A defence rate</div><div class="mt-val">89%</div><div class="mt-sub">ATC & weather claims</div></div>
+    <div class="metric-tile"><div class="mt-label">Avg days — Cat A</div><div class="mt-val">14d</div><div class="mt-sub">Intake to close</div></div>
+  </div>`;
+
+  const pipelinePanel = `<div class="panel">
+    <div class="panel-header"><div class="panel-title"><i class="ti ti-chart-bar"></i>Stage pipeline</div><div class="panel-sub">Visual pipeline by stage</div></div>
+    <div class="panel-body"><div class="chart-wrap"><canvas id="ch-pipeline"></canvas></div></div>
+  </div>`;
+
+  const metricsPanel = `<div class="panel">
+    <div class="panel-header"><div class="panel-title"><i class="ti ti-calculator"></i>Key metrics</div><div class="panel-sub">YTD performance summary</div></div>
+    <div class="panel-body">${metricsHtml}</div>
+  </div>`;
+
+  return stats + row1 + row2 + `<div class="chart-grid-2">${metricsPanel}${pipelinePanel}</div>` + buildDataBricksPanel();
+}
+
+function buildTeamWorkloadContent(displayStats){
   const wlMax = Math.max(...DATA.workload.map(w=>w.cases));
   const workloadItems = DATA.workload.map(w=>`
     <div class="workload-item">
@@ -631,44 +671,43 @@ function buildContent(displayStats){
       <div class="wl-bar"><div class="wl-fill" style="width:${w.cases/wlMax*100}%;background:${w.color}"></div></div>
     </div>`).join('');
 
-  const metricsHtml = `<div class="metric-tiles">
-    <div class="metric-tile"><div class="mt-label">Defence rate</div><div class="mt-val">72%</div><div class="mt-sub">18 of 25 closed cases</div></div>
-    <div class="metric-tile"><div class="mt-label">Avg claim value</div><div class="mt-val">€318</div><div class="mt-sub">Across all open cases</div></div>
-    <div class="metric-tile"><div class="mt-label">EC261 saving YTD</div><div class="mt-val">£280,750</div><div class="mt-sub">Alleged vs actual paid</div></div>
-    <div class="metric-tile"><div class="mt-label">CPR compliance</div><div class="mt-val">100%</div><div class="mt-sub">No missed deadlines</div></div>
-    <div class="metric-tile"><div class="mt-label">Cat A defence rate</div><div class="mt-val">89%</div><div class="mt-sub">ATC & weather claims</div></div>
-    <div class="metric-tile"><div class="mt-label">Avg days — Cat A</div><div class="mt-val">14d</div><div class="mt-sub">Intake to close</div></div>
-  </div>`;
-
-  const cprRows = DATA.cprDeadlines.map(d=>{
-    const cls = d.days<=3?'cpr-urgent':d.days<=7?'cpr-warn':'cpr-ok';
-    const txt = d.days<=3?d.days+'d — URGENT':d.days<=7?d.days+'d — this week':d.days+'d';
-    return `<div class="cpr-item"><div class="cpr-ref">${d.ref}</div><div class="cpr-name">${d.name}</div><span class="cpr-days ${cls}">${txt}</span></div>`;
+  const cprDeadlines = (typeof ALL_CASES !== 'undefined' ? ALL_CASES : [])
+    .filter(function(c){return c.stage!=='resolve';})
+    .sort(function(a,b){return a.cprDaysLeft-b.cprDaysLeft;})
+    .slice(0,10);
+  const cprRows = cprDeadlines.map(function(d){
+    const cls = d.cprDaysLeft<=3?'cpr-urgent':d.cprDaysLeft<=7?'cpr-warn':'cpr-ok';
+    const txt = d.cprDaysLeft<=3?d.cprDaysLeft+'d — URGENT':d.cprDaysLeft<=7?d.cprDaysLeft+'d — this week':d.cprDaysLeft+'d';
+    return `<div class="cpr-item"><div class="cpr-ref">${d.ref}</div><div class="cpr-name">${d.claimant}</div><span class="cpr-days ${cls}">${txt}</span></div>`;
   }).join('');
 
-  const row3 = `<div class="chart-grid-3">
+  return `<div class="chart-grid-2">
     <div class="panel">
       <div class="panel-header"><div class="panel-title"><i class="ti ti-users"></i>Workload by solicitor</div><div class="panel-sub">Open and total cases assigned</div></div>
       <div class="panel-body">${workloadItems}</div>
-    </div>
-    <div class="panel">
-      <div class="panel-header"><div class="panel-title"><i class="ti ti-calculator"></i>Key metrics</div><div class="panel-sub">YTD performance summary</div></div>
-      <div class="panel-body">${metricsHtml}</div>
     </div>
     <div class="panel">
       <div class="panel-header"><div class="panel-title"><i class="ti ti-calendar-due"></i>CPR deadline tracker</div><div class="panel-sub">All open cases by deadline urgency</div></div>
       <div class="panel-body" style="padding:8px 16px">${cprRows}</div>
     </div>
   </div>`;
+}
 
-  /* urgency row — TOP of page after stats */
+function buildRiskRegisterContent(displayStats){
   const riskRows = DATA.riskRegister.map(r=>`
     <div class="risk-item">
-      <div class="risk-dot risk-${r.level}"></div>
-      <div style="flex:1"><div class="risk-case">${r.case}</div><div class="risk-reason">${r.reason}</div></div>
-      <div class="risk-val">${r.val}</div>
+      <div class="risk-dot risk-${r.risk||'high'}"></div>
+      <div style="flex:1"><div class="risk-case">${r.ref}</div><div class="risk-reason">${r.issue} — ${r.note||''}</div></div>
+      <div class="risk-val">${r.days}d</div>
     </div>`).join('');
 
+  return `<div class="panel">
+    <div class="panel-header"><div class="panel-title"><i class="ti ti-alert-triangle" style="color:var(--red)"></i>Risk register</div><div class="panel-sub">Cases requiring immediate attention</div></div>
+    <div class="panel-body" style="padding:8px 16px">${riskRows}</div>
+  </div>`;
+}
+
+function buildRecentCasesContent(displayStats){
   const tableRows = DATA.recentCases.map(c=>{
     const isOpen = c.stage !== 'Closed';
     const stageHtml = isOpen
@@ -690,19 +729,8 @@ function buildContent(displayStats){
     </tr>`;
   }).join('');
 
-  const row4 = `<div class="chart-grid-2">
-    <div class="panel">
-      <div class="panel-header"><div class="panel-title"><i class="ti ti-alert-triangle" style="color:var(--red)"></i>Risk register</div><div class="panel-sub">Cases requiring immediate attention</div></div>
-      <div class="panel-body" style="padding:8px 16px">${riskRows}</div>
-    </div>
-    <div class="panel">
-      <div class="panel-header"><div class="panel-title"><i class="ti ti-chart-bar"></i>Stage pipeline</div><div class="panel-sub">Visual pipeline by stage</div></div>
-      <div class="panel-body"><div class="chart-wrap"><canvas id="ch-pipeline"></canvas></div></div>
-    </div>
-  </div>`;
-
-  const tablePanel = `<div class="panel chart-grid-full">
-    <div class="panel-header"><div class="panel-title"><i class="ti ti-table"></i>Full case register</div><div class="panel-sub">All cases — open and closed</div></div>
+  return `<div class="panel chart-grid-full">
+    <div class="panel-header"><div class="panel-title"><i class="ti ti-table"></i>Recent high-priority cases</div><div class="panel-sub">Urgent CPR and escalated cases</div></div>
     <div class="panel-body" style="padding:0 16px">
       <table class="mi-table">
         <thead><tr>
@@ -712,9 +740,30 @@ function buildContent(displayStats){
       </table>
     </div>
   </div>`;
+}
 
-  const urgencyRow = row4; // risk register + pipeline — shown first
-  return stats + urgencyRow + row1 + row2 + row3 + tablePanel + buildDataBricksPanel();
+function buildExposureContent(displayStats){
+  return `<div class="chart-grid-2">
+    <div class="panel">
+      <div class="panel-header"><div class="panel-title"><i class="ti ti-currency-pound"></i>Financial exposure</div><div class="panel-sub">Alleged vs actual paid out</div></div>
+      <div class="panel-body"><div class="chart-wrap-lg"><canvas id="ch-exposure"></canvas></div></div>
+    </div>
+    <div class="panel">
+      <div class="panel-header"><div class="panel-title"><i class="ti ti-trending-up"></i>Exposure trend</div><div class="panel-sub">Monthly alleged vs actual liability</div></div>
+      <div class="panel-body">
+        <div class="metric-tiles">
+          <div class="metric-tile"><div class="mt-label">Gross exposure</div><div class="mt-val">${DATA.stats.exposureGross||'£284,500'}</div><div class="mt-sub">All open cases</div></div>
+          <div class="metric-tile"><div class="mt-label">Net paid out</div><div class="mt-val">${DATA.stats.exposureNet||'£3,750'}</div><div class="mt-sub">YTD actual liability</div></div>
+          <div class="metric-tile"><div class="mt-label">Saving YTD</div><div class="mt-val">${DATA.stats.savingYTD||'£280,750'}</div><div class="mt-sub">vs full settlement</div></div>
+          <div class="metric-tile"><div class="mt-label">Defence rate</div><div class="mt-val">${DATA.stats.defenceRate||72}%</div><div class="mt-sub">Closed cases defended</div></div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function buildContent(displayStats){
+  return buildOverviewContent(displayStats);
 }
 
 function statCard(label, val, icon, iconCol, sub, subCls){
@@ -797,6 +846,143 @@ function buildCharts(){
     labels:['Intake','Triage','Evidence','Defence','Resolve'],
     datasets:[{data:[2,2,2,2,0],backgroundColor:['#EFF6FF','#FEF3C7','#EEEDFE','#E6F5EE','#F1F5F9'],borderColor:['#2A6FDB','#F59E0B','#8B5CF6','#22A863','#94A3B8'],borderWidth:1.5,borderRadius:4}]
   },options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:gridColor},ticks:{font:fontOpts,color:tickColor,stepSize:1}},y:{grid:{display:false},ticks:{font:fontOpts,color:tickColor}}}}});}
+}
+
+function buildExposureCharts(){
+  const fontOpts = {family:'DM Sans',size:11};
+  const gridColor = '#E2E8F0';
+  const tickColor = '#94A3B8';
+  function destroyIfExists(id){
+    try{if(charts[id]){charts[id].destroy();delete charts[id];}}catch(e){delete charts[id];}
+  }
+  destroyIfExists('exposure');
+  const cexp = document.getElementById('ch-exposure');
+  if(cexp){charts['exposure'] = new Chart(cexp,{type:'bar',data:{
+    labels:DATA.exposure.labels,
+    datasets:[
+      {label:'Alleged (£)',data:DATA.exposure.alleged,backgroundColor:'rgba(192,57,43,0.15)',borderColor:'#C0392B',borderWidth:1.5,borderRadius:3},
+      {label:'Actual paid (£)',data:DATA.exposure.actual,backgroundColor:'rgba(34,168,99,0.8)',borderColor:'#22A863',borderWidth:0,borderRadius:3}
+    ]
+  },options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{font:fontOpts,color:tickColor,boxWidth:10}}},scales:{x:{grid:{display:false},ticks:{font:fontOpts,color:tickColor}},y:{grid:{color:gridColor},ticks:{font:fontOpts,color:tickColor,callback:v=>'£'+v.toLocaleString()}}}}});}
+}
+
+function renderMonthlyReport(){
+  var el = document.getElementById('tab-content');
+  if(!el) return;
+
+  el.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text3)"><i class="ti ti-loader-2" style="font-size:24px"></i><div style="margin-top:8px;font-size:12px">Generating report from live data...</div></div>';
+
+  fetch('templates/report_data_june2026.json?t='+Date.now())
+    .then(function(r){ return r.json(); })
+    .then(function(report){ buildReportHTML(report); })
+    .catch(function(){ buildReportFromCases(); });
+}
+
+function buildReportHTML(report){
+  var ex = report.executive_summary;
+  var html = '';
+
+  // Report header
+  html += '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;padding-bottom:14px;border-bottom:1px solid var(--border)">';
+  html += '<div>';
+  html += '<div style="font-size:18px;font-weight:500;color:var(--text)">Litigation Report — ' + report.reportMonth + '</div>';
+  html += '<div style="font-size:12px;color:var(--text3);margin-top:3px">Generated ' + new Date(report.generatedAt).toLocaleString('en-GB') + ' · ' + report.generatedBy + '</div>';
+  html += '</div>';
+  html += '<button onclick="window.print()" style="font-size:11px;padding:6px 14px;border-radius:var(--r);border:1px solid var(--border2);background:var(--blue);color:#fff;cursor:pointer;font-family:var(--font);display:flex;align-items:center;gap:5px"><i class="ti ti-printer"></i> Export PDF</button>';
+  html += '</div>';
+
+  // Executive summary stats row
+  html += '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px">';
+  var stats = [
+    {label:'Total active claims', value:ex.totalActive, sub:'across all jurisdictions', color:'var(--blue)'},
+    {label:'New this month', value:ex.newThisMonth, sub:'LOCs received', color:'var(--green)'},
+    {label:'Gross exposure', value:'£'+Math.round(ex.totalExposureGross/1000)+'k', sub:'total comp sought', color:'var(--red)'},
+    {label:'Escalated cases', value:ex.escalateCount, sub:'requiring senior review', color:'var(--amber)'}
+  ];
+  stats.forEach(function(s){
+    html += '<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:12px 14px">';
+    html += '<div style="font-size:22px;font-weight:500;color:'+s.color+'">'+s.value+'</div>';
+    html += '<div style="font-size:11px;font-weight:500;color:var(--text);margin-top:2px">'+s.label+'</div>';
+    html += '<div style="font-size:10px;color:var(--text3)">'+s.sub+'</div>';
+    html += '</div>';
+  });
+  html += '</div>';
+
+  // Financial position
+  var fin = report.financial_summary;
+  html += '<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:14px 16px;margin-bottom:14px">';
+  html += '<div style="font-size:12px;font-weight:500;color:var(--text);margin-bottom:10px;display:flex;align-items:center;gap:6px"><i class="ti ti-calculator" style="color:var(--blue-text)"></i> Financial position</div>';
+  html += '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">';
+  [
+    {label:'Gross claims value', value:'£'+fin.totalClaimedGross.toLocaleString()},
+    {label:'Estimated defence cost', value:'£'+fin.estimatedDefenceCost.toLocaleString()},
+    {label:'Projected net liability', value:'£'+fin.projectedLiability.toLocaleString(), highlight:true},
+    {label:'Savings vs full settlement', value:'£'+fin.savingsVsFullSettlement.toLocaleString(), green:true},
+    {label:'Avg cost per case', value:'£'+fin.avgCostPerCase.toLocaleString()},
+    {label:'High value cases (>£10k)', value:fin.highValueCaseCount}
+  ].forEach(function(item){
+    html += '<div style="padding:8px 0;border-bottom:1px solid var(--border)">';
+    html += '<div style="font-size:10px;color:var(--text3)">'+item.label+'</div>';
+    html += '<div style="font-size:15px;font-weight:500;color:'+(item.green?'var(--green)':item.highlight?'var(--blue)':'var(--text)')+'">'+item.value+'</div>';
+    html += '</div>';
+  });
+  html += '</div></div>';
+
+  // By jurisdiction table
+  html += '<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:14px 16px;margin-bottom:14px">';
+  html += '<div style="font-size:12px;font-weight:500;color:var(--text);margin-bottom:10px;display:flex;align-items:center;gap:6px"><i class="ti ti-world" style="color:var(--blue-text)"></i> By jurisdiction</div>';
+  html += '<table style="width:100%;border-collapse:collapse;font-size:12px">';
+  html += '<tr style="border-bottom:1px solid var(--border);color:var(--text3);font-size:10px"><th style="text-align:left;padding:4px 0;font-weight:500">Jurisdiction</th><th style="text-align:right;font-weight:500">Active</th><th style="text-align:right;font-weight:500">New</th><th style="text-align:right;font-weight:500">Closed</th><th style="text-align:right;font-weight:500">Avg days open</th><th style="text-align:right;font-weight:500">Defend rate</th></tr>';
+  report.by_jurisdiction.forEach(function(j){
+    html += '<tr style="border-bottom:1px solid var(--border)">';
+    html += '<td style="padding:7px 0;font-weight:500;color:var(--text)">'+j.name+'</td>';
+    html += '<td style="text-align:right;color:var(--text2)">'+j.active+'</td>';
+    html += '<td style="text-align:right;color:var(--green)">+'+j.new+'</td>';
+    html += '<td style="text-align:right;color:var(--text3)">'+j.closed+'</td>';
+    html += '<td style="text-align:right;color:var(--text2)">'+j.avgDaysOpen+'d</td>';
+    html += '<td style="text-align:right"><span style="background:var(--blue-faint);color:var(--blue-text);padding:1px 7px;border-radius:10px;font-size:11px">'+j.defendRate+'%</span></td>';
+    html += '</tr>';
+  });
+  html += '</table></div>';
+
+  // Risk register
+  html += '<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:14px 16px;margin-bottom:14px">';
+  html += '<div style="font-size:12px;font-weight:500;color:var(--text);margin-bottom:10px;display:flex;align-items:center;gap:6px"><i class="ti ti-alert-triangle" style="color:var(--red)"></i> Risk register — requires action</div>';
+  report.risk_register.forEach(function(r){
+    html += '<div style="border:1px solid var(--border);border-radius:var(--r);padding:10px 12px;margin-bottom:8px;background:var(--red-faint)">';
+    html += '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px">';
+    html += '<div><div style="font-size:12px;font-weight:500;color:var(--text)">'+r.ref+' — '+r.claimant+'</div>';
+    html += '<div style="font-size:11px;color:var(--text2);margin-top:2px">'+r.issue+'</div></div>';
+    html += '<div style="text-align:right;flex-shrink:0"><div style="font-size:11px;font-weight:500;color:var(--red)">'+r.cprDaysLeft+'d remaining</div>';
+    html += '<div style="font-size:10px;color:var(--text3)">'+r.value+'</div></div>';
+    html += '</div>';
+    html += '<div style="font-size:11px;color:var(--amber);margin-top:6px;font-weight:500"><i class="ti ti-arrow-right"></i> '+r.action+'</div>';
+    html += '</div>';
+  });
+  html += '</div>';
+
+  // Key legal developments
+  html += '<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:14px 16px;margin-bottom:14px">';
+  html += '<div style="font-size:12px;font-weight:500;color:var(--text);margin-bottom:10px;display:flex;align-items:center;gap:6px"><i class="ti ti-gavel" style="color:var(--purple,#4338CA)"></i> Key legal developments this month</div>';
+  report.key_legal_developments.forEach(function(dev){
+    html += '<div style="padding:8px 0;border-bottom:1px solid var(--border)">';
+    html += '<div style="font-size:12px;font-weight:500;color:var(--text)">'+dev.title+'</div>';
+    html += '<div style="font-size:11px;color:var(--text2);margin-top:2px">'+dev.impact+'</div>';
+    html += '</div>';
+  });
+  html += '</div>';
+
+  document.getElementById('tab-content').innerHTML = html;
+}
+
+// Fallback — build from ALL_CASES directly
+function buildReportFromCases(){
+  var cases = typeof ALL_CASES !== 'undefined' ? ALL_CASES : [];
+  var html = '<div style="padding:20px">';
+  html += '<div style="font-size:16px;font-weight:500;margin-bottom:16px">Live report — ' + cases.length + ' cases</div>';
+  html += '<div style="font-size:12px;color:var(--text2)">Report data file not available. Showing live case summary.</div>';
+  html += '</div>';
+  document.getElementById('tab-content').innerHTML = html;
 }
 
 function exportReport(){
@@ -893,8 +1079,8 @@ function switchUser(id){
     var el=document.getElementById('ud-'+uid);
     if(el){el.classList.toggle('current',uid===id);}
   });
-  if(typeof _navInit==='function')_navInit();
-  if(typeof render==='function')render();
+  if(typeof renderGlobalNav==='function')renderGlobalNav();
+  if(typeof render==='function'){renderTabs();renderActiveTab();}
   if(typeof _render==='function')_render();
 }
 (function initNav(){

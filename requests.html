@@ -172,6 +172,7 @@ function switchUser(id){
   if(id!=='EH'){window.location.href='index.html';return;}
   var u=USERS[id];if(u){document.getElementById('nav-av').textContent=u.initials;document.getElementById('nav-user').textContent=u.name;}
   ['SB','JP','KR','MD','PL','CG','IM','EH'].forEach(function(uid){var el=document.getElementById('ud-'+uid);if(el)el.classList.toggle('current',uid===id);});
+  if(typeof renderGlobalNav==='function')renderGlobalNav();
   render();
 }
 (function seedDemoNotif(){
