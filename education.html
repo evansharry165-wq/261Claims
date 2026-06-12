@@ -123,6 +123,7 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 
 html.embed-mode .global-nav,html.embed-mode #user-modal{display:none!important}
 html.embed-mode .page{height:100%!important}
+@keyframes spin{to{transform:rotate(360deg)}}
 
 </style>
 </head>
@@ -168,6 +169,7 @@ html.embed-mode .page{height:100%!important}
     <div class="sb-item" onclick="showSection('repository_learning', event)"><i class="ti ti-database"></i> Repository learning</div>
     <div class="sb-item" onclick="showSection('templates', event)"><i class="ti ti-file-text"></i> Document templates</div>
     <div class="sb-item" onclick="showSection('updates', event)"><i class="ti ti-news"></i> Legal updates <span class="sb-count" style="background:var(--red-faint);color:var(--red)">3</span></div>
+    <div class="sb-item" onclick="showSection('live-updates', event)"><i class="ti ti-live-photo"></i> Live intelligence <span style="font-size:9px;background:#EAF3DE;color:#3B6D11;padding:1px 5px;border-radius:8px;margin-left:4px">LIVE</span></div>
   </div>
 
   <div class="main" id="main"></div>
@@ -197,6 +199,7 @@ function showSection(s, ev){
   }
   try{history.replaceState({},'','education.html?section='+encodeURIComponent(s));}catch(e){}
   render();
+  if(s==='live-updates'){setTimeout(initLiveUpdates,50);}
 }
 
 var SECTIONS = {
@@ -439,6 +442,12 @@ repository_learning: {
   }
 },
 
+'live-updates': {
+  title: 'Live legal intelligence',
+  sub: 'Automated updates from Bailii, EUR-Lex, CAA and AviationADR — refreshed continuously',
+  content: function(){ return renderLiveUpdates(); }
+},
+
 };
 
 function activeCaseQuery(){
@@ -457,6 +466,80 @@ function articleCard(icon, tagCls, tagLabel, title, summary, footer){
     +'</div>';
 }
 
+function renderLiveUpdates(){
+  return '<div id="live-updates-container"><div style="text-align:center;padding:40px;color:var(--text3)"><i class="ti ti-loader-2" style="font-size:24px;animation:spin 1s linear infinite"></i><div style="margin-top:8px;font-size:12px">Loading live intelligence...</div></div></div>';
+}
+
+function initLiveUpdates(){
+  fetch('knowledge_store.json?t=' + Date.now())
+    .then(function(r){ return r.json(); })
+    .then(function(store){ renderKnowledgeStore(store); })
+    .catch(function(){
+      var el = document.getElementById('live-updates-container');
+      if(el) el.innerHTML = '<div style="padding:20px;font-size:12px;color:var(--text3)">Live intelligence temporarily unavailable. Refresh to retry.</div>';
+    });
+}
+
+function renderKnowledgeStore(store){
+  var el = document.getElementById('live-updates-container');
+  if(!el) return;
+
+  var html = '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px">';
+  html += '<div style="font-size:12px;color:var(--text3)"><i class="ti ti-refresh"></i> Last updated: ' + new Date(store.lastUpdated).toLocaleDateString('en-GB', {day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}) + '</div>';
+  html += '<div style="display:flex;gap:6px;flex-wrap:wrap">';
+  store.sources.forEach(function(s){
+    html += '<span style="font-size:10px;padding:2px 7px;border-radius:10px;background:var(--surface3);color:var(--text2)">' + s + '</span>';
+  });
+  html += '</div></div>';
+
+  var entries = store.entries.slice().sort(function(a,b){
+    if(a.actionRequired && !b.actionRequired) return -1;
+    if(!a.actionRequired && b.actionRequired) return 1;
+    return new Date(b.date) - new Date(a.date);
+  });
+
+  entries.forEach(function(entry){
+    var impactColor = entry.impact==='high'?'var(--red)':entry.impact==='medium'?'var(--amber)':'var(--green)';
+    var impactBg = entry.impact==='high'?'var(--red-faint)':entry.impact==='medium'?'var(--amber-faint)':'var(--green-faint)';
+    var typeIcon = entry.type==='judgment'?'ti-gavel':entry.type==='regulatory'?'ti-building-government':'ti-file-description';
+
+    html += '<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:14px 16px;margin-bottom:10px">';
+
+    html += '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:8px;flex-wrap:wrap">';
+    html += '<div style="display:flex;align-items:center;gap:8px">';
+    html += '<i class="ti ' + typeIcon + '" style="color:var(--blue-text);font-size:16px"></i>';
+    html += '<div>';
+    html += '<div style="font-size:13px;font-weight:500;color:var(--text)">' + entry.title + '</div>';
+    html += '<div style="font-size:11px;color:var(--text3);margin-top:2px">' + entry.source + ' · ' + new Date(entry.date).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}) + '</div>';
+    html += '</div></div>';
+
+    html += '<span style="font-size:10px;font-weight:500;padding:2px 8px;border-radius:10px;background:' + impactBg + ';color:' + impactColor + ';white-space:nowrap">' + entry.impact.toUpperCase() + ' IMPACT</span>';
+    html += '</div>';
+
+    html += '<div style="font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:8px">' + entry.summary + '</div>';
+
+    html += '<div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px">';
+    var jurLabels = {'england-wales':'🇬🇧 E&W', 'france':'🇫🇷 France', 'spain':'🇪🇸 Spain', 'all':'🌍 All jurisdictions'};
+    (entry.jurisdiction||[]).forEach(function(j){
+      html += '<span style="font-size:10px;padding:1px 6px;border-radius:4px;background:var(--blue-faint);color:var(--blue-text)">' + (jurLabels[j]||j) + '</span>';
+    });
+    (entry.disruptionTypes||[]).forEach(function(d){
+      if(d!=='all') html += '<span style="font-size:10px;padding:1px 6px;border-radius:4px;background:var(--surface3);color:var(--text2)">' + d + '</span>';
+    });
+    html += '</div>';
+
+    if(entry.actionRequired){
+      html += '<div style="background:var(--amber-faint);border:1px solid #FDE68A;border-radius:var(--r);padding:8px 10px;font-size:11px;color:var(--amber);line-height:1.5">';
+      html += '<strong>Action required:</strong> ' + entry.actionNote;
+      html += '</div>';
+    }
+
+    html += '</div>';
+  });
+
+  el.innerHTML = html;
+}
+
 function render(){
   var s = SECTIONS[activeSection];
   if(!s) return;
@@ -473,6 +556,7 @@ function render(){
   if(window.location.hash==='#case-law')activeSection='caselaw';
   else if(section&&SECTIONS[section])activeSection=section;
   render();
+  if(activeSection==='live-updates'){setTimeout(initLiveUpdates,50);}
   if(section&&SECTIONS[section]){
     document.querySelectorAll('.sb-item').forEach(function(el){el.classList.remove('active');});
     document.querySelectorAll('.sb-item').forEach(function(el){
