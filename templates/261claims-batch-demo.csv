@@ -1,0 +1,101 @@
+ref,surname,firstName,solicitor,flightNum,dep,arr,flightDate,currency,compSought,claimType,jurisdictionCode,disruptionType,triage,complexity,dateReceived,notes
+,Navarro,Paula,FACUA,EZY2431,SVQ,LGW,8 Mar 2026,EUR,1450,EC261,ES,Delay >3hrs,DEFEND,Standard,20 Mar 2026,Group 5 pax. ATFM slot restriction — strong extraordinary circ defence.
+,Romero,Marta,Reclamador,EZY1916,VLC,LGW,26 May 2026,EUR,3300,EC261,ES,Cancellation,INVESTIGATE,Standard,10 Jun 2026,Group 8 pax. Industrial action by third party — potential extraordinary circ.
+,Hall,Harry,AirHelp,EZY7266,EDI,BCN,8 Mar 2026,GBP,1560,EC261,EW,Cancellation,INVESTIGATE,Standard,28 Mar 2026,Group 4 pax. Volcanic ash advisory — strong extraordinary circ.
+,Young,Chen,Bott & Co,EZY8926,MAN,ALC,7 Dec 2025,GBP,2650,High Value,EW,Cancellation,ESCALATE,High Value,29 Mar 2026,Cancellation <14 days notice. No extraordinary circ evidence assembled yet.
+,Wright,Fatima,Irwin Mitchell,EZY6317,MAN,BCN,6 Mar 2026,GBP,170,MCOL,EW,Downgrade,DEFEND,Standard,7 Apr 2026,Seat change economy to basic. Art 10 refund 30%/50%/75% applicable.
+,Kowalski,Marek,AirHelp EU,EZY6097,PRG,LGW,15 Mar 2026,EUR,2520,MCOL,EU,Delay >3hrs,DEFEND,Standard,22 Mar 2026,Group 6 pax. De-icing delay — within airline control. Weak extraordinary circ.
+,Johnson,Cerys,Claim Today,EZY9883,LBA,FAO,3 Nov 2025,GBP,410,ADR,EW,Cancellation,INVESTIGATE,Standard,2 Jan 2026,Industrial action by third party — potential extraordinary circ.
+,Simon,Nathalie,EUclaim France,EZY1373,TLS,LGW,19 Nov 2025,EUR,300,EC261,FR,Delay >3hrs,DEFEND,Standard,4 Mar 2026,Airport infrastructure closure. Notam to obtain.
+,Jackson,Sophie,Minster Law,EZY9746,BHX,AMS,4 Feb 2026,GBP,49950,High Value,EW,Denied Boarding,ESCALATE,High Value,24 Feb 2026,Group 5 pax. Name mismatch on booking — airline error confirmed.
+,Durand,Chloé,Indemniflight,EZY3991,NTE,LGW,5 Dec 2025,EUR,9760,Complex,FR,Cancellation,INVESTIGATE,Complex,22 Jan 2026,Crew shortage. AIMS availability records needed.
+,Harris,Chen,Claim Today,EZY3258,LBA,FAO,14 Feb 2026,GBP,27360,Complex,EW,Delay >3hrs,INVESTIGATE,Complex,23 Feb 2026,Group 8 pax. Weather delay at origin — METAR evidence required.
+,Ferreira,Erik,EUclaim,EZY2598,WAW,LGW,10 Apr 2026,EUR,760,EC261,EU,Cancellation,INVESTIGATE,Standard,7 May 2026,Cancellation <14 days notice. No extraordinary circ evidence assembled yet.
+,O'Brien,Lars,AirHelp EU,EZY1962,WAW,LGW,24 Jan 2026,EUR,580,EC261,EU,Delay >3hrs,DEFEND,Standard,9 May 2026,Crew duty hours exceeded. AIMS records requested.
+,Novak,Lars,Flightright GmbH,EZY6129,LIS,LGW,9 Jan 2026,EUR,2160,MCOL,EU,Delay >3hrs,DEFEND,Standard,5 May 2026,Group 12 pax. Birdstrike on approach. Strong extraordinary circ. SafetyNet report to redact.
+,Robinson,Amir,AirHelp,EZY6150,BRS,FAO,23 Dec 2025,GBP,900,EC261,EW,Delay >3hrs,DEFEND,Standard,14 Jan 2026,ATC slot restriction. EUROCONTROL ATFM reference required.
+,Collins,Sophie,AirHelp,EZY6728,BHX,AMS,31 Dec 2025,GBP,800,EC261,EW,Delay >3hrs,DEFEND,Standard,29 Jan 2026,Weather delay at origin — METAR evidence required.
+,Williams,Robert,Slater & Gordon,EZY7232,LGW,PMI,8 Dec 2025,GBP,1860,MCOL,EW,Denied Boarding,INVESTIGATE,Standard,29 Mar 2026,Group 6 pax. Overbooking confirmed. AIMS volunteer call not completed.
+,Smith,Robert,Bott & Co,EZY8870,LTN,AGP,17 Mar 2026,GBP,3420,UK261,EW,Cancellation,INVESTIGATE,Standard,4 Apr 2026,Group 6 pax. Industrial action by third party — potential extraordinary circ.
+,Fournier,Pierre,Indemniflight,EZY2165,CDG,LTN,5 May 2026,EUR,30570,High Value,FR,Delay >3hrs,ESCALATE,High Value,26 May 2026,De-icing delay — within airline control. Weak extraordinary circ.
+,Taylor,Jack,Slater & Gordon,EZY3326,EDI,BCN,5 Dec 2025,GBP,330,MCOL,EW,Cancellation,DEFEND,Standard,16 Feb 2026,Cancellation <14 days notice. No extraordinary circ evidence assembled yet.
+,Scott,Oliver,Bott & Co,EZY7420,LGW,MAD,13 Mar 2026,GBP,680,ADR,EW,Delay >3hrs,DEFEND,Standard,31 Mar 2026,Technical fault on inbound aircraft. AMOS inspection records needed.
+,Young,Thomas,Leigh Day,EZY9865,LGW,AMS,30 Nov 2025,GBP,240,County Court,EW,Delay >3hrs,INVESTIGATE,Standard,15 Feb 2026,Technical fault on inbound aircraft. AMOS inspection records needed.
+,Williams,Harry,Claim Today,EZY1684,LHR,DXB,25 May 2026,GBP,960,Other Litigation,EW,Delay >3hrs,INVESTIGATE,Complex,4 Jun 2026,Group 4 pax. ATFM slot restriction — strong extraordinary circ defence.
+,Martínez,María,FACUA,EZY6807,SVQ,LGW,23 Dec 2025,EUR,2880,EC261,ES,Cancellation,INVESTIGATE,Standard,11 Feb 2026,Group 12 pax. Industrial action by third party — potential extraordinary circ.
+,Bauer,Ana,Compensation.eu,EZY7127,VIE,LGW,3 Jan 2026,EUR,370,Other Litigation,EU,Delay >3hrs,INVESTIGATE,Complex,1 Apr 2026,Weather delay at origin — METAR evidence required.
+,Carter,William,Minster Law,EZY2263,STN,AMS,10 Nov 2025,GBP,840,EC261,EW,Downgrade,DEFEND,Standard,5 Mar 2026,Group 6 pax. Seat change economy to basic. Art 10 refund 30%/50%/75% applicable.
+,Watson,Lucy,Claim Today,EZY4103,LGW,AMS,7 Sep 2025,GBP,680,ADR,EW,Delay >3hrs,DEFEND,Standard,2 Jan 2026,Airport infrastructure closure. Notam to obtain.
+,Collins,Oliver,Leigh Day,EZY1991,MAN,BCN,6 Dec 2025,GBP,2940,EC261,EW,Denied Boarding,INVESTIGATE,Standard,4 Mar 2026,Group 12 pax. Security screening caused delay past gate closure. Liability question.
+,Laurent,Théo,Air Indemnité,EZY9820,CDG,LGW,23 Jan 2026,EUR,2340,ADR,FR,Delay >3hrs,DEFEND,Standard,1 Mar 2026,Group 8 pax. Ground handling failure. Third party liability question.
+,Simon,Lucie,Cabinet Leblanc,EZY8790,LYS,LGW,19 Mar 2026,EUR,900,Complex,FR,Delay >3hrs,INVESTIGATE,Complex,13 May 2026,Crew duty hours exceeded. AIMS records requested.
+,Gómez,Adrián,Lexington Abogados,EZY4802,MAD,MAN,18 Feb 2026,EUR,11760,Complex,ES,Cancellation,INVESTIGATE,Complex,31 Mar 2026,Group 12 pax. Wet lease crew unavailable. Complex contractual question.
+,Jensen,Linh,ECC Network,EZY3464,ARN,LGW,15 Feb 2026,EUR,3180,EC261,EU,Denied Boarding,INVESTIGATE,Standard,2 Mar 2026,Group 10 pax. Overbooking confirmed. AIMS volunteer call not completed.
+,Müller,Brigitte,AirHelp EU,EZY8647,CPH,LGW,22 Apr 2026,EUR,7350,High Value,EU,Delay >3hrs,ESCALATE,High Value,9 May 2026,Airport infrastructure closure. Notam to obtain.
+,Allen,Robert,Resolver,EZY1115,LGW,BCN,21 Oct 2025,GBP,3120,EC261,EW,Denied Boarding,INVESTIGATE,Standard,31 Jan 2026,Group 12 pax. Name mismatch on booking — airline error confirmed.
+,Harris,Wei,Claim Today,EZY6591,BRS,MAD,15 Jan 2026,GBP,290,ADR,EW,Cancellation,INVESTIGATE,Standard,25 Feb 2026,COVID-era legacy cancellation — limitation period watch.
+,Parker,Sarah,Minster Law,EZY7680,LGW,FCO,9 Feb 2026,GBP,1800,ADR,EW,Delay >3hrs,DEFEND,Standard,27 Mar 2026,Group 8 pax. Weather delay at origin — METAR evidence required.
+,Allen,Amelia,Slater & Gordon,EZY5773,LTN,AGP,22 Nov 2025,GBP,1920,ADR,EW,Delay >3hrs,DEFEND,Standard,19 Mar 2026,Group 12 pax. Birdstrike on approach. Strong extraordinary circ. SafetyNet report to redact.
+,Díaz,Pablo,FACUA,EZY4833,PMI,LGW,14 Feb 2026,EUR,11820,Complex,ES,Cancellation,INVESTIGATE,Complex,8 Mar 2026,Group 12 pax. Wet lease crew unavailable. Complex contractual question.
+,Hernández,Javier,AirHelp ES,EZY4870,AGP,LGW,8 Jan 2026,EUR,1880,EC261,ES,Denied Boarding,INVESTIGATE,Standard,8 Feb 2026,Group 4 pax. Security screening caused delay past gate closure. Liability question.
+,Allen,Amelia,Flight Delay Claims,EZY3540,LPL,BCN,26 Dec 2025,GBP,2160,ADR,EW,Delay >3hrs,DEFEND,Standard,15 Mar 2026,Group 6 pax. Airport infrastructure closure. Notam to obtain.
+,Thompson,Grace,Bott & Co,EZY8336,LHR,DXB,11 Jan 2026,GBP,4780,High Value,EW,Denied Boarding,ESCALATE,High Value,24 Feb 2026,Security screening caused delay past gate closure. Liability question.
+,Green,Alice,PGMBM,EZY3528,MAN,CAI,21 Dec 2025,GBP,240,MCOL,EW,Delay >3hrs,DEFEND,Standard,5 Feb 2026,Airport infrastructure closure. Notam to obtain.
+,Domínguez,Carmen,Volarcondatos,EZY5936,BCN,LGW,21 Feb 2026,EUR,3780,Complex,ES,Cancellation,INVESTIGATE,Complex,20 Apr 2026,Group 10 pax. Technical AOG. AMOS maintenance records critical.
+,Díaz,Carlos,FACUA,EZY4925,MAD,LGW,4 Dec 2025,EUR,460,EC261,ES,Denied Boarding,INVESTIGATE,Standard,15 Jan 2026,Security screening caused delay past gate closure. Liability question.
+,Parker,Amir,Resolver,EZY7565,STN,AMS,25 Jan 2026,GBP,490,UK261,EW,Cancellation,INVESTIGATE,Standard,31 Mar 2026,Technical AOG. AMOS maintenance records critical.
+,Carter,Lucy,Resolver,EZY7057,LGW,CDG,15 Apr 2026,GBP,3000,UK261,EW,Cancellation,INVESTIGATE,Standard,11 May 2026,Group 8 pax. Crew shortage. AIMS availability records needed.
+,Walker,Patrick,Claim Today,EZY1317,STN,BCN,30 Nov 2025,GBP,370,MCOL,EW,Cancellation,DEFEND,Standard,28 Feb 2026,COVID-era legacy cancellation — limitation period watch.
+,Martin,Élodie,Flightright FR,EZY9132,LYS,LGW,26 Apr 2026,EUR,32960,High Value,FR,Delay >3hrs,ESCALATE,High Value,13 May 2026,Group 8 pax. Technical fault on inbound aircraft. AMOS inspection records needed.
+,Wright,Isla,Leigh Day,EZY4782,LGW,CDG,1 Dec 2025,GBP,105840,High Value,EW,Denied Boarding,ESCALATE,High Value,26 Mar 2026,Group 12 pax. Overbooking confirmed. AIMS volunteer call not completed.
+,Allen,Fatima,Claim Today,EZY6241,LGW,BCN,18 Mar 2026,GBP,109200,High Value,EW,Denied Boarding,ESCALATE,High Value,22 Apr 2026,Group 10 pax. Name mismatch on booking — airline error confirmed.
+,Perez,Cerys,Claim Today,EZY9502,LGW,DUB,22 Oct 2025,GBP,204360,High Value,EW,Cancellation,ESCALATE,High Value,17 Jan 2026,Group 12 pax. Industrial action by third party — potential extraordinary circ.
+,Taylor,Fatima,AirHelp,EZY1754,MAN,BCN,8 Apr 2026,GBP,19120,High Value,EW,Delay >3hrs,ESCALATE,High Value,23 May 2026,Technical fault on inbound aircraft. AMOS inspection records needed.
+,Turner,Isla,CEL Solicitors,EZY8620,EDI,BCN,13 Jan 2026,GBP,260,EC261,EW,Downgrade,DEFEND,Standard,21 Jan 2026,Cabin downgrade — equipment substitution. Compensation calculation to confirm.
+,Martin,Laurent,Air Indemnité,EZY9735,MRS,LGW,7 Nov 2025,EUR,840,EC261,FR,Delay >3hrs,DEFEND,Standard,27 Feb 2026,Birdstrike on approach. Strong extraordinary circ. SafetyNet report to redact.
+,Schmidt,Björn,EUclaim,EZY6761,MXP,LGW,28 Mar 2026,EUR,2100,EC261,EU,Cancellation,INVESTIGATE,Standard,9 May 2026,Group 10 pax. Storm closure at destination. METAR and NOTAM data required.
+,López,Ana,Lexington Abogados,EZY8931,AGP,LGW,22 Feb 2026,EUR,870,EC261,ES,Cancellation,INVESTIGATE,Standard,10 May 2026,Crew shortage. AIMS availability records needed.
+,Jackson,Olivia,AirHelp,EZY7052,LGW,NCE,21 Feb 2026,GBP,2440,County Court,EW,Delay >3hrs,INVESTIGATE,Standard,8 Jun 2026,Group 4 pax. ATFM slot restriction — strong extraordinary circ defence.
+,Allen,Raj,Irwin Mitchell,EZY3352,LGW,DUB,17 Sep 2025,GBP,720,MCOL,EW,Downgrade,DEFEND,Standard,1 Jan 2026,Group 8 pax. Row change with reduced pitch — borderline downgrade argument.
+,Ferreira,Tomáš,EUclaim,EZY1332,CPH,LGW,17 Nov 2025,EUR,2640,ADR,EU,Cancellation,INVESTIGATE,Standard,25 Jan 2026,Group 8 pax. Technical AOG. AMOS maintenance records critical.
+,Ramos,Rafael,Lexington Abogados,EZY3640,VLC,LGW,18 Nov 2025,EUR,700,EC261,ES,Cancellation,INVESTIGATE,Standard,28 Feb 2026,Cancellation <14 days notice. No extraordinary circ evidence assembled yet.
+,Díaz,Javier,Volarcondatos,EZY1192,SVQ,LGW,6 Jan 2026,EUR,3240,EC261,ES,Delay >3hrs,DEFEND,Standard,14 Jan 2026,Group 8 pax. De-icing delay — within airline control. Weak extraordinary circ.
+,King,Sarah,AirHelp,EZY1375,LGW,LIS,4 Dec 2025,GBP,16620,Complex,EW,Cancellation,INVESTIGATE,Complex,16 Mar 2026,Group 6 pax. Industrial action by third party — potential extraordinary circ.
+,Dubois,Hugo,Cabinet Leblanc,EZY8105,MRS,LGW,14 Apr 2026,EUR,1140,EC261,FR,Cancellation,INVESTIGATE,Standard,9 Jun 2026,Storm closure at destination. METAR and NOTAM data required.
+,Michel,François,Indemniflight,EZY3662,MRS,LGW,21 Dec 2025,EUR,250,EC261,FR,Delay >3hrs,DEFEND,Standard,18 Mar 2026,Late inbound aircraft from previous sector. Operational cascading delay.
+,Mitchell,George,Minster Law,EZY7638,LGW,FCO,29 Jan 2026,GBP,340,MCOL,EW,Denied Boarding,INVESTIGATE,Standard,4 Mar 2026,Denied boarding — aircraft weight restriction. Technical justification needed.
+,Moreau,Hugo,Jedclare,EZY2799,CDG,LGW,20 Nov 2025,EUR,1740,EC261,FR,Denied Boarding,INVESTIGATE,Standard,16 Mar 2026,Group 6 pax. Name mismatch on booking — airline error confirmed.
+,Taylor,William,Bott & Co,EZY3051,LHR,TFS,9 Feb 2026,GBP,84320,High Value,EW,Delay >3hrs,ESCALATE,High Value,23 May 2026,Group 8 pax. De-icing delay — within airline control. Weak extraordinary circ.
+,Kovač,Ingrid,ECC Network,EZY5211,FCO,LGW,19 Nov 2025,EUR,11600,Complex,EU,Delay >3hrs,INVESTIGATE,Complex,10 Feb 2026,Group 4 pax. ATC slot restriction. EUROCONTROL ATFM reference required.
+,López,Pablo,Volarcondatos,EZY6186,PMI,LGW,20 Dec 2025,EUR,960,EC261,ES,Cancellation,INVESTIGATE,Standard,13 Feb 2026,Volcanic ash advisory — strong extraordinary circ.
+,Petersen,Björn,EUclaim,EZY4428,AMS,LGW,21 Jan 2026,EUR,20100,Complex,EU,Delay >3hrs,INVESTIGATE,Complex,9 May 2026,Group 8 pax. Crew duty hours exceeded. AIMS records requested.
+,Díaz,Sofía,Reclamador,EZY2525,SVQ,LGW,19 Feb 2026,EUR,17640,High Value,ES,Cancellation,ESCALATE,High Value,3 Apr 2026,Airport capacity restriction — extraordinary circ if sustained ATC directive.
+,Martin,Théo,Air Indemnité,EZY5650,NTE,LGW,27 Feb 2026,EUR,160,EC261,FR,Downgrade,DEFEND,Standard,14 Mar 2026,Row change with reduced pitch — borderline downgrade argument.
+,Jackson,Olivia,Irwin Mitchell,EZY1306,MAN,CAI,30 Oct 2025,GBP,640,ADR,EW,Cancellation,INVESTIGATE,Standard,6 Feb 2026,Schedule change >5hrs — claimant arguing constructive cancellation.
+,Allen,Isla,CEL Solicitors,EZY2672,LGW,FCO,27 Oct 2025,GBP,500,EC261,EW,Cancellation,INVESTIGATE,Standard,13 Jan 2026,Airport capacity restriction — extraordinary circ if sustained ATC directive.
+,Schmidt,Linh,EUclaim,EZY2913,WAW,LGW,2 Dec 2025,EUR,1440,Other Litigation,EU,Downgrade,INVESTIGATE,Complex,6 Feb 2026,Group 8 pax. Cabin downgrade — equipment substitution. Compensation calculation to confirm.
+,Novak,Marek,Flightright GmbH,EZY1682,MXP,LGW,23 Nov 2025,EUR,1700,ADR,EU,Delay >3hrs,DEFEND,Standard,6 Mar 2026,Group 5 pax. Birdstrike on approach. Strong extraordinary circ. SafetyNet report to redact.
+,Young,Archie,Leigh Day,EZY7907,LGW,NCE,25 Jan 2026,GBP,2000,Other Litigation,EW,Delay >3hrs,INVESTIGATE,Complex,10 Apr 2026,Group 5 pax. Birdstrike on approach. Strong extraordinary circ. SafetyNet report to redact.
+,Thomas,Oliver,Stewarts Law,EZY1422,BRS,FAO,12 Dec 2025,GBP,2280,UK261,EW,Cancellation,INVESTIGATE,Standard,20 Jan 2026,Group 10 pax. Cancellation <14 days notice. No extraordinary circ evidence assembled yet.
+,King,David,CEL Solicitors,EZY7925,STN,BCN,24 Nov 2025,GBP,19140,Complex,EW,Delay >3hrs,INVESTIGATE,Complex,19 Jan 2026,Group 8 pax. ATFM slot restriction — strong extraordinary circ defence.
+,Allen,Priya,Claim Today,EZY6928,MAN,PMI,10 May 2026,GBP,1080,EC261,EW,Delay >3hrs,DEFEND,Standard,1 Jun 2026,Weather delay at origin — METAR evidence required.
+,Andersen,Agnieszka,Flightright GmbH,EZY5783,ARN,LGW,2 Jan 2026,EUR,2040,Other Litigation,EU,Cancellation,INVESTIGATE,Complex,15 Feb 2026,Group 6 pax. Storm closure at destination. METAR and NOTAM data required.
+,Müller,Franz,ECC Network,EZY2299,MXP,LGW,23 Mar 2026,EUR,11940,Complex,EU,Delay >3hrs,INVESTIGATE,Complex,14 May 2026,Technical fault on inbound aircraft. AMOS inspection records needed.
+,Papadopoulos,Lars,Compensation.eu,EZY1050,TXL,STN,25 Nov 2025,EUR,1470,EC261,EU,Cancellation,INVESTIGATE,Standard,24 Feb 2026,Cancellation <14 days notice. No extraordinary circ evidence assembled yet.
+,O'Brien,Fatou,ECC Network,EZY4709,MXP,LGW,14 Mar 2026,EUR,700,Other Litigation,EU,Delay >3hrs,INVESTIGATE,Complex,29 May 2026,Weather delay at origin — METAR evidence required.
+,Mitchell,Cerys,AirHelp,EZY3343,MAN,ALC,30 Jan 2026,GBP,2300,ADR,EW,Cancellation,INVESTIGATE,Standard,26 Apr 2026,Group 5 pax. Storm closure at destination. METAR and NOTAM data required.
+,Thomas,George,Slater & Gordon,EZY7420,LGW,FCO,2 May 2026,GBP,470,MCOL,EW,Delay >3hrs,DEFEND,Standard,10 May 2026,Airport infrastructure closure. Notam to obtain.
+,Laurent,Marie,EUclaim France,EZY3328,TLS,LGW,11 Dec 2025,EUR,280,Other Litigation,FR,Delay >3hrs,INVESTIGATE,Complex,6 Mar 2026,Airport infrastructure closure. Notam to obtain.
+,Durand,Camille,Cabinet Leblanc,EZY2917,NCE,LGW,13 Dec 2025,EUR,10560,Complex,FR,Cancellation,INVESTIGATE,Complex,18 Jan 2026,Group 4 pax. Wet lease crew unavailable. Complex contractual question.
+,Martin,Isabelle,Air Indemnité,EZY1600,MRS,LGW,29 Jan 2026,EUR,490,EC261,FR,Denied Boarding,INVESTIGATE,Standard,24 Feb 2026,Security screening caused delay past gate closure. Liability question.
+,Okonkwo,João,Flightright GmbH,EZY1027,ZAG,LGW,24 Feb 2026,EUR,7900,Complex,EU,Delay >3hrs,INVESTIGATE,Complex,6 Jun 2026,Technical fault on inbound aircraft. AMOS inspection records needed.
+,Lindqvist,Agnieszka,ECC Network,EZY2167,AMS,LGW,21 Oct 2025,EUR,1000,MCOL,EU,Denied Boarding,INVESTIGATE,Standard,7 Feb 2026,Group 4 pax. Security screening caused delay past gate closure. Liability question.
+,Robinson,Alice,Stewarts Law,EZY8949,MAN,CAI,3 Apr 2026,GBP,3240,County Court,EW,Cancellation,INVESTIGATE,Standard,5 May 2026,Group 8 pax. Volcanic ash advisory — strong extraordinary circ.
+,Scott,Cerys,Slater & Gordon,EZY9084,LGW,MAD,31 Mar 2026,GBP,680,County Court,EW,Cancellation,INVESTIGATE,Standard,30 May 2026,Cancellation <14 days notice. No extraordinary circ evidence assembled yet.
+,Álvarez,Paula,FACUA,EZY3149,MAD,MAN,18 Mar 2026,EUR,330,Other Litigation,ES,Delay >3hrs,INVESTIGATE,Complex,9 Jun 2026,De-icing delay — within airline control. Weak extraordinary circ.
+,Kowalski,Fatou,ECC Network,EZY7960,TXL,STN,3 Apr 2026,EUR,1020,ADR,EU,Cancellation,INVESTIGATE,Standard,26 Apr 2026,Schedule change >5hrs — claimant arguing constructive cancellation.
+,Díaz,María,FACUA,EZY3075,ALC,LGW,28 Mar 2026,EUR,420,EC261,ES,Delay >3hrs,DEFEND,Standard,20 May 2026,Technical fault on inbound aircraft. AMOS inspection records needed.
+,Robinson,Emma,Stewarts Law,EZY6432,EDI,BCN,21 Jan 2026,GBP,2260,Complex,EW,Delay >3hrs,INVESTIGATE,Complex,20 Mar 2026,Weather delay at origin — METAR evidence required.
+,Walker,Fatima,Stewarts Law,EZY6708,STN,MXP,2 Jan 2026,GBP,14600,Complex,EW,Delay >3hrs,INVESTIGATE,Complex,29 Apr 2026,Group 5 pax. Birdstrike on approach. Strong extraordinary circ. SafetyNet report to redact.
+,Edwards,Cerys,Slater & Gordon,EZY7577,LTN,BCN,9 Jan 2026,GBP,1100,MCOL,EW,Delay >3hrs,DEFEND,Standard,3 Apr 2026,Group 5 pax. Birdstrike on approach. Strong extraordinary circ. SafetyNet report to redact.
+,Vincent,François,Jedclare,EZY7195,NTE,LGW,12 Oct 2025,EUR,16400,Complex,FR,Denied Boarding,ESCALATE,Complex,18 Jan 2026,Group 5 pax. Overbooking confirmed. AIMS volunteer call not completed.
