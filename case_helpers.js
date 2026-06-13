@@ -596,7 +596,9 @@ function buildCaseFromRow(row, confirmedAssigneeId, parsedDateReceived) {
     locDate: row.dateReceived,
     triageNote: row.notes,
     evidencePct: 0,
-    cprDaysLeft: Math.max(0, Math.round((new Date(parsed.getTime() + 21 * 86400000) - Date.now()) / 86400000)),
+    cprDaysLeft: typeof computeCprDaysLeft === 'function'
+      ? computeCprDaysLeft(row.dateReceived, jurisMap[jCode] || 'england-wales')
+      : Math.max(0, Math.round((new Date(parsed.getTime() + 21 * 86400000) - Date.now()) / 86400000)),
     uploadedByName: uploader.full || uploader.name || 'User'
   };
 }

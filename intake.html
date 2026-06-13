@@ -110,6 +110,40 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 .fi-label{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:0.06em;color:var(--text3);margin-bottom:3px}
 .fi-val{font-size:12px;font-weight:500;color:var(--text)}
 
+/* intake insights */
+.insight-strip{padding:12px 14px;border-radius:var(--r2);margin-bottom:12px;display:flex;align-items:flex-start;gap:10px;line-height:1.5}
+.insight-strip.defend{background:var(--green-faint);border:1px solid #BBF7D0}
+.insight-strip.investigate{background:var(--amber-faint);border:1px solid #FDE68A}
+.insight-strip.escalate{background:var(--red-faint);border:1px solid #FECACA}
+.insight-strip-icon{font-size:18px;flex-shrink:0;margin-top:1px}
+.insight-strip-title{font-size:12px;font-weight:500;margin-bottom:2px}
+.insight-strip-sub{font-size:11px;color:var(--text2)}
+.insight-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+@media(max-width:900px){.insight-grid{grid-template-columns:1fr}}
+.insight-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r2);padding:12px 14px}
+.insight-card-hdr{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);margin-bottom:8px;display:flex;align-items:center;gap:5px}
+.cpr-step{display:flex;gap:10px;padding:7px 0;border-bottom:1px solid var(--rule2)}
+.cpr-step:last-child{border-bottom:none;padding-bottom:0}
+.cpr-step-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:4px}
+.cpr-step-dot.done{background:var(--green-l)}.cpr-step-dot.active{background:var(--amber)}.cpr-step-dot.future{background:var(--rule)}
+.cpr-step-label{font-size:11px;font-weight:500;color:var(--text)}
+.cpr-step-note{font-size:10px;color:var(--text3);margin-top:1px}
+.gap-chip{display:inline-flex;align-items:center;gap:4px;font-size:10px;padding:3px 8px;border-radius:10px;background:var(--amber-faint);color:var(--amber);margin:2px 4px 2px 0;border:1px solid #FDE68A}
+.conf-bar{height:4px;background:var(--surface3);border-radius:2px;overflow:hidden;margin-top:6px}
+.conf-fill{height:100%;background:var(--accent);border-radius:2px}
+.activity-item{display:flex;gap:8px;padding:7px 0;border-bottom:1px solid var(--rule2);font-size:11px}
+.activity-item:last-child{border-bottom:none}
+.activity-time{color:var(--text3);font-size:10px;white-space:nowrap;min-width:72px}
+.activity-text{color:var(--text2);line-height:1.45}
+.exposure-pill{font-size:10px;font-weight:500;padding:2px 8px;border-radius:10px;text-transform:uppercase;letter-spacing:.04em}
+.exposure-standard{background:var(--surface2);color:var(--text3)}
+.exposure-elevated{background:var(--amber-faint);color:var(--amber)}
+.exposure-high{background:var(--red-faint);color:var(--red)}
+.class-pill{font-size:10px;font-weight:500;padding:3px 9px;border-radius:10px}
+.class-defend{background:var(--green-faint);color:var(--green)}
+.class-investigate{background:var(--amber-faint);color:var(--amber)}
+.class-escalate{background:var(--red-faint);color:var(--red)}
+
 /* user switcher modal */
 .user-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.3);z-index:1000;align-items:flex-start;justify-content:flex-end;padding:52px 16px 0}
 .user-modal.open{display:flex}
@@ -206,6 +240,7 @@ input[type=file]{display:none}
 <script src="case_filing.js"></script>
 <script src="team_helpers.js"></script>
 <script src="intake_template.js"></script>
+<script src="intake_extract.js"></script>
 
 <nav class="global-nav">
   <a href="index.html" class="gn-logo">
@@ -282,13 +317,25 @@ function nextUploadRef(offset){
 function depositIntakeCase(row,assigneeId,fileMeta,leadUid,activityPrefix){
   var parsedDateReceived=parseLocDateReceived(row.dateReceived);
   var c=buildCaseFromRow(row,assigneeId,parsedDateReceived);
-  var lead=USERS[leadUid]||{};
-  c.points=[];
+  if(typeof computeCprDaysLeft==='function'){
+    c.cprDaysLeft=computeCprDaysLeft(row.dateReceived,c.jurisdiction);
+  }
   c.loaStatus='';
+  if(typeof applyIntakeEnrichment==='function'){
+    applyIntakeEnrichment(c,row,{profile:row._profile,textExtracted:row._textExtracted});
+  }else{
+    c.points=buildIntakePointsFromRow?buildIntakePointsFromRow(row,c):[];
+    c.triageNote=row.notes||'';
+  }
+  var lead=USERS[leadUid]||{};
   c.activity=[
     {text:(activityPrefix||'LOC deposited')+' — '+(row.notes||row.ref),time:'Just now',type:'upload'},
+    {text:'AI extraction complete — '+((c.extractionMeta&&c.extractionMeta.confidence)||'—')+'% confidence',time:'Just now',type:'ai'},
     {text:'Assigned to '+(USERS[assigneeId]?USERS[assigneeId].name:assigneeId)+' · confirmed by '+(lead.name||leadUid),time:'Just now',type:'action'}
   ];
+  if(c.points&&c.points.length){
+    c.activity.push({text:c.points.length+' triage issue'+(c.points.length!==1?'s':'')+' identified from LOC',time:'Just now',type:'create'});
+  }
   if(fileMeta&&fileMeta.name)c.uploadedFile=fileMeta.name;
   uploadedCases.unshift(c);
   if(typeof CaseFiling!=='undefined'){
@@ -327,7 +374,13 @@ function userCases(){
   var uid=getActiveUser();
   return typeof getMergedCasesForUser==='function'?getMergedCasesForUser(uid):getCasesForUser(uid).concat(uploadedCases.filter(function(c){return c.assignedTo===uid;}));
 }
-function buildLocRowFromFile(file, ref, uid){
+function buildLocRowFromFile(file, ref, uid, textContent){
+  if(typeof enrichLocRowFromFile==='function'){
+    var enriched=enrichLocRowFromFile(file,ref,uid,textContent);
+    enriched.row._profile=enriched.profile;
+    enriched.row._textExtracted=enriched.textExtracted;
+    return enriched.row;
+  }
   var base=file.name.replace(/\.[^.]+$/,'').replace(/[_-]+/g,' ').trim();
   var tokens=base?base.split(/\s+/):[];
   var firstName=tokens.length>1?tokens.pop():'';
@@ -358,11 +411,24 @@ function handleUpload(event){
   var file=event.target.files&&event.target.files[0];
   if(!file)return;
   var uid=getActiveUser();
-  var row=buildLocRowFromFile(file,nextUploadRef(0),uid);
-  var c=depositIntakeCase(row,uid,{name:file.name,size:file.size,type:file.type},uid,'LOC uploaded');
-  selectedRef=c.ref;
-  try{sessionStorage.setItem('dfa_case',JSON.stringify(c));}catch(e){}
-  render();
+  var isText=/\.(txt|text)$/i.test(file.name)||file.type==='text/plain';
+  if(isText){
+    var reader=new FileReader();
+    reader.onload=function(){
+      var row=buildLocRowFromFile(file,nextUploadRef(0),uid,reader.result||'');
+      var c=depositIntakeCase(row,uid,{name:file.name,size:file.size,type:file.type},uid,'LOC uploaded');
+      selectedRef=c.ref;
+      try{sessionStorage.setItem('dfa_case',JSON.stringify(c));}catch(e){}
+      render();
+    };
+    reader.readAsText(file);
+  }else{
+    var row=buildLocRowFromFile(file,nextUploadRef(0),uid,'');
+    var c=depositIntakeCase(row,uid,{name:file.name,size:file.size,type:file.type},uid,'LOC uploaded');
+    selectedRef=c.ref;
+    try{sessionStorage.setItem('dfa_case',JSON.stringify(c));}catch(e){}
+    render();
+  }
   event.target.value='';
 }
 function triggerMassUpload(){
@@ -618,16 +684,17 @@ function copyGapFillEmail(){
 }
 
 function createCaseFromEmail(){
-  var existing=typeof getCase==='function'?getCase('AC-2026-0089'):null;
+  var hartleyRef='DEF-2026-EW-0089';
+  var existing=typeof getCase==='function'?getCase(hartleyRef):null;
   if(existing){
-    selectedRef='AC-2026-0089';
+    selectedRef=hartleyRef;
     try{sessionStorage.setItem('dfa_case',JSON.stringify(existing));}catch(e){}
     intakeTab='new';
-    showToast('Case AC-2026-0089 already exists — opened in intake queue.');
+    showToast('Case '+hartleyRef+' already exists — opened in intake queue.');
     render();
     return;
   }
-  showToast('Case created from email — AC-2026-0089 (Daniel Hartley).');
+  showToast('Case created from email — '+hartleyRef+' (Daniel Hartley).');
   intakeTab='new';
   render();
 }
@@ -643,19 +710,26 @@ function renderEmailParseResult(){
     parsedFieldRow('ok','Solicitor','Pemberton & Associates'),
     parsedFieldRow('ok','Flight','HC1184'),
     parsedFieldRow('ok','Date','13 March 2026'),
-    parsedFieldRow('ok','Route','LTN → BCN'),
+    parsedFieldRow('ok','Route','LTN → BCN (diverted VLC)'),
     parsedFieldRow('ok','Claim type','EC261 / UK261 — Diversion'),
-    parsedFieldRow('ok','Compensation','£39,000'),
+    parsedFieldRow('ok','Disruption','Weather — diversion to Valencia'),
+    parsedFieldRow('ok','Compensation','£39,000 EC261'),
     parsedFieldRow('warn','Consequential loss','£38,250 (Montreal Convention — flag for senior review)'),
+    parsedFieldRow('warn','Recommended triage','ESCALATE — high exposure'),
     parsedFieldRow('miss','Booking reference','NOT FOUND — gap identified'),
     parsedFieldRow('miss','Passenger count','NOT FOUND — gap identified')
   ].join('');
+  var insightHtml='<div class="insight-strip escalate" style="margin-top:12px"><i class="ti ti-alert-triangle insight-strip-icon"></i><div>'
+    +'<div class="insight-strip-title">AI triage recommendation: ESCALATE · Cat C · high exposure</div>'
+    +'<div class="insight-strip-sub">Montreal Convention consequential loss is the primary exposure (£38,250). EC261 weather diversion defence is strong but secondary. Route to senior solicitor before substantive response. 2 data gaps require gap-fill email.</div>'
+    +'</div></div>';
   var mailtoSubject=encodeURIComponent('RE: Letter of Claim — Hartley, Daniel — Flight HC1184 13 March 2026');
   var mailtoBody=encodeURIComponent(EMAIL_GAP_FILL_DRAFT.replace(/\n/g,'\r\n'));
   return '<div class="section-card" style="margin-bottom:12px"><div class="sc-header"><i class="ti ti-scan"></i><div class="sc-title">Email parsing result</div></div><div class="sc-body">'
     +'<div class="ec-split">'
     +'<div><div style="font-size:11px;font-weight:500;color:var(--text3);margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em">Raw email</div><div class="ec-raw">'+escapeHtml(EMAIL_RAW_HARTLEY)+'</div></div>'
-    +'<div><div style="font-size:11px;font-weight:500;color:var(--text3);margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em">Parsed fields — ready to create case</div><div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r2);padding:4px 12px">'+fields+'</div></div>'
+    +'<div><div style="font-size:11px;font-weight:500;color:var(--text3);margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em">Parsed fields — ready to create case</div><div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r2);padding:4px 12px">'+fields+'</div>'
+    +insightHtml+'</div>'
     +'</div>'
     +'<div class="ec-actions">'
     +'<button class="btn-advance" style="width:auto" onclick="createCaseFromEmail()"><i class="ti ti-arrow-right"></i> Create case →</button>'
@@ -671,7 +745,7 @@ function renderEmailConnector(){
     +'<div style="padding:12px 14px">'
     +'<div class="ec-email unread"><div class="ec-from">clerk@pemberton-associates.co.uk</div><div class="ec-subject">Letter of Claim — Hartley, Daniel — Flight HC1184 13 March 2026</div><div class="ec-preview">"Dear Legal Department, We write on behalf of our client Mr Daniel Hartley..."</div><div class="ec-meta"><span class="ec-time">Today 09:14</span><button class="ec-parse-btn" onclick="parseEmailConnector(\'hartley\')">Parse &amp; create case →</button></div></div>'
     +'<div class="ec-email unread"><div class="ec-from">claims@airhelp.com</div><div class="ec-subject">RE: EC261 Compensation Claim — Walsh, Rebecca — EZY2847</div><div class="ec-preview">"Please find attached our Letter of Claim in respect of..."</div><div class="ec-meta"><span class="ec-time">Yesterday 16:30</span><button class="ec-parse-btn" onclick="showToast(\'Parsing demo available for Hartley email only.\')">Parse &amp; create case →</button></div></div>'
-    +'<div class="ec-email read"><div class="ec-from">info@bottandco.com</div><div class="ec-subject">Letter of Claim — Morrison, Thomas — Flight HC442</div><div class="ec-preview">"We act on behalf of Thomas Morrison in connection with..."</div><div class="ec-meta"><span class="ec-time">10 Jun 2026</span><span class="ec-status"><i class="ti ti-circle-check"></i> Case created — AC-2026-0094</span></div></div>'
+    +'<div class="ec-email read"><div class="ec-from">info@bottandco.com</div><div class="ec-subject">Letter of Claim — Morrison, Thomas — Flight HC442</div><div class="ec-preview">"We act on behalf of Thomas Morrison in connection with..."</div><div class="ec-meta"><span class="ec-time">10 Jun 2026</span><span class="ec-status"><i class="ti ti-circle-check"></i> Case created — DEF-2026-EW-0094</span></div></div>'
     +'</div></div>';
 
   if(emailConnectorParsed==='hartley'){
@@ -861,6 +935,150 @@ function startTriage(ref){
   }
   openCase(ref,'triage');
 }
+
+function intakeClassKey(cls){
+  var k=String(cls||'INVESTIGATE').toLowerCase();
+  if(k.indexOf('defend')>=0)return 'defend';
+  if(k.indexOf('escalate')>=0)return 'escalate';
+  return 'investigate';
+}
+
+function renderIntakeInsightStrip(c,insights){
+  insights=insights||(c.intakeInsights||(typeof buildIntakeInsights==='function'?buildIntakeInsights(c,{}):null));
+  if(!insights)return '';
+  var ck=intakeClassKey(insights.classification);
+  var icons={defend:'ti-shield-check',investigate:'ti-search',escalate:'ti-alert-triangle'};
+  return '<div class="insight-strip '+ck+'"><i class="ti '+(icons[ck]||'ti-brain')+' insight-strip-icon"></i><div>'
+    +'<div class="insight-strip-title">Recommended: '+escapeHtml(insights.classification||'INVESTIGATE')+' · Cat '+escapeHtml(c.cat||'B')+' · '
+    +'<span class="exposure-pill exposure-'+(insights.exposure||'standard')+'">'+escapeHtml(insights.exposure||'standard')+' exposure</span></div>'
+    +'<div class="insight-strip-sub">'+escapeHtml(insights.triageReason)+'</div>'
+    +(insights.exposureNote?'<div class="insight-strip-sub" style="margin-top:4px">'+escapeHtml(insights.exposureNote)+'</div>':'')
+    +'</div></div>';
+}
+
+function renderCprTimeline(c,insights,J){
+  insights=insights||(c.intakeInsights||{});
+  J=J||getJurisdiction(c.jurisdiction);
+  var steps=[];
+  if(J&&J.keyDates){
+    J.keyDates.slice(0,3).forEach(function(kd,i){
+      var daysLeft=insights.cprDaysLeft!=null?insights.cprDaysLeft:0;
+      var cls=i===0&&daysLeft<=7?'active':i===0?'done':'future';
+      steps.push('<div class="cpr-step"><div class="cpr-step-dot '+cls+'"></div><div><div class="cpr-step-label">'+escapeHtml(kd.label)+' — '+kd.days+'d</div><div class="cpr-step-note">'+escapeHtml(kd.note||'')+'</div></div></div>');
+    });
+  }else{
+    steps.push('<div class="cpr-step"><div class="cpr-step-dot active"></div><div><div class="cpr-step-label">Acknowledge LOC — 21 days</div><div class="cpr-step-note">CPR Pre-Action Protocol</div></div></div>');
+  }
+  return '<div class="insight-card"><div class="insight-card-hdr"><i class="ti ti-calendar-due"></i> CPR timeline</div>'
+    +'<div style="font-size:11px;color:var(--text2);margin-bottom:8px">'+escapeHtml(J.procedureNote||'')+'</div>'
+    +steps.join('')
+    +'<div style="margin-top:10px;padding-top:8px;border-top:1px solid var(--rule2);font-size:11px"><strong style="color:var(--text)">'+urgencyLabel(c.cprDaysLeft)+'</strong> remaining on primary response window</div>'
+    +(J.important?'<div style="margin-top:8px;font-size:10px;color:var(--red);background:var(--red-faint);padding:6px 8px;border-radius:var(--r)">'+escapeHtml(J.important)+'</div>':'')
+    +'</div>';
+}
+
+function renderExtractionMeta(c,insights){
+  insights=insights||(c.intakeInsights||{});
+  var meta=c.extractionMeta||{};
+  var conf=insights.confidence||meta.confidence||0;
+  return '<div class="insight-card"><div class="insight-card-hdr"><i class="ti ti-scan"></i> Extraction confidence</div>'
+    +'<div style="font-size:22px;font-weight:500;color:var(--text);letter-spacing:-0.02em">'+conf+'%</div>'
+    +'<div class="conf-bar"><div class="conf-fill" style="width:'+conf+'%"></div></div>'
+    +'<div style="font-size:10px;color:var(--text3);margin-top:6px">Source: '+escapeHtml(meta.source||'Case data')+'</div>'
+    +(insights.gaps&&insights.gaps.length?'<div style="margin-top:10px"><div style="font-size:10px;font-weight:500;color:var(--text3);margin-bottom:4px;text-transform:uppercase;letter-spacing:.06em">Data gaps flagged</div>'
+      +insights.gaps.map(function(g){return '<span class="gap-chip"><i class="ti ti-alert-circle" style="font-size:9px"></i> '+escapeHtml(g)+'</span>';}).join('')
+      +'</div>':'')
+    +'</div>';
+}
+
+function renderActivityFeed(c){
+  var acts=(c.activity&&c.activity.length)?c.activity:[{text:'LOC received',time:c.locDate||'Today',type:'create'}];
+  return '<div class="section-card"><div class="sc-header"><i class="ti ti-history"></i><div class="sc-title">Intake activity</div></div><div class="sc-body">'
+    +acts.slice(0,6).map(function(a){
+      return '<div class="activity-item"><div class="activity-time">'+escapeHtml(a.time||'')+'</div><div class="activity-text">'+escapeHtml(a.text||'')+'</div></div>';
+    }).join('')
+    +'</div></div>';
+}
+
+function renderCaseWorkspace(c,J){
+  var insights=c.intakeInsights||(typeof buildIntakeInsights==='function'?buildIntakeInsights(c,{}):{});
+  var assignee=USERS[c.assignedTo];
+  var ck=intakeClassKey(c.classification||insights.classification);
+  var points=(c.points&&c.points.length)?c.points:[
+    {n:1,claim:'Passenger and flight details extracted',evidenceStatus:'amber',evidenceDoc:'Needs legal review'},
+    {n:2,claim:'Disruption reason identified as '+(c.disruptionType||'pending'),evidenceStatus:'amber',evidenceDoc:'Confirm in triage'},
+    {n:3,claim:'CPR response clock started',evidenceStatus:'green',evidenceDoc:urgencyLabel(c.cprDaysLeft)}
+  ];
+  var docs=depositedDocs.filter(function(d){return d.ref===c.ref;});
+  var candidates=userCases().filter(function(x){
+    var q=depositSearch.toLowerCase();
+    return !q||x.ref.toLowerCase().indexOf(q)>=0||x.claimant.toLowerCase().indexOf(q)>=0||(x.flightNum||'').toLowerCase().indexOf(q)>=0;
+  }).slice(0,6);
+
+  return '<div class="cw">'
+    +'<div class="cw-header"><div class="cw-ref">'+escapeHtml(c.ref)+'</div>'
+    +'<div style="display:flex;align-items:flex-start;gap:10px;flex-wrap:wrap">'
+    +'<div style="flex:1;min-width:200px"><div class="cw-name">'+escapeHtml(c.claimant)+' v. [Airline]</div>'
+    +'<div class="cw-meta"><span><i class="ti ti-building"></i>'+escapeHtml(c.solicitor)+'</span>'
+    +'<span><i class="ti ti-plane"></i>'+escapeHtml(c.flight)+'</span>'
+    +'<span><i class="ti ti-world"></i>'+J.flag+' '+escapeHtml(J.name)+'</span>'
+    +'<span><i class="ti ti-cash"></i>'+escapeHtml(c.value)+'</span>'
+    +(assignee?'<span><i class="ti ti-user"></i>'+escapeHtml(assignee.name)+'</span>':'')
+    +'</div></div>'
+    +'<span class="class-pill class-'+ck+'">'+escapeHtml(c.classification||insights.classification||'INVESTIGATE')+'</span>'
+    +'<span class="cw-badge" style="background:'+stageBg('intake')+';color:'+stageColor('intake')+'">'+t('stage_intake')+'</span>'
+    +'</div></div>'
+
+    +renderIntakeInsightStrip(c,insights)
+
+    +'<div class="insight-grid">'
+    +'<div class="section-card" style="margin:0"><div class="sc-header"><i class="ti ti-plane-departure"></i><div class="sc-title">Flight & claim details</div></div><div class="sc-body"><div class="field-grid">'
+    +fieldHtml('Flight number',c.flightNum)
+    +fieldHtml('Route',(c.dep&&c.arr&&c.dep!=='TBD')?c.dep+' → '+c.arr:'Pending')
+    +fieldHtml('Flight date',c.flightDate)
+    +fieldHtml('Claim type',c.type)
+    +fieldHtml('Disruption',c.disruptionType)
+    +fieldHtml('Complexity',c.cat?'Cat '+c.cat:'Pending')
+    +fieldHtml('LOC received',c.locDate)
+    +fieldHtml('Compensation sought',c.value)
+    +'</div>'
+    +(c.triageNote?'<div style="margin-top:10px;padding:10px 12px;background:var(--surface2);border-radius:var(--r);border:1px solid var(--border);font-size:11px;color:var(--text2);line-height:1.55"><strong style="color:var(--text);font-size:10px;text-transform:uppercase;letter-spacing:.06em">Extraction note</strong><br>'+escapeHtml(c.triageNote)+'</div>':'')
+    +'</div></div>'
+    +renderCprTimeline(c,insights,J)
+    +'</div>'
+
+    +'<div class="insight-grid" style="margin-bottom:12px">'
+    +renderExtractionMeta(c,insights)
+    +'<div class="insight-card"><div class="insight-card-hdr"><i class="ti ti-scale"></i> Legal framework</div>'
+    +'<div style="font-size:12px;color:var(--text);font-weight:500;margin-bottom:4px">'+escapeHtml(c.type||'EC261')+'</div>'
+    +'<div style="font-size:11px;color:var(--text2);line-height:1.55;margin-bottom:8px">'+escapeHtml(J.procedureNote||'')+'</div>'
+    +'<div style="font-size:10px;color:var(--text3)"><i class="ti ti-clock"></i> Limitation: '+escapeHtml(J.limitationNote||'—')+'</div>'
+    +'</div></div>'
+
+    +'<div class="section-card"><div class="sc-header"><i class="ti ti-list-check"></i><div class="sc-title">Initial issues for triage · '+points.length+' identified</div></div><div class="sc-body">'
+    +points.map(function(p){
+      var cls=p.evidenceStatus==='green'?'g':p.evidenceStatus==='red'?'r':'a';
+      return '<div class="point-item"><div class="pt-dot pt-'+cls+'"></div><div class="pt-n">'+p.n+'</div><div style="flex:1"><div class="pt-claim">'+escapeHtml(p.claim)+'</div><div class="pt-ev">'+escapeHtml(p.evidenceDoc||'Pending')+'</div></div><span class="pt-status ps-'+cls+'">'+(cls==='g'?'Ready':cls==='r'?'Missing':'Review')+'</span></div>';
+    }).join('')
+    +'</div></div>'
+
+    +renderActivityFeed(c)
+
+    +'<div class="section-card"><div class="sc-header"><i class="ti ti-file-search"></i><div class="sc-title">Document deposit and AI summary</div></div><div class="sc-body">'
+    +'<div style="font-size:12px;color:var(--text2);line-height:1.5;margin-bottom:10px">Upload supporting documents, search for the correct existing case, and deposit the file into that case file for AI scanning and legal review.</div>'
+    +'<div class="field-grid" style="margin-bottom:10px">'+fieldHtml('Selected document',pendingSupportFile?pendingSupportFile.name:'No document selected')+fieldHtml('Current case documents',docs.length+' deposited')+'</div>'
+    +'<div style="display:flex;gap:8px;margin-bottom:10px"><button class="btn-advance" style="width:auto;padding:7px 12px" onclick="triggerSupportUpload()"><i class="ti ti-upload"></i> Choose document</button><input class="chk-text" style="max-width:none;flex:1" placeholder="Search case ref, claimant, or flight" value="'+escapeHtml(depositSearch)+'" oninput="setDepositSearch(this.value)"></div>'
+    +(pendingSupportFile?'<div style="border:1px solid var(--border);border-radius:var(--r2);overflow:hidden;margin-bottom:10px">'+candidates.map(function(x){return '<div class="point-item" style="padding:9px 10px"><div class="pt-dot pt-a"></div><div style="flex:1"><div class="pt-claim">'+escapeHtml(x.ref)+' · '+escapeHtml(x.claimant)+'</div><div class="pt-ev">'+escapeHtml(x.flightNum)+' · '+escapeHtml(t('stage_'+x.stage)||x.stage)+'</div></div><button class="chk-save" onclick="depositIntoCase(&quot;'+escapeHtml(x.ref)+'&quot;)">Deposit here</button></div>';}).join('')+'</div>':'')
+    +(docs.length?docs.map(function(d){return '<div style="background:var(--green-faint);border:1px solid #BBF7D0;border-radius:var(--r);padding:9px 10px;margin-top:6px"><div style="font-size:12px;font-weight:500;color:var(--green);margin-bottom:3px"><i class="ti ti-file-check"></i> '+escapeHtml(d.name)+'</div><div style="font-size:11px;color:var(--text2);line-height:1.5">'+escapeHtml(d.summary)+'</div></div>';}).join(''):'<div style="font-size:11px;color:var(--text3)">No supporting documents deposited into this case yet.</div>')
+    +'</div></div>'
+
+    +'<div class="advance-bar"><div class="adv-text">'
+    +(insights.gaps&&insights.gaps.length?insights.gaps.length+' data gap'+(insights.gaps.length!==1?'s':'')+' flagged · ':'')
+    +'CPR clock running · '+points.length+' triage issue'+(points.length!==1?'s':'')+' ready for review</div>'
+    +'<button class="btn-advance" onclick="startTriage(\''+c.ref+'\')"><i class="ti ti-arrow-right"></i> Start triage</button></div>'
+    +'</div>';
+}
+
 function render(){
   var cases=intakeCases().sort(function(a,b){return a.cprDaysLeft-b.cprDaysLeft;});
   var list=document.getElementById('case-list');
@@ -880,7 +1098,7 @@ function render(){
       var urg=daysUrgency(c.cprDaysLeft);
       return '<div class="case-row '+(c.ref===selectedRef?'active':'')+'" onclick="selectCase(\''+c.ref+'\')">'
         +'<div class="cr-icon '+(c.uploadedFile?'new':'')+'"><i class="ti '+(c.uploadedFile?'ti-upload':'ti-file-text')+'"></i></div>'
-        +'<div style="min-width:0"><div class="cr-ref">'+escapeHtml(c.ref)+'</div><div class="cr-name">'+escapeHtml(c.claimant)+'</div><div class="cr-meta"><span>'+escapeHtml(c.flightNum)+'</span><span class="cr-badge">'+escapeHtml(c.cat)+'</span></div></div>'
+        +'<div style="min-width:0"><div class="cr-ref">'+escapeHtml(c.ref)+'</div><div class="cr-name">'+escapeHtml(c.claimant)+'</div><div class="cr-meta"><span>'+escapeHtml(c.flightNum)+'</span><span class="cr-badge">'+escapeHtml(c.classification||c.cat)+'</span></div></div>'
         +'<div class="cr-right"><span class="cr-days days-'+urg+'">'+urgencyLabel(c.cprDaysLeft)+'</span></div></div>';
     }).join(''):'<div class="case-list-empty"><i class="ti ti-mail"></i><div>Email connector inbox</div></div>';
     document.getElementById('right-panel').innerHTML=tabBar+renderEmailConnector();
@@ -892,7 +1110,7 @@ function render(){
       var urg=daysUrgency(c.cprDaysLeft);
       return '<div class="case-row '+(c.ref===selectedRef?'active':'')+'" onclick="selectCase(\''+c.ref+'\')">'
         +'<div class="cr-icon '+(c.uploadedFile?'new':'')+'"><i class="ti '+(c.uploadedFile?'ti-upload':'ti-file-text')+'"></i></div>'
-        +'<div style="min-width:0"><div class="cr-ref">'+escapeHtml(c.ref)+'</div><div class="cr-name">'+escapeHtml(c.claimant)+'</div><div class="cr-meta"><span>'+escapeHtml(c.flightNum)+'</span><span class="cr-badge">'+escapeHtml(c.cat)+'</span></div></div>'
+        +'<div style="min-width:0"><div class="cr-ref">'+escapeHtml(c.ref)+'</div><div class="cr-name">'+escapeHtml(c.claimant)+'</div><div class="cr-meta"><span>'+escapeHtml(c.flightNum)+'</span><span class="cr-badge">'+escapeHtml(c.classification||c.cat)+'</span></div></div>'
         +'<div class="cr-right"><span class="cr-days days-'+urg+'">'+urgencyLabel(c.cprDaysLeft)+'</span></div></div>';
     }).join(''):'<div class="case-list-empty"><i class="ti ti-stack-2"></i><div>Batch deposit queue</div></div>';
     document.getElementById('right-panel').innerHTML=tabBar+renderMassPanel();
@@ -911,35 +1129,23 @@ function render(){
     var urg=daysUrgency(c.cprDaysLeft);
     return '<div class="case-row '+(c.ref===selectedRef?'active':'')+'" onclick="selectCase(\''+c.ref+'\')">'
       +'<div class="cr-icon '+(c.uploadedFile?'new':'')+'"><i class="ti '+(c.uploadedFile?'ti-upload':'ti-file-text')+'"></i></div>'
-      +'<div style="min-width:0"><div class="cr-ref">'+escapeHtml(c.ref)+'</div><div class="cr-name">'+escapeHtml(c.claimant)+'</div><div class="cr-meta"><span>'+escapeHtml(c.flightNum)+'</span><span class="cr-badge">'+escapeHtml(c.cat)+'</span></div></div>'
+      +'<div style="min-width:0"><div class="cr-ref">'+escapeHtml(c.ref)+'</div><div class="cr-name">'+escapeHtml(c.claimant)+'</div><div class="cr-meta"><span>'+escapeHtml(c.flightNum)+'</span><span class="cr-badge">'+escapeHtml(c.classification||c.cat)+'</span></div></div>'
       +'<div class="cr-right"><span class="cr-days days-'+urg+'">'+urgencyLabel(c.cprDaysLeft)+'</span></div></div>';
   }).join('');
   var c=cases.find(function(x){return x.ref===selectedRef;})||cases[0];
   var J=getJurisdiction(c.jurisdiction);
+  if(!c.intakeInsights&&typeof buildIntakeInsights==='function'){
+    var rowData=typeof caseToRowFromCase==='function'?caseToRowFromCase(c):{};
+    c.intakeInsights=buildIntakeInsights(c,rowData);
+    if(!c.extractionMeta){
+      c.extractionMeta={source:'Case record',confidence:c.intakeInsights.confidence,extractedAt:new Date().toISOString()};
+    }
+  }
   var candidates=userCases().filter(function(x){
     var q=depositSearch.toLowerCase();
     return !q||x.ref.toLowerCase().indexOf(q)>=0||x.claimant.toLowerCase().indexOf(q)>=0||(x.flightNum||'').toLowerCase().indexOf(q)>=0;
   }).slice(0,6);
-  var docs=depositedDocs.filter(function(d){return d.ref===c.ref;});
-  var points=(c.points&&c.points.length)?c.points:[
-    {n:1,claim:'Passenger and flight details extracted',evidenceStatus:'amber',evidenceDoc:'Needs legal review'},
-    {n:2,claim:'Disruption reason identified as '+(c.disruptionType||'pending'),evidenceStatus:'amber',evidenceDoc:'Confirm in triage'},
-    {n:3,claim:'CPR response clock started',evidenceStatus:'green',evidenceDoc:urgencyLabel(c.cprDaysLeft)}
-  ];
-  var newPanel=intakeTab==='new'?('<div class="cw">'
-    +'<div class="cw-header"><div class="cw-ref">'+escapeHtml(c.ref)+'</div><div style="display:flex;align-items:flex-start;gap:10px"><div style="flex:1"><div class="cw-name">'+escapeHtml(c.claimant)+' v. [Airline]</div><div class="cw-meta"><span><i class="ti ti-building"></i>'+escapeHtml(c.solicitor)+'</span><span><i class="ti ti-plane"></i>'+escapeHtml(c.flight)+'</span><span><i class="ti ti-world"></i>'+J.flag+' '+escapeHtml(J.name)+'</span><span><i class="ti ti-cash"></i>'+escapeHtml(c.value)+'</span></div></div><span class="cw-badge" style="background:'+stageBg('intake')+';color:'+stageColor('intake')+'">'+t('stage_intake')+'</span></div></div>'
-    +'<div class="section-card"><div class="sc-header"><i class="ti ti-scan"></i><div class="sc-title">Extracted claim summary</div></div><div class="sc-body"><div class="field-grid">'
-    +fieldHtml('Claim type',c.type)+fieldHtml('LOC received',c.locDate)+fieldHtml('Disruption',c.disruptionType)+fieldHtml('Jurisdiction',J.name)+'</div></div></div>'
-    +'<div class="section-card"><div class="sc-header"><i class="ti ti-list-check"></i><div class="sc-title">Initial issues for triage</div></div><div class="sc-body">'+points.map(function(p){var cls=p.evidenceStatus==='green'?'g':p.evidenceStatus==='red'?'r':'a';return '<div class="point-item"><div class="pt-dot pt-'+cls+'"></div><div class="pt-n">'+p.n+'</div><div style="flex:1"><div class="pt-claim">'+escapeHtml(p.claim)+'</div><div class="pt-ev">'+escapeHtml(p.evidenceDoc||'Pending')+'</div></div><span class="pt-status ps-'+cls+'">'+(cls==='g'?'Ready':cls==='r'?'Missing':'Review')+'</span></div>';}).join('')+'</div></div>'
-    +'<div class="section-card"><div class="sc-header"><i class="ti ti-file-search"></i><div class="sc-title">Document deposit and AI summary</div></div><div class="sc-body">'
-    +'<div style="font-size:12px;color:var(--text2);line-height:1.5;margin-bottom:10px">Upload supporting documents, search for the correct existing case, and deposit the file into that case file for AI scanning and legal review.</div>'
-    +'<div class="field-grid" style="margin-bottom:10px">'+fieldHtml('Selected document',pendingSupportFile?pendingSupportFile.name:'No document selected')+fieldHtml('Current case documents',docs.length+' deposited')+'</div>'
-    +'<div style="display:flex;gap:8px;margin-bottom:10px"><button class="btn-advance" style="width:auto;padding:7px 12px" onclick="triggerSupportUpload()"><i class="ti ti-upload"></i> Choose document</button><input class="chk-text" style="max-width:none;flex:1" placeholder="Search case ref, claimant, or flight" value="'+escapeHtml(depositSearch)+'" oninput="setDepositSearch(this.value)"></div>'
-    +(pendingSupportFile?'<div style="border:1px solid var(--border);border-radius:var(--r2);overflow:hidden;margin-bottom:10px">'+candidates.map(function(x){return '<div class="point-item" style="padding:9px 10px"><div class="pt-dot pt-a"></div><div style="flex:1"><div class="pt-claim">'+escapeHtml(x.ref)+' · '+escapeHtml(x.claimant)+'</div><div class="pt-ev">'+escapeHtml(x.flightNum)+' · '+escapeHtml(t('stage_'+x.stage)||x.stage)+'</div></div><button class="chk-save" onclick="depositIntoCase(&quot;'+escapeHtml(x.ref)+'&quot;)">Deposit here</button></div>';}).join('')+'</div>':'')
-    +(docs.length?docs.map(function(d){return '<div style="background:var(--green-faint);border:1px solid #BBF7D0;border-radius:var(--r);padding:9px 10px;margin-top:6px"><div style="font-size:12px;font-weight:500;color:var(--green);margin-bottom:3px"><i class="ti ti-file-check"></i> '+escapeHtml(d.name)+'</div><div style="font-size:11px;color:var(--text2);line-height:1.5">'+escapeHtml(d.summary)+'</div></div>';}).join(''):'<div style="font-size:11px;color:var(--text3)">No supporting documents deposited into this case yet.</div>')
-    +'</div></div>'
-    +'<div class="advance-bar"><div class="adv-text">Case created · CPR clock started · Hand off to triage.</div><button class="btn-advance" onclick="startTriage(\''+c.ref+'\')"><i class="ti ti-arrow-right"></i> Start triage</button></div>'
-    +'</div>'):'';
+  var newPanel=intakeTab==='new'?renderCaseWorkspace(c,J):'';
   var depositPanel=intakeTab==='deposit'?('<div class="cw"><div class="section-card"><div class="sc-header"><i class="ti ti-file-search"></i><div class="sc-title">Deposit document into existing case</div></div><div class="sc-body">'
     +'<div style="font-size:12px;color:var(--text2);line-height:1.5;margin-bottom:10px">Upload supporting documents, search for the correct case, and deposit the file for AI scanning.</div>'
     +'<div style="display:flex;gap:8px;margin-bottom:10px"><button class="btn-advance" style="width:auto;padding:7px 12px" onclick="triggerSupportUpload()"><i class="ti ti-upload"></i> Choose document</button><input class="chk-text" style="max-width:none;flex:1" placeholder="Search case ref, claimant, or flight" value="'+escapeHtml(depositSearch)+'" oninput="setDepositSearch(this.value)"></div>'
