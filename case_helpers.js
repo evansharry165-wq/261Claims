@@ -41,7 +41,7 @@ function routeForStage(stage) {
 
 function getStoredEvidencePct(ref) {
   try {
-    var st = JSON.parse(sessionStorage.getItem('261c_evidence_' + ref) || 'null');
+    var st = JSON.parse(sessionStorage.getItem('dfa_evidence_' + ref) || 'null');
     if (st && typeof st.evidencePct === 'number') return st.evidencePct;
   } catch (e) {}
   return null;
@@ -56,14 +56,14 @@ function syncCaseEvidencePct(ref, pct, readyForDrafting) {
     c.classification = 'DRAFTING';
   }
   try {
-    var stored = JSON.parse(sessionStorage.getItem('261c_case') || 'null');
+    var stored = JSON.parse(sessionStorage.getItem('dfa_case') || 'null');
     if (stored && stored.ref === ref) {
       stored.evidencePct = pct;
       if (readyForDrafting) {
         stored.evidenceReady = true;
         stored.classification = 'DRAFTING';
       }
-      sessionStorage.setItem('261c_case', JSON.stringify(stored));
+      sessionStorage.setItem('dfa_case', JSON.stringify(stored));
     }
     var aero = JSON.parse(sessionStorage.getItem('aeroCaseData') || 'null');
     if (aero && aero.ref === ref) {
@@ -211,7 +211,7 @@ function sortCases(cases, sort) {
 function getNotifications(uid) {
   var all = [];
   try {
-    all = JSON.parse(sessionStorage.getItem('261c_notifications') || '[]');
+    all = JSON.parse(sessionStorage.getItem('dfa_notifications') || '[]');
   } catch (e) {}
   return all.filter(function (n) {
     return !uid || n.to === uid || n.to === 'all';
@@ -221,7 +221,7 @@ function getNotifications(uid) {
 function pushNotification(notif) {
   var all = [];
   try {
-    all = JSON.parse(sessionStorage.getItem('261c_notifications') || '[]');
+    all = JSON.parse(sessionStorage.getItem('dfa_notifications') || '[]');
   } catch (e) {}
   all.unshift(
     Object.assign(
@@ -234,21 +234,21 @@ function pushNotification(notif) {
     )
   );
   try {
-    sessionStorage.setItem('261c_notifications', JSON.stringify(all.slice(0, 40)));
+    sessionStorage.setItem('dfa_notifications', JSON.stringify(all.slice(0, 40)));
   } catch (e) {}
 }
 
 function markNotificationsRead(uid) {
   var all = [];
   try {
-    all = JSON.parse(sessionStorage.getItem('261c_notifications') || '[]');
+    all = JSON.parse(sessionStorage.getItem('dfa_notifications') || '[]');
   } catch (e) {}
   all = all.map(function (n) {
     if (n.to === uid) return Object.assign({}, n, { read: true });
     return n;
   });
   try {
-    sessionStorage.setItem('261c_notifications', JSON.stringify(all));
+    sessionStorage.setItem('dfa_notifications', JSON.stringify(all));
   } catch (e) {}
 }
 
@@ -261,7 +261,7 @@ function unreadNotificationCount(uid) {
 function updateEvidenceRequest(id, status) {
   var reqs = [];
   try {
-    reqs = JSON.parse(sessionStorage.getItem('261c_evidence_requests') || '[]');
+    reqs = JSON.parse(sessionStorage.getItem('dfa_evidence_requests') || '[]');
   } catch (e) {}
   var found = false;
   var updated = null;
@@ -283,7 +283,7 @@ function updateEvidenceRequest(id, status) {
     }
   }
   try {
-    sessionStorage.setItem('261c_evidence_requests', JSON.stringify(reqs));
+    sessionStorage.setItem('dfa_evidence_requests', JSON.stringify(reqs));
   } catch (e) {}
   return updated;
 }
@@ -324,7 +324,7 @@ function notifyEvidenceTeamRequest(req) {
 function getEvidenceRequests() {
   var reqs = [];
   try {
-    reqs = JSON.parse(sessionStorage.getItem('261c_evidence_requests') || '[]');
+    reqs = JSON.parse(sessionStorage.getItem('dfa_evidence_requests') || '[]');
   } catch (e) {}
   var byId = {};
   EVIDENCE_REQUEST_SEED.concat(reqs).forEach(function (r) {
@@ -351,13 +351,13 @@ function getActiveEvidenceRequest(ref) {
 
 function saveEvidenceWorkspaceState(ref, state) {
   try {
-    sessionStorage.setItem('261c_evidence_' + ref, JSON.stringify(state));
+    sessionStorage.setItem('dfa_evidence_' + ref, JSON.stringify(state));
   } catch (e) {}
 }
 
 function loadEvidenceWorkspaceState(ref) {
   try {
-    return JSON.parse(sessionStorage.getItem('261c_evidence_' + ref) || 'null');
+    return JSON.parse(sessionStorage.getItem('dfa_evidence_' + ref) || 'null');
   } catch (e) {
     return null;
   }
@@ -367,7 +367,7 @@ function openCase(ref, tab) {
   var c = typeof resolveCase === 'function' ? resolveCase(ref) : (typeof getCase === 'function' ? getCase(ref) : null);
   if (!c) return;
   try {
-    sessionStorage.setItem('261c_case', JSON.stringify(c));
+    sessionStorage.setItem('dfa_case', JSON.stringify(c));
   } catch (e) {}
   var targetTab = tab || getPrimaryTab(c);
   window.location.href = CASE_ROUTE(ref, targetTab);

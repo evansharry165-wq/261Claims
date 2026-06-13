@@ -7,7 +7,7 @@
   var qs = window.location.search || '';
   var uid = 'SB';
   try {
-    uid = sessionStorage.getItem('261c_user') || 'SB';
+    uid = sessionStorage.getItem('dfa_user') || 'SB';
   } catch (e) {}
 
   var MAP = {

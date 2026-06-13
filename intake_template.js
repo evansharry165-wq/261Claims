@@ -1,6 +1,6 @@
 /* Master intake spreadsheet — v1.1 deterministic column schema */
 var INTAKE_TEMPLATE_VERSION = '1.1';
-var INTAKE_TEMPLATE_FILENAME = '261claims-intake-master.csv';
+var INTAKE_TEMPLATE_FILENAME = 'defendable-intake-master.csv';
 
 var INTAKE_TEMPLATE_COLUMNS = [
   'ref',

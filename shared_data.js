@@ -45,7 +45,7 @@ function stageIcon(s){var m={intake:'ti-inbox',triage:'ti-search',cpr:'ti-calend
 function stageColor(s){var m={intake:'#1D4ED8',triage:'#92400E',cpr:'#B45309',evidence:'#4338CA',drafting:'#065F46',defence:'#1A7A4A',resolve:'#374151'};return m[s]||'#374151';}
 function stageBg(s){var m={intake:'#EFF6FF',triage:'#FEF3C7',cpr:'#FEF9C3',evidence:'#EEEDFE',drafting:'#E6F5EE',defence:'#DCFCE7',resolve:'#F1F5F9'};return m[s]||'#F1F5F9';}
 function evPctColor(p){return p>=70?'#22A863':p>=40?'#F59E0B':'#C0392B';}
-function getActiveUser(){return sessionStorage.getItem('261c_user')||'SB';}
-function setActiveUser(id){sessionStorage.setItem('261c_user',id);}
-function getUILang(){return sessionStorage.getItem('261c_lang')||(USERS[getActiveUser()]&&USERS[getActiveUser()].lang)||'en';}
+function getActiveUser(){return sessionStorage.getItem('dfa_user')||'SB';}
+function setActiveUser(id){sessionStorage.setItem('dfa_user',id);}
+function getUILang(){return sessionStorage.getItem('dfa_lang')||(USERS[getActiveUser()]&&USERS[getActiveUser()].lang)||'en';}
 function t(key){var d=I18N[getUILang()]||I18N.en;return d[key]||I18N.en[key]||key;}

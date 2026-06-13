@@ -33,7 +33,7 @@ var CaseShell = (function () {
   function loadCase(ref) {
     var stored = null;
     try {
-      stored = JSON.parse(sessionStorage.getItem('261c_case') || 'null');
+      stored = JSON.parse(sessionStorage.getItem('dfa_case') || 'null');
     } catch (e) {}
     var c = typeof getCase === 'function' ? getCase(ref) : null;
     if (stored && stored.ref === ref) c = stored;
@@ -41,7 +41,7 @@ var CaseShell = (function () {
 
     var u = USERS[c.assignedTo] || { name: c.assignedTo };
     try {
-      sessionStorage.setItem('261c_case', JSON.stringify(c));
+      sessionStorage.setItem('dfa_case', JSON.stringify(c));
       sessionStorage.setItem(
         'aeroCaseData',
         JSON.stringify({
@@ -72,7 +72,7 @@ var CaseShell = (function () {
     } catch (e) {}
 
     try {
-      var actKey = '261c_activity_' + ref;
+      var actKey = 'dfa_activity_' + ref;
       state.activity = JSON.parse(sessionStorage.getItem(actKey) || '[]');
     } catch (e) {
       state.activity = [];
@@ -91,7 +91,7 @@ var CaseShell = (function () {
     };
     state.activity.unshift(entry);
     try {
-      sessionStorage.setItem('261c_activity_' + state.ref, JSON.stringify(state.activity.slice(0, 50)));
+      sessionStorage.setItem('dfa_activity_' + state.ref, JSON.stringify(state.activity.slice(0, 50)));
     } catch (e) {}
     if (state.tab === 'activity') renderActivity();
   }
@@ -99,7 +99,7 @@ var CaseShell = (function () {
   function demoStudyStripHtml(c) {
     var studyId = null;
     try {
-      studyId = sessionStorage.getItem('261c_active_demo_study');
+      studyId = sessionStorage.getItem('dfa_active_demo_study');
     } catch (e) {}
     if (!studyId || typeof getDemoStudy !== 'function') return '';
     var study = getDemoStudy(studyId);
@@ -109,7 +109,7 @@ var CaseShell = (function () {
       escapeHtml(study.title) +
       ' — ' +
       escapeHtml(study.narrative) +
-      ' <a href="index.html" onclick="try{sessionStorage.removeItem(\'261c_active_demo_study\')}catch(e){}">All demos</a></div>'
+      ' <a href="index.html" onclick="try{sessionStorage.removeItem(\'dfa_active_demo_study\')}catch(e){}">All demos</a></div>'
     );
   }
 

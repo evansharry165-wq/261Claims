@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>261Claims — New claim</title>
+<title>DefendAble — New claim</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -14,7 +14,7 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 /* global nav */
 .global-nav{background:var(--navy);height:48px;display:flex;align-items:center;padding:0 20px;gap:0;flex-shrink:0}
 .gn-logo{display:flex;align-items:center;gap:8px;text-decoration:none;margin-right:20px;flex-shrink:0}
-.gn-mark{width:28px;height:28px;background:var(--blue);border-radius:6px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px}
+.gn-mark{width:28px;height:28px;background:var(--blue);border-radius:4px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px}
 .gn-name{font-size:14px;font-weight:500;color:#fff;letter-spacing:-0.01em}
 .gn-links{display:flex;align-items:center;gap:2px;flex:1}
 .gn-link{display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r);font-size:12px;font-weight:500;color:rgba(255,255,255,0.5);text-decoration:none;transition:all 0.15s;white-space:nowrap}
@@ -209,8 +209,8 @@ input[type=file]{display:none}
 
 <nav class="global-nav">
   <a href="index.html" class="gn-logo">
-    <div class="gn-mark"><i class="ti ti-plane"></i></div>
-    <span class="gn-name">261Claims</span>
+    <div class="gn-mark"><i class="ti ti-lock"></i></div>
+    <span class="gn-name">DefendAble</span>
   </a>
   <div class="gn-links" id="gn-links"></div>
   <div class="gn-right">
@@ -361,7 +361,7 @@ function handleUpload(event){
   var row=buildLocRowFromFile(file,nextUploadRef(0),uid);
   var c=depositIntakeCase(row,uid,{name:file.name,size:file.size,type:file.type},uid,'LOC uploaded');
   selectedRef=c.ref;
-  try{sessionStorage.setItem('261c_case',JSON.stringify(c));}catch(e){}
+  try{sessionStorage.setItem('dfa_case',JSON.stringify(c));}catch(e){}
   render();
   event.target.value='';
 }
@@ -547,14 +547,14 @@ function loadMasterTemplateDemo(){
 }
 function loadDemoBatch(){
   if(!isIntakeLead(getActiveUser())){showToast('Mass upload is restricted to team leads.');return;}
-  fetch('templates/261claims-batch-demo.csv')
+  fetch('templates/defendable-batch-demo.csv')
     .then(function(r){return r.text();})
     .then(function(text){
       var result=rowsFromSpreadsheetText(text);
       if(result.error){showToast(result.error);return;}
       var items=buildMassItemsFromRows(result.rows,function(i){return nextUploadRef(i);});
       items.forEach(function(item){
-        item.file={name:'261claims-batch-demo.csv',size:text.length,type:'text/csv'};
+        item.file={name:'defendable-batch-demo.csv',size:text.length,type:'text/csv'};
       });
       startMassExtraction(items,'BATCH_20260612_HL — 100 claims');
     })
@@ -582,7 +582,7 @@ function confirmMassBatch(){
   massBatch=null;
   if(created.length){
     selectedRef=created[0].ref;
-    try{sessionStorage.setItem('261c_case',JSON.stringify(created[0]));}catch(e){}
+    try{sessionStorage.setItem('dfa_case',JSON.stringify(created[0]));}catch(e){}
   }
   showToast('Deposited '+created.length+' case'+(created.length!==1?'s':'')+' with reviewed assignments.');
   intakeTab='new';
@@ -621,7 +621,7 @@ function createCaseFromEmail(){
   var existing=typeof getCase==='function'?getCase('AC-2026-0089'):null;
   if(existing){
     selectedRef='AC-2026-0089';
-    try{sessionStorage.setItem('261c_case',JSON.stringify(existing));}catch(e){}
+    try{sessionStorage.setItem('dfa_case',JSON.stringify(existing));}catch(e){}
     intakeTab='new';
     showToast('Case AC-2026-0089 already exists — opened in intake queue.');
     render();
@@ -819,7 +819,7 @@ function depositIntoCase(ref){
   depositedDocs.unshift(doc);
   pendingSupportFile=null;
   selectedRef=ref;
-  try{sessionStorage.setItem('261c_case',JSON.stringify(c));}catch(e){}
+  try{sessionStorage.setItem('dfa_case',JSON.stringify(c));}catch(e){}
   if(typeof CaseFiling!=='undefined'){
     var uid=getActiveUser();
     var u=USERS[uid]||{};
@@ -849,7 +849,7 @@ function buildDocSummary(file,c){
 function selectCase(ref){
   selectedRef=ref;
   var c=intakeCases().find(function(x){return x.ref===ref;});
-  if(c){try{sessionStorage.setItem('261c_case',JSON.stringify(c));}catch(e){}}
+  if(c){try{sessionStorage.setItem('dfa_case',JSON.stringify(c));}catch(e){}}
   render();
 }
 function startTriage(ref){
@@ -1015,8 +1015,8 @@ function toggleUserMenu(){var m=document.getElementById('user-modal');if(m)m.cla
 function closeMenu(){var m=document.getElementById('user-modal');if(m)m.classList.remove('open');}
 function switchUser(id){
   if(typeof setActiveUser==='function')setActiveUser(id);
-  sessionStorage.removeItem('261c_lang');
-  sessionStorage.removeItem('261c_case');
+  sessionStorage.removeItem('dfa_lang');
+  sessionStorage.removeItem('dfa_case');
   sessionStorage.removeItem('aeroCaseData');
   closeMenu();
   if(window.location.pathname.indexOf('workspace')>=0){window.location.href='index.html';return;}

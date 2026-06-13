@@ -4,7 +4,7 @@
 (function () {
   'use strict';
 
-  if (document.getElementById('261c-theme-css')) return;
+  if (document.getElementById('dfa-theme-css')) return;
 
   var fonts = document.createElement('link');
   fonts.rel = 'stylesheet';
@@ -13,7 +13,7 @@
   document.head.appendChild(fonts);
 
   var theme = document.createElement('link');
-  theme.id = '261c-theme-css';
+  theme.id = 'dfa-theme-css';
   theme.rel = 'stylesheet';
   theme.href = 'shared_theme.css';
   document.head.appendChild(theme);

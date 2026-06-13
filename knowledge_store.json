@@ -87,5 +87,6 @@
       "actionNote": "Update ADR deadline engine for FR/ES cases — 30-day response window now mandatory",
       "affectedStages": ["cpr", "triage"]
     }
-  ]
+  ],
+  "generatedBy": "DefendAble Platform — auto-generated"
 }

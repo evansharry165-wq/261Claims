@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>261Claims — Module 5: Document Drafting</title>
+<title>DefendAble — Documents</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -14,7 +14,7 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 /* topbar */
 .topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px;height:54px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
 .logo{display:flex;align-items:center;gap:10px;text-decoration:none}
-.logo-mark{width:32px;height:32px;background:var(--navy);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px}
+.logo-mark{width:32px;height:32px;background:var(--navy);border-radius:4px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px}
 .logo-name{font-size:15px;font-weight:500;letter-spacing:-0.02em;color:var(--navy)}
 .logo-tag{font-size:12px;color:var(--text3);margin-left:2px}
 .topbar-right{display:flex;align-items:center;gap:10px}
@@ -258,9 +258,9 @@ function stageIcon(s){var m={intake:'ti-inbox',triage:'ti-search',cpr:'ti-calend
 function stageColor(s){var m={intake:'#1D4ED8',triage:'#92400E',cpr:'#B45309',evidence:'#4338CA',drafting:'#065F46',defence:'#1A7A4A',resolve:'#374151'};return m[s]||'#374151';}
 function stageBg(s){var m={intake:'#EFF6FF',triage:'#FEF3C7',cpr:'#FEF9C3',evidence:'#EEEDFE',drafting:'#E6F5EE',defence:'#DCFCE7',resolve:'#F1F5F9'};return m[s]||'#F1F5F9';}
 function evPctColor(p){return p>=70?'#22A863':p>=40?'#F59E0B':'#C0392B';}
-function getActiveUser(){return sessionStorage.getItem('261c_user')||'SB';}
-function setActiveUser(id){sessionStorage.setItem('261c_user',id);}
-function getUILang(){return sessionStorage.getItem('261c_lang')||(USERS[getActiveUser()]&&USERS[getActiveUser()].lang)||'en';}
+function getActiveUser(){return sessionStorage.getItem('dfa_user')||'SB';}
+function setActiveUser(id){sessionStorage.setItem('dfa_user',id);}
+function getUILang(){return sessionStorage.getItem('dfa_lang')||(USERS[getActiveUser()]&&USERS[getActiveUser()].lang)||'en';}
 function t(key){var d=I18N[getUILang()]||I18N.en;return d[key]||I18N.en[key]||key;}
 
 </script>
@@ -273,7 +273,7 @@ function t(key){var d=I18N[getUILang()]||I18N.en;return d[key]||I18N.en[key]||ke
     if(!ref) return;
     // Try sessionStorage case store first
     var stored=null;
-    try{stored=JSON.parse(sessionStorage.getItem('261c_case')||'null');}catch(e){}
+    try{stored=JSON.parse(sessionStorage.getItem('dfa_case')||'null');}catch(e){}
     if(stored&&stored.ref===ref){
       // Already correct — write to aeroCaseData for legacy readers
       sessionStorage.setItem('aeroCaseData',JSON.stringify({
@@ -309,7 +309,7 @@ function t(key){var d=I18N[getUILang()]||I18N.en;return d[key]||I18N.en[key]||ke
       triageNote:cd.triageNote||'',assignedTo:u
     };
     sessionStorage.setItem('aeroCaseData',JSON.stringify(payload));
-    sessionStorage.setItem('261c_case',JSON.stringify(cd));
+    sessionStorage.setItem('dfa_case',JSON.stringify(cd));
   }catch(e){}
 })();
 </script>
@@ -319,8 +319,8 @@ function t(key){var d=I18N[getUILang()]||I18N.en;return d[key]||I18N.en[key]||ke
     <div style="display:flex;align-items:center;gap:14px">
       <a href="index.html" class="btn-back"><i class="ti ti-arrow-left"></i> Home</a>
       <div class="logo">
-        <div class="logo-mark"><i class="ti ti-plane"></i></div>
-        <span class="logo-name">261Claims</span>
+        <div class="logo-mark"><i class="ti ti-lock"></i></div>
+        <span class="logo-name">DefendAble</span>
         <span class="logo-tag">/ Document drafting</span>
       </div>
     </div>
@@ -485,9 +485,9 @@ function escapeHtml(str){
 
 function getEvidencePct(){
   try{
-    var st=JSON.parse(sessionStorage.getItem('261c_evidence_'+C.ref)||'null');
+    var st=JSON.parse(sessionStorage.getItem('dfa_evidence_'+C.ref)||'null');
     if(st&&typeof st.evidencePct==='number')return st.evidencePct;
-    var c=JSON.parse(sessionStorage.getItem('261c_case')||'null');
+    var c=JSON.parse(sessionStorage.getItem('dfa_case')||'null');
     if(c&&c.ref===C.ref)return c.evidencePct||0;
   }catch(e){}
   return _i.evidencePct||35;
@@ -1459,7 +1459,7 @@ function approveDoc(id){
 }
 
 function openCaseFileInRepo(){
-  try{sessionStorage.setItem('261c_repo_case',C.ref);}catch(e){}
+  try{sessionStorage.setItem('dfa_repo_case',C.ref);}catch(e){}
   var url='repository.html#cases';
   if(window.parent!==window){window.parent.location.href=url;}
   else{window.open(url,'_blank');}
@@ -1485,7 +1485,7 @@ function addToRepository(id){
       CaseFiling.addActivity(C.ref,docName+' added to case file from drafting','upload',u.full||u.name);
       CaseFiling.updateCaseMeta(C.ref,{stage:'drafting',evidencePct:getEvidencePct()});
     }
-    var repo=JSON.parse(sessionStorage.getItem('261c_repository')||'[]');
+    var repo=JSON.parse(sessionStorage.getItem('dfa_repository')||'[]');
     repo.unshift({
       ref:C.ref,claimant:C.name,outcome:'Draft document',
       stored:new Date().toISOString(),
@@ -1494,7 +1494,7 @@ function addToRepository(id){
       disruptionType:C.type,solicitor:C.sol,
       docType:DOC_FILE_NAMES[id],docText:text.slice(0,500)
     });
-    sessionStorage.setItem('261c_repository',JSON.stringify(repo.slice(0,30)));
+    sessionStorage.setItem('dfa_repository',JSON.stringify(repo.slice(0,30)));
     storedInRepo[id]=true;
     if(window.parent!==window){window.parent.postMessage({type:'case-shell',action:'log',text:'Document added to case file: '+docName,logType:'upload'},'*');}
   }catch(e){}
@@ -1506,9 +1506,9 @@ function addToRepository(id){
 function resolveCase(){
   caseResolved=true;
   try{
-    var repo=JSON.parse(sessionStorage.getItem('261c_repository')||'[]');
+    var repo=JSON.parse(sessionStorage.getItem('dfa_repository')||'[]');
     repo.unshift({ref:C.ref,claimant:C.name,outcome:'Defended / response issued',stored:new Date().toISOString(),documents:Object.keys(docApproved).filter(k=>docApproved[k]),value:C.value,flightNum:C.flightNum,disruptionType:C.type,solicitor:C.sol});
-    sessionStorage.setItem('261c_repository',JSON.stringify(repo.slice(0,20)));
+    sessionStorage.setItem('dfa_repository',JSON.stringify(repo.slice(0,20)));
   }catch(e){}
   renderWorkspace();
 }
@@ -1666,8 +1666,8 @@ function toggleUserMenu(){var m=document.getElementById('user-modal');if(m)m.cla
 function closeMenu(){var m=document.getElementById('user-modal');if(m)m.classList.remove('open');}
 function switchUser(id){
   if(typeof setActiveUser==='function')setActiveUser(id);
-  sessionStorage.removeItem('261c_lang');
-  sessionStorage.removeItem('261c_case');
+  sessionStorage.removeItem('dfa_lang');
+  sessionStorage.removeItem('dfa_case');
   sessionStorage.removeItem('aeroCaseData');
   closeMenu();
   if(window.location.pathname.indexOf('workspace')>=0){var ep=new URLSearchParams(window.location.search);if(ep.get('embed')!=='1'){window.location.href='index.html';return;}}

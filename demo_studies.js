@@ -1,4 +1,4 @@
-// Curated demo case studies — each showcases a specific 261Claims capability
+// Curated demo case studies — each showcases a specific DefendAble capability
 var DEMO_STUDIES = [
   {
     id: 'flagship-collaboration',
@@ -19,7 +19,7 @@ var DEMO_STUDIES = [
       'EH — Mark as complete',
       'SB — Move to drafting → Generate LOR',
     ],
-    resetKeys: ['261c_evidence_AC-2026-0089', '261c_active_request', '261c_seeded_eh_notif'],
+    resetKeys: ['dfa_evidence_AC-2026-0089', 'dfa_active_request', 'dfa_seeded_eh_notif'],
   },
   {
     id: 'weather-drafting',
@@ -116,7 +116,7 @@ function openDemoStudy(id) {
   }
 
   try {
-    sessionStorage.setItem('261c_active_demo_study', study.id);
+    sessionStorage.setItem('dfa_active_demo_study', study.id);
     if (study.resetKeys) {
       study.resetKeys.forEach(function (key) {
         sessionStorage.removeItem(key);
@@ -124,7 +124,7 @@ function openDemoStudy(id) {
     }
     if (study.ref && typeof getCase === 'function') {
       var c = getCase(study.ref);
-      if (c) sessionStorage.setItem('261c_case', JSON.stringify(c));
+      if (c) sessionStorage.setItem('dfa_case', JSON.stringify(c));
     }
   } catch (e) {}
 

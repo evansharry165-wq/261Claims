@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>261Claims — Evidence requests</title>
+<title>DefendAble — Evidence requests</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -11,7 +11,7 @@
 html,body{height:100%;font-family:var(--font);background:var(--surface2);color:var(--text);font-size:14px}
 .global-nav{background:var(--navy);height:48px;display:flex;align-items:center;padding:0 20px}
 .gn-logo{display:flex;align-items:center;gap:8px;text-decoration:none;margin-right:20px}
-.gn-mark{width:28px;height:28px;background:var(--blue);border-radius:6px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px}
+.gn-mark{width:28px;height:28px;background:var(--blue);border-radius:4px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px}
 .gn-name{font-size:14px;font-weight:500;color:#fff}
 .gn-links{display:flex;gap:2px;flex:1}
 .gn-link{display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r);font-size:12px;font-weight:500;color:rgba(255,255,255,0.5);text-decoration:none}
@@ -65,7 +65,7 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 <script src="evidence_filing.js"></script>
 
 <nav class="global-nav">
-  <a href="index.html" class="gn-logo"><div class="gn-mark"><i class="ti ti-plane"></i></div><span class="gn-name">261Claims</span></a>
+  <a href="index.html" class="gn-logo"><div class="gn-mark"><i class="ti ti-lock"></i></div><span class="gn-name">DefendAble</span></a>
   <div class="gn-links" id="gn-links"></div>
   <div class="gn-right"><div class="gn-user-btn" onclick="toggleUserMenu()"><div class="gn-av" id="nav-av">EH</div><span class="gn-user" id="nav-user">E. Hughes</span></div></div>
 </nav>
@@ -81,9 +81,9 @@ function openRequest(id){
   var r=getEvidenceRequests().find(function(x){return x.id===id;});
   if(!r)return;
   try{
-    sessionStorage.setItem('261c_active_request',r.id);
+    sessionStorage.setItem('dfa_active_request',r.id);
     var c=getCase(r.ref);
-    if(c)sessionStorage.setItem('261c_case',JSON.stringify(c));
+    if(c)sessionStorage.setItem('dfa_case',JSON.stringify(c));
   }catch(e){}
   updateEvidenceRequest(r.id,'in-progress');
   window.location.href='case.html?ref='+encodeURIComponent(r.ref)+'&tab=evidence&request='+encodeURIComponent(r.id);
@@ -116,7 +116,7 @@ function markRequestComplete(id){
       size:84000
     });
     try{
-      var evState=JSON.parse(sessionStorage.getItem('261c_evidence_AC-2026-0089')||'null');
+      var evState=JSON.parse(sessionStorage.getItem('dfa_evidence_AC-2026-0089')||'null');
       if(evState){
         evState.uploads=evState.uploads||{};
         evState.uploads.ops_review='HC1184_DailyOpsReview_24MAR24.pdf';
@@ -128,12 +128,12 @@ function markRequestComplete(id){
         evState.pullState.dpm='done';
         evState.pullAllDone=true;
         evState.evidencePct=100;
-        sessionStorage.setItem('261c_evidence_AC-2026-0089',JSON.stringify(evState));
+        sessionStorage.setItem('dfa_evidence_AC-2026-0089',JSON.stringify(evState));
       }
       if(typeof syncCaseEvidencePct==='function')syncCaseEvidencePct(req.ref,100,true);
     }catch(e){}
   }
-  sessionStorage.removeItem('261c_active_request');
+  sessionStorage.removeItem('dfa_active_request');
   render();
 }
 
@@ -166,7 +166,7 @@ function render(){
 function toggleUserMenu(){document.getElementById('user-modal').classList.toggle('open');}
 function closeMenu(){document.getElementById('user-modal').classList.remove('open');}
 function switchUser(id){
-  setActiveUser(id);sessionStorage.removeItem('261c_lang');closeMenu();
+  setActiveUser(id);sessionStorage.removeItem('dfa_lang');closeMenu();
   if(id!=='EH'){window.location.href='index.html';return;}
   var u=USERS[id];if(u){document.getElementById('nav-av').textContent=u.initials;document.getElementById('nav-user').textContent=u.name;}
   ['SB','JP','KR','MD','PL','CG','IM','EH'].forEach(function(uid){var el=document.getElementById('ud-'+uid);if(el)el.classList.toggle('current',uid===id);});
@@ -175,11 +175,11 @@ function switchUser(id){
 }
 (function seedDemoNotif(){
   try{
-    if(sessionStorage.getItem('261c_seeded_eh_notif'))return;
+    if(sessionStorage.getItem('dfa_seeded_eh_notif'))return;
     var reqs=getEvidenceRequests();
     if(reqs.some(function(r){return r.id==='REQ-001'&&r.status!=='complete';})){
       pushNotification({to:'EH',type:'evidence-request',ref:'AC-2026-0089',requestId:'REQ-001',title:'New evidence request',body:'S. Booth requests a Daily Operations Review for 24MAR24 — Daniel Hartley',tab:'requests'});
-      sessionStorage.setItem('261c_seeded_eh_notif','1');
+      sessionStorage.setItem('dfa_seeded_eh_notif','1');
     }
   }catch(e){}
 })();

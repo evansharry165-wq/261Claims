@@ -1,4 +1,4 @@
-# 261Claims
+# DefendAble
 Case management for in-house legal and evidence teams handling EC261/UK261 aviation claims.
 
 ## Running the demo

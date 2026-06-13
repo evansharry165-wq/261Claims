@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>261Claims — Evidence</title>
+<title>DefendAble — Evidence</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -13,7 +13,7 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 
 .topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px;height:54px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
 .logo{display:flex;align-items:center;gap:10px;text-decoration:none}
-.logo-mark{width:32px;height:32px;background:var(--navy);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px}
+.logo-mark{width:32px;height:32px;background:var(--navy);border-radius:4px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px}
 .logo-name{font-size:15px;font-weight:500;letter-spacing:-0.02em;color:var(--navy)}
 .logo-tag{font-size:12px;color:var(--text3);margin-left:2px}
 .topbar-right{display:flex;align-items:center;gap:10px}
@@ -246,9 +246,9 @@ function stageIcon(s){var m={intake:'ti-inbox',triage:'ti-search',cpr:'ti-calend
 function stageColor(s){var m={intake:'#1D4ED8',triage:'#92400E',cpr:'#B45309',evidence:'#4338CA',drafting:'#065F46',defence:'#1A7A4A',resolve:'#374151'};return m[s]||'#374151';}
 function stageBg(s){var m={intake:'#EFF6FF',triage:'#FEF3C7',cpr:'#FEF9C3',evidence:'#EEEDFE',drafting:'#E6F5EE',defence:'#DCFCE7',resolve:'#F1F5F9'};return m[s]||'#F1F5F9';}
 function evPctColor(p){return p>=70?'#22A863':p>=40?'#F59E0B':'#C0392B';}
-function getActiveUser(){return sessionStorage.getItem('261c_user')||'SB';}
-function setActiveUser(id){sessionStorage.setItem('261c_user',id);}
-function getUILang(){return sessionStorage.getItem('261c_lang')||(USERS[getActiveUser()]&&USERS[getActiveUser()].lang)||'en';}
+function getActiveUser(){return sessionStorage.getItem('dfa_user')||'SB';}
+function setActiveUser(id){sessionStorage.setItem('dfa_user',id);}
+function getUILang(){return sessionStorage.getItem('dfa_lang')||(USERS[getActiveUser()]&&USERS[getActiveUser()].lang)||'en';}
 function t(key){var d=I18N[getUILang()]||I18N.en;return d[key]||I18N.en[key]||key;}
 
 </script>
@@ -261,7 +261,7 @@ function t(key){var d=I18N[getUILang()]||I18N.en;return d[key]||I18N.en[key]||ke
     if(!ref) return;
     // Try sessionStorage case store first
     var stored=null;
-    try{stored=JSON.parse(sessionStorage.getItem('261c_case')||'null');}catch(e){}
+    try{stored=JSON.parse(sessionStorage.getItem('dfa_case')||'null');}catch(e){}
     if(stored&&stored.ref===ref){
       // Already correct — write to aeroCaseData for legacy readers
       sessionStorage.setItem('aeroCaseData',JSON.stringify({
@@ -293,15 +293,15 @@ function t(key){var d=I18N[getUILang()]||I18N.en;return d[key]||I18N.en[key]||ke
       triageNote:cd.triageNote||'',assignedTo:u
     };
     sessionStorage.setItem('aeroCaseData',JSON.stringify(payload));
-    sessionStorage.setItem('261c_case',JSON.stringify(cd));
+    sessionStorage.setItem('dfa_case',JSON.stringify(cd));
   }catch(e){}
 })();
 </script>
 
 <nav class="global-nav">
   <a href="index.html" class="gn-logo">
-    <div class="gn-mark"><i class="ti ti-plane"></i></div>
-    <span class="gn-name">261Claims</span>
+    <div class="gn-mark"><i class="ti ti-lock"></i></div>
+    <span class="gn-name">DefendAble</span>
   </a>
   <div class="gn-links" id="gn-links"></div>
   <div class="gn-right">
@@ -586,7 +586,7 @@ var requestSent=false;
 var pullAllDone=false;
 var activeRequestId=null;
 
-function evidenceStateKey(){return '261c_evidence_'+C.ref;}
+function evidenceStateKey(){return 'dfa_evidence_'+C.ref;}
 function saveWorkspaceState(){
   var state={D:D,primaryType:primaryType,secondaryType:secondaryType,dtMode:dtMode,uploads:uploads,pullState:pullState,summaryOpen:summaryOpen,requestSent:requestSent,pullAllDone:pullAllDone,evidencePct:getReadiness().pct,audit:audit.slice(-30)};
   try{sessionStorage.setItem(evidenceStateKey(),JSON.stringify(state));}catch(e){}
@@ -613,11 +613,11 @@ function syncEvidenceToCase(){
   var pack=packReadiness();
   var ready=pack.gold>=100;
   try{
-    var stored=JSON.parse(sessionStorage.getItem('261c_case')||'null');
+    var stored=JSON.parse(sessionStorage.getItem('dfa_case')||'null');
     if(stored&&stored.ref===C.ref){
       stored.evidencePct=r.pct;
       if(ready){stored.evidenceReady=true;stored.classification='DRAFTING';}
-      sessionStorage.setItem('261c_case',JSON.stringify(stored));
+      sessionStorage.setItem('dfa_case',JSON.stringify(stored));
     }
     var aero=JSON.parse(sessionStorage.getItem('aeroCaseData')||'null');
     if(aero&&aero.ref===C.ref){aero.evidencePct=r.pct;sessionStorage.setItem('aeroCaseData',JSON.stringify(aero));}
@@ -859,7 +859,7 @@ function renderMain(){
   var requestBanner='';
   if(activeRequestId){
     try{
-      var reqs=JSON.parse(sessionStorage.getItem('261c_evidence_requests')||'[]');
+      var reqs=JSON.parse(sessionStorage.getItem('dfa_evidence_requests')||'[]');
       var seed=[{id:'REQ-001',ref:'AC-2026-0089',claimant:'Daniel Hartley',requestedBy:'S. Booth',requestType:'Daily Operations Review',requestDate:'24MAR24',missing:['Daily Operations Review for 24MAR24','Valencia ground handling records','Passenger care evidence']}];
       var allReqs=seed.concat(reqs);
       var actReq=allReqs.find(function(r){return r.id===activeRequestId;});
@@ -880,8 +880,8 @@ function renderMain(){
       missingBanner='<div style="background:var(--green-faint);border:1px solid #BBF7D0;border-radius:var(--r2);padding:12px 14px;margin-bottom:12px;font-size:12px;color:var(--green)"><i class="ti ti-check"></i> All evidence gathered — gold pack complete. Ready to move to drafting.</div>';
     }
     opsPanel='<div class="card"><div class="card-body open">'
-      +'<div style="border:1px solid #FDE68A;background:#FFFBEB;border-radius:var(--r2);padding:14px 16px;margin-bottom:12px"><div style="font-size:13px;font-weight:500;margin-bottom:4px;display:flex;align-items:center;gap:6px"><i class="ti ti-certificate" style="color:var(--amber)"></i> Gold evidence pack</div><div style="font-size:28px;font-weight:500;color:var(--amber);margin-bottom:4px">'+pack.gold+'%</div><div style="font-size:11px;color:var(--text2);line-height:1.55">261Claims targets the gold pack on every case — the most complete aviation defence. Higher collection demand, but the strongest position for legal.</div><div style="font-size:10px;color:var(--text3);margin-top:6px">'+pack.goldDone+' of '+pack.goldTotal+' key & secondary documents on file</div></div>'
-      +'<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn-sm btn-navy" onclick="pullAllEvidence()"><i class="ti ti-cloud-download"></i> Pull all evidence</button><button class="btn-sm btn-navy" onclick="pullFromRepository()" style="background:var(--green);border-color:var(--green)"><i class="ti ti-database"></i> Pull from repository</button><button class="btn-sm" onclick="requestEvidenceCompletion()" style="border:1px solid var(--border2);background:var(--surface2);color:var(--text2)"><i class="ti ti-user-question"></i> Request evidence completion</button><a class="btn-sm" href="repository.html" onclick="sessionStorage.setItem(\'261c_repo_area\',\'evidence\')" style="border:1px solid var(--border2);background:var(--surface2);color:var(--text2);text-decoration:none"><i class="ti ti-database"></i> Open filing system</a>'
+      +'<div style="border:1px solid #FDE68A;background:#FFFBEB;border-radius:var(--r2);padding:14px 16px;margin-bottom:12px"><div style="font-size:13px;font-weight:500;margin-bottom:4px;display:flex;align-items:center;gap:6px"><i class="ti ti-certificate" style="color:var(--amber)"></i> Gold evidence pack</div><div style="font-size:28px;font-weight:500;color:var(--amber);margin-bottom:4px">'+pack.gold+'%</div><div style="font-size:11px;color:var(--text2);line-height:1.55">DefendAble targets the gold pack on every case — the most complete aviation defence. Higher collection demand, but the strongest position for legal.</div><div style="font-size:10px;color:var(--text3);margin-top:6px">'+pack.goldDone+' of '+pack.goldTotal+' key & secondary documents on file</div></div>'
+      +'<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn-sm btn-navy" onclick="pullAllEvidence()"><i class="ti ti-cloud-download"></i> Pull all evidence</button><button class="btn-sm btn-navy" onclick="pullFromRepository()" style="background:var(--green);border-color:var(--green)"><i class="ti ti-database"></i> Pull from repository</button><button class="btn-sm" onclick="requestEvidenceCompletion()" style="border:1px solid var(--border2);background:var(--surface2);color:var(--text2)"><i class="ti ti-user-question"></i> Request evidence completion</button><a class="btn-sm" href="repository.html" onclick="sessionStorage.setItem(\'dfa_repo_area\',\'evidence\')" style="border:1px solid var(--border2);background:var(--surface2);color:var(--text2);text-decoration:none"><i class="ti ti-database"></i> Open filing system</a>'
       +(pack.gold>=100
         ?'<button class="btn-sm btn-navy" onclick="moveToDrafting()" style="background:var(--purple);border-color:var(--purple)"><i class="ti ti-file-pencil"></i> Move to drafting</button>'
         :'<button class="btn-sm" disabled title="Complete the key evidence items to advance" style="opacity:0.5;cursor:not-allowed;background:var(--surface3);color:var(--text3);border-color:var(--border)"><i class="ti ti-file-pencil"></i> Move to drafting</button>')
@@ -1067,8 +1067,8 @@ function pullFromRepository(){
     }
   });
   try{
-    var pending=JSON.parse(sessionStorage.getItem('261c_pending_pulls')||'[]');
-    sessionStorage.removeItem('261c_pending_pulls');
+    var pending=JSON.parse(sessionStorage.getItem('dfa_pending_pulls')||'[]');
+    sessionStorage.removeItem('dfa_pending_pulls');
   }catch(e){}
   log('Pull from repository — '+pulled+' document(s) attached from filing system for '+C.flightNum+' ('+C.flightDate+')','pull');
   render();
@@ -1112,10 +1112,10 @@ function requestEvidenceCompletion(){
     note:'Legal user requested evidence completion after Pull all in case workspace.'
   };
   try{
-    var reqs=JSON.parse(sessionStorage.getItem('261c_evidence_requests')||'[]');
+    var reqs=JSON.parse(sessionStorage.getItem('dfa_evidence_requests')||'[]');
     reqs.unshift(req);
-    sessionStorage.setItem('261c_evidence_requests',JSON.stringify(reqs.slice(0,30)));
-    sessionStorage.setItem('261c_notifications',JSON.stringify(JSON.parse(sessionStorage.getItem('261c_notifications')||'[]').concat([{id:'N-'+Date.now(),to:'EH',type:'evidence-request',ref:C.ref,requestId:req.id,title:'New evidence request',body:(req.requestedBy||'Legal team')+' requests completion for '+C.name,time:new Date().toLocaleString('en-GB',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}),read:false}]).slice(0,40)));
+    sessionStorage.setItem('dfa_evidence_requests',JSON.stringify(reqs.slice(0,30)));
+    sessionStorage.setItem('dfa_notifications',JSON.stringify(JSON.parse(sessionStorage.getItem('dfa_notifications')||'[]').concat([{id:'N-'+Date.now(),to:'EH',type:'evidence-request',ref:C.ref,requestId:req.id,title:'New evidence request',body:(req.requestedBy||'Legal team')+' requests completion for '+C.name,time:new Date().toLocaleString('en-GB',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}),read:false}]).slice(0,40)));
   }catch(e){}
   requestSent=true;
   log('Evidence completion request sent to Evidence Handling queue','action');
@@ -1149,8 +1149,8 @@ try{
 if(_i.disruptionType||C.disruptionType) primaryType=_i.disruptionType||C.disruptionType;
 try{
   var urlParams=new URLSearchParams(window.location.search);
-  activeRequestId=urlParams.get('request')||sessionStorage.getItem('261c_active_request')||null;
-  if(activeRequestId)sessionStorage.setItem('261c_active_request',activeRequestId);
+  activeRequestId=urlParams.get('request')||sessionStorage.getItem('dfa_active_request')||null;
+  if(activeRequestId)sessionStorage.setItem('dfa_active_request',activeRequestId);
 }catch(e){}
 loadWorkspaceState();
 /* ── Init ── */
@@ -1250,10 +1250,10 @@ function closeMenu(){var m=document.getElementById('user-modal');if(m)m.classLis
 function switchUser(id){
   saveWorkspaceState();
   if(typeof setActiveUser==='function')setActiveUser(id);
-  sessionStorage.removeItem('261c_lang');
+  sessionStorage.removeItem('dfa_lang');
   var isEmbed=new URLSearchParams(window.location.search).get('embed')==='1';
   if(!isEmbed){
-    sessionStorage.removeItem('261c_case');
+    sessionStorage.removeItem('dfa_case');
     sessionStorage.removeItem('aeroCaseData');
   }
   closeMenu();

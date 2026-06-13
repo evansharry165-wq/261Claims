@@ -1,5 +1,5 @@
 /* ════════════════════════════════════════════════════════════════
-   261Claims — Global Navigation Component v3.0
+   DefendAble — Global Navigation Component v3.0
    Include this AFTER shared_data.js on every page.
    Call: renderGlobalNav('active-module-id')
    Modules: dashboard, intake, cases, cpr, evidence, drafting, mi
@@ -23,8 +23,8 @@ function renderGlobalNav(activeModule){
 
   var html = '<nav class="global-nav" id="global-nav">'
     +'<a href="index.html" class="gn-logo">'
-    +'<div class="gn-mark"><i class="ti ti-plane"></i></div>'
-    +'<span class="gn-name">261Claims</span>'
+    +'<div class="gn-mark"><i class="ti ti-lock"></i></div>'
+    +'<span class="gn-name">DefendAble</span>'
     +'</a>'
     +'<div class="gn-links">'+linksHtml+'</div>'
     +'<div class="gn-right">'
@@ -58,7 +58,7 @@ function renderGlobalNav(activeModule){
     style.textContent = `
 .global-nav{background:#0B1628;height:48px;display:flex;align-items:center;padding:0 20px;gap:0;position:sticky;top:0;z-index:200;border-bottom:1px solid rgba(255,255,255,0.06);flex-shrink:0}
 .gn-logo{display:flex;align-items:center;gap:8px;text-decoration:none;margin-right:20px;flex-shrink:0}
-.gn-mark{width:28px;height:28px;background:#2A6FDB;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px}
+.gn-mark{width:28px;height:28px;background:#2A6FDB;border-radius:4px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px}
 .gn-name{font-size:14px;font-weight:600;color:#fff;letter-spacing:-0.02em}
 .gn-links{display:flex;align-items:center;gap:2px;flex:1;overflow:hidden}
 .gn-link{display:flex;align-items:center;gap:5px;padding:5px 10px;border-radius:6px;font-size:12px;font-weight:500;color:rgba(255,255,255,0.5);text-decoration:none;white-space:nowrap;transition:all 0.15s;flex-shrink:0}

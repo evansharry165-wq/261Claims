@@ -2,12 +2,12 @@
  * Case Filing System — live case files for active matters.
  * Intake creates a case file; drafting and deposits add documents;
  * Repository Cases area browses, views and edits the full file.
- * Persisted in localStorage (261c_case_filing).
+ * Persisted in localStorage (dfa_case_filing).
  */
 (function (global) {
   'use strict';
 
-  var STORAGE_KEY = '261c_case_filing';
+  var STORAGE_KEY = 'dfa_case_filing';
   var VERSION = 1;
 
   var CASE_FOLDERS = [

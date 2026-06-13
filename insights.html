@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>261Claims — Insights</title>
+<title>DefendAble — Insights</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -11,7 +11,7 @@
 html,body{height:100%;font-family:var(--font);background:var(--surface2);color:var(--text);font-size:14px}
 .global-nav{background:var(--navy);height:48px;display:flex;align-items:center;padding:0 20px}
 .gn-logo{display:flex;align-items:center;gap:8px;text-decoration:none;margin-right:20px}
-.gn-mark{width:28px;height:28px;background:var(--blue);border-radius:6px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px}
+.gn-mark{width:28px;height:28px;background:var(--blue);border-radius:4px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px}
 .gn-name{font-size:14px;font-weight:500;color:#fff}
 .gn-links{display:flex;gap:2px;flex:1}
 .gn-link{display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r);font-size:12px;font-weight:500;color:rgba(255,255,255,0.5);text-decoration:none}
@@ -132,7 +132,7 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 <script src="insights_data.js"></script>
 
 <nav class="global-nav">
-  <a href="index.html" class="gn-logo"><div class="gn-mark"><i class="ti ti-plane"></i></div><span class="gn-name">261Claims</span></a>
+  <a href="index.html" class="gn-logo"><div class="gn-mark"><i class="ti ti-lock"></i></div><span class="gn-name">DefendAble</span></a>
   <div class="gn-links" id="gn-links"></div>
   <div class="gn-right"><div class="gn-user-btn" onclick="toggleUserMenu()"><div class="gn-av" id="nav-av">SB</div><span class="gn-user" id="nav-user">S. Booth</span></div></div>
 </nav>
@@ -205,7 +205,7 @@ function hydrateBatchDemoCases(done){
   if(cases.filter(function(c){return/^UP-2026-/.test(c.ref);}).length>=50||typeof rowsFromSpreadsheetText!=='function'){
     _intelHydrated=true;if(done)done();return;
   }
-  fetch('templates/261claims-batch-demo.csv').then(function(r){return r.text();}).then(function(text){
+  fetch('templates/defendable-batch-demo.csv').then(function(r){return r.text();}).then(function(text){
     var result=rowsFromSpreadsheetText(text);
     if(!result.error&&result.rows.length){
       var seen={}, merged=getIntelligenceCases();
@@ -456,7 +456,7 @@ function renderPanel(){
 function toggleUserMenu(){document.getElementById('user-modal').classList.toggle('open');}
 function closeMenu(){document.getElementById('user-modal').classList.remove('open');}
 function switchUser(id){
-  setActiveUser(id);sessionStorage.removeItem('261c_lang');closeMenu();
+  setActiveUser(id);sessionStorage.removeItem('dfa_lang');closeMenu();
   var u=USERS[id];if(u){document.getElementById('nav-av').textContent=u.initials;document.getElementById('nav-user').textContent=u.name;}
   ['SB','JP','KR','MD','PL','CG','IM','EH'].forEach(function(uid){var el=document.getElementById('ud-'+uid);if(el)el.classList.toggle('current',uid===id);});
   if(typeof renderGlobalNav==='function')renderGlobalNav();

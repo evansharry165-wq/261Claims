@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>261Claims — Case</title>
+<title>DefendAble — Case</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -11,7 +11,7 @@
 html,body{height:100%;font-family:var(--font);background:var(--surface2);color:var(--text);font-size:14px}
 .global-nav{background:var(--navy);height:48px;display:flex;align-items:center;padding:0 20px;flex-shrink:0}
 .gn-logo{display:flex;align-items:center;gap:8px;text-decoration:none;margin-right:20px}
-.gn-mark{width:28px;height:28px;background:var(--blue);border-radius:6px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px}
+.gn-mark{width:28px;height:28px;background:var(--blue);border-radius:4px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px}
 .gn-name{font-size:14px;font-weight:500;color:#fff}
 .gn-links{display:flex;align-items:center;gap:2px;flex:1}
 .gn-link{display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r);font-size:12px;font-weight:500;color:rgba(255,255,255,0.5);text-decoration:none}
@@ -110,7 +110,7 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 <script src="case_shell.js"></script>
 
 <nav class="global-nav">
-  <a href="index.html" class="gn-logo"><div class="gn-mark"><i class="ti ti-plane"></i></div><span class="gn-name">261Claims</span></a>
+  <a href="index.html" class="gn-logo"><div class="gn-mark"><i class="ti ti-lock"></i></div><span class="gn-name">DefendAble</span></a>
   <div class="gn-links" id="gn-links"></div>
   <div class="gn-right">
     <div class="gn-user-btn" onclick="toggleUserMenu()">
@@ -154,7 +154,7 @@ function toggleUserMenu(){var m=document.getElementById('user-modal');if(m)m.cla
 function closeMenu(){var m=document.getElementById('user-modal');if(m)m.classList.remove('open');}
 function switchUser(id){
   if(typeof setActiveUser==='function')setActiveUser(id);
-  sessionStorage.removeItem('261c_lang');
+  sessionStorage.removeItem('dfa_lang');
   closeMenu();
   if(id==='EH'&&USERS[id]&&USERS[id].team==='evidence'){window.location.href='index.html';return;}
   var u=USERS[id];

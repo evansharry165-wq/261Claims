@@ -5,9 +5,9 @@
   'use strict';
 
   var DEMO_TODAY = new Date(2026, 5, 9, 9, 0, 0); // 9 Jun 2026 — demo anchor
-  var LAST_VISIT_KEY = '261c_last_visit_';
-  var WORK_NOTES_KEY = '261c_work_notes';
-  var CALENDAR_ADD_KEY = '261c_cpr_calendar';
+  var LAST_VISIT_KEY = 'dfa_last_visit_';
+  var WORK_NOTES_KEY = 'dfa_work_notes';
+  var CALENDAR_ADD_KEY = 'dfa_cpr_calendar';
 
   var MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
   var MONTHS_SHORT = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -411,7 +411,7 @@
     var start = new Date(ev.date.getTime());
     start.setHours(9, 0, 0, 0);
     var end = new Date(start.getTime() + 3600000);
-    var uid = ev.id + '@261claims';
+    var uid = ev.id + '@defendable';
     var desc = (ev.note || '').replace(/\r?\n/g, '\\n').replace(/,/g, '\\,');
     return (
       'BEGIN:VEVENT\r\n' +
@@ -440,11 +440,11 @@
 
   function downloadCalendarIcs(events, filename) {
     var body = events.map(buildIcsEvent).join('');
-    var ics = 'BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//261Claims//EN\r\nCALSCALE:GREGORIAN\r\n' + body + 'END:VCALENDAR\r\n';
+    var ics = 'BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//DefendAble//EN\r\nCALSCALE:GREGORIAN\r\n' + body + 'END:VCALENDAR\r\n';
     var blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
     var a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = filename || '261Claims-CPR-deadlines.ics';
+    a.download = filename || 'DefendAble-CPR-deadlines.ics';
     a.click();
     setTimeout(function () {
       URL.revokeObjectURL(a.href);

@@ -112,7 +112,7 @@
   window.switchUser = function(id){
     if(typeof setActiveUser==='function') setActiveUser(id);
     // Language follows user unless manually overridden
-    sessionStorage.removeItem('261c_lang'); // clear override so user lang takes effect
+    sessionStorage.removeItem('dfa_lang'); // clear override so user lang takes effect
     renderNav();
     if(typeof renderPage==='function') renderPage();
     if(typeof render==='function') render();

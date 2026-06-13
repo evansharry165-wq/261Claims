@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>261Claims — Education Hub</title>
+<title>DefendAble — Knowledge Hub</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -13,7 +13,7 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 /* nav */
 .global-nav{background:var(--navy);height:48px;display:flex;align-items:center;padding:0 20px;gap:0;flex-shrink:0;border-bottom:1px solid rgba(255,255,255,0.07)}
 .gn-logo{display:flex;align-items:center;gap:8px;text-decoration:none;margin-right:20px}
-.gn-mark{width:28px;height:28px;background:var(--blue);border-radius:6px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px}
+.gn-mark{width:28px;height:28px;background:var(--blue);border-radius:4px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px}
 .gn-name{font-size:14px;font-weight:500;color:#fff;letter-spacing:-0.01em}
 .gn-links{display:flex;align-items:center;gap:2px;flex:1}
 .gn-link{display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r);font-size:12px;font-weight:500;color:rgba(255,255,255,0.5);text-decoration:none;transition:all 0.15s;white-space:nowrap}
@@ -121,8 +121,8 @@ html.embed-mode .page{height:100%!important}
 
 <nav class="global-nav">
   <a href="index.html" class="gn-logo">
-    <div class="gn-mark"><i class="ti ti-plane"></i></div>
-    <span class="gn-name">261Claims</span>
+    <div class="gn-mark"><i class="ti ti-lock"></i></div>
+    <span class="gn-name">DefendAble</span>
   </a>
   <div class="gn-links" id="gn-links"></div>
   <div class="gn-right">
@@ -137,7 +137,7 @@ html.embed-mode .page{height:100%!important}
 <div class="page">
   <div class="sidebar">
     <div class="sb-header">
-      <div class="sb-header-title">Education Hub</div>
+      <div class="sb-header-title">Knowledge Hub</div>
       <div class="sb-header-sub">Guidance, case law, and operational training for the legal team</div>
     </div>
     <div class="sb-section">Legal knowledge</div>
@@ -439,7 +439,7 @@ repository_learning: {
 
 function activeCaseQuery(){
   try{
-    var c=JSON.parse(sessionStorage.getItem('261c_case')||'null');
+    var c=JSON.parse(sessionStorage.getItem('dfa_case')||'null');
     return c&&c.ref?'?ref='+encodeURIComponent(c.ref):'';
   }catch(e){return '';}
 }
@@ -557,7 +557,7 @@ function toggleUserMenu(){var m=document.getElementById('user-modal');if(m)m.cla
 function closeMenu(){var m=document.getElementById('user-modal');if(m)m.classList.remove('open');}
 function switchUser(id){
   if(typeof setActiveUser==='function')setActiveUser(id);
-  sessionStorage.removeItem('261c_lang');
+  sessionStorage.removeItem('dfa_lang');
   closeMenu();
   var u=typeof USERS!=='undefined'?USERS[id]:null;
   if(u){

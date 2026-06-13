@@ -1,7 +1,7 @@
 /* Embed mode + redirect for legacy case workspaces */
 (function () {
   ['shared_theme.js', 'demo_reset.js', 'shared_user_menu.js'].forEach(function (src) {
-    var id = '261c-' + src.replace('.js', '');
+    var id = 'dfa-' + src.replace('.js', '');
     if (document.getElementById(id)) return;
     var s = document.createElement('script');
     s.id = id;

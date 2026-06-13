@@ -3,12 +3,12 @@
  *   Category → Year → Month → Day → Files
  *
  * Evidence team uploads here; legal team pulls into evidence packs.
- * Persisted in localStorage (261c_evidence_filing).
+ * Persisted in localStorage (dfa_evidence_filing).
  */
 (function (global) {
   'use strict';
 
-  var STORAGE_KEY = '261c_evidence_filing';
+  var STORAGE_KEY = 'dfa_evidence_filing';
   var VERSION = 1;
 
   var FILING_CATEGORIES = [

@@ -1,4 +1,4 @@
-# 261Claims — Redesign Specification
+# DefendAble — Redesign Specification
 
 **Version:** 1.0  
 **Date:** June 2026  
@@ -62,7 +62,7 @@ Keep existing design tokens: navy `#0B1628`, DM Sans, Tabler icons, `.panel`, `.
 ### Navigation (4 items + user)
 
 ```
-[Logo 261Claims]   Work   Cases   Repository   Insights          [User ▾]
+[Logo DefendAble]   Work   Cases   Repository   Insights          [User ▾]
 ```
 
 | Nav item | Replaces | Primary audience |
@@ -106,7 +106,7 @@ NAV_LINKS = [
 // Evidence team (EH): add { key:'requests', href:'requests.html' } after Work
 ```
 
-**Case context bar** (when `?ref=` present or `261c_case` in session):
+**Case context bar** (when `?ref=` present or `dfa_case` in session):
 
 ```
 Global nav (48px)
@@ -131,7 +131,7 @@ Dismissible banner on Work dashboard:
 
 > **Demo path:** Open urgent case AC-2026-0089 → Request evidence → Switch to Emma Hughes → Complete request
 
-Stored in `sessionStorage` key `261c_demo_dismissed`.
+Stored in `sessionStorage` key `dfa_demo_dismissed`.
 
 ---
 
@@ -563,7 +563,7 @@ module5-drafting-workspace.html?ref=X  →  case.html?ref=X&tab=documents
 |---|---|---|
 | 13 sidebar sections | AI chat assistant | Guidance tab with search + chat |
 | Article cards | Document library + filters | Unified searchable library |
-| — | Platform module guide | Rename to "How 261Claims works" |
+| — | Platform module guide | Rename to "How DefendAble works" |
 | — | Upload modal | Defer / demo-only |
 
 #### WIREFRAME — Guidance tab
@@ -639,7 +639,7 @@ Move `renderCases()` from repository:
 
 ```javascript
 function getNextAction(c) { /* stage-based next action text + tab */ }
-function getWaitingOn(c) { /* from 261c_evidence_requests session + seed */ }
+function getWaitingOn(c) { /* from dfa_evidence_requests session + seed */ }
 function getPrimaryTab(c) { /* map stage → tab name */ }
 function CASE_ROUTE(ref, tab) { return 'case.html?ref='+encodeURIComponent(ref)+(tab?'&tab='+tab:''); }
 ```
@@ -650,7 +650,7 @@ function CASE_ROUTE(ref, tab) { return 'case.html?ref='+encodeURIComponent(ref)+
 function openCase(ref) {
   var c = getCase(ref);
   if (!c) return;
-  sessionStorage.setItem('261c_case', JSON.stringify(c));
+  sessionStorage.setItem('dfa_case', JSON.stringify(c));
   window.location.href = CASE_ROUTE(ref, getPrimaryTab(c));
 }
 ```
@@ -718,11 +718,11 @@ Update to reflect:
 
 | Key | Use |
 |---|---|
-| `261c_user` | Active user |
-| `261c_case` | Active case object |
+| `dfa_user` | Active user |
+| `dfa_case` | Active case object |
 | `aeroCaseData` | Legacy payload for workspace readers |
-| `261c_evidence_requests` | EH queue |
-| `261c_lang` | i18n override |
+| `dfa_evidence_requests` | EH queue |
+| `dfa_lang` | i18n override |
 
 ### New query params
 

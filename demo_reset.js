@@ -4,8 +4,8 @@
 (function (global) {
   'use strict';
 
-  var SESSION_PREFIX = '261c_';
-  var LOCAL_STORE_KEYS = ['261c_case_filing', '261c_evidence_filing'];
+  var SESSION_PREFIX = 'dfa_';
+  var LOCAL_STORE_KEYS = ['dfa_case_filing', 'dfa_evidence_filing'];
 
   function resetAll(opts) {
     opts = opts || {};
@@ -28,7 +28,7 @@
       var localKeys = [];
       for (var j = 0; j < localStorage.length; j++) {
         var lk = localStorage.key(j);
-        if (lk && lk.indexOf('261c_last_visit_') === 0) localKeys.push(lk);
+        if (lk && lk.indexOf('dfa_last_visit_') === 0) localKeys.push(lk);
       }
       localKeys.forEach(function (k) {
         localStorage.removeItem(k);

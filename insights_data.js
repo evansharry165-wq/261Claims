@@ -9,7 +9,7 @@ var CLOSED_CASES = [
 
 function getStoredClosedCases() {
   try {
-    return JSON.parse(sessionStorage.getItem('261c_repository') || '[]').map(function (c) {
+    return JSON.parse(sessionStorage.getItem('dfa_repository') || '[]').map(function (c) {
       return {
         ref: c.ref,
         claimant: c.claimant || 'Stored case',
