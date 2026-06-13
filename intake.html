@@ -139,8 +139,37 @@ input[type=file]{display:none}
 .mass-banner{background:var(--purple-faint);border:1px solid #DDD6FE;border-radius:var(--r2);padding:10px 12px;font-size:12px;color:var(--text2);margin-bottom:12px;line-height:1.5}
 .batch-table{width:100%;border-collapse:collapse;font-size:12px}
 .batch-table th,.batch-table td{padding:8px 10px;border-bottom:1px solid var(--border);text-align:left;vertical-align:middle}
-.batch-table th{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.05em;color:var(--text3);background:var(--surface2)}
+.batch-table th{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.05em;color:var(--text3);background:var(--surface2);white-space:nowrap}
+.batch-table th.sortable{cursor:pointer;user-select:none}
+.batch-table th.sortable:hover{color:var(--blue-text);background:var(--blue-faint)}
+.batch-table th.sort-active{color:var(--blue-text)}
 .batch-select{width:100%;padding:6px 8px;border:1px solid var(--border);border-radius:var(--r);font-size:11px;font-family:var(--font);background:var(--surface)}
+.batch-toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;padding:12px 14px;border-bottom:1px solid var(--border);background:var(--surface2)}
+.batch-toolbar-group{display:flex;flex-direction:column;gap:4px;min-width:0}
+.batch-toolbar-label{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.05em;color:var(--text3)}
+.batch-search{min-width:220px;flex:1;font-size:12px;padding:7px 10px;border:1px solid var(--border);border-radius:var(--r);font-family:var(--font);background:var(--surface)}
+.batch-search:focus{outline:none;border-color:var(--blue)}
+.batch-select-ctrl{font-size:12px;padding:7px 10px;border:1px solid var(--border);border-radius:var(--r);font-family:var(--font);background:var(--surface);min-width:140px}
+.batch-pills{display:flex;flex-wrap:wrap;gap:5px}
+.batch-pill{font-size:10px;padding:4px 9px;border-radius:20px;border:1px solid var(--border);background:var(--surface);cursor:pointer;font-family:var(--font);color:var(--text2);white-space:nowrap}
+.batch-pill:hover{border-color:var(--border2);background:var(--surface3)}
+.batch-pill.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+.batch-sort-dir{width:32px;height:32px;border:1px solid var(--border);border-radius:var(--r);background:var(--surface);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text2);font-family:var(--font)}
+.batch-sort-dir:hover{background:var(--surface3);color:var(--text)}
+.batch-summary{display:flex;flex-wrap:wrap;gap:8px;padding:10px 14px;border-bottom:1px solid var(--border);background:var(--surface)}
+.batch-stat{font-size:11px;padding:4px 10px;border-radius:20px;background:var(--surface2);border:1px solid var(--border);color:var(--text2)}
+.batch-stat strong{color:var(--text);font-weight:500}
+.batch-stat.warn{background:var(--amber-faint);border-color:#FDE68A;color:var(--amber)}
+.batch-rule{font-size:11px;color:var(--text3);padding:8px 14px;border-bottom:1px solid var(--border);background:var(--surface);line-height:1.5}
+.batch-rule strong{color:var(--text2);font-weight:500}
+.batch-bulk{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.batch-bulk select{font-size:11px;padding:6px 8px;border:1px solid var(--border);border-radius:var(--r);font-family:var(--font);background:var(--surface)}
+.batch-empty{padding:40px 20px;text-align:center;color:var(--text3);font-size:12px}
+.triage-pill{font-size:10px;font-weight:500;padding:2px 7px;border-radius:20px;display:inline-block}
+.triage-defend{background:var(--green-faint);color:var(--green)}
+.triage-investigate{background:var(--amber-faint);color:var(--amber)}
+.triage-escalate{background:var(--red-faint);color:var(--red)}
+.jur-pill{font-size:10px;font-weight:500;padding:2px 6px;border-radius:4px;background:var(--surface3);color:var(--text2);font-family:var(--mono)}
 .extract-loading{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:240px;text-align:center;padding:32px}
 .extract-spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--blue);border-radius:50%;animation:spin .8s linear infinite;margin-bottom:12px}
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -240,6 +269,7 @@ var depositSearch='';
 var intakeTab='new';
 var massBatch=null;
 var massExtractTimer=null;
+var massBatchView={search:'',sortBy:'default',sortDir:'asc',jurisdiction:'',triage:'',assignee:''};
 var emailConnectorParsed=null;
 var emailConnectorDraft=false;
 function setIntakeTab(tab){
@@ -370,6 +400,7 @@ function buildMassBatchItemsFromLocFiles(files){
 function startMassExtraction(items,sourceLabel){
   if(massExtractTimer)clearTimeout(massExtractTimer);
   massBatch={status:'extracting',items:items,source:sourceLabel||'batch'};
+  massBatchView={search:'',sortBy:'default',sortDir:'asc',jurisdiction:'',triage:'',assignee:''};
   intakeTab='mass';
   render();
   massExtractTimer=setTimeout(function(){
@@ -377,6 +408,114 @@ function startMassExtraction(items,sourceLabel){
     massBatch.status='review';
     render();
   },sourceLabel==='master template'?800:2000);
+}
+function resetMassBatchView(){
+  massBatchView={search:'',sortBy:'default',sortDir:'asc',jurisdiction:'',triage:'',assignee:''};
+  render();
+}
+function setMassBatchSearch(v){massBatchView.search=v||'';render();}
+function setMassBatchSort(sortBy){
+  if(massBatchView.sortBy===sortBy){
+    massBatchView.sortDir=massBatchView.sortDir==='asc'?'desc':'asc';
+  }else{
+    massBatchView.sortBy=sortBy;
+    massBatchView.sortDir=(sortBy==='compSought'||sortBy==='dateReceived')?'desc':'asc';
+  }
+  render();
+}
+function toggleMassBatchSortDir(){
+  massBatchView.sortDir=massBatchView.sortDir==='asc'?'desc':'asc';
+  render();
+}
+function setMassBatchFilter(field,value){
+  massBatchView[field]=massBatchView[field]===value?'':value;
+  render();
+}
+function massBatchClaimant(item){
+  var r=item.row||{};
+  return ((r.surname||'')+' '+(r.firstName||'')).trim()||'Unknown';
+}
+function massBatchCompNum(item){
+  var r=item.row||{};
+  var raw=String(r.compSought||'').replace(/,/g,'');
+  var n=parseFloat(raw);
+  return isNaN(n)?0:n;
+}
+function massBatchSortLabel(){
+  var labels={default:'Default (jurisdiction → LOC date → name)',jurisdiction:'Jurisdiction',dateReceived:'LOC date received',claimant:'Claimant name',flightNum:'Flight number',triage:'Triage',complexity:'Complexity',assignee:'Assignee',compSought:'Claim value',ref:'Reference'};
+  return labels[massBatchView.sortBy]||massBatchView.sortBy;
+}
+function massBatchHaystack(item){
+  var r=item.row||{};
+  var u=USERS[item.assignee];
+  return [r.ref,r.surname,r.firstName,r.solicitor,r.flightNum,r.dep,r.arr,r.jurisdictionCode,r.triage,r.complexity,r.disruptionType,r.claimType,r.notes,r.compSought,r.currency,item.file&&item.file.name,u&&u.name,u&&u.full].join(' ').toLowerCase();
+}
+function compareMassBatchItems(a,b){
+  var dir=massBatchView.sortDir==='desc'?-1:1;
+  var ra=a.row||{}, rb=b.row||{};
+  if(massBatchView.sortBy==='default'){
+    return (a.sortOrder||0)-(b.sortOrder||0);
+  }
+  if(massBatchView.sortBy==='jurisdiction'){
+    var j=(ra.jurisdictionCode||'').localeCompare(rb.jurisdictionCode||'');
+    return j?j*dir:0;
+  }
+  if(massBatchView.sortBy==='dateReceived'){
+    var da=parseLocDateReceived(ra.dateReceived).getTime();
+    var db=parseLocDateReceived(rb.dateReceived).getTime();
+    return (da-db)*dir;
+  }
+  if(massBatchView.sortBy==='claimant'){
+    return massBatchClaimant(a).localeCompare(massBatchClaimant(b))*dir;
+  }
+  if(massBatchView.sortBy==='compSought'){
+    return (massBatchCompNum(a)-massBatchCompNum(b))*dir;
+  }
+  if(massBatchView.sortBy==='assignee'){
+    var aa=(USERS[a.assignee]&&USERS[a.assignee].name)||a.assignee||'';
+    var ab=(USERS[b.assignee]&&USERS[b.assignee].name)||b.assignee||'';
+    return aa.localeCompare(ab)*dir;
+  }
+  var va=String(ra[massBatchView.sortBy]||'');
+  var vb=String(rb[massBatchView.sortBy]||'');
+  return va.localeCompare(vb)*dir;
+}
+function getMassBatchView(){
+  if(!massBatch||!massBatch.items)return {items:[],total:0,filtered:0,byAssignee:{},byJuris:{}};
+  var q=(massBatchView.search||'').trim().toLowerCase();
+  var items=massBatch.items.filter(function(item){
+    var r=item.row||{};
+    if(massBatchView.jurisdiction&&r.jurisdictionCode!==massBatchView.jurisdiction)return false;
+    if(massBatchView.triage&&(r.triage||'INVESTIGATE')!==massBatchView.triage)return false;
+    if(massBatchView.assignee&&item.assignee!==massBatchView.assignee)return false;
+    if(q&&massBatchHaystack(item).indexOf(q)<0)return false;
+    return true;
+  });
+  items=items.slice().sort(compareMassBatchItems);
+  var byAssignee={}, byJuris={};
+  items.forEach(function(item){
+    var r=item.row||{};
+    byAssignee[item.assignee]=(byAssignee[item.assignee]||0)+1;
+    byJuris[r.jurisdictionCode||'EW']=(byJuris[r.jurisdictionCode||'EW']||0)+1;
+  });
+  return {items:items,total:massBatch.items.length,filtered:items.length,byAssignee:byAssignee,byJuris:byJuris};
+}
+function triagePillHtml(triage){
+  var t=(triage||'INVESTIGATE').toUpperCase();
+  var cls=t==='DEFEND'?'triage-defend':t==='ESCALATE'?'triage-escalate':'triage-investigate';
+  return '<span class="triage-pill '+cls+'">'+escapeHtml(t)+'</span>';
+}
+function massBatchSortHeader(label,sortKey){
+  var active=massBatchView.sortBy===sortKey;
+  var arrow=active?(massBatchView.sortDir==='asc'?' ↑':' ↓'):'';
+  return '<th class="sortable'+(active?' sort-active':'')+'" onclick="setMassBatchSort(\''+sortKey+'\')">'+escapeHtml(label)+arrow+'</th>';
+}
+function bulkAssignFiltered(uid){
+  if(!massBatch||!uid)return;
+  var view=getMassBatchView();
+  view.items.forEach(function(item){item.assignee=uid;});
+  showToast('Assigned '+view.filtered+' filtered claim'+(view.filtered!==1?'s':'')+' to '+(USERS[uid]?USERS[uid].name:uid)+'.');
+  render();
 }
 function handleMassUpload(event){
   var leadUid=getActiveUser();
@@ -433,9 +572,10 @@ function loadDemoBatch(){
     })
     .catch(function(e){showToast('Could not load demo batch: '+e.message);});
 }
-function setMassAssignee(index,uid){
-  if(!massBatch||!massBatch.items[index])return;
-  massBatch.items[index].assignee=uid;
+function setMassAssignee(ref,uid){
+  if(!massBatch)return;
+  var item=massBatch.items.find(function(it){return it.row&&it.row.ref===ref;});
+  if(item)item.assignee=uid;
   render();
 }
 function cancelMassBatch(){
@@ -580,18 +720,93 @@ function renderMassPanel(){
       +(massBatch&&massBatch.status==='extracting'?'<div class="extract-loading"><div class="extract-spinner"></div><div style="font-size:13px;font-weight:500">'+(massBatch.source==='master template'?'Parsing master template…':'Extracting '+massBatch.items.length+' letters…')+'</div><div style="font-size:11px;color:var(--text3);margin-top:4px">'+(massBatch.source==='master template'?'Sorting rows and calculating workload assignments':'AI reading claimant, flight and jurisdiction fields')+'</div></div>':'')
       +'</div>';
   }
-  var rows=massBatch.items.map(function(item,idx){
-    var r=item.row;
-    var claimant=r.surname+' '+r.firstName;
-    return '<tr><td style="font-family:var(--mono);font-size:11px;color:var(--text3)">'+escapeHtml(String(item.sortOrder||idx+1))+'</td>'
-      +'<td><div class="cr-ref">'+escapeHtml(r.ref)+'</div><div style="font-size:11px;color:var(--text3)">'+escapeHtml(item.file.name)+'</div></td>'
-      +'<td>'+escapeHtml(claimant)+'</td><td>'+escapeHtml(r.flightNum)+'</td><td>'+escapeHtml(r.jurisdictionCode)+'</td><td>'+escapeHtml(r.triage||'INVESTIGATE')+'</td><td>'+escapeHtml(r.complexity||'Standard')+'</td>'
-      +'<td><select class="batch-select" onchange="setMassAssignee('+idx+',this.value)">'+assigneeOptionsHtml(item.assignee,r.jurisdictionCode)+'</select></td></tr>';
+  var view=getMassBatchView();
+  var sortOptions=[
+    {key:'default',label:'Default order'},
+    {key:'jurisdiction',label:'Jurisdiction'},
+    {key:'dateReceived',label:'LOC date'},
+    {key:'claimant',label:'Claimant A–Z'},
+    {key:'flightNum',label:'Flight'},
+    {key:'triage',label:'Triage'},
+    {key:'complexity',label:'Complexity'},
+    {key:'compSought',label:'Claim value'},
+    {key:'assignee',label:'Assignee'},
+    {key:'ref',label:'Reference'}
+  ];
+  var sortSelect=sortOptions.map(function(o){
+    return '<option value="'+o.key+'"'+(massBatchView.sortBy===o.key?' selected':'')+'>'+escapeHtml(o.label)+'</option>';
   }).join('');
-  return '<div class="cw"><div class="mass-banner"><strong>Assignment review</strong> — '+escapeHtml(massBatch.source||'batch')+' · '+massBatch.items.length+' case'+(massBatch.items.length!==1?'s':'')+' sorted by deterministic rules and pre-assigned to lowest workload. Adjust if needed, then deposit.</div>'
-    +'<div class="section-card"><div class="sc-header"><i class="ti ti-users"></i><div class="sc-title">Batch assignment review</div></div><div class="sc-body" style="padding:0;overflow-x:auto;max-height:60vh;overflow-y:auto"><table class="batch-table"><thead><tr><th>#</th><th>Ref / source</th><th>Claimant</th><th>Flight</th><th>Juris.</th><th>Triage</th><th>Cat.</th><th>Assign to</th></tr></thead><tbody>'+rows+'</tbody></table></div></div>'
-    +'<div class="advance-bar"><div class="adv-text">Lead approval required · CPR clocks start on deposit · Cases enter assignee intake queues.</div>'
-    +'<div style="display:flex;gap:8px"><button class="lp-upload-btn" style="width:auto;margin:0;border-style:solid" onclick="cancelMassBatch()">Cancel</button><button class="btn-advance" onclick="confirmMassBatch()"><i class="ti ti-circle-check"></i> Deposit batch</button></div></div></div>';
+  var jurisPills=['','EW','FR','ES','EU'].map(function(j){
+    var label=j||'All jurisdictions';
+    var active=massBatchView.jurisdiction===j;
+    return '<button type="button" class="batch-pill'+(active?' active':'')+'" onclick="setMassBatchFilter(\'jurisdiction\',\''+j+'\')">'+escapeHtml(label)+'</button>';
+  }).join('');
+  var triagePills=['','DEFEND','INVESTIGATE','ESCALATE'].map(function(t){
+    var label=t||'All triage';
+    var active=massBatchView.triage===t;
+    return '<button type="button" class="batch-pill'+(active?' active':'')+'" onclick="setMassBatchFilter(\'triage\',\''+t+'\')">'+escapeHtml(label)+'</button>';
+  }).join('');
+  var assigneeFilterOpts=['<option value="">All assignees</option>'].concat(['SB','JP','KR','MD','PL','CG','IM'].filter(function(uid){return USERS[uid];}).map(function(uid){
+    return '<option value="'+uid+'"'+(massBatchView.assignee===uid?' selected':'')+'>'+escapeHtml(USERS[uid].name)+'</option>';
+  })).join('');
+  var bulkAssignOpts=['<option value="">Bulk assign filtered to…</option>'].concat(['SB','JP','KR','MD','PL','CG','IM'].filter(function(uid){return USERS[uid];}).map(function(uid){
+    return '<option value="'+uid+'">'+escapeHtml(USERS[uid].name)+'</option>';
+  })).join('');
+  var summaryStats='<span class="batch-stat"><strong>'+view.filtered+'</strong> of '+view.total+' claims shown</span>';
+  Object.keys(view.byJuris).sort().forEach(function(j){
+    summaryStats+='<span class="batch-stat">'+escapeHtml(j)+': <strong>'+view.byJuris[j]+'</strong></span>';
+  });
+  Object.keys(view.byAssignee).sort().forEach(function(uid){
+    var u=USERS[uid];
+    summaryStats+='<span class="batch-stat">→ '+(u?escapeHtml(u.name):escapeHtml(uid))+': <strong>'+view.byAssignee[uid]+'</strong></span>';
+  });
+  if(view.filtered<view.total){
+    summaryStats+='<span class="batch-stat warn"><i class="ti ti-filter" style="font-size:10px"></i> Filters active</span>';
+  }
+  var rows=view.items.map(function(item){
+    var r=item.row;
+    var claimant=massBatchClaimant(item);
+    var comp=r.currency==='GBP'?'£':(r.currency==='EUR'?'€':'');
+    comp+=r.compSought||'—';
+    return '<tr>'
+      +'<td style="font-family:var(--mono);font-size:11px;color:var(--text3)">'+escapeHtml(String(item.sortOrder||''))+'</td>'
+      +'<td><div class="cr-ref">'+escapeHtml(r.ref)+'</div><div style="font-size:11px;color:var(--text3);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+escapeHtml(item.file.name)+'">'+escapeHtml(item.file.name)+'</div></td>'
+      +'<td><div style="font-weight:500">'+escapeHtml(claimant)+'</div><div style="font-size:11px;color:var(--text3)">'+escapeHtml(r.solicitor||'—')+'</div></td>'
+      +'<td><div>'+escapeHtml(r.flightNum)+'</div><div style="font-size:11px;color:var(--text3)">'+escapeHtml(r.dep||'')+(r.arr?' → '+escapeHtml(r.arr):'')+'</div></td>'
+      +'<td><span class="jur-pill">'+escapeHtml(r.jurisdictionCode||'EW')+'</span></td>'
+      +'<td>'+triagePillHtml(r.triage)+'</td>'
+      +'<td>'+escapeHtml(r.complexity||'Standard')+'</td>'
+      +'<td style="font-family:var(--mono);font-size:11px">'+escapeHtml(comp)+'</td>'
+      +'<td><div style="font-size:11px;color:var(--text3)">'+escapeHtml(r.dateReceived||'—')+'</div></td>'
+      +'<td><select class="batch-select" onchange="setMassAssignee(\''+escapeHtml(r.ref).replace(/'/g,"\\'")+'\',this.value)">'+assigneeOptionsHtml(item.assignee,r.jurisdictionCode)+'</select></td></tr>';
+  }).join('');
+  var tableBody=rows||'<tr><td colspan="10"><div class="batch-empty"><i class="ti ti-search-off" style="font-size:28px;opacity:.35;display:block;margin-bottom:8px"></i>No claims match your search or filters.<br><button type="button" class="batch-pill" style="margin-top:10px" onclick="resetMassBatchView()">Clear filters</button></div></td></tr>';
+  return '<div class="cw"><div class="mass-banner"><strong>Assignment review</strong> — '+escapeHtml(massBatch.source||'batch')+' · '+massBatch.items.length+' claim'+(massBatch.items.length!==1?'s':'')+' extracted. Use search, filters and sort to review assignments before deposit. Default order follows jurisdiction → LOC date → claimant name; workload rules pre-assign each row to the lowest-load solicitor in that jurisdiction pool.</div>'
+    +'<div class="section-card"><div class="sc-header"><i class="ti ti-users"></i><div class="sc-title">Batch assignment review</div><div style="font-size:11px;color:var(--text3);margin-left:auto">Click column headers to sort</div></div>'
+    +'<div class="batch-toolbar">'
+    +'<div class="batch-toolbar-group" style="flex:1;min-width:220px"><div class="batch-toolbar-label">Search claims</div><input class="batch-search" placeholder="Ref, claimant, flight, solicitor, notes…" value="'+escapeHtml(massBatchView.search)+'" oninput="setMassBatchSearch(this.value)"></div>'
+    +'<div class="batch-toolbar-group"><div class="batch-toolbar-label">Sort by</div><div style="display:flex;gap:6px;align-items:center"><select class="batch-select-ctrl" onchange="massBatchView.sortBy=this.value;massBatchView.sortDir=(this.value===\'compSought\'||this.value===\'dateReceived\')?\'desc\':\'asc\';render()">'+sortSelect+'</select><button type="button" class="batch-sort-dir" title="Toggle sort direction" onclick="toggleMassBatchSortDir()"><i class="ti ti-arrows-'+(massBatchView.sortDir==='asc'?'sort-ascending':'sort-descending')+'"></i></button></div></div>'
+    +'<div class="batch-toolbar-group"><div class="batch-toolbar-label">Assignee filter</div><select class="batch-select-ctrl" onchange="massBatchView.assignee=this.value;render()">'+assigneeFilterOpts+'</select></div>'
+    +'<div class="batch-toolbar-group"><div class="batch-toolbar-label">Bulk action</div><div class="batch-bulk"><select id="bulk-assign-select">'+bulkAssignOpts+'</select><button type="button" class="btn-outline" style="padding:6px 10px;font-size:11px" onclick="var s=document.getElementById(\'bulk-assign-select\');if(s&&s.value)bulkAssignFiltered(s.value)"><i class="ti ti-user-check"></i> Apply</button></div></div>'
+    +'</div>'
+    +'<div style="padding:8px 14px;border-bottom:1px solid var(--border);background:var(--surface)"><div class="batch-toolbar-label" style="margin-bottom:5px">Jurisdiction</div><div class="batch-pills">'+jurisPills+'</div></div>'
+    +'<div style="padding:8px 14px;border-bottom:1px solid var(--border);background:var(--surface)"><div class="batch-toolbar-label" style="margin-bottom:5px">Triage</div><div class="batch-pills">'+triagePills+'</div></div>'
+    +'<div class="batch-summary">'+summaryStats+'</div>'
+    +'<div class="batch-rule"><strong>Current sort:</strong> '+escapeHtml(massBatchSortLabel())+' ('+(massBatchView.sortDir==='asc'?'A → Z / oldest first':'Z → A / highest first')+') · <button type="button" class="batch-pill" style="margin-left:4px" onclick="resetMassBatchView()">Reset view</button></div>'
+    +'<div class="sc-body" style="padding:0;overflow-x:auto;max-height:55vh;overflow-y:auto"><table class="batch-table"><thead><tr>'
+    +massBatchSortHeader('#','default')
+    +massBatchSortHeader('Ref / source','ref')
+    +massBatchSortHeader('Claimant','claimant')
+    +massBatchSortHeader('Flight','flightNum')
+    +massBatchSortHeader('Juris.','jurisdiction')
+    +massBatchSortHeader('Triage','triage')
+    +massBatchSortHeader('Cat.','complexity')
+    +massBatchSortHeader('Value','compSought')
+    +massBatchSortHeader('LOC date','dateReceived')
+    +massBatchSortHeader('Assign to','assignee')
+    +'</tr></thead><tbody>'+tableBody+'</tbody></table></div></div>'
+    +'<div class="advance-bar"><div class="adv-text">Lead approval required · Depositing all <strong>'+massBatch.items.length+'</strong> claims (not just filtered view) · CPR clocks start on deposit</div>'
+    +'<div style="display:flex;gap:8px"><button class="lp-upload-btn" style="width:auto;margin:0;border-style:solid" onclick="cancelMassBatch()">Cancel</button><button class="btn-advance" onclick="confirmMassBatch()"><i class="ti ti-circle-check"></i> Deposit batch ('+massBatch.items.length+')</button></div></div></div>';
 }
 function handleSupportUpload(event){
   var file=event.target.files&&event.target.files[0];
