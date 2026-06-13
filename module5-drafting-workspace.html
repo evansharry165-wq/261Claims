@@ -4,24 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>261Claims — Module 5: Document Drafting</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --navy:#0B1628;--navy2:#132033;
-  --blue:#2A6FDB;--blue-faint:#EFF6FF;--blue-text:#1D4ED8;
-  --green:#1A7A4A;--green-l:#22A863;--green-faint:#E6F5EE;
-  --red:#C0392B;--red-faint:#FCF0EF;
-  --amber:#B45309;--amber-faint:#FEF3C7;
-  --purple:#4338CA;--purple-faint:#EEEDFE;
-  --border:#E2E8F0;--border2:#CBD5E1;
-  --text:#0F172A;--text2:#475569;--text3:#94A3B8;
-  --surface:#FFFFFF;--surface2:#F8FAFC;--surface3:#F1F5F9;
-  --font:'Inter',sans-serif;--font-serif:'Instrument Serif',Georgia,serif;--mono:'DM Mono',monospace;
-  --r:8px;--r2:12px;--r3:16px;
-}
+:root{--ink:#1A1A2E;--ink2:#2D2D44;--ink3:#6B6B80;--ink4:#9B9BAA;--rule:#D8D8E0;--rule2:#EBEBF0;--surface:#FFFFFF;--surface2:#F7F7F9;--surface3:#EFEFF2;--accent:#1B3A6B;--accent2:#254E91;--accent-faint:#EEF2F8;--confirm:#1A5C3A;--confirm-faint:#EEF7F2;--caution:#7A4E00;--caution-faint:#FDF4E3;--alert:#8B1A1A;--alert-faint:#FBF0F0;--navy:var(--ink);--navy2:var(--ink2);--navy3:var(--ink2);--blue:var(--accent2);--blue-faint:var(--accent-faint);--blue-text:var(--accent);--green:var(--confirm);--green-l:#2A7A4F;--green-faint:var(--confirm-faint);--amber:var(--caution);--amber-faint:var(--caution-faint);--red:var(--alert);--red-faint:var(--alert-faint);--border:var(--rule);--border2:var(--rule2);--text:var(--ink);--text2:var(--ink2);--text3:var(--ink3);--font:'Helvetica Neue','Arial',sans-serif;--font-serif:'Georgia','Times New Roman',serif;--font-doc:'Georgia','Times New Roman',serif;--mono:'Courier New','Courier',monospace;--purple:#4338CA;--purple-faint:var(--accent-faint);--r:3px;--r2:4px;--r3:5px}
 html,body{height:100%;font-family:var(--font);background:var(--surface2);color:var(--text);font-size:14px}
 .app{display:flex;flex-direction:column;height:calc(100vh - 48px);min-height:0}
 
@@ -61,14 +47,14 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 /* document library */
 .lib-section{margin-bottom:16px}
 .lib-label{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.07em;color:var(--text3);margin-bottom:8px}
-.doc-btn{width:100%;display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border:1px solid var(--border);border-radius:var(--r2);margin-bottom:6px;cursor:pointer;text-align:left;font-family:var(--font);background:var(--surface);transition:all 0.15s}
-.doc-btn:hover{border-color:var(--border2);background:var(--surface2)}
-.doc-btn.active{border-color:var(--blue);background:var(--blue-faint)}
+.doc-btn{width:100%;display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border:1px solid var(--rule);border-radius:0;border-left:2px solid transparent;margin-bottom:0;cursor:pointer;text-align:left;font-family:var(--font);background:var(--surface);transition:background 0.12s}
+.doc-btn:hover{border-color:var(--rule);background:var(--surface2)}
+.doc-btn.active,.doc-btn.open{border-left-color:var(--accent);background:var(--accent-faint);border-color:var(--rule)}
 .doc-btn.minimized{border-color:var(--amber);background:var(--amber-faint)}
 .doc-btn.minimized .doc-btn-sub::before{content:'Minimised · '}
 .doc-btn.open{border-left:3px solid var(--blue)}
 .doc-btn-icon{width:28px;height:28px;border-radius:var(--r);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
-.doc-btn-name{font-size:12px;font-weight:500;color:var(--text);margin-bottom:2px;line-height:1.35}
+.doc-btn-name{font-size:12px;font-weight:400;color:var(--text);margin-bottom:2px;line-height:1.35;font-family:var(--font-serif)}
 .doc-btn-sub{font-size:10px;color:var(--text3);line-height:1.4}
 .doc-btn .doc-btn-text{flex:1;min-width:0}
 .doc-btn.saved-case{border-color:#BBF7D0;background:linear-gradient(135deg,var(--green-faint),#fff)}
@@ -125,7 +111,8 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 .ev-pill i{font-size:10px}
 
 /* letter body */
-.letter-body{padding:36px 56px;font-size:13px;line-height:1.9;color:var(--text);background:var(--surface);flex:1;font-family:Georgia,serif;white-space:pre-wrap;outline:none;border:none;min-height:100%}
+.letter-body{padding:32px 40px;font-size:13px;line-height:1.9;color:var(--text);background:var(--surface);flex:1;font-family:var(--font-doc);white-space:pre-wrap;outline:none;border:none;min-height:100%}
+.letter-wp-header{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:var(--text3);padding:24px 40px 0;background:var(--surface)}
 .letter-body[contenteditable=true]{box-shadow:inset 0 0 0 2px var(--blue)}
 .letter-body .gap{background:#FEF3C7;border:1px dashed var(--amber);border-radius:3px;padding:0 4px;color:var(--amber);font-family:var(--font);font-size:11px;cursor:pointer}
 .letter-empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 24px;text-align:center;color:var(--text3)}
@@ -206,20 +193,21 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 .gp-q-label{font-size:12px;font-weight:500;color:var(--text);margin-bottom:3px}
 .gp-q-hint{font-size:11px;color:var(--text3);margin-bottom:8px;line-height:1.4}
 .gp-options{display:flex;flex-direction:column;gap:6px}
-.gp-option{font-size:12px;padding:8px 12px;border:1px solid var(--border2);border-radius:var(--r);background:var(--surface);cursor:pointer;text-align:left;color:var(--text2);font-family:var(--font);transition:all .1s}
-.gp-option:hover{border-color:var(--blue);color:var(--text)}
-.gp-option.selected{border-color:var(--blue);background:var(--blue-faint);color:var(--blue-text);font-weight:500}
+.gp-option{font-size:12px;padding:8px 12px;border:1px solid var(--rule);border-radius:0;background:var(--surface);cursor:pointer;text-align:left;color:var(--text2);font-family:var(--font);transition:background .1s}
+.gp-option:hover{border-color:var(--rule);color:var(--text)}
+.gp-option.selected{border-left:2px solid var(--accent);background:var(--accent-faint);color:var(--text);font-weight:400}
 .gp-textarea{width:100%;font-size:12px;padding:9px 11px;border:1px solid var(--border2);border-radius:var(--r);background:var(--surface);color:var(--text);font-family:var(--font);resize:vertical;min-height:72px;margin-top:4px;line-height:1.5}
 .gp-textarea:focus{outline:none;border-color:var(--blue)}
 .gp-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:16px;padding-top:12px;border-top:1px solid var(--border)}
 .gp-btn-skip{font-size:12px;padding:7px 14px;border:1px solid var(--border2);border-radius:var(--r);background:var(--surface);cursor:pointer;color:var(--text2);font-family:var(--font)}
-.gp-btn-generate{font-size:12px;padding:7px 16px;border:none;border-radius:var(--r);background:var(--blue);color:#fff;cursor:pointer;font-family:var(--font);font-weight:500;display:flex;align-items:center;gap:6px}
+.gp-btn-generate{font-size:11px;padding:7px 16px;border:none;border-radius:2px;background:var(--accent);color:#fff;cursor:pointer;font-family:var(--font);letter-spacing:0.03em;display:flex;align-items:center;gap:6px}
 .gp-btn-generate:hover{opacity:.9}
 
 </style>
 
 </head>
 <body>
+<script src="shared_theme.js"></script>
 <script src="case_embed.js"></script>
 <script src="case_filing.js"></script>
 <script>
@@ -1209,7 +1197,7 @@ function renderDocFocus(){
   var letterText=state.edits||buildDoc(id);
   var safeText=letterText.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   var letterHtml=hasContent
-    ?'<div class="letter-body" id="letter-'+id+'" '+(isEdit?'contenteditable="true"':'')+'>'+safeText+'</div>'
+    ?'<div class="letter-wp-header">Without prejudice save as to costs</div><div class="letter-body" id="letter-'+id+'" '+(isEdit?'contenteditable="true"':'')+'>'+safeText+'</div>'
     :'<div class="letter-empty"><i class="ti ti-sparkles"></i><p>Generate a draft from case data and evidence on file, then review it here in full-screen view.</p><button class="btn-action primary" style="margin-top:14px" onclick="startGathering(\''+id+'\')"><i class="ti ti-sparkles"></i> Generate draft</button></div>';
 
   var statusTxt=isApproved?'Approved — ready for use'

@@ -4,23 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>261Claims — Module 3: CPR Deadlines</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --navy:#0B1628;--navy2:#132033;
-  --blue:#2A6FDB;--blue-faint:#EFF6FF;--blue-text:#1D4ED8;
-  --green:#1A7A4A;--green-l:#22A863;--green-faint:#E6F5EE;
-  --red:#C0392B;--red-faint:#FCF0EF;
-  --amber:#B45309;--amber-faint:#FEF3C7;
-  --border:#E2E8F0;--border2:#CBD5E1;
-  --text:#0F172A;--text2:#475569;--text3:#94A3B8;
-  --surface:#FFFFFF;--surface2:#F8FAFC;--surface3:#F1F5F9;
-  --font:'Inter',sans-serif;--font-serif:'Instrument Serif',Georgia,serif;--mono:'DM Mono',monospace;
-  --r:8px;--r2:12px;--r3:16px;
-}
+:root{--ink:#1A1A2E;--ink2:#2D2D44;--ink3:#6B6B80;--ink4:#9B9BAA;--rule:#D8D8E0;--rule2:#EBEBF0;--surface:#FFFFFF;--surface2:#F7F7F9;--surface3:#EFEFF2;--accent:#1B3A6B;--accent2:#254E91;--accent-faint:#EEF2F8;--confirm:#1A5C3A;--confirm-faint:#EEF7F2;--caution:#7A4E00;--caution-faint:#FDF4E3;--alert:#8B1A1A;--alert-faint:#FBF0F0;--navy:var(--ink);--navy2:var(--ink2);--navy3:var(--ink2);--blue:var(--accent2);--blue-faint:var(--accent-faint);--blue-text:var(--accent);--green:var(--confirm);--green-l:#2A7A4F;--green-faint:var(--confirm-faint);--amber:var(--caution);--amber-faint:var(--caution-faint);--red:var(--alert);--red-faint:var(--alert-faint);--border:var(--rule);--border2:var(--rule2);--text:var(--ink);--text2:var(--ink2);--text3:var(--ink3);--font:'Helvetica Neue','Arial',sans-serif;--font-serif:'Georgia','Times New Roman',serif;--font-doc:'Georgia','Times New Roman',serif;--mono:'Courier New','Courier',monospace;--purple:#4338CA;--purple-faint:var(--accent-faint);--r:3px;--r2:4px;--r3:5px}
 html,body{height:100%;font-family:var(--font);background:var(--surface2);color:var(--text);font-size:14px}
 .app{display:flex;flex-direction:column;height:calc(100vh - 48px);min-height:0}
 
@@ -67,9 +54,9 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 /* deadline cards */
 .deadline-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
 .dl-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:13px 15px}
-.dl-card.urgent{border-color:#FECACA;background:var(--red-faint)}
-.dl-card.warning{border-color:#FDE68A;background:var(--amber-faint)}
-.dl-card.ok{border-color:#BBF7D0;background:var(--green-faint)}
+.dl-card.urgent{border-color:var(--rule);background:var(--surface)}
+.dl-card.warning{border-color:var(--rule);background:var(--surface)}
+.dl-card.ok{border-color:var(--rule);background:var(--surface)}
 .dl-label{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:5px;display:flex;align-items:center;gap:5px}
 .dl-label.urgent{color:var(--red)}
 .dl-label.warning{color:var(--amber)}
@@ -79,6 +66,7 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 .dl-date.warning{color:var(--amber)}
 .dl-date.ok{color:var(--green)}
 .dl-days{font-size:11px;color:var(--text2);margin-bottom:8px}
+.dl-days.urgent-text{color:var(--alert);font-weight:500}
 .dl-desc{font-size:11px;color:var(--text2);line-height:1.5;margin-bottom:6px}
 .dl-rule{font-size:10px;color:var(--text3);font-style:italic;margin-bottom:9px}
 .cal-row{display:flex;gap:5px;flex-wrap:wrap}
@@ -98,18 +86,18 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 .cal-nav button:hover{background:var(--surface3)}
 .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:10px}
 .cal-dow{font-size:9px;font-weight:500;text-transform:uppercase;color:var(--text3);text-align:center;padding:3px 0}
-.cal-day{min-height:44px;border:1px solid var(--border);border-radius:var(--r);padding:4px 5px;font-size:10px;background:var(--surface2);cursor:pointer;transition:all .12s}
-.cal-day:hover{border-color:var(--blue);background:var(--blue-faint)}
+.cal-day{min-height:44px;border:1px solid var(--rule2);border-radius:0;padding:4px 5px;font-size:10px;background:var(--surface);cursor:pointer;transition:border-color .12s}
+.cal-day:hover{border-color:var(--accent);background:var(--accent-faint)}
 .cal-day.empty{background:transparent;border-color:transparent;cursor:default}
-.cal-day.today{border-color:var(--blue);box-shadow:inset 0 0 0 1px var(--blue)}
-.cal-day.selected{background:var(--navy);border-color:var(--navy);color:#fff}
+.cal-day.today{border-color:var(--accent);box-shadow:none}
+.cal-day.selected{background:var(--ink);border-color:var(--ink);color:#fff}
 .cal-day.selected .cal-ev-dot{background:rgba(255,255,255,.7)}
-.cal-day-num{font-weight:500;margin-bottom:2px}
+.cal-day-num{font-weight:500;margin-bottom:2px;font-family:var(--mono)}
 .cal-ev-dots{display:flex;gap:2px;flex-wrap:wrap}
 .cal-ev-dot{width:5px;height:5px;border-radius:50%;background:var(--blue-text)}
 .cal-ev-dot.urgent{background:var(--red)}.cal-ev-dot.warn{background:var(--amber)}
 .cal-day-detail{border-top:1px solid var(--border);padding-top:10px}
-.cal-event{padding:8px 10px;border:1px solid var(--border);border-radius:var(--r2);margin-bottom:6px;background:var(--surface2)}
+.cal-event{padding:8px 10px;border:1px solid var(--rule);border-radius:0;margin-bottom:6px;background:var(--surface);font-family:var(--font-serif)}
 .cal-event.urgent{border-left:3px solid var(--red)}
 .cal-event.warn{border-left:3px solid var(--amber)}
 .cal-event-label{font-size:11px;font-weight:500;margin-bottom:2px}
@@ -201,6 +189,7 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 
 </head>
 <body>
+<script src="shared_theme.js"></script>
 <script src="case_embed.js"></script>
 <script src="work_dashboard.js"></script>
 <script>
@@ -571,7 +560,7 @@ function renderMain(){
       return '<div class="dl-card '+urg+'">'
         +'<div class="dl-label '+urg+'"><i class="ti ti-clock" style="font-size:10px"></i>'+dl.label+'</div>'
         +'<div class="dl-date '+urg+'">'+fmtDate(dl.date)+'</div>'
-        +'<div class="dl-days">'+daysTxt+'</div>'
+        +'<div class="dl-days'+(days<0?' urgent-text':'')+'">'+daysTxt+'</div>'
         +'<div class="dl-desc">'+dl.desc+'</div>'
         +'<div class="dl-rule">'+dl.rule+'</div>'
         +'<div class="cal-row">'+calBtns+'</div>'

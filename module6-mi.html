@@ -4,8 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>261Claims — MI Reporting</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <script src="shared_data.js"></script>
 <script src="shared_theme.js"></script>
@@ -13,19 +11,7 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --navy:#0B1628;--navy2:#132033;
-  --blue:#2A6FDB;--blue-faint:#EFF6FF;--blue-text:#1D4ED8;
-  --green:#1A7A4A;--green-l:#22A863;--green-faint:#E6F5EE;
-  --red:#C0392B;--red-faint:#FCF0EF;
-  --amber:#B45309;--amber-faint:#FEF3C7;
-  --purple:#4338CA;--purple-faint:#EEEDFE;
-  --border:#E2E8F0;--border2:#CBD5E1;
-  --text:#0F172A;--text2:#475569;--text3:#94A3B8;
-  --surface:#FFFFFF;--surface2:#F8FAFC;--surface3:#F1F5F9;
-  --font:'DM Sans',sans-serif;--mono:'DM Mono',monospace;
-  --r:8px;--r2:12px;--r3:16px;
-}
+:root{--ink:#1A1A2E;--ink2:#2D2D44;--ink3:#6B6B80;--ink4:#9B9BAA;--rule:#D8D8E0;--rule2:#EBEBF0;--surface:#FFFFFF;--surface2:#F7F7F9;--surface3:#EFEFF2;--accent:#1B3A6B;--accent2:#254E91;--accent-faint:#EEF2F8;--confirm:#1A5C3A;--confirm-faint:#EEF7F2;--caution:#7A4E00;--caution-faint:#FDF4E3;--alert:#8B1A1A;--alert-faint:#FBF0F0;--navy:var(--ink);--navy2:var(--ink2);--navy3:var(--ink2);--blue:var(--accent2);--blue-faint:var(--accent-faint);--blue-text:var(--accent);--green:var(--confirm);--green-l:#2A7A4F;--green-faint:var(--confirm-faint);--amber:var(--caution);--amber-faint:var(--caution-faint);--red:var(--alert);--red-faint:var(--alert-faint);--border:var(--rule);--border2:var(--rule2);--text:var(--ink);--text2:var(--ink2);--text3:var(--ink3);--font:'Helvetica Neue','Arial',sans-serif;--font-serif:'Georgia','Times New Roman',serif;--font-doc:'Georgia','Times New Roman',serif;--mono:'Courier New','Courier',monospace;--purple:#4338CA;--purple-faint:var(--accent-faint);--r:3px;--r2:4px;--r3:5px}
 html,body{height:100%;font-family:var(--font);background:var(--surface2);color:var(--text);font-size:14px}
 .app{display:flex;flex-direction:column;height:calc(100vh - 48px);min-height:0}
 
@@ -57,10 +43,10 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 
 /* stat row */
 .stat-row{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:16px}
-.stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:13px 15px}
-.stat-label{font-size:10px;color:var(--text3);margin-bottom:5px;display:flex;align-items:center;gap:4px;font-weight:500;text-transform:uppercase;letter-spacing:0.05em}
+.stat{background:transparent;border:none;border-radius:0;border-bottom:1px solid var(--rule);padding:13px 0}
+.stat-label{font-size:10px;color:var(--text3);margin-bottom:5px;display:flex;align-items:center;gap:4px;font-weight:500;text-transform:uppercase;letter-spacing:0.09em;font-family:var(--font)}
 .stat-label i{font-size:12px}
-.stat-val{font-size:22px;font-weight:500;color:var(--text);line-height:1;margin-bottom:3px}
+.stat-val{font-size:24px;font-weight:400;font-family:var(--font-serif);color:var(--text);line-height:1;margin-bottom:3px}
 .stat-sub{font-size:11px}
 .sub-up{color:var(--green)}
 .sub-warn{color:var(--amber)}
@@ -85,15 +71,15 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 
 /* table */
 .mi-table{width:100%;border-collapse:collapse;font-size:12px}
-.mi-table th{text-align:left;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.06em;color:var(--text3);padding:0 10px 10px 0;border-bottom:1px solid var(--border)}
-.mi-table td{padding:9px 10px 9px 0;border-bottom:1px solid var(--border);color:var(--text);vertical-align:middle}
+.mi-table th{padding:10px;border-bottom:1px solid var(--rule)}
+.mi-table td{padding:10px;border-bottom:1px solid var(--rule);font-size:12px}
 .mi-table tr:last-child td{border-bottom:none}
 .mi-table tr:hover td{background:var(--surface2)}
-.outcome-pill{font-size:10px;font-weight:500;padding:2px 7px;border-radius:20px}
-.op-defended{background:var(--green-faint);color:var(--green)}
-.op-settled{background:var(--amber-faint);color:var(--amber)}
-.op-open{background:var(--blue-faint);color:var(--blue-text)}
-.op-escalated{background:var(--red-faint);color:var(--red)}
+.outcome-pill{font-size:10px;font-weight:500;padding:2px 7px;border-radius:2px;border:1px solid var(--rule);background:transparent}
+.op-defended{color:var(--confirm);border-color:#A8C8B4}
+.op-settled{color:var(--caution);border-color:#D4B896}
+.op-open{color:var(--accent);border-color:#A8B8D0}
+.op-escalated{color:var(--alert);border-color:#C8A0A0}
 .cat-pill{font-size:10px;font-weight:500;padding:2px 6px;border-radius:20px;font-family:var(--mono)}
 .cat-a{background:var(--blue-faint);color:var(--blue-text)}
 .cat-b{background:var(--amber-faint);color:var(--amber)}
@@ -164,7 +150,8 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 
 /* ── DataBricks concept ── */
 .db-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);margin-bottom:18px;overflow:hidden}
-.db-header{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:linear-gradient(135deg,#FF3621 0%,#FF8C00 100%)}
+.db-header{padding:12px 16px;border-bottom:1px solid var(--rule);display:flex;align-items:center;justify-content:space-between;background:var(--ink)}
+.db-panel{border-left:3px solid #EF9F27}
 .db-title{font-size:13px;font-weight:600;color:#fff;display:flex;align-items:center;gap:8px}
 .db-badge{font-size:10px;padding:2px 8px;border-radius:10px;background:rgba(255,255,255,0.2);color:#fff;font-weight:500}
 .db-body{padding:14px 16px}
@@ -635,7 +622,7 @@ function buildOverviewContent(displayStats){
       <div class="panel-header"><div class="panel-title"><i class="ti ti-layers"></i>EC261 category</div><div class="panel-sub">A / B / C split by volume</div></div>
       <div class="panel-body"><div class="chart-wrap"><canvas id="ch-cat"></canvas></div>
         <div style="display:flex;justify-content:center;gap:14px;margin-top:8px">
-          ${[['Cat A — €250','#2A6FDB'],['Cat B — €400','#B45309'],['Cat C — Complex','#C0392B']].map(([l,c])=>`<div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2)"><div style="width:8px;height:8px;border-radius:50%;background:${c}"></div>${l}</div>`).join('')}
+          ${[['Cat A — €250',accent],['Cat B — €400',secondary],['Cat C — Complex','#9B9BAA']].map(([l,c])=>`<div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2)"><div style="width:8px;height:8px;border-radius:50%;background:${c}"></div>${l}</div>`).join('')}
         </div>
       </div>
     </div>
@@ -778,9 +765,13 @@ function statCard(label, val, icon, iconCol, sub, subCls){
 }
 
 function buildCharts(){
-  const fontOpts = {family:'DM Sans',size:11};
-  const gridColor = '#E2E8F0';
-  const tickColor = '#94A3B8';
+  const fontOpts = {family:'Helvetica Neue, Arial, sans-serif',size:11};
+  const gridColor = '#EBEBF0';
+  const tickColor = '#6B6B80';
+  const accent = '#1B3A6B';
+  const accentLight = 'rgba(27,58,107,0.12)';
+  const secondary = '#6B6B80';
+  const secondaryLight = 'rgba(107,107,128,0.15)';
 
   function destroyIfExists(id){
     try{if(charts[id]){charts[id].destroy();delete charts[id];}}catch(e){delete charts[id];}
@@ -792,8 +783,8 @@ function buildCharts(){
   if(cvol){charts['volume'] = new Chart(cvol,{type:'bar',data:{
     labels:DATA.volumeByMonth.labels,
     datasets:[
-      {label:'Received',data:DATA.volumeByMonth.received,backgroundColor:'rgba(42,111,219,0.15)',borderColor:'#2A6FDB',borderWidth:1.5,borderRadius:3},
-      {label:'Closed',data:DATA.volumeByMonth.closed,backgroundColor:'rgba(34,168,99,0.15)',borderColor:'#22A863',borderWidth:1.5,borderRadius:3}
+      {label:'Received',data:DATA.volumeByMonth.received,backgroundColor:accentLight,borderColor:accent,borderWidth:1.5,borderRadius:2},
+      {label:'Closed',data:DATA.volumeByMonth.closed,backgroundColor:secondaryLight,borderColor:secondary,borderWidth:1.5,borderRadius:2}
     ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{font:fontOpts,color:tickColor,boxWidth:10}}},scales:{x:{grid:{display:false},ticks:{font:fontOpts,color:tickColor}},y:{grid:{color:gridColor},ticks:{font:fontOpts,color:tickColor,stepSize:2}}}}});}
 
   // Outcomes — doughnut
@@ -801,7 +792,7 @@ function buildCharts(){
   const cout = document.getElementById('ch-outcomes');
   if(cout){charts['outcomes'] = new Chart(cout,{type:'doughnut',data:{
     labels:DATA.outcomes.labels,
-    datasets:[{data:DATA.outcomes.counts,backgroundColor:DATA.outcomes.colors,borderWidth:2,borderColor:'#fff'}]
+    datasets:[{data:DATA.outcomes.counts,backgroundColor:[accent,secondary,'#9B9BAA','#2D2D44'],borderWidth:2,borderColor:'#fff'}]
   },options:{responsive:true,maintainAspectRatio:false,cutout:'65%',plugins:{legend:{position:'right',labels:{font:fontOpts,color:tickColor,boxWidth:10,padding:10}}}}});}
 
   // By type — horizontal bar
@@ -809,7 +800,7 @@ function buildCharts(){
   const ctype = document.getElementById('ch-type');
   if(ctype){charts['type'] = new Chart(ctype,{type:'bar',data:{
     labels:DATA.byType.labels,
-    datasets:[{data:DATA.byType.counts,backgroundColor:DATA.byType.colors,borderRadius:3,borderWidth:0}]
+    datasets:[{data:DATA.byType.counts,backgroundColor:accent,borderRadius:2,borderWidth:0}]
   },options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:gridColor},ticks:{font:fontOpts,color:tickColor,stepSize:2}},y:{grid:{display:false},ticks:{font:fontOpts,color:tickColor}}}}});}
 
   // Exposure — bar (alleged vs actual)
@@ -818,8 +809,8 @@ function buildCharts(){
   if(cexp){charts['exposure'] = new Chart(cexp,{type:'bar',data:{
     labels:DATA.exposure.labels,
     datasets:[
-      {label:'Alleged (£)',data:DATA.exposure.alleged,backgroundColor:'rgba(192,57,43,0.15)',borderColor:'#C0392B',borderWidth:1.5,borderRadius:3},
-      {label:'Actual paid (£)',data:DATA.exposure.actual,backgroundColor:'rgba(34,168,99,0.8)',borderColor:'#22A863',borderWidth:0,borderRadius:3}
+      {label:'Alleged (£)',data:DATA.exposure.alleged,backgroundColor:accentLight,borderColor:accent,borderWidth:1.5,borderRadius:2},
+      {label:'Actual paid (£)',data:DATA.exposure.actual,backgroundColor:secondary,borderColor:secondary,borderWidth:0,borderRadius:2}
     ]
   },options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{font:fontOpts,color:tickColor,boxWidth:10}}},scales:{x:{grid:{display:false},ticks:{font:fontOpts,color:tickColor}},y:{grid:{color:gridColor},ticks:{font:fontOpts,color:tickColor,callback:v=>'£'+v.toLocaleString()}}}}});}
 
@@ -829,8 +820,8 @@ function buildCharts(){
   if(cttc){charts['ttc'] = new Chart(cttc,{type:'bar',data:{
     labels:DATA.timeToClose.labels,
     datasets:[
-      {label:'Defended',data:DATA.timeToClose.defended,backgroundColor:'rgba(34,168,99,0.7)',borderRadius:3,borderWidth:0},
-      {label:'Settled',data:DATA.timeToClose.settled,backgroundColor:'rgba(245,158,11,0.7)',borderRadius:3,borderWidth:0}
+      {label:'Defended',data:DATA.timeToClose.defended,backgroundColor:accent,borderRadius:2,borderWidth:0},
+      {label:'Settled',data:DATA.timeToClose.settled,backgroundColor:secondary,borderRadius:2,borderWidth:0}
     ]
   },options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{font:fontOpts,color:tickColor,boxWidth:10}}},scales:{x:{grid:{display:false},ticks:{font:fontOpts,color:tickColor}},y:{grid:{color:gridColor},ticks:{font:fontOpts,color:tickColor,stepSize:2}}}}});}
 
@@ -839,7 +830,7 @@ function buildCharts(){
   const ccat = document.getElementById('ch-cat');
   if(ccat){charts['cat'] = new Chart(ccat,{type:'doughnut',data:{
     labels:DATA.byCat.labels,
-    datasets:[{data:DATA.byCat.counts,backgroundColor:DATA.byCat.colors,borderWidth:2,borderColor:'#fff'}]
+    datasets:[{data:DATA.byCat.counts,backgroundColor:[accent,secondary,'#9B9BAA'],borderWidth:2,borderColor:'#fff'}]
   },options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{display:false}}}});}
 
   // Pipeline — horizontal bar
@@ -847,14 +838,17 @@ function buildCharts(){
   const cpipe = document.getElementById('ch-pipeline');
   if(cpipe){charts['pipeline'] = new Chart(cpipe,{type:'bar',data:{
     labels:['Intake','Triage','Evidence','Defence','Resolve'],
-    datasets:[{data:[2,2,2,2,0],backgroundColor:['#EFF6FF','#FEF3C7','#EEEDFE','#E6F5EE','#F1F5F9'],borderColor:['#2A6FDB','#F59E0B','#8B5CF6','#22A863','#94A3B8'],borderWidth:1.5,borderRadius:4}]
+    datasets:[{data:[2,2,2,2,0],backgroundColor:[accentLight,accentLight,accentLight,accentLight,'#EFEFF2'],borderColor:[accent,accent,accent,accent,secondary],borderWidth:1.5,borderRadius:2}]
   },options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:gridColor},ticks:{font:fontOpts,color:tickColor,stepSize:1}},y:{grid:{display:false},ticks:{font:fontOpts,color:tickColor}}}}});}
 }
 
 function buildExposureCharts(){
-  const fontOpts = {family:'DM Sans',size:11};
-  const gridColor = '#E2E8F0';
-  const tickColor = '#94A3B8';
+  const fontOpts = {family:'Helvetica Neue, Arial, sans-serif',size:11};
+  const gridColor = '#EBEBF0';
+  const tickColor = '#6B6B80';
+  const accent = '#1B3A6B';
+  const accentLight = 'rgba(27,58,107,0.12)';
+  const secondary = '#6B6B80';
   function destroyIfExists(id){
     try{if(charts[id]){charts[id].destroy();delete charts[id];}}catch(e){delete charts[id];}
   }
@@ -863,8 +857,8 @@ function buildExposureCharts(){
   if(cexp){charts['exposure'] = new Chart(cexp,{type:'bar',data:{
     labels:DATA.exposure.labels,
     datasets:[
-      {label:'Alleged (£)',data:DATA.exposure.alleged,backgroundColor:'rgba(192,57,43,0.15)',borderColor:'#C0392B',borderWidth:1.5,borderRadius:3},
-      {label:'Actual paid (£)',data:DATA.exposure.actual,backgroundColor:'rgba(34,168,99,0.8)',borderColor:'#22A863',borderWidth:0,borderRadius:3}
+      {label:'Alleged (£)',data:DATA.exposure.alleged,backgroundColor:accentLight,borderColor:accent,borderWidth:1.5,borderRadius:2},
+      {label:'Actual paid (£)',data:DATA.exposure.actual,backgroundColor:secondary,borderColor:secondary,borderWidth:0,borderRadius:2}
     ]
   },options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{font:fontOpts,color:tickColor,boxWidth:10}}},scales:{x:{grid:{display:false},ticks:{font:fontOpts,color:tickColor}},y:{grid:{color:gridColor},ticks:{font:fontOpts,color:tickColor,callback:v=>'£'+v.toLocaleString()}}}}});}
 }

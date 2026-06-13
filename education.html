@@ -4,24 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>261Claims — Education Hub</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --navy:#0B1628;--navy2:#132033;
-  --blue:#2A6FDB;--blue-faint:#EFF6FF;--blue-text:#1D4ED8;
-  --green:#1A7A4A;--green-l:#22A863;--green-faint:#E6F5EE;
-  --red:#C0392B;--red-faint:#FCF0EF;
-  --amber:#B45309;--amber-faint:#FEF3C7;
-  --purple:#4338CA;--purple-faint:#EEEDFE;
-  --border:#E2E8F0;--border2:#CBD5E1;
-  --text:#0F172A;--text2:#475569;--text3:#94A3B8;
-  --surface:#FFFFFF;--surface2:#F8FAFC;--surface3:#F1F5F9;
-  --font:'Inter',sans-serif;--font-serif:'Instrument Serif',Georgia,serif;--mono:'DM Mono',monospace;
-  --r:8px;--r2:12px;--r3:16px;
-}
+:root{--ink:#1A1A2E;--ink2:#2D2D44;--ink3:#6B6B80;--ink4:#9B9BAA;--rule:#D8D8E0;--rule2:#EBEBF0;--surface:#FFFFFF;--surface2:#F7F7F9;--surface3:#EFEFF2;--accent:#1B3A6B;--accent2:#254E91;--accent-faint:#EEF2F8;--confirm:#1A5C3A;--confirm-faint:#EEF7F2;--caution:#7A4E00;--caution-faint:#FDF4E3;--alert:#8B1A1A;--alert-faint:#FBF0F0;--navy:var(--ink);--navy2:var(--ink2);--navy3:var(--ink2);--blue:var(--accent2);--blue-faint:var(--accent-faint);--blue-text:var(--accent);--green:var(--confirm);--green-l:#2A7A4F;--green-faint:var(--confirm-faint);--amber:var(--caution);--amber-faint:var(--caution-faint);--red:var(--alert);--red-faint:var(--alert-faint);--border:var(--rule);--border2:var(--rule2);--text:var(--ink);--text2:var(--ink2);--text3:var(--ink3);--font:'Helvetica Neue','Arial',sans-serif;--font-serif:'Georgia','Times New Roman',serif;--font-doc:'Georgia','Times New Roman',serif;--mono:'Courier New','Courier',monospace;--purple:#4338CA;--purple-faint:var(--accent-faint);--r:3px;--r2:4px;--r3:5px}
 html,body{height:100%;font-family:var(--font);background:var(--surface2);color:var(--text);font-size:14px}
 
 /* nav */
@@ -50,7 +36,7 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 .sb-section{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.07em;color:var(--text3);padding:14px 16px 6px}
 .sb-item{display:flex;align-items:center;gap:9px;padding:8px 16px;cursor:pointer;font-size:12px;font-weight:500;color:var(--text2);transition:all 0.15s;border-left:3px solid transparent}
 .sb-item:hover{background:var(--surface2);color:var(--text)}
-.sb-item.active{background:var(--blue-faint);color:var(--blue-text);border-left-color:var(--blue)}
+.sb-item.active{background:transparent;color:var(--text);border-left-color:transparent;text-decoration:underline;font-weight:500}
 .sb-item i{font-size:14px;flex-shrink:0}
 .sb-count{margin-left:auto;font-size:10px;background:var(--surface3);color:var(--text3);padding:1px 6px;border-radius:20px}
 
@@ -84,10 +70,10 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 .ac-read{font-size:10px;font-weight:500;color:var(--blue-text);margin-left:auto;display:inline-flex;align-items:center;gap:3px;white-space:nowrap}
 
 /* case law cards */
-.case-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:14px 16px;margin-bottom:10px;border-left:3px solid var(--blue)}
-.cc-cite{font-size:11px;font-weight:500;font-family:var(--mono);color:var(--blue-text);margin-bottom:5px}
-.cc-title{font-size:13px;font-weight:500;color:var(--text);margin-bottom:6px;line-height:1.4}
-.cc-principle{font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:8px}
+.case-card{background:var(--surface);border:none;border-bottom:1px solid var(--rule);border-radius:0;padding:14px 0;margin-bottom:0}
+.cc-cite{font-size:11px;font-family:var(--mono);color:var(--text3);margin-bottom:5px}
+.cc-title{font-size:13px;font-weight:400;font-family:var(--font-serif);font-style:italic;color:var(--text);margin-bottom:6px;line-height:1.4}
+.cc-principle{font-size:12px;font-family:var(--font-serif);color:var(--text2);line-height:1.6;margin-bottom:8px}
 .cc-tags{display:flex;gap:5px;flex-wrap:wrap}
 .cc-tag{font-size:10px;padding:1px 7px;border-radius:20px;background:var(--surface3);color:var(--text2)}
 .cc-impact{font-size:11px;font-weight:500;margin-top:8px;padding:6px 10px;border-radius:var(--r);background:var(--blue-faint);color:var(--blue-text)}
@@ -486,10 +472,10 @@ function renderKnowledgeStore(store){
   if(!el) return;
 
   var html = '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px">';
-  html += '<div style="font-size:12px;color:var(--text3)"><i class="ti ti-refresh"></i> Last updated: ' + new Date(store.lastUpdated).toLocaleDateString('en-GB', {day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}) + '</div>';
+  html += '<div style="font-size:11px;color:var(--text3);font-family:var(--mono)"><i class="ti ti-refresh"></i> ' + new Date(store.lastUpdated).toLocaleDateString('en-GB', {day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}) + '</div>';
   html += '<div style="display:flex;gap:6px;flex-wrap:wrap">';
   store.sources.forEach(function(s){
-    html += '<span style="font-size:10px;padding:2px 7px;border-radius:10px;background:var(--surface3);color:var(--text2)">' + s + '</span>';
+    html += '<span style="font-size:10px;padding:2px 7px;border:1px solid var(--rule);border-radius:2px;color:var(--text2)">' + s + '</span>';
   });
   html += '</div></div>';
 
@@ -500,42 +486,19 @@ function renderKnowledgeStore(store){
   });
 
   entries.forEach(function(entry){
-    var impactColor = entry.impact==='high'?'var(--red)':entry.impact==='medium'?'var(--amber)':'var(--green)';
-    var impactBg = entry.impact==='high'?'var(--red-faint)':entry.impact==='medium'?'var(--amber-faint)':'var(--green-faint)';
-    var typeIcon = entry.type==='judgment'?'ti-gavel':entry.type==='regulatory'?'ti-building-government':'ti-file-description';
+    var impactCls = entry.impact==='high'?'impact-high':entry.impact==='medium'?'impact-medium':'impact-low';
+    var dateStr = new Date(entry.date).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
 
-    html += '<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:14px 16px;margin-bottom:10px">';
-
-    html += '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:8px;flex-wrap:wrap">';
-    html += '<div style="display:flex;align-items:center;gap:8px">';
-    html += '<i class="ti ' + typeIcon + '" style="color:var(--blue-text);font-size:16px"></i>';
-    html += '<div>';
-    html += '<div style="font-size:13px;font-weight:500;color:var(--text)">' + entry.title + '</div>';
-    html += '<div style="font-size:11px;color:var(--text3);margin-top:2px">' + entry.source + ' · ' + new Date(entry.date).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}) + '</div>';
-    html += '</div></div>';
-
-    html += '<span style="font-size:10px;font-weight:500;padding:2px 8px;border-radius:10px;background:' + impactBg + ';color:' + impactColor + ';white-space:nowrap">' + entry.impact.toUpperCase() + ' IMPACT</span>';
-    html += '</div>';
-
-    html += '<div style="font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:8px">' + entry.summary + '</div>';
-
-    html += '<div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px">';
-    var jurLabels = {'england-wales':'🇬🇧 E&W', 'france':'🇫🇷 France', 'spain':'🇪🇸 Spain', 'all':'🌍 All jurisdictions'};
-    (entry.jurisdiction||[]).forEach(function(j){
-      html += '<span style="font-size:10px;padding:1px 6px;border-radius:4px;background:var(--blue-faint);color:var(--blue-text)">' + (jurLabels[j]||j) + '</span>';
-    });
-    (entry.disruptionTypes||[]).forEach(function(d){
-      if(d!=='all') html += '<span style="font-size:10px;padding:1px 6px;border-radius:4px;background:var(--surface3);color:var(--text2)">' + d + '</span>';
-    });
-    html += '</div>';
-
+    html += '<div class="live-bulletin '+impactCls+'">';
+    html += '<div class="live-date">' + dateStr + '</div>';
+    html += '<div style="flex:1">';
+    html += '<div class="live-title">' + entry.title + '</div>';
+    html += '<div style="font-size:10px;color:var(--text3);margin-bottom:6px">' + entry.source + '</div>';
+    html += '<div class="live-summary">' + entry.summary + '</div>';
     if(entry.actionRequired){
-      html += '<div style="background:var(--amber-faint);border:1px solid #FDE68A;border-radius:var(--r);padding:8px 10px;font-size:11px;color:var(--amber);line-height:1.5">';
-      html += '<strong>Action required:</strong> ' + entry.actionNote;
-      html += '</div>';
+      html += '<div style="margin-top:8px;font-size:11px;color:var(--caution);font-family:var(--font-serif);line-height:1.5"><strong>Action required:</strong> ' + entry.actionNote + '</div>';
     }
-
-    html += '</div>';
+    html += '</div></div>';
   });
 
   el.innerHTML = html;

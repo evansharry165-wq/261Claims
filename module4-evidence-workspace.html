@@ -4,24 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>261Claims — Evidence</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --navy:#0B1628;--navy2:#132033;
-  --blue:#2A6FDB;--blue-faint:#EFF6FF;--blue-text:#1D4ED8;
-  --green:#1A7A4A;--green-l:#22A863;--green-faint:#E6F5EE;
-  --red:#C0392B;--red-faint:#FCF0EF;
-  --amber:#B45309;--amber-faint:#FEF3C7;
-  --purple:#4338CA;--purple-faint:#EEEDFE;
-  --border:#E2E8F0;--border2:#CBD5E1;
-  --text:#0F172A;--text2:#475569;--text3:#94A3B8;
-  --surface:#FFFFFF;--surface2:#F8FAFC;--surface3:#F1F5F9;
-  --font:'Inter',sans-serif;--font-serif:'Instrument Serif',Georgia,serif;--mono:'DM Mono',monospace;
-  --r:8px;--r2:12px;--r3:16px;
-}
+:root{--ink:#1A1A2E;--ink2:#2D2D44;--ink3:#6B6B80;--ink4:#9B9BAA;--rule:#D8D8E0;--rule2:#EBEBF0;--surface:#FFFFFF;--surface2:#F7F7F9;--surface3:#EFEFF2;--accent:#1B3A6B;--accent2:#254E91;--accent-faint:#EEF2F8;--confirm:#1A5C3A;--confirm-faint:#EEF7F2;--caution:#7A4E00;--caution-faint:#FDF4E3;--alert:#8B1A1A;--alert-faint:#FBF0F0;--navy:var(--ink);--navy2:var(--ink2);--navy3:var(--ink2);--blue:var(--accent2);--blue-faint:var(--accent-faint);--blue-text:var(--accent);--green:var(--confirm);--green-l:#2A7A4F;--green-faint:var(--confirm-faint);--amber:var(--caution);--amber-faint:var(--caution-faint);--red:var(--alert);--red-faint:var(--alert-faint);--border:var(--rule);--border2:var(--rule2);--text:var(--ink);--text2:var(--ink2);--text3:var(--ink3);--font:'Helvetica Neue','Arial',sans-serif;--font-serif:'Georgia','Times New Roman',serif;--font-doc:'Georgia','Times New Roman',serif;--mono:'Courier New','Courier',monospace;--purple:#4338CA;--purple-faint:var(--accent-faint);--r:3px;--r2:4px;--r3:5px}
 html,body{height:100%;font-family:var(--font);background:var(--surface2);color:var(--text);font-size:14px}
 .app{display:flex;flex-direction:column;height:calc(100vh - 48px);min-height:0}
 
@@ -209,6 +195,7 @@ input[type=file]{display:none}
 </style>
 </head>
 <body>
+<script src="shared_theme.js"></script>
 <script src="case_embed.js"></script>
 <script src="evidence_filing.js"></script>
 <script>
@@ -933,40 +920,35 @@ function renderMain(){
       else if(isPulling) actionBtn='<button class="btn-ev api-btn"><i class="ti ti-loader-2" style="animation:spin 1s linear infinite"></i> Pulling…</button>';
       else if(item.auto) actionBtn='<button class="btn-ev api-btn"><i class="ti ti-plug"></i> Auto — pending</button>';
       else actionBtn='<button class="btn-ev" onclick="triggerUpload(\''+id+'\',\''+item.name.replace(/'/g,"\\'")+'\')"><i class="ti ti-upload"></i> Upload</button>';
-      var fileRow=uploads[id]?'<div class="ev-file">'+uploads[id]+'</div>':'';
+      var fileRow=uploads[id]?'<div class="ev-file" style="padding:4px 0 0">'+uploads[id]+'</div>':'';
       var repoMatch=getRepositoryMatch(id);
-      var repoRow=(!isUp&&repoMatch)?'<div class="ev-api-note" style="color:var(--green)"><i class="ti ti-database" style="font-size:9px"></i> On file in repository: '+repoMatch.filename+' — click Pull from repository</div>':'';
-      var apiRow=(item.auto&&!isUp&&!repoMatch)?'<div class="ev-api-note">'+item.api+'</div>':'';
+      var repoRow=(!isUp&&repoMatch)?'<div class="ev-api-note" style="padding:4px 0 0;color:var(--green)"><i class="ti ti-database" style="font-size:9px"></i> On file in repository: '+repoMatch.filename+' — click Pull from repository</div>':'';
+      var apiRow=(item.auto&&!isUp&&!repoMatch)?'<div class="ev-api-note" style="padding:4px 0 0">'+item.api+'</div>':'';
       var compRow='';
       if(item.components&&item.components.length){
-        compRow='<div style="padding:0 12px 8px 29px;font-size:10px;color:var(--text3);line-height:1.6">'+item.components.map(function(c){return '<span style="display:inline-block;background:var(--surface3);border-radius:10px;padding:2px 7px;margin:2px 4px 2px 0">'+c+'</span>';}).join('')+'</div>';
+        compRow='<div style="padding:4px 0 0;font-size:10px;color:var(--text3);line-height:1.6">'+item.components.map(function(c){return '<span style="display:inline-block;border:1px solid var(--rule);border-radius:2px;padding:2px 7px;margin:2px 4px 2px 0">'+c+'</span>';}).join('')+'</div>';
       }
       var flashTags=getCaseLawMatches(C.jurisdiction,primaryType).map(function(match){
-        var tagStyle=match.actionRequired?'background:#FEF3C7;color:#92400E;border-color:#FDE68A':'';
-        var urgentIcon=match.actionRequired?'<i class="ti ti-alert-triangle" style="color:#EF9F27"></i> ':'';
-        return '<a href="'+match.anchor+'" target="_blank" class="ev-flash-tag" style="'+tagStyle+'">'+urgentIcon+'<i class="ti ti-gavel"></i> '+match.title+'</a>';
+        return '<a href="'+match.anchor+'" target="_blank" class="ev-flash-tag">See: '+escapeHtml(match.title)+' ↗</a>';
       }).join('');
       if(id==='montreal_conv'){
-        flashTags+='<a href="education.html#case-law" target="_blank" class="ev-flash-tag" style="background:#FEF3C7;color:#92400E;border-color:#FDE68A"><i class="ti ti-alert-triangle" style="color:#EF9F27"></i><i class="ti ti-gavel"></i> Montreal Convention — challenge causation</a>';
+        flashTags+='<a href="education.html#case-law" target="_blank" class="ev-flash-tag">See: Montreal Convention — challenge causation ↗</a>';
       }else if(!flashTags&&item.tier==='K'){
         flashTags=getCaseLawMatches(C.jurisdiction,primaryType).slice(0,1).map(function(match){
-          return '<a href="'+match.anchor+'" target="_blank" class="ev-flash-tag"><i class="ti ti-gavel"></i> '+match.title+'</a>';
+          return '<a href="'+match.anchor+'" target="_blank" class="ev-flash-tag">See: '+escapeHtml(match.title)+' ↗</a>';
         }).join('');
       }
       var flashRow=flashTags?'<div class="ev-flash-tags">'+flashTags+'</div>':'';
-      return '<div class="ev-item'+(isUp?' ev-uploaded':(item.auto?' ev-api':''))+'">'
-        +'<div class="ev-row">'
-        +'<div class="ev-dot '+dotCls+'"></div>'
-        +'<div class="ev-info">'
-        +'<div class="ev-name">'+item.name+tierTag+upTag+'</div>'
+      return '<tr class="ev-item'+(isUp?' ev-uploaded':(item.auto?' ev-api':''))+'">'
+        +'<td class="ev-dot-col"><div class="ev-dot '+dotCls+'"></div></td>'
+        +'<td><div class="ev-name">'+item.name+tierTag+upTag+'</div>'
         +'<div class="ev-why">'+item.why+'</div>'
         +flashRow
         +'<div class="ev-meta"><div class="ev-source"><i class="ti ti-database" style="font-size:10px"></i>'+srcHtml+'</div>'+apiPill+confPill+'</div>'
-        +'</div>'
-        +'<div class="ev-actions">'+actionBtn+'</div>'
-        +'</div>'
         +fileRow+repoRow+apiRow+compRow
-        +'</div>';
+        +'</td>'
+        +'<td class="ev-actions-col">'+actionBtn+'</td>'
+        +'</tr>';
     }
 
     function tierBlock(tier,ids,label,dot,upCount,pullId){
@@ -976,7 +958,8 @@ function renderMain(){
       else if(psState==='done') pullBtn='<button class="btn-pull pulled"><i class="ti ti-check" style="font-size:11px"></i> Pulled</button>';
       else pullBtn='<button class="btn-pull" onclick="pullTier(\''+pullId+'\',\''+ids.join(',')+'\')"><i class="ti ti-cloud-download" style="font-size:11px"></i> Pull all</button>';
       return '<div class="ev-tier">'
-        +'<div class="ev-tier-header">'
+        +'<div class="ev-tier-divider">'+label+' — '+upCount+' of '+ids.length+' on file</div>'
+        +'<div class="ev-tier-header" style="display:none">'
         +'<div class="ev-tier-left">'
         +'<div class="ev-tier-dot" style="background:'+dot+'"></div>'
         +'<div><div class="ev-tier-title">'+label+'</div>'
@@ -984,7 +967,10 @@ function renderMain(){
         +'</div></div>'
         +'<div class="ev-tier-right">'+pullBtn+'</div>'
         +'</div>'
+        +'<table class="ev-table"><tbody>'
         +ids.map(renderItem).join('')
+        +'</tbody></table>'
+        +'<div style="text-align:right;margin-bottom:8px">'+pullBtn+'</div>'
         +'</div>';
     }
 
@@ -1006,8 +992,8 @@ function renderMain(){
       +'</div>'
       +'<div class="card-body open">'
       +(pullAllDone?missingBanner:'')
-      +'<div class="prog-track"><div class="prog-fill" style="width:'+r.pct+'%"></div></div>'
-      +'<div class="prog-stats">'
+      +'<div class="ev-readiness">'+r.up+' of '+r.total+' items on file</div>'
+      +'<div class="prog-stats" style="display:none">'
       +'<div class="prog-stat"><strong style="color:var(--green)">'+r.up+'</strong> on file</div>'
       +'<div class="prog-stat"><strong>'+(r.total-r.up)+'</strong> outstanding</div>'
       +'<div class="prog-stat" style="margin-left:auto;font-weight:500">'+r.pct+'% complete</div>'
