@@ -63,6 +63,7 @@ var TerminalHealth = (function () {
   }
 
   function runCheck(ref, caseData) {
+    if (typeof normaliseCaseRef === 'function') ref = normaliseCaseRef(ref);
     caseData = caseData || (typeof getCase === 'function' ? getCase(ref) : null) || {};
     var filing = typeof CaseFiling !== 'undefined' ? CaseFiling.getCase(ref) : null;
     var evPct = getEvidencePct(ref, caseData);

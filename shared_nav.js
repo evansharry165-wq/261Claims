@@ -59,6 +59,13 @@
     }).length;
   }
 
+  function terminalQueueCount(uid) {
+    if (typeof WorkDashboard !== 'undefined' && WorkDashboard.getTerminalQueueForUser) {
+      return WorkDashboard.getTerminalQueueForUser(uid).length;
+    }
+    return 0;
+  }
+
   function renderGlobalNav() {
     if (typeof t !== 'function') return;
 
@@ -87,7 +94,11 @@
               ? ' <span class="gn-badge" style="margin-left:4px;font-size:9px;font-weight:600;background:#C0392B;color:#fff;border-radius:10px;padding:1px 6px;line-height:1.4">' +
                 urgentN +
                 '</span>'
-              : '';
+              : l.key === 'terminal' && !isEvidence && terminalQueueCount(uid) > 0
+                ? ' <span class="gn-badge" style="margin-left:4px;font-size:9px;font-weight:600;background:#0F766E;color:#fff;border-radius:10px;padding:1px 6px;line-height:1.4">' +
+                  terminalQueueCount(uid) +
+                  '</span>'
+                : '';
           return (
             '<a href="' +
             l.href +

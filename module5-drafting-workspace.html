@@ -1519,11 +1519,18 @@ function addToRepository(id){
 
 function resolveCase(){
   caseResolved=true;
-  try{
-    var repo=JSON.parse(sessionStorage.getItem('dfa_repository')||'[]');
-    repo.unshift({ref:C.ref,claimant:C.name,outcome:'Defended / response issued',stored:new Date().toISOString(),documents:Object.keys(docApproved).filter(k=>docApproved[k]),value:C.value,flightNum:C.flightNum,disruptionType:C.type,solicitor:C.sol});
-    sessionStorage.setItem('dfa_repository',JSON.stringify(repo.slice(0,20)));
-  }catch(e){}
+  if(typeof markCaseResolved==='function'){
+    markCaseResolved(C.ref,'Defended / response issued',{
+      claimant:C.name,flightNum:C.flightNum,value:C.value,solicitor:C.sol,
+      documents:Object.keys(docApproved).filter(function(k){return docApproved[k];})
+    });
+  }else{
+    try{
+      var repo=JSON.parse(sessionStorage.getItem('dfa_repository')||'[]');
+      repo.unshift({ref:C.ref,claimant:C.name,outcome:'Defended / response issued',stored:new Date().toISOString(),documents:Object.keys(docApproved).filter(function(k){return docApproved[k];}),value:C.value,flightNum:C.flightNum,disruptionType:C.type,solicitor:C.sol});
+      sessionStorage.setItem('dfa_repository',JSON.stringify(repo.slice(0,20)));
+    }catch(e){}
+  }
   renderWorkspace();
 }
 
