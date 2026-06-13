@@ -546,7 +546,11 @@ function renderMain(){
   var deadlinesToShow = DEADLINES_OVERRIDE.length ? DEADLINES_OVERRIDE : DEADLINES;
 
   /* deadline cards */
-  var dlCards='<div class="deadline-grid">'
+  var dlCards='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">'
+      +'<div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:var(--text3)">CPR deadlines</div>'
+      +'<button class="btn btn-outline" onclick="downloadCprCalendar()" style="font-size:11px;padding:5px 11px"><i class="ti ti-calendar-down"></i> Export .ics</button>'
+      +'</div>'
+      +'<div class="deadline-grid">'
     +deadlinesToShow.map(function(dl){
       var days=daysFrom(dl.date);
       var urg=urgency(days);
@@ -797,6 +801,45 @@ function addToCalendar(id,label,dateStr,desc){
   if(id==='response'||id==='jd-21') checked['c_calendar']=true;
   log((added?'Added to calendar: ':'Already on calendar: ')+label+' — '+fmtDate(d),'cal');
   render();
+}
+
+function downloadCprCalendar(){
+  var dls=typeof DEADLINES!=='undefined'?DEADLINES:[];
+  if(!dls.length){alert('No deadlines to export.');return;}
+  function pad(n){return String(n).padStart(2,'0');}
+  function icsDate(d){
+    return d.getFullYear()+pad(d.getMonth()+1)+pad(d.getDate())
+      +'T'+pad(d.getHours())+pad(d.getMinutes())+'00';
+  }
+  function uid(){return 'dfa-'+C.ref+'-'+Date.now()+Math.random().toString(36).slice(2)+'@defendable.io';}
+  var events=dls.map(function(dl){
+    var start=new Date(dl.date);
+    var end=new Date(dl.date.getTime?dl.date.getTime():new Date(dl.date));
+    end.setDate(end.getDate()+1);
+    var summary=(dl.label+' — '+C.ref+' — '+C.name).replace(/[\r\n]/g,' ');
+    var description=(dl.desc||dl.rule||'').replace(/[\r\n]/g,' ');
+    return [
+      'BEGIN:VEVENT',
+      'UID:'+uid(),
+      'DTSTART;VALUE=DATE:'+icsDate(start).slice(0,8),
+      'DTEND;VALUE=DATE:'+icsDate(end).slice(0,8),
+      'SUMMARY:'+summary,
+      'DESCRIPTION:'+description,
+      'CATEGORIES:LEGAL,CPR,DEFENDA BLE',
+      'STATUS:CONFIRMED',
+      'END:VEVENT'
+    ].join('\r\n');
+  }).join('\r\n');
+  var ics='BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//DefendAble//CPR Deadlines//EN\r\nCALSCALE:GREGORIAN\r\nMETHOD:PUBLISH\r\n'+events+'\r\nEND:VCALENDAR\r\n';
+  var blob=new Blob([ics],{type:'text/calendar;charset=utf-8'});
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='DefendAble-CPR-'+C.ref+'.ics';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(function(){URL.revokeObjectURL(a.href);},500);
+  log('CPR calendar exported — '+dls.length+' deadline'+(dls.length===1?'':'s')+' saved','cal');
 }
 
 function goToEvidence(){
