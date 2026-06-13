@@ -144,6 +144,7 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 <script src="case_helpers.js"></script>
 <script src="case_filing.js"></script>
 <script src="work_dashboard.js"></script>
+<script src="terminal_health.js"></script>
 <script src="demo_studies.js"></script>
 
 <nav class="global-nav">
@@ -365,6 +366,27 @@ function buildOutstandingRequests(uid){
     +'</div><div class="panel">'+rows+'</div></div>';
 }
 
+function buildTerminalQueueZone(uid){
+  if(typeof WorkDashboard==='undefined'||typeof WorkDashboard.getTerminalQueueForUser!=='function')return '';
+  var queue=WorkDashboard.getTerminalQueueForUser(uid);
+  if(!queue.length)return '';
+  var countLabel=queue.length+' ready';
+  var rows=queue.slice(0,5).map(function(r){
+    var urg=r.cprDaysLeft<=3?'urgent':r.cprDaysLeft<=7?'warn':'ok';
+    var sc=r.status==='ready'?'var(--green)':r.status==='warnings'?'var(--amber)':'var(--red)';
+    return '<div class="task-row" data-ref="'+escapeHtml(r.ref)+'" data-tab="terminal">'
+      +'<div class="task-dot '+urg+'"></div>'
+      +'<div><div class="task-action">'+escapeHtml(r.claimant)+' — '+escapeHtml(typeof t==='function'?t('finishAndSend'):'Finish & send')+'</div>'
+      +'<div class="task-claimant"><span class="task-ref">'+escapeHtml(r.ref)+'</span> · '+escapeHtml(r.flightNum||'')+' · health <span style="color:'+sc+';font-family:var(--mono)">'+r.score+'</span></div></div>'
+      +'<div class="task-meta"><span class="req-age-pill '+urg+'">CPR '+r.cprDaysLeft+'d</span></div>'
+      +'</div>';
+  }).join('');
+  return '<div class="zone" style="margin-bottom:14px"><div class="zone-hdr">'
+    +'<div class="zone-title"><i class="ti ti-send"></i> '+escapeHtml(typeof t==='function'?t('terminalQueue'):'Terminal send queue')+'</div>'
+    +'<a class="zone-link" href="terminal.html">'+escapeHtml(typeof t==='function'?t('viewAll'):'View all')+'</a>'
+    +'</div><div class="panel">'+rows+'</div></div>';
+}
+
 function renderLegalWork(uid,u,cases){
   var tasks=collectDoNowTasks(cases,6);
   var updates=WorkDashboard.getUpdatesSinceLogin(cases,uid);
@@ -385,6 +407,7 @@ function renderLegalWork(uid,u,cases){
     +'<button type="button" class="btn btn-outline" onclick="downloadWorkCalendar()"><i class="ti ti-calendar-down"></i> CPR calendar (.ics)</button></div>'
     +knowledgeAlertBanner()
     +buildOutstandingRequests(uid)
+    +buildTerminalQueueZone(uid)
     +'<div class="work-grid">'
     +'<div class="zone"><div class="zone-hdr"><div class="zone-title"><i class="ti ti-sparkles"></i> Since you last logged in</div></div><div class="panel">'+updatesHtml(updates)+'</div></div>'
     +'<div class="zone"><div class="zone-hdr"><div class="zone-title"><i class="ti ti-list-check"></i> '+escapeHtml(t('doNow'))+'</div><a class="zone-link" href="cases.html?sort=urgency">'+escapeHtml(t('viewAll'))+'</a></div><div class="panel">'+tasksHtml(tasks)+'</div></div>'

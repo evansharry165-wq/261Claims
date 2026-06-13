@@ -165,6 +165,13 @@ function getCaseData(){
   return typeof getCase==='function'?getCase(C.ref):{ref:C.ref,claimant:C.name,solicitor:C.sol,points:C.points,cprDaysLeft:C.cprDaysLeft,loaStatus:C.loaStatus,evidencePct:0};
 }
 
+function storedCaseResolved(){
+  try{
+    var stored=JSON.parse(sessionStorage.getItem('dfa_case')||'null');
+    return !!(stored&&stored.ref===C.ref&&stored.stage==='resolve');
+  }catch(e){return false;}
+}
+
 function goTab(tab){
   if(typeof shellGo==='function'&&shellGo(tab,'Opened from Terminal health check'))return;
   window.location.href='case.html?ref='+encodeURIComponent(C.ref)+'&tab='+encodeURIComponent(tab);
@@ -208,17 +215,34 @@ function finishAndSend(){
     if(stored&&stored.ref===C.ref){
       stored.stage='defence';
       stored.loaStatus=stored.loaStatus||'sent';
+      stored.sentAt=now;
       sessionStorage.setItem('dfa_case',JSON.stringify(stored));
     }
   }catch(e){}
   if(window.parent!==window){
     window.parent.postMessage({type:'case-shell',action:'log',text:'Terminal: response pack sent to '+sendForm.recipient,logType:'stage'},'*');
-    window.parent.postMessage({type:'case-shell',action:'stageComplete',tab:'overview'},'*');
+    window.parent.postMessage({type:'case-shell',action:'stageComplete',tab:'terminal'},'*');
   }
   if(sendForm.method==='secure_email'){
     var subj=encodeURIComponent(sendForm.reference||('Response — '+C.ref));
     var body=encodeURIComponent(sendForm.coverNote+'\n\nDocuments:\n'+selected.map(function(d){return '• '+d.name;}).join('\n'));
     window.open('mailto:'+encodeURIComponent(sendForm.recipient)+'?subject='+subj+'&body='+body,'_blank');
+  }
+  render();
+}
+
+function closeCaseAfterSend(){
+  if(!confirm('Close this case and record outcome in Repository?\n\nUse this when the response has been sent and no further action is required.'))return;
+  var health=TerminalHealth.runCheck(C.ref,getCaseData());
+  var docs=(health.terminalState&&health.terminalState.documents)||health.documents.map(function(d){return d.name;});
+  if(typeof markCaseResolved==='function'){
+    markCaseResolved(C.ref,'Defended / response issued',{
+      claimant:C.name,
+      flightNum:C.flightNum,
+      value:C.value,
+      solicitor:C.sol,
+      documents:docs
+    });
   }
   render();
 }
@@ -250,7 +274,11 @@ function render(){
   }).join(''):'<div style="font-size:12px;color:var(--text3);padding:8px 0">No approved documents in case file yet. Approve and add from the Documents tab.</div>';
 
   var sentBanner=health.alreadySent
-    ?'<div class="sent-banner"><i class="ti ti-circle-check"></i><div><strong>Response sent</strong> — '+escapeHtml(health.terminalState.sentAt)+' to '+escapeHtml(health.terminalState.recipient||'recipient')+'. Case moved to defence stage.</div></div>'
+    ?'<div class="sent-banner"><i class="ti ti-circle-check"></i><div style="flex:1"><strong>Response sent</strong> — '+escapeHtml(health.terminalState.sentAt)+' to '+escapeHtml(health.terminalState.recipient||'recipient')+'. Case moved to defence stage.'
+      +(health.terminalState&&storedCaseResolved()?' <strong>Case closed.</strong>':'')
+      +'</div>'
+      +(storedCaseResolved()?'':'<button class="btn btn-ghost" style="margin-left:auto;white-space:nowrap" onclick="closeCaseAfterSend()"><i class="ti ti-circle-check"></i> '+(typeof t==='function'?t('closeCase'):'Close case')+'</button>')
+      +'</div>'
     :'';
 
   document.getElementById('main').innerHTML=
@@ -266,7 +294,7 @@ function render(){
     +'<div class="sum-tile"><div class="sum-lbl">Documents</div><div class="sum-val">'+health.documents.length+'</div></div>'
     +'<div class="sum-tile"><div class="sum-lbl">CPR</div><div class="sum-val">'+C.cprDaysLeft+'d</div></div></div>'
 
-    +'<div class="grid-2"><div class="card"><div class="card-hdr"><i class="ti ti-heartbeat"></i><div class="card-title">Case health check</div><div class="card-sub">'+health.summary+'</div></div>'
+    +'<div class="grid-2"><div class="card"><div class="card-hdr"><i class="ti ti-heartbeat"></i><div class="card-title">'+(typeof t==='function'?t('caseHealthCheck'):'Case health check')+'</div><div class="card-sub">'+health.summary+'</div></div>'
     +'<div class="card-body">'+checksHtml+'</div></div>'
 
     +'<div class="card"><div class="card-hdr"><i class="ti ti-package"></i><div class="card-title">Response pack</div><div class="card-sub">Documents to include</div></div>'
@@ -285,7 +313,7 @@ function render(){
     +(health.alreadySent
       ?'<button class="btn btn-ghost" onclick="goTab(\'documents\')"><i class="ti ti-file-pencil"></i> Back to Documents</button>'
         +'<button class="btn btn-ghost" onclick="window.parent!==window?window.parent.location.href=\'repository.html#cases\':location.href=\'repository.html#cases\'"><i class="ti ti-database"></i> View in Repository</button>'
-      :'<button class="btn btn-primary"'+(health.canSend?'':' disabled')+' onclick="finishAndSend()"><i class="ti ti-send"></i> Finish &amp; send</button>'
+      :'<button class="btn btn-primary"'+(health.canSend?'':' disabled')+' onclick="finishAndSend()"><i class="ti ti-send"></i> '+(typeof t==='function'?t('finishAndSend'):'Finish &amp; send')+'</button>'
         +'<button class="btn btn-ghost" onclick="goTab(\'documents\')"><i class="ti ti-file-pencil"></i> Back to Documents</button>'
         +'<button class="btn btn-ghost" onclick="goTab(\'evidence\')"><i class="ti ti-folder-open"></i> Review evidence</button>')
     +'</div></div></div>';

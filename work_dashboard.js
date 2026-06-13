@@ -468,6 +468,19 @@
     };
   }
 
+  function getTerminalQueueForUser(uid) {
+    var list = [];
+    if (typeof getMergedCasesForUser === 'function') {
+      list = getMergedCasesForUser(uid).filter(function (c) {
+        return c.assignedTo === uid && c.stage !== 'resolve';
+      });
+    } else if (typeof getCasesForUser === 'function') {
+      list = getCasesForUser(uid);
+    }
+    if (typeof TerminalHealth === 'undefined') return [];
+    return TerminalHealth.listTerminalQueue(list);
+  }
+
   global.WorkDashboard = {
     DEMO_TODAY: DEMO_TODAY,
     getDemoToday: getDemoToday,
@@ -487,6 +500,7 @@
     buildMonthGrid: buildMonthGrid,
     downloadCalendarIcs: downloadCalendarIcs,
     roleSummary: roleSummary,
+    getTerminalQueueForUser: getTerminalQueueForUser,
     MONTHS: MONTHS,
   };
 })(typeof window !== 'undefined' ? window : this);

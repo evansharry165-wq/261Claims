@@ -63,6 +63,8 @@ tbody tr:hover td{background:var(--surface2);cursor:pointer}
 <script src="case_helpers.js"></script>
 <script src="case_filing.js"></script>
 <script src="terminal_health.js"></script>
+<script src="work_dashboard.js"></script>
+<script src="terminal_health.js"></script>
 
 <nav class="global-nav">
   <a href="index.html" class="gn-logo"><div class="gn-mark"><i class="ti ti-lock"></i></div><span class="gn-name">DefendAble</span></a>
@@ -72,11 +74,11 @@ tbody tr:hover td{background:var(--surface2);cursor:pointer}
 
 <div class="layout">
   <div class="page-hdr">
-    <h1>Terminal</h1>
-    <p>Cases with approved documents ready for final review and send. Open a case to run the health check, confirm dispatch details, and finish without returning to Repository.</p>
+    <h1 id="term-title">Terminal</h1>
+    <p id="term-desc">Cases with approved documents ready for final review and send. Open a case to run the health check, confirm dispatch details, and finish without returning to Repository.</p>
   </div>
   <div class="content">
-    <div class="hero"><i class="ti ti-info-circle"></i><div>After approving a draft in <strong>Documents</strong>, use <strong>Proceed to Terminal</strong> — or pick a case below. The health check compares case file data, evidence, CPR status and approved documents before you send.</div></div>
+    <div class="hero" id="term-hero"><i class="ti ti-info-circle"></i><div id="term-hero-text">After approving a draft in <strong>Documents</strong>, use <strong>Proceed to Terminal</strong> — or pick a case below. The health check compares case file data, evidence, CPR status and approved documents before you send.</div></div>
     <div id="queue"></div>
   </div>
 </div>
@@ -97,10 +99,16 @@ function allCasesForTerminal(){
 }
 
 function renderQueue(){
+  if(typeof t==='function'){
+    var titleEl=document.getElementById('term-title');
+    if(titleEl)titleEl.textContent=t('terminal');
+    var heroEl=document.getElementById('term-hero-text');
+    if(heroEl)heroEl.innerHTML='After approving a draft in <strong>Documents</strong>, use <strong>'+escapeHtml(t('proceedToTerminal'))+'</strong> — or pick a case below. '+escapeHtml(t('terminalQueueHint'));
+  }
   var queue=TerminalHealth.listTerminalQueue(allCasesForTerminal());
   var el=document.getElementById('queue');
   if(!queue.length){
-    el.innerHTML='<div class="empty"><i class="ti ti-inbox" style="font-size:32px;display:block;margin-bottom:10px;color:var(--text3)"></i>No cases in the send queue yet.<br><br>Approve a document in Documents and choose <strong>Proceed to Terminal</strong>.</div>';
+    el.innerHTML='<div class="empty"><i class="ti ti-inbox" style="font-size:32px;display:block;margin-bottom:10px;color:var(--text3)"></i>'+escapeHtml(typeof t==='function'?t('terminalQueueEmpty'):'No cases in the send queue yet.')+'<br><br>'+escapeHtml(typeof t==='function'?t('terminalQueueHint'):'Approve a document in Documents and choose Proceed to Terminal.')+'</div>';
     return;
   }
   el.innerHTML='<table><thead><tr><th>Case</th><th>Claimant</th><th>Flight</th><th>Docs</th><th>Health</th><th>CPR</th><th></th></tr></thead><tbody>'

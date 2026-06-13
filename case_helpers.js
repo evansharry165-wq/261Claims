@@ -521,6 +521,7 @@ function caseFromFilingRecord(cf) {
 }
 
 function resolveCase(ref) {
+  ref = typeof normaliseCaseRef === 'function' ? normaliseCaseRef(ref) : ref;
   var c = typeof getCase === 'function' ? getCase(ref) : null;
   if (c) return c;
   if (typeof CaseFiling !== 'undefined') {
@@ -533,6 +534,53 @@ function resolveCase(ref) {
     }
   }
   return null;
+}
+
+function markCaseResolved(ref, outcome, meta) {
+  ref = typeof normaliseCaseRef === 'function' ? normaliseCaseRef(ref) : ref;
+  outcome = outcome || 'Defended / response issued';
+  meta = meta || {};
+  var c = resolveCase(ref);
+  var uid = typeof getActiveUser === 'function' ? getActiveUser() : 'SB';
+  var u = (typeof USERS !== 'undefined' ? USERS[uid] : null) || { full: 'User', name: 'User' };
+  var now = new Date().toLocaleString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+
+  try {
+    var stored = JSON.parse(sessionStorage.getItem('dfa_case') || 'null');
+    if (stored && stored.ref === ref) {
+      stored.stage = 'resolve';
+      stored.resolvedAt = now;
+      stored.outcome = outcome;
+      sessionStorage.setItem('dfa_case', JSON.stringify(stored));
+    }
+  } catch (e) {}
+
+  if (typeof CaseFiling !== 'undefined') {
+    CaseFiling.updateCaseMeta(ref, { stage: 'resolve', outcome: outcome, resolvedAt: now });
+    CaseFiling.addActivity(ref, 'Case closed — ' + outcome, 'stage', u.full || u.name);
+  }
+
+  try {
+    var repo = JSON.parse(sessionStorage.getItem('dfa_repository') || '[]');
+    repo.unshift({
+      ref: ref,
+      claimant: (c && c.claimant) || meta.claimant || '',
+      outcome: outcome,
+      stored: new Date().toISOString(),
+      documents: meta.documents || [],
+      value: (c && c.value) || meta.value || '',
+      flightNum: (c && c.flightNum) || meta.flightNum || '',
+      disruptionType: (c && c.type) || meta.disruptionType || '',
+      solicitor: (c && c.solicitor) || meta.solicitor || '',
+    });
+    sessionStorage.setItem('dfa_repository', JSON.stringify(repo.slice(0, 30)));
+  } catch (e) {}
+
+  if (window.parent !== window) {
+    window.parent.postMessage({ type: 'case-shell', action: 'log', text: 'Case resolved — ' + outcome, logType: 'stage' }, '*');
+    window.parent.postMessage({ type: 'case-shell', action: 'stageComplete', tab: 'overview' }, '*');
+  }
+  return true;
 }
 
 function getMergedCasesForUser(uid, stage) {

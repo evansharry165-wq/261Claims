@@ -33,6 +33,7 @@ var CaseShell = (function () {
   }
 
   function loadCase(ref) {
+    if (typeof normaliseCaseRef === 'function') ref = normaliseCaseRef(ref);
     var stored = null;
     try {
       stored = JSON.parse(sessionStorage.getItem('dfa_case') || 'null');

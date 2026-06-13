@@ -8,7 +8,7 @@
   'use strict';
 
   var STORAGE_KEY = 'dfa_case_filing';
-  var VERSION = 1;
+  var VERSION = 2;
 
   var CASE_FOLDERS = [
     { id: 'intake', name: 'Intake', icon: 'ti-upload', desc: 'LOC and initial claim documents' },
@@ -67,6 +67,71 @@
     };
   }
 
+  function normaliseRef(ref) {
+    if (typeof normaliseCaseRef === 'function') return normaliseCaseRef(ref);
+    var aliases = {
+      'AC-2026-0089': 'DEF-2026-EW-0089',
+      'AC-2026-0076': 'DEF-2026-EW-0076',
+      'FR-2026-0009': 'DEF-2026-FR-0009',
+      'ES-2026-0027': 'DEF-2026-ES-0027',
+    };
+    return aliases[ref] || ref;
+  }
+
+  function migrateCaseAliases(cases) {
+    Object.keys(cases).forEach(function (oldRef) {
+      var newRef = normaliseRef(oldRef);
+      if (newRef === oldRef) return;
+      if (!cases[newRef]) {
+        cases[newRef] = cases[oldRef];
+        cases[newRef].ref = newRef;
+      }
+      delete cases[oldRef];
+    });
+  }
+
+  function enrichDraftingSendPack(cases, ref, opts) {
+    opts = opts || {};
+    var c = cases[ref];
+    if (!c) return;
+    var hasLor = (c.documents || []).some(function (d) { return d.docKey === 'lor' || d.docKey === 'defence'; });
+    if (hasLor) return;
+    c.stage = c.stage || 'drafting';
+    c.evidencePct = opts.evidencePct != null ? opts.evidencePct : 100;
+    c.loaStatus = c.loaStatus || 'sent';
+    if (!(c.documents || []).some(function (d) { return d.folderId === 'intake'; })) {
+      c.documents.push(mkDoc('cf-' + ref.slice(-4) + '-loc', 'intake', opts.locName || 'Letter of Claim', {
+        filename: ref + '-LOC.pdf',
+        content: opts.locContent || 'Letter of claim on file.',
+        status: 'on_file',
+        source: 'intake',
+        uploadedAt: opts.locDate || '22 May 2026 09:00',
+      }));
+    }
+    if (!(c.documents || []).some(function (d) { return d.docKey === 'loa'; })) {
+      c.documents.push(mkDoc('cf-' + ref.slice(-4) + '-loa', 'correspondence', opts.loaName || 'Letter of Acknowledgement', {
+        docKey: 'loa',
+        filename: ref + '-LOA.txt',
+        content: opts.loaContent || 'Letter of acknowledgement sent — CPR compliance.',
+        status: 'approved',
+        source: 'drafting',
+        uploadedAt: opts.loaDate || '24 May 2026 11:30',
+      }));
+    }
+    c.documents.push(mkDoc('cf-' + ref.slice(-4) + '-lor', 'legal_drafts', opts.lorName || 'Letter of Response', {
+      docKey: 'lor',
+      filename: ref + '-Letter-of-Response.txt',
+      content: opts.lorContent || 'Approved letter of response — extraordinary circumstances defence.',
+      status: 'approved',
+      source: 'drafting',
+      uploadedAt: opts.lorDate || '05 Jun 2026 10:00',
+    }));
+    c.activity = c.activity || [];
+    c.activity.push(
+      { text: opts.lorName || 'Letter of Response approved and filed', time: opts.lorDate || '05 Jun 2026 10:00', type: 'approve', by: opts.by || 'Legal team' }
+    );
+  }
+
   function seedCases() {
     var cases = {};
     var all = typeof ALL_CASES !== 'undefined' ? ALL_CASES : [];
@@ -99,6 +164,7 @@
         h = JSON.parse(JSON.stringify(cases['AC-2026-0089']));
         h.ref = 'DEF-2026-EW-0089';
         cases['DEF-2026-EW-0089'] = h;
+        delete cases['AC-2026-0089'];
       }
       h.classification = 'ESCALATE';
       h.cprDaysLeft = 3;
@@ -124,7 +190,7 @@
         }),
         mkDoc('cf-h-002', 'correspondence', 'Letter of Acknowledgement', {
           docKey: 'loa',
-          filename: 'AC-2026-0089-Letter-of-Acknowledgement.txt',
+          filename: 'DEF-2026-EW-0089-Letter-of-Acknowledgement.txt',
           content: 'Letter of Acknowledgement sent to Pemberton & Associates — CPR Pre-Action Protocol compliance.',
           status: 'approved',
           source: 'drafting',
@@ -133,7 +199,7 @@
           uploadedAt: '24 May 2026 11:30',
         }),
         mkDoc('cf-h-003', 'evidence_index', 'Evidence pack index — HC 1184', {
-          filename: 'AC-2026-0089-Evidence-Index.txt',
+          filename: 'DEF-2026-EW-0089-Evidence-Index.txt',
           content: 'Evidence on file (35%):\n• Operational delay records system flight details — on file\n• Disruption data system disruption record — on file\n• METAR/SIGMET BCN — on file\n• Eurocontrol ATFM — on file\n• Valencia ground records — requested',
           status: 'on_file',
           source: 'evidence',
@@ -151,17 +217,39 @@
       h.stage = 'evidence';
     }
 
-    if (cases['AC-2026-0076']) {
-      cases['AC-2026-0076'].documents.push(
-        mkDoc('cf-t-001', 'intake', 'Letter of Claim — Foster', {
-          filename: 'Foster_LOC.pdf',
-          content: 'LOC for Angela Foster — HC 203 LGW–ALC weather delay.',
-          status: 'on_file',
-          source: 'intake',
-        })
-      );
-    }
+    enrichDraftingSendPack(cases, 'DEF-2026-EW-0076', {
+      locName: 'Letter of Claim — Taylor',
+      locContent: 'LOC for Sarah Taylor — HC 330 LGW–ALC. ATC Ground Stop Manchester — extraordinary circumstances.',
+      loaContent: 'LOA sent to Thompsons Solicitors — CPR acknowledgement.',
+      lorName: 'Letter of Response — Taylor',
+      lorContent: 'LETTER OF RESPONSE\n\nRe: Sarah Taylor v [Airline] — Flight HC 330\n\nWe maintain extraordinary circumstances apply due to ATC Ground Stop at Manchester (Eurocontrol CRCO EU-ATC-20260312-MAN). Compensation not payable under UK261.',
+      lorDate: '04 Jun 2026 09:30',
+      by: 'J. Patel',
+    });
 
+    enrichDraftingSendPack(cases, 'DEF-2026-FR-0009', {
+      locName: 'Lettre de réclamation — Fontaine',
+      locContent: 'Réclamation Isabelle Fontaine — vol HC 881 MRS–LGW. Retard grève ATC.',
+      loaName: 'Accusé de réception',
+      loaContent: 'Accusé de réception envoyé à Maître Dumas — conformité délais.',
+      lorName: 'Lettre de réponse',
+      lorContent: 'LETTRE DE RÉPONSE\n\nAffaire Fontaine — vol HC 881\n\nCirconstances extraordinaires établies (grève ATC du 14 mars — arrêté préfectoral et communiqué DGAC). Indemnisation CE261 non due.',
+      lorDate: '03 Jun 2026 11:00',
+      by: 'P. Laurent',
+    });
+
+    enrichDraftingSendPack(cases, 'DEF-2026-ES-0027', {
+      locName: 'Carta de reclamación — Ruiz',
+      locContent: 'Reclamación Carmen Ruiz — vuelo HC 339 AGP–LTN. Retraso meteorológico granizo.',
+      loaName: 'Acuse de recibo',
+      loaContent: 'Acuse de recibo enviado a Bufete Morales.',
+      lorName: 'Escrito de respuesta',
+      lorContent: 'ESCRITO DE RESPUESTA\n\nAsunto Ruiz — vuelo HC 339\n\nCircunstancias extraordinarias plenamente documentadas (AEMET + NOTAM cierre pista). Compensación CE261 no procede.',
+      lorDate: '02 Jun 2026 15:00',
+      by: 'I. Martín',
+    });
+
+    migrateCaseAliases(cases);
     return cases;
   }
 
@@ -193,6 +281,7 @@
   }
 
   function getCase(ref) {
+    ref = normaliseRef(ref);
     var store = loadStore();
     return store.cases[ref] || null;
   }
