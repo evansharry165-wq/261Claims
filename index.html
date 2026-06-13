@@ -301,6 +301,52 @@ function renderKEBanner(alerts){
   return html;
 }
 
+function buildOutstandingRequests(uid){
+  var cases=typeof ALL_CASES!=='undefined'?ALL_CASES:[];
+  var userCases=cases.filter(function(c){return c.assignedTo===uid&&c.stage!=='resolve';});
+  var allRequests=[];
+  userCases.forEach(function(c){
+    try{
+      var key='dfa_evidence_'+c.ref;
+      var st=JSON.parse(sessionStorage.getItem(key)||'null');
+      if(!st||!st.evidenceRequests)return;
+      Object.values(st.evidenceRequests).forEach(function(req){
+        if(req.status==='pending'||req.status==='received'){
+          var daysAgo=Math.floor((Date.now()-req.requestedAtMs)/86400000);
+          allRequests.push(Object.assign({},req,{
+            daysAgo:daysAgo,
+            overdue:daysAgo>req.slaDays,
+            cprDaysLeft:c.cprDaysLeft||21
+          }));
+        }
+      });
+    }catch(e){}
+  });
+  if(!allRequests.length)return '';
+  allRequests.sort(function(a,b){
+    if(a.overdue&&!b.overdue)return -1;
+    if(!a.overdue&&b.overdue)return 1;
+    return (a.cprDaysLeft||99)-(b.cprDaysLeft||99);
+  });
+  var overdueCount=allRequests.filter(function(r){return r.overdue;}).length;
+  var countLabel=overdueCount>0?overdueCount+' overdue':allRequests.length+' pending';
+  var countStyle=overdueCount>0?'color:var(--red);background:var(--red-faint);border-color:#FECACA':'color:var(--blue-text);background:var(--blue-faint);border-color:#BFDBFE';
+  var rows=allRequests.slice(0,6).map(function(req){
+    var ageText=req.overdue?req.daysAgo+'d — overdue':req.daysAgo+'d ago';
+    var ageStyle=req.overdue?'color:var(--red);font-weight:500':'color:var(--text3)';
+    return '<div class="task-row" onclick="location.href=\'module4-evidence-workspace.html?ref='+encodeURIComponent(req.caseRef)+'\'">'
+      +'<div class="task-dot '+(req.overdue?'urgent':'warn')+'"></div>'
+      +'<div><div class="task-action">'+escapeHtml(req.name)+'</div>'
+      +'<div class="task-claimant" style="margin-top:2px"><span style="font-family:var(--mono);font-size:10px;color:var(--text3);margin-right:6px">'+escapeHtml(req.caseRef)+'</span>'+escapeHtml(req.recipient)+'</div></div>'
+      +'<div class="task-meta"><div class="task-deadline '+(req.overdue?'urgent':'warn')+'" style="'+ageStyle+'">'+ageText+'</div>'
+      +'<div style="font-size:10px;color:var(--text3);margin-top:1px">CPR '+(req.cprDaysLeft||'?')+'d</div></div>'
+      +'</div>';
+  }).join('');
+  return '<div class="zone" style="margin-bottom:14px"><div class="zone-hdr"><div class="zone-title"><i class="ti ti-clock-exclamation"></i> Outstanding evidence requests</div>'
+    +'<span class="stat-chip" style="'+countStyle+';font-size:10px">'+countLabel+'</span></div>'
+    +'<div class="panel">'+rows+'</div></div>';
+}
+
 function renderLegalWork(uid,u,cases){
   var tasks=collectDoNowTasks(cases,6);
   var updates=WorkDashboard.getUpdatesSinceLogin(cases,uid);
@@ -320,6 +366,7 @@ function renderLegalWork(uid,u,cases){
     +'<a class="btn btn-primary" href="intake.html"><i class="ti ti-mail-plus"></i> '+escapeHtml(t('newClaim'))+'</a>'
     +'<button type="button" class="btn btn-outline" onclick="downloadWorkCalendar()"><i class="ti ti-calendar-down"></i> CPR calendar (.ics)</button></div>'
     +knowledgeAlertBanner()
+    +buildOutstandingRequests(uid)
     +'<div class="work-grid">'
     +'<div class="zone"><div class="zone-hdr"><div class="zone-title"><i class="ti ti-sparkles"></i> Since you last logged in</div></div><div class="panel">'+updatesHtml(updates)+'</div></div>'
     +'<div class="zone"><div class="zone-hdr"><div class="zone-title"><i class="ti ti-list-check"></i> '+escapeHtml(t('doNow'))+'</div><a class="zone-link" href="cases.html?sort=urgency">'+escapeHtml(t('viewAll'))+'</a></div><div class="panel">'+tasksHtml(tasks)+'</div></div>'

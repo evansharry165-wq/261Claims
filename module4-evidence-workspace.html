@@ -117,9 +117,9 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 .ev-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:5px}
 .ev-d-green{background:var(--green-l)}
 .ev-d-amber{background:#F59E0B}
-.ev-d-red{background:var(--red)}
+.ev-d-red{background:var(--alert)}
 .ev-d-blue{background:var(--blue)}
-.ev-d-grey{background:var(--border2)}
+.ev-d-grey{background:#B4B2A9}
 .ev-info{flex:1;min-width:0}
 .ev-name{font-size:12px;font-weight:500;color:var(--text);margin-bottom:2px;display:flex;align-items:center;gap:5px;flex-wrap:wrap}
 .ev-why{font-size:11px;color:var(--text2);line-height:1.5;margin-bottom:4px}
@@ -140,6 +140,10 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 .btn-ev{font-size:10px;padding:4px 9px;border-radius:var(--r);border:1px solid var(--border2);background:var(--surface2);cursor:pointer;color:var(--text2);font-family:var(--font);display:inline-flex;align-items:center;gap:3px;transition:background 0.15s;white-space:nowrap}
 .btn-ev:hover{background:var(--surface3)}
 .btn-ev.done{background:var(--green-faint);border-color:#BBF7D0;color:var(--green);cursor:default}
+.btn-ev.request-btn{background:var(--accent);color:#fff;border-color:var(--accent)}
+.btn-ev.requested{background:var(--caution-faint);color:var(--caution);border-color:#EFD9A3;cursor:default}
+.btn-ev.chase{background:var(--caution-faint);color:var(--caution);border-color:#EFD9A3}
+.btn-ev.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
 .btn-ev.api-btn{background:var(--blue-faint);border-color:#BFDBFE;color:var(--blue-text);cursor:not-allowed}
 .ev-file{font-size:10px;color:var(--text3);font-family:var(--mono);padding:0 12px 8px 29px}
 .ev-api-note{font-size:10px;color:var(--blue-text);padding:0 12px 8px 29px;font-style:italic}
@@ -166,6 +170,7 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 .a-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:4px}
 .a-create{background:var(--green-l)}.a-action{background:var(--green-l)}
 .a-upload{background:#8B5CF6}.a-note{background:var(--amber)}
+.a-request{background:var(--accent)}
 .a-save{background:var(--blue)}.a-pull{background:var(--blue)}
 .a-text{font-size:11px;color:var(--text);line-height:1.4}
 .a-time{font-size:10px;color:var(--text3);margin-top:1px}
@@ -174,6 +179,21 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 .note-bar input:focus{outline:none;border-color:var(--blue)}
 .note-bar button{font-size:11px;padding:5px 9px;border-radius:var(--r);border:1px solid var(--border);background:var(--surface2);cursor:pointer;font-family:var(--font);color:var(--text2)}
 input[type=file]{display:none}
+
+.req-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.35);z-index:1000;display:flex;align-items:center;justify-content:center}
+.req-modal{background:var(--surface);border:1px solid var(--rule);width:420px;max-width:calc(100vw - 32px)}
+.req-modal-hdr{padding:14px 16px;border-bottom:1px solid var(--rule);display:flex;align-items:center;justify-content:space-between}
+.req-modal-title{font-family:var(--font-serif);font-size:15px;color:var(--ink);font-weight:400}
+.req-modal-close{background:none;border:none;cursor:pointer;color:var(--ink3);font-size:16px;padding:0}
+.req-modal-body{padding:16px}
+.req-modal-item-name{font-family:var(--font-ui,var(--font));font-size:13px;font-weight:500;color:var(--ink);margin-bottom:14px;padding:8px 10px;background:var(--surface2);border:1px solid var(--rule)}
+.req-field{margin-bottom:12px}
+.req-label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--ink4);margin-bottom:5px}
+.req-select{width:100%;padding:7px 10px;border:1px solid var(--rule);font-family:var(--font);font-size:12px;color:var(--ink);background:var(--surface)}
+.req-textarea{width:100%;padding:7px 10px;border:1px solid var(--rule);font-family:var(--font);font-size:12px;color:var(--ink);min-height:72px;resize:vertical}
+.req-modal-footer{padding:12px 16px;border-top:1px solid var(--rule);display:flex;justify-content:flex-end;gap:8px}
+.req-btn-secondary{font-size:12px;padding:6px 14px;border:1px solid var(--rule);background:var(--surface);cursor:pointer;font-family:var(--font);color:var(--ink2)}
+.req-btn-primary{font-size:12px;padding:6px 14px;border:1px solid var(--accent);background:var(--accent);color:#fff;cursor:pointer;font-family:var(--font);display:flex;align-items:center;gap:5px}
 
 .user-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.3);z-index:500}
 .user-modal.open{display:flex;justify-content:flex-end;padding:52px 20px 0}
@@ -337,7 +357,7 @@ try{var _r=sessionStorage.getItem('aeroCaseData');if(_r)_i=JSON.parse(_r);}catch
 var _jKey=_i.jurisdiction||'england-wales';
 var _J=typeof getJurisdiction==='function'?getJurisdiction(_jKey):null;
 var C={
-  ref:   _i.ref       ||'AC-2026-0089',
+  ref:   _i.ref       ||'DEF-2026-EW-0089',
   name:  _i.claimant  ||'Daniel Hartley',
   sol:   _i.solicitor ||'Pemberton & Associates Solicitors LLP',
   flight:_i.flight    ||'HC 1184 — LTN to BCN (diverted VLC)',
@@ -351,9 +371,10 @@ var C={
   jurisdiction: _jKey,
   triageNote: _i.triageNote || 'ESCALATE — Montreal Convention consequential loss (£38,250) is the primary exposure. Challenge causation, foreseeability and mitigation. EC261 extraordinary circumstances defence strong on weather diversion.',
   points: _i.points || [],
+  cprDaysLeft: _i.cprDaysLeft != null ? _i.cprDaysLeft : 21,
   user:  'S. Booth'
 };
-if(!C.points.length&&C.ref==='AC-2026-0089'){
+if(!C.points.length&&C.ref==='DEF-2026-EW-0089'){
   C.points=[
     {n:1,claim:'Delay — Art 7(1)(a)',evidenceStatus:'green',evidenceDoc:'Operational delay records system confirmed'},
     {n:2,claim:'Extraordinary circumstances — weather',evidenceStatus:'amber',evidenceDoc:'METAR/SIGMET pending'},
@@ -578,7 +599,7 @@ var MATRIX={
 
 /* ── State ── */
 var primaryType='', secondaryType='', dtMode='primary';
-var uploads={}, pullState={};
+var uploads={}, pullState={}, evidenceRequests={};
 var summaryOpen=false;
 var audit=[];
 var pendingUpload=null;
@@ -588,7 +609,7 @@ var activeRequestId=null;
 
 function evidenceStateKey(){return 'dfa_evidence_'+C.ref;}
 function saveWorkspaceState(){
-  var state={D:D,primaryType:primaryType,secondaryType:secondaryType,dtMode:dtMode,uploads:uploads,pullState:pullState,summaryOpen:summaryOpen,requestSent:requestSent,pullAllDone:pullAllDone,evidencePct:getReadiness().pct,audit:audit.slice(-30)};
+  var state={D:D,primaryType:primaryType,secondaryType:secondaryType,dtMode:dtMode,uploads:uploads,pullState:pullState,summaryOpen:summaryOpen,requestSent:requestSent,pullAllDone:pullAllDone,evidencePct:getReadiness().pct,audit:audit.slice(-30),evidenceRequests:evidenceRequests};
   try{sessionStorage.setItem(evidenceStateKey(),JSON.stringify(state));}catch(e){}
   syncEvidenceToCase();
 }
@@ -606,6 +627,7 @@ function loadWorkspaceState(){
     if(st.requestSent)requestSent=st.requestSent;
     if(st.pullAllDone)pullAllDone=st.pullAllDone;
     if(st.audit&&st.audit.length)audit=st.audit;
+    if(st.evidenceRequests)evidenceRequests=st.evidenceRequests;
   }catch(e){}
 }
 function syncEvidenceToCase(){
@@ -906,7 +928,12 @@ function renderMain(){
       if(!item)return '';
       var isUp=!!(uploads[id]||pullState[id]==='done');
       var isPulling=pullState[id]==='pulling';
-      var dotCls=isUp?'ev-d-green':(item.auto?'ev-d-blue':'ev-d-amber');
+      var req=evidenceRequests[id]||null;
+      var isRequested=req&&req.status==='pending';
+      var isReceived=req&&req.status==='received';
+      var daysAgo=req?Math.floor((Date.now()-req.requestedAtMs)/86400000):0;
+      var isOverdue=isRequested&&daysAgo>req.slaDays;
+      var dotCls=isUp?'ev-d-green':isRequested?(isOverdue?'ev-d-red':'ev-d-amber'):isReceived?'ev-d-blue':(item.auto?'ev-d-blue':'ev-d-grey');
       var tierTag=item.tier==='K'?'<span class="ev-tag tag-key">Key</span>'
                  :item.tier==='S'?'<span class="ev-tag tag-sec">Secondary</span>'
                  :'<span class="ev-tag tag-wide">Wider</span>';
@@ -916,11 +943,31 @@ function renderMain(){
       var conf=evidenceConfidence(id);
       var confPill='<span class="ev-api-pill" style="background:'+conf.bg+';color:'+conf.col+'"><i class="ti ti-brain" style="font-size:9px"></i>'+conf.label+'</span>';
       var actionBtn='';
-      if(isUp) actionBtn='<button class="btn-ev done"><i class="ti ti-check"></i> On file</button>';
-      else if(isPulling) actionBtn='<button class="btn-ev api-btn"><i class="ti ti-loader-2" style="animation:spin 1s linear infinite"></i> Pulling…</button>';
-      else if(item.auto) actionBtn='<button class="btn-ev api-btn"><i class="ti ti-plug"></i> Auto — pending</button>';
-      else actionBtn='<button class="btn-ev" onclick="triggerUpload(\''+id+'\',\''+item.name.replace(/'/g,"\\'")+'\')"><i class="ti ti-upload"></i> Upload</button>';
+      if(isUp){
+        actionBtn='<button class="btn-ev done"><i class="ti ti-check"></i> On file</button>';
+      }else if(isReceived){
+        actionBtn='<button class="btn-ev primary" onclick="uploadReceived(\''+id+'\',\''+item.name.replace(/'/g,"\\'")+'\')"><i class="ti ti-upload"></i> Upload now</button>';
+      }else if(isRequested){
+        if(isOverdue){
+          actionBtn='<button class="btn-ev chase" onclick="chaseRequest(\''+id+'\')"><i class="ti ti-mail-forward"></i> Chase ('+daysAgo+'d)</button>';
+        }else{
+          actionBtn='<button class="btn-ev requested" disabled><i class="ti ti-clock"></i> Requested — '+daysAgo+'d ago</button>';
+        }
+      }else if(isPulling){
+        actionBtn='<button class="btn-ev api-btn"><i class="ti ti-loader-2" style="animation:spin 1s linear infinite"></i> Pulling…</button>';
+      }else if(item.auto){
+        actionBtn='<button class="btn-ev api-btn"><i class="ti ti-plug"></i> Auto — pending</button>';
+      }else{
+        actionBtn='<button class="btn-ev request-btn" onclick="openRequestModal(\''+id+'\',\''+item.name.replace(/'/g,"\\'")+'\')"><i class="ti ti-send"></i> Request</button>'
+          +'<button class="btn-ev" onclick="triggerUpload(\''+id+'\',\''+item.name.replace(/'/g,"\\'")+'\')" style="margin-left:4px"><i class="ti ti-upload"></i> Upload</button>';
+      }
       var fileRow=uploads[id]?'<div class="ev-file" style="padding:4px 0 0">'+uploads[id]+'</div>':'';
+      var reqRow='';
+      if(req&&!isUp){
+        var statusText=isReceived?'Received — upload to file':isOverdue?'Requested '+daysAgo+' days ago · no response — chase now':'Requested from '+req.recipient+' · '+req.requestedAt;
+        var statusCol=isOverdue?'var(--alert)':'var(--caution)';
+        reqRow='<div class="ev-api-note" style="color:'+statusCol+';padding:4px 0 0"><i class="ti ti-clock" style="font-size:9px"></i> '+statusText+'</div>';
+      }
       var repoMatch=getRepositoryMatch(id);
       var repoRow=(!isUp&&repoMatch)?'<div class="ev-api-note" style="padding:4px 0 0;color:var(--green)"><i class="ti ti-database" style="font-size:9px"></i> On file in repository: '+repoMatch.filename+' — click Pull from repository</div>':'';
       var apiRow=(item.auto&&!isUp&&!repoMatch)?'<div class="ev-api-note" style="padding:4px 0 0">'+item.api+'</div>':'';
@@ -945,7 +992,7 @@ function renderMain(){
         +'<div class="ev-why">'+item.why+'</div>'
         +flashRow
         +'<div class="ev-meta"><div class="ev-source"><i class="ti ti-database" style="font-size:10px"></i>'+srcHtml+'</div>'+apiPill+confPill+'</div>'
-        +fileRow+repoRow+apiRow+compRow
+        +fileRow+reqRow+repoRow+apiRow+compRow
         +'</td>'
         +'<td class="ev-actions-col">'+actionBtn+'</td>'
         +'</tr>';
@@ -1123,12 +1170,83 @@ function requestEvidenceCompletion(){
 }
 
 function triggerUpload(id,name){pendingUpload={id:id,name:name};document.getElementById('file-input').click();}
+
+var _pendingRequestId=null;
+var _pendingRequestName=null;
+
+function openRequestModal(id,name){
+  _pendingRequestId=id;
+  _pendingRequestName=name;
+  document.getElementById('req-modal-item-name').textContent=name;
+  document.getElementById('req-note').value='Please provide '+name+' for case '+C.ref+' — flight '+(C.flightNum||'')+' on '+(C.flightDate||'')+'. CPR deadline: '+C.cprDaysLeft+' days.';
+  document.getElementById('request-modal').style.display='flex';
+}
+
+function closeRequestModal(){
+  document.getElementById('request-modal').style.display='none';
+  _pendingRequestId=null;
+  _pendingRequestName=null;
+}
+
+function submitRequest(){
+  if(!_pendingRequestId)return;
+  var recipientVal=document.getElementById('req-recipient').value;
+  var parts=recipientVal.split('|');
+  var recipientName=parts[0];
+  var recipientEmail=parts[1]||'';
+  var sla=parseInt(document.getElementById('req-sla').value,10);
+  var note=document.getElementById('req-note').value.trim();
+  var now=Date.now();
+  var ts=(function(){
+    var d=new Date(now);
+    var months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return d.getDate()+' '+months[d.getMonth()]+' '+d.getFullYear()+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+  })();
+  evidenceRequests[_pendingRequestId]={
+    id:_pendingRequestId,
+    name:_pendingRequestName,
+    recipient:recipientName,
+    recipientEmail:recipientEmail,
+    requestedBy:C.user||'Solicitor',
+    requestedAt:ts,
+    requestedAtMs:now,
+    slaDays:sla,
+    status:'pending',
+    note:note,
+    caseRef:C.ref,
+    cprDaysLeft:C.cprDaysLeft||21
+  };
+  log('Evidence requested — '+_pendingRequestName+' from '+recipientName,'request');
+  closeRequestModal();
+  saveWorkspaceState();
+  render();
+}
+
+function uploadReceived(id,name){
+  if(evidenceRequests[id])evidenceRequests[id].status='received';
+  triggerUpload(id,name);
+}
+
+function chaseRequest(id){
+  var req=evidenceRequests[id];
+  if(!req)return;
+  var subject='CHASE: Evidence request — '+req.name+' — '+req.caseRef;
+  var body='Dear '+req.recipient+',\n\nWe refer to our request dated '+req.requestedAt+' for the following evidence:\n\n'+req.name+'\n\n'+(req.note?req.note+'\n\n':'')+'This case has a CPR deadline of '+req.cprDaysLeft+' days. Please treat this as urgent.\n\nDefendAble Platform — '+req.caseRef;
+  var mailto='mailto:'+(req.recipientEmail||'')+'?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
+  window.open(mailto);
+  log('Chase sent — '+req.name+' ('+req.recipient+')','request');
+  saveWorkspaceState();
+}
+
 function handleUpload(e){
   var f=e.target.files[0];
   if(!f||!pendingUpload)return;
   uploads[pendingUpload.id]=f.name;
+  if(evidenceRequests[pendingUpload.id])evidenceRequests[pendingUpload.id].status='uploaded';
   log('Uploaded: "'+f.name+'" — '+pendingUpload.name,'upload');
-  e.target.value='';pendingUpload=null;render();
+  e.target.value='';pendingUpload=null;
+  saveWorkspaceState();
+  render();
 }
 
 function addNote(){
@@ -1153,6 +1271,31 @@ try{
   if(activeRequestId)sessionStorage.setItem('dfa_active_request',activeRequestId);
 }catch(e){}
 loadWorkspaceState();
+// Seed demo requests for Hartley if none exist
+if(C.ref==='DEF-2026-EW-0089'&&Object.keys(evidenceRequests).length===0){
+  var baseMs=Date.now()-(8*86400000);
+  var baseMs2=Date.now()-(2*86400000);
+  evidenceRequests['eurocontrol']={
+    id:'eurocontrol',name:'Eurocontrol CRCO reference',
+    recipient:'Ops team',recipientEmail:'ops-legal@[client].com',
+    requestedBy:'S. Booth',
+    requestedAt:'4 Jun 2026 10:00',requestedAtMs:baseMs,
+    slaDays:5,status:'pending',
+    note:'ATFM slot restriction certificate for HC1184 13 March 2026. Case DEF-2026-EW-0089. CPR deadline 3 days.',
+    caseRef:'DEF-2026-EW-0089',cprDaysLeft:3
+  };
+  evidenceRequests['aims']={
+    id:'aims',name:'Crew roster records (AIMS)',
+    recipient:'Crew scheduling',
+    recipientEmail:'crew-scheduling@[client].com',
+    requestedBy:'S. Booth',
+    requestedAt:'10 Jun 2026 14:30',requestedAtMs:baseMs2,
+    slaDays:5,status:'pending',
+    note:'Crew availability records for HC1184 13 March 2026. Confirm no preventable crew shortage.',
+    caseRef:'DEF-2026-EW-0089',cprDaysLeft:3
+  };
+  saveWorkspaceState();
+}
 /* ── Init ── */
 if(!audit.length)log('Evidence workspace opened — ' + C.name,'create');
 render();
@@ -1288,5 +1431,45 @@ function switchUser(id){
 
 </script>
 <script src="shared_nav.js"></script>
+
+<div id="request-modal" class="req-modal-overlay" onclick="closeRequestModal()" style="display:none">
+  <div class="req-modal" onclick="event.stopPropagation()">
+    <div class="req-modal-hdr">
+      <div class="req-modal-title">Request evidence</div>
+      <button class="req-modal-close" onclick="closeRequestModal()"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="req-modal-body">
+      <div class="req-modal-item-name" id="req-modal-item-name"></div>
+      <div class="req-field">
+        <label class="req-label">Request from</label>
+        <select id="req-recipient" class="req-select">
+          <option value="Ops team|ops-legal@[client].com">Ops team — operational records</option>
+          <option value="Crew scheduling|crew-scheduling@[client].com">Crew scheduling — roster records</option>
+          <option value="Ground operations|ground-ops@[client].com">Ground operations — airport records</option>
+          <option value="Eurocontrol|atfm@eurocontrol.int">Eurocontrol — ATFM/CRCO data</option>
+          <option value="Met office|metar-requests@metoffice.gov.uk">Met office — METAR/NOTAM</option>
+          <option value="Claimant solicitor|">Claimant solicitor — disclosure request</option>
+          <option value="Other|">Other</option>
+        </select>
+      </div>
+      <div class="req-field">
+        <label class="req-label">Expected response (working days)</label>
+        <select id="req-sla" class="req-select">
+          <option value="3">3 days — urgent</option>
+          <option value="5" selected>5 days — standard</option>
+          <option value="10">10 days — external source</option>
+        </select>
+      </div>
+      <div class="req-field">
+        <label class="req-label">Additional note (optional)</label>
+        <textarea id="req-note" class="req-textarea" placeholder="e.g. ATD/ATA for flight HC1184 on 13 March 2026 — case reference DEF-2026-EW-0089"></textarea>
+      </div>
+    </div>
+    <div class="req-modal-footer">
+      <button class="req-btn-secondary" onclick="closeRequestModal()">Cancel</button>
+      <button class="req-btn-primary" onclick="submitRequest()"><i class="ti ti-send"></i> Raise request</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>

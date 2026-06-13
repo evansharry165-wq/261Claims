@@ -116,7 +116,7 @@ function markRequestComplete(id){
       size:84000
     });
     try{
-      var evState=JSON.parse(sessionStorage.getItem('dfa_evidence_AC-2026-0089')||'null');
+      var evState=JSON.parse(sessionStorage.getItem('dfa_evidence_DEF-2026-EW-0089')||'null');
       if(evState){
         evState.uploads=evState.uploads||{};
         evState.uploads.ops_review='HC1184_DailyOpsReview_24MAR24.pdf';
@@ -128,13 +128,49 @@ function markRequestComplete(id){
         evState.pullState.dpm='done';
         evState.pullAllDone=true;
         evState.evidencePct=100;
-        sessionStorage.setItem('dfa_evidence_AC-2026-0089',JSON.stringify(evState));
+        sessionStorage.setItem('dfa_evidence_DEF-2026-EW-0089',JSON.stringify(evState));
       }
       if(typeof syncCaseEvidencePct==='function')syncCaseEvidencePct(req.ref,100,true);
     }catch(e){}
   }
   sessionStorage.removeItem('dfa_active_request');
   render();
+}
+
+function buildEvidenceRequestSection(){
+  var uid=typeof getActiveUser==='function'?getActiveUser():'SB';
+  var cases=typeof ALL_CASES!=='undefined'?ALL_CASES:[];
+  var userCases=cases.filter(function(c){return c.assignedTo===uid;});
+  var reqs=[];
+  userCases.forEach(function(c){
+    try{
+      var st=JSON.parse(sessionStorage.getItem('dfa_evidence_'+c.ref)||'null');
+      if(!st||!st.evidenceRequests)return;
+      Object.values(st.evidenceRequests).forEach(function(r){
+        var daysAgo=Math.floor((Date.now()-r.requestedAtMs)/86400000);
+        reqs.push(Object.assign({},r,{daysAgo:daysAgo,overdue:daysAgo>r.slaDays}));
+      });
+    }catch(e){}
+  });
+  if(!reqs.length)return '<div class="notif-bar"><strong>No outstanding evidence requests</strong>All evidence requests for your caseload have been fulfilled.</div>';
+  reqs.sort(function(a,b){
+    if(a.overdue&&!b.overdue)return -1;
+    if(!a.overdue&&b.overdue)return 1;
+    return (a.cprDaysLeft||99)-(b.cprDaysLeft||99);
+  });
+  return reqs.map(function(req){
+    var urgCls=req.overdue?'urgent':'';
+    return '<div class="req-card"><div class="req-top"><div>'
+      +'<div class="req-id">'+escapeHtml(req.caseRef)+'<span class="req-pill '+urgCls+'">'+(req.overdue?'Overdue — '+req.daysAgo+'d':'Pending — '+req.daysAgo+'d')+'</span></div>'
+      +'<div class="req-title">'+escapeHtml(req.name)+'</div>'
+      +'<div class="req-meta">Requested from: '+escapeHtml(req.recipient)+' · '+escapeHtml(req.requestedAt)+' · by '+escapeHtml(req.requestedBy)
+      +(req.note?'<br><span style="color:var(--text3)">'+escapeHtml(req.note)+'</span>':'')
+      +'</div></div></div>'
+      +'<div class="req-actions">'
+      +'<a href="module4-evidence-workspace.html?ref='+encodeURIComponent(req.caseRef)+'" class="btn-mini primary"><i class="ti ti-arrow-right"></i> Open evidence workspace</a>'
+      +(req.recipientEmail?'<a href="mailto:'+req.recipientEmail+'?subject='+encodeURIComponent('CHASE: '+req.name+' — '+req.caseRef)+'" class="btn-mini"><i class="ti ti-mail-forward"></i> Chase by email</a>':'')
+      +'</div></div>';
+  }).join('');
 }
 
 function render(){
@@ -149,7 +185,8 @@ function render(){
   var notifHtml=notifs.length?'<div class="notif-bar"><strong><i class="ti ti-bell"></i> '+notifs.length+' new notification'+(notifs.length!==1?'s':'')+'</strong>'+notifs.slice(0,3).map(function(n){return escapeHtml(n.title)+' — '+escapeHtml(n.body);}).join('<br>')+'</div>':'';
 
   document.getElementById('page').innerHTML=
-    '<div class="page-hdr"><h1>Evidence requests · '+open.length+' open</h1><p>Queue for '+escapeHtml(u.name)+' — requests from legal teams where gold evidence packs have gaps</p></div>'
+    buildEvidenceRequestSection()
+    +'<div class="page-hdr"><h1>Evidence requests · '+open.length+' open</h1><p>Queue for '+escapeHtml(u.name)+' — requests from legal teams where gold evidence packs have gaps</p></div>'
     +notifHtml
     +'<div class="stats"><div class="stat"><div class="stat-label">Open</div><div class="stat-val">'+open.length+'</div></div><div class="stat"><div class="stat-label">Urgent</div><div class="stat-val" style="color:var(--red)">'+open.filter(function(r){return r.priority==='Urgent';}).length+'</div></div><div class="stat"><div class="stat-label">Complete</div><div class="stat-val" style="color:var(--green)">'+complete.length+'</div></div></div>'
     +'<div class="filter-bar"><button class="filter-chip '+(statusFilter==='open'?'active':'')+'" onclick="setStatusFilter(\'open\')">Open</button><button class="filter-chip '+(statusFilter==='in-progress'?'active':'')+'" onclick="setStatusFilter(\'in-progress\')">In progress</button><button class="filter-chip '+(statusFilter==='complete'?'active':'')+'" onclick="setStatusFilter(\'complete\')">Complete</button></div>'
@@ -178,7 +215,7 @@ function switchUser(id){
     if(sessionStorage.getItem('dfa_seeded_eh_notif'))return;
     var reqs=getEvidenceRequests();
     if(reqs.some(function(r){return r.id==='REQ-001'&&r.status!=='complete';})){
-      pushNotification({to:'EH',type:'evidence-request',ref:'AC-2026-0089',requestId:'REQ-001',title:'New evidence request',body:'S. Booth requests a Daily Operations Review for 24MAR24 — Daniel Hartley',tab:'requests'});
+      pushNotification({to:'EH',type:'evidence-request',ref:'DEF-2026-EW-0089',requestId:'REQ-001',title:'New evidence request',body:'S. Booth requests a Daily Operations Review for 24MAR24 — Daniel Hartley',tab:'requests'});
       sessionStorage.setItem('dfa_seeded_eh_notif','1');
     }
   }catch(e){}
