@@ -111,6 +111,12 @@ html.embed-mode .global-nav,html.embed-mode #user-modal{display:none!important}
 html.embed-mode .page{height:100%!important}
 @keyframes spin{to{transform:rotate(360deg)}}
 
+
+.intel-filter{font-size:11px;padding:3px 10px;border:1px solid var(--rule);
+  background:var(--surface);cursor:pointer;font-family:var(--font);color:var(--ink2)}
+.intel-filter.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+.intel-filter:hover:not(.active){background:var(--surface2)}
+
 </style>
 </head>
 <body>
@@ -140,23 +146,25 @@ html.embed-mode .page{height:100%!important}
       <div class="sb-header-title">Knowledge Hub</div>
       <div class="sb-header-sub">Guidance, case law, and operational training for the legal team</div>
     </div>
-    <div class="sb-section">Legal knowledge</div>
+    <div class="sb-section">Knowledge base</div>
     <div class="sb-item active" onclick="showSection('regulation', event)"><i class="ti ti-file-certificate"></i> EC 261/2004 regulation <span class="sb-count">12</span></div>
     <div class="sb-item" onclick="showSection('caselaw', event)"><i class="ti ti-gavel"></i> Key case law <span class="sb-count">8</span></div>
-    <div class="sb-item" onclick="showSection('defence', event)"><i class="ti ti-shield"></i> Defence strategies <span class="sb-count">6</span></div>
-    <div class="sb-item" onclick="showSection('quickref', event)"><i class="ti ti-table"></i> Quick reference</div>
-
-    <div class="sb-section">Operations</div>
+    <div class="sb-item" onclick="showSection('defence', event)"><i class="ti ti-shield-check"></i> Defence strategies <span class="sb-count">6</span></div>
     <div class="sb-item" onclick="showSection('evidence_guides', event)"><i class="ti ti-folder-open"></i> Evidence guides <span class="sb-count">5</span></div>
-    <div class="sb-item" onclick="showSection('cpr_guide', event)"><i class="ti ti-calendar-due"></i> CPR obligations</div>
     <div class="sb-item" onclick="showSection('disruption', event)"><i class="ti ti-bolt"></i> Disruption types <span class="sb-count">15</span></div>
-    <div class="sb-item" onclick="showSection('france-spain', event)"><i class="ti ti-world"></i> France & Spain</div>
-
-    <div class="sb-section">Team resources</div>
-    <div class="sb-item" onclick="showSection('repository_learning', event)"><i class="ti ti-database"></i> Repository learning</div>
+    <div class="sb-item" onclick="showSection('france-spain', event)"><i class="ti ti-world"></i> Jurisdictions</div>
+    <div class="sb-item" onclick="showSection('quickref', event)"><i class="ti ti-table"></i> Quick reference</div>
+    <div class="sb-item" onclick="showSection('cpr_guide', event)"><i class="ti ti-calendar-due"></i> CPR obligations</div>
     <div class="sb-item" onclick="showSection('templates', event)"><i class="ti ti-file-text"></i> Document templates</div>
-    <div class="sb-item" onclick="showSection('updates', event)"><i class="ti ti-news"></i> Legal updates <span class="sb-count" style="background:var(--red-faint);color:var(--red)">3</span></div>
-    <div class="sb-item" onclick="showSection('live-updates', event)"><i class="ti ti-live-photo"></i> Live intelligence <span style="font-size:9px;background:#EAF3DE;color:#3B6D11;padding:1px 5px;border-radius:8px;margin-left:4px">LIVE</span></div>
+
+    <div class="sb-section">Intelligence</div>
+    <div class="sb-item" id="sb-intelligence" onclick="showSection('intelligence', event)">
+      <i class="ti ti-radar"></i> Live &amp; published updates
+      <span id="intelligence-badge" style="display:none;font-size:9px;padding:1px 6px;border-radius:8px;background:var(--alert-faint);color:var(--alert);margin-left:4px;font-weight:500">NEW</span>
+      <span style="font-size:9px;background:#EAF3DE;color:#3B6D11;padding:1px 5px;border-radius:8px;margin-left:4px">LIVE</span>
+    </div>
+    <div class="sb-item" onclick="showSection('contribute', event)"><i class="ti ti-pencil-plus"></i> Contribute update</div>
+    <div class="sb-item" onclick="showSection('repository_learning', event)"><i class="ti ti-database"></i> Repository learning</div>
   </div>
 
   <div class="main" id="main"></div>
@@ -187,6 +195,7 @@ function showSection(s, ev){
   try{history.replaceState({},'','education.html?section='+encodeURIComponent(s));}catch(e){}
   render();
   if(s==='live-updates'){setTimeout(initLiveUpdates,50);}
+  if(s==='intelligence'){setTimeout(initIntelligenceHub,50);}
 }
 
 var SECTIONS = {
@@ -435,7 +444,422 @@ repository_learning: {
   content: function(){ return renderLiveUpdates(); }
 },
 
+'intelligence': {
+  title: 'Legal intelligence — live and published',
+  sub: 'Automated feeds and team-published updates — filtered, searchable, with apply-to links',
+  content: function(){ return renderIntelligenceHub(); }
+},
+
+'contribute': {
+  title: 'Contribute a knowledge update',
+  sub: 'Publish a legal update, judgment summary or guidance note to your jurisdiction team',
+  content: function(){ return renderContributeForm(); }
+}
+
 };
+
+
+/* ── Intelligence Hub — combined live + published updates ── */
+var PUBLISHED_UPDATES = [];
+
+function loadPublishedUpdates(){
+  try{
+    var stored = JSON.parse(sessionStorage.getItem('dfa_published_updates')||'[]');
+    PUBLISHED_UPDATES = stored;
+  }catch(e){ PUBLISHED_UPDATES = []; }
+}
+
+function savePublishedUpdates(){
+  try{ sessionStorage.setItem('dfa_published_updates', JSON.stringify(PUBLISHED_UPDATES)); }catch(e){}
+}
+
+function renderIntelligenceHub(){
+  loadPublishedUpdates();
+  return '<div id="intel-hub">'
+    + '<div style="text-align:center;padding:32px;color:var(--ink4)">'
+      + '<i class="ti ti-loader-2" style="font-size:20px;animation:spin 1s linear infinite;display:block;margin-bottom:8px"></i>'
+      + '<div style="font-size:12px">Loading intelligence feed...</div>'
+    + '</div>'
+  + '</div>';
+}
+
+function initIntelligenceHub(){
+  var el = document.getElementById('intel-hub');
+  if(!el) return;
+  
+  fetch('knowledge_store.json?t='+Date.now())
+    .then(function(r){ return r.json(); })
+    .then(function(store){
+      var liveEntries = (store.entries||[]).slice().sort(function(a,b){
+        if(a.actionRequired&&!b.actionRequired) return -1;
+        if(!a.actionRequired&&b.actionRequired) return 1;
+        return new Date(b.date)-new Date(a.date);
+      });
+      
+      var allEntries = PUBLISHED_UPDATES.concat(liveEntries);
+      
+      // Filter bar
+      var filterHtml = '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;align-items:center">'
+        + '<span style="font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink4);margin-right:4px">Filter</span>'
+        + ['All','England & Wales','France','Spain','High impact','Action required'].map(function(f){
+            return '<button onclick="filterIntel(this,''+f+'')" class="intel-filter'+(f==='All'?' active':'')+'">' + f + '</button>';
+          }).join('')
+        + '<button onclick="showSection('contribute')" style="margin-left:auto;font-size:11px;padding:4px 12px;border:1px solid var(--accent);color:var(--accent);background:var(--accent-faint);cursor:pointer;font-family:var(--font)">'
+          + '<i class="ti ti-pencil-plus"></i> Contribute update'
+        + '</button>'
+      + '</div>';
+      
+      var entriesHtml = '<div id="intel-entries">' + renderIntelEntries(allEntries, 'All') + '</div>';
+      
+      el.innerHTML = filterHtml + entriesHtml;
+      
+      // Clear new badge after viewing
+      var badge = document.getElementById('intelligence-badge');
+      if(badge) badge.style.display = 'none';
+      sessionStorage.setItem('dfa_intel_last_seen', Date.now());
+    })
+    .catch(function(){
+      if(el) el.innerHTML = '<div style="font-size:12px;color:var(--ink4);padding:20px">Intelligence feed unavailable. Check connection.</div>';
+    });
+}
+
+function renderIntelEntries(entries, filter){
+  var filtered = entries.filter(function(e){
+    if(filter==='All') return true;
+    if(filter==='High impact') return e.impact==='high';
+    if(filter==='Action required') return e.actionRequired;
+    if(filter==='England & Wales') return (e.jurisdiction||[]).indexOf('england-wales')>=0||(e.jurisdiction||[]).indexOf('all')>=0;
+    if(filter==='France') return (e.jurisdiction||[]).indexOf('france')>=0||(e.jurisdiction||[]).indexOf('all')>=0;
+    if(filter==='Spain') return (e.jurisdiction||[]).indexOf('spain')>=0||(e.jurisdiction||[]).indexOf('all')>=0;
+    return true;
+  });
+  
+  if(!filtered.length) return '<div style="padding:24px;font-size:12px;color:var(--ink4);text-align:center">No updates match this filter</div>';
+  
+  var impactCols = {high:['var(--alert)','var(--alert-faint)','#E8BABA'], medium:['var(--caution)','var(--caution-faint)','#EFD9A3'], low:['var(--confirm)','var(--confirm-faint)','#BBD9C8']};
+  var jurFlags = {'england-wales':'🇬🇧','france':'🇫🇷','spain':'🇪🇸','all':'🌍'};
+  var typeIcons = {judgment:'ti-gavel',regulatory:'ti-building-government',procedural:'ti-file-description',guidance:'ti-book-2'};
+  
+  return filtered.map(function(e){
+    var imp = impactCols[e.impact]||impactCols.medium;
+    var isPublished = !!e.publishedBy;
+    var sourceLabel = isPublished
+      ? '<span style="font-size:10px;padding:1px 6px;background:var(--accent-faint);color:var(--accent);border:1px solid #C2D0E8">Team update</span>'
+      : '<span style="font-size:10px;padding:1px 6px;background:#EAF3DE;color:#3B6D11;border:1px solid #C0DD97">Live</span>';
+    
+    // Apply-this links — surgical routing based on content type
+    var applyLinks = [];
+    if(e.disruptionTypes&&e.disruptionTypes.length){
+      e.disruptionTypes.forEach(function(dt){
+        if(dt!=='all') applyLinks.push(
+          '<a href="module4-evidence-workspace.html'+(activeCaseQuery()?activeCaseQuery():'')+'" '
+          +'style="font-size:10px;color:var(--accent);text-decoration:none;margin-right:8px">'
+          +'Apply to '+dt+' evidence ↗</a>'
+        );
+      });
+    }
+    if(e.jurisdiction&&e.jurisdiction.length&&e.jurisdiction[0]!=='all'){
+      e.jurisdiction.forEach(function(j){
+        applyLinks.push(
+          '<a href="cases.html?jur='+j+'" '
+          +'style="font-size:10px;color:var(--accent);text-decoration:none;margin-right:8px">'
+          +(jurFlags[j]||'')+' View '+j.replace('-',' ')+' cases ↗</a>'
+        );
+      });
+    }
+    
+    return '<div style="background:var(--surface);border:1px solid var(--rule);'
+      +'border-left:3px solid '+imp[0]+';padding:14px 16px;margin-bottom:10px">'
+      
+      // Header
+      +'<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:8px">'
+        +'<div style="display:flex;align-items:center;gap:8px">'
+          +'<i class="ti '+(typeIcons[e.type]||'ti-file-description')+'" style="color:'+imp[0]+';font-size:15px"></i>'
+          +'<div>'
+            +'<div style="font-family:var(--font-serif);font-size:13px;color:var(--ink);font-weight:400;line-height:1.3">'
+              +e.title
+            +'</div>'
+            +'<div style="font-size:10px;color:var(--ink4);margin-top:2px;font-family:var(--mono)">'
+              +e.source+' · '+(e.date?new Date(e.date).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}):'')+
+              (isPublished?' · Published by '+e.publishedBy:'')
+            +'</div>'
+          +'</div>'
+        +'</div>'
+        +'<div style="display:flex;gap:4px;flex-shrink:0">'
+          +sourceLabel
+          +'<span style="font-size:10px;font-weight:500;padding:1px 6px;border:1px solid '+imp[2]+';color:'+imp[0]+';background:'+imp[1]+'">'
+            +(e.impact||'medium').toUpperCase()
+          +'</span>'
+        +'</div>'
+      +'</div>'
+      
+      // Jurisdiction tags
+      +'<div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px">'
+        +(e.jurisdiction||[]).map(function(j){
+          return '<span style="font-size:10px;padding:1px 6px;background:var(--surface2);border:1px solid var(--rule);color:var(--ink3)">'
+            +(jurFlags[j]||'')+(j==='all'?' All jurisdictions':(' '+j.charAt(0).toUpperCase()+j.slice(1).replace('-',' ')))
+          +'</span>';
+        }).join('')
+        +(e.disruptionTypes||[]).filter(function(d){return d!=='all';}).map(function(d){
+          return '<span style="font-size:10px;padding:1px 6px;background:var(--surface2);border:1px solid var(--rule);color:var(--ink3)">'+d+'</span>';
+        }).join('')
+      +'</div>'
+      
+      // Summary
+      +'<div style="font-size:12px;color:var(--ink2);line-height:1.7;margin-bottom:8px">'
+        +(e.summary||'')
+      +'</div>'
+      
+      // Action note
+      +(e.actionRequired&&e.actionNote
+        ?'<div style="background:var(--caution-faint);border:1px solid #EFD9A3;padding:7px 10px;font-size:11px;color:var(--caution);margin-bottom:8px">'
+          +'<strong>Action required: </strong>'+e.actionNote
+        +'</div>'
+        :''
+      )
+      
+      // Risk note (from team-published entries)
+      +(e.riskNote
+        ?'<div style="background:var(--accent-faint);border:1px solid #C2D0E8;padding:7px 10px;font-size:11px;color:var(--accent);margin-bottom:8px">'
+          +'<strong>Application note: </strong>'+e.riskNote
+        +'</div>'
+        :''
+      )
+      
+      // Apply-this links
+      +(applyLinks.length
+        ?'<div style="margin-top:6px;padding-top:6px;border-top:1px solid var(--rule2)">'
+          +'<span style="font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--ink4);margin-right:8px">Apply to</span>'
+          +applyLinks.join('')
+        +'</div>'
+        :''
+      )
+      
+    +'</div>';
+  }).join('');
+}
+
+function filterIntel(btn, filter){
+  document.querySelectorAll('.intel-filter').forEach(function(b){ b.classList.remove('active'); });
+  btn.classList.add('active');
+  var el = document.getElementById('intel-entries');
+  if(!el) return;
+  
+  // Rebuild from current data
+  fetch('knowledge_store.json?t='+Date.now())
+    .then(function(r){ return r.json(); })
+    .then(function(store){
+      var liveEntries = store.entries||[];
+      var allEntries = PUBLISHED_UPDATES.concat(liveEntries);
+      el.innerHTML = renderIntelEntries(allEntries, filter);
+    });
+}
+
+/* ── Contribute form ── */
+function renderContributeForm(){
+  return '<div style="max-width:600px">'
+    + '<div style="background:var(--surface);border:1px solid var(--rule);padding:20px">'
+    
+    + '<div class="section-rule" style="margin-bottom:16px">'
+      + '<span class="section-label">Publish a knowledge update</span>'
+      + '<div class="section-line"></div>'
+    + '</div>'
+    
+    + formField('Title', 'contrib-title', 'text', 'e.g. Lipton v BA Cityflyer — pilot illness not extraordinary circumstance')
+    
+    + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">'
+      + formSelect('Source', 'contrib-source', ['Bailii','EUR-Lex','CAA','AviationADR','DGAC (France)','AESA (Spain)','Other'])
+      + formSelect('Impact', 'contrib-impact', ['High','Medium','Low'])
+    + '</div>'
+    
+    + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">'
+      + formSelect('Type', 'contrib-type', ['Judgment','Regulatory','Procedural','Guidance'])
+      + formField('Date', 'contrib-date', 'date', '')
+    + '</div>'
+    
+    + '<div style="margin-bottom:12px">'
+      + '<label class="req-label">Jurisdiction</label>'
+      + '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:5px">'
+        + ['England & Wales','France','Spain','All jurisdictions'].map(function(j){
+            var val = j==='England & Wales'?'england-wales':j==='All jurisdictions'?'all':j.toLowerCase();
+            return '<label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer">'
+              + '<input type="checkbox" id="jur-'+val+'" value="'+val+'"> '+j+'</label>';
+          }).join('')
+      + '</div>'
+    + '</div>'
+    
+    + '<div style="margin-bottom:12px">'
+      + '<label class="req-label">Disruption types affected</label>'
+      + '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:5px">'
+        + ['Weather','ATC Restrictions','Technical Issues','Denied Boarding','Cancellation','All'].map(function(dt){
+            return '<label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer">'
+              + '<input type="checkbox" id="dt-'+dt.replace(/ /g,'-')+'" value="'+dt+'"> '+dt+'</label>';
+          }).join('')
+      + '</div>'
+    + '</div>'
+    
+    + formTextarea('Summary', 'contrib-summary', 'Summarise the key finding, ruling or regulatory change (minimum 80 characters)...')
+    + formTextarea('Application note', 'contrib-risk', 'How does this affect current cases? What should solicitors do? Any risks or limitations?')
+    
+    + '<div style="margin-bottom:16px">'
+      + '<label style="display:flex;align-items:center;gap:8px;font-size:12px;cursor:pointer">'
+        + '<input type="checkbox" id="contrib-action"> '
+        + '<span>Action required — solicitors must act on this update</span>'
+      + '</label>'
+      + '<div id="contrib-action-note-wrap" style="display:none;margin-top:8px">'
+        + formField('Action instruction', 'contrib-action-note', 'text', 'e.g. Review all open crew illness cases — liability position weakened')
+      + '</div>'
+    + '</div>'
+    
+    + '<button onclick="submitContribution()" '
+      + 'style="font-size:12px;padding:8px 18px;background:var(--accent);color:#fff;'
+      + 'border:1px solid var(--accent);cursor:pointer;font-family:var(--font);'
+      + 'display:flex;align-items:center;gap:6px">'
+      + '<i class="ti ti-send"></i> Publish update'
+    + '</button>'
+    
+    + '<div id="contrib-success" style="display:none;margin-top:12px;padding:10px 12px;'
+      + 'background:var(--confirm-faint);border:1px solid #BBD9C8;font-size:12px;color:var(--confirm)">'
+    + '</div>'
+    
+    + '</div>'
+  + '</div>';
+}
+
+function formField(label, id, type, placeholder){
+  return '<div style="margin-bottom:12px">'
+    +'<label class="req-label">'+label+'</label>'
+    +'<input type="'+type+'" id="'+id+'" placeholder="'+placeholder+'" '
+    +'style="width:100%;padding:7px 10px;border:1px solid var(--rule);font-family:var(--font);'
+    +'font-size:12px;color:var(--ink);background:var(--surface)">'
+  +'</div>';
+}
+
+function formSelect(label, id, options){
+  return '<div style="margin-bottom:12px">'
+    +'<label class="req-label">'+label+'</label>'
+    +'<select id="'+id+'" style="width:100%;padding:7px 10px;border:1px solid var(--rule);'
+    +'font-family:var(--font);font-size:12px;color:var(--ink);background:var(--surface)">'
+    +options.map(function(o){return '<option>'+o+'</option>';}).join('')
+    +'</select>'
+  +'</div>';
+}
+
+function formTextarea(label, id, placeholder){
+  return '<div style="margin-bottom:12px">'
+    +'<label class="req-label">'+label+'</label>'
+    +'<textarea id="'+id+'" placeholder="'+placeholder+'" '
+    +'style="width:100%;padding:7px 10px;border:1px solid var(--rule);font-family:var(--font);'
+    +'font-size:12px;color:var(--ink);min-height:80px;resize:vertical"></textarea>'
+  +'</div>';
+}
+
+function submitContribution(){
+  var title = document.getElementById('contrib-title').value.trim();
+  var source = document.getElementById('contrib-source').value;
+  var impact = document.getElementById('contrib-impact').value.toLowerCase();
+  var type = document.getElementById('contrib-type').value.toLowerCase();
+  var summary = document.getElementById('contrib-summary').value.trim();
+  var riskNote = document.getElementById('contrib-risk').value.trim();
+  var dateVal = document.getElementById('contrib-date').value || new Date().toISOString().slice(0,10);
+  var actionReq = document.getElementById('contrib-action').checked;
+  var actionNote = actionReq ? document.getElementById('contrib-action-note').value.trim() : '';
+  
+  if(!title){ alert('Title is required'); return; }
+  if(summary.length < 40){ alert('Please provide a fuller summary (minimum 40 characters)'); return; }
+  
+  var jurChecked = ['england-wales','france','spain','all'].filter(function(j){
+    var el = document.getElementById('jur-'+j);
+    return el && el.checked;
+  });
+  if(!jurChecked.length) jurChecked = ['all'];
+  
+  var dtChecked = ['Weather','ATC Restrictions','Technical Issues','Denied Boarding','Cancellation','All'].filter(function(dt){
+    var el = document.getElementById('dt-'+dt.replace(/ /g,'-'));
+    return el && el.checked;
+  });
+  if(!dtChecked.length) dtChecked = ['all'];
+  
+  var uid = typeof getActiveUser === 'function' ? getActiveUser() : 'SB';
+  var uName = (typeof USERS !== 'undefined' && USERS[uid]) ? USERS[uid].full : uid;
+  
+  var entry = {
+    id: 'PUB-'+Date.now(),
+    type: type,
+    source: source,
+    title: title,
+    date: dateVal,
+    summary: summary,
+    riskNote: riskNote,
+    jurisdiction: jurChecked,
+    disruptionTypes: dtChecked,
+    impact: impact,
+    actionRequired: actionReq,
+    actionNote: actionNote,
+    publishedBy: uName,
+    publishedAt: new Date().toISOString()
+  };
+  
+  loadPublishedUpdates();
+  PUBLISHED_UPDATES.unshift(entry);
+  savePublishedUpdates();
+  
+  // Set notification flag for other users
+  var notifications = JSON.parse(sessionStorage.getItem('dfa_knowledge_notifications')||'[]');
+  notifications.push({
+    id: entry.id,
+    title: title,
+    impact: impact,
+    jurisdiction: jurChecked,
+    publishedBy: uName,
+    publishedAt: entry.publishedAt,
+    expiresAt: new Date(Date.now() + 7*86400000).toISOString()
+  });
+  sessionStorage.setItem('dfa_knowledge_notifications', JSON.stringify(notifications));
+  
+  var jurLabels = jurChecked.map(function(j){
+    return j==='all'?'all jurisdictions':j.replace('-',' ');
+  }).join(', ');
+  
+  var success = document.getElementById('contrib-success');
+  if(success){
+    success.textContent = 'Published. Solicitors covering '+jurLabels+' will see this update on their next login. The entry has been added to the intelligence feed.';
+    success.style.display = 'block';
+  }
+  
+  // Clear form
+  ['contrib-title','contrib-summary','contrib-risk','contrib-action-note'].forEach(function(id){
+    var el = document.getElementById(id);
+    if(el) el.value = '';
+  });
+  document.getElementById('contrib-action').checked = false;
+}
+
+/* ── Check for new notifications badge ── */
+function checkIntelligenceBadge(){
+  var lastSeen = parseInt(sessionStorage.getItem('dfa_intel_last_seen')||'0');
+  var notifications = JSON.parse(sessionStorage.getItem('dfa_knowledge_notifications')||'[]');
+  var now = Date.now();
+  var fresh = notifications.filter(function(n){
+    return new Date(n.publishedAt).getTime() > lastSeen
+      && new Date(n.expiresAt).getTime() > now;
+  });
+  var badge = document.getElementById('intelligence-badge');
+  if(badge && fresh.length > 0){
+    badge.style.display = 'inline';
+    badge.textContent = fresh.length > 1 ? fresh.length+' NEW' : 'NEW';
+  }
+}
+
+
+// Toggle action note field
+document.addEventListener('change', function(e){
+  if(e.target && e.target.id === 'contrib-action'){
+    var wrap = document.getElementById('contrib-action-note-wrap');
+    if(wrap) wrap.style.display = e.target.checked ? 'block' : 'none';
+  }
+});
+
 
 function activeCaseQuery(){
   try{
@@ -511,6 +935,7 @@ function render(){
     '<div class="pg-hdr"><div class="pg-title">'+s.title+'</div><div class="pg-sub">'+s.sub+'</div></div>'
     + s.content();
   if(typeof renderGlobalNav==='function')renderGlobalNav();
+  checkIntelligenceBadge();
 }
 
 
