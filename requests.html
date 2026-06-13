@@ -45,6 +45,22 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 .stat-val{font-size:22px;font-weight:500;margin-top:4px}
 .notif-bar{background:var(--blue-faint);border:1px solid #BFDBFE;border-radius:var(--r2);padding:10px 14px;margin-bottom:14px;font-size:12px;color:var(--blue-text)}
 .notif-bar strong{display:block;margin-bottom:4px}
+.sol-req-section{margin-bottom:20px}
+.sol-req-hdr{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:10px;gap:10px}
+.sol-req-hdr h2{font-size:13px;font-weight:500;color:var(--text);letter-spacing:-0.01em}
+.sol-req-hdr span{font-size:11px;color:var(--text3)}
+.sol-req-list{background:var(--surface);border:1px solid var(--border);border-radius:var(--r3);overflow:hidden}
+.sol-req-row{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;padding:12px 14px;border-bottom:1px solid var(--rule2);transition:background .12s}
+.sol-req-row:last-child{border-bottom:none}
+.sol-req-row:hover{background:var(--surface2)}
+.sol-req-name{font-size:13px;font-weight:500;color:var(--text);margin-bottom:3px;line-height:1.35}
+.sol-req-meta{font-size:11px;color:var(--text3);line-height:1.45}
+.sol-req-badge{font-size:10px;font-weight:500;padding:3px 8px;border-radius:10px;white-space:nowrap}
+.sol-req-badge.pending{background:var(--surface2);color:var(--text3)}
+.sol-req-badge.overdue{background:var(--red-faint);color:var(--red)}
+.sol-req-actions{display:flex;gap:6px;margin-top:8px}
+.sol-req-empty{background:var(--surface);border:1px solid var(--border);border-radius:var(--r3);padding:16px 14px;font-size:12px;color:var(--text3);line-height:1.5;margin-bottom:20px}
+.sol-req-empty strong{display:block;font-size:12px;color:var(--text2);margin-bottom:4px;font-weight:500}
 .user-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.3);z-index:500;justify-content:flex-end;padding:52px 20px 0}
 .user-modal.open{display:flex}
 .user-dropdown{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);width:230px;overflow:hidden}
@@ -147,30 +163,34 @@ function buildEvidenceRequestSection(){
       var st=JSON.parse(sessionStorage.getItem('dfa_evidence_'+c.ref)||'null');
       if(!st||!st.evidenceRequests)return;
       Object.values(st.evidenceRequests).forEach(function(r){
+        if(r.status!=='pending'&&r.status!=='received')return;
         var daysAgo=Math.floor((Date.now()-r.requestedAtMs)/86400000);
         reqs.push(Object.assign({},r,{daysAgo:daysAgo,overdue:daysAgo>r.slaDays}));
       });
     }catch(e){}
   });
-  if(!reqs.length)return '<div class="notif-bar"><strong>No outstanding evidence requests</strong>All evidence requests for your caseload have been fulfilled.</div>';
+  if(!reqs.length)return '<div class="sol-req-empty"><strong>No outstanding evidence requests</strong>All requests for your caseload have been fulfilled.</div>';
   reqs.sort(function(a,b){
     if(a.overdue&&!b.overdue)return -1;
     if(!a.overdue&&b.overdue)return 1;
     return (a.cprDaysLeft||99)-(b.cprDaysLeft||99);
   });
-  return reqs.map(function(req){
-    var urgCls=req.overdue?'urgent':'';
-    return '<div class="req-card"><div class="req-top"><div>'
-      +'<div class="req-id">'+escapeHtml(req.caseRef)+'<span class="req-pill '+urgCls+'">'+(req.overdue?'Overdue — '+req.daysAgo+'d':'Pending — '+req.daysAgo+'d')+'</span></div>'
-      +'<div class="req-title">'+escapeHtml(req.name)+'</div>'
-      +'<div class="req-meta">Requested from: '+escapeHtml(req.recipient)+' · '+escapeHtml(req.requestedAt)+' · by '+escapeHtml(req.requestedBy)
-      +(req.note?'<br><span style="color:var(--text3)">'+escapeHtml(req.note)+'</span>':'')
-      +'</div></div></div>'
-      +'<div class="req-actions">'
-      +'<a href="module4-evidence-workspace.html?ref='+encodeURIComponent(req.caseRef)+'" class="btn-mini primary"><i class="ti ti-arrow-right"></i> Open evidence workspace</a>'
-      +(req.recipientEmail?'<a href="mailto:'+req.recipientEmail+'?subject='+encodeURIComponent('CHASE: '+req.name+' — '+req.caseRef)+'" class="btn-mini"><i class="ti ti-mail-forward"></i> Chase by email</a>':'')
-      +'</div></div>';
+  var pending=reqs.filter(function(r){return r.status==='pending'||r.status==='received';}).length;
+  var rows=reqs.map(function(req){
+    var badgeCls=req.overdue?'overdue':'pending';
+    var badgeText=req.overdue?req.daysAgo+'d overdue':'Pending · '+req.daysAgo+'d';
+    return '<div class="sol-req-row">'
+      +'<div><div class="sol-req-name">'+escapeHtml(req.name)+'</div>'
+      +'<div class="sol-req-meta">'+escapeHtml(req.recipient)+' · '+escapeHtml(req.caseRef)+' · '+escapeHtml(req.requestedAt)+'</div>'
+      +'<div class="sol-req-actions">'
+      +'<a href="module4-evidence-workspace.html?ref='+encodeURIComponent(req.caseRef)+'" class="btn-mini primary"><i class="ti ti-arrow-right"></i> Open workspace</a>'
+      +(req.recipientEmail&&req.overdue?'<a href="mailto:'+req.recipientEmail+'?subject='+encodeURIComponent('CHASE: '+req.name+' — '+req.caseRef)+'" class="btn-mini"><i class="ti ti-mail-forward"></i> Chase</a>':'')
+      +'</div></div>'
+      +'<span class="sol-req-badge '+badgeCls+'">'+badgeText+'</span>'
+      +'</div>';
   }).join('');
+  return '<div class="sol-req-section"><div class="sol-req-hdr"><h2>Your evidence requests</h2><span>'+pending+' open</span></div>'
+    +'<div class="sol-req-list">'+rows+'</div></div>';
 }
 
 function render(){

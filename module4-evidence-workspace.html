@@ -137,16 +137,46 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 .tag-wide{background:var(--purple-faint);color:var(--purple)}
 .tag-up{background:var(--green-faint);color:var(--green)}
 .tag-api{background:var(--blue-faint);color:var(--blue-text)}
-.btn-ev{font-size:10px;padding:4px 9px;border-radius:var(--r);border:1px solid var(--border2);background:var(--surface2);cursor:pointer;color:var(--text2);font-family:var(--font);display:inline-flex;align-items:center;gap:3px;transition:background 0.15s;white-space:nowrap}
-.btn-ev:hover{background:var(--surface3)}
-.btn-ev.done{background:var(--green-faint);border-color:#BBF7D0;color:var(--green);cursor:default}
-.btn-ev.request-btn{background:var(--accent);color:#fff;border-color:var(--accent)}
-.btn-ev.requested{background:var(--caution-faint);color:var(--caution);border-color:#EFD9A3;cursor:default}
-.btn-ev.chase{background:var(--caution-faint);color:var(--caution);border-color:#EFD9A3}
-.btn-ev.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
-.btn-ev.api-btn{background:var(--blue-faint);border-color:#BFDBFE;color:var(--blue-text);cursor:not-allowed}
-.ev-file{font-size:10px;color:var(--text3);font-family:var(--mono);padding:0 12px 8px 29px}
-.ev-api-note{font-size:10px;color:var(--blue-text);padding:0 12px 8px 29px;font-style:italic}
+
+/* evidence table rows */
+.ev-table{width:100%;border-collapse:collapse}
+.ev-table td{vertical-align:top;padding:11px 0;border-bottom:1px solid var(--rule2)}
+.ev-table tr:last-child td{border-bottom:none}
+.ev-table tr.ev-item td{transition:background .12s}
+.ev-table tr.ev-item:hover td{background:var(--surface2)}
+.ev-dot-col{width:18px;padding:11px 10px 11px 2px;vertical-align:top}
+.ev-actions-col{width:1%;white-space:nowrap;padding:11px 2px 11px 14px;text-align:right;vertical-align:middle}
+.ev-item.ev-requested td:first-child+td{border-left:2px solid var(--caution-faint)}
+.ev-item.ev-overdue td:first-child+td{border-left:2px solid var(--alert-faint)}
+
+/* evidence actions — light, inline */
+.ev-actions-inline{display:inline-flex;align-items:center;gap:1px}
+.btn-ev{font-size:11px;padding:5px 10px;border-radius:var(--r);border:1px solid transparent;background:transparent;cursor:pointer;color:var(--text2);font-family:var(--font);display:inline-flex;align-items:center;gap:4px;transition:all .12s;white-space:nowrap}
+.btn-ev:hover{background:var(--surface2);color:var(--text)}
+.btn-ev.done{color:var(--green);cursor:default;background:transparent}
+.btn-ev.done:hover{background:transparent}
+.btn-ev-ghost{color:var(--text3);padding:5px 8px}
+.btn-ev-ghost:hover{color:var(--accent);background:var(--accent-faint)}
+.btn-ev-outline{border-color:var(--rule);background:var(--surface);color:var(--accent)}
+.btn-ev-outline:hover{background:var(--accent-faint);border-color:var(--accent-faint)}
+.btn-ev-chase{border-color:var(--rule);background:var(--surface);color:var(--alert);font-weight:500}
+.btn-ev-chase:hover{background:var(--alert-faint);border-color:#FECACA}
+.btn-ev-wait{color:var(--text3);cursor:default;font-size:10px;padding:4px 8px;opacity:.85}
+.btn-ev-wait:hover{background:transparent;color:var(--text3)}
+.btn-ev.api-btn{background:var(--blue-faint);border-color:transparent;color:var(--blue-text);cursor:default;font-size:10px;padding:4px 8px}
+.btn-ev.api-btn:hover{background:var(--blue-faint)}
+
+.ev-status-pill{font-size:10px;font-weight:500;padding:2px 8px;border-radius:10px;display:inline-flex;align-items:center;gap:4px;vertical-align:middle}
+.ev-status-pill.waiting{background:var(--caution-faint);color:var(--caution)}
+.ev-status-pill.overdue{background:var(--alert-faint);color:var(--alert)}
+.ev-status-pill.received{background:var(--accent-faint);color:var(--accent)}
+
+.ev-req-note{font-size:10px;color:var(--text3);margin-top:5px;display:flex;align-items:flex-start;gap:5px;line-height:1.45}
+.ev-req-note i{font-size:10px;margin-top:1px;opacity:.65;flex-shrink:0}
+.ev-req-note.overdue{color:var(--alert)}
+
+.ev-file{font-size:10px;color:var(--text3);font-family:var(--mono);padding:4px 0 0}
+.ev-api-note{font-size:10px;color:var(--blue-text);padding:4px 0 0;line-height:1.45}
 
 /* empty */
 .ev-empty{text-align:center;padding:44px 20px;color:var(--text3)}
@@ -180,20 +210,24 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 .note-bar button{font-size:11px;padding:5px 9px;border-radius:var(--r);border:1px solid var(--border);background:var(--surface2);cursor:pointer;font-family:var(--font);color:var(--text2)}
 input[type=file]{display:none}
 
-.req-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.35);z-index:1000;display:flex;align-items:center;justify-content:center}
-.req-modal{background:var(--surface);border:1px solid var(--rule);width:420px;max-width:calc(100vw - 32px)}
-.req-modal-hdr{padding:14px 16px;border-bottom:1px solid var(--rule);display:flex;align-items:center;justify-content:space-between}
-.req-modal-title{font-family:var(--font-serif);font-size:15px;color:var(--ink);font-weight:400}
-.req-modal-close{background:none;border:none;cursor:pointer;color:var(--ink3);font-size:16px;padding:0}
-.req-modal-body{padding:16px}
-.req-modal-item-name{font-family:var(--font-ui,var(--font));font-size:13px;font-weight:500;color:var(--ink);margin-bottom:14px;padding:8px 10px;background:var(--surface2);border:1px solid var(--rule)}
-.req-field{margin-bottom:12px}
-.req-label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--ink4);margin-bottom:5px}
-.req-select{width:100%;padding:7px 10px;border:1px solid var(--rule);font-family:var(--font);font-size:12px;color:var(--ink);background:var(--surface)}
-.req-textarea{width:100%;padding:7px 10px;border:1px solid var(--rule);font-family:var(--font);font-size:12px;color:var(--ink);min-height:72px;resize:vertical}
-.req-modal-footer{padding:12px 16px;border-top:1px solid var(--rule);display:flex;justify-content:flex-end;gap:8px}
-.req-btn-secondary{font-size:12px;padding:6px 14px;border:1px solid var(--rule);background:var(--surface);cursor:pointer;font-family:var(--font);color:var(--ink2)}
-.req-btn-primary{font-size:12px;padding:6px 14px;border:1px solid var(--accent);background:var(--accent);color:#fff;cursor:pointer;font-family:var(--font);display:flex;align-items:center;gap:5px}
+.req-modal-overlay{position:fixed;inset:0;background:rgba(26,26,46,0.22);backdrop-filter:blur(3px);z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px}
+.req-modal{background:var(--surface);border:1px solid var(--rule);width:400px;max-width:100%;border-radius:var(--r2);box-shadow:0 12px 40px rgba(26,26,46,0.14);overflow:hidden}
+.req-modal-hdr{padding:16px 18px 14px;display:flex;align-items:center;justify-content:space-between}
+.req-modal-title{font-family:var(--font-serif);font-size:16px;color:var(--ink);font-weight:400;letter-spacing:-0.01em}
+.req-modal-close{background:var(--surface2);border:none;border-radius:50%;cursor:pointer;color:var(--ink3);font-size:14px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;transition:background .12s}
+.req-modal-close:hover{background:var(--surface3);color:var(--ink2)}
+.req-modal-body{padding:0 18px 6px}
+.req-modal-item-name{font-size:12px;font-weight:500;color:var(--ink2);margin-bottom:16px;padding:10px 12px;background:var(--surface2);border-radius:var(--r);line-height:1.45}
+.req-field{margin-bottom:14px}
+.req-label{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink4);margin-bottom:6px;font-weight:500}
+.req-select{width:100%;padding:8px 10px;border:1px solid var(--rule);border-radius:var(--r);font-family:var(--font);font-size:12px;color:var(--ink);background:var(--surface);transition:border-color .12s}
+.req-select:focus,.req-textarea:focus{outline:none;border-color:var(--accent)}
+.req-textarea{width:100%;padding:8px 10px;border:1px solid var(--rule);border-radius:var(--r);font-family:var(--font);font-size:12px;color:var(--ink);min-height:68px;resize:vertical;line-height:1.5;transition:border-color .12s}
+.req-modal-footer{padding:14px 18px 16px;display:flex;justify-content:flex-end;gap:8px;border-top:1px solid var(--rule2);margin-top:8px}
+.req-btn-secondary{font-size:12px;padding:7px 14px;border:1px solid var(--rule);border-radius:var(--r);background:var(--surface);cursor:pointer;font-family:var(--font);color:var(--ink2);transition:background .12s}
+.req-btn-secondary:hover{background:var(--surface2)}
+.req-btn-primary{font-size:12px;padding:7px 16px;border:1px solid var(--accent);border-radius:var(--r);background:var(--accent);color:#fff;cursor:pointer;font-family:var(--font);display:inline-flex;align-items:center;gap:5px;transition:opacity .12s}
+.req-btn-primary:hover{opacity:.92}
 
 .user-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.3);z-index:500}
 .user-modal.open{display:flex;justify-content:flex-end;padding:52px 20px 0}
@@ -942,35 +976,44 @@ function renderMain(){
       var apiPill=item.auto?'<span class="ev-api-pill"><i class="ti ti-plug" style="font-size:9px"></i>API ready</span>':'';
       var conf=evidenceConfidence(id);
       var confPill='<span class="ev-api-pill" style="background:'+conf.bg+';color:'+conf.col+'"><i class="ti ti-brain" style="font-size:9px"></i>'+conf.label+'</span>';
+      var reqPill='';
+      if(req&&!isUp){
+        if(isReceived)reqPill='<span class="ev-status-pill received"><i class="ti ti-inbox" style="font-size:9px"></i> Received</span>';
+        else if(isOverdue)reqPill='<span class="ev-status-pill overdue"><i class="ti ti-clock-exclamation" style="font-size:9px"></i> '+daysAgo+'d overdue</span>';
+        else reqPill='<span class="ev-status-pill waiting"><i class="ti ti-clock" style="font-size:9px"></i> Awaiting · '+daysAgo+'d</span>';
+      }
       var actionBtn='';
       if(isUp){
-        actionBtn='<button class="btn-ev done"><i class="ti ti-check"></i> On file</button>';
+        actionBtn='<span class="btn-ev done"><i class="ti ti-check"></i> On file</span>';
       }else if(isReceived){
-        actionBtn='<button class="btn-ev primary" onclick="uploadReceived(\''+id+'\',\''+item.name.replace(/'/g,"\\'")+'\')"><i class="ti ti-upload"></i> Upload now</button>';
+        actionBtn='<button class="btn-ev btn-ev-outline" onclick="uploadReceived(\''+id+'\',\''+item.name.replace(/'/g,"\\'")+'\')"><i class="ti ti-upload"></i> Upload</button>';
       }else if(isRequested){
         if(isOverdue){
-          actionBtn='<button class="btn-ev chase" onclick="chaseRequest(\''+id+'\')"><i class="ti ti-mail-forward"></i> Chase ('+daysAgo+'d)</button>';
+          actionBtn='<button class="btn-ev btn-ev-chase" onclick="chaseRequest(\''+id+'\')"><i class="ti ti-mail-forward"></i> Chase</button>';
         }else{
-          actionBtn='<button class="btn-ev requested" disabled><i class="ti ti-clock"></i> Requested — '+daysAgo+'d ago</button>';
+          actionBtn='<span class="btn-ev btn-ev-wait"><i class="ti ti-clock"></i> Waiting</span>';
         }
       }else if(isPulling){
-        actionBtn='<button class="btn-ev api-btn"><i class="ti ti-loader-2" style="animation:spin 1s linear infinite"></i> Pulling…</button>';
+        actionBtn='<span class="btn-ev api-btn"><i class="ti ti-loader-2" style="animation:spin 1s linear infinite"></i> Pulling</span>';
       }else if(item.auto){
-        actionBtn='<button class="btn-ev api-btn"><i class="ti ti-plug"></i> Auto — pending</button>';
+        actionBtn='<span class="btn-ev api-btn"><i class="ti ti-plug"></i> Auto</span>';
       }else{
-        actionBtn='<button class="btn-ev request-btn" onclick="openRequestModal(\''+id+'\',\''+item.name.replace(/'/g,"\\'")+'\')"><i class="ti ti-send"></i> Request</button>'
-          +'<button class="btn-ev" onclick="triggerUpload(\''+id+'\',\''+item.name.replace(/'/g,"\\'")+'\')" style="margin-left:4px"><i class="ti ti-upload"></i> Upload</button>';
+        actionBtn='<div class="ev-actions-inline">'
+          +'<button class="btn-ev btn-ev-ghost" onclick="openRequestModal(\''+id+'\',\''+item.name.replace(/'/g,"\\'")+'\')"><i class="ti ti-send"></i> Request</button>'
+          +'<button class="btn-ev btn-ev-ghost" onclick="triggerUpload(\''+id+'\',\''+item.name.replace(/'/g,"\\'")+'\')"><i class="ti ti-upload"></i> Upload</button>'
+          +'</div>';
       }
-      var fileRow=uploads[id]?'<div class="ev-file" style="padding:4px 0 0">'+uploads[id]+'</div>':'';
+      var fileRow=uploads[id]?'<div class="ev-file">'+uploads[id]+'</div>':'';
       var reqRow='';
       if(req&&!isUp){
-        var statusText=isReceived?'Received — upload to file':isOverdue?'Requested '+daysAgo+' days ago · no response — chase now':'Requested from '+req.recipient+' · '+req.requestedAt;
-        var statusCol=isOverdue?'var(--alert)':'var(--caution)';
-        reqRow='<div class="ev-api-note" style="color:'+statusCol+';padding:4px 0 0"><i class="ti ti-clock" style="font-size:9px"></i> '+statusText+'</div>';
+        var statusText=isReceived?'Ready to upload and file'
+          :isOverdue?'No response from '+req.recipient+' — chase recommended'
+          :'With '+req.recipient+' since '+req.requestedAt;
+        reqRow='<div class="ev-req-note'+(isOverdue?' overdue':'')+'"><i class="ti ti-'+(isOverdue?'alert-circle':'arrow-right')+'"></i><span>'+statusText+'</span></div>';
       }
       var repoMatch=getRepositoryMatch(id);
-      var repoRow=(!isUp&&repoMatch)?'<div class="ev-api-note" style="padding:4px 0 0;color:var(--green)"><i class="ti ti-database" style="font-size:9px"></i> On file in repository: '+repoMatch.filename+' — click Pull from repository</div>':'';
-      var apiRow=(item.auto&&!isUp&&!repoMatch)?'<div class="ev-api-note" style="padding:4px 0 0">'+item.api+'</div>':'';
+      var repoRow=(!isUp&&repoMatch)?'<div class="ev-api-note" style="color:var(--green)"><i class="ti ti-database" style="font-size:9px"></i> In repository: '+repoMatch.filename+'</div>':'';
+      var apiRow=(item.auto&&!isUp&&!repoMatch)?'<div class="ev-api-note">'+item.api+'</div>':'';
       var compRow='';
       if(item.components&&item.components.length){
         compRow='<div style="padding:4px 0 0;font-size:10px;color:var(--text3);line-height:1.6">'+item.components.map(function(c){return '<span style="display:inline-block;border:1px solid var(--rule);border-radius:2px;padding:2px 7px;margin:2px 4px 2px 0">'+c+'</span>';}).join('')+'</div>';
@@ -986,9 +1029,10 @@ function renderMain(){
         }).join('');
       }
       var flashRow=flashTags?'<div class="ev-flash-tags">'+flashTags+'</div>':'';
-      return '<tr class="ev-item'+(isUp?' ev-uploaded':(item.auto?' ev-api':''))+'">'
+      var rowCls='ev-item'+(isUp?' ev-uploaded':(item.auto?' ev-api':''))+(isRequested&&!isUp?' ev-requested'+(isOverdue?' ev-overdue':''):'');
+      return '<tr class="'+rowCls+'">'
         +'<td class="ev-dot-col"><div class="ev-dot '+dotCls+'"></div></td>'
-        +'<td><div class="ev-name">'+item.name+tierTag+upTag+'</div>'
+        +'<td><div class="ev-name">'+item.name+tierTag+upTag+reqPill+'</div>'
         +'<div class="ev-why">'+item.why+'</div>'
         +flashRow
         +'<div class="ev-meta"><div class="ev-source"><i class="ti ti-database" style="font-size:10px"></i>'+srcHtml+'</div>'+apiPill+confPill+'</div>'

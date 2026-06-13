@@ -62,6 +62,9 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 .task-meta{font-size:10px;color:var(--text3);white-space:nowrap;text-align:right}
 .task-deadline{font-size:11px;font-weight:500}
 .task-deadline.urgent{color:var(--red)}.task-deadline.warn{color:var(--amber)}
+.req-age-pill{font-size:10px;font-weight:500;padding:3px 8px;border-radius:10px;background:var(--surface2);color:var(--text3);white-space:nowrap}
+.req-age-pill.urgent{background:var(--red-faint);color:var(--red)}
+.req-task-row .task-meta{display:flex;align-items:center;gap:6px}
 
 .update-row{display:flex;gap:10px;padding:11px 14px;border-bottom:1px solid var(--border);cursor:pointer;align-items:flex-start}
 .update-row:last-child{border-bottom:none}
@@ -301,7 +304,23 @@ function renderKEBanner(alerts){
   return html;
 }
 
+function ensureDemoEvidenceRequests(){
+  try{
+    var key='dfa_evidence_DEF-2026-EW-0089';
+    var st=JSON.parse(sessionStorage.getItem(key)||'null');
+    if(st&&st.evidenceRequests&&Object.keys(st.evidenceRequests).length)return;
+    var baseMs=Date.now()-8*86400000, baseMs2=Date.now()-2*86400000;
+    st=st||{};
+    st.evidenceRequests={
+      eurocontrol:{id:'eurocontrol',name:'Eurocontrol CRCO reference',recipient:'Ops team',recipientEmail:'ops-legal@[client].com',requestedBy:'S. Booth',requestedAt:'4 Jun 2026 10:00',requestedAtMs:baseMs,slaDays:5,status:'pending',caseRef:'DEF-2026-EW-0089',cprDaysLeft:3},
+      aims:{id:'aims',name:'Crew roster records (AIMS)',recipient:'Crew scheduling',recipientEmail:'crew-scheduling@[client].com',requestedBy:'S. Booth',requestedAt:'10 Jun 2026 14:30',requestedAtMs:baseMs2,slaDays:5,status:'pending',caseRef:'DEF-2026-EW-0089',cprDaysLeft:3}
+    };
+    sessionStorage.setItem(key,JSON.stringify(st));
+  }catch(e){}
+}
+
 function buildOutstandingRequests(uid){
+  ensureDemoEvidenceRequests();
   var cases=typeof ALL_CASES!=='undefined'?ALL_CASES:[];
   var userCases=cases.filter(function(c){return c.assignedTo===uid&&c.stage!=='resolve';});
   var allRequests=[];
@@ -329,22 +348,21 @@ function buildOutstandingRequests(uid){
     return (a.cprDaysLeft||99)-(b.cprDaysLeft||99);
   });
   var overdueCount=allRequests.filter(function(r){return r.overdue;}).length;
-  var countLabel=overdueCount>0?overdueCount+' overdue':allRequests.length+' pending';
-  var countStyle=overdueCount>0?'color:var(--red);background:var(--red-faint);border-color:#FECACA':'color:var(--blue-text);background:var(--blue-faint);border-color:#BFDBFE';
+  var countLabel=overdueCount>0?overdueCount+' overdue':allRequests.length+' open';
   var rows=allRequests.slice(0,6).map(function(req){
-    var ageText=req.overdue?req.daysAgo+'d — overdue':req.daysAgo+'d ago';
-    var ageStyle=req.overdue?'color:var(--red);font-weight:500':'color:var(--text3)';
-    return '<div class="task-row" onclick="location.href=\'module4-evidence-workspace.html?ref='+encodeURIComponent(req.caseRef)+'\'">'
+    var ageText=req.overdue?req.daysAgo+'d overdue':req.daysAgo+'d';
+    return '<div class="task-row req-task-row" onclick="location.href=\'module4-evidence-workspace.html?ref='+encodeURIComponent(req.caseRef)+'\'">'
       +'<div class="task-dot '+(req.overdue?'urgent':'warn')+'"></div>'
       +'<div><div class="task-action">'+escapeHtml(req.name)+'</div>'
-      +'<div class="task-claimant" style="margin-top:2px"><span style="font-family:var(--mono);font-size:10px;color:var(--text3);margin-right:6px">'+escapeHtml(req.caseRef)+'</span>'+escapeHtml(req.recipient)+'</div></div>'
-      +'<div class="task-meta"><div class="task-deadline '+(req.overdue?'urgent':'warn')+'" style="'+ageStyle+'">'+ageText+'</div>'
-      +'<div style="font-size:10px;color:var(--text3);margin-top:1px">CPR '+(req.cprDaysLeft||'?')+'d</div></div>'
+      +'<div class="task-claimant">'+escapeHtml(req.recipient)+' · <span class="task-ref">'+escapeHtml(req.caseRef)+'</span></div></div>'
+      +'<div class="task-meta"><span class="req-age-pill '+(req.overdue?'urgent':'')+'">'+ageText+'</span>'
+      +'<span style="font-size:10px;color:var(--text3)">CPR '+ (req.cprDaysLeft||'?') +'d</span></div>'
       +'</div>';
   }).join('');
-  return '<div class="zone" style="margin-bottom:14px"><div class="zone-hdr"><div class="zone-title"><i class="ti ti-clock-exclamation"></i> Outstanding evidence requests</div>'
-    +'<span class="stat-chip" style="'+countStyle+';font-size:10px">'+countLabel+'</span></div>'
-    +'<div class="panel">'+rows+'</div></div>';
+  return '<div class="zone" style="margin-bottom:14px"><div class="zone-hdr">'
+    +'<div class="zone-title"><i class="ti ti-send"></i> Evidence requests</div>'
+    +'<span class="zone-link" style="cursor:default;font-size:10px;color:var(--text3)">'+countLabel+'</span>'
+    +'</div><div class="panel">'+rows+'</div></div>';
 }
 
 function renderLegalWork(uid,u,cases){
