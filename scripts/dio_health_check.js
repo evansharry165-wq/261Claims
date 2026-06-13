@@ -17,7 +17,7 @@ global.window = global;
 global.localStorage = mockStorage();
 global.sessionStorage = mockStorage();
 
-['shared_data.js', 'case_helpers.js', 'work_dashboard.js'].forEach(function (f) {
+['shared_data.js', 'case_helpers.js', 'work_dashboard.js', 'dio_helpers.js'].forEach(function (f) {
   vm.runInThisContext(fs.readFileSync(path.join(root, f), 'utf8'), { filename: f });
 });
 
@@ -44,16 +44,28 @@ var frCases = ALL_CASES.filter(function (c) {
 });
 assert(ewCases.length > 0 && frCases.length > 0, 'jurisdiction case pools exist');
 
+assert(typeof DISRUPTION_EVENTS !== 'undefined' && DISRUPTION_EVENTS.length >= 5, 'DISRUPTION_EVENTS defined');
+
 var navSrc = fs.readFileSync(path.join(root, 'shared_nav.js'), 'utf8');
 assert(navSrc.indexOf('DIO_NAV') >= 0, 'DIO_NAV defined');
+assert(navSrc.indexOf("href: 'dio.html'") >= 0, 'DIO nav points to dio.html');
+assert(navSrc.indexOf('dio-knowledge.html') >= 0, 'DIO knowledge nav');
 assert(navSrc.indexOf("u.team === 'dio'") >= 0, 'DIO nav routing');
 
 var indexSrc = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
-assert(indexSrc.indexOf('renderDIOWork') >= 0, 'renderDIOWork in index');
+assert(indexSrc.indexOf("window.location.replace('dio.html')") >= 0, 'DIO redirect in index');
 assert(indexSrc.indexOf('WorkDashboard.isDIOUser') >= 0, 'DIO routing in index');
 
 var casesSrc = fs.readFileSync(path.join(root, 'cases.html'), 'utf8');
 assert(casesSrc.indexOf('renderDIOCases') >= 0, 'renderDIOCases in cases.html');
+assert(casesSrc.indexOf('dio-case.html') >= 0, 'DIO case links in cases.html');
+
+assert(fs.existsSync(path.join(root, 'dio.html')), 'dio.html exists');
+assert(fs.existsSync(path.join(root, 'dio-case.html')), 'dio-case.html exists');
+assert(fs.existsSync(path.join(root, 'dio-knowledge.html')), 'dio-knowledge.html exists');
+
+var helpersSrc = fs.readFileSync(path.join(root, 'case_helpers.js'), 'utf8');
+assert(helpersSrc.indexOf('dio-case.html') >= 0, 'openCase routes DIO to dio-case.html');
 
 if (failures.length) {
   console.error('FAILED (' + failures.length + '):');

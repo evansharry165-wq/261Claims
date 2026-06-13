@@ -6,6 +6,7 @@
     repository: 'Repository',
     insights: 'Insights',
     education: 'Education',
+    knowledge: 'Knowledge',
     terminal: 'Terminal',
     requests: 'Requests'
   };
@@ -20,10 +21,10 @@
   ];
 
   var DIO_NAV = [
-    { key: 'work', icon: 'ti-layout-dashboard', href: 'index.html' },
+    { key: 'work', icon: 'ti-layout-dashboard', href: 'dio.html', label: 'Today' },
     { key: 'requests', icon: 'ti-inbox', href: 'requests.html' },
-    { key: 'cases', icon: 'ti-files', href: 'cases.html' },
-    { key: 'knowledge', icon: 'ti-book-2', href: 'education.html' },
+    { key: 'cases', icon: 'ti-file-search', href: 'cases.html' },
+    { key: 'knowledge', icon: 'ti-book-2', href: 'dio-knowledge.html' },
     { key: 'repository', icon: 'ti-database', href: 'repository.html' }
   ];
 
@@ -37,6 +38,9 @@
 
   function activePageKey() {
     var p = window.location.pathname.split('/').pop() || 'index.html';
+    if (p === 'dio.html') return 'work';
+    if (p === 'dio-knowledge.html') return 'knowledge';
+    if (p === 'dio-case.html') return 'cases';
     if (p === 'index.html' || p === '') return 'work';
     if (p === 'case.html' || p === 'cases.html') return 'cases';
     if (p === 'terminal.html' || p.indexOf('module8') >= 0) return 'terminal';
@@ -96,7 +100,7 @@
       var linkCls = linksEl.classList.contains('nav-links') ? 'nl' : 'gn-link';
       linksEl.innerHTML = links
         .map(function (l) {
-          var label = typeof t === 'function' ? t(l.key) : null;
+          var label = l.label || (typeof t === 'function' ? t(l.key) : null);
           if (!label || label === l.key) label = FALLBACK[l.key] || l.key;
           var isActive = active === l.key;
           var badge =

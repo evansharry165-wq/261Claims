@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DefendAble — DIO Today</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--ink:#1A1A2E;--ink2:#2D2D44;--ink3:#6B6B80;--ink4:#9B9BAA;--rule:#D8D8E0;--rule2:#EBEBF0;--surface:#FFFFFF;--surface2:#F7F7F9;--accent:#1B3A6B;--accent-faint:#EEF2F8;--confirm:#1A5C3A;--confirm-faint:#EEF7F2;--caution:#7A4E00;--caution-faint:#FDF4E3;--alert:#8B1A1A;--alert-faint:#FBF0F0;--navy:var(--ink);--blue:var(--accent);--border:var(--rule);--text:var(--ink);--font:'Helvetica Neue','Arial',sans-serif;--font-serif:'Georgia','Times New Roman',serif;--mono:'Courier New',monospace;--r:3px;--r3:5px}
+html,body{min-height:100%;font-family:var(--font);background:var(--surface2);color:var(--text);font-size:14px}
+.global-nav{background:var(--navy);height:48px;display:flex;align-items:center;padding:0 20px}
+.gn-logo{display:flex;align-items:center;gap:8px;text-decoration:none;margin-right:20px}
+.gn-mark{width:28px;height:28px;background:var(--blue);border-radius:4px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px}
+.gn-name{font-size:14px;font-weight:500;color:#fff}
+.gn-links{display:flex;gap:2px;flex:1}
+.gn-link{display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r);font-size:12px;font-weight:500;color:rgba(255,255,255,0.5);text-decoration:none}
+.gn-link:hover{background:rgba(255,255,255,0.08);color:#fff}
+.gn-link.active{background:rgba(42,111,219,0.35);color:#fff}
+.gn-right{margin-left:8px}
+.gn-user-btn{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:20px;padding:3px 10px 3px 4px;cursor:pointer}
+.gn-av{width:24px;height:24px;border-radius:50%;background:#164E63;color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px}
+.gn-user{font-size:11px;color:rgba(255,255,255,0.85)}
+.wrap{max-width:860px;margin:0 auto;padding:24px 20px 48px}
+.page-title{font-family:var(--font-serif);font-size:24px;font-weight:400;margin-bottom:4px;letter-spacing:-0.02em}
+.page-sub{font-size:12px;color:var(--ink3);margin-bottom:24px}
+.section{margin-bottom:28px}
+.section-rule{display:flex;align-items:center;justify-content:space-between;padding-bottom:8px;margin-bottom:12px;border-bottom:1px solid var(--rule)}
+.section-title{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.09em;color:var(--ink3);display:flex;align-items:center;gap:6px}
+.section-link{font-size:11px;color:var(--accent);text-decoration:none}
+.panel{background:var(--surface);border:1px solid var(--rule);border-radius:var(--r3)}
+.row{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;border-bottom:1px solid var(--rule2);font-size:12px}
+.row:last-child{border-bottom:none}
+.row:hover{background:var(--surface2)}
+.dot{width:8px;height:8px;border-radius:50%;margin-top:5px;flex-shrink:0}
+.dot-urgent{background:var(--alert)}
+.dot-warn{background:var(--caution)}
+.dot-ok{background:var(--confirm)}
+.row-main{flex:1;min-width:0}
+.row-title{font-weight:500;margin-bottom:2px}
+.row-meta{font-size:11px;color:var(--ink3);line-height:1.45}
+.row-meta .ref{font-family:var(--mono);font-size:10px;margin-right:6px}
+.row-side{text-align:right;flex-shrink:0}
+.btn{font-size:11px;font-weight:500;padding:6px 12px;border-radius:var(--r);border:1px solid var(--accent);background:var(--accent-faint);color:var(--accent);cursor:pointer;font-family:var(--font);text-decoration:none;display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
+.btn:hover{opacity:.9}
+.btn-amber{border-color:var(--caution);background:var(--caution-faint);color:var(--caution)}
+.btn-done{border-color:var(--confirm);background:var(--confirm-faint);color:var(--confirm);cursor:default}
+.badge{font-size:10px;font-weight:500;padding:2px 7px;border-radius:20px;font-family:var(--mono)}
+.badge-high{background:var(--alert-faint);color:var(--alert);border:1px solid #E8B4B4}
+.badge-medium{background:var(--caution-faint);color:var(--caution);border:1px solid #E8D4A8}
+.badge-low{background:var(--surface2);color:var(--ink3);border:1px solid var(--rule)}
+.note{font-size:11px;color:var(--ink3);background:var(--caution-faint);border:1px solid #FDE68A;border-radius:var(--r);padding:10px 12px;margin-bottom:12px;line-height:1.5}
+.empty{padding:16px;font-size:12px;color:var(--ink4);text-align:center}
+.intel-row{padding:12px 14px;border-bottom:1px solid var(--rule2)}
+.intel-row:last-child{border-bottom:none}
+.user-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.3);z-index:500;justify-content:flex-end;padding:52px 20px 0}
+.user-modal.open{display:flex}
+.user-dropdown{background:var(--surface);border:1px solid var(--rule);border-radius:var(--r3);width:240px;overflow:hidden}
+.ud-header{padding:10px 14px;border-bottom:1px solid var(--rule);font-size:10px;text-transform:uppercase;color:var(--ink3)}
+.ud-item{display:flex;align-items:center;gap:10px;padding:9px 14px;cursor:pointer}
+.ud-item:hover,.ud-item.current{background:var(--accent-faint)}
+.ud-av{width:28px;height:28px;border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px}
+.ud-name{font-size:12px;font-weight:500}
+.ud-role{font-size:10px;color:var(--ink3)}
+.ud-tick{margin-left:auto;color:var(--confirm);display:none}
+.ud-item.current .ud-tick{display:block}
+.greeting,.page-title,h1{font-family:var(--font-serif)!important;font-weight:400}
+</style>
+</head>
+<body>
+<script src="shared_data.js"></script>
+<script src="shared_theme.js"></script>
+<script src="case_helpers.js"></script>
+<script src="work_dashboard.js"></script>
+<script src="dio_helpers.js"></script>
+
+<nav class="global-nav">
+  <a href="dio.html" class="gn-logo"><div class="gn-mark"><i class="ti ti-archive"></i></div><span class="gn-name">DefendAble DIO</span></a>
+  <div class="gn-links" id="gn-links"></div>
+  <div class="gn-right"><div class="gn-user-btn" onclick="toggleUserMenu()"><div class="gn-av" id="nav-av">EH</div><span class="gn-user" id="nav-user">E. Hughes</span></div></div>
+</nav>
+
+<div class="wrap" id="app"></div>
+
+<script src="shared_nav.js"></script>
+<script>
+function escapeHtml(v){return String(v==null?'':v).replace(/[&<>"']/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch];});}
+
+function archiveEvent(id){
+  DIO.saveDisruptionEventPatch(id,{archived:true,archivedAt:new Date().toISOString()});
+  try{
+    var audit=JSON.parse(sessionStorage.getItem('dfa_dio_audit')||'[]');
+    audit.unshift({t:'Disruption event archived: '+id,time:new Date().toLocaleString('en-GB')});
+    sessionStorage.setItem('dfa_dio_audit',JSON.stringify(audit.slice(0,30)));
+  }catch(e){}
+  render();
+}
+
+function render(){
+  if(!DIO.ensureDIOAccess())return;
+  DIO.ensureDemoEvidenceRequests();
+  var profile=DIO.getDIOProfile();
+  var jur=profile.jurisdiction;
+  var requests=DIO.collectEvidenceRequests(jur);
+  var gaps=DIO.collectEvidenceGaps(jur);
+  var events=DIO.loadDisruptionEvents(jur);
+
+  var reqHtml=requests.length?requests.map(function(r){
+    var age=r.overdue?'<span style="color:var(--alert);font-weight:500">'+r.daysAgo+'d — OVERDUE</span>':'<span>'+r.daysAgo+'d ago</span>';
+    return '<div class="row"><div class="dot '+(r.overdue?'dot-urgent':'dot-warn')+'"></div>'
+      +'<div class="row-main"><div class="row-title">'+escapeHtml(r.name)+'</div>'
+      +'<div class="row-meta"><span class="ref">'+escapeHtml(r.caseRef)+'</span>'+escapeHtml(r.claimantName||'')+' · Requested by '+escapeHtml(r.requestedBy||'Legal')+'</div></div>'
+      +'<div class="row-side">'+age+'<br><a class="btn" href="'+DIO.dioCaseUrl(r.caseRef)+'" style="margin-top:6px"><i class="ti ti-upload"></i> File evidence</a></div></div>';
+  }).join(''):'<div class="empty">No outstanding evidence requests for '+escapeHtml(profile.label)+'</div>';
+
+  var gapHtml=gaps.length?gaps.map(function(g){
+    return '<div class="row"><div class="dot '+(g.cprDaysLeft<=3?'dot-urgent':g.cprDaysLeft<=7?'dot-warn':'dot-ok')+'"></div>'
+      +'<div class="row-main"><div class="row-title">'+escapeHtml(g.claimant)+'</div>'
+      +'<div class="row-meta"><span class="ref">'+escapeHtml(g.ref)+'</span>'+g.missingCount+' item(s) missing · '+g.evidencePct+'% on file</div></div>'
+      +'<div class="row-side"><span style="font-size:11px;color:var(--ink3)">CPR '+g.cprDaysLeft+'d</span><br>'
+      +'<a class="btn" href="'+DIO.dioCaseUrl(g.ref)+'" style="margin-top:6px">View gaps →</a></div></div>';
+  }).join(''):'<div class="empty">No evidence gaps without requests — '+escapeHtml(profile.label)+'</div>';
+
+  var evtHtml=events.length?events.map(function(e){
+    var riskCls=e.risk==='high'?'badge-high':e.risk==='medium'?'badge-medium':'badge-low';
+    var when=e.date==='2026-06-12'?'Today '+e.time:(e.date==='2026-06-11'?'Yesterday '+e.time:e.date+' '+e.time);
+    return '<div class="row"><div class="row-main"><div class="row-title">'+escapeHtml(e.flight)+' · '+escapeHtml(e.route)+'</div>'
+      +'<div class="row-meta">'+escapeHtml(when)+' · Delay '+e.delay+'min · '+escapeHtml(e.type)+'</div>'
+      +'<div class="row-meta" style="margin-top:4px">Evidence: '+escapeHtml((e.evidence||[]).join(' · '))+'</div></div>'
+      +'<div class="row-side"><span class="badge '+riskCls+'">'+escapeHtml(e.risk)+'</span><br>'
+      +(e.archived?'<span class="btn btn-done" style="margin-top:6px"><i class="ti ti-check"></i> Archived ✓</span>'
+        :'<button class="btn btn-amber" style="margin-top:6px" onclick="archiveEvent(\''+e.id+'\')"><i class="ti ti-archive"></i> Archive now</button>')
+      +'</div></div>';
+  }).join(''):'<div class="empty">No disruption events in the last 48h</div>';
+
+  document.getElementById('app').innerHTML=
+    '<h1 class="page-title">'+escapeHtml(profile.label)+' Today — '+escapeHtml(profile.user.full)+'</h1>'
+    +'<p class="page-sub">Documentary Intelligence — evidence archive, requests, disruption monitoring &amp; knowledge</p>'
+
+    +'<div class="section"><div class="section-rule"><div class="section-title"><i class="ti ti-inbox"></i> Evidence requests</div>'
+    +(requests.length?'<a class="section-link" href="requests.html">View all</a>':'')+'</div><div class="panel">'+reqHtml+'</div></div>'
+
+    +'<div class="section"><div class="section-rule"><div class="section-title"><i class="ti ti-file-search"></i> Evidence gaps (no request yet)</div>'
+    +'<a class="section-link" href="cases.html">All cases</a></div><div class="panel">'+gapHtml+'</div></div>'
+
+    +'<div class="section"><div class="section-rule"><div class="section-title"><i class="ti ti-radar"></i> Disruption event digest — last 48h</div></div>'
+    +'<div class="note"><i class="ti ti-clock-exclamation"></i> Evidence data has a limited retention window. Archive within 48h of disruption to preserve extraordinary circumstances defence capability.</div>'
+    +'<div class="panel">'+evtHtml+'</div></div>'
+
+    +'<div class="section"><div class="section-rule"><div class="section-title"><i class="ti ti-gavel"></i> Legal intelligence — '+escapeHtml(profile.label)+'</div>'
+    +'<a class="section-link" href="dio-knowledge.html">Knowledge hub</a></div>'
+    +'<div class="panel" id="intel-panel"><div class="empty">Loading intelligence…</div></div></div>';
+
+  fetch('knowledge_store.json?t='+Date.now()).then(function(r){return r.json();}).then(function(store){
+    var panel=document.getElementById('intel-panel');
+    if(!panel)return;
+    var pending=DIO.loadPendingKnowledge().filter(function(e){return (e.jurisdiction||[]).indexOf(jur)>=0||(e.jurisdiction||[]).indexOf('all')>=0;});
+    var entries=(store.entries||[]).filter(function(e){
+      return e.jurisdiction.indexOf(jur)>=0||e.jurisdiction.indexOf('all')>=0;
+    }).sort(function(a,b){
+      if(a.actionRequired&&!b.actionRequired)return -1;
+      if(!a.actionRequired&&b.actionRequired)return 1;
+      return new Date(b.date)-new Date(a.date);
+    }).slice(0,3);
+    var all=pending.concat(entries);
+    if(!all.length){panel.innerHTML='<div class="empty">No updates for '+escapeHtml(profile.label)+'</div>';return;}
+    panel.innerHTML=all.slice(0,3).map(function(e){
+      var col=e.impact==='high'?'var(--alert)':e.impact==='medium'?'var(--caution)':'var(--confirm)';
+      return '<div class="intel-row"><div style="display:flex;justify-content:space-between;gap:8px;margin-bottom:4px">'
+        +'<div style="font-family:var(--font-serif);font-size:13px;font-weight:500">'+escapeHtml(e.title)+'</div>'
+        +'<span class="badge" style="border-color:'+col+';color:'+col+'">'+escapeHtml((e.impact||'medium').toUpperCase())+'</span></div>'
+        +(e.actionRequired?'<div style="font-size:11px;color:var(--caution);margin-bottom:4px">'+escapeHtml(e.actionNote||'')+'</div>':'')
+        +'<div style="font-size:11px;color:var(--ink4)">'+escapeHtml(e.source||'')+' · '
+        +new Date(e.date).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})
+        +' · <a href="dio-knowledge.html?prefill='+encodeURIComponent(e.title||'')+'" style="color:var(--accent)">Add to knowledge base</a></div></div>';
+    }).join('');
+  }).catch(function(){
+    var panel=document.getElementById('intel-panel');
+    if(panel)panel.innerHTML='<div class="empty">Intelligence feed unavailable</div>';
+  });
+
+  if(typeof renderGlobalNav==='function')renderGlobalNav();
+}
+
+function toggleUserMenu(){document.getElementById('user-modal').classList.toggle('open');}
+function closeMenu(){document.getElementById('user-modal').classList.remove('open');}
+function switchUser(id){
+  setActiveUser(id);sessionStorage.removeItem('dfa_lang');closeMenu();
+  var u=USERS[id];if(u){document.getElementById('nav-av').textContent=u.initials;document.getElementById('nav-user').textContent=u.name;}
+  ['EH','FD','SR'].forEach(function(uid){var el=document.getElementById('ud-'+uid);if(el)el.classList.toggle('current',uid===id);});
+  if(u&&u.team!=='dio'){window.location.href='index.html';return;}
+  render();
+}
+
+window.addEventListener('load',render);
+</script>
+
+<div id="user-modal" class="user-modal" onclick="if(event.target===this)closeMenu()">
+  <div class="user-dropdown">
+    <div class="ud-header">Documentary Intelligence</div>
+    <div class="ud-item" id="ud-EH" onclick="switchUser('EH')"><div class="ud-av" style="background:#164E63">EH</div><div><div class="ud-name">Emma Hughes</div><div class="ud-role">DIO — England & Wales</div></div><i class="ti ti-check ud-tick"></i></div>
+    <div class="ud-item" id="ud-FD" onclick="switchUser('FD')"><div class="ud-av" style="background:#4A3728">FD</div><div><div class="ud-name">Françoise Durand</div><div class="ud-role">DIO — France</div></div><i class="ti ti-check ud-tick"></i></div>
+    <div class="ud-item" id="ud-SR" onclick="switchUser('SR')"><div class="ud-av" style="background:#2D4A3E">SR</div><div><div class="ud-name">Sofia Ramos</div><div class="ud-role">DIO — España</div></div><i class="ti ti-check ud-tick"></i></div>
+  </div>
+</div>
+</body>
+</html>

@@ -374,6 +374,12 @@ function loadEvidenceWorkspaceState(ref) {
 }
 
 function openCase(ref, tab) {
+  var uid = typeof getActiveUser === 'function' ? getActiveUser() : '';
+  var u = typeof USERS !== 'undefined' ? USERS[uid] : null;
+  if (u && u.team === 'dio') {
+    window.location.href = 'dio-case.html?ref=' + encodeURIComponent(ref);
+    return;
+  }
   var c = typeof resolveCase === 'function' ? resolveCase(ref) : (typeof getCase === 'function' ? getCase(ref) : null);
   if (!c) return;
   try {
@@ -660,3 +666,15 @@ function buildCaseFromRow(row, confirmedAssigneeId, parsedDateReceived) {
     uploadedByName: uploader.full || uploader.name || 'User'
   };
 }
+
+(function guardDIOFromSolicitorModules() {
+  if (typeof window === 'undefined' || typeof USERS === 'undefined') return;
+  var uid = typeof getActiveUser === 'function' ? getActiveUser() : '';
+  var u = USERS[uid];
+  if (!u || u.team !== 'dio') return;
+  var p = window.location.pathname.split('/').pop() || '';
+  if (/^module[2345]/.test(p) || p === 'case.html') {
+    var ref = new URLSearchParams(window.location.search).get('ref');
+    window.location.replace(ref ? 'dio-case.html?ref=' + encodeURIComponent(ref) : 'dio.html');
+  }
+})();

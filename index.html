@@ -597,8 +597,7 @@ function render(){
   var uid=getActiveUser();
   var u=USERS[uid]||USERS.SB;
   if(typeof WorkDashboard.isDIOUser==='function'&&WorkDashboard.isDIOUser(uid)){
-    renderDIOWork(u);
-    if(typeof renderGlobalNav==='function')renderGlobalNav();
+    window.location.replace('dio.html');
     return;
   }
   if(WorkDashboard.isEvidenceUser(uid)){renderEvidenceWork(u);if(typeof renderGlobalNav==='function')renderGlobalNav();return;}

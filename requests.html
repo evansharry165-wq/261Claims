@@ -78,6 +78,7 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 <script src="shared_data.js"></script>
 <script src="shared_theme.js"></script>
 <script src="case_helpers.js"></script>
+<script src="dio_helpers.js"></script>
 <script src="evidence_filing.js"></script>
 
 <nav class="global-nav">
@@ -184,11 +185,15 @@ function buildEvidenceRequestSection(){
   var rows=reqs.map(function(req){
     var badgeCls=req.overdue?'overdue':'pending';
     var badgeText=req.overdue?req.daysAgo+'d overdue':'Pending · '+req.daysAgo+'d';
+    var caseHref=isDio
+      ?'dio-case.html?ref='+encodeURIComponent(req.caseRef)
+      :'module4-evidence-workspace.html?ref='+encodeURIComponent(req.caseRef);
+    var linkLabel=isDio?'File evidence':'Open workspace';
     return '<div class="sol-req-row">'
       +'<div><div class="sol-req-name">'+escapeHtml(req.name)+'</div>'
       +'<div class="sol-req-meta">'+escapeHtml(req.recipient)+' · '+escapeHtml(req.caseRef)+' · '+escapeHtml(req.requestedAt)+'</div>'
       +'<div class="sol-req-actions">'
-      +'<a href="module4-evidence-workspace.html?ref='+encodeURIComponent(req.caseRef)+'" class="btn-mini primary"><i class="ti ti-arrow-right"></i> Open workspace</a>'
+      +'<a href="'+caseHref+'" class="btn-mini primary"><i class="ti ti-arrow-right"></i> '+linkLabel+'</a>'
       +(req.recipientEmail&&req.overdue?'<a href="mailto:'+req.recipientEmail+'?subject='+encodeURIComponent('CHASE: '+req.name+' — '+req.caseRef)+'" class="btn-mini"><i class="ti ti-mail-forward"></i> Chase</a>':'')
       +'</div></div>'
       +'<span class="sol-req-badge '+badgeCls+'">'+badgeText+'</span>'
@@ -201,6 +206,7 @@ function buildEvidenceRequestSection(){
 function render(){
   var uid=getActiveUser();
   var u=USERS[uid]||USERS.EH;
+  if(u.team==='dio'&&typeof DIO!=='undefined')DIO.ensureDemoEvidenceRequests();
   var reqs=getEvidenceRequests();
   if(u.team==='dio'){
     reqs=reqs.filter(function(r){

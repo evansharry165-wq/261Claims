@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DefendAble — DIO Knowledge</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--ink:#1A1A2E;--ink2:#2D2D44;--ink3:#6B6B80;--ink4:#9B9BAA;--rule:#D8D8E0;--rule2:#EBEBF0;--surface:#FFFFFF;--surface2:#F7F7F9;--accent:#1B3A6B;--accent-faint:#EEF2F8;--confirm:#1A5C3A;--confirm-faint:#EEF7F2;--caution:#7A4E00;--caution-faint:#FDF4E3;--alert:#8B1A1A;--alert-faint:#FBF0F0;--navy:var(--ink);--blue:var(--accent);--border:var(--rule);--text:var(--ink);--font:'Helvetica Neue','Arial',sans-serif;--font-serif:'Georgia','Times New Roman',serif;--mono:'Courier New',monospace;--r:3px;--r3:5px}
+html,body{min-height:100%;font-family:var(--font);background:var(--surface2);color:var(--text);font-size:14px}
+.global-nav{background:var(--navy);height:48px;display:flex;align-items:center;padding:0 20px}
+.gn-logo{display:flex;align-items:center;gap:8px;text-decoration:none;margin-right:20px}
+.gn-mark{width:28px;height:28px;background:var(--blue);border-radius:4px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px}
+.gn-name{font-size:14px;font-weight:500;color:#fff}
+.gn-links{display:flex;gap:2px;flex:1}
+.gn-link{display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r);font-size:12px;font-weight:500;color:rgba(255,255,255,0.5);text-decoration:none}
+.gn-link:hover{background:rgba(255,255,255,0.08);color:#fff}
+.gn-link.active{background:rgba(42,111,219,0.35);color:#fff}
+.gn-right{margin-left:8px}
+.gn-user-btn{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:20px;padding:3px 10px 3px 4px;cursor:pointer}
+.gn-av{width:24px;height:24px;border-radius:50%;background:#164E63;color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px}
+.gn-user{font-size:11px;color:rgba(255,255,255,0.85)}
+.layout{display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:1100px;margin:0 auto;padding:24px 20px 48px}
+@media(max-width:900px){.layout{grid-template-columns:1fr}}
+.page-title{font-family:var(--font-serif);font-size:22px;font-weight:400;margin-bottom:20px;grid-column:1/-1}
+.panel{background:var(--surface);border:1px solid var(--rule);border-radius:var(--r3)}
+.panel-hdr{padding:10px 14px;border-bottom:1px solid var(--rule2);font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.09em;color:var(--ink3)}
+.intel-item{padding:14px;border-bottom:1px solid var(--rule2);font-size:12px}
+.intel-item:last-child{border-bottom:none}
+.intel-title{font-family:var(--font-serif);font-size:14px;font-weight:500;margin-bottom:6px;line-height:1.35}
+.intel-meta{font-size:10px;color:var(--ink4);margin-bottom:8px;text-transform:uppercase;letter-spacing:.04em}
+.intel-summary{font-size:12px;color:var(--ink2);line-height:1.55;margin-bottom:8px}
+.intel-action{font-size:11px;color:var(--caution);background:var(--caution-faint);padding:8px 10px;border-radius:var(--r);margin-bottom:8px}
+.badge{font-size:10px;font-weight:500;padding:2px 7px;border-radius:20px;font-family:var(--mono);display:inline-block}
+.badge-high{background:var(--alert-faint);color:var(--alert)}
+.badge-medium{background:var(--caution-faint);color:var(--caution)}
+.badge-low{background:var(--surface2);color:var(--ink3)}
+.form{padding:14px}
+label{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink4);display:block;margin-bottom:4px;margin-top:10px}
+label.req::after{content:' *';color:var(--alert)}
+input,select,textarea{width:100%;font-family:var(--font);font-size:12px;padding:8px 10px;border:1px solid var(--rule);border-radius:var(--r);background:var(--surface)}
+textarea{min-height:90px;resize:vertical}
+.checks{display:flex;flex-wrap:wrap;gap:8px 14px;margin-top:6px}
+.checks label{text-transform:none;letter-spacing:0;font-size:12px;color:var(--ink2);display:flex;align-items:center;gap:5px;margin:0}
+.checks input{width:auto}
+.btn{font-size:12px;font-weight:500;padding:9px 16px;border-radius:var(--r);border:1px solid var(--accent);background:var(--accent);color:#fff;cursor:pointer;font-family:var(--font);margin-top:16px;width:100%}
+.btn:hover{opacity:.9}
+.success{background:var(--confirm-faint);border:1px solid #BBF7D0;color:var(--confirm);padding:12px 14px;border-radius:var(--r);font-size:12px;margin-bottom:12px;line-height:1.5}
+.empty{padding:20px;text-align:center;color:var(--ink4);font-size:12px}
+.link-btn{font-size:11px;color:var(--accent);background:none;border:none;cursor:pointer;padding:0;text-decoration:underline;font-family:var(--font)}
+.user-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.3);z-index:500;justify-content:flex-end;padding:52px 20px 0}
+.user-modal.open{display:flex}
+.user-dropdown{background:var(--surface);border:1px solid var(--rule);border-radius:var(--r3);width:240px;overflow:hidden}
+.ud-header{padding:10px 14px;border-bottom:1px solid var(--rule);font-size:10px;text-transform:uppercase;color:var(--ink3)}
+.ud-item{display:flex;align-items:center;gap:10px;padding:9px 14px;cursor:pointer}
+.ud-item:hover,.ud-item.current{background:var(--accent-faint)}
+.ud-av{width:28px;height:28px;border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px}
+.ud-name{font-size:12px;font-weight:500}
+.ud-role{font-size:10px;color:var(--ink3)}
+.ud-tick{margin-left:auto;color:var(--confirm);display:none}
+.ud-item.current .ud-tick{display:block}
+.err{font-size:11px;color:var(--alert);margin-top:4px}
+</style>
+</head>
+<body>
+<script src="shared_data.js"></script>
+<script src="shared_theme.js"></script>
+<script src="case_helpers.js"></script>
+<script src="dio_helpers.js"></script>
+
+<nav class="global-nav">
+  <a href="dio.html" class="gn-logo"><div class="gn-mark"><i class="ti ti-archive"></i></div><span class="gn-name">DefendAble DIO</span></a>
+  <div class="gn-links" id="gn-links"></div>
+  <div class="gn-right"><div class="gn-user-btn" onclick="toggleUserMenu()"><div class="gn-av" id="nav-av">EH</div><span class="gn-user" id="nav-user">E. Hughes</span></div></div>
+</nav>
+
+<div class="layout" id="layout">
+  <h1 class="page-title" id="page-title">Knowledge</h1>
+  <div class="panel"><div class="panel-hdr">Live intelligence</div><div id="intel-list"><div class="empty">Loading…</div></div></div>
+  <div class="panel"><div class="panel-hdr">Publish update</div><div class="form" id="publish-form"></div></div>
+</div>
+
+<script src="shared_nav.js"></script>
+<script>
+var JUR_MAP={'England & Wales':'england-wales','France':'france','Spain':'spain','All':'all'};
+var JUR_LABELS={'england-wales':'England & Wales',france:'France',spain:'Spain',all:'All'};
+
+function escapeHtml(v){return String(v==null?'':v).replace(/[&<>"']/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch];});}
+
+function renderForm(prefill){
+  var profile=DIO.getDIOProfile();
+  var today=new Date().toISOString().slice(0,10);
+  document.getElementById('publish-form').innerHTML=
+    '<div id="form-msg"></div>'
+    +'<label class="req">Title</label><input id="k-title" value="'+escapeHtml(prefill||'')+'">'
+    +'<label>Source</label><select id="k-source"><option>Bailii</option><option>EUR-Lex</option><option>CAA</option><option>AviationADR</option><option>DGAC</option><option>AESA</option><option>Other</option></select>'
+    +'<label>Date</label><input type="date" id="k-date" value="'+today+'">'
+    +'<label>Impact</label><select id="k-impact"><option>High</option><option selected>Medium</option><option>Low</option></select>'
+    +'<label>Type</label><select id="k-type"><option>Judgment</option><option>Regulatory</option><option>Procedural</option><option>Guidance</option></select>'
+    +'<label class="req">Jurisdiction</label><div class="checks" id="k-jur">'
+    +['England & Wales','France','Spain','All'].map(function(j){
+      var checked=j==='England & Wales'&&profile.jurisdiction==='england-wales'||j==='France'&&profile.jurisdiction==='france'||j==='Spain'&&profile.jurisdiction==='spain'?' checked':'';
+      return '<label><input type="checkbox" name="jur" value="'+j+'"'+checked+'> '+j+'</label>';
+    }).join('')+'</div>'
+    +'<label>Disruption types</label><div class="checks">'
+    +['Weather','ATC','Technical','Denied Boarding','Cancellation','All'].map(function(d){
+      return '<label><input type="checkbox" name="dist" value="'+d+'"> '+d+'</label>';
+    }).join('')+'</div>'
+    +'<label class="req">Summary</label><textarea id="k-summary" placeholder="Minimum 100 characters — full detail for solicitors"></textarea>'
+    +'<label>Risk note</label><textarea id="k-risk" placeholder="How this affects current cases, what solicitors should do"></textarea>'
+    +'<label><input type="checkbox" id="k-action-req" onchange="document.getElementById(\'action-wrap\').style.display=this.checked?\'block\':\'none\'"> Action required?</label>'
+    +'<div id="action-wrap" style="display:none"><label>Action note</label><input id="k-action-note"></div>'
+    +'<button class="btn" onclick="publishUpdate()">Publish to '+escapeHtml(profile.label)+' team</button>';
+}
+
+function getChecked(name){
+  return Array.prototype.slice.call(document.querySelectorAll('input[name="'+name+'"]:checked')).map(function(el){return el.value;});
+}
+
+function publishUpdate(){
+  var profile=DIO.getDIOProfile();
+  var title=document.getElementById('k-title').value.trim();
+  var summary=document.getElementById('k-summary').value.trim();
+  var jurs=getChecked('jur');
+  var msg=document.getElementById('form-msg');
+  msg.innerHTML='';
+  if(!title){msg.innerHTML='<div class="err">Title is required.</div>';return;}
+  if(!jurs.length){msg.innerHTML='<div class="err">Select at least one jurisdiction.</div>';return;}
+  if(summary.length<100){msg.innerHTML='<div class="err">Summary must be at least 100 characters ('+summary.length+' entered).</div>';return;}
+
+  var jurisdictions=jurs.map(function(j){return JUR_MAP[j]||j.toLowerCase();});
+  var distTypes=getChecked('dist');
+  var actionReq=document.getElementById('k-action-req').checked;
+  var entry={
+    id:'KE-PND-'+Date.now(),
+    type:(document.getElementById('k-type').value||'guidance').toLowerCase(),
+    source:document.getElementById('k-source').value,
+    title:title,
+    date:document.getElementById('k-date').value,
+    summary:summary,
+    riskNote:document.getElementById('k-risk').value.trim(),
+    jurisdiction:jurisdictions,
+    disruptionTypes:distTypes.length?distTypes:['All'],
+    impact:document.getElementById('k-impact').value.toLowerCase(),
+    actionRequired:actionReq,
+    actionNote:actionReq?document.getElementById('k-action-note').value.trim():'',
+    publishedBy:profile.user.full,
+    pending:true
+  };
+  DIO.addPendingKnowledge(entry);
+  var n=DIO.solicitorCountForJurisdiction(profile.jurisdiction);
+  msg.innerHTML='<div class="success">Published. '+n+' solicitors in '+escapeHtml(profile.label)+' will see this update on their next login.</div>';
+  renderIntel();
+  document.getElementById('k-title').value='';
+  document.getElementById('k-summary').value='';
+  document.getElementById('k-risk').value='';
+}
+
+function prefillForm(title){
+  document.getElementById('k-title').value=title||'';
+  document.getElementById('k-title').focus();
+}
+
+function renderIntel(){
+  var profile=DIO.getDIOProfile();
+  var jur=profile.jurisdiction;
+  document.getElementById('page-title').textContent=profile.label+' — Knowledge';
+
+  fetch('knowledge_store.json?t='+Date.now()).then(function(r){return r.json();}).then(function(store){
+    var pending=DIO.loadPendingKnowledge().filter(function(e){
+      return e.jurisdiction.indexOf(jur)>=0||e.jurisdiction.indexOf('all')>=0;
+    });
+    var entries=(store.entries||[]).filter(function(e){
+      return e.jurisdiction.indexOf(jur)>=0||e.jurisdiction.indexOf('all')>=0;
+    });
+    var all=pending.concat(entries).sort(function(a,b){return new Date(b.date)-new Date(a.date);});
+    var list=document.getElementById('intel-list');
+    if(!all.length){list.innerHTML='<div class="empty">No intelligence for '+escapeHtml(profile.label)+'</div>';return;}
+    list.innerHTML=all.map(function(e){
+      var imp=e.impact||'medium';
+      var badgeCls=imp==='high'?'badge-high':imp==='medium'?'badge-medium':'badge-low';
+      var jurs=(e.jurisdiction||[]).map(function(j){return JUR_LABELS[j]||j;}).join(' · ');
+      return '<div class="intel-item">'
+        +'<div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start;margin-bottom:4px">'
+        +'<div class="intel-title">'+escapeHtml(e.title)+(e.pending?' <span style="font-size:10px;color:var(--confirm)">(pending)</span>':'')+'</div>'
+        +'<span class="badge '+badgeCls+'">'+escapeHtml(imp.toUpperCase())+'</span></div>'
+        +'<div class="intel-meta">'+escapeHtml(e.source||'')+' · '+new Date(e.date).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})+' · '+escapeHtml(jurs)+'</div>'
+        +'<div class="intel-summary">'+escapeHtml(e.summary)+'</div>'
+        +(e.riskNote?'<div class="intel-summary" style="font-style:italic;color:var(--ink3)">Risk: '+escapeHtml(e.riskNote)+'</div>':'')
+        +(e.actionRequired&&e.actionNote?'<div class="intel-action">'+escapeHtml(e.actionNote)+'</div>':'')
+        +'<button class="link-btn" onclick="prefillForm(\''+escapeHtml(e.title).replace(/'/g,"\\'")+'\')">Add to knowledge base</button>'
+        +'</div>';
+    }).join('');
+  }).catch(function(){
+    document.getElementById('intel-list').innerHTML='<div class="empty">Could not load knowledge store</div>';
+  });
+}
+
+function init(){
+  if(!DIO.ensureDIOAccess())return;
+  var prefill=new URLSearchParams(window.location.search).get('prefill')||'';
+  renderForm(prefill);
+  renderIntel();
+  if(typeof renderGlobalNav==='function')renderGlobalNav();
+}
+
+function toggleUserMenu(){document.getElementById('user-modal').classList.toggle('open');}
+function closeMenu(){document.getElementById('user-modal').classList.remove('open');}
+function switchUser(id){
+  setActiveUser(id);sessionStorage.removeItem('dfa_lang');closeMenu();
+  var u=USERS[id];if(u){document.getElementById('nav-av').textContent=u.initials;document.getElementById('nav-user').textContent=u.name;}
+  ['EH','FD','SR'].forEach(function(uid){var el=document.getElementById('ud-'+uid);if(el)el.classList.toggle('current',uid===id);});
+  if(u&&u.team!=='dio'){window.location.href='index.html';return;}
+  renderForm();renderIntel();
+  if(typeof renderGlobalNav==='function')renderGlobalNav();
+}
+
+window.addEventListener('load',init);
+</script>
+
+<div id="user-modal" class="user-modal" onclick="if(event.target===this)closeMenu()">
+  <div class="user-dropdown">
+    <div class="ud-header">Documentary Intelligence</div>
+    <div class="ud-item" id="ud-EH" onclick="switchUser('EH')"><div class="ud-av" style="background:#164E63">EH</div><div><div class="ud-name">Emma Hughes</div><div class="ud-role">DIO — England & Wales</div></div><i class="ti ti-check ud-tick"></i></div>
+    <div class="ud-item" id="ud-FD" onclick="switchUser('FD')"><div class="ud-av" style="background:#4A3728">FD</div><div><div class="ud-name">Françoise Durand</div><div class="ud-role">DIO — France</div></div><i class="ti ti-check ud-tick"></i></div>
+    <div class="ud-item" id="ud-SR" onclick="switchUser('SR')"><div class="ud-av" style="background:#2D4A3E">SR</div><div><div class="ud-name">Sofia Ramos</div><div class="ud-role">DIO — España</div></div><i class="ti ti-check ud-tick"></i></div>
+  </div>
+</div>
+</body>
+</html>

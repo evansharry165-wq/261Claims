@@ -73,6 +73,7 @@ tr.row-urgent .td-name{font-weight:600}
 <script src="shared_theme.js"></script>
 <script src="case_helpers.js"></script>
 <script src="case_filing.js"></script>
+<script src="dio_helpers.js"></script>
 
 <nav class="global-nav">
   <a href="index.html" class="gn-logo"><div class="gn-mark"><i class="ti ti-lock"></i></div><span class="gn-name">DefendAble</span></a>
@@ -158,9 +159,11 @@ function renderDIOCases(){
     +(jurLabels[jur]||jur)+' — '+jurCases.length+' active cases'
     +'</div>'
     +jurCases.map(function(c){
-      var missingItems=(c.points||[]).filter(function(p){return p.evidenceStatus==='red';});
+      var missingItems=(c.points||[]).filter(function(p){return p.evidenceStatus==='red'||p.evidenceStatus==='amber';});
       var pctCol=c.evidencePct>=75?'var(--confirm)':c.evidencePct>=40?'var(--caution)':'var(--alert)';
       var cprUrgency=c.cprDaysLeft<=3?'var(--alert)':c.cprDaysLeft<=7?'var(--caution)':'var(--ink3)';
+      var hasReq=typeof DIO!=='undefined'&&DIO.caseHasOpenRequest(c.ref);
+      var btnLabel=hasReq?'File evidence →':'View missing evidence →';
       return '<div style="background:var(--surface);border:1px solid var(--rule);padding:12px 14px;margin-bottom:8px">'
         +'<div style="display:flex;align-items:baseline;gap:12px;margin-bottom:8px">'
         +'<span style="font-family:var(--mono);font-size:11px;color:var(--ink4)">'+escapeHtml(c.ref)+'</span>'
@@ -179,9 +182,9 @@ function renderDIOCases(){
                 +'</div>';
             }).join('')
           +'</div>':'')
-        +'<a href="module4-evidence-workspace.html?ref='+encodeURIComponent(c.ref)+'" '
+        +'<a href="dio-case.html?ref='+encodeURIComponent(c.ref)+'" '
           +'style="font-size:11px;padding:5px 12px;border:1px solid var(--accent);color:var(--accent);background:var(--accent-faint);text-decoration:none;display:inline-flex;align-items:center;gap:5px">'
-          +'<i class="ti ti-file-search"></i> View evidence gaps</a>'
+          +'<i class="ti ti-file-search"></i> '+btnLabel+'</a>'
         +'</div>';
     }).join('')
   +'</div>';
