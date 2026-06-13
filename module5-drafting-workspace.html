@@ -1180,10 +1180,10 @@ function renderDocFocus(){
   var actions='';
   if(!hasContent){
     actions='<button class="btn-action primary" onclick="startGathering(\''+id+'\')"><i class="ti ti-sparkles"></i> Generate draft</button>';
-  }else if(isApproved){
+  }else   if(isApproved){
     actions='<span class="btn-action success"><i class="ti ti-check"></i> Approved</span>'
       +(storedInRepo[id]
-        ?'<span class="btn-casefile done"><i class="ti ti-check"></i> In case file</span>'
+        ?'<span class="btn-casefile done"><i class="ti ti-check"></i> In case file</span><button class="btn-casefile" onclick="goToTerminal()" style="background:var(--teal,#0F766E);border-color:var(--teal,#0F766E);color:#fff"><i class="ti ti-send"></i> Proceed to Terminal</button>'
         :'<button class="btn-casefile" onclick="addToRepository(\''+id+'\')"><i class="ti ti-folder-symlink"></i> Add to case file</button>')
       +'<button class="btn-action" onclick="downloadDoc(\''+id+'\',true)"><i class="ti ti-download"></i> Download</button>';
   }else{
@@ -1207,7 +1207,9 @@ function renderDocFocus(){
   var versions=docVersions[id]||[];
   var versionNote=versions.length?'<span class="draft-hint"><i class="ti ti-history"></i>'+versions[0].label+' · '+versions[0].time+'</span>':'';
   var approvePrompt='';
-  if(isApproved&&!storedInRepo[id]){
+  if(isApproved&&storedInRepo[id]){
+    approvePrompt='<div class="approve-prompt"><div class="approve-prompt-text"><strong>Ready to send</strong>Document is in the live case file. Open Terminal for a final health check, confirm dispatch details, and send — no need to go back through Repository.</div><button class="btn-casefile" onclick="goToTerminal()" style="background:var(--teal,#0F766E);border-color:var(--teal,#0F766E);color:#fff"><i class="ti ti-send"></i> Proceed to Terminal</button><button class="btn-action" onclick="openCaseFileInRepo()"><i class="ti ti-external-link"></i> View in Repository</button></div>';
+  }else if(isApproved&&!storedInRepo[id]){
     approvePrompt='<div class="approve-prompt"><div class="approve-prompt-text"><strong>Ready for the team</strong>Add this approved document to the live case file in the Repository. The whole legal team can then view and edit it — no download and re-upload via intake.</div><button class="btn-casefile" onclick="addToRepository(\''+id+'\')"><i class="ti ti-folder-symlink"></i> Add to case file</button><button class="btn-action" onclick="openCaseFileInRepo()"><i class="ti ti-external-link"></i> View in Repository</button></div>';
   }
 
@@ -1465,6 +1467,13 @@ function openCaseFileInRepo(){
   else{window.open(url,'_blank');}
 }
 
+function goToTerminal(){
+  if(typeof shellGo==='function'&&shellGo('terminal','Draft approved — proceeding to Terminal for final send'))return;
+  var target='case.html?ref='+encodeURIComponent(C.ref)+'&tab=terminal';
+  if(window.parent!==window){window.parent.location.href=target;}
+  else{window.location.href=target;}
+}
+
 function addToRepository(id){
   var text=docStates[id].edits||buildDoc(id);
   var uid=typeof getActiveUser==='function'?getActiveUser():'SB';
@@ -1498,9 +1507,14 @@ function addToRepository(id){
     storedInRepo[id]=true;
     if(window.parent!==window){window.parent.postMessage({type:'case-shell',action:'log',text:'Document added to case file: '+docName,logType:'upload'},'*');}
   }catch(e){}
-  showDraftToast(docName+' added to case file — team can access in Repository');
+  showDraftToast(docName+' added to case file — open Terminal to finish & send');
   renderWorkspace();
   updateDocBtn(id,'approved');
+  setTimeout(function(){
+    if(confirm('Document saved to case file.\n\nProceed to Terminal for final health check and send?')){
+      goToTerminal();
+    }
+  },400);
 }
 
 function resolveCase(){

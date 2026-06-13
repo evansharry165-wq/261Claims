@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DefendAble — Terminal</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--ink:#1A1A2E;--ink2:#2D2D44;--ink3:#6B6B80;--rule:#D8D8E0;--surface:#FFFFFF;--surface2:#F7F7F9;--surface3:#EFEFF2;--accent:#1B3A6B;--accent2:#254E91;--accent-faint:#EEF2F8;--confirm:#1A5C3A;--confirm-faint:#EEF7F2;--caution:#7A4E00;--caution-faint:#FDF4E3;--alert:#8B1A1A;--alert-faint:#FBF0F0;--navy:var(--ink);--blue:var(--accent2);--blue-faint:var(--accent-faint);--blue-text:var(--accent);--green:var(--confirm);--green-faint:var(--confirm-faint);--amber:var(--caution);--amber-faint:var(--caution-faint);--red:var(--alert);--red-faint:var(--alert-faint);--border:var(--rule);--text:var(--ink);--text2:var(--ink2);--text3:var(--ink3);--font:'Helvetica Neue','Arial',sans-serif;--font-serif:'Georgia','Times New Roman',serif;--mono:'Courier New',monospace;--teal:#0F766E;--teal-faint:#CCFBF1;--r:3px;--r2:4px;--r3:5px}
+html,body{min-height:100%;font-family:var(--font);background:var(--surface2);color:var(--text);font-size:14px}
+.app{min-height:100vh;display:flex;flex-direction:column}
+.main{flex:1;padding:20px 24px 32px;max-width:1100px;margin:0 auto;width:100%}
+.term-hero{background:linear-gradient(135deg,var(--teal-faint),#fff);border:1px solid #99F6E4;border-radius:var(--r3);padding:18px 20px;margin-bottom:18px;display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap}
+.term-hero-icon{width:44px;height:44px;border-radius:var(--r2);background:var(--teal);color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.term-hero h1{font-size:20px;font-weight:400;font-family:var(--font-serif);margin-bottom:4px}
+.term-hero p{font-size:12px;color:var(--text2);line-height:1.55;max-width:560px}
+.health-score{margin-left:auto;text-align:center;min-width:88px}
+.health-ring{font-size:28px;font-weight:500;font-family:var(--mono);line-height:1}
+.health-label{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-top:4px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+@media(max-width:860px){.grid-2{grid-template-columns:1fr}}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r3);overflow:hidden}
+.card-hdr{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.card-hdr i{color:var(--teal);font-size:16px}
+.card-title{font-size:13px;font-weight:500}
+.card-sub{font-size:11px;color:var(--text3);margin-left:auto}
+.card-body{padding:14px 16px}
+.check-row{display:flex;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);font-size:12px;align-items:flex-start}
+.check-row:last-child{border-bottom:none}
+.check-dot{width:10px;height:10px;border-radius:50%;margin-top:4px;flex-shrink:0}
+.check-pass{background:var(--green)}
+.check-warn{background:var(--amber)}
+.check-fail{background:var(--red)}
+.check-label{font-weight:500;color:var(--text);margin-bottom:2px}
+.check-detail{font-size:11px;color:var(--text2);line-height:1.45}
+.check-action{font-size:10px;color:var(--blue-text);cursor:pointer;margin-top:4px;display:inline-flex;align-items:center;gap:3px}
+.doc-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);font-size:12px}
+.doc-row:last-child{border-bottom:none}
+.doc-row input{margin:0}
+.doc-name{font-weight:500;flex:1}
+.doc-meta{font-size:10px;color:var(--text3)}
+.form-group{margin-bottom:12px}
+.form-label{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-bottom:5px}
+.form-input,.form-textarea,.form-select{width:100%;font-size:12px;padding:8px 10px;border:1px solid var(--border);border-radius:var(--r);font-family:var(--font)}
+.form-textarea{min-height:72px;resize:vertical;line-height:1.5}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btn{font-size:12px;font-weight:500;padding:9px 14px;border-radius:var(--r);border:none;cursor:pointer;font-family:var(--font);display:inline-flex;align-items:center;gap:6px}
+.btn-primary{background:var(--teal);color:#fff}
+.btn-primary:hover{opacity:.92}
+.btn-primary:disabled{opacity:.45;cursor:not-allowed}
+.btn-ghost{background:var(--surface);border:1px solid var(--border);color:var(--text2)}
+.btn-ghost:hover{background:var(--surface2)}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
+.sent-banner{background:var(--green-faint);border:1px solid #BBF7D0;border-radius:var(--r2);padding:14px 16px;margin-bottom:14px;font-size:12px;color:var(--green);display:flex;align-items:center;gap:10px}
+.sent-banner i{font-size:18px}
+.summary-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+.sum-tile{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:10px 12px}
+.sum-lbl{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px}
+.sum-val{font-size:14px;font-weight:500}
+.greeting,.page-title,h1,.zone-title,.hdr-title{font-family:var(--font-serif)!important;font-weight:400;letter-spacing:-0.02em}
+</style>
+</head>
+<body>
+<script src="shared_data.js"></script>
+<script src="shared_theme.js"></script>
+<script src="case_helpers.js"></script>
+<script src="case_filing.js"></script>
+<script src="terminal_health.js"></script>
+<script src="case_embed.js"></script>
+
+<div class="app">
+<div class="main" id="main"></div>
+</div>
+
+<script>
+(function(){
+  try{
+    var p=new URLSearchParams(window.location.search);
+    var ref=p.get('ref');
+    if(!ref)return;
+    var stored=null;
+    try{stored=JSON.parse(sessionStorage.getItem('dfa_case')||'null');}catch(e){}
+    if(stored&&stored.ref===ref){
+      sessionStorage.setItem('aeroCaseData',JSON.stringify({
+        ref:stored.ref,claimant:stored.claimant,solicitor:stored.solicitor,
+        flight:stored.flight,flightNum:stored.flightNum,dep:stored.dep,arr:stored.arr,
+        flightDate:stored.flightDate,value:stored.value,type:stored.type,
+        date:stored.locDate,points:stored.points||[],jurisdiction:stored.jurisdiction||'england-wales',
+        loaStatus:stored.loaStatus||'',classification:stored.classification||'',
+        triageNote:stored.triageNote||'',cprDaysLeft:stored.cprDaysLeft,evidencePct:stored.evidencePct||0
+      }));
+      return;
+    }
+    var cd=typeof getCase==='function'?getCase(ref):null;
+    if(cd){
+      sessionStorage.setItem('dfa_case',JSON.stringify(cd));
+      sessionStorage.setItem('aeroCaseData',JSON.stringify({
+        ref:cd.ref,claimant:cd.claimant,solicitor:cd.solicitor,flight:cd.flight,
+        flightNum:cd.flightNum,dep:cd.dep,arr:cd.arr,flightDate:cd.flightDate,
+        value:cd.value,type:cd.type,date:cd.locDate,points:cd.points||[],
+        jurisdiction:cd.jurisdiction||'england-wales',loaStatus:cd.loaStatus||'',
+        cprDaysLeft:cd.cprDaysLeft,evidencePct:cd.evidencePct||0
+      }));
+    }
+  }catch(e){}
+})();
+
+var _i={};
+try{var _r=sessionStorage.getItem('aeroCaseData');if(_r)_i=JSON.parse(_r);}catch(e){}
+var C={
+  ref:_i.ref||'DEF-2026-EW-0089',
+  name:_i.claimant||'Daniel Hartley',
+  sol:_i.solicitor||'Pemberton & Associates',
+  flight:_i.flight||'HC 1184 — LTN → BCN',
+  flightNum:_i.flightNum||'HC 1184',
+  value:_i.value||'£39,000+',
+  loaStatus:_i.loaStatus||'',
+  cprDaysLeft:_i.cprDaysLeft!=null?_i.cprDaysLeft:21,
+  classification:_i.classification||'',
+  points:_i.points||[]
+};
+
+var sendForm={
+  recipient:'',
+  cc:'',
+  method:'secure_email',
+  reference:'',
+  coverNote:'',
+  selectedDocs:{}
+};
+
+function escapeHtml(v){return String(v==null?'':v).replace(/[&<>"']/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch];});}
+
+function loadSendForm(){
+  try{
+    var st=JSON.parse(sessionStorage.getItem('dfa_terminal_form_'+C.ref)||'null');
+    if(st)sendForm=Object.assign(sendForm,st);
+  }catch(e){}
+  if(!sendForm.recipient)sendForm.recipient=guessRecipient();
+  if(!sendForm.reference)sendForm.reference=C.ref+' — '+C.flightNum;
+  if(!sendForm.coverNote)sendForm.coverNote=defaultCoverNote();
+}
+
+function saveSendForm(){
+  try{sessionStorage.setItem('dfa_terminal_form_'+C.ref,JSON.stringify(sendForm));}catch(e){}
+}
+
+function guessRecipient(){
+  var sol=(C.sol||'').toLowerCase();
+  if(sol.indexOf('pemberton')>=0)return 'claims@pemberton-associates.co.uk';
+  if(sol.indexOf('clarke')>=0)return 'disputes@clarke-partners.co.uk';
+  if(sol.indexOf('irwin')>=0)return 'aviation@irwinmitchell.com';
+  return 'claims@solicitor-firm.co.uk';
+}
+
+function defaultCoverNote(){
+  return 'Dear Sirs,\n\nPlease find enclosed our response in matter '+C.ref+' ('+C.name+', flight '+C.flightNum+').\n\nWe maintain our position that extraordinary circumstances apply. Please confirm receipt.\n\nYours faithfully,\n[Airline Legal Team]';
+}
+
+function getCaseData(){
+  var stored=null;
+  try{stored=JSON.parse(sessionStorage.getItem('dfa_case')||'null');}catch(e){}
+  if(stored&&stored.ref===C.ref)return stored;
+  return typeof getCase==='function'?getCase(C.ref):{ref:C.ref,claimant:C.name,solicitor:C.sol,points:C.points,cprDaysLeft:C.cprDaysLeft,loaStatus:C.loaStatus,evidencePct:0};
+}
+
+function goTab(tab){
+  if(typeof shellGo==='function'&&shellGo(tab,'Opened from Terminal health check'))return;
+  window.location.href='case.html?ref='+encodeURIComponent(C.ref)+'&tab='+encodeURIComponent(tab);
+}
+
+function toggleDoc(key,on){
+  sendForm.selectedDocs[key]=on;
+  saveSendForm();
+  render();
+}
+
+function finishAndSend(){
+  var health=TerminalHealth.runCheck(C.ref,getCaseData());
+  if(!health.canSend&&!health.alreadySent){
+    alert('Cannot send yet — resolve blockers in the health check first.');
+    return;
+  }
+  var selected=health.documents.filter(function(d){
+    var key=d.docKey||d.id;
+    return sendForm.selectedDocs[key]!==false;
+  });
+  if(!selected.length){alert('Select at least one document to send.');return;}
+  var uid=typeof getActiveUser==='function'?getActiveUser():'SB';
+  var u=(typeof USERS!=='undefined'?USERS[uid]:null)||{full:'User'};
+  var now=new Date().toLocaleString('en-GB',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
+  var terminalState={
+    sentAt:now,
+    method:sendForm.method,
+    recipient:sendForm.recipient,
+    reference:sendForm.reference,
+    documents:selected.map(function(d){return d.name;}),
+    sentBy:u.full||u.name
+  };
+  try{
+    sessionStorage.setItem('dfa_terminal_'+C.ref,JSON.stringify(terminalState));
+    if(typeof CaseFiling!=='undefined'){
+      CaseFiling.addActivity(C.ref,'Response pack sent to '+sendForm.recipient+' — '+selected.length+' document(s)','stage',u.full||u.name);
+      CaseFiling.updateCaseMeta(C.ref,{stage:'defence',sentAt:now});
+    }
+    var stored=JSON.parse(sessionStorage.getItem('dfa_case')||'null');
+    if(stored&&stored.ref===C.ref){
+      stored.stage='defence';
+      stored.loaStatus=stored.loaStatus||'sent';
+      sessionStorage.setItem('dfa_case',JSON.stringify(stored));
+    }
+  }catch(e){}
+  if(window.parent!==window){
+    window.parent.postMessage({type:'case-shell',action:'log',text:'Terminal: response pack sent to '+sendForm.recipient,logType:'stage'},'*');
+    window.parent.postMessage({type:'case-shell',action:'stageComplete',tab:'overview'},'*');
+  }
+  if(sendForm.method==='secure_email'){
+    var subj=encodeURIComponent(sendForm.reference||('Response — '+C.ref));
+    var body=encodeURIComponent(sendForm.coverNote+'\n\nDocuments:\n'+selected.map(function(d){return '• '+d.name;}).join('\n'));
+    window.open('mailto:'+encodeURIComponent(sendForm.recipient)+'?subject='+subj+'&body='+body,'_blank');
+  }
+  render();
+}
+
+function render(){
+  loadSendForm();
+  var caseData=getCaseData();
+  var health=TerminalHealth.runCheck(C.ref,caseData);
+  health.documents.forEach(function(d){
+    var key=d.docKey||d.id;
+    if(sendForm.selectedDocs[key]===undefined)sendForm.selectedDocs[key]=true;
+  });
+
+  var scoreCol=health.status==='ready'?'var(--green)':health.status==='warnings'?'var(--amber)':'var(--red)';
+  var checksHtml=health.checks.map(function(ch){
+    var dot=ch.status==='pass'?'check-pass':ch.status==='warn'?'check-warn':'check-fail';
+    return '<div class="check-row"><div class="check-dot '+dot+'"></div><div><div class="check-label">'+escapeHtml(ch.label)+'</div>'
+      +'<div class="check-detail">'+escapeHtml(ch.detail)+'</div>'
+      +(ch.tab?'<span class="check-action" onclick="goTab(\''+ch.tab+'\')"><i class="ti ti-arrow-right"></i> Open '+escapeHtml(ch.tab)+'</span>':'')
+      +'</div></div>';
+  }).join('');
+
+  var docsHtml=health.documents.length?health.documents.map(function(d){
+    var key=d.docKey||d.id;
+    var checked=sendForm.selectedDocs[key]!==false;
+    return '<label class="doc-row"><input type="checkbox" '+(checked?'checked':'')+' onchange="toggleDoc(\''+key+'\',this.checked)">'
+      +'<div class="doc-name">'+escapeHtml(d.label||d.name)+(d.pendingFile?' <span style="color:var(--amber);font-size:10px">· approve in Documents first</span>':'')+'</div>'
+      +'<div class="doc-meta">'+(d.folderId||'draft')+' · '+(d.status||'approved')+'</div></label>';
+  }).join(''):'<div style="font-size:12px;color:var(--text3);padding:8px 0">No approved documents in case file yet. Approve and add from the Documents tab.</div>';
+
+  var sentBanner=health.alreadySent
+    ?'<div class="sent-banner"><i class="ti ti-circle-check"></i><div><strong>Response sent</strong> — '+escapeHtml(health.terminalState.sentAt)+' to '+escapeHtml(health.terminalState.recipient||'recipient')+'. Case moved to defence stage.</div></div>'
+    :'';
+
+  document.getElementById('main').innerHTML=
+    sentBanner
+    +'<div class="term-hero"><div class="term-hero-icon"><i class="ti ti-send"></i></div><div><h1>Terminal — finish &amp; send</h1>'
+    +'<p>Final review before dispatch. Health check compares your case file, evidence, CPR status and approved documents — then send the response pack without returning to Repository.</p>'
+    +'<div style="font-size:11px;color:var(--text3);margin-top:6px;font-family:var(--mono)">'+escapeHtml(C.ref)+' · '+escapeHtml(C.name)+' · '+escapeHtml(C.flight)+'</div></div>'
+    +'<div class="health-score"><div class="health-ring" style="color:'+scoreCol+'">'+health.score+'</div><div class="health-label">Health score</div></div></div>'
+
+    +'<div class="summary-strip">'
+    +'<div class="sum-tile"><div class="sum-lbl">Status</div><div class="sum-val" style="color:'+scoreCol+'">'+escapeHtml(health.status)+'</div></div>'
+    +'<div class="sum-tile"><div class="sum-lbl">Evidence</div><div class="sum-val">'+health.evidencePct+'%</div></div>'
+    +'<div class="sum-tile"><div class="sum-lbl">Documents</div><div class="sum-val">'+health.documents.length+'</div></div>'
+    +'<div class="sum-tile"><div class="sum-lbl">CPR</div><div class="sum-val">'+C.cprDaysLeft+'d</div></div></div>'
+
+    +'<div class="grid-2"><div class="card"><div class="card-hdr"><i class="ti ti-heartbeat"></i><div class="card-title">Case health check</div><div class="card-sub">'+health.summary+'</div></div>'
+    +'<div class="card-body">'+checksHtml+'</div></div>'
+
+    +'<div class="card"><div class="card-hdr"><i class="ti ti-package"></i><div class="card-title">Response pack</div><div class="card-sub">Documents to include</div></div>'
+    +'<div class="card-body">'+docsHtml+'</div></div></div>'
+
+    +'<div class="card"><div class="card-hdr"><i class="ti ti-mail-forward"></i><div class="card-title">Send details</div></div><div class="card-body">'
+    +'<div class="form-row"><div class="form-group"><div class="form-label">Recipient</div><input class="form-input" value="'+escapeHtml(sendForm.recipient)+'" oninput="sendForm.recipient=this.value;saveSendForm()"></div>'
+    +'<div class="form-group"><div class="form-label">CC (optional)</div><input class="form-input" value="'+escapeHtml(sendForm.cc)+'" oninput="sendForm.cc=this.value;saveSendForm()"></div></div>'
+    +'<div class="form-row"><div class="form-group"><div class="form-label">Dispatch method</div><select class="form-select" onchange="sendForm.method=this.value;saveSendForm()">'
+    +'<option value="secure_email"'+(sendForm.method==='secure_email'?' selected':'')+'>Secure email (demo)</option>'
+    +'<option value="portal"'+(sendForm.method==='portal'?' selected':'')+'>Solicitor portal upload</option>'
+    +'<option value="post"'+(sendForm.method==='post'?' selected':'')+'>Recorded post</option></select></div>'
+    +'<div class="form-group"><div class="form-label">Reference line</div><input class="form-input" value="'+escapeHtml(sendForm.reference)+'" oninput="sendForm.reference=this.value;saveSendForm()"></div></div>'
+    +'<div class="form-group"><div class="form-label">Cover note</div><textarea class="form-textarea" oninput="sendForm.coverNote=this.value;saveSendForm()">'+escapeHtml(sendForm.coverNote)+'</textarea></div>'
+    +'<div class="actions">'
+    +(health.alreadySent
+      ?'<button class="btn btn-ghost" onclick="goTab(\'documents\')"><i class="ti ti-file-pencil"></i> Back to Documents</button>'
+        +'<button class="btn btn-ghost" onclick="window.parent!==window?window.parent.location.href=\'repository.html#cases\':location.href=\'repository.html#cases\'"><i class="ti ti-database"></i> View in Repository</button>'
+      :'<button class="btn btn-primary"'+(health.canSend?'':' disabled')+' onclick="finishAndSend()"><i class="ti ti-send"></i> Finish &amp; send</button>'
+        +'<button class="btn btn-ghost" onclick="goTab(\'documents\')"><i class="ti ti-file-pencil"></i> Back to Documents</button>'
+        +'<button class="btn btn-ghost" onclick="goTab(\'evidence\')"><i class="ti ti-folder-open"></i> Review evidence</button>')
+    +'</div></div></div>';
+}
+
+render();
+</script>
+</body>
+</html>

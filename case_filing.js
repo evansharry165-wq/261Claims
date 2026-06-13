@@ -93,8 +93,13 @@
       };
     });
 
-    if (cases['AC-2026-0089']) {
-      var h = cases['AC-2026-0089'];
+    if (cases['AC-2026-0089'] || cases['DEF-2026-EW-0089']) {
+      var h = cases['DEF-2026-EW-0089'] || cases['AC-2026-0089'];
+      if (cases['AC-2026-0089'] && !cases['DEF-2026-EW-0089']) {
+        h = JSON.parse(JSON.stringify(cases['AC-2026-0089']));
+        h.ref = 'DEF-2026-EW-0089';
+        cases['DEF-2026-EW-0089'] = h;
+      }
       h.classification = 'ESCALATE';
       h.cprDaysLeft = 3;
       h.triageNote = 'ESCALATE — Montreal Convention consequential loss (£38,250) is the primary exposure. Challenge causation, foreseeability and mitigation. EC261 extraordinary circumstances defence strong on weather diversion.';

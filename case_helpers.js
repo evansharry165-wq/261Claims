@@ -6,7 +6,7 @@ var STAGE_TAB_MAP = {
   cpr: 'deadlines',
   evidence: 'evidence',
   drafting: 'documents',
-  defence: 'documents',
+  defence: 'terminal',
   resolve: 'overview'
 };
 
@@ -16,6 +16,7 @@ var LEGACY_WORKSPACE_ROUTES = {
   deadlines: 'module3-cpr-workspace.html',
   evidence: 'module4-evidence-workspace.html',
   documents: 'module5-drafting-workspace.html',
+  terminal: 'module8-terminal-workspace.html',
   activity: 'module2-case-workspace.html'
 };
 
@@ -79,6 +80,11 @@ function getEffectiveEvidencePct(c) {
   return stored !== null ? stored : c.evidencePct || 0;
 }
 
+function hasApprovedSendPack(ref) {
+  if (typeof CaseFiling === 'undefined') return false;
+  return !!(CaseFiling.findByDocKey(ref, 'lor') || CaseFiling.findByDocKey(ref, 'defence'));
+}
+
 function getNextAction(c) {
   if (!c) return { text: 'Open case', tab: 'overview', icon: 'ti-file', urgency: 99 };
   var tab = getPrimaryTab(c);
@@ -106,10 +112,14 @@ function getNextAction(c) {
     text = 'Move to drafting';
     tab = 'documents';
     icon = 'ti-file-pencil';
+  } else if (c.stage === 'drafting' && typeof hasApprovedSendPack === 'function' && hasApprovedSendPack(c.ref)) {
+    text = 'Finish and send response — Terminal';
+    tab = 'terminal';
+    icon = 'ti-send';
   } else if (c.stage === 'drafting' || c.stage === 'defence') {
-    text = 'Review AI draft and sign off';
-    tab = 'documents';
-    icon = 'ti-file-pencil';
+    text = c.stage === 'defence' ? 'Review sent response in Terminal' : 'Review AI draft and sign off';
+    tab = c.stage === 'defence' ? 'terminal' : 'documents';
+    icon = c.stage === 'defence' ? 'ti-send' : 'ti-file-pencil';
   } else if (c.stage === 'resolve') {
     text = 'Review resolved case';
     tab = 'overview';
