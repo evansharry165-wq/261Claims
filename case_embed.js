@@ -17,7 +17,8 @@
     'module2-case-workspace.html': 'triage',
     'module3-cpr-workspace.html': 'deadlines',
     'module4-evidence-workspace.html': 'evidence',
-    'module5-drafting-workspace.html': 'documents'
+    'module5-drafting-workspace.html': 'documents',
+    'module8-terminal-workspace.html': 'terminal'
   };
 
   var file = window.location.pathname.split('/').pop() || '';

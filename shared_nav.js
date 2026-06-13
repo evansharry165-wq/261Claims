@@ -6,12 +6,14 @@
     repository: 'Repository',
     insights: 'Insights',
     education: 'Education',
+    terminal: 'Terminal',
     requests: 'Requests'
   };
 
   var LEGAL_NAV = [
     { key: 'work', icon: 'ti-layout-dashboard', href: 'index.html' },
     { key: 'cases', icon: 'ti-briefcase', href: 'cases.html' },
+    { key: 'terminal', icon: 'ti-send', href: 'terminal.html' },
     { key: 'repository', icon: 'ti-database', href: 'repository.html' },
     { key: 'insights', icon: 'ti-chart-dots', href: 'insights.html' },
     { key: 'education', icon: 'ti-school', href: 'education.html' }
@@ -29,6 +31,7 @@
     var p = window.location.pathname.split('/').pop() || 'index.html';
     if (p === 'index.html' || p === '') return 'work';
     if (p === 'case.html' || p === 'cases.html') return 'cases';
+    if (p === 'terminal.html' || p.indexOf('module8') >= 0) return 'terminal';
     if (p === 'intake.html' || p.indexOf('module1') >= 0 || p.indexOf('intake') >= 0) return 'cases';
     if (p === 'requests.html') return 'requests';
     if (p.indexOf('module2') >= 0 || p.indexOf('module3') >= 0) return 'cases';

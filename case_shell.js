@@ -6,6 +6,7 @@ var CaseShell = (function () {
     { id: 'deadlines', label: 'Deadlines', icon: 'ti-calendar-due', frame: 'module3-cpr-workspace.html' },
     { id: 'evidence', label: 'Evidence', icon: 'ti-folder-open', frame: 'module4-evidence-workspace.html' },
     { id: 'documents', label: 'Documents', icon: 'ti-file-pencil', frame: 'module5-drafting-workspace.html' },
+    { id: 'terminal', label: 'Terminal', icon: 'ti-send', frame: 'module8-terminal-workspace.html' },
     { id: 'activity', label: 'Activity', icon: 'ti-history', frame: false }
   ];
 
@@ -13,7 +14,8 @@ var CaseShell = (function () {
     triage: 'module2-case-workspace.html',
     deadlines: 'module3-cpr-workspace.html',
     evidence: 'module4-evidence-workspace.html',
-    documents: 'module5-drafting-workspace.html'
+    documents: 'module5-drafting-workspace.html',
+    terminal: 'module8-terminal-workspace.html'
   };
 
   var state = {
@@ -183,9 +185,11 @@ var CaseShell = (function () {
                 ? 3
                 : tab.id === 'documents'
                   ? 4
-                  : tab.id === 'activity'
-                    ? 99
-                    : 0;
+                  : tab.id === 'terminal'
+                    ? 5
+                    : tab.id === 'activity'
+                      ? 99
+                      : 0;
       var done = tabStageIdx >= 0 && tabStageIdx < stageIdx;
       var active = state.tab === tab.id;
       return (
@@ -219,6 +223,7 @@ var CaseShell = (function () {
       { id: 'cpr', label: 'Deadlines', tab: 'deadlines' },
       { id: 'evidence', label: 'Evidence', tab: 'evidence' },
       { id: 'drafting', label: 'Documents', tab: 'documents' },
+      { id: 'defence', label: 'Terminal', tab: 'terminal' },
       { id: 'resolve', label: 'Resolve', tab: null }
     ];
     var stageIdx = stages.findIndex(function (s) {
