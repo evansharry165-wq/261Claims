@@ -64,6 +64,14 @@ assert(fs.existsSync(path.join(root, 'dio.html')), 'dio.html exists');
 assert(fs.existsSync(path.join(root, 'dio-case.html')), 'dio-case.html exists');
 assert(fs.existsSync(path.join(root, 'dio-knowledge.html')), 'dio-knowledge.html exists');
 
+assert(fs.existsSync(path.join(root, 'shared_user_switch.js')), 'shared_user_switch.js exists');
+var switchSrc = fs.readFileSync(path.join(root, 'shared_user_switch.js'), 'utf8');
+assert(switchSrc.indexOf('DemoUserSwitch') >= 0, 'DemoUserSwitch defined');
+
+var dioSrc = fs.readFileSync(path.join(root, 'dio.html'), 'utf8');
+assert(dioSrc.indexOf('shared_user_switch.js') >= 0, 'dio.html uses shared user switch');
+assert(dioSrc.indexOf('user-dropdown"></div>') >= 0, 'dio.html delegates user menu to shared switcher');
+
 var helpersSrc = fs.readFileSync(path.join(root, 'case_helpers.js'), 'utf8');
 assert(helpersSrc.indexOf('dio-case.html') >= 0, 'openCase routes DIO to dio-case.html');
 

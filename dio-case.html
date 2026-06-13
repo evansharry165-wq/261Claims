@@ -12,6 +12,20 @@ html,body{min-height:100%;font-family:var(--font);background:var(--surface2);col
 .top-bar{background:var(--navy);height:48px;display:flex;align-items:center;padding:0 20px;gap:16px}
 .top-bar a{color:rgba(255,255,255,0.85);text-decoration:none;font-size:12px;display:inline-flex;align-items:center;gap:5px}
 .top-bar a:hover{color:#fff}
+.top-bar .gn-user-btn{margin-left:auto;display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:20px;padding:3px 10px 3px 4px;cursor:pointer}
+.top-bar .gn-av{width:24px;height:24px;border-radius:50%;background:#164E63;color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px}
+.top-bar .gn-user{font-size:11px;color:rgba(255,255,255,0.85)}
+.user-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.3);z-index:500;justify-content:flex-end;padding:52px 20px 0}
+.user-modal.open{display:flex}
+.user-dropdown{background:var(--surface);border:1px solid var(--rule);border-radius:var(--r3);width:240px;overflow:hidden}
+.ud-header{padding:10px 14px;border-bottom:1px solid var(--rule);font-size:10px;text-transform:uppercase;color:var(--ink3)}
+.ud-item{display:flex;align-items:center;gap:10px;padding:9px 14px;cursor:pointer}
+.ud-item:hover,.ud-item.current{background:var(--accent-faint)}
+.ud-av{width:28px;height:28px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px}
+.ud-name{font-size:12px;font-weight:500}
+.ud-role{font-size:10px;color:var(--ink3)}
+.ud-tick{margin-left:auto;color:var(--confirm);display:none}
+.ud-item.current .ud-tick{display:block}
 .gn-mark{width:28px;height:28px;background:var(--blue);border-radius:4px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;text-decoration:none}
 .wrap{max-width:960px;margin:0 auto;padding:20px 20px 48px}
 .back-link{font-size:12px;color:var(--accent);text-decoration:none;display:inline-flex;align-items:center;gap:4px;margin-bottom:14px}
@@ -66,6 +80,7 @@ textarea{min-height:56px;resize:vertical}
 <header class="top-bar">
   <a href="dio.html" class="gn-mark"><i class="ti ti-archive"></i></a>
   <a href="dio.html"><i class="ti ti-arrow-left"></i> Return to dashboard</a>
+  <div class="gn-user-btn" onclick="toggleUserMenu()"><div class="gn-av" id="nav-av">EH</div><span class="gn-user" id="nav-user">E. Hughes</span></div>
 </header>
 
 <div class="wrap" id="app"></div>
@@ -300,5 +315,10 @@ function render(){
 document.getElementById('point-file').addEventListener('change',handlePointUpload);
 window.addEventListener('load',render);
 </script>
+<script src="shared_user_switch.js"></script>
+
+<div id="user-modal" class="user-modal" onclick="if(event.target===this)closeMenu()">
+  <div class="user-dropdown"></div>
+</div>
 </body>
 </html>

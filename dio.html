@@ -83,8 +83,8 @@ html,body{min-height:100%;font-family:var(--font);background:var(--surface2);col
 <div class="wrap" id="app"></div>
 
 <script src="shared_nav.js"></script>
+<script src="shared_user_switch.js"></script>
 <script>
-function escapeHtml(v){return String(v==null?'':v).replace(/[&<>"']/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch];});}
 
 function archiveEvent(id){
   DIO.saveDisruptionEventPatch(id,{archived:true,archivedAt:new Date().toISOString()});
@@ -182,26 +182,12 @@ function render(){
   if(typeof renderGlobalNav==='function')renderGlobalNav();
 }
 
-function toggleUserMenu(){document.getElementById('user-modal').classList.toggle('open');}
-function closeMenu(){document.getElementById('user-modal').classList.remove('open');}
-function switchUser(id){
-  setActiveUser(id);sessionStorage.removeItem('dfa_lang');closeMenu();
-  var u=USERS[id];if(u){document.getElementById('nav-av').textContent=u.initials;document.getElementById('nav-user').textContent=u.name;}
-  ['EH','FD','SR'].forEach(function(uid){var el=document.getElementById('ud-'+uid);if(el)el.classList.toggle('current',uid===id);});
-  if(u&&u.team!=='dio'){window.location.href='index.html';return;}
-  render();
-}
-
-window.addEventListener('load',render);
+function escapeHtml(v){return String(v==null?'':v).replace(/[&<>"']/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch];});}
 </script>
 
 <div id="user-modal" class="user-modal" onclick="if(event.target===this)closeMenu()">
-  <div class="user-dropdown">
-    <div class="ud-header">Documentary Intelligence</div>
-    <div class="ud-item" id="ud-EH" onclick="switchUser('EH')"><div class="ud-av" style="background:#164E63">EH</div><div><div class="ud-name">Emma Hughes</div><div class="ud-role">DIO — England & Wales</div></div><i class="ti ti-check ud-tick"></i></div>
-    <div class="ud-item" id="ud-FD" onclick="switchUser('FD')"><div class="ud-av" style="background:#4A3728">FD</div><div><div class="ud-name">Françoise Durand</div><div class="ud-role">DIO — France</div></div><i class="ti ti-check ud-tick"></i></div>
-    <div class="ud-item" id="ud-SR" onclick="switchUser('SR')"><div class="ud-av" style="background:#2D4A3E">SR</div><div><div class="ud-name">Sofia Ramos</div><div class="ud-role">DIO — España</div></div><i class="ti ti-check ud-tick"></i></div>
-  </div>
+  <div class="user-dropdown"></div>
 </div>
+<script>window.addEventListener('load',render);</script>
 </body>
 </html>
