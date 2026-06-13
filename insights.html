@@ -115,6 +115,45 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 .tb-inv{background:var(--amber)}
 .tb-esc{background:var(--red)}
 .intel-empty{padding:24px;text-align:center;color:var(--text3);font-size:12px}
+.ai-search-panel{background:linear-gradient(135deg,#f8f6ff 0%,#fff 55%);border:1px solid #D4D0F0;border-radius:var(--r3);padding:16px 18px;margin-bottom:18px;box-shadow:0 1px 0 rgba(67,56,202,.06)}
+.ai-search-hdr{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.ai-search-hdr i{width:34px;height:34px;border-radius:var(--r2);background:var(--purple-faint);color:var(--purple);display:flex;align-items:center;justify-content:center;font-size:17px}
+.ai-search-title{font-size:15px;font-weight:500;font-family:var(--font-serif);color:var(--text)}
+.ai-search-sub{font-size:11px;color:var(--text3);margin-top:2px}
+.ai-badge{font-size:10px;font-weight:500;padding:3px 8px;border-radius:20px;background:var(--purple-faint);color:var(--purple);margin-left:auto}
+.ai-chat-thread{display:flex;flex-direction:column;gap:10px;max-height:320px;overflow-y:auto;margin-bottom:12px;padding-right:4px}
+.ai-msg{max-width:92%;font-size:12px;line-height:1.55;padding:10px 12px;border-radius:var(--r2)}
+.ai-msg.user{align-self:flex-end;background:var(--navy);color:#fff;border-bottom-right-radius:2px}
+.ai-msg.assistant{align-self:flex-start;background:var(--surface);border:1px solid var(--border);color:var(--text2);border-bottom-left-radius:2px}
+.ai-msg.assistant strong{color:var(--text);font-weight:500}
+.ai-msg-meta{font-size:10px;color:var(--text3);margin-top:6px}
+.ai-suggestions{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.ai-chip{font-size:11px;border:1px solid #C7C2E8;background:#fff;color:var(--purple);padding:6px 10px;border-radius:20px;cursor:pointer;font-family:var(--font);transition:background .12s}
+.ai-chip:hover{background:var(--purple-faint)}
+.ai-chip.secondary{color:var(--text2);border-color:var(--border);background:var(--surface)}
+.ai-input-row{display:flex;gap:8px;align-items:center}
+.ai-input{flex:1;font-size:13px;padding:11px 14px;border:1px solid #C7C2E8;border-radius:var(--r2);font-family:var(--font);background:#fff;box-shadow:inset 0 1px 2px rgba(67,56,202,.04)}
+.ai-input:focus{outline:none;border-color:var(--purple);box-shadow:0 0 0 3px rgba(67,56,202,.12)}
+.ai-send{font-size:12px;font-weight:500;padding:10px 14px;border-radius:var(--r);background:var(--purple);color:#fff;border:none;cursor:pointer;font-family:var(--font);display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.ai-send:hover{opacity:.92}
+.ai-send:disabled{opacity:.55;cursor:wait}
+.ai-viz-wrap{margin-top:8px;display:grid;gap:10px}
+.ai-viz-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r2);padding:12px 14px}
+.ai-viz-title{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-bottom:10px}
+.ai-bar-row{display:grid;grid-template-columns:minmax(90px,1.1fr) 1fr 28px;gap:8px;align-items:center;margin-bottom:7px;font-size:11px}
+.ai-bar-label{color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ai-bar-track{height:8px;background:var(--surface3);border-radius:4px;overflow:hidden}
+.ai-bar-fill{height:100%;background:linear-gradient(90deg,var(--purple),var(--blue));border-radius:4px}
+.ai-bar-val{font-family:var(--mono);font-size:10px;color:var(--text3);text-align:right}
+.ai-cost-row{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid var(--border)}
+.ai-cost-row:last-of-type{border-bottom:none}
+.ai-cost-label{font-size:12px;font-weight:500;color:var(--text)}
+.ai-cost-note{font-size:10px;color:var(--text3);margin-top:2px}
+.ai-cost-val{font-family:var(--mono);font-size:13px;font-weight:500;color:var(--text);white-space:nowrap}
+.ai-cost-foot{font-size:10px;color:var(--text3);margin-top:8px;font-style:italic}
+.ai-thinking{align-self:flex-start;font-size:11px;color:var(--text3);display:flex;align-items:center;gap:6px;padding:4px 2px}
+.ai-thinking i{animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
 @media(max-width:900px){
   .intel-row{grid-template-columns:1fr 1fr;gap:6px;padding:12px}
   .intel-row>span:nth-child(n+5){display:none}
@@ -130,6 +169,7 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 <script src="team_helpers.js"></script>
 <script src="intake_template.js"></script>
 <script src="insights_data.js"></script>
+<script src="intel_ai_search.js"></script>
 
 <nav class="global-nav">
   <a href="index.html" class="gn-logo"><div class="gn-mark"><i class="ti ti-lock"></i></div><span class="gn-name">DefendAble</span></a>
@@ -150,10 +190,14 @@ var activeTab=_tabParam==='guidance'?'intelligence':_tabParam;
 var activeOutcome='all', selectedRef='', query='';
 var _intelCaseCache=null;
 var _intelHydrated=false;
-var intelFilters={disruptionTypes:[],jurisdictions:[],triage:[],cprBands:[],solicitor:'',valueMin:'',valueMax:'',groupOnly:false};
+var intelFilters={disruptionTypes:[],jurisdictions:[],triage:[],cprBands:[],solicitor:'',valueMin:'',valueMax:'',groupOnly:false,airports:[],airportDirection:'either'};
 var _correlations=[];
+var aiChatHistory=[];
+var aiLastQuery={cases:[],parsed:null,viz:null};
+var aiThinking=false;
 
 function escapeHtml(v){return String(v==null?'':v).replace(/[&<>"']/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch];});}
+function aiMarkdown(s){return typeof IntelAISearch!=='undefined'&&IntelAISearch.markdownLite?IntelAISearch.markdownLite(s):escapeHtml(s);}
 
 function switchTab(tab){
   activeTab=tab;
@@ -183,7 +227,8 @@ function normalizeInsightCase(c){
     disruptionType:c.disruptionType||'Unknown',jurisdiction:c.jurisdiction||'england-wales',
     classification:String(c.classification||'INVESTIGATE').toUpperCase(),
     cprDaysLeft:c.cprDaysLeft!=null?c.cprDaysLeft:21,value:c.value||v.display,
-    compNumeric:v.amount,compCurrency:v.currency,triageNote:c.triageNote||'',assignedTo:c.assignedTo||''
+    compNumeric:v.amount,compCurrency:v.currency,triageNote:c.triageNote||'',assignedTo:c.assignedTo||'',
+    dep:c.dep||'',arr:c.arr||'',flight:c.flight||'',flightNum:c.flightNum||'',type:c.type||'',stage:c.stage||''
   };
 }
 
@@ -245,11 +290,25 @@ function toggleIntelFilter(kind,value){
   intelFilters.groupOnly=false;renderPanel();
 }
 function setIntelText(field,value){intelFilters[field]=value;intelFilters.groupOnly=false;renderPanel();}
-function clearIntelFilters(){intelFilters={disruptionTypes:[],jurisdictions:[],triage:[],cprBands:[],solicitor:'',valueMin:'',valueMax:'',groupOnly:false};renderPanel();}
+function clearIntelFilters(){intelFilters={disruptionTypes:[],jurisdictions:[],triage:[],cprBands:[],solicitor:'',valueMin:'',valueMax:'',groupOnly:false,airports:[],airportDirection:'either'};aiLastQuery={cases:[],parsed:null,viz:null};renderPanel();}
 
 function matchesDisruption(c,selected){
   if(!selected.length)return true;
-  return selected.some(function(t){return (c.disruptionType||'').toLowerCase().indexOf(String(t).toLowerCase())>=0;});
+  return selected.some(function(t){
+    if(t==='Cancellation'&&typeof IntelAISearch!=='undefined'&&IntelAISearch.isCancellationCase)return IntelAISearch.isCancellationCase(c);
+    return (c.disruptionType||'').toLowerCase().indexOf(String(t).toLowerCase())>=0
+      ||(c.type||'').toLowerCase().indexOf(String(t).toLowerCase())>=0;
+  });
+}
+
+function matchesAirportFilter(c){
+  if(!intelFilters.airports||!intelFilters.airports.length)return true;
+  var dir=intelFilters.airportDirection||'either';
+  return intelFilters.airports.some(function(code){
+    if(dir==='dep')return c.dep===code;
+    if(dir==='arr')return c.arr===code;
+    return c.dep===code||c.arr===code||(c.flight||'').indexOf(code)>=0;
+  });
 }
 
 function filterIntelligenceCases(cases){
@@ -258,6 +317,7 @@ function filterIntelligenceCases(cases){
   return cases.filter(function(c){
     if(intelFilters.groupOnly&&!/(group|pax)/i.test(c.triageNote||''))return false;
     if(!matchesDisruption(c,intelFilters.disruptionTypes))return false;
+    if(!matchesAirportFilter(c))return false;
     if(intelFilters.jurisdictions.length&&intelFilters.jurisdictions.indexOf(c.jurisdiction)<0)return false;
     if(intelFilters.triage.length&&intelFilters.triage.indexOf(c.classification)<0)return false;
     if(intelFilters.cprBands.length&&intelFilters.cprBands.indexOf(cprBand(c.cprDaysLeft))<0)return false;
@@ -334,9 +394,142 @@ function computeCorrelations(cases){
 }
 
 function applyCorrelationPreset(preset){
-  intelFilters={disruptionTypes:(preset.disruptionTypes||[]).slice(),jurisdictions:(preset.jurisdictions||[]).slice(),triage:(preset.triage||[]).slice(),cprBands:(preset.cprBands||[]).slice(),solicitor:preset.solicitor||'',valueMin:'',valueMax:'',groupOnly:!!preset.groupOnly};
+  intelFilters={disruptionTypes:(preset.disruptionTypes||[]).slice(),jurisdictions:(preset.jurisdictions||[]).slice(),triage:(preset.triage||[]).slice(),cprBands:(preset.cprBands||[]).slice(),solicitor:preset.solicitor||'',valueMin:'',valueMax:'',groupOnly:!!preset.groupOnly,airports:[],airportDirection:'either'};
   renderPanel();
   var el=document.getElementById('intel-search');if(el)el.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function ensureAiWelcome(){
+  if(aiChatHistory.length)return;
+  aiChatHistory.push({
+    role:'assistant',
+    text:'Ask in plain language — I\'ll search the live portfolio and suggest how to view the results. Try **cancelled flights from London Gatwick**, **urgent CPR exposure**, or **weather delays we can defend**.',
+    meta:{welcome:true}
+  });
+}
+
+function renderAiChatThread(){
+  ensureAiWelcome();
+  var html=aiChatHistory.map(function(m){
+    if(m.role==='viz'&&m.html){
+      return '<div class="ai-msg assistant"><div>'+m.html+'</div></div>';
+    }
+    var cls=m.role==='user'?'user':'assistant';
+    var body=m.role==='assistant'?aiMarkdown(m.text):escapeHtml(m.text);
+    return '<div class="ai-msg '+cls+'"><div>'+body+'</div>'+(m.meta&&m.meta.count!=null?'<div class="ai-msg-meta">'+m.meta.count+' cases matched</div>':'')+'</div>';
+  }).join('');
+  if(aiThinking)html+='<div class="ai-thinking"><i class="ti ti-loader-2"></i> Analysing portfolio…</div>';
+  return html;
+}
+
+function renderAiSuggestions(){
+  var chips=[];
+  if(aiLastQuery.cases.length&&aiLastQuery.parsed){
+    (aiLastQuery.followUps||[]).forEach(function(f){
+      if(f.action==='viz'){
+        chips.push('<button type="button" class="ai-chip" onclick="runAiVisualization(\''+f.viz+'\')">'+escapeHtml(f.label)+'</button>');
+      }else if(f.action==='scroll'){
+        chips.push('<button type="button" class="ai-chip secondary" onclick="scrollToIntelList()">'+escapeHtml(f.label)+'</button>');
+      }else if(f.query){
+        chips.push('<button type="button" class="ai-chip secondary" onclick="submitAiQuery(\''+String(f.query).replace(/'/g,'\\\'')+'\')">'+escapeHtml(f.label)+'</button>');
+      }
+    });
+  }else{
+    (typeof IntelAISearch!=='undefined'?IntelAISearch.starterPrompts():[]).forEach(function(q){
+      chips.push('<button type="button" class="ai-chip secondary" onclick="submitAiQuery(\''+String(q).replace(/'/g,'\\\'')+'\')">'+escapeHtml(q)+'</button>');
+    });
+  }
+  return chips.join('');
+}
+
+function scrollToIntelList(){
+  var el=document.getElementById('intel-case-list');
+  if(el)el.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function syncAiFilters(parsed){
+  if(typeof IntelAISearch==='undefined')return;
+  intelFilters=IntelAISearch.parsedToIntelFilters(parsed);
+}
+
+function submitAiQuery(text){
+  text=(text||'').trim();
+  if(!text||aiThinking||typeof IntelAISearch==='undefined')return;
+  var input=document.getElementById('ai-query-input');
+  if(input)input.value=text;
+  aiChatHistory.push({role:'user',text:text});
+  aiThinking=true;
+  renderAiPanelOnly();
+  setTimeout(function(){
+    var allCases=getIntelligenceCases();
+    var parsed=IntelAISearch.parseQuery(text);
+    var matched=IntelAISearch.filterCases(allCases,parsed);
+    if(!matched.length&&aiLastQuery.cases.length&&parsed.vizIntent){
+      matched=aiLastQuery.cases;
+      parsed=Object.assign({},aiLastQuery.parsed||parsed,{vizIntent:parsed.vizIntent});
+    }
+    if(parsed.vizIntent&&matched.length){
+      syncAiFilters(parsed);
+      aiLastQuery={cases:matched,parsed:parsed,viz:parsed.vizIntent,followUps:IntelAISearch.buildSummary(matched,parsed).followUps};
+      aiChatHistory.push({
+        role:'assistant',
+        text:IntelAISearch.buildSummary(matched,parsed).headline,
+        meta:{count:matched.length}
+      });
+      aiChatHistory.push({role:'viz',html:IntelAISearch.renderVisualization(parsed.vizIntent,matched)});
+      aiThinking=false;
+      renderPanel();
+      return;
+    }
+    var summary=IntelAISearch.buildSummary(matched,parsed);
+    syncAiFilters(parsed);
+    aiLastQuery={cases:matched,parsed:parsed,viz:null,followUps:summary.followUps};
+    aiChatHistory.push({
+      role:'assistant',
+      text:summary.headline+' '+summary.detail,
+      meta:{count:matched.length}
+    });
+    aiThinking=false;
+    renderPanel();
+    var thread=document.getElementById('ai-chat-thread');
+    if(thread)thread.scrollTop=thread.scrollHeight;
+  },650);
+}
+
+function runAiVisualization(mode){
+  if(!aiLastQuery.cases.length||typeof IntelAISearch==='undefined')return;
+  aiLastQuery.viz=mode;
+  var labels={chart:'Disruption mix chart',cost:'Projected cost impact',triage:'Triage breakdown',firms:'Claims by firm'};
+  aiChatHistory.push({role:'user',text:'Show '+((labels[mode]||mode).toLowerCase())});
+  var html=IntelAISearch.renderVisualization(mode,aiLastQuery.cases);
+  aiChatHistory.push({role:'viz',html:html});
+  renderAiPanelOnly();
+  var thread=document.getElementById('ai-chat-thread');
+  if(thread)thread.scrollTop=thread.scrollHeight;
+}
+
+function handleAiInputKey(e){
+  if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();submitAiQuery(e.target.value);}
+}
+
+function renderAiPanelOnly(){
+  var thread=document.getElementById('ai-chat-thread');
+  var chips=document.getElementById('ai-suggestions');
+  var btn=document.getElementById('ai-send-btn');
+  if(thread)thread.innerHTML=renderAiChatThread();
+  if(chips)chips.innerHTML=renderAiSuggestions();
+  if(btn)btn.disabled=aiThinking;
+}
+
+function buildAiSearchPanel(){
+  return '<div class="ai-search-panel" id="intel-ai-search">'
+    +'<div class="ai-search-hdr"><i class="ti ti-sparkles"></i><div><div class="ai-search-title">Ask Intelligence</div>'
+    +'<div class="ai-search-sub">Natural language search across active claims — no filters required</div></div>'
+    +'<span class="ai-badge">AI demo</span></div>'
+    +'<div class="ai-chat-thread" id="ai-chat-thread">'+renderAiChatThread()+'</div>'
+    +'<div class="ai-suggestions" id="ai-suggestions">'+renderAiSuggestions()+'</div>'
+    +'<div class="ai-input-row"><input id="ai-query-input" class="ai-input" type="text" placeholder="e.g. cancelled flights from London Gatwick — show cost impact" onkeydown="handleAiInputKey(event)">'
+    +'<button type="button" id="ai-send-btn" class="ai-send" onclick="submitAiQuery(document.getElementById(\'ai-query-input\').value)"'+(aiThinking?' disabled':'')+'><i class="ti ti-arrow-up"></i> Ask</button></div></div>';
 }
 
 function triageSplitBar(cases){
@@ -406,7 +599,9 @@ function renderIntelligence(){
     return '<tr><td><strong>'+escapeHtml(r.name)+'</strong></td><td>'+r.count+'</td><td>'+escapeHtml(r.jurisdictions)+'</td><td>'+escapeHtml(r.types)+'</td><td>'+escapeHtml(r.avgValue)+'</td><td>'+triageSplitBar(r.cases)+'</td></tr>';
   }).join('');
   document.getElementById('tab-panel').innerHTML=
-    '<div class="intel-wrap"><div class="intel-section" id="intel-search"><div class="intel-section-hdr"><i class="ti ti-filter"></i><div class="intel-section-title">Live search &amp; filter</div><div class="intel-section-sub">Correlation engine · '+allCases.length+' active cases</div></div>'
+    '<div class="intel-wrap">'
+    +buildAiSearchPanel()
+    +'<div class="intel-section" id="intel-search"><div class="intel-section-hdr"><i class="ti ti-filter"></i><div class="intel-section-title">Live search &amp; filter</div><div class="intel-section-sub">Or refine manually · Correlation engine · '+allCases.length+' active cases</div></div>'
     +'<div class="filter-bar"><div class="filter-group"><div class="filter-label">Disruption type</div><div class="filter-pills">'+pillHtml('disruptionTypes',disruptionOpts)+'</div></div>'
     +'<div class="filter-group"><div class="filter-label">Jurisdiction</div><div class="filter-pills">'+pillHtml('jurisdictions',jurOpts,function(o){return o.key;},function(o){return o.label;})+'</div></div>'
     +'<div class="filter-group"><div class="filter-label">Triage</div><div class="filter-pills">'+pillHtml('triage',triageOpts)+'</div></div>'
@@ -415,7 +610,7 @@ function renderIntelligence(){
     +'<div class="filter-group"><div class="filter-label">Claim value (min / max)</div><div class="filter-row"><input class="filter-input" type="number" placeholder="Min" value="'+escapeHtml(intelFilters.valueMin)+'" oninput="setIntelText(\'valueMin\',this.value)"><input class="filter-input" type="number" placeholder="Max" value="'+escapeHtml(intelFilters.valueMax)+'" oninput="setIntelText(\'valueMax\',this.value)"></div></div></div>'
     +'<div><button type="button" class="fpill" onclick="clearIntelFilters()">Clear all filters</button></div></div>'
     +'<div class="intel-count">Showing '+filtered.length+' of '+allCases.length+' cases</div>'
-    +'<div class="intel-list">'+(caseRows||'<div class="intel-empty">No cases match the current filters.</div>')+'</div></div>'
+    +'<div class="intel-list" id="intel-case-list">'+(caseRows||'<div class="intel-empty">No cases match the current filters.</div>')+'</div></div>'
     +'<div class="intel-section"><div class="intel-section-hdr"><i class="ti ti-brain"></i><div class="intel-section-title">AI-surfaced correlations</div></div><div class="corr-grid">'+renderCorrelationCards(_correlations)+'</div></div>'
     +'<div class="intel-section"><div class="intel-section-hdr"><i class="ti ti-flag"></i><div class="intel-section-title">Agency / CMC tracker</div><div class="intel-section-sub">Flags by agency — focus defence strategy</div></div>'
     +'<div class="panel"><table class="agency-table"><thead><tr><th>Firm name</th><th>Claims filed</th><th>Jurisdictions</th><th>Disruption types</th><th>Avg claim value</th><th>Triage split</th></tr></thead><tbody>'+agencyRows+'</tbody></table></div></div></div>';
