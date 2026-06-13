@@ -262,9 +262,24 @@ function demoToursHtml(){
 
 function knowledgeAlertBanner(){
   var DEFAULT_KE_ALERTS=[
-    {title:'Lipton v BA Cityflyer [2024] UKSC 24',actionNote:'Review all open cases with crew illness as pleaded extraordinary circumstance — liability position weakened'},
-    {title:'CAA UK261 Evidence Standards — Updated Guidance May 2026',actionNote:'Ensure evidence packs include specific ATFM references and METAR records — not general operational summaries'}
+    {title:'Lipton v BA Cityflyer [2024] UKSC 24',
+     actionNote:'Review all open cases with crew illness as pleaded extraordinary circumstance — liability position weakened'},
+    {title:'CAA UK261 Evidence Standards — Updated Guidance May 2026',
+     actionNote:'Ensure evidence packs include specific ATFM references and METAR records'}
   ];
+  
+  // Check for team-published updates not yet seen
+  var notifications = [];
+  try{
+    var now = Date.now();
+    var stored = JSON.parse(sessionStorage.getItem('dfa_knowledge_notifications')||'[]');
+    var lastSeen = parseInt(sessionStorage.getItem('dfa_intel_last_seen')||'0');
+    notifications = stored.filter(function(n){
+      return new Date(n.publishedAt).getTime() > lastSeen
+        && new Date(n.expiresAt||0).getTime() > now;
+    });
+  }catch(e){}
+  
   var cached = window._keAlerts;
   if(!cached){
     fetch('knowledge_store.json?t='+Date.now())
@@ -276,31 +291,56 @@ function knowledgeAlertBanner(){
         if(!urgent.length) urgent=DEFAULT_KE_ALERTS;
         window._keAlerts=urgent;
         var el=document.getElementById('ke-alert-banner');
-        if(el) el.outerHTML=renderKEBanner(urgent);
+        if(el) el.outerHTML=renderKEBanner(urgent, notifications);
       })
-      .catch(function(){
-        window._keAlerts=DEFAULT_KE_ALERTS;
-        var el=document.getElementById('ke-alert-banner');
-        if(el) el.outerHTML=renderKEBanner(DEFAULT_KE_ALERTS);
-      });
-    return renderKEBanner(DEFAULT_KE_ALERTS);
+      .catch(function(){});
+    return '<div id="ke-alert-banner">'
+      +(notifications.length ? renderKEBanner(DEFAULT_KE_ALERTS, notifications) : '')
+    +'</div>';
   }
-  return renderKEBanner(cached);
+  return renderKEBanner(cached, notifications);
 }
 
-function renderKEBanner(alerts){
+}
+
+function renderKEBanner(alerts, teamNotifs){
   if(!alerts||!alerts.length) return '';
-  var html='<div id="ke-alert-banner" style="background:#FFFBEB;border:1px solid #FDE68A;border-radius:var(--r2);padding:10px 14px;margin-bottom:14px">';
+  teamNotifs = teamNotifs || [];
+  var totalAlerts = (alerts||[]).length + teamNotifs.length;
+  if(!totalAlerts) return '';
+  
+  var html='<div id="ke-alert-banner" style="background:#FFFBEB;border:1px solid #FDE68A;'
+    +'border-radius:var(--r2);padding:10px 14px;margin-bottom:14px">';
   html+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">';
   html+='<i class="ti ti-bell-ringing" style="color:#D97706;font-size:14px"></i>';
-  html+='<span style="font-size:12px;font-weight:500;color:#92400E">'+alerts.length+' legal intelligence alert'+(alerts.length>1?'s':'')+' require action</span>';
-  html+='<a href="education.html?section=live-updates" style="font-size:11px;color:#D97706;margin-left:auto;text-decoration:none">View all <i class="ti ti-arrow-right" style="font-size:10px"></i></a>';
+  html+='<span style="font-size:12px;font-weight:500;color:#92400E">';
+  if(teamNotifs.length){
+    html+=teamNotifs.length+' new knowledge update'+(teamNotifs.length>1?'s':'')+' published';
+    if((alerts||[]).length) html+=' · '+(alerts||[]).length+' intelligence alert'+(alerts.length>1?'s':'');
+  } else {
+    html+=(alerts||[]).length+' legal intelligence alert'+((alerts||[]).length>1?'s':'')+' require action';
+  }
+  html+='</span>';
+  html+='<a href="education.html?section=intelligence" style="font-size:11px;color:#D97706;margin-left:auto;text-decoration:none">'
+    +'View all <i class="ti ti-arrow-right" style="font-size:10px"></i></a>';
   html+='</div>';
-  alerts.slice(0,2).forEach(function(e){
+  
+  // Team-published notifications first (most recent, expires in 7 days)
+  teamNotifs.slice(0,1).forEach(function(n){
     html+='<div style="font-size:11px;color:#78350F;padding:3px 0;border-top:1px solid #FDE68A">';
-    html+='<strong>'+e.title+'</strong> — '+e.actionNote;
+    html+='<span style="font-size:10px;background:var(--accent-faint);color:var(--accent);'
+      +'padding:1px 5px;border-radius:2px;margin-right:6px">Team update</span>';
+    html+='<strong>'+n.title+'</strong>'+(n.publishedBy?' — published by '+n.publishedBy:'');
     html+='</div>';
   });
+  
+  // Knowledge store HIGH alerts
+  (alerts||[]).slice(0, teamNotifs.length ? 1 : 2).forEach(function(e){
+    html+='<div style="font-size:11px;color:#78350F;padding:3px 0;border-top:1px solid #FDE68A">';
+    html+='<strong>'+(e.title||'')+'</strong>'+(e.actionNote?' — '+(e.actionNote||''):'');
+    html+='</div>';
+  });
+  
   html+='</div>';
   return html;
 }
