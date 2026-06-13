@@ -141,7 +141,9 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 .btn-ev:hover{background:var(--surface3)}
 .btn-ev.done{background:var(--green-faint);border-color:#BBF7D0;color:var(--green);cursor:default}
 .btn-ev.api-btn{background:var(--blue-faint);border-color:#BFDBFE;color:var(--blue-text);cursor:not-allowed}
-.ev-file{font-size:10px;color:var(--text3);font-family:var(--mono);padding:0 12px 8px 29px}
+.ev-extract{font-size:11px;font-family:var(--font-serif);color:var(--text2);line-height:1.55;margin-top:6px;padding:8px 10px;border-left:2px solid var(--accent);background:var(--accent-faint)}
+.ev-extract-label{font-family:var(--font);font-size:9px;text-transform:uppercase;letter-spacing:0.08em;color:var(--accent);display:block;margin-bottom:3px}
+.fi.ai,.fta.ai{background:var(--accent-faint);border-color:var(--accent)}
 .ev-api-note{font-size:10px;color:var(--blue-text);padding:0 12px 8px 29px;font-style:italic}
 
 /* empty */
@@ -198,6 +200,7 @@ input[type=file]{display:none}
 <script src="shared_theme.js"></script>
 <script src="case_embed.js"></script>
 <script src="evidence_filing.js"></script>
+<script src="evidence_extract.js"></script>
 <script>
 // ALL DATA AND HELPERS — embedded in every page
 const USERS={
@@ -578,7 +581,7 @@ var MATRIX={
 
 /* ── State ── */
 var primaryType='', secondaryType='', dtMode='primary';
-var uploads={}, pullState={};
+var uploads={}, pullState={}, extracted={}, autoFilled={};
 var summaryOpen=false;
 var audit=[];
 var pendingUpload=null;
@@ -586,9 +589,23 @@ var requestSent=false;
 var pullAllDone=false;
 var activeRequestId=null;
 
-function evidenceStateKey(){return '261c_evidence_'+C.ref;}
+function escapeHtml(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function fiCls(key){return autoFilled[key]?' ai':'';}
+function applyDocumentExtraction(libKey,filename,textContent){
+  if(typeof EvidenceExtract==='undefined')return null;
+  var ex=EvidenceExtract.extractFromDocument(C,libKey,filename,textContent);
+  extracted[libKey]=ex;
+  var filled=EvidenceExtract.mergeIntoDisruption(D,ex.fields,false);
+  filled.forEach(function(k){autoFilled[k]=true;});
+  if(C.points&&C.points.length)EvidenceExtract.applyPointUpdates(C.points,libKey,ex);
+  return ex;
+}
+function extractForAttachedItem(id,filename){
+  if(!id||extracted[id])return;
+  applyDocumentExtraction(id,filename||uploads[id]||'','');
+}
 function saveWorkspaceState(){
-  var state={D:D,primaryType:primaryType,secondaryType:secondaryType,dtMode:dtMode,uploads:uploads,pullState:pullState,summaryOpen:summaryOpen,requestSent:requestSent,pullAllDone:pullAllDone,evidencePct:getReadiness().pct,audit:audit.slice(-30)};
+  var state={D:D,primaryType:primaryType,secondaryType:secondaryType,dtMode:dtMode,uploads:uploads,pullState:pullState,extracted:extracted,autoFilled:autoFilled,summaryOpen:summaryOpen,requestSent:requestSent,pullAllDone:pullAllDone,evidencePct:getReadiness().pct,audit:audit.slice(-30),points:C.points};
   try{sessionStorage.setItem(evidenceStateKey(),JSON.stringify(state));}catch(e){}
   syncEvidenceToCase();
 }
@@ -602,6 +619,9 @@ function loadWorkspaceState(){
     if(st.dtMode)dtMode=st.dtMode;
     if(st.uploads)uploads=st.uploads;
     if(st.pullState)pullState=st.pullState;
+    if(st.extracted)extracted=st.extracted;
+    if(st.autoFilled)autoFilled=st.autoFilled;
+    if(st.points&&st.points.length)C.points=st.points;
     if(typeof st.summaryOpen==='boolean')summaryOpen=st.summaryOpen;
     if(st.requestSent)requestSent=st.requestSent;
     if(st.pullAllDone)pullAllDone=st.pullAllDone;
@@ -616,6 +636,7 @@ function syncEvidenceToCase(){
     var stored=JSON.parse(sessionStorage.getItem('261c_case')||'null');
     if(stored&&stored.ref===C.ref){
       stored.evidencePct=r.pct;
+      if(C.points)stored.points=C.points;
       if(ready){stored.evidenceReady=true;stored.classification='DRAFTING';}
       sessionStorage.setItem('261c_case',JSON.stringify(stored));
     }
@@ -770,9 +791,9 @@ function renderMain(){
 
     +'<div class="form-sec">Flight information <span class="ai-tag">AI pre-filled where available</span></div>'
     +'<div class="fg4">'
-    +'<div><div class="fl">Flight number</div><input class="fi'+(D.flightNum?' ai':'')+'" value="'+D.flightNum+'" placeholder="HC 307" onchange="D.flightNum=this.value"></div>'
-    +'<div><div class="fl">From</div><input class="fi'+(D.dep?' ai':'')+'" value="'+D.dep+'" placeholder="MAN" onchange="D.dep=this.value"></div>'
-    +'<div><div class="fl">To</div><input class="fi'+(D.arr?' ai':'')+'" value="'+D.arr+'" placeholder="AMS" onchange="D.arr=this.value"></div>'
+    +'<div><div class="fl">Flight number</div><input class="fi'+(D.flightNum?' ai':'')+fiCls('flightNum')+'" value="'+D.flightNum+'" placeholder="HC 307" onchange="D.flightNum=this.value;delete autoFilled.flightNum"></div>'
+    +'<div><div class="fl">From</div><input class="fi'+(D.dep?' ai':'')+fiCls('dep')+'" value="'+D.dep+'" placeholder="MAN" onchange="D.dep=this.value;delete autoFilled.dep"></div>'
+    +'<div><div class="fl">To</div><input class="fi'+(D.arr?' ai':'')+fiCls('arr')+'" value="'+D.arr+'" placeholder="AMS" onchange="D.arr=this.value;delete autoFilled.arr"></div>'
     +'<div><div class="fl">Category</div><select class="fs" onchange="D.cat=this.value">'
     +'<option value="">Select…</option>'
     +'<option value="A"'+(D.cat==='A'?' selected':'')+'>A — €250</option>'
@@ -781,25 +802,26 @@ function renderMain(){
     +'</select></div>'
     +'</div>'
     +'<div class="fg4">'
-    +'<div><div class="fl">STD (Zulu)</div><input class="fi" value="'+D.std+'" placeholder="08:15Z" onchange="D.std=this.value"></div>'
-    +'<div><div class="fl">STA (Zulu)</div><input class="fi" value="'+D.sta+'" placeholder="10:45Z" onchange="D.sta=this.value"></div>'
-    +'<div><div class="fl">ATD (Zulu)</div><input class="fi" value="'+D.atd+'" placeholder="11:53Z" onchange="D.atd=this.value"></div>'
-    +'<div><div class="fl">ATA (Zulu)</div><input class="fi" value="'+D.ata+'" placeholder="14:21Z" onchange="D.ata=this.value"></div>'
+    +'<div><div class="fl">STD (Zulu)</div><input class="fi'+fiCls('std')+'" value="'+D.std+'" placeholder="08:15Z" onchange="D.std=this.value;delete autoFilled.std"></div>'
+    +'<div><div class="fl">STA (Zulu)</div><input class="fi'+fiCls('sta')+'" value="'+D.sta+'" placeholder="10:45Z" onchange="D.sta=this.value;delete autoFilled.sta"></div>'
+    +'<div><div class="fl">ATD (Zulu)</div><input class="fi'+fiCls('atd')+'" value="'+D.atd+'" placeholder="11:53Z" onchange="D.atd=this.value;delete autoFilled.atd"></div>'
+    +'<div><div class="fl">ATA (Zulu)</div><input class="fi'+fiCls('ata')+'" value="'+D.ata+'" placeholder="14:21Z" onchange="D.ata=this.value;delete autoFilled.ata"></div>'
     +'</div>'
     +'<div class="form-div"></div>'
     +'<div class="form-sec">Disruption information — pulled from Operational delay records system, Disruption data system &amp; Crew scheduling system on connection</div>'
     +'<div class="fg2">'
-    +'<div><div class="fl">Primary cause</div><input class="fi" value="'+D.primaryCause+'" placeholder="e.g. ATC slot restriction at AMS" onchange="D.primaryCause=this.value"></div>'
-    +'<div><div class="fl">Secondary cause</div><input class="fi" value="'+D.secondaryCause+'" placeholder="e.g. Resulting crew FDP breach" onchange="D.secondaryCause=this.value"></div>'
+    +'<div><div class="fl">Primary cause</div><input class="fi'+fiCls('primaryCause')+'" value="'+escapeHtml(D.primaryCause)+'" placeholder="e.g. ATC slot restriction at AMS" onchange="D.primaryCause=this.value;delete autoFilled.primaryCause"></div>'
+    +'<div><div class="fl">Secondary cause</div><input class="fi'+fiCls('secondaryCause')+'" value="'+escapeHtml(D.secondaryCause)+'" placeholder="e.g. Resulting crew FDP breach" onchange="D.secondaryCause=this.value;delete autoFilled.secondaryCause"></div>'
     +'</div>'
     +'<div class="fg2">'
-    +'<div><div class="fl">Disruption summary</div><textarea class="fta" placeholder="Brief operational summary as it would appear in the evidence pack. When Operational delay records system/Disruption data system/Crew scheduling system are connected, this will be auto-generated." onchange="D.summary=this.value">'+D.summary+'</textarea></div>'
+    +'<div><div class="fl">Disruption summary</div><textarea class="fta'+fiCls('summary')+'" placeholder="Brief operational summary — populated automatically when documents are uploaded or pulled." onchange="D.summary=this.value;delete autoFilled.summary">'+escapeHtml(D.summary)+'</textarea></div>'
     +'<div><div class="fl">Classification</div><select class="fs" onchange="D.classification=this.value;render()">'
     +'<option value="DEFEND"'+(D.classification==='DEFEND'?' selected':'')+'>DEFEND</option>'
     +'<option value="INVESTIGATE"'+(D.classification==='INVESTIGATE'?' selected':'')+'>INVESTIGATE</option>'
     +'<option value="ESCALATE"'+(D.classification==='ESCALATE'?' selected':'')+'>ESCALATE</option>'
     +'</select></div>'
     +'</div>'
+    +((C.points&&C.points.length)?('<div class="form-div"></div><div class="form-sec">Points of claim — linked from documents</div><div style="display:flex;flex-direction:column;gap:6px;margin-bottom:10px">'+C.points.map(function(p){var st=p.evidenceStatus==='green'?'var(--confirm)':p.evidenceStatus==='red'?'var(--alert)':'var(--caution)';return '<div style="font-size:11px;padding:6px 8px;border:1px solid var(--rule);border-left:2px solid '+st+'"><div style="font-weight:500;color:var(--text)">'+escapeHtml(p.claim)+'</div><div style="color:var(--text2);margin-top:2px;font-family:var(--font-serif);font-size:11px">'+escapeHtml(p.evidenceDoc||'Pending')+'</div></div>';}).join('')+'</div>'):'')
     +'<div class="form-div"></div>'
     +'<div class="form-sec">Crew &amp; aircraft — pulled from Crew scheduling system on connection</div>'
     +'<div class="fg4">'
@@ -939,10 +961,12 @@ function renderMain(){
         }).join('');
       }
       var flashRow=flashTags?'<div class="ev-flash-tags">'+flashTags+'</div>':'';
+      var exBlock=(extracted[id]&&extracted[id].snippet)?'<div class="ev-extract"><span class="ev-extract-label">Extracted from document</span>'+escapeHtml(extracted[id].snippet)+'</div>':'';
       return '<tr class="ev-item'+(isUp?' ev-uploaded':(item.auto?' ev-api':''))+'">'
         +'<td class="ev-dot-col"><div class="ev-dot '+dotCls+'"></div></td>'
         +'<td><div class="ev-name">'+item.name+tierTag+upTag+'</div>'
         +'<div class="ev-why">'+item.why+'</div>'
+        +exBlock
         +flashRow
         +'<div class="ev-meta"><div class="ev-source"><i class="ti ti-database" style="font-size:10px"></i>'+srcHtml+'</div>'+apiPill+confPill+'</div>'
         +fileRow+repoRow+apiRow+compRow
@@ -1045,9 +1069,28 @@ function pullTier(tierId,idsStr){
   render();
   setTimeout(function(){
     pullState['_tier_'+tierId]='done';
-    log('Pull initiated — '+tierId.toUpperCase()+' evidence tier (connection pending — documents will populate when API is live)','pull');
+    idsStr.split(',').forEach(function(id){
+      id=id.trim();
+      if(!id||!LIB[id])return;
+      var match=getRepositoryMatch(id);
+      var fn=match?match.filename:((C.flightNum||'HC').replace(/\s/g,'')+'_'+id+'.pdf');
+      uploads[id]=fn;
+      pullState[id]='done';
+      applyDocumentExtraction(id,fn,'');
+    });
+    if(!summaryOpen)summaryOpen=true;
+    log('Pull completed — '+tierId.toUpperCase()+' tier: documents attached and data extracted','pull');
+    saveWorkspaceState();
     render();
-  },1800);
+  },1200);
+}
+function rehydrateExtractions(){
+  if(typeof EvidenceExtract==='undefined')return;
+  allEvidenceIds().forEach(function(id){
+    if((uploads[id]||pullState[id]==='done')&&!extracted[id]){
+      applyDocumentExtraction(id,uploads[id]||'','');
+    }
+  });
 }
 function getRepositoryMatch(id){
   if(typeof EvidenceFiling==='undefined')return null;
@@ -1063,6 +1106,7 @@ function pullFromRepository(){
     if(match){
       uploads[id]=match.filename;
       pullState[id]='done';
+      applyDocumentExtraction(id,match.filename,'');
       pulled++;
     }
   });
@@ -1070,7 +1114,9 @@ function pullFromRepository(){
     var pending=JSON.parse(sessionStorage.getItem('261c_pending_pulls')||'[]');
     sessionStorage.removeItem('261c_pending_pulls');
   }catch(e){}
-  log('Pull from repository — '+pulled+' document(s) attached from filing system for '+C.flightNum+' ('+C.flightDate+')','pull');
+  if(pulled&&!summaryOpen)summaryOpen=true;
+  log('Pull from repository — '+pulled+' document(s) attached and extracted for '+C.flightNum+' ('+C.flightDate+')','pull');
+  saveWorkspaceState();
   render();
 }
 function pullAllEvidence(){
@@ -1081,15 +1127,21 @@ function pullAllEvidence(){
   ids.forEach(function(id){
     if(LIB[id]&&LIB[id].auto){
       pullState[id]='done';
+      var synth=(C.flightNum||'HC').replace(/\s/g,'')+'_'+id+'_auto.pdf';
+      if(!uploads[id])uploads[id]=synth;
+      applyDocumentExtraction(id,uploads[id]||synth,'');
     }
     var match=getRepositoryMatch(id);
     if(match){
       uploads[id]=match.filename;
       pullState[id]='done';
+      applyDocumentExtraction(id,match.filename,'');
     }
   });
   pullAllDone=true;
-  log('Pull all evidence completed — API sources and repository filing matches attached where available','pull');
+  if(!summaryOpen)summaryOpen=true;
+  log('Pull all evidence — documents attached and operational data extracted where available','pull');
+  saveWorkspaceState();
   render();
 }
 function requestEvidenceCompletion(){
@@ -1126,9 +1178,23 @@ function triggerUpload(id,name){pendingUpload={id:id,name:name};document.getElem
 function handleUpload(e){
   var f=e.target.files[0];
   if(!f||!pendingUpload)return;
-  uploads[pendingUpload.id]=f.name;
-  log('Uploaded: "'+f.name+'" — '+pendingUpload.name,'upload');
-  e.target.value='';pendingUpload=null;render();
+  var id=pendingUpload.id, itemName=pendingUpload.name;
+  uploads[id]=f.name;
+  var finish=function(ex){
+    if(ex&&!summaryOpen)summaryOpen=true;
+    log('Uploaded & extracted: "'+f.name+'" — '+itemName+(ex&&ex.snippet?' · '+ex.snippet.slice(0,72)+(ex.snippet.length>72?'…':''):''),'upload');
+    e.target.value='';
+    pendingUpload=null;
+    saveWorkspaceState();
+    render();
+  };
+  if(typeof EvidenceExtract!=='undefined'){
+    EvidenceExtract.readFileText(f,function(text){
+      finish(applyDocumentExtraction(id,f.name,text));
+    });
+    return;
+  }
+  finish(null);
 }
 
 function addNote(){
@@ -1153,6 +1219,7 @@ try{
   if(activeRequestId)sessionStorage.setItem('261c_active_request',activeRequestId);
 }catch(e){}
 loadWorkspaceState();
+rehydrateExtractions();
 /* ── Init ── */
 if(!audit.length)log('Evidence workspace opened — ' + C.name,'create');
 render();
