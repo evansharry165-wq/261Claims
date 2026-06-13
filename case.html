@@ -148,8 +148,10 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
     <div class="ud-item" id="ud-CG" onclick="switchUser('CG')"><div class="ud-av" style="background:#6b1a1a">CG</div><div><div class="ud-name">Carlos García</div><div class="ud-role">Abogado senior</div></div><i class="ti ti-check ud-tick"></i></div>
     <div class="ud-item" id="ud-IM" onclick="switchUser('IM')"><div class="ud-av" style="background:#6b1a1a">IM</div><div><div class="ud-name">Isabel Martín</div><div class="ud-role">Abogada</div></div><i class="ti ti-check ud-tick"></i></div>
     <div style="height:1px;background:var(--border);margin:4px 0"></div>
-    <div style="padding:4px 14px 2px;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.06em;color:var(--text3)">Evidence team</div>
-    <div class="ud-item" id="ud-EH" onclick="switchUser('EH')"><div class="ud-av" style="background:#164E63">EH</div><div><div class="ud-name">Emma Hughes</div><div class="ud-role">Evidence Handling Specialist</div></div><i class="ti ti-check ud-tick"></i></div>
+    <div style="padding:4px 14px 2px;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.06em;color:var(--text3)">Documentary Intelligence</div>
+    <div class="ud-item" id="ud-EH" onclick="switchUser('EH')"><div class="ud-av" style="background:#164E63">EH</div><div><div class="ud-name">Emma Hughes</div><div class="ud-role">DIO — England & Wales</div></div><i class="ti ti-check ud-tick"></i></div>
+    <div class="ud-item" id="ud-FD" onclick="switchUser('FD')"><div class="ud-av" style="background:#4A3728">FD</div><div><div class="ud-name">Françoise Durand</div><div class="ud-role">DIO — France</div></div><i class="ti ti-check ud-tick"></i></div>
+    <div class="ud-item" id="ud-SR" onclick="switchUser('SR')"><div class="ud-av" style="background:#2D4A3E">SR</div><div><div class="ud-name">Sofia Ramos</div><div class="ud-role">DIO — España</div></div><i class="ti ti-check ud-tick"></i></div>
   </div>
 </div>
 <script>
@@ -159,10 +161,10 @@ function switchUser(id){
   if(typeof setActiveUser==='function')setActiveUser(id);
   sessionStorage.removeItem('dfa_lang');
   closeMenu();
-  if(id==='EH'&&USERS[id]&&USERS[id].team==='evidence'){window.location.href='index.html';return;}
+  if(USERS[id]&&(USERS[id].team==='dio'||USERS[id].team==='evidence')){window.location.href='index.html';return;}
   var u=USERS[id];
   if(u){document.getElementById('nav-av').textContent=u.initials;document.getElementById('nav-user').textContent=u.name;}
-  ['SB','JP','KR','MD','PL','CG','IM','EH'].forEach(function(uid){var el=document.getElementById('ud-'+uid);if(el)el.classList.toggle('current',uid===id);});
+  ['SB','JP','KR','MD','PL','CG','IM','EH','FD','SR'].forEach(function(uid){var el=document.getElementById('ud-'+uid);if(el)el.classList.toggle('current',uid===id);});
   if(typeof renderGlobalNav==='function')renderGlobalNav();
   CaseShell.init();
 }

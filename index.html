@@ -420,6 +420,148 @@ function renderLegalWork(uid,u,cases){
   WorkDashboard.recordVisit(uid);
 }
 
+function renderDIOWork(u){
+  var uid=getActiveUser();
+  var userObj=USERS[uid];
+  var jur=userObj?userObj.jurisdiction:'england-wales';
+  var jurLabels={
+    'england-wales':'🇬🇧 England & Wales',
+    'france':'🇫🇷 France',
+    'spain':'🇪🇸 Spain'
+  };
+  var jurLabel=jurLabels[jur]||jur;
+  var cases=typeof ALL_CASES!=='undefined'?ALL_CASES:[];
+  var jurCases=cases.filter(function(c){
+    return c.jurisdiction===jur&&c.stage!=='resolve';
+  });
+  var allRequests=[];
+  jurCases.forEach(function(c){
+    try{
+      var st=JSON.parse(sessionStorage.getItem('dfa_evidence_'+c.ref)||'null');
+      if(!st||!st.evidenceRequests)return;
+      Object.values(st.evidenceRequests).forEach(function(req){
+        if(req.status==='pending'||req.status==='received'){
+          var daysAgo=Math.floor((Date.now()-req.requestedAtMs)/86400000);
+          allRequests.push(Object.assign({},req,{
+            daysAgo:daysAgo,
+            overdue:daysAgo>req.slaDays,
+            claimantName:c.claimant,
+            cprDaysLeft:c.cprDaysLeft||21
+          }));
+        }
+      });
+    }catch(e){}
+  });
+  allRequests.sort(function(a,b){
+    if(a.overdue&&!b.overdue)return -1;
+    if(!a.overdue&&b.overdue)return 1;
+    return (a.cprDaysLeft||99)-(b.cprDaysLeft||99);
+  });
+  var reqRows=allRequests.length
+    ?allRequests.slice(0,8).map(function(req){
+        var ageStyle=req.overdue?'color:var(--alert);font-weight:500':'color:var(--ink3)';
+        var ageText=req.overdue?req.daysAgo+'d — overdue':req.daysAgo+'d ago';
+        return '<div class="task-row" onclick="location.href=\'module4-evidence-workspace.html?ref='+encodeURIComponent(req.caseRef)+'\'">'
+          +'<div class="task-dot '+(req.overdue?'urgent':'warn')+'"></div>'
+          +'<div style="flex:1;min-width:0">'
+          +'<div class="task-action" style="font-size:12px">'+escapeHtml(req.name)+'</div>'
+          +'<div style="font-size:11px;color:var(--ink3);margin-top:2px">'
+          +'<span style="font-family:var(--mono);font-size:10px;margin-right:6px">'+escapeHtml(req.caseRef)+'</span>'
+          +escapeHtml(req.claimantName||'')
+          +' · Requested by '+escapeHtml(req.requestedBy||'Legal')
+          +'</div></div>'
+          +'<div style="text-align:right;flex-shrink:0">'
+          +'<div style="font-size:11px;'+ageStyle+'">'+ageText+'</div>'
+          +'<div style="font-size:10px;color:var(--ink4)">CPR '+(req.cprDaysLeft||'?')+'d</div>'
+          +'</div></div>';
+      }).join('')
+    :'<div style="font-size:12px;color:var(--ink4);padding:12px 0">No outstanding evidence requests for '+jurLabel+'</div>';
+  var gapCases=jurCases.filter(function(c){
+    return c.evidencePct<100&&c.stage==='evidence';
+  }).sort(function(a,b){return (a.cprDaysLeft||99)-(b.cprDaysLeft||99);});
+  var gapRows=gapCases.length
+    ?gapCases.slice(0,6).map(function(c){
+        var pctCol=c.evidencePct>=75?'var(--confirm)':c.evidencePct>=40?'var(--caution)':'var(--alert)';
+        return '<div class="task-row" onclick="location.href=\'module4-evidence-workspace.html?ref='+encodeURIComponent(c.ref)+'\'">'
+          +'<div class="task-dot '+(c.cprDaysLeft<=3?'urgent':c.cprDaysLeft<=7?'warn':'ok')+'"></div>'
+          +'<div style="flex:1;min-width:0">'
+          +'<div class="task-action" style="font-size:12px">'+escapeHtml(c.claimant)+'</div>'
+          +'<div style="font-size:11px;color:var(--ink3);margin-top:2px">'
+          +'<span style="font-family:var(--mono);font-size:10px;margin-right:6px">'+escapeHtml(c.ref)+'</span>'
+          +escapeHtml(c.disruptionType||'')
+          +'</div></div>'
+          +'<div style="text-align:right;flex-shrink:0">'
+          +'<div style="font-size:13px;font-weight:500;color:'+pctCol+'">'+c.evidencePct+'%</div>'
+          +'<div style="font-size:10px;color:var(--ink4)">CPR '+(c.cprDaysLeft||'?')+'d</div>'
+          +'</div></div>';
+      }).join('')
+    :'<div style="font-size:12px;color:var(--ink4);padding:12px 0">All evidence complete for '+jurLabel+' cases</div>';
+  document.getElementById('page').innerHTML=
+    '<div class="page-header"><div>'
+      +'<div class="greeting">'+jurLabel+' · '+escapeHtml(u.full)+'</div>'
+      +'<div class="greeting-sub">Documentary Intelligence Officer — evidence, legal intelligence &amp; knowledge</div>'
+    +'</div><div class="stat-bar">'
+      +'<span class="stat-chip '+(allRequests.filter(function(r){return r.overdue;}).length?'urgent':'new')+'">'
+        +'<i class="ti ti-inbox"></i> '+allRequests.length+' open request'+(allRequests.length===1?'':'s')
+      +'</span>'
+      +'<span class="stat-chip"><i class="ti ti-folders"></i> '+gapCases.length+' case'+(gapCases.length===1?'':'s')+' need evidence</span>'
+    +'</div></div>'
+    +knowledgeAlertBanner()
+    +'<div class="work-grid">'
+    +'<div class="zone"><div class="zone-hdr"><div class="zone-title"><i class="ti ti-clock-exclamation"></i> Evidence requests — '+jurLabel+'</div>'
+      +(allRequests.length?'<a class="zone-link" href="requests.html">View all</a>':'')
+    +'</div><div class="panel">'+reqRows+'</div></div>'
+    +'<div class="zone"><div class="zone-hdr"><div class="zone-title"><i class="ti ti-file-search"></i> Evidence gaps — '+jurLabel+'</div>'
+      +'<a class="zone-link" href="cases.html">All cases</a>'
+    +'</div><div class="panel">'+gapRows+'</div></div>'
+    +'<div class="zone"><div class="zone-hdr"><div class="zone-title"><i class="ti ti-upload"></i> Quick file to repository</div>'
+      +'<a class="zone-link" href="repository.html">Open repository</a>'
+    +'</div><div class="panel">'
+      +'<div style="padding:14px;text-align:center;border:2px dashed var(--rule);cursor:pointer;background:var(--surface2)" onclick="location.href=\'repository.html\'">'
+        +'<i class="ti ti-upload" style="font-size:22px;color:var(--ink4);display:block;margin-bottom:6px"></i>'
+        +'<div style="font-size:12px;color:var(--ink2);font-weight:500">Drop files or click to file evidence</div>'
+        +'<div style="font-size:11px;color:var(--ink4);margin-top:3px">Files are tagged to '+jurLabel+' automatically</div>'
+      +'</div></div></div>'
+    +'<div class="zone" id="dio-intelligence-zone"><div class="zone-hdr"><div class="zone-title"><i class="ti ti-gavel"></i> Legal intelligence — '+jurLabel+'</div>'
+      +'<a class="zone-link" href="education.html?section=live-updates">View all</a>'
+    +'</div><div class="panel" id="dio-intel-panel"><div style="font-size:11px;color:var(--ink4);padding:8px 0">Loading...</div></div></div>'
+    +'</div>';
+  fetch('knowledge_store.json?t='+Date.now())
+    .then(function(r){return r.json();})
+    .then(function(store){
+      var panel=document.getElementById('dio-intel-panel');
+      if(!panel)return;
+      var entries=(store.entries||[]).filter(function(e){
+        return e.jurisdiction.indexOf(jur)>=0||e.jurisdiction.indexOf('all')>=0;
+      }).sort(function(a,b){
+        if(a.actionRequired&&!b.actionRequired)return -1;
+        if(!a.actionRequired&&b.actionRequired)return 1;
+        return new Date(b.date)-new Date(a.date);
+      }).slice(0,4);
+      if(!entries.length){
+        panel.innerHTML='<div style="font-size:12px;color:var(--ink4);padding:12px 0">No updates for '+jurLabel+' this period</div>';
+        return;
+      }
+      panel.innerHTML=entries.map(function(e){
+        var impactCol=e.impact==='high'?'var(--alert)':e.impact==='medium'?'var(--caution)':'var(--confirm)';
+        return '<div style="padding:9px 0;border-bottom:1px solid var(--rule2)">'
+          +'<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:4px">'
+          +'<div style="font-size:12px;font-weight:500;color:var(--ink);font-family:var(--font-serif);line-height:1.3">'+escapeHtml(e.title)+'</div>'
+          +'<span style="font-size:10px;font-weight:500;padding:1px 6px;border:1px solid;border-color:'+impactCol+';color:'+impactCol+';white-space:nowrap;flex-shrink:0">'+e.impact.toUpperCase()+'</span>'
+          +'</div>'
+          +(e.actionRequired?'<div style="font-size:11px;color:var(--caution);margin-bottom:4px;font-weight:500"><i class="ti ti-alert-triangle" style="font-size:10px"></i> '+escapeHtml(e.actionNote)+'</div>':'')
+          +'<div style="font-size:11px;color:var(--ink4)">'+e.source+' · '
+          +new Date(e.date).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})
+          +' · <a href="education.html?section=live-updates" style="color:var(--accent)">File to knowledge base</a></div></div>';
+      }).join('');
+    })
+    .catch(function(){
+      var panel=document.getElementById('dio-intel-panel');
+      if(panel)panel.innerHTML='<div style="font-size:12px;color:var(--ink4);padding:8px 0">Intelligence feed unavailable</div>';
+    });
+  WorkDashboard.recordVisit(uid);
+}
+
 function renderEvidenceWork(u){
   var uid=getActiveUser();
   var open=getEvidenceRequests().filter(function(r){return r.status!=='complete';});
@@ -454,6 +596,11 @@ function renderEvidenceWork(u){
 function render(){
   var uid=getActiveUser();
   var u=USERS[uid]||USERS.SB;
+  if(typeof WorkDashboard.isDIOUser==='function'&&WorkDashboard.isDIOUser(uid)){
+    renderDIOWork(u);
+    if(typeof renderGlobalNav==='function')renderGlobalNav();
+    return;
+  }
   if(WorkDashboard.isEvidenceUser(uid)){renderEvidenceWork(u);if(typeof renderGlobalNav==='function')renderGlobalNav();return;}
   var cases=(typeof getMergedCasesForUser==='function'?getMergedCasesForUser(uid):getCasesForUser(uid)).slice().sort(function(a,b){return a.cprDaysLeft-b.cprDaysLeft;});
   renderLegalWork(uid,u,cases);
@@ -488,8 +635,10 @@ window.addEventListener('load',function(){
     <div class="ud-item" id="ud-CG" onclick="switchUser('CG')"><div class="ud-av" style="background:#6b1a1a">CG</div><div><div class="ud-name">Carlos García</div><div class="ud-role">Abogado senior</div></div><i class="ti ti-check ud-tick"></i></div>
     <div class="ud-item" id="ud-IM" onclick="switchUser('IM')"><div class="ud-av" style="background:#6b1a1a">IM</div><div><div class="ud-name">Isabel Martín</div><div class="ud-role">Abogada</div></div><i class="ti ti-check ud-tick"></i></div>
     <div style="height:1px;background:var(--border);margin:4px 0"></div>
-    <div style="padding:4px 14px 2px;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.06em;color:var(--text3)">Evidence team</div>
-    <div class="ud-item" id="ud-EH" onclick="switchUser('EH')"><div class="ud-av" style="background:#164E63">EH</div><div><div class="ud-name">Emma Hughes</div><div class="ud-role">Evidence Handling Specialist</div></div><i class="ti ti-check ud-tick"></i></div>
+    <div style="padding:4px 14px 2px;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.06em;color:var(--text3)">Documentary Intelligence</div>
+    <div class="ud-item" id="ud-EH" onclick="switchUser('EH')"><div class="ud-av" style="background:#164E63">EH</div><div><div class="ud-name">Emma Hughes</div><div class="ud-role">DIO — England & Wales</div></div><i class="ti ti-check ud-tick"></i></div>
+    <div class="ud-item" id="ud-FD" onclick="switchUser('FD')"><div class="ud-av" style="background:#4A3728">FD</div><div><div class="ud-name">Françoise Durand</div><div class="ud-role">DIO — France</div></div><i class="ti ti-check ud-tick"></i></div>
+    <div class="ud-item" id="ud-SR" onclick="switchUser('SR')"><div class="ud-av" style="background:#2D4A3E">SR</div><div><div class="ud-name">Sofia Ramos</div><div class="ud-role">DIO — España</div></div><i class="ti ti-check ud-tick"></i></div>
   </div>
 </div>
 <script>
@@ -504,7 +653,7 @@ function switchUser(id){
   if(window.location.pathname.indexOf('workspace')>=0||window.location.pathname.indexOf('case.html')>=0){window.location.href='index.html';return;}
   var u=typeof USERS!=='undefined'?USERS[id]:null;
   if(u){var av=document.getElementById('nav-av');if(av)av.textContent=u.initials;var un=document.getElementById('nav-user');if(un)un.textContent=u.name;}
-  ['SB','JP','KR','MD','PL','CG','IM','EH'].forEach(function(uid){var el=document.getElementById('ud-'+uid);if(el)el.classList.toggle('current',uid===id);});
+  ['SB','JP','KR','MD','PL','CG','IM','EH','FD','SR'].forEach(function(uid){var el=document.getElementById('ud-'+uid);if(el)el.classList.toggle('current',uid===id);});
   if(typeof renderGlobalNav==='function')renderGlobalNav();
   if(typeof render==='function')render();
 }

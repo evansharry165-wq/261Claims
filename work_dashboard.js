@@ -102,7 +102,12 @@
 
   function isEvidenceUser(uid) {
     var u = typeof USERS !== 'undefined' ? USERS[uid] : null;
-    return !!(u && u.team === 'evidence');
+    return !!(u && (u.team === 'evidence' || u.team === 'dio'));
+  }
+
+  function isDIOUser(uid) {
+    var u = typeof USERS !== 'undefined' ? USERS[uid] : null;
+    return !!(u && u.team === 'dio');
   }
 
   function urgencyFromDays(d) {
@@ -458,7 +463,7 @@
     }).length;
     return {
       role: u ? u.role : '',
-      team: u && u.team === 'evidence' ? 'evidence' : 'legal',
+      team: u && u.team === 'dio' ? 'dio' : u && u.team === 'evidence' ? 'evidence' : 'legal',
       urgent: urgent,
       updates: updates.length,
       active: (cases || []).filter(function (c) {
@@ -488,6 +493,7 @@
     getLastVisit: getLastVisit,
     recordVisit: recordVisit,
     isEvidenceUser: isEvidenceUser,
+    isDIOUser: isDIOUser,
     buildCalendarEvents: buildCalendarEvents,
     addCaseDeadline: addCaseDeadline,
     isCaseDeadlineAdded: isCaseDeadlineAdded,

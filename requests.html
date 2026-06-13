@@ -155,8 +155,13 @@ function markRequestComplete(id){
 
 function buildEvidenceRequestSection(){
   var uid=typeof getActiveUser==='function'?getActiveUser():'SB';
+  var u=typeof USERS!=='undefined'?USERS[uid]:null;
+  var isDio=u&&u.team==='dio';
   var cases=typeof ALL_CASES!=='undefined'?ALL_CASES:[];
-  var userCases=cases.filter(function(c){return c.assignedTo===uid;});
+  var userCases=cases.filter(function(c){
+    if(isDio)return c.jurisdiction===u.jurisdiction&&c.stage!=='resolve';
+    return c.assignedTo===uid;
+  });
   var reqs=[];
   userCases.forEach(function(c){
     try{
@@ -197,6 +202,12 @@ function render(){
   var uid=getActiveUser();
   var u=USERS[uid]||USERS.EH;
   var reqs=getEvidenceRequests();
+  if(u.team==='dio'){
+    reqs=reqs.filter(function(r){
+      var c=typeof getCase==='function'?getCase(r.ref):null;
+      return c&&c.jurisdiction===u.jurisdiction;
+    });
+  }
   var notifs=getNotifications(uid).filter(function(n){return !n.read;});
   var open=reqs.filter(function(r){return r.status!=='complete';});
   var complete=reqs.filter(function(r){return r.status==='complete';});
@@ -224,9 +235,10 @@ function toggleUserMenu(){document.getElementById('user-modal').classList.toggle
 function closeMenu(){document.getElementById('user-modal').classList.remove('open');}
 function switchUser(id){
   setActiveUser(id);sessionStorage.removeItem('dfa_lang');closeMenu();
-  if(id!=='EH'){window.location.href='index.html';return;}
-  var u=USERS[id];if(u){document.getElementById('nav-av').textContent=u.initials;document.getElementById('nav-user').textContent=u.name;}
-  ['SB','JP','KR','MD','PL','CG','IM','EH'].forEach(function(uid){var el=document.getElementById('ud-'+uid);if(el)el.classList.toggle('current',uid===id);});
+  var u=USERS[id];
+  if(!u||(u.team!=='evidence'&&u.team!=='dio')){window.location.href='index.html';return;}
+  if(u){document.getElementById('nav-av').textContent=u.initials;document.getElementById('nav-user').textContent=u.name;}
+  ['EH','FD','SR','SB'].forEach(function(uid){var el=document.getElementById('ud-'+uid);if(el)el.classList.toggle('current',uid===id);});
   if(typeof renderGlobalNav==='function')renderGlobalNav();
   render();
 }
@@ -247,7 +259,9 @@ window.addEventListener('load',render);
 <div id="user-modal" class="user-modal" onclick="if(event.target===this)closeMenu()">
   <div class="user-dropdown">
     <div class="ud-header">Switch user — demo</div>
-    <div class="ud-item" id="ud-EH" onclick="switchUser('EH')"><div class="ud-av" style="background:#164E63">EH</div><div><div class="ud-name">Emma Hughes</div><div class="ud-role">Evidence Handling Specialist</div></div><i class="ti ti-check ud-tick"></i></div>
+    <div class="ud-item" id="ud-EH" onclick="switchUser('EH')"><div class="ud-av" style="background:#164E63">EH</div><div><div class="ud-name">Emma Hughes</div><div class="ud-role">DIO — England & Wales</div></div><i class="ti ti-check ud-tick"></i></div>
+    <div class="ud-item" id="ud-FD" onclick="switchUser('FD')"><div class="ud-av" style="background:#4A3728">FD</div><div><div class="ud-name">Françoise Durand</div><div class="ud-role">DIO — France</div></div><i class="ti ti-check ud-tick"></i></div>
+    <div class="ud-item" id="ud-SR" onclick="switchUser('SR')"><div class="ud-av" style="background:#2D4A3E">SR</div><div><div class="ud-name">Sofia Ramos</div><div class="ud-role">DIO — España</div></div><i class="ti ti-check ud-tick"></i></div>
     <div class="ud-item" id="ud-SB" onclick="switchUser('SB')"><div class="ud-av">SB</div><div><div class="ud-name">Sarah Booth</div><div class="ud-role">Head of Legal Ops</div></div><i class="ti ti-check ud-tick"></i></div>
   </div>
 </div>

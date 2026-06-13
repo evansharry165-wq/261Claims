@@ -129,6 +129,73 @@ var FILTERS = [
 
 function escapeHtml(v){return String(v==null?'':v).replace(/[&<>"']/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch];});}
 
+function isDIO(){
+  var uid=typeof getActiveUser==='function'?getActiveUser():'';
+  return typeof USERS!=='undefined'&&USERS[uid]&&USERS[uid].team==='dio';
+}
+
+function getDIOJurisdiction(){
+  var uid=typeof getActiveUser==='function'?getActiveUser():'';
+  return USERS&&USERS[uid]?USERS[uid].jurisdiction:null;
+}
+
+function renderDIOCases(){
+  var jur=getDIOJurisdiction();
+  var cases=typeof ALL_CASES!=='undefined'?ALL_CASES:[];
+  var jurCases=cases.filter(function(c){
+    return c.jurisdiction===jur&&c.stage!=='resolve';
+  }).sort(function(a,b){return (a.cprDaysLeft||99)-(b.cprDaysLeft||99);});
+  var jurLabels={
+    'england-wales':'🇬🇧 England & Wales',
+    'france':'🇫🇷 France',
+    'spain':'🇪🇸 Spain'
+  };
+  if(!jurCases.length){
+    return '<div style="padding:24px;font-size:12px;color:var(--ink4)">No active cases for '+(jurLabels[jur]||jur)+'</div>';
+  }
+  return '<div style="margin-bottom:14px">'
+    +'<div style="font-size:10px;text-transform:uppercase;letter-spacing:.09em;color:var(--ink4);margin-bottom:12px">'
+    +(jurLabels[jur]||jur)+' — '+jurCases.length+' active cases'
+    +'</div>'
+    +jurCases.map(function(c){
+      var missingItems=(c.points||[]).filter(function(p){return p.evidenceStatus==='red';});
+      var pctCol=c.evidencePct>=75?'var(--confirm)':c.evidencePct>=40?'var(--caution)':'var(--alert)';
+      var cprUrgency=c.cprDaysLeft<=3?'var(--alert)':c.cprDaysLeft<=7?'var(--caution)':'var(--ink3)';
+      return '<div style="background:var(--surface);border:1px solid var(--rule);padding:12px 14px;margin-bottom:8px">'
+        +'<div style="display:flex;align-items:baseline;gap:12px;margin-bottom:8px">'
+        +'<span style="font-family:var(--mono);font-size:11px;color:var(--ink4)">'+escapeHtml(c.ref)+'</span>'
+        +'<span style="font-family:var(--font-serif);font-size:14px;color:var(--ink)">'+escapeHtml(c.claimant)+'</span>'
+        +'<span style="font-size:11px;color:var(--ink3)">'+escapeHtml(c.disruptionType||'')+'</span>'
+        +'<span style="margin-left:auto;font-size:13px;font-weight:500;color:'+pctCol+'">'+c.evidencePct+'% on file</span>'
+        +'<span style="font-size:11px;color:'+cprUrgency+'">CPR '+c.cprDaysLeft+'d</span>'
+        +'</div>'
+        +(missingItems.length
+          ?'<div style="margin-bottom:10px"><div style="font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--ink4);margin-bottom:5px">Evidence required</div>'
+            +missingItems.map(function(p){
+              return '<div style="font-size:11px;color:var(--alert);padding:3px 0;border-bottom:1px solid var(--rule2);display:flex;align-items:baseline;gap:8px">'
+                +'<span style="width:6px;height:6px;border-radius:50%;background:var(--alert);display:inline-block;flex-shrink:0;margin-bottom:1px"></span>'
+                +'<span>'+escapeHtml(p.claim)+'</span>'
+                +(p.evidenceDoc?'<span style="color:var(--ink3);font-size:11px;margin-left:auto">'+escapeHtml(p.evidenceDoc.slice(0,60))+(p.evidenceDoc.length>60?'…':'')+'</span>':'')
+                +'</div>';
+            }).join('')
+          +'</div>':'')
+        +'<a href="module4-evidence-workspace.html?ref='+encodeURIComponent(c.ref)+'" '
+          +'style="font-size:11px;padding:5px 12px;border:1px solid var(--accent);color:var(--accent);background:var(--accent-faint);text-decoration:none;display:inline-flex;align-items:center;gap:5px">'
+          +'<i class="ti ti-file-search"></i> View evidence gaps</a>'
+        +'</div>';
+    }).join('')
+  +'</div>';
+}
+
+function resetDIOView(){
+  var actions=document.querySelector('.page-hdr .hdr-actions');
+  if(actions)actions.style.display='';
+  var fb=document.getElementById('filter-bar');if(fb)fb.style.display='';
+  var thead=document.querySelector('thead');if(thead)thead.style.display='';
+  var table=document.querySelector('table');if(table)table.style.display='';
+  var d=document.getElementById('dio-cases-view');if(d)d.style.display='none';
+}
+
 function getParams(){
   var p=new URLSearchParams(window.location.search);
   return {filter:p.get('filter')||'',sort:p.get('sort')||'urgency',q:''};
@@ -152,6 +219,28 @@ function renderFilters(){
 }
 
 function renderCases(){
+  if(isDIO()){
+    document.querySelector('.page-hdr .hdr-actions').style.display='none';
+    document.getElementById('filter-bar').style.display='none';
+    document.querySelector('thead').style.display='none';
+    document.querySelector('table').style.display='none';
+    document.getElementById('hdr-title').textContent='Cases — evidence view';
+    document.getElementById('hdr-sub').textContent=(USERS[getActiveUser()]||{}).full+' · jurisdiction-filtered';
+    document.getElementById('tbody').innerHTML='';
+    document.getElementById('empty-state').style.display='none';
+    var wrap=document.querySelector('.table-wrap');
+    var existing=document.getElementById('dio-cases-view');
+    if(!existing){
+      existing=document.createElement('div');
+      existing.id='dio-cases-view';
+      wrap.appendChild(existing);
+    }
+    existing.innerHTML=renderDIOCases();
+    existing.style.display='block';
+    if(typeof renderGlobalNav==='function')renderGlobalNav();
+    return;
+  }
+  resetDIOView();
   var uid=getActiveUser();
   var u=USERS[uid]||USERS.SB;
   var params=getParams();
@@ -211,7 +300,7 @@ function toggleUserMenu(){document.getElementById('user-modal').classList.toggle
 function closeMenu(){document.getElementById('user-modal').classList.remove('open');}
 function switchUser(id){
   setActiveUser(id);sessionStorage.removeItem('dfa_lang');closeMenu();renderCases();
-  ['SB','JP','KR','MD','PL','CG','IM','EH'].forEach(function(uid){
+  ['SB','JP','KR','MD','PL','CG','IM','EH','FD','SR'].forEach(function(uid){
     var el=document.getElementById('ud-'+uid);if(el)el.classList.toggle('current',uid===id);
   });
   var u=USERS[id];if(u){document.getElementById('nav-av').textContent=u.initials;document.getElementById('nav-user').textContent=u.name;}
@@ -248,7 +337,9 @@ window.addEventListener('load', function(){
     <div class="ud-item" id="ud-CG" onclick="switchUser('CG')"><div class="ud-av" style="background:#6b1a1a">CG</div><div><div class="ud-name">Carlos García</div><div class="ud-role">Abogado senior</div></div><i class="ti ti-check ud-tick"></i></div>
     <div class="ud-item" id="ud-IM" onclick="switchUser('IM')"><div class="ud-av" style="background:#6b1a1a">IM</div><div><div class="ud-name">Isabel Martín</div><div class="ud-role">Abogada</div></div><i class="ti ti-check ud-tick"></i></div>
     <div style="height:1px;background:var(--border);margin:4px 0"></div>
-    <div class="ud-item" id="ud-EH" onclick="switchUser('EH')"><div class="ud-av" style="background:#164E63">EH</div><div><div class="ud-name">Emma Hughes</div><div class="ud-role">Evidence Handling Specialist</div></div><i class="ti ti-check ud-tick"></i></div>
+    <div class="ud-item" id="ud-EH" onclick="switchUser('EH')"><div class="ud-av" style="background:#164E63">EH</div><div><div class="ud-name">Emma Hughes</div><div class="ud-role">DIO — England & Wales</div></div><i class="ti ti-check ud-tick"></i></div>
+    <div class="ud-item" id="ud-FD" onclick="switchUser('FD')"><div class="ud-av" style="background:#4A3728">FD</div><div><div class="ud-name">Françoise Durand</div><div class="ud-role">DIO — France</div></div><i class="ti ti-check ud-tick"></i></div>
+    <div class="ud-item" id="ud-SR" onclick="switchUser('SR')"><div class="ud-av" style="background:#2D4A3E">SR</div><div><div class="ud-name">Sofia Ramos</div><div class="ud-role">DIO — España</div></div><i class="ti ti-check ud-tick"></i></div>
   </div>
 </div>
 <script src="shared_nav.js"></script>

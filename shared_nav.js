@@ -19,6 +19,14 @@
     { key: 'education', icon: 'ti-school', href: 'education.html' }
   ];
 
+  var DIO_NAV = [
+    { key: 'work', icon: 'ti-layout-dashboard', href: 'index.html' },
+    { key: 'requests', icon: 'ti-inbox', href: 'requests.html' },
+    { key: 'cases', icon: 'ti-files', href: 'cases.html' },
+    { key: 'knowledge', icon: 'ti-book-2', href: 'education.html' },
+    { key: 'repository', icon: 'ti-database', href: 'repository.html' }
+  ];
+
   var EVIDENCE_NAV = [
     { key: 'work', icon: 'ti-layout-dashboard', href: 'index.html' },
     { key: 'requests', icon: 'ti-user-question', href: 'requests.html' },
@@ -38,6 +46,7 @@
     if (p.indexOf('module4-evidence.html') >= 0 || p.indexOf('module4') >= 0) {
       var uid = typeof getActiveUser === 'function' ? getActiveUser() : 'SB';
       var u = typeof USERS !== 'undefined' ? USERS[uid] : null;
+      if (u && u.team === 'dio') return 'cases';
       return u && u.team === 'evidence' ? 'requests' : 'cases';
     }
     if (p.indexOf('module5') >= 0) return 'cases';
@@ -71,10 +80,11 @@
 
     var uid = typeof getActiveUser === 'function' ? getActiveUser() : 'SB';
     var u = typeof USERS !== 'undefined' ? USERS[uid] : null;
+    var isDIO = u && u.team === 'dio';
     var isEvidence = u && u.team === 'evidence';
-    var links = isEvidence ? EVIDENCE_NAV : LEGAL_NAV;
+    var links = isDIO ? DIO_NAV : isEvidence ? EVIDENCE_NAV : LEGAL_NAV;
     var active = activePageKey();
-    var urgentN = !isEvidence ? urgentCaseCount(uid) : 0;
+    var urgentN = !isEvidence && !isDIO ? urgentCaseCount(uid) : 0;
 
     var avEl = document.getElementById('nav-av') || document.getElementById('u-av');
     var unEl = document.getElementById('nav-user') || document.getElementById('u-name');
@@ -94,7 +104,7 @@
               ? ' <span class="gn-badge" style="margin-left:4px;font-size:9px;font-weight:600;background:#C0392B;color:#fff;border-radius:10px;padding:1px 6px;line-height:1.4">' +
                 urgentN +
                 '</span>'
-              : l.key === 'terminal' && !isEvidence && terminalQueueCount(uid) > 0
+              : l.key === 'terminal' && !isEvidence && !isDIO && terminalQueueCount(uid) > 0
                 ? ' <span class="gn-badge" style="margin-left:4px;font-size:9px;font-weight:600;background:#0F766E;color:#fff;border-radius:10px;padding:1px 6px;line-height:1.4">' +
                   terminalQueueCount(uid) +
                   '</span>'
