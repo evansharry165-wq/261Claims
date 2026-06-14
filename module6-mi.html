@@ -8,6 +8,7 @@
 <script src="shared_data.js"></script>
 <script src="shared_theme.js"></script>
 <script src="case_helpers.js"></script>
+<script src="report_engine.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -867,12 +868,28 @@ function renderMonthlyReport(){
   var el = document.getElementById('tab-content');
   if(!el) return;
 
-  el.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text3)"><i class="ti ti-loader-2" style="font-size:24px"></i><div style="margin-top:8px;font-size:12px">Generating report from live data...</div></div>';
+  el.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text3)"><i class="ti ti-loader-2" style="font-size:24px"></i><div style="margin-top:8px;font-size:12px">Generating report from live portfolio…</div></div>';
 
-  fetch('templates/report_data_june2026.json?t='+Date.now())
-    .then(function(r){ return r.json(); })
-    .then(function(report){ buildReportHTML(report); })
-    .catch(function(){ buildReportFromCases(); });
+  var cases = typeof getPortfolioCases === 'function' ? getPortfolioCases() : (typeof ALL_CASES !== 'undefined' ? ALL_CASES : []);
+
+  function renderFromCases(knowledgeEntries) {
+    if (typeof ReportEngine !== 'undefined') {
+      buildReportHTML(ReportEngine.build(cases, knowledgeEntries || []));
+      return;
+    }
+    buildReportFromCases();
+  }
+
+  fetch('knowledge_store.json?t=' + Date.now())
+    .then(function (r) {
+      return r.json();
+    })
+    .then(function (store) {
+      renderFromCases(store.entries || []);
+    })
+    .catch(function () {
+      renderFromCases([]);
+    });
 }
 
 function buildReportHTML(report){
@@ -883,7 +900,9 @@ function buildReportHTML(report){
   html += '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;padding-bottom:14px;border-bottom:1px solid var(--border)">';
   html += '<div>';
   html += '<div style="font-size:18px;font-weight:500;color:var(--text)">Litigation Report — ' + report.reportMonth + '</div>';
-  html += '<div style="font-size:12px;color:var(--text3);margin-top:3px">Generated ' + new Date(report.generatedAt).toLocaleString('en-GB') + ' · ' + report.generatedBy + '</div>';
+  html += '<div style="font-size:12px;color:var(--text3);margin-top:3px">Generated ' + new Date(report.generatedAt).toLocaleString('en-GB') + ' · ' + report.generatedBy;
+  if (report._caseCount != null) html += ' · ' + report._caseCount + ' cases in register';
+  html += '</div>';
   html += '</div>';
   html += '<button onclick="window.print()" style="font-size:11px;padding:6px 14px;border-radius:var(--r);border:1px solid var(--border2);background:var(--blue);color:#fff;cursor:pointer;font-family:var(--font);display:flex;align-items:center;gap:5px"><i class="ti ti-printer"></i> Export PDF</button>';
   html += '</div>';
@@ -972,12 +991,16 @@ function buildReportHTML(report){
   document.getElementById('tab-content').innerHTML = html;
 }
 
-// Fallback — build from ALL_CASES directly
+// Fallback — build from portfolio cases directly
 function buildReportFromCases(){
-  var cases = typeof ALL_CASES !== 'undefined' ? ALL_CASES : [];
+  var cases = typeof getPortfolioCases === 'function' ? getPortfolioCases() : (typeof ALL_CASES !== 'undefined' ? ALL_CASES : []);
+  if (typeof ReportEngine !== 'undefined') {
+    buildReportHTML(ReportEngine.build(cases, []));
+    return;
+  }
   var html = '<div style="padding:20px">';
   html += '<div style="font-size:16px;font-weight:500;margin-bottom:16px">Live report — ' + cases.length + ' cases</div>';
-  html += '<div style="font-size:12px;color:var(--text2)">Report data file not available. Showing live case summary.</div>';
+  html += '<div style="font-size:12px;color:var(--text2)">Report engine unavailable. Showing case count only.</div>';
   html += '</div>';
   document.getElementById('tab-content').innerHTML = html;
 }

@@ -624,6 +624,48 @@ function getMergedCasesForUser(uid, stage) {
   return merged;
 }
 
+function persistPortfolioCase(c) {
+  if (!c || !c.ref) return;
+  try {
+    var list = JSON.parse(sessionStorage.getItem('dfa_portfolio_cases') || '[]');
+    list = list.filter(function (x) {
+      return x.ref !== c.ref;
+    });
+    list.unshift(c);
+    sessionStorage.setItem('dfa_portfolio_cases', JSON.stringify(list.slice(0, 500)));
+  } catch (e) {}
+}
+
+function getPortfolioCases() {
+  var seen = {};
+  var out = [];
+  function add(c) {
+    if (!c || !c.ref || seen[c.ref]) return;
+    var norm = typeof normaliseCaseRef === 'function' ? normaliseCaseRef(c.ref) : c.ref;
+    if (seen[norm]) return;
+    seen[c.ref] = true;
+    seen[norm] = true;
+    out.push(c);
+  }
+  if (typeof ALL_CASES !== 'undefined') {
+    ALL_CASES.forEach(add);
+  }
+  try {
+    JSON.parse(sessionStorage.getItem('dfa_portfolio_cases') || '[]').forEach(add);
+  } catch (e) {}
+  if (typeof uploadedCases !== 'undefined') {
+    uploadedCases.forEach(add);
+  }
+  if (typeof CaseFiling !== 'undefined') {
+    try {
+      CaseFiling.listCases({}).forEach(function (cf) {
+        if (typeof caseFromFilingRecord === 'function') add(caseFromFilingRecord(cf));
+      });
+    } catch (e) {}
+  }
+  return out;
+}
+
 function buildCaseFromRow(row, confirmedAssigneeId, parsedDateReceived) {
   row = row || {};
   var jurisMap = { EW: 'england-wales', FR: 'france', ES: 'spain', EU: 'england-wales' };

@@ -73,6 +73,7 @@ html,body{min-height:100%;font-family:var(--font);background:var(--surface2);col
 <script src="case_helpers.js"></script>
 <script src="work_dashboard.js"></script>
 <script src="dio_helpers.js"></script>
+<script src="flight_data.js"></script>
 
 <nav class="global-nav">
   <a href="dio.html" class="gn-logo"><div class="gn-mark"><i class="ti ti-archive"></i></div><span class="gn-name">DefendAble DIO</span></a>
@@ -94,6 +95,18 @@ function archiveEvent(id){
     sessionStorage.setItem('dfa_dio_audit',JSON.stringify(audit.slice(0,30)));
   }catch(e){}
   render();
+}
+
+function refreshLiveFlights(){
+  if(typeof FlightData==='undefined'){render();return;}
+  var profile=DIO.getDIOProfile();
+  var events=DIO.loadDisruptionEvents(profile.jurisdiction);
+  var btn=document.getElementById('live-flight-btn');
+  if(btn){btn.disabled=true;btn.innerHTML='<i class="ti ti-loader-2"></i> Checking…';}
+  FlightData.refreshDigest(events).then(function(){
+    if(btn){btn.disabled=false;btn.innerHTML='<i class="ti ti-radar"></i> Refresh live status';}
+    render();
+  });
 }
 
 function render(){
@@ -124,9 +137,11 @@ function render(){
   var evtHtml=events.length?events.map(function(e){
     var riskCls=e.risk==='high'?'badge-high':e.risk==='medium'?'badge-medium':'badge-low';
     var when=e.date==='2026-06-12'?'Today '+e.time:(e.date==='2026-06-11'?'Yesterday '+e.time:e.date+' '+e.time);
+    var live=e.liveStatus;
+    var liveHtml=live?'<div class="row-meta" style="margin-top:4px;color:var(--accent)"><i class="ti ti-'+(live.source==='opensky'?'antenna':'database')+'"></i> '+escapeHtml(live.summary)+'</div>':'';
     return '<div class="row"><div class="row-main"><div class="row-title">'+escapeHtml(e.flight)+' · '+escapeHtml(e.route)+'</div>'
       +'<div class="row-meta">'+escapeHtml(when)+' · Delay '+e.delay+'min · '+escapeHtml(e.type)+'</div>'
-      +'<div class="row-meta" style="margin-top:4px">Evidence: '+escapeHtml((e.evidence||[]).join(' · '))+'</div></div>'
+      +'<div class="row-meta" style="margin-top:4px">Evidence: '+escapeHtml((e.evidence||[]).join(' · '))+'</div>'+liveHtml+'</div>'
       +'<div class="row-side"><span class="badge '+riskCls+'">'+escapeHtml(e.risk)+'</span><br>'
       +(e.archived?'<span class="btn btn-done" style="margin-top:6px"><i class="ti ti-check"></i> Archived ✓</span>'
         :'<button class="btn btn-amber" style="margin-top:6px" onclick="archiveEvent(\''+e.id+'\')"><i class="ti ti-archive"></i> Archive now</button>')
@@ -143,7 +158,8 @@ function render(){
     +'<div class="section"><div class="section-rule"><div class="section-title"><i class="ti ti-file-search"></i> Evidence gaps (no request yet)</div>'
     +'<a class="section-link" href="cases.html">All cases</a></div><div class="panel">'+gapHtml+'</div></div>'
 
-    +'<div class="section"><div class="section-rule"><div class="section-title"><i class="ti ti-radar"></i> Disruption event digest — last 48h</div></div>'
+    +'<div class="section"><div class="section-rule"><div class="section-title"><i class="ti ti-radar"></i> Disruption event digest — last 48h</div>'
+    +'<button type="button" class="btn" id="live-flight-btn" style="margin-left:auto;font-size:11px" onclick="refreshLiveFlights()"><i class="ti ti-radar"></i> Refresh live status</button></div>'
     +'<div class="note"><i class="ti ti-clock-exclamation"></i> Evidence data has a limited retention window. Archive within 48h of disruption to preserve extraordinary circumstances defence capability.</div>'
     +'<div class="panel">'+evtHtml+'</div></div>'
 

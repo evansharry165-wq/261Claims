@@ -358,6 +358,7 @@ function depositIntakeCase(row,assigneeId,fileMeta,leadUid,activityPrefix){
     }
     CaseFiling.addActivity(c.ref,'Case deposited — assigned to '+(USERS[assigneeId]?USERS[assigneeId].name:assigneeId),'upload',lead.full||lead.name);
   }
+  if(typeof persistPortfolioCase==='function')persistPortfolioCase(c);
   return c;
 }
 
