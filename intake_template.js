@@ -168,11 +168,22 @@ function rowsFromSpreadsheetText(text) {
   return { error: null, rows: rows };
 }
 
+function defenceRefForRow(row, index, seqBase) {
+  var jurisMap = { EW: 'EW', FR: 'FR', ES: 'ES', EU: 'EW' };
+  var code = jurisMap[row.jurisdictionCode || 'EW'] || 'EW';
+  var n = (seqBase || 0) + index + 1;
+  return 'DEF-2026-' + code + '-' + String(n).padStart(4, '0');
+}
+
 function assignBatchDeterministic(rows, refFn) {
   var sorted = sortIntakeRowsDeterministic(rows);
   var batchAssigned = [];
+  var seqBase = 0;
+  try {
+    if (typeof uploadedCases !== 'undefined' && uploadedCases.length) seqBase = uploadedCases.length;
+  } catch (e) {}
   return sorted.map(function (row, i) {
-    if (!row.ref) row.ref = refFn(i);
+    if (!row.ref) row.ref = refFn ? refFn(row, i, seqBase) : defenceRefForRow(row, i, seqBase);
     var assignee = pickDeterministicAssignee(row.jurisdictionCode, batchAssigned);
     batchAssigned.push({ assignedTo: assignee, stage: 'intake' });
     return {

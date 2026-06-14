@@ -1199,6 +1199,7 @@ function renderDocFocus(){
       ?'<button class="btn-action primary" onclick="saveEdit(\''+id+'\')"><i class="ti ti-device-floppy"></i> Save & close</button>'
       :'<button class="btn-action" onclick="editDoc(\''+id+'\')"><i class="ti ti-pencil"></i> Edit</button>')
       +'<button class="btn-action" onclick="downloadDoc(\''+id+'\',true)"><i class="ti ti-download"></i> Download & close</button>'
+      +(GATHERING_QUESTIONS[id]&&GATHERING_QUESTIONS[id].length?'<button class="btn-action" onclick="startGathering(\''+id+'\')"><i class="ti ti-refresh"></i> Re-draft</button>':'')
       +(isApproved?'':'<button class="btn-action warn" onclick="approveDoc(\''+id+'\')"><i class="ti ti-check"></i> Approve</button>');
   }
 
@@ -1259,12 +1260,15 @@ function renderWorkspace(){
   renderPointsRefSidebar();
   renderSidebarCaseLink();
   document.body.classList.toggle('gathering-active',!!(gatheringState.active&&docFocused));
-  if(typeof notifyCaseShell==='function')notifyCaseShell('resize');
+  document.documentElement.classList.toggle('gathering-active',!!(gatheringState.active&&docFocused));
   if(gatheringState.active&&docFocused){
     setTimeout(function(){
       var scrollEl=document.querySelector('.doc-focus-scroll');
       if(scrollEl)scrollEl.scrollTop=0;
-    },30);
+      if(typeof notifyCaseShell==='function')notifyCaseShell('gatheringOpen',{open:true});
+    },40);
+  }else if(typeof notifyCaseShell==='function'){
+    notifyCaseShell('gatheringOpen',{open:false});
   }
 }
 

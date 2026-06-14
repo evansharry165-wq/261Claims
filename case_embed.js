@@ -102,6 +102,12 @@
               e.preventDefault();
               return;
             }
+            if (document.getElementById('gathering-panel')) {
+              e.preventDefault();
+              try {
+                window.parent.postMessage({ type: 'case-shell', action: 'panelScroll', deltaY: e.deltaY }, '*');
+              } catch (err) {}
+            }
             return;
           }
           e.preventDefault();
@@ -125,6 +131,13 @@
           if (isDrafting) {
             if (scrollDrafting(deltaY)) {
               e.preventDefault();
+              return;
+            }
+            if (document.getElementById('gathering-panel')) {
+              e.preventDefault();
+              try {
+                window.parent.postMessage({ type: 'case-shell', action: 'panelScroll', deltaY: deltaY }, '*');
+              } catch (err) {}
             }
             return;
           }

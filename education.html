@@ -163,7 +163,7 @@ html.embed-mode .page{height:100%!important}
     <div class="sb-item" onclick="showSection('defence', event)"><i class="ti ti-shield-check"></i> Defence strategies <span class="sb-count">6</span></div>
     <div class="sb-item" onclick="showSection('evidence_guides', event)"><i class="ti ti-folder-open"></i> Evidence guides <span class="sb-count">5</span></div>
     <div class="sb-item" onclick="showSection('disruption', event)"><i class="ti ti-bolt"></i> Disruption types <span class="sb-count">15</span></div>
-    <div class="sb-item" onclick="showSection('france-spain', event)"><i class="ti ti-world"></i> Jurisdictions</div>
+    <div class="sb-item" onclick="showSection('france-spain', event)"><i class="ti ti-world"></i> Jurisdictions <span style="font-size:9px;color:var(--text3)">→ Intelligence</span></div>
     <div class="sb-item" onclick="showSection('quickref', event)"><i class="ti ti-table"></i> Quick reference</div>
     <div class="sb-item" onclick="showSection('cpr_guide', event)"><i class="ti ti-calendar-due"></i> CPR obligations</div>
     <div class="sb-item" onclick="showSection('templates', event)"><i class="ti ti-file-text"></i> Document templates</div>
@@ -194,6 +194,16 @@ window.CASE_LAW_INDEX = CASE_LAW_INDEX;
 var activeSection = 'regulation';
 
 function showSection(s, ev){
+  if(s==='france-spain'){
+    activeSection='intelligence';
+    document.querySelectorAll('.sb-item').forEach(function(el){ el.classList.remove('active'); });
+    var intelEl=document.querySelector('.sb-item[onclick*="intelligence"]');
+    if(intelEl)intelEl.classList.add('active');
+    try{history.replaceState({},'','education.html?section=intelligence&filter=France');}catch(e){}
+    render();
+    setTimeout(function(){initIntelligenceHub();if(typeof filterIntel==='function')filterIntel(null,'France');},50);
+    return;
+  }
   if(!SECTIONS[s]) return;
   activeSection = s;
   document.querySelectorAll('.sb-item').forEach(function(el){ el.classList.remove('active'); });

@@ -312,7 +312,7 @@ function showToast(msg){
 }
 function nextUploadRef(offset){
   var n=uploadedCases.length+1+(offset||0);
-  return 'UP-2026-'+String(n).padStart(4,'0');
+  return 'DEF-2026-EW-'+String(n).padStart(4,'0');
 }
 function depositIntakeCase(row,assigneeId,fileMeta,leadUid,activityPrefix){
   var parsedDateReceived=parseLocDateReceived(row.dateReceived);
@@ -446,7 +446,7 @@ function buildMassBatchItemsFromLocFiles(files){
   for(var i=0;i<files.length;i++){
     rows.push(buildLocRowFromFile(files[i],nextUploadRef(i),getActiveUser()));
   }
-  return buildMassItemsFromRows(rows,function(i){return nextUploadRef(i);}).map(function(item,idx){
+  return buildMassItemsFromRows(rows,function(row,i,seq){return defenceRefForRow(row,i,seq);}).map(function(item,idx){
     item.file={name:files[idx].name,size:files[idx].size,type:files[idx].type||'application/pdf'};
     return item;
   });
@@ -588,7 +588,7 @@ function handleSpreadsheetUpload(event){
   if(!file)return;
   readSpreadsheetFile(file,function(err,rows,srcFile){
     if(err){showToast(err);render();return;}
-    var items=buildMassItemsFromRows(rows,function(i){return nextUploadRef(i);});
+    var items=buildMassItemsFromRows(rows,function(row,i,seq){return defenceRefForRow(row,i,seq);});
     items.forEach(function(item){
       item.file={name:srcFile.name,size:srcFile.size,type:srcFile.type||'text/csv'};
     });
@@ -603,7 +603,7 @@ function loadMasterTemplateDemo(){
     .then(function(text){
       var result=rowsFromSpreadsheetText(text);
       if(result.error){showToast(result.error);return;}
-      var items=buildMassItemsFromRows(result.rows,function(i){return nextUploadRef(i);});
+      var items=buildMassItemsFromRows(result.rows,function(row,i,seq){return defenceRefForRow(row,i,seq);});
       items.forEach(function(item){
         item.file={name:INTAKE_TEMPLATE_FILENAME,size:text.length,type:'text/csv'};
       });
@@ -618,7 +618,7 @@ function loadDemoBatch(){
     .then(function(text){
       var result=rowsFromSpreadsheetText(text);
       if(result.error){showToast(result.error);return;}
-      var items=buildMassItemsFromRows(result.rows,function(i){return nextUploadRef(i);});
+      var items=buildMassItemsFromRows(result.rows,function(row,i,seq){return defenceRefForRow(row,i,seq);});
       items.forEach(function(item){
         item.file={name:'defendable-batch-demo.csv',size:text.length,type:'text/csv'};
       });

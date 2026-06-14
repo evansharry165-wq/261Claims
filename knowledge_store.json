@@ -86,6 +86,40 @@
       "actionRequired": true,
       "actionNote": "Update ADR deadline engine for FR/ES cases — 30-day response window now mandatory",
       "affectedStages": ["cpr", "triage"]
+    },
+    {
+      "id": "KE-2026-006",
+      "type": "regulatory",
+      "source": "DGAC",
+      "sourceUrl": "https://www.ecologie.gouv.fr/direction-generale-laviation-civile-dgac",
+      "title": "DGAC — Mise à jour des preuves météo pour défense CE261 (juin 2026)",
+      "date": "2026-06-05",
+      "summary": "La DGAC rappelle que les transporteurs doivent produire des bulletins Météo-France ou METAR/SIGMET certifiés pour invoquer des circonstances extraordinaires liées à la météo. Les extraits non horodatés ou issus de sites grand public ne sont plus acceptés dans les dossiers de médiation MTV.",
+      "jurisdiction": ["france"],
+      "disruptionTypes": ["Weather"],
+      "claimTypes": ["EC261"],
+      "tags": ["DGAC", "météo", "METAR", "circonstances-extraordinaires", "MTV"],
+      "impact": "high",
+      "actionRequired": true,
+      "actionNote": "Vérifier que chaque dossier FR météo inclut METAR/SIGMET certifiés — pas de captures web",
+      "affectedStages": ["evidence", "drafting"]
+    },
+    {
+      "id": "KE-2026-007",
+      "type": "judgment",
+      "source": "AESA / TSJ",
+      "sourceUrl": "https://www.seguridadaerea.gob.es",
+      "title": "STSJ Madrid — impacto de ave / circunstancias extraordinarias (mayo 2026)",
+      "date": "2026-05-28",
+      "summary": "El TSJ de Madrid confirmó que un impacto de ave puede constituir circunstancia extraordinaria si el transportista acredita que no era evitable con el mantenimiento ordinario. La carga de la prueba recae en la aerolínea — registros de mantenimiento y NOTAM son esenciales.",
+      "jurisdiction": ["spain"],
+      "disruptionTypes": ["Birdstrike", "Technical Issues"],
+      "claimTypes": ["EC261"],
+      "tags": ["AESA", "birdstrike", "circunstancias-extraordinarias", "mantenimiento"],
+      "impact": "high",
+      "actionRequired": true,
+      "actionNote": "Para casos ES con impacto de ave: solicitar registros de mantenimiento y NOTAM antes de contestar",
+      "affectedStages": ["evidence", "triage", "drafting"]
     }
   ],
   "generatedBy": "DefendAble Platform — auto-generated"

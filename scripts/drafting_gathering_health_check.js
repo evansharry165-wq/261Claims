@@ -19,6 +19,7 @@ assert(m5.indexOf('insertAdjacentHTML') < 0 || m5.indexOf("workspace.insertAdjac
 assert(m5.indexOf('function cancelGathering') >= 0, 'cancelGathering defined');
 assert(embed.indexOf('gathering-panel') >= 0, 'case_embed routes scroll for gathering panel');
 assert(shell.indexOf("doc.getElementById('gathering-panel')") >= 0, 'case_shell prefers doc-focus-scroll when gathering panel open');
+assert(shell.indexOf('gathering-panel') >= 0 && shell.indexOf("data-scroll-mode', 'panel'") >= 0, 'case_shell expands iframe in gathering mode');
 
 if (failures.length) {
   console.error('FAILED (' + failures.length + '):');

@@ -863,6 +863,11 @@ function addNote(){
   var val=inp.value.trim();
   if(!val)return;
   log(val,'note');
+  if(window.parent!==window){
+    try{
+      window.parent.postMessage({type:'case-shell',action:'log',text:val,logType:'note'},'*');
+    }catch(e){}
+  }
   inp.value='';
 }
 

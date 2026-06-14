@@ -364,6 +364,19 @@ var CaseShell = (function () {
     if (!frame || !frame.contentDocument) return;
     var panel = document.getElementById('tab-panel');
     if (isDraftingFrame(frame)) {
+      var doc = frame.contentDocument;
+      var gathering = doc.getElementById('gathering-panel');
+      if (gathering) {
+        var contentH = Math.max(
+          gathering.offsetHeight + 100,
+          doc.body ? doc.body.scrollHeight : 0,
+          doc.documentElement ? doc.documentElement.scrollHeight : 0,
+          panel ? panel.clientHeight : 480
+        );
+        frame.style.height = contentH + 'px';
+        frame.setAttribute('data-scroll-mode', 'panel');
+        return;
+      }
       frame.style.height = (panel ? panel.clientHeight : 0) + 'px';
       frame.setAttribute('data-scroll-mode', 'embed');
       return;
@@ -385,7 +398,22 @@ var CaseShell = (function () {
       frame._resizeObs = null;
     }
     syncFrameHeight(frame);
-    if (isDraftingFrame(frame)) return;
+    if (isDraftingFrame(frame)) {
+      var gatherTimer;
+      frame._resizeObs = new MutationObserver(function () {
+        clearTimeout(gatherTimer);
+        gatherTimer = setTimeout(function () {
+          syncFrameHeight(frame);
+        }, 80);
+      });
+      frame._resizeObs.observe(frame.contentDocument.body, {
+        childList: true,
+        subtree: true,
+        attributes: true,
+        characterData: true
+      });
+      return;
+    }
     var timer;
     frame._resizeObs = new MutationObserver(function () {
       clearTimeout(timer);
@@ -566,7 +594,7 @@ var CaseShell = (function () {
       scrollPanel.scrollTop = Math.max(0, Math.min(panelMax, scrollPanel.scrollTop + (e.data.deltaY || 0)));
       return;
     }
-    if (e.data.action === 'resize') {
+    if (e.data.action === 'resize' || e.data.action === 'gatheringOpen') {
       var resizeFrame = document.getElementById('case-frame');
       if (resizeFrame) syncFrameHeight(resizeFrame);
     }

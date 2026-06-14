@@ -268,6 +268,78 @@
     return null;
   }
 
+  function notifyEvidenceFilingComplete(ref, payload) {
+    payload = payload || {};
+    ref = typeof normaliseCaseRef === 'function' ? normaliseCaseRef(ref) : ref;
+    var st = getEvidenceState(ref);
+    if (!st.pointOverrides) st.pointOverrides = {};
+    if (!st.evidenceRequests) st.evidenceRequests = {};
+    if (!st.uploads) st.uploads = {};
+    if (payload.pointN != null) {
+      st.pointOverrides[String(payload.pointN)] = payload.status || 'green';
+    }
+    if (payload.requestId) {
+      if (!st.evidenceRequests[payload.requestId]) {
+        st.evidenceRequests[payload.requestId] = {
+          id: payload.requestId,
+          name: payload.label || 'Evidence filing',
+          status: 'received',
+          caseRef: ref,
+          requestedAt: new Date().toLocaleString('en-GB'),
+          requestedAtMs: Date.now()
+        };
+      } else {
+        st.evidenceRequests[payload.requestId].status = 'received';
+      }
+      st.uploads[payload.requestId] = payload.fileName || st.uploads[payload.requestId] || 'filed.pdf';
+    }
+    saveEvidenceState(ref, st);
+
+    var c = typeof getCase === 'function' ? getCase(ref) : null;
+    if (c && c.points && payload.pointN != null) {
+      c.points.forEach(function (p) {
+        if (p.n === payload.pointN) {
+          p.evidenceStatus = payload.status || 'green';
+          if (payload.fileName) p.evidenceDoc = (p.evidenceDoc || '') + ' — ' + payload.fileName + ' on file';
+        }
+      });
+      var resolved = c.points.filter(function (p) {
+        var ov = st.pointOverrides[String(p.n)];
+        return (ov || p.evidenceStatus) === 'green';
+      }).length;
+      var pct = c.points.length ? Math.round((resolved / c.points.length) * 100) : c.evidencePct || 0;
+      c.evidencePct = pct;
+      st.evidencePct = pct;
+      saveEvidenceState(ref, st);
+      if (typeof syncCaseEvidencePct === 'function') syncCaseEvidencePct(ref, pct, pct >= 100);
+      try {
+        sessionStorage.setItem('dfa_case', JSON.stringify(c));
+        var aero = JSON.parse(sessionStorage.getItem('aeroCaseData') || 'null');
+        if (aero && (aero.ref === ref || aero.ref === payload.aliasRef)) {
+          aero.points = c.points;
+          aero.evidencePct = pct;
+          sessionStorage.setItem('aeroCaseData', JSON.stringify(aero));
+        }
+      } catch (e) {}
+    }
+
+    var assignee = c && c.assignedTo ? c.assignedTo : 'SB';
+    if (typeof pushNotification === 'function') {
+      pushNotification({
+        to: assignee,
+        type: 'evidence-filed',
+        ref: ref,
+        title: 'Evidence filed by DIO',
+        body: (payload.label || 'Document') + ' received for ' + (c ? c.claimant : ref) + ' — review in Evidence tab.',
+        tab: 'evidence'
+      });
+    }
+    if (payload.requestId && typeof completeEvidenceRequest === 'function') {
+      completeEvidenceRequest(payload.requestId);
+    }
+    return st;
+  }
+
   global.DIO = {
     JUR_LABELS: JUR_LABELS,
     isDIOUser: isDIOUser,
@@ -289,5 +361,6 @@
     addPendingKnowledge: addPendingKnowledge,
     ensureDemoEvidenceRequests: ensureDemoEvidenceRequests,
     findRequestForPoint: findRequestForPoint,
+    notifyEvidenceFilingComplete: notifyEvidenceFilingComplete,
   };
 })(typeof window !== 'undefined' ? window : this);
