@@ -338,7 +338,12 @@ var CaseShell = (function () {
     if (!frame || !frame.contentDocument || !frame.contentWindow) return null;
     var doc = frame.contentDocument;
     var win = frame.contentWindow;
+    if (doc.getElementById('gathering-panel')) {
+      var gatheringScroll = doc.querySelector('.doc-focus-scroll');
+      if (gatheringScroll) return gatheringScroll;
+    }
     var candidates = [
+      doc.querySelector('#gathering-panel') ? doc.querySelector('.doc-focus-scroll') : null,
       doc.querySelector('.doc-focus-scroll'),
       doc.querySelector('.library-home'),
       doc.querySelector('.sidebar-left'),

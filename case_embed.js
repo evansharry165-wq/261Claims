@@ -68,6 +68,11 @@
       window._embedScrollBound = true;
 
       function findDraftingScrollEl() {
+        var gathering = document.getElementById('gathering-panel');
+        if (gathering) {
+          var inFocus = gathering.closest('.doc-focus-scroll');
+          if (inFocus) return inFocus;
+        }
         return (
           document.querySelector('.doc-focus-scroll') ||
           document.querySelector('.library-home') ||
