@@ -410,7 +410,7 @@ var EVIDENCE_SOURCES=[
   {group:'Weather',name:'Met Office - Daily Impact Hazard Forecast',tier:'Key',source:'Met Office',auto:'API-ready',why:'Broader weather context and hazard forecasts supporting extraordinary circumstances.'},
   {group:'Airport',name:'NOTAM Records',tier:'Key',source:'NOTAM Search',auto:'API-ready',why:'Aerodrome notices confirming restrictions, closures, works, or operational limitations.'},
   {group:'Technical',name:'Maintenance records system - Technical Event Record',tier:'Key',source:'Internal maintenance records system',auto:'API-ready',why:'Maintenance and technical log for technical issues, birdstrike, lightning and ground damage.'},
-  {group:'Passenger care',name:'MAX OPS - Passenger Communications',tier:'Secondary',source:'Internal MAX OPS',auto:'API-ready',why:'SMS/email notifications and welfare communications to prove Article 9 care steps.'},
+  {group:'Passenger care',name:'PAX OPS - Passenger Communications',tier:'Secondary',source:'Internal PAX OPS',auto:'API-ready',why:'SMS/email notifications and welfare communications to prove Article 9 care steps.'},
   {group:'Operational context',name:'DPM Notes',tier:'Secondary',source:'Internal Operations',auto:'Manual upload',why:'Disruption planning notes explaining why decisions were taken and what mitigations were considered.'},
   {group:'Wider reference',name:'Case Studies & Judgements',tier:'Wider',source:'Repository / Education',auto:'Internal',why:'Prior outcomes and legal authorities used to align evidence strategy and drafting.'}
 ];
@@ -422,11 +422,11 @@ var EVIDENCE_DAYS=[
     {name:'Eurocontrol ATFM regulation',type:'API',status:'On file',pack:'Secondary',linked:'AC-2026-0091'},
     {name:'METAR / TAF / SIGMET',type:'API',status:'On file',pack:'Secondary',linked:'AC-2026-0089'},
     {name:'Valencia ground handling records',type:'Manual',status:'Requested',pack:'Secondary',linked:'AC-2026-0089'}]},
-  {date:'2026-04-09',label:'09 Apr 2026',routes:'MAN-AMS',flights:['HC 307'],completion:74,gold:false,summary:'ATC delay evidence collected. Gold pack requires Eurocontrol network outlook and MAX OPS passenger-care communications before drafting.',sources:[
+  {date:'2026-04-09',label:'09 Apr 2026',routes:'MAN-AMS',flights:['HC 307'],completion:74,gold:false,summary:'ATC delay evidence collected. Gold pack requires airport documents and PAX OPS passenger-care communications before drafting.',sources:[
     {name:'Operational delay records system delay code',type:'API',status:'On file',pack:'Key',linked:'AC-2026-0091'},
     {name:'Eurocontrol regulation',type:'API',status:'On file',pack:'Key',linked:'AC-2026-0091'},
-    {name:'Network Outlook Brief',type:'API',status:'Pending',pack:'Secondary',linked:'AC-2026-0091'},
-    {name:'MAX OPS passenger comms',type:'API',status:'Gap',pack:'Secondary',linked:'AC-2026-0091'}]},
+    {name:'Airport Documents brief',type:'API',status:'Pending',pack:'Secondary',linked:'AC-2026-0091'},
+    {name:'PAX OPS passenger comms',type:'API',status:'Gap',pack:'Secondary',linked:'AC-2026-0091'}]},
   {date:'2026-04-28',label:'28 Apr 2026',routes:'LGW-ALC',flights:['HC 330'],completion:100,gold:true,summary:'Weather delay evidence complete. Gold pack includes METAR, SIGMET, NOTAM, Operational delay records system, Disruption data system, passenger comms and DPM notes. Ready for lawyer use.',sources:[
     {name:'Operational delay records system report',type:'API',status:'On file',pack:'Key',linked:'AC-2026-0076'},
     {name:'METAR / SIGMET',type:'API',status:'On file',pack:'Key',linked:'AC-2026-0076'},

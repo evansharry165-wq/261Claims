@@ -21,11 +21,11 @@
     { id: 'met_office', name: 'Met Office — Hazard Forecasts', icon: 'ti-temperature', libKey: 'met_office', tier: 'K', group: 'Weather' },
     { id: 'notam', name: 'NOTAM Records', icon: 'ti-alert-triangle', libKey: 'notam', tier: 'K', group: 'Airport' },
     { id: 'amos', name: 'Maintenance records system — Technical Events', icon: 'ti-tool', libKey: 'amos', tier: 'K', group: 'Technical' },
-    { id: 'max_ops', name: 'MAX OPS — Passenger Communications', icon: 'ti-message', libKey: 'max_ops', tier: 'S', group: 'Passenger care' },
+    { id: 'max_ops', name: 'PAX OPS — Passenger Communications', icon: 'ti-message', libKey: 'max_ops', tier: 'S', group: 'Passenger care' },
     { id: 'dpm', name: 'DPM Notes & Ops Review', icon: 'ti-notes', libKey: 'dpm', tier: 'S', group: 'Operational context' },
     { id: 'internal_email', name: 'Internal Emails & Ops Comms', icon: 'ti-mail', libKey: 'internal_email', tier: 'S', group: 'Operational context' },
     { id: 'flight_tracking', name: 'Flight Tracking — FR24 & FlightStats', icon: 'ti-route', libKey: 'flightradar', tier: 'S', group: 'Operational context' },
-    { id: 'network_out', name: 'Network Outlook & LIDO', icon: 'ti-world', libKey: 'network_out', tier: 'S', group: 'Operational context' },
+    { id: 'network_out', name: 'Airport Documents', icon: 'ti-world', libKey: 'network_out', tier: 'S', group: 'Airport' },
     { id: 'wider_ref', name: 'Wider Reference & Case Studies', icon: 'ti-books', libKey: 'case_studies', tier: 'W', group: 'Wider reference' },
   ];
 
