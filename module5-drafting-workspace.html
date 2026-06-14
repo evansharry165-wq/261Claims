@@ -1351,6 +1351,10 @@ function renderGatheringPanel(id){
     workspace.insertAdjacentHTML('afterbegin',html);
     var panel=document.getElementById('gathering-panel');
     if(panel)panel.scrollIntoView({behavior:'smooth',block:'start'});
+    // Notify parent frame to resize (for case shell iframe embedding)
+    try{window.parent.postMessage({type:'gatheringPanelOpen',height:document.body.scrollHeight},'*');}catch(e){}
+    // Also fire resize event for MutationObserver
+    setTimeout(function(){window.dispatchEvent(new Event('resize'));},100);
   }
 }
 
