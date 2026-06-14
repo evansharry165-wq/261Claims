@@ -52,10 +52,10 @@ const DISRUPTION_EVENTS=[
 if(typeof window!=='undefined')window.DISRUPTION_EVENTS=DISRUPTION_EVENTS;
 // Helpers
 const CASE_REF_ALIASES={
-  'AC-2026-0089':'DEF-2026-EW-0089',
-  'AC-2026-0076':'DEF-2026-EW-0076',
-  'FR-2026-0009':'DEF-2026-FR-0009',
-  'ES-2026-0027':'DEF-2026-ES-0027'
+  'DEF-2026-EW-0089':'DEF-2026-EW-0089',
+  'DEF-2026-EW-0076':'DEF-2026-EW-0076',
+  'DEF-2026-FR-0009':'DEF-2026-FR-0009',
+  'DEF-2026-ES-0027':'DEF-2026-ES-0027'
 };
 function normaliseCaseRef(ref){return CASE_REF_ALIASES[ref]||ref;}
 function getCasesForUser(uid,stage){return ALL_CASES.filter(function(c){return c.assignedTo===uid&&(!stage||c.stage===stage);});}
