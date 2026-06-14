@@ -574,12 +574,17 @@ var CaseShell = (function () {
   });
 
   return { init: init, switchTab: switchTab, addNote: addNote, logActivity: logActivity };
-})();
+  // Handle gathering panel height notification from module5 iframe
+  window.addEventListener('message', function(e) {
+    if(!e.data || e.data.type !== 'gatheringPanelOpen') return;
+    var frame = document.getElementById('case-frame');
+    if(!frame) return;
+    var panel = document.getElementById('tab-panel');
+    var panelH = panel ? panel.clientHeight : 500;
+    var targetH = Math.max(e.data.height || 800, panelH, 800);
+    frame.style.height = targetH + 'px';
+    // Scroll tab-panel to top so gathering stage is visible
+    if(panel) panel.scrollTop = 0;
+  });
 
-function caseShellNavigate(tab) {
-  if (window.parent !== window && window.parent.CaseShell) {
-    window.parent.CaseShell.switchTab(tab);
-    return true;
-  }
-  return false;
-}
+})();
