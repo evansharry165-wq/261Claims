@@ -202,6 +202,9 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 .gp-btn-skip{font-size:12px;padding:7px 14px;border:1px solid var(--border2);border-radius:var(--r);background:var(--surface);cursor:pointer;color:var(--text2);font-family:var(--font)}
 .gp-btn-generate{font-size:11px;padding:7px 16px;border:none;border-radius:2px;background:var(--accent);color:#fff;cursor:pointer;font-family:var(--font);letter-spacing:0.03em;display:flex;align-items:center;gap:6px}
 .gp-btn-generate:hover{opacity:.9}
+.doc-focus-scroll .gathering-panel{flex-shrink:0;margin:16px 16px 0}
+body.drafting-embed .doc-focus-scroll .gathering-panel{margin:12px 16px 0}
+.doc-focus.gathering-mode .doc-focus-footer,.doc-focus.gathering-mode .letter-empty{display:none}
 
 </style>
 
@@ -1179,10 +1182,13 @@ function renderDocFocus(){
       +evList.map(function(e){return '<span class="ev-pill"><i class="ti ti-database"></i>'+e+'</span>';}).join('')
       +'</div>':'';
 
+  var isGathering=gatheringState.active&&gatheringState.docId===id;
   var actions='';
-  if(!hasContent){
+  if(isGathering){
+    actions='<button class="btn-action" onclick="cancelGathering()"><i class="ti ti-x"></i> Cancel</button>';
+  }else if(!hasContent){
     actions='<button class="btn-action primary" onclick="startGathering(\''+id+'\')"><i class="ti ti-sparkles"></i> Generate draft</button>';
-  }else   if(isApproved){
+  }else if(isApproved){
     actions='<span class="btn-action success"><i class="ti ti-check"></i> Approved</span>'
       +(storedInRepo[id]
         ?'<span class="btn-casefile done"><i class="ti ti-check"></i> In case file</span><button class="btn-casefile" onclick="goToTerminal()" style="background:var(--teal,#0F766E);border-color:var(--teal,#0F766E);color:#fff"><i class="ti ti-send"></i> Proceed to Terminal</button>'
@@ -1193,14 +1199,16 @@ function renderDocFocus(){
       ?'<button class="btn-action primary" onclick="saveEdit(\''+id+'\')"><i class="ti ti-device-floppy"></i> Save & close</button>'
       :'<button class="btn-action" onclick="editDoc(\''+id+'\')"><i class="ti ti-pencil"></i> Edit</button>')
       +'<button class="btn-action" onclick="downloadDoc(\''+id+'\',true)"><i class="ti ti-download"></i> Download & close</button>'
+      +(GATHERING_QUESTIONS[id]&&GATHERING_QUESTIONS[id].length?'<button class="btn-action" onclick="startGathering(\''+id+'\')"><i class="ti ti-refresh"></i> Re-draft</button>':'')
       +(isApproved?'':'<button class="btn-action warn" onclick="approveDoc(\''+id+'\')"><i class="ti ti-check"></i> Approve</button>');
   }
 
+  var gatheringHtml=isGathering?buildGatheringPanelHtml(id):'';
   var letterText=state.edits||buildDoc(id);
   var safeText=letterText.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  var letterHtml=hasContent
+  var letterHtml=isGathering?'':(hasContent
     ?'<div class="letter-wp-header">Without prejudice save as to costs</div><div class="letter-body" id="letter-'+id+'" '+(isEdit?'contenteditable="true"':'')+'>'+safeText+'</div>'
-    :'<div class="letter-empty"><i class="ti ti-sparkles"></i><p>Generate a draft from case data and evidence on file, then review it here in full-screen view.</p><button class="btn-action primary" style="margin-top:14px" onclick="startGathering(\''+id+'\')"><i class="ti ti-sparkles"></i> Generate draft</button></div>';
+    :'<div class="letter-empty"><i class="ti ti-sparkles"></i><p>Generate a draft from case data and evidence on file, then review it here in full-screen view.</p><button class="btn-action primary" style="margin-top:14px" onclick="startGathering(\''+id+'\')"><i class="ti ti-sparkles"></i> Generate draft</button></div>');
 
   var statusTxt=isApproved?'Approved — ready for use'
     :hasContent?(isEdit?'Editing — save or close to exit':'Draft — pending solicitor sign-off')
@@ -1215,7 +1223,7 @@ function renderDocFocus(){
     approvePrompt='<div class="approve-prompt"><div class="approve-prompt-text"><strong>Ready for the team</strong>Add this approved document to the live case file in the Repository. The whole legal team can then view and edit it — no download and re-upload via intake.</div><button class="btn-casefile" onclick="addToRepository(\''+id+'\')"><i class="ti ti-folder-symlink"></i> Add to case file</button><button class="btn-action" onclick="openCaseFileInRepo()"><i class="ti ti-external-link"></i> View in Repository</button></div>';
   }
 
-  return '<div class="doc-focus">'
+  return '<div class="doc-focus'+(isGathering?' gathering-mode':'')+'">'
     +'<div class="doc-focus-toolbar">'
     +'<div class="doc-focus-nav">'
     +'<button class="btn-dismiss close" title="Close document" onclick="closeDoc()"><i class="ti ti-x"></i></button>'
@@ -1225,7 +1233,7 @@ function renderDocFocus(){
     +'<p>'+C.ref+' · '+C.name+' · Evidence '+getEvidencePct()+'%</p></div>'
     +'<div class="doc-focus-actions">'+actions+'</div>'
     +'</div>'
-    +'<div class="doc-focus-scroll">'+evStrip+approvePrompt+letterHtml+'</div>'
+    +'<div class="doc-focus-scroll">'+gatheringHtml+evStrip+approvePrompt+letterHtml+'</div>'
     +'<div class="doc-focus-footer"><div class="'+statusCls+'">'+statusTxt+'</div>'+versionNote+'<span class="draft-hint"><i class="ti ti-info-circle"></i>Close, save, or download to return to library</span></div>'
     +'</div>';
 }
@@ -1251,6 +1259,20 @@ function renderWorkspace(){
   syncDocBtnStates();
   renderPointsRefSidebar();
   renderSidebarCaseLink();
+  document.body.classList.toggle('gathering-active',!!(gatheringState.active&&docFocused));
+  document.documentElement.classList.toggle('gathering-active',!!(gatheringState.active&&docFocused));
+  if(gatheringState.active&&docFocused){
+    setTimeout(function(){
+      var scrollEl=document.querySelector('.doc-focus-scroll');
+      if(scrollEl)scrollEl.scrollTop=0;
+      if(typeof notifyCaseShell==='function')notifyCaseShell('gatheringOpen',{open:true});
+      try{
+        window.parent.postMessage({type:'gatheringPanelOpen',height:document.body.scrollHeight},'*');
+      }catch(err){}
+    },40);
+  }else if(typeof notifyCaseShell==='function'){
+    notifyCaseShell('gatheringOpen',{open:false});
+  }
 }
 
 function renderPointsRef(){
@@ -1277,10 +1299,18 @@ function startGathering(id){
   gatheringState.docId=id;
   gatheringState.responses={};
   gatheringState.additionalContext='';
-  renderGatheringPanel(id);
+  renderWorkspace();
 }
 
-function renderGatheringPanel(id){
+function cancelGathering(){
+  gatheringState.active=false;
+  gatheringState.docId=null;
+  gatheringState.responses={};
+  gatheringState.additionalContext='';
+  renderWorkspace();
+}
+
+function buildGatheringPanelHtml(id){
   var docNames={lor:'Letter of Response',defence:'Defence',witness:'Witness Statement',p36:'Part 36 Offer'};
   var qs=GATHERING_QUESTIONS[id]||[];
   var evPct=getEvidencePct();
@@ -1343,19 +1373,7 @@ function renderGatheringPanel(id){
   html+='<button type="button" class="gp-btn-skip" onclick="generateDoc(gatheringState.docId)">Skip — generate from case file only</button>';
   html+='<button type="button" class="gp-btn-generate" onclick="generateFromGathering()"><i class="ti ti-sparkles"></i> Generate with these inputs</button>';
   html+='</div></div>';
-
-  var workspace=document.querySelector('.drafting-workspace')||document.getElementById('workspace')||document.getElementById('main');
-  if(workspace){
-    var existing=document.getElementById('gathering-panel');
-    if(existing)existing.remove();
-    workspace.insertAdjacentHTML('afterbegin',html);
-    var panel=document.getElementById('gathering-panel');
-    if(panel)panel.scrollIntoView({behavior:'smooth',block:'start'});
-    // Notify parent frame to resize (for case shell iframe embedding)
-    try{window.parent.postMessage({type:'gatheringPanelOpen',height:document.body.scrollHeight},'*');}catch(e){}
-    // Also fire resize event for MutationObserver
-    setTimeout(function(){window.dispatchEvent(new Event('resize'));},100);
-  }
+  return html;
 }
 
 function selectGatheringOption(qId,btn,value){
@@ -1375,16 +1393,12 @@ function generateFromGathering(){
   var additionalEl=document.getElementById('gpt-additional');
   if(additionalEl)gatheringState.additionalContext=additionalEl.value;
 
-  var panel=document.getElementById('gathering-panel');
-  if(panel)panel.remove();
   gatheringState.active=false;
 
   generateDocWithContext(gatheringState.docId,gatheringState.responses,gatheringState.additionalContext);
 }
 
 async function generateDoc(id){
-  var panel=document.getElementById('gathering-panel');
-  if(panel)panel.remove();
   gatheringState.active=false;
   await generateDocWithContext(id,{},'');
 }

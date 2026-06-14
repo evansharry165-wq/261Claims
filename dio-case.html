@@ -166,6 +166,16 @@ function handlePointUpload(e){
   st.pointOverrides[String(pendingPointId.pointN)]='green';
   logAudit('Evidence filed: '+f.name+' — '+pendingPointId.label);
   saveState(st);
+  if(typeof DIO!=='undefined'&&DIO.notifyEvidenceFilingComplete){
+    DIO.notifyEvidenceFilingComplete(CASE_REF,{
+      pointN:pendingPointId.pointN,
+      requestId:id,
+      label:pendingPointId.label,
+      fileName:f.name,
+      status:'green',
+      aliasRef:CASE_DATA&&CASE_DATA.ref
+    });
+  }
   pendingPointId=null;
   showToast('✓ '+f.name+' filed — item marked received');
   render();
@@ -190,6 +200,14 @@ function fileToCase(){
   logAudit('Bulk file to case: '+fname+' ('+docType+')');
   delete st.pendingBulkFile;
   saveState(st);
+  if(typeof DIO!=='undefined'&&DIO.notifyEvidenceFilingComplete){
+    DIO.notifyEvidenceFilingComplete(CASE_REF,{
+      requestId:entryId,
+      label:docType,
+      fileName:fname,
+      aliasRef:CASE_DATA&&CASE_DATA.ref
+    });
+  }
   showToast('✓ Filed to case — '+fname);
   document.getElementById('file-notes').value='';
   render();

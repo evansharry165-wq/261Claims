@@ -338,7 +338,12 @@ var CaseShell = (function () {
     if (!frame || !frame.contentDocument || !frame.contentWindow) return null;
     var doc = frame.contentDocument;
     var win = frame.contentWindow;
+    if (doc.getElementById('gathering-panel')) {
+      var gatheringScroll = doc.querySelector('.doc-focus-scroll');
+      if (gatheringScroll) return gatheringScroll;
+    }
     var candidates = [
+      doc.querySelector('#gathering-panel') ? doc.querySelector('.doc-focus-scroll') : null,
       doc.querySelector('.doc-focus-scroll'),
       doc.querySelector('.library-home'),
       doc.querySelector('.sidebar-left'),
@@ -367,10 +372,20 @@ var CaseShell = (function () {
     );
     var panelHeight = panel ? panel.clientHeight : 480;
     if (isDraftingFrame(frame)) {
-      // Use content height if gathering panel has expanded it, else panel height
+      var gathering = doc.getElementById('gathering-panel');
+      if (gathering) {
+        var contentH = Math.max(
+          gathering.offsetHeight + 100,
+          contentHeight,
+          panelHeight
+        );
+        frame.style.height = contentH + 'px';
+        frame.setAttribute('data-scroll-mode', 'panel');
+        return;
+      }
       var targetHeight = Math.max(contentHeight, panelHeight);
       frame.style.height = targetHeight + 'px';
-      frame.setAttribute('data-scroll-mode', 'embed');
+      frame.setAttribute('data-scroll-mode', contentHeight > panelHeight + 20 ? 'panel' : 'embed');
       return;
     }
     var height = Math.max(contentHeight, panelHeight);
@@ -385,8 +400,6 @@ var CaseShell = (function () {
       frame._resizeObs = null;
     }
     syncFrameHeight(frame);
-    // Always observe mutations for drafting frame too — gathering panel changes height
-    if (false) return;
     var timer;
     frame._resizeObs = new MutationObserver(function () {
       clearTimeout(timer);
@@ -537,7 +550,19 @@ var CaseShell = (function () {
   }
 
   window.addEventListener('message', function (e) {
-    if (!e.data || e.data.type !== 'case-shell') return;
+    if (!e.data) return;
+    if (e.data.type === 'gatheringPanelOpen') {
+      var gFrame = document.getElementById('case-frame');
+      if (gFrame) {
+        var gPanel = document.getElementById('tab-panel');
+        var gPanelH = gPanel ? gPanel.clientHeight : 500;
+        gFrame.style.height = Math.max(e.data.height || 800, gPanelH) + 'px';
+        gFrame.setAttribute('data-scroll-mode', 'panel');
+        if (gPanel) gPanel.scrollTop = 0;
+      }
+      return;
+    }
+    if (e.data.type !== 'case-shell') return;
     if (e.data.action === 'switchTab' && e.data.tab) switchTab(e.data.tab);
     if (e.data.action === 'log' && e.data.text) logActivity(e.data.text, e.data.logType || 'action');
     if (e.data.action === 'stageComplete' && e.data.tab) {
@@ -567,24 +592,12 @@ var CaseShell = (function () {
       scrollPanel.scrollTop = Math.max(0, Math.min(panelMax, scrollPanel.scrollTop + (e.data.deltaY || 0)));
       return;
     }
-    if (e.data.action === 'resize') {
+    if (e.data.action === 'resize' || e.data.action === 'gatheringOpen') {
       var resizeFrame = document.getElementById('case-frame');
       if (resizeFrame) syncFrameHeight(resizeFrame);
+      return;
     }
   });
 
   return { init: init, switchTab: switchTab, addNote: addNote, logActivity: logActivity };
-  // Handle gathering panel height notification from module5 iframe
-  window.addEventListener('message', function(e) {
-    if(!e.data || e.data.type !== 'gatheringPanelOpen') return;
-    var frame = document.getElementById('case-frame');
-    if(!frame) return;
-    var panel = document.getElementById('tab-panel');
-    var panelH = panel ? panel.clientHeight : 500;
-    var targetH = Math.max(e.data.height || 800, panelH, 800);
-    frame.style.height = targetH + 'px';
-    // Scroll tab-panel to top so gathering stage is visible
-    if(panel) panel.scrollTop = 0;
-  });
-
 })();

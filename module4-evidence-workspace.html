@@ -643,7 +643,40 @@ var requestSent=false;
 var pullAllDone=false;
 var activeRequestId=null;
 
-function evidenceStateKey(){return 'dfa_evidence_'+C.ref;}
+function evidenceStateKey(){
+  var ref=C.ref;
+  if(typeof normaliseCaseRef==='function')ref=normaliseCaseRef(ref);
+  return 'dfa_evidence_'+ref;
+}
+function applyDIOEvidenceSync(){
+  try{
+    var st=JSON.parse(sessionStorage.getItem(evidenceStateKey())||'null');
+    if(!st)return;
+    if(st.pointOverrides&&C.points){
+      C.points.forEach(function(p){
+        var ov=st.pointOverrides[String(p.n)];
+        if(ov)p.evidenceStatus=ov;
+      });
+    }
+    if(st.evidenceRequests){
+      Object.keys(st.evidenceRequests).forEach(function(k){
+        var req=st.evidenceRequests[k];
+        if(req.status==='received'||req.status==='uploaded'){
+          evidenceRequests[k]=Object.assign({},evidenceRequests[k]||{},req);
+          if(st.uploads&&st.uploads[k]){
+            uploads[k]=st.uploads[k];
+            pullState[k]='done';
+          }
+        }else if(!evidenceRequests[k]){
+          evidenceRequests[k]=req;
+        }
+      });
+    }
+    if(typeof st.evidencePct==='number'){
+      syncEvidenceToCase();
+    }
+  }catch(e){}
+}
 function saveWorkspaceState(){
   var state={D:D,primaryType:primaryType,secondaryType:secondaryType,dtMode:dtMode,uploads:uploads,pullState:pullState,summaryOpen:summaryOpen,requestSent:requestSent,pullAllDone:pullAllDone,evidencePct:getReadiness().pct,audit:audit.slice(-30),evidenceRequests:evidenceRequests};
   try{sessionStorage.setItem(evidenceStateKey(),JSON.stringify(state));}catch(e){}
@@ -940,7 +973,7 @@ function renderMain(){
     }
     opsPanel='<div class="card"><div class="card-body open">'
       +'<div style="border:1px solid #FDE68A;background:#FFFBEB;border-radius:var(--r2);padding:14px 16px;margin-bottom:12px"><div style="font-size:13px;font-weight:500;margin-bottom:4px;display:flex;align-items:center;gap:6px"><i class="ti ti-certificate" style="color:var(--amber)"></i> Gold evidence pack</div><div style="font-size:28px;font-weight:500;color:var(--amber);margin-bottom:4px">'+pack.gold+'%</div><div style="font-size:11px;color:var(--text2);line-height:1.55">DefendAble targets the gold pack on every case — the most complete aviation defence. Higher collection demand, but the strongest position for legal.</div><div style="font-size:10px;color:var(--text3);margin-top:6px">'+pack.goldDone+' of '+pack.goldTotal+' key & secondary documents on file</div></div>'
-      +'<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn-sm btn-navy" onclick="pullAllEvidence()"><i class="ti ti-cloud-download"></i> Pull all evidence</button><button class="btn-sm btn-navy" onclick="pullFromRepository()" style="background:var(--green);border-color:var(--green)"><i class="ti ti-database"></i> Pull from repository</button><button class="btn-sm" onclick="requestEvidenceCompletion()" style="border:1px solid var(--border2);background:var(--surface2);color:var(--text2)"><i class="ti ti-user-question"></i> Request evidence completion</button><a class="btn-sm" href="repository.html" onclick="sessionStorage.setItem(\'dfa_repo_area\',\'evidence\')" style="border:1px solid var(--border2);background:var(--surface2);color:var(--text2);text-decoration:none"><i class="ti ti-database"></i> Open filing system</a>'
+      +'<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn-sm btn-navy" onclick="pullAllEvidence()" title="Attach API-ready items and repository matches already on file"><i class="ti ti-database-import"></i> Attach on-file evidence</button><button class="btn-sm btn-navy" onclick="pullFromRepository()" style="background:var(--green);border-color:var(--green)"><i class="ti ti-database"></i> Pull from repository</button><button class="btn-sm" onclick="requestEvidenceCompletion()" style="border:1px solid var(--border2);background:var(--surface2);color:var(--text2)"><i class="ti ti-user-question"></i> Request outstanding from DIO</button><a class="btn-sm" href="repository.html" onclick="sessionStorage.setItem(\'dfa_repo_area\',\'evidence\')" style="border:1px solid var(--border2);background:var(--surface2);color:var(--text2);text-decoration:none"><i class="ti ti-database"></i> Open filing system</a>'
       +(pack.gold>=100
         ?'<button class="btn-sm btn-navy" onclick="moveToDrafting()" style="background:var(--purple);border-color:var(--purple)"><i class="ti ti-file-pencil"></i> Move to drafting</button>'
         :'<button class="btn-sm" disabled title="Complete the key evidence items to advance" style="opacity:0.5;cursor:not-allowed;background:var(--surface3);color:var(--text3);border-color:var(--border)"><i class="ti ti-file-pencil"></i> Move to drafting</button>')
@@ -1183,7 +1216,7 @@ function pullAllEvidence(){
     }
   });
   pullAllDone=true;
-  log('Pull all evidence completed — API sources and repository filing matches attached where available','pull');
+  log('On-file evidence attached — repository matches and API-ready sources linked where available','pull');
   render();
 }
 function requestEvidenceCompletion(){
@@ -1301,6 +1334,11 @@ function addNote(){
   var val=inp.value.trim();
   if(!val)return;
   log(val,'note');
+  if(window.parent!==window){
+    try{
+      window.parent.postMessage({type:'case-shell',action:'log',text:val,logType:'note'},'*');
+    }catch(e){}
+  }
   inp.value='';
 }
 
@@ -1318,6 +1356,7 @@ try{
   if(activeRequestId)sessionStorage.setItem('dfa_active_request',activeRequestId);
 }catch(e){}
 loadWorkspaceState();
+applyDIOEvidenceSync();
 // Seed demo requests for Hartley if none exist
 if(C.ref==='DEF-2026-EW-0089'&&Object.keys(evidenceRequests).length===0){
   var baseMs=Date.now()-(8*86400000);
