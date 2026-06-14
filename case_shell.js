@@ -358,17 +358,22 @@ var CaseShell = (function () {
   function syncFrameHeight(frame) {
     if (!frame || !frame.contentDocument) return;
     var panel = document.getElementById('tab-panel');
+    var doc = frame.contentDocument;
+    // For drafting frame: use max of content height and panel height
+    // This allows the gathering stage panel to expand beyond the viewport
+    var contentHeight = Math.max(
+      doc.body ? doc.body.scrollHeight : 0,
+      doc.documentElement ? doc.documentElement.scrollHeight : 0
+    );
+    var panelHeight = panel ? panel.clientHeight : 480;
     if (isDraftingFrame(frame)) {
-      frame.style.height = (panel ? panel.clientHeight : 0) + 'px';
+      // Use content height if gathering panel has expanded it, else panel height
+      var targetHeight = Math.max(contentHeight, panelHeight);
+      frame.style.height = targetHeight + 'px';
       frame.setAttribute('data-scroll-mode', 'embed');
       return;
     }
-    var doc = frame.contentDocument;
-    var height = Math.max(
-      doc.body ? doc.body.scrollHeight : 0,
-      doc.documentElement ? doc.documentElement.scrollHeight : 0,
-      panel ? panel.clientHeight : 0
-    );
+    var height = Math.max(contentHeight, panelHeight);
     frame.style.height = height + 'px';
     frame.setAttribute('data-scroll-mode', 'panel');
   }
@@ -380,7 +385,8 @@ var CaseShell = (function () {
       frame._resizeObs = null;
     }
     syncFrameHeight(frame);
-    if (isDraftingFrame(frame)) return;
+    // Always observe mutations for drafting frame too — gathering panel changes height
+    if (false) return;
     var timer;
     frame._resizeObs = new MutationObserver(function () {
       clearTimeout(timer);
