@@ -1280,12 +1280,7 @@ function isCaseEmbed(){
 }
 
 function requestGenerateDraft(id){
-  if(isCaseEmbed()){
-    showDraftToast('Generating from case file — review and edit when ready');
-    generateDoc(id);
-    return;
-  }
-  startGathering(id);
+  showGatheringOverlay(id);
 }
 
 function showGatheringOverlay(id){

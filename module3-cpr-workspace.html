@@ -163,10 +163,6 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 .a-stage{background:var(--blue)}.a-draft{background:var(--purple,#4338CA)}
 .a-text{font-size:11px;color:var(--text);line-height:1.4}
 .a-time{font-size:10px;color:var(--text3);margin-top:1px}
-.note-bar{padding:9px 11px;border-top:1px solid var(--border);display:flex;gap:5px;flex-shrink:0}
-.note-bar input{flex:1;font-size:11px;padding:5px 8px;border:1px solid var(--border);border-radius:var(--r);background:var(--surface);color:var(--text);font-family:var(--font)}
-.note-bar input:focus{outline:none;border-color:var(--blue)}
-.note-bar button{font-size:11px;padding:5px 9px;border-radius:var(--r);border:1px solid var(--border);background:var(--surface2);cursor:pointer;font-family:var(--font);color:var(--text2)}
 
 .user-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.3);z-index:500}
 .user-modal.open{display:flex;justify-content:flex-end;padding:52px 20px 0}
@@ -322,10 +318,6 @@ function t(key){var d=I18N[getUILang()]||I18N.en;return d[key]||I18N.en[key]||ke
         <div class="sb-sub" id="audit-count">0 entries</div>
       </div>
       <div class="audit-scroll" id="audit-scroll"></div>
-      <div class="note-bar">
-        <input type="text" id="note-input" placeholder="Add a note…" onkeydown="if(event.key==='Enter')addNote()">
-        <button onclick="addNote()">Add</button>
-      </div>
     </div>
   </div>
 </div>
@@ -856,19 +848,6 @@ function goToEvidence(){
   }catch(e){}
   if(typeof shellGo==='function'&&shellGo('evidence','CPR stage complete — proceeding to evidence'))return;
   window.location.href='module4-evidence-workspace.html?ref='+encodeURIComponent(C.ref);
-}
-
-function addNote(){
-  var inp=document.getElementById('note-input');
-  var val=inp.value.trim();
-  if(!val)return;
-  log(val,'note');
-  if(window.parent!==window){
-    try{
-      window.parent.postMessage({type:'case-shell',action:'log',text:val,logType:'note'},'*');
-    }catch(e){}
-  }
-  inp.value='';
 }
 
 /* ── Init ── */
