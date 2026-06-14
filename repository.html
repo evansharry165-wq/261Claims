@@ -99,8 +99,18 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 input[type=file].filing-file-input{display:none}
 
 /* ── Live case files ── */
-.case-preview{padding:14px 16px;font-size:12px;line-height:1.65;color:var(--text);white-space:pre-wrap;font-family:Georgia,serif;max-height:420px;overflow-y:auto;background:var(--surface)}
+.case-preview{padding:14px 16px;font-size:12px;line-height:1.65;color:var(--text);white-space:pre-wrap;font-family:Georgia,serif;max-height:min(52vh,520px);overflow-y:auto;background:var(--surface)}
 .case-preview[contenteditable=true]{box-shadow:inset 0 0 0 2px var(--blue);outline:none}
+.doc-fullpage{position:fixed;inset:0;z-index:600;background:rgba(11,22,40,0.55);display:flex;align-items:center;justify-content:center;padding:24px}
+.doc-fullpage-inner{background:var(--surface);border:1px solid var(--border);border-radius:var(--r3);width:min(920px,100%);max-height:calc(100vh - 48px);display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,0.25)}
+.doc-fullpage-hdr{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-shrink:0}
+.doc-fullpage-title{font-size:15px;font-weight:500;line-height:1.35}
+.doc-fullpage-meta{font-size:11px;color:var(--text3);margin-top:4px}
+.doc-fullpage-body{padding:20px 24px 28px;overflow-y:auto;flex:1;font-size:13px;line-height:1.7;color:var(--text);white-space:pre-wrap;font-family:Georgia,serif}
+.doc-fullpage-actions{display:flex;gap:8px;flex-shrink:0}
+.filing-layout.doc-focused{grid-template-columns:280px 1fr}
+.filing-layout.doc-focused .filing-sidebar .case-preview-panel{display:none}
+.case-preview-expanded .case-preview{max-height:none;min-height:320px}
 .case-meta-strip{display:flex;flex-wrap:wrap;gap:6px;padding:10px 14px;border-bottom:1px solid var(--border);background:var(--surface2)}
 .case-meta-chip{font-size:10px;padding:3px 8px;border-radius:20px;background:var(--surface3);color:var(--text2)}
 .case-meta-chip.live{background:var(--green-faint);color:var(--green)}
@@ -117,6 +127,7 @@ input[type=file].filing-file-input{display:none}
 <script src="shared_data.js"></script>
 <script src="shared_theme.js"></script>
 <script src="case_helpers.js"></script>
+<script src="dio_helpers.js"></script>
 <script src="evidence_filing.js"></script>
 <script src="case_filing.js"></script>
 <nav class="global-nav">
@@ -127,6 +138,7 @@ input[type=file].filing-file-input{display:none}
   </div>
 </nav>
 <div class="page" id="page"></div>
+<div id="doc-fullpage-overlay" class="doc-fullpage" style="display:none" onclick="if(event.target===this)closeCaseDocFullPage()"></div>
 <div id="user-modal" class="user-modal" onclick="if(event.target===this)closeMenu()"><div class="user-dropdown">
   <div class="ud-header">Switch user — demo</div>
   <div class="ud-item" id="ud-SB" onclick="switchUser('SB')"><div class="ud-av">SB</div><div><div class="ud-name">Sarah Booth</div><div class="ud-role">Head of Legal Ops</div></div><i class="ti ti-check ud-tick"></i></div>
@@ -351,7 +363,7 @@ function buildEvidenceDaysFromFiling(){
   });
 }
 var activeArea='evidence', activeOutcome='all', query='', selectedRef='', evidenceFilter='All';
-var caseFilingTab='live', caseFilingRef='', caseFilingFolder='all', caseFilingDocId='', caseFilingSearch='', caseFilingEditing=false;
+var caseFilingTab='live', caseFilingRef='', caseFilingFolder='all', caseFilingDocId='', caseFilingSearch='', caseFilingEditing=false, caseDocFullView=false, caseDocFocusView=false;
 var filingView='browse';
 var filingPath={categoryId:null,year:null,month:null,date:null};
 var filingSearch='';
@@ -414,12 +426,38 @@ function filteredCases(){var q=query.toLowerCase();return repoCases().filter(fun
 function setArea(area){activeArea=area;render();}
 function select(ref){selectedRef=ref;render();}
 function shell(content){return '<div class="area-nav"><button class="area-btn '+(activeArea==='cases'?'active':'')+'" onclick="setArea(\'cases\')"><i class="ti ti-briefcase"></i>Cases</button><button class="area-btn '+(activeArea==='evidence'?'active':'')+'" onclick="setArea(\'evidence\')"><i class="ti ti-folder-open"></i>Evidence</button><button class="area-btn '+(activeArea==='education'?'active':'')+'" onclick="setArea(\'education\')"><i class="ti ti-school"></i>Education</button><button class="area-btn home" onclick="setArea(\'hub\')"><i class="ti ti-layout-grid"></i>Repository home</button></div>'+content;}
-function render(){var uid=getActiveUser(), u=USERS[uid]||USERS.SB;document.getElementById('nav-av').textContent=u.initials;document.getElementById('nav-user').textContent=u.name;document.querySelectorAll('.ud-item').forEach(function(el){el.classList.toggle('current',el.id==='ud-'+uid);});if(activeArea==='cases'){renderCases();if(typeof renderGlobalNav==='function')renderGlobalNav();return;}if(activeArea==='evidence'){renderEvidence();if(typeof renderGlobalNav==='function')renderGlobalNav();return;}if(activeArea==='education'){renderEducation();if(typeof renderGlobalNav==='function')renderGlobalNav();return;}renderEvidence();if(typeof renderGlobalNav==='function')renderGlobalNav();}
+function render(){var uid=getActiveUser(), u=USERS[uid]||USERS.SB;document.getElementById('nav-av').textContent=u.initials;document.getElementById('nav-user').textContent=u.name;document.querySelectorAll('.ud-item').forEach(function(el){el.classList.toggle('current',el.id==='ud-'+uid);});if(activeArea==='cases'){renderCases();renderCaseDocFullOverlay();if(typeof renderGlobalNav==='function')renderGlobalNav();return;}caseDocFullView=false;renderCaseDocFullOverlay();if(activeArea==='evidence'){renderEvidence();if(typeof renderGlobalNav==='function')renderGlobalNav();return;}if(activeArea==='education'){renderEducation();if(typeof renderGlobalNav==='function')renderGlobalNav();return;}renderEvidence();if(typeof renderGlobalNav==='function')renderGlobalNav();}
 function renderHub(){var all=repoCases(), defended=all.filter(c=>c.outcome==='defended').length, settled=all.filter(c=>c.outcome==='settled').length;document.getElementById('page').innerHTML='<div class="hero"><div><h1>Repository Command Centre</h1><p>The repository is split into three working areas: closed case outcomes, reusable evidence file structures, and education generated from case law applied in real aviation claims.</p></div><div class="hero-actions"><a class="hero-btn" href="module1-intake.html"><i class="ti ti-upload"></i>Ingest claim</a><a class="hero-btn" href="module4-evidence.html"><i class="ti ti-folder-open"></i>Evidence module</a></div></div><div class="gateway-grid"><div class="gateway" onclick="setArea(\'cases\')"><div><div class="gw-icon" style="background:var(--green-faint);color:var(--green)"><i class="ti ti-briefcase"></i></div><div class="gw-title">1. Cases</div><div class="gw-copy">Live case files for active matters — browse, view and edit documents created from intake and drafting. Closed outcomes remain searchable for strategy.</div></div><div class="gw-meta"><span class="gw-chip">'+(typeof CaseFiling!=='undefined'?CaseFiling.listCases().length:0)+' live files</span><span class="gw-chip">'+all.length+' closed</span><span class="gw-chip">Team access</span></div></div><div class="gateway" onclick="setArea(\'evidence\')"><div><div class="gw-icon" style="background:var(--purple-faint);color:var(--purple)"><i class="ti ti-folder-open"></i></div><div class="gw-title">2. Evidence filing</div><div class="gw-copy">SharePoint-mirror filing system: evidence types organised by year, month and operation date. Evidence team uploads; legal team pulls into packs.</div></div><div class="gw-meta"><span class="gw-chip">SharePoint mirror</span><span class="gw-chip">Gold packs</span><span class="gw-chip">Direct pull</span></div></div><div class="gateway" onclick="setArea(\'education\')"><div><div class="gw-icon" style="background:var(--blue-faint);color:var(--blue-text)"><i class="ti ti-school"></i></div><div class="gw-title">3. Education</div><div class="gw-copy">AI summaries explain the law, how it applied to closed cases, and what users should do next time.</div></div><div class="gw-meta"><span class="gw-chip">Case law</span><span class="gw-chip">Playbooks</span><span class="gw-chip">Training</span></div></div></div>'+renderLiveSuggestions();}
-function setCaseFilingRef(ref){caseFilingRef=ref;caseFilingFolder='all';caseFilingDocId='';caseFilingEditing=false;render();}
-function setCaseFilingFolder(folder){caseFilingFolder=folder;caseFilingDocId='';caseFilingEditing=false;render();}
+function caseWorkspaceUrl(ref){
+  var uid=typeof getActiveUser==='function'?getActiveUser():'SB';
+  var u=typeof USERS!=='undefined'?USERS[uid]:null;
+  if(u&&u.team==='dio')return 'dio-case.html?ref='+encodeURIComponent(ref);
+  return 'case.html?ref='+encodeURIComponent(ref);
+}
+function setCaseFilingRef(ref){caseFilingRef=ref;caseFilingFolder='all';caseFilingDocId='';caseFilingEditing=false;caseDocFullView=false;caseDocFocusView=false;render();}
+function setCaseFilingFolder(folder){caseFilingFolder=folder;caseFilingDocId='';caseFilingEditing=false;caseDocFullView=false;render();}
 function selectCaseDoc(docId){caseFilingDocId=docId;caseFilingEditing=false;render();}
+function openCaseDocFullPage(){if(!caseFilingRef||!caseFilingDocId)return;caseDocFullView=true;caseFilingEditing=false;renderCaseDocFullOverlay();}
+function closeCaseDocFullPage(){caseDocFullView=false;renderCaseDocFullOverlay();}
+function toggleCaseDocFocus(){caseDocFocusView=!caseDocFocusView;render();}
 function toggleCaseDocEdit(){caseFilingEditing=!caseFilingEditing;render();}
+function renderCaseDocFullOverlay(){
+  var el=document.getElementById('doc-fullpage-overlay');
+  if(!el)return;
+  if(!caseDocFullView||!caseFilingRef||!caseFilingDocId){el.style.display='none';el.innerHTML='';return;}
+  var d=CaseFiling.getDocument(caseFilingRef,caseFilingDocId);
+  if(!d){el.style.display='none';return;}
+  var safe=(d.content||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  var c=CaseFiling.getCase(caseFilingRef);
+  el.style.display='flex';
+  el.innerHTML='<div class="doc-fullpage-inner"><div class="doc-fullpage-hdr"><div><div class="doc-fullpage-title">'+escapeHtml(d.name)+'</div>'
+    +'<div class="doc-fullpage-meta">'+escapeHtml(caseFilingRef)+' · '+escapeHtml((c&&c.claimant)||'')+' · '+escapeHtml(d.filename)+' · '+escapeHtml(d.uploadedAt)+'</div></div>'
+    +'<div class="doc-fullpage-actions"><button class="mini-btn" onclick="toggleCaseDocEdit();closeCaseDocFullPage()"><i class="ti ti-pencil"></i> Edit in sidebar</button>'
+    +'<a class="mini-btn" href="'+caseWorkspaceUrl(caseFilingRef)+'"><i class="ti ti-external-link"></i> Open case</a>'
+    +'<button class="mini-btn primary" onclick="closeCaseDocFullPage()"><i class="ti ti-x"></i> Close</button></div></div>'
+    +'<div class="doc-fullpage-body">'+safe+'</div></div>';
+}
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&caseDocFullView)closeCaseDocFullPage();});
 function saveCaseDocEdit(){
   if(!caseFilingRef||!caseFilingDocId)return;
   var el=document.getElementById('case-doc-preview');
@@ -465,14 +503,14 @@ function renderCaseFileTable(){
     +'<span class="case-meta-chip">'+escapeHtml(c.flightNum)+'</span>'
     +'<span class="case-meta-chip stage-'+escapeHtml(c.stage)+'">'+escapeHtml(CaseFiling.stageLabel(c.stage))+'</span>'
     +'<span class="case-meta-chip">Evidence '+((c.evidencePct||0)+'%')+'</span>'
-    +'<a class="mini-btn" href="case.html?ref='+encodeURIComponent(c.ref)+'" style="margin-left:auto"><i class="ti ti-external-link"></i>Open case workspace</a>'
+    +'<a class="mini-btn" href="'+caseWorkspaceUrl(c.ref)+'" style="margin-left:auto"><i class="ti ti-external-link"></i>Open case workspace</a>'
     +'</div>';
   if(!docs.length)return header+'<div class="empty-note">No documents in '+escapeHtml(folder)+' yet.</div>';
   var rows=docs.map(function(d){
     var active=caseFilingDocId===d.id?' active':'';
-    return '<tr class="case-file-row'+active+'" onclick="selectCaseDoc(&quot;'+escapeHtml(d.id)+'&quot;)"><td><div class="file-name"><i class="ti ti-file-text"></i>'+escapeHtml(d.name)+'</div><div class="file-meta">'+escapeHtml(d.filename)+' · '+escapeHtml(d.uploadedAt)+'</div></td><td><span class="pill '+(d.status==='approved'?'p-defended':'status-wait')+'">'+escapeHtml(d.status||'on file')+'</span></td><td>'+escapeHtml(d.uploadedByName||'')+'</td><td>'+CaseFiling.formatSize(d.size)+'</td></tr>';
+    return '<tr class="case-file-row'+active+'" onclick="selectCaseDoc(&quot;'+escapeHtml(d.id)+'&quot;)" ondblclick="selectCaseDoc(&quot;'+escapeHtml(d.id)+'&quot;);openCaseDocFullPage()"><td><div class="file-name"><i class="ti ti-file-text"></i>'+escapeHtml(d.name)+'</div><div class="file-meta">'+escapeHtml(d.filename)+' · '+escapeHtml(d.uploadedAt)+'</div></td><td><span class="pill '+(d.status==='approved'?'p-defended':'status-wait')+'">'+escapeHtml(d.status||'on file')+'</span></td><td>'+escapeHtml(d.uploadedByName||'')+'</td><td>'+CaseFiling.formatSize(d.size)+'</td><td><button class="mini-btn" onclick="event.stopPropagation();selectCaseDoc(&quot;'+escapeHtml(d.id)+'&quot;);openCaseDocFullPage()" title="Open full page"><i class="ti ti-arrows-maximize"></i></button></td></tr>';
   }).join('');
-  return header+'<table class="file-table"><thead><tr><th>Document</th><th>Status</th><th>Added by</th><th>Size</th></tr></thead><tbody>'+rows+'</tbody></table>';
+  return header+'<table class="file-table"><thead><tr><th>Document</th><th>Status</th><th>Added by</th><th>Size</th><th></th></tr></thead><tbody>'+rows+'</tbody></table>';
 }
 function renderCaseDocPreview(){
   if(!caseFilingRef||!caseFilingDocId)return '<div class="panel-body"><div class="detail-empty">Select a document to view or edit its contents.</div></div>';
@@ -480,18 +518,23 @@ function renderCaseDocPreview(){
   if(!d)return '<div class="panel-body"><div class="detail-empty">Document not found.</div></div>';
   var safe=(d.content||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   return '<div class="panel-hdr"><div><div class="panel-title"><i class="ti ti-file-text"></i>'+escapeHtml(d.name)+'</div><div class="panel-sub">'+escapeHtml(d.filename)+' · '+escapeHtml(d.source||'case file')+'</div></div>'
+    +'<div style="display:flex;gap:6px;flex-wrap:wrap">'
+    +'<button class="mini-btn primary" onclick="openCaseDocFullPage()"><i class="ti ti-arrows-maximize"></i> Full page</button>'
     +(caseFilingEditing
       ?'<button class="mini-btn primary" onclick="saveCaseDocEdit()"><i class="ti ti-device-floppy"></i>Save</button>'
       :'<button class="mini-btn" onclick="toggleCaseDocEdit()"><i class="ti ti-pencil"></i>Edit</button>')
-    +'</div><div class="case-preview" id="case-doc-preview"'+(caseFilingEditing?' contenteditable="true"':'')+'>'+safe+'</div>';
+    +'<button class="mini-btn" onclick="toggleCaseDocFocus()" title="Expand preview"><i class="ti ti-'+(caseDocFocusView?'layout-sidebar-right-expand':'layout-sidebar-right-collapse')+'"></i></button>'
+    +'</div></div><div class="case-preview" id="case-doc-preview"'+(caseFilingEditing?' contenteditable="true"':'')+'>'+safe+'</div>';
 }
 function renderLiveCaseFiles(){
   var live=CaseFiling.listCases();
   var docTotal=live.reduce(function(s,c){return s+(c.documents||[]).length;},0);
   var stats='<div class="grid-4"><div class="stat"><div class="stat-label">Live case files</div><div class="stat-val">'+live.length+'</div><div class="stat-sub">Created from intake</div></div><div class="stat"><div class="stat-label">Documents on file</div><div class="stat-val">'+docTotal+'</div><div class="stat-sub">View &amp; edit by team</div></div><div class="stat"><div class="stat-label">In drafting</div><div class="stat-val">'+live.filter(function(c){return c.stage==='drafting';}).length+'</div><div class="stat-sub">Legal documents active</div></div><div class="stat"><div class="stat-label">At intake</div><div class="stat-val">'+live.filter(function(c){return c.stage==='intake'||c.stage==='triage';}).length+'</div><div class="stat-sub">New matters</div></div></div>';
-  var layout='<div class="filing-layout"><div class="filing-tree"><div class="filing-tree-hdr"><i class="ti ti-briefcase"></i> Live cases</div><div class="filing-tree-body">'+renderCaseFileTree()+'</div>'
+  var expandedPreview=(caseDocFocusView&&caseFilingDocId)?'<div class="case-preview-expanded" style="margin:12px 14px 0;border:1px solid var(--border);border-radius:var(--r3);overflow:hidden;background:var(--surface)">'+renderCaseDocPreview()+'</div>':'';
+  var sidebarPreviewBody=(caseDocFocusView&&caseFilingDocId)?'<div class="panel-body"><div class="detail-empty" style="padding:16px">Document expanded below the file list. <button class="mini-btn" onclick="toggleCaseDocFocus()"><i class="ti ti-layout-sidebar-right-collapse"></i> Show in sidebar</button></div></div>':'<div class="case-preview-panel">'+renderCaseDocPreview()+'</div>';
+  var layout='<div class="filing-layout'+(caseDocFocusView&&caseFilingDocId?' doc-focused':'')+'"><div class="filing-tree"><div class="filing-tree-hdr"><i class="ti ti-briefcase"></i> Live cases</div><div class="filing-tree-body">'+renderCaseFileTree()+'</div>'
     +(caseFilingRef?'<div style="border-top:1px solid var(--border);padding:8px 0"><div style="font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);padding:6px 14px">Folders</div>'+renderCaseFolderNav()+'<div class="tree-item tree-nested'+(caseFilingFolder==='all'?' active':'')+'" onclick="setCaseFilingFolder(&quot;all&quot;)"><i class="ti ti-folders"></i><span>All documents</span></div></div>':'')
-    +'</div><div class="filing-main"><div class="filing-toolbar"><div class="breadcrumb"><span onclick="setCaseFilingFolder(&quot;all&quot;)">Case files</span><span class="bc-sep">›</span><span>'+escapeHtml(caseFilingRef||'Select case')+'</span>'+(caseFilingFolder!=='all'?'<span class="bc-sep">›</span><span>'+escapeHtml((CaseFiling.folderById(caseFilingFolder)||{}).name||caseFilingFolder)+'</span>':'')+'</div><input class="filing-search" placeholder="Search documents…" value="'+escapeHtml(caseFilingSearch)+'" oninput="caseFilingSearch=this.value;render()"></div><div class="pull-banner" style="margin:12px 14px 0"><strong>Team access:</strong> Every LOC upload creates a live case file here. Approved drafts from the Documents tab are added automatically — no manual re-upload.</div><div class="filing-body">'+renderCaseFileTable()+'</div></div><div class="filing-sidebar">'+renderCaseDocPreview()+'<div class="panel-hdr" style="border-top:1px solid var(--border)"><div class="panel-title"><i class="ti ti-history"></i>Case activity</div></div><div class="panel-body">'+(caseFilingRef?(CaseFiling.getCase(caseFilingRef).activity||[]).slice(0,8).map(function(a){return '<div class="insight" style="margin-bottom:6px;padding:8px 10px"><div style="font-size:11px;line-height:1.45">'+escapeHtml(a.text)+'</div><div style="font-size:10px;color:var(--text3);margin-top:3px">'+escapeHtml(a.time)+' · '+escapeHtml(a.by)+'</div></div>';}).join(''):'<div class="detail-empty">Select a case.</div>')+'</div></div></div>';
+    +'</div><div class="filing-main"><div class="filing-toolbar"><div class="breadcrumb"><span onclick="setCaseFilingFolder(&quot;all&quot;)">Case files</span><span class="bc-sep">›</span><span>'+escapeHtml(caseFilingRef||'Select case')+'</span>'+(caseFilingFolder!=='all'?'<span class="bc-sep">›</span><span>'+escapeHtml((CaseFiling.folderById(caseFilingFolder)||{}).name||caseFilingFolder)+'</span>':'')+'</div><input class="filing-search" placeholder="Search documents…" value="'+escapeHtml(caseFilingSearch)+'" oninput="caseFilingSearch=this.value;render()"></div><div class="pull-banner" style="margin:12px 14px 0"><strong>Team access:</strong> Every LOC upload creates a live case file here. Approved drafts from the Documents tab are added automatically — no manual re-upload. Double-click a document or use <strong>Full page</strong> for the complete view.</div><div class="filing-body">'+renderCaseFileTable()+expandedPreview+'</div></div><div class="filing-sidebar">'+sidebarPreviewBody+'<div class="panel-hdr" style="border-top:1px solid var(--border)"><div class="panel-title"><i class="ti ti-history"></i>Case activity</div></div><div class="panel-body">'+(caseFilingRef?(CaseFiling.getCase(caseFilingRef).activity||[]).slice(0,8).map(function(a){return '<div class="insight" style="margin-bottom:6px;padding:8px 10px"><div style="font-size:11px;line-height:1.45">'+escapeHtml(a.text)+'</div><div style="font-size:10px;color:var(--text3);margin-top:3px">'+escapeHtml(a.time)+' · '+escapeHtml(a.by)+'</div></div>';}).join(''):'<div class="detail-empty">Select a case.</div>')+'</div></div></div>';
   return stats+layout;
 }
 function renderClosedOutcomes(){
