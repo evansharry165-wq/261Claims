@@ -68,6 +68,8 @@
       window._embedScrollBound = true;
 
       function findDraftingScrollEl() {
+        var overlay = document.getElementById('gathering-overlay');
+        if (overlay) return overlay;
         var gathering = document.getElementById('gathering-panel');
         if (gathering) {
           var inFocus = gathering.closest('.doc-focus-scroll');

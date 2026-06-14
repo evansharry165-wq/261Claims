@@ -14,12 +14,13 @@ var embed = fs.readFileSync(path.join(root, 'case_embed.js'), 'utf8');
 var shell = fs.readFileSync(path.join(root, 'case_shell.js'), 'utf8');
 
 assert(m5.indexOf('function buildGatheringPanelHtml') >= 0, 'buildGatheringPanelHtml defined');
-assert(m5.indexOf("'+gatheringHtml+evStrip") >= 0, 'gathering panel rendered inside doc-focus-scroll');
-assert(m5.indexOf('insertAdjacentHTML') < 0 || m5.indexOf("workspace.insertAdjacentHTML('afterbegin',html)") < 0, 'gathering panel not injected outside scroll container');
-assert(m5.indexOf('function cancelGathering') >= 0, 'cancelGathering defined');
-assert(embed.indexOf('gathering-panel') >= 0, 'case_embed routes scroll for gathering panel');
-assert(shell.indexOf("doc.getElementById('gathering-panel')") >= 0, 'case_shell prefers doc-focus-scroll when gathering panel open');
-assert(shell.indexOf('gathering-panel') >= 0 && shell.indexOf("data-scroll-mode', 'panel'") >= 0, 'case_shell expands iframe in gathering mode');
+assert(m5.indexOf('function showGatheringOverlay') >= 0, 'showGatheringOverlay defined');
+assert(m5.indexOf('function requestGenerateDraft') >= 0, 'requestGenerateDraft defined');
+assert(m5.indexOf('isCaseEmbed()') >= 0 && m5.indexOf('generateDoc(id)') >= 0, 'embed mode skips questionnaire');
+assert(m5.indexOf('gathering-overlay') >= 0, 'gathering overlay CSS present');
+assert(m5.indexOf("workspace.insertAdjacentHTML('afterbegin',html)") < 0, 'gathering panel not injected outside scroll container');
+assert(embed.indexOf('gathering-overlay') >= 0, 'case_embed routes scroll for gathering overlay');
+assert(shell.indexOf('gathering-overlay') >= 0, 'case_shell routes scroll for gathering overlay');
 
 if (failures.length) {
   console.error('FAILED (' + failures.length + '):');

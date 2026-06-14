@@ -338,6 +338,9 @@ var CaseShell = (function () {
     if (!frame || !frame.contentDocument || !frame.contentWindow) return null;
     var doc = frame.contentDocument;
     var win = frame.contentWindow;
+    if (doc.getElementById('gathering-overlay')) {
+      return doc.getElementById('gathering-overlay');
+    }
     if (doc.getElementById('gathering-panel')) {
       var gatheringScroll = doc.querySelector('.doc-focus-scroll');
       if (gatheringScroll) return gatheringScroll;
@@ -441,6 +444,21 @@ var CaseShell = (function () {
             e.preventDefault();
           }
           return;
+        }
+
+        if (mode === 'panel' && frame) {
+          var panelScrollEl = getFrameScrollEl(frame);
+          if (panelScrollEl && panelScrollEl !== panel) {
+            var pInnerMax = panelScrollEl.scrollHeight - panelScrollEl.clientHeight;
+            if (pInnerMax > 0) {
+              var pInnerNext = panelScrollEl.scrollTop + e.deltaY;
+              if ((e.deltaY > 0 && panelScrollEl.scrollTop < pInnerMax) || (e.deltaY < 0 && panelScrollEl.scrollTop > 0)) {
+                panelScrollEl.scrollTop = Math.max(0, Math.min(pInnerMax, pInnerNext));
+                e.preventDefault();
+                return;
+              }
+            }
+          }
         }
 
         if (mode === 'panel' || !frame) {

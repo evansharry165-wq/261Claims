@@ -205,6 +205,10 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 .doc-focus-scroll .gathering-panel{flex-shrink:0;margin:16px 16px 0}
 body.drafting-embed .doc-focus-scroll .gathering-panel{margin:12px 16px 0}
 .doc-focus.gathering-mode .doc-focus-footer,.doc-focus.gathering-mode .letter-empty{display:none}
+.gathering-overlay{position:fixed;inset:0;z-index:900;overflow-y:auto;-webkit-overflow-scrolling:touch;background:var(--surface2);padding:12px 16px 24px}
+.gathering-overlay .gathering-panel{margin:0;border-radius:var(--r3);max-width:720px;margin:0 auto}
+.gathering-overlay .gp-actions{position:sticky;bottom:0;background:linear-gradient(to top,var(--surface2) 70%,transparent);padding:14px 0 4px;margin-top:8px}
+body.gathering-overlay-open{overflow:hidden}
 
 </style>
 
@@ -1187,7 +1191,7 @@ function renderDocFocus(){
   if(isGathering){
     actions='<button class="btn-action" onclick="cancelGathering()"><i class="ti ti-x"></i> Cancel</button>';
   }else if(!hasContent){
-    actions='<button class="btn-action primary" onclick="startGathering(\''+id+'\')"><i class="ti ti-sparkles"></i> Generate draft</button>';
+    actions='<button class="btn-action primary" onclick="requestGenerateDraft(\''+id+'\')"><i class="ti ti-sparkles"></i> Generate draft</button>';
   }else if(isApproved){
     actions='<span class="btn-action success"><i class="ti ti-check"></i> Approved</span>'
       +(storedInRepo[id]
@@ -1199,16 +1203,15 @@ function renderDocFocus(){
       ?'<button class="btn-action primary" onclick="saveEdit(\''+id+'\')"><i class="ti ti-device-floppy"></i> Save & close</button>'
       :'<button class="btn-action" onclick="editDoc(\''+id+'\')"><i class="ti ti-pencil"></i> Edit</button>')
       +'<button class="btn-action" onclick="downloadDoc(\''+id+'\',true)"><i class="ti ti-download"></i> Download & close</button>'
-      +(GATHERING_QUESTIONS[id]&&GATHERING_QUESTIONS[id].length?'<button class="btn-action" onclick="startGathering(\''+id+'\')"><i class="ti ti-refresh"></i> Re-draft</button>':'')
+      +(GATHERING_QUESTIONS[id]&&GATHERING_QUESTIONS[id].length?'<button class="btn-action" onclick="requestGenerateDraft(\''+id+'\')"><i class="ti ti-refresh"></i> Re-draft</button>':'')
       +(isApproved?'':'<button class="btn-action warn" onclick="approveDoc(\''+id+'\')"><i class="ti ti-check"></i> Approve</button>');
   }
 
-  var gatheringHtml=isGathering?buildGatheringPanelHtml(id):'';
   var letterText=state.edits||buildDoc(id);
   var safeText=letterText.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   var letterHtml=isGathering?'':(hasContent
     ?'<div class="letter-wp-header">Without prejudice save as to costs</div><div class="letter-body" id="letter-'+id+'" '+(isEdit?'contenteditable="true"':'')+'>'+safeText+'</div>'
-    :'<div class="letter-empty"><i class="ti ti-sparkles"></i><p>Generate a draft from case data and evidence on file, then review it here in full-screen view.</p><button class="btn-action primary" style="margin-top:14px" onclick="startGathering(\''+id+'\')"><i class="ti ti-sparkles"></i> Generate draft</button></div>');
+    :'<div class="letter-empty"><i class="ti ti-sparkles"></i><p>Generate a draft from case data and evidence on file, then review it here in full-screen view.</p><button class="btn-action primary" style="margin-top:14px" onclick="requestGenerateDraft(\''+id+'\')"><i class="ti ti-sparkles"></i> Generate draft</button></div>');
 
   var statusTxt=isApproved?'Approved — ready for use'
     :hasContent?(isEdit?'Editing — save or close to exit':'Draft — pending solicitor sign-off')
@@ -1233,7 +1236,7 @@ function renderDocFocus(){
     +'<p>'+C.ref+' · '+C.name+' · Evidence '+getEvidencePct()+'%</p></div>'
     +'<div class="doc-focus-actions">'+actions+'</div>'
     +'</div>'
-    +'<div class="doc-focus-scroll">'+gatheringHtml+evStrip+approvePrompt+letterHtml+'</div>'
+    +'<div class="doc-focus-scroll">'+evStrip+approvePrompt+letterHtml+'</div>'
     +'<div class="doc-focus-footer"><div class="'+statusCls+'">'+statusTxt+'</div>'+versionNote+'<span class="draft-hint"><i class="ti ti-info-circle"></i>Close, save, or download to return to library</span></div>'
     +'</div>';
 }
@@ -1261,18 +1264,45 @@ function renderWorkspace(){
   renderSidebarCaseLink();
   document.body.classList.toggle('gathering-active',!!(gatheringState.active&&docFocused));
   document.documentElement.classList.toggle('gathering-active',!!(gatheringState.active&&docFocused));
-  if(gatheringState.active&&docFocused){
-    setTimeout(function(){
-      var scrollEl=document.querySelector('.doc-focus-scroll');
-      if(scrollEl)scrollEl.scrollTop=0;
-      if(typeof notifyCaseShell==='function')notifyCaseShell('gatheringOpen',{open:true});
-      try{
-        window.parent.postMessage({type:'gatheringPanelOpen',height:document.body.scrollHeight},'*');
-      }catch(err){}
-    },40);
-  }else if(typeof notifyCaseShell==='function'){
-    notifyCaseShell('gatheringOpen',{open:false});
+  if(gatheringState.active&&gatheringState.docId){
+    showGatheringOverlay(gatheringState.docId);
+  }else{
+    hideGatheringOverlay();
+    if(typeof notifyCaseShell==='function')notifyCaseShell('gatheringOpen',{open:false});
   }
+}
+
+function isCaseEmbed(){
+  try{
+    return new URLSearchParams(window.location.search).get('embed')==='1'
+      ||document.documentElement.classList.contains('drafting-embed');
+  }catch(e){return false;}
+}
+
+function requestGenerateDraft(id){
+  if(isCaseEmbed()){
+    showDraftToast('Generating from case file — review and edit when ready');
+    generateDoc(id);
+    return;
+  }
+  startGathering(id);
+}
+
+function showGatheringOverlay(id){
+  hideGatheringOverlay();
+  var html='<div class="gathering-overlay" id="gathering-overlay" role="dialog" aria-label="Before we draft">'
+    +buildGatheringPanelHtml(id)+'</div>';
+  document.body.insertAdjacentHTML('beforeend',html);
+  document.body.classList.add('gathering-overlay-open');
+  var overlay=document.getElementById('gathering-overlay');
+  if(overlay)overlay.scrollTop=0;
+  if(typeof notifyCaseShell==='function')notifyCaseShell('gatheringOpen',{open:true});
+}
+
+function hideGatheringOverlay(){
+  var el=document.getElementById('gathering-overlay');
+  if(el)el.remove();
+  document.body.classList.remove('gathering-overlay-open');
 }
 
 function renderPointsRef(){
@@ -1307,6 +1337,7 @@ function cancelGathering(){
   gatheringState.docId=null;
   gatheringState.responses={};
   gatheringState.additionalContext='';
+  hideGatheringOverlay();
   renderWorkspace();
 }
 
@@ -1394,12 +1425,14 @@ function generateFromGathering(){
   if(additionalEl)gatheringState.additionalContext=additionalEl.value;
 
   gatheringState.active=false;
+  hideGatheringOverlay();
 
   generateDocWithContext(gatheringState.docId,gatheringState.responses,gatheringState.additionalContext);
 }
 
 async function generateDoc(id){
   gatheringState.active=false;
+  hideGatheringOverlay();
   await generateDocWithContext(id,{},'');
 }
 
