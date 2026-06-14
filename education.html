@@ -113,9 +113,20 @@ html.embed-mode .page{height:100%!important}
 
 
 .intel-filter{font-size:11px;padding:3px 10px;border:1px solid var(--rule);
-  background:var(--surface);cursor:pointer;font-family:var(--font);color:var(--ink2)}
+  background:var(--surface);cursor:pointer;font-family:var(--font);color:var(--ink2);border-radius:var(--r)}
 .intel-filter.active{background:var(--ink);color:#fff;border-color:var(--ink)}
 .intel-filter:hover:not(.active){background:var(--surface2)}
+.section-rule{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.section-label{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.08em;color:var(--ink3);white-space:nowrap}
+.section-line{flex:1;height:1px;background:var(--rule)}
+.req-label{display:block;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.06em;color:var(--ink3);margin-bottom:4px}
+.live-bulletin{display:flex;gap:14px;padding:14px 16px;border:1px solid var(--border);border-radius:var(--r2);margin-bottom:10px;background:var(--surface)}
+.live-bulletin.impact-high{border-left:3px solid var(--alert)}
+.live-bulletin.impact-medium{border-left:3px solid var(--caution)}
+.live-bulletin.impact-low{border-left:3px solid var(--confirm)}
+.live-date{font-size:10px;font-family:var(--mono);color:var(--text3);white-space:nowrap;min-width:72px}
+.live-title{font-size:13px;font-weight:500;color:var(--text);margin-bottom:4px;line-height:1.35}
+.live-summary{font-size:12px;color:var(--text2);line-height:1.6}
 
 </style>
 </head>
@@ -502,9 +513,9 @@ function initIntelligenceHub(){
       var filterHtml = '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;align-items:center">'
         + '<span style="font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink4);margin-right:4px">Filter</span>'
         + ['All','England & Wales','France','Spain','High impact','Action required'].map(function(f){
-            return '<button onclick="filterIntel(this,''+f+'')" class="intel-filter'+(f==='All'?' active':'')+'">' + f + '</button>';
+            return '<button onclick="filterIntel(this,\''+String(f).replace(/'/g,"\\'")+'\')" class="intel-filter'+(f==='All'?' active':'')+'">' + f + '</button>';
           }).join('')
-        + '<button onclick="showSection('contribute')" style="margin-left:auto;font-size:11px;padding:4px 12px;border:1px solid var(--accent);color:var(--accent);background:var(--accent-faint);cursor:pointer;font-family:var(--font)">'
+        + '<button onclick="showSection(\'contribute\')" style="margin-left:auto;font-size:11px;padding:4px 12px;border:1px solid var(--accent);color:var(--accent);background:var(--accent-faint);cursor:pointer;font-family:var(--font)">'
           + '<i class="ti ti-pencil-plus"></i> Contribute update'
         + '</button>'
       + '</div>';
@@ -947,6 +958,7 @@ function render(){
   else if(section&&SECTIONS[section])activeSection=section;
   render();
   if(activeSection==='live-updates'){setTimeout(initLiveUpdates,50);}
+  if(activeSection==='intelligence'){setTimeout(initIntelligenceHub,50);}
   if(section&&SECTIONS[section]){
     document.querySelectorAll('.sb-item').forEach(function(el){el.classList.remove('active');});
     document.querySelectorAll('.sb-item').forEach(function(el){
