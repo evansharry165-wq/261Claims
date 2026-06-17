@@ -32,11 +32,30 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 .stat-chip.new{background:var(--blue-faint);border-color:#BFDBFE;color:var(--blue-text)}
 .stat-chip.active{background:var(--green-faint);border-color:#BBF7D0;color:var(--green)}
 
-.toolbar{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap}
-.search-wrap{flex:1;min-width:180px;position:relative}
-.search-wrap i{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:14px}
-.search-input{width:100%;height:36px;border:1px solid var(--border);border-radius:var(--r);padding:0 12px 0 34px;font-family:var(--font);font-size:12px;background:var(--surface)}
+.hero-search{margin-bottom:12px}
+.search-wrap{position:relative;width:100%}
+.search-wrap i{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:14px;pointer-events:none}
+.search-input{width:100%;min-height:48px;border:1px solid var(--border);border-radius:0;padding:0 16px 0 44px;font-family:var(--font);font-size:14px;background:var(--surface)}
 .search-input:focus{outline:none;border-color:var(--blue)}
+.quick-actions{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+@media(max-width:720px){.quick-actions{grid-template-columns:1fr}}
+.quick-tile{background:var(--surface);border:1px solid var(--border);padding:14px 16px;cursor:pointer;display:flex;align-items:flex-start;gap:12px}
+.quick-tile:hover{background:var(--surface2)}
+.quick-tile.accent{border-left:3px solid var(--accent)}
+.quick-tile-icon{width:28px;height:28px;border-radius:var(--r);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:22px}
+.quick-tile-icon.accent{background:var(--accent-faint);color:var(--accent)}
+.quick-tile-icon.muted{background:var(--surface2);color:var(--text2)}
+.quick-tile-label{font-size:12px;font-weight:500;color:var(--text);margin-bottom:2px}
+.quick-tile-sub{font-size:11px;color:var(--text3);line-height:1.4}
+.priority-row{display:flex;align-items:flex-start;gap:10px;padding:11px 14px;border-bottom:1px solid var(--rule);cursor:pointer;border-left:3px solid var(--border)}
+.priority-row:last-child{border-bottom:none}
+.priority-row:hover{background:var(--surface2)}
+.priority-row.urgent-red{border-left-color:var(--red)}
+.priority-row.urgent-amber{border-left-color:var(--amber)}
+.priority-body{flex:1;min-width:0}
+.priority-action{font-size:12px;font-weight:500;color:var(--text);line-height:1.35}
+.priority-ref{font-size:10px;font-family:var(--mono);color:var(--text3);margin-top:3px}
+.priority-meta{font-size:10px;color:var(--text3);white-space:nowrap;text-align:right;flex-shrink:0}
 .btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:var(--r);font-size:12px;font-weight:500;font-family:var(--font);cursor:pointer;text-decoration:none;border:1px solid transparent}
 .btn-primary{background:var(--navy);color:#fff}
 .btn-primary:hover{opacity:.92}
@@ -220,6 +239,39 @@ function tasksHtml(tasks){
     var urg=daysUrgency(tk.urg);
     return '<div class="task-row" data-ref="'+escapeHtml(tk.ref)+'" data-tab="'+escapeHtml(tk.tab||'')+'"><div class="task-dot '+urg+'"></div><div><div class="task-ref">'+escapeHtml(tk.ref)+'</div><div class="task-action">'+escapeHtml(tk.txt)+'</div><div class="task-claimant">'+escapeHtml(tk.claimant||'')+(tk.blocker?' · '+escapeHtml(tk.blocker):'')+'</div></div><div class="task-meta"><div class="task-deadline '+urg+'">'+escapeHtml(urgencyLabel(tk.urg))+'</div></div></div>';
   }).join('');
+}
+
+function priorityTasksHtml(tasks){
+  if(!tasks.length)return '<div class="empty-row">'+escapeHtml(t('noTasks'))+'</div>';
+  return tasks.map(function(tk){
+    var cpr=typeof tk.urg==='number'?tk.urg:99;
+    var borderCls=tk.urgent||cpr<=3?'urgent-red':cpr<=7?'urgent-amber':'';
+    var urg=daysUrgency(cpr);
+    return '<div class="priority-row '+borderCls+'" data-ref="'+escapeHtml(tk.ref)+'" data-tab="'+escapeHtml(tk.tab||'')+'">'
+      +'<div class="priority-body"><div class="priority-action">'+escapeHtml(tk.txt)+'</div>'
+      +'<div class="priority-ref">'+escapeHtml(tk.ref)+'</div></div>'
+      +'<div class="priority-meta"><div class="task-deadline '+urg+'">'+escapeHtml(urgencyLabel(cpr))+'</div></div></div>';
+  }).join('');
+}
+
+function heroSearchHtml(){
+  return '<div class="hero-search"><div class="search-wrap"><i class="ti ti-search"></i>'
+    +'<input class="search-input" id="work-search" placeholder="Search cases, claimants, flights, references..." oninput="searchCases(this.value)" onfocus="if(this.value)searchCases(this.value)">'
+    +'<div class="search-dropdown" id="search-dropdown"></div></div></div>';
+}
+
+function quickActionsHtml(){
+  return '<div class="quick-actions">'
+    +'<div class="quick-tile accent" onclick="window.location.href=\'intake.html\'">'
+    +'<div class="quick-tile-icon accent"><i class="ti ti-file-plus"></i></div>'
+    +'<div><div class="quick-tile-label">New claim</div><div class="quick-tile-sub">Upload LOC or mass intake</div></div></div>'
+    +'<div class="quick-tile" onclick="window.location.href=\'cases.html\'">'
+    +'<div class="quick-tile-icon muted"><i class="ti ti-folders"></i></div>'
+    +'<div><div class="quick-tile-label">Case files</div><div class="quick-tile-sub">Browse and filter all cases</div></div></div>'
+    +'<div class="quick-tile" onclick="window.location.href=\'repository.html\'">'
+    +'<div class="quick-tile-icon muted"><i class="ti ti-database"></i></div>'
+    +'<div><div class="quick-tile-label">Repository</div><div class="quick-tile-sub">Evidence and documents</div></div></div>'
+    +'</div>';
 }
 
 function ongoingHtml(rows){
@@ -428,7 +480,6 @@ function buildTerminalQueueZone(uid){
 function renderLegalWork(uid,u,cases){
   var tasks=collectDoNowTasks(cases,6);
   var updates=WorkDashboard.getUpdatesSinceLogin(cases,uid);
-  var ongoing=WorkDashboard.getOngoingCases(cases);
   var events=WorkDashboard.buildCalendarEvents(cases);
   var summary=WorkDashboard.roleSummary(uid,cases,updates,tasks);
   var greeting=(new Date().getHours()<12?t('goodMorning'):new Date().getHours()<18?t('goodAfternoon'):t('goodEvening'));
@@ -437,22 +488,14 @@ function renderLegalWork(uid,u,cases){
     '<div class="page-header"><div><div class="greeting">'+greeting+', '+escapeHtml(u.full.split(' ')[0])+'</div><div class="greeting-sub">'+escapeHtml(u.role)+' — your work queue, updates and CPR calendar</div></div>'
     +'<div class="stat-bar">'
     +(summary.urgent?'<span class="stat-chip urgent"><i class="ti ti-alert-circle"></i> '+summary.urgent+' urgent</span>':'')
-    +(summary.updates?'<span class="stat-chip new"><i class="ti ti-bell"></i> '+summary.updates+' since last visit</span>':'')
+    +(summary.updates?'<span class="stat-chip new"><i class="ti ti-calendar"></i> '+summary.updates+' new this week</span>':'')
     +'<span class="stat-chip active"><i class="ti ti-briefcase"></i> '+summary.active+' active cases</span>'
     +'</div></div>'
-    +'<div class="toolbar"><div class="search-wrap"><i class="ti ti-search"></i><input class="search-input" id="work-search" placeholder="'+escapeHtml(t('searchCases'))+'" oninput="searchCases(this.value)" onfocus="if(this.value)searchCases(this.value)"><div class="search-dropdown" id="search-dropdown"></div></div>'
-    +'<a class="btn btn-primary" href="intake.html"><i class="ti ti-mail-plus"></i> '+escapeHtml(t('newClaim'))+'</a>'
-    +'<button type="button" class="btn btn-outline" onclick="downloadWorkCalendar()"><i class="ti ti-calendar-down"></i> CPR calendar (.ics)</button></div>'
-    +knowledgeAlertBanner()
-    +buildOutstandingRequests(uid)
+    +heroSearchHtml()
+    +quickActionsHtml()
+    +'<div class="zone"><div class="zone-hdr"><div class="zone-title"><i class="ti ti-list-check"></i> Today\'s priorities</div><a class="zone-link" href="cases.html?sort=urgency">'+escapeHtml(t('viewAll'))+'</a></div><div class="panel">'+priorityTasksHtml(tasks)+'</div></div>'
     +buildTerminalQueueZone(uid)
-    +'<div class="work-grid">'
-    +'<div class="zone"><div class="zone-hdr"><div class="zone-title"><i class="ti ti-sparkles"></i> Since you last logged in</div></div><div class="panel">'+updatesHtml(updates)+'</div></div>'
-    +'<div class="zone"><div class="zone-hdr"><div class="zone-title"><i class="ti ti-list-check"></i> '+escapeHtml(t('doNow'))+'</div><a class="zone-link" href="cases.html?sort=urgency">'+escapeHtml(t('viewAll'))+'</a></div><div class="panel">'+tasksHtml(tasks)+'</div></div>'
-    +'</div>'
-    +'<div class="zone"><div class="zone-hdr"><div class="zone-title"><i class="ti ti-briefcase"></i> Ongoing cases</div><a class="zone-link" href="cases.html">'+escapeHtml(t('viewAll'))+'</a></div><div class="panel">'+ongoingHtml(ongoing)+'</div></div>'
-    +'<div class="zone"><div class="zone-hdr"><div class="zone-title"><i class="ti ti-calendar"></i> Work &amp; CPR calendar</div><span class="zone-link" style="cursor:default;color:var(--text3)">Deadlines, case notes and comments by month</span></div><div class="panel">'+calendarHtml(events)+'</div></div>'
-    +demoToursHtml();
+    +'<div class="zone"><div class="zone-hdr"><div class="zone-title"><i class="ti ti-calendar"></i> Deadlines this month</div><span class="zone-link" style="cursor:default;color:var(--text3)">Deadlines, case notes and comments by month</span></div><div class="panel">'+calendarHtml(events)+'</div></div>';
 
   bindCaseClicks(document.getElementById('page'));
   WorkDashboard.recordVisit(uid);
