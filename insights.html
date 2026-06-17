@@ -195,6 +195,22 @@ var _correlations=[];
 var aiChatHistory=[];
 var aiLastQuery={cases:[],parsed:null,viz:null};
 var aiThinking=false;
+var insightDropdownFilters={disruption:'',jurisdiction:'',triage:'',cpr:''};
+var PLACEHOLDER_PROMPTS=[
+  'Try: weather delays we can defend...',
+  'Try: urgent CPR cases this week...',
+  'Try: high-value ESCALATE cases by jurisdiction...',
+  'Try: claims from Clarke & Partners...',
+  'Try: ATC cases with strong evidence...',
+  'Try: cases approaching CPR deadline...'
+];
+var placeholderIdx=0;
+function cyclePlaceholder(){
+  var input=document.getElementById('ai-search-input');
+  if(!input||document.activeElement===input)return;
+  input.placeholder=PLACEHOLDER_PROMPTS[placeholderIdx%PLACEHOLDER_PROMPTS.length];
+  placeholderIdx++;
+}
 
 function escapeHtml(v){return String(v==null?'':v).replace(/[&<>"']/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch];});}
 function aiMarkdown(s){return typeof IntelAISearch!=='undefined'&&IntelAISearch.markdownLite?IntelAISearch.markdownLite(s):escapeHtml(s);}
@@ -288,7 +304,12 @@ function toggleIntelFilter(kind,value){
   intelFilters.groupOnly=false;renderPanel();
 }
 function setIntelText(field,value){intelFilters[field]=value;intelFilters.groupOnly=false;renderPanel();}
-function clearIntelFilters(){intelFilters={disruptionTypes:[],jurisdictions:[],triage:[],cprBands:[],solicitor:'',valueMin:'',valueMax:'',groupOnly:false,airports:[],airportDirection:'either'};aiLastQuery={cases:[],parsed:null,viz:null};renderPanel();}
+function clearIntelFilters(){
+  insightDropdownFilters={disruption:'',jurisdiction:'',triage:'',cpr:''};
+  intelFilters={disruptionTypes:[],jurisdictions:[],triage:[],cprBands:[],solicitor:'',valueMin:'',valueMax:'',groupOnly:false,airports:[],airportDirection:'either'};
+  aiLastQuery={cases:[],parsed:null,viz:null};
+  renderPanel();
+}
 
 function matchesDisruption(c,selected){
   if(!selected.length)return true;
@@ -458,12 +479,66 @@ function scrollToIntelList(){
 function syncAiFilters(parsed){
   if(typeof IntelAISearch==='undefined')return;
   intelFilters=IntelAISearch.parsedToIntelFilters(parsed);
+  insightDropdownFilters.disruption=intelFilters.disruptionTypes[0]||'';
+  insightDropdownFilters.jurisdiction=intelFilters.jurisdictions[0]||'';
+  insightDropdownFilters.triage=intelFilters.triage[0]||'';
+  insightDropdownFilters.cpr=intelFilters.cprBands[0]||'';
+}
+
+function renderCaseList(cases){
+  var el=document.getElementById('insight-case-list');
+  var countEl=document.getElementById('case-count');
+  if(countEl)countEl.textContent=cases.length;
+  if(!el)return;
+  if(!cases.length){
+    el.innerHTML='<div class="intel-empty">No cases match the current filters.</div>';
+    return;
+  }
+  el.innerHTML=cases.map(function(c){
+    return '<div onclick="window.location.href=\'case.html?ref='+encodeURIComponent(c.ref)+'\'" style="padding:8px 0;border-bottom:1px solid var(--border2);cursor:pointer">'
+      +'<div style="font-size:10px;font-family:var(--mono);color:var(--text3)">'+escapeHtml(c.ref)+'</div>'
+      +'<div style="font-size:12px;font-weight:500;color:var(--text);margin:1px 0">'+escapeHtml(c.claimant)+'</div>'
+      +'<div style="display:flex;gap:6px;align-items:center">'
+      +'<span style="font-size:11px;color:var(--text3)">'+escapeHtml(c.disruptionType)+'</span>'
+      +(c.cprDaysLeft<=7?'<span style="font-size:10px;color:var(--red);font-weight:500">'+c.cprDaysLeft+'d</span>':'')
+      +'</div></div>';
+  }).join('');
+}
+
+function applyInsightFilter(){
+  var disruption=document.getElementById('filter-disruption')?document.getElementById('filter-disruption').value:'';
+  var jur=document.getElementById('filter-jurisdiction')?document.getElementById('filter-jurisdiction').value:'';
+  var triage=document.getElementById('filter-triage')?document.getElementById('filter-triage').value:'';
+  var cpr=document.getElementById('filter-cpr')?document.getElementById('filter-cpr').value:'';
+  insightDropdownFilters={disruption:disruption,jurisdiction:jur,triage:triage,cpr:cpr};
+  var solicitor=document.getElementById('filter-solicitor')?document.getElementById('filter-solicitor').value:'';
+  var valueMin=document.getElementById('filter-value-min')?document.getElementById('filter-value-min').value:'';
+  var valueMax=document.getElementById('filter-value-max')?document.getElementById('filter-value-max').value:'';
+  intelFilters.solicitor=solicitor;
+  intelFilters.valueMin=valueMin;
+  intelFilters.valueMax=valueMax;
+  var cases=getIntelligenceCases();
+  var min=valueMin!==''?parseFloat(valueMin):null;
+  var max=valueMax!==''?parseFloat(valueMax):null;
+  var filtered=cases.filter(function(c){
+    if(disruption&&c.disruptionType!==disruption)return false;
+    if(jur&&c.jurisdiction!==jur)return false;
+    if(triage&&c.classification!==triage)return false;
+    if(cpr==='urgent'&&(c.cprDaysLeft||99)>3)return false;
+    if(cpr==='watch'&&((c.cprDaysLeft||99)<=3||(c.cprDaysLeft||99)>10))return false;
+    if(cpr==='normal'&&(c.cprDaysLeft||99)<=10)return false;
+    if(solicitor&&(c.solicitor||'').toLowerCase().indexOf(solicitor.toLowerCase())<0)return false;
+    if(min!=null&&!isNaN(min)&&c.compNumeric<min)return false;
+    if(max!=null&&!isNaN(max)&&c.compNumeric>max)return false;
+    return true;
+  });
+  renderCaseList(filtered);
 }
 
 function submitAiQuery(text){
   text=(text||'').trim();
   if(!text||aiThinking||typeof IntelAISearch==='undefined')return;
-  var input=document.getElementById('ai-query-input');
+  var input=document.getElementById('ai-search-input');
   if(input)input.value=text;
   aiChatHistory.push({role:'user',text:text});
   aiThinking=true;
@@ -522,10 +597,8 @@ function handleAiInputKey(e){
 
 function renderAiPanelOnly(){
   var thread=document.getElementById('ai-chat-thread');
-  var chips=document.getElementById('ai-suggestions');
   var btn=document.getElementById('ai-send-btn');
   if(thread)thread.innerHTML=renderAiChatThread();
-  if(chips)chips.innerHTML=renderAiSuggestions();
   if(btn)btn.disabled=aiThinking;
 }
 
@@ -535,9 +608,8 @@ function buildAiSearchPanel(){
     +'<div class="ai-search-sub">Natural language search across active claims — no filters required</div></div>'
     +'<span class="ai-badge">AI demo</span></div>'
     +'<div class="ai-chat-thread" id="ai-chat-thread">'+renderAiChatThread()+'</div>'
-    +'<div class="ai-suggestions" id="ai-suggestions">'+renderAiSuggestions()+'</div>'
-    +'<div class="ai-input-row"><input id="ai-query-input" class="ai-input" type="text" placeholder="e.g. cancelled flights from London Gatwick — show cost impact" onkeydown="handleAiInputKey(event)">'
-    +'<button type="button" id="ai-send-btn" class="ai-send" onclick="submitAiQuery(document.getElementById(\'ai-query-input\').value)"'+(aiThinking?' disabled':'')+'><i class="ti ti-arrow-up"></i> Ask</button></div></div>';
+    +'<div class="ai-input-row"><input id="ai-search-input" class="ai-input" type="text" placeholder="Try: cancelled flights from LGW this month..." onkeydown="handleAiInputKey(event)">'
+    +'<button type="button" id="ai-send-btn" class="ai-send" onclick="submitAiQuery(document.getElementById(\'ai-search-input\').value)"'+(aiThinking?' disabled':'')+'><i class="ti ti-arrow-up"></i> Ask</button></div></div>';
 }
 
 function triageSplitBar(cases){
@@ -582,46 +654,59 @@ function renderCorrelationCards(cards){
 
 function renderIntelligence(){
   var allCases=getIntelligenceCases();
-  _correlations=computeCorrelations(allCases);
-  var filtered=filterIntelligenceCases(allCases);
-  var disruptionOpts=uniqueDisruptionTypes(allCases);
-  var jurOpts=[{key:'england-wales',label:'England & Wales'},{key:'france',label:'France'},{key:'spain',label:'Spain'}];
-  var triageOpts=['DEFEND','INVESTIGATE','ESCALATE'];
-  var cprOpts=[{key:'urgent',label:'Urgent ≤3d'},{key:'watch',label:'Watch 4–10d'},{key:'normal',label:'Normal >10d'}];
-  function pillHtml(kind,items,keyFn,labelFn){
-    return items.map(function(item){
-      var key=keyFn?keyFn(item):item,label=labelFn?labelFn(item):item;
-      var active=(intelFilters[kind]||[]).indexOf(key)>=0;
-      return '<button type="button" class="fpill'+(active?' active':'')+'" onclick="toggleIntelFilter(\''+kind+'\',\''+String(key).replace(/'/g,'\\\'')+'\')">'+escapeHtml(label)+'</button>';
-    }).join('');
-  }
-  var caseRows=filtered.map(function(c){
-    return '<div class="intel-row" onclick="window.location.href=\'case.html?ref='+encodeURIComponent(c.ref)+'\'">'
-      +'<div><div class="ir-ref">'+escapeHtml(c.ref)+'</div><div class="ir-name">'+escapeHtml(c.claimant)+'</div></div>'
-      +'<div class="ir-muted">'+escapeHtml(c.disruptionType)+'</div><div class="ir-muted">'+escapeHtml(jurisdictionLabel(c.jurisdiction))+'</div>'
-      +'<div><span class="p-triage '+triageClass(c.classification)+'">'+escapeHtml(c.classification)+'</span></div>'
-      +'<div><span class="p-cpr '+cprClass(c.cprDaysLeft)+'">'+c.cprDaysLeft+'d</span></div>'
-      +'<div class="ir-muted">'+escapeHtml(c.value||'—')+'</div><div><div class="ir-sol">'+escapeHtml(c.solicitor)+'</div></div></div>';
-  }).join('');
+  var df=insightDropdownFilters;
+  var selectStyle='font-size:12px;padding:6px 10px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:var(--font);cursor:pointer;min-width:160px';
+  function optSel(val,current){return val===current?' selected':'';}
   var agencyRows=buildAgencyRows(allCases).map(function(r){
     return '<tr><td><strong>'+escapeHtml(r.name)+'</strong></td><td>'+r.count+'</td><td>'+escapeHtml(r.jurisdictions)+'</td><td>'+escapeHtml(r.types)+'</td><td>'+escapeHtml(r.avgValue)+'</td><td>'+triageSplitBar(r.cases)+'</td></tr>';
   }).join('');
   document.getElementById('tab-panel').innerHTML=
     '<div class="intel-wrap">'
+    +'<div style="display:flex;gap:16px;align-items:flex-start">'
+    +'<div style="flex:1;min-width:0">'
     +buildAiSearchPanel()
-    +'<div class="intel-section" id="intel-search"><div class="intel-section-hdr"><i class="ti ti-filter"></i><div class="intel-section-title">Live search &amp; filter</div><div class="intel-section-sub">Or refine manually · Correlation engine · '+allCases.length+' active cases</div></div>'
-    +'<div class="filter-bar"><div class="filter-group"><div class="filter-label">Disruption type</div><div class="filter-pills">'+pillHtml('disruptionTypes',disruptionOpts)+'</div></div>'
-    +'<div class="filter-group"><div class="filter-label">Jurisdiction</div><div class="filter-pills">'+pillHtml('jurisdictions',jurOpts,function(o){return o.key;},function(o){return o.label;})+'</div></div>'
-    +'<div class="filter-group"><div class="filter-label">Triage</div><div class="filter-pills">'+pillHtml('triage',triageOpts)+'</div></div>'
-    +'<div class="filter-group"><div class="filter-label">CPR urgency</div><div class="filter-toggles">'+pillHtml('cprBands',cprOpts,function(o){return o.key;},function(o){return o.label;})+'</div></div>'
-    +'<div class="filter-row"><div class="filter-group"><div class="filter-label">Solicitor / CMC</div><input class="filter-input" placeholder="Filter by firm name…" value="'+escapeHtml(intelFilters.solicitor)+'" oninput="setIntelText(\'solicitor\',this.value)"></div>'
-    +'<div class="filter-group"><div class="filter-label">Claim value (min / max)</div><div class="filter-row"><input class="filter-input" type="number" placeholder="Min" value="'+escapeHtml(intelFilters.valueMin)+'" oninput="setIntelText(\'valueMin\',this.value)"><input class="filter-input" type="number" placeholder="Max" value="'+escapeHtml(intelFilters.valueMax)+'" oninput="setIntelText(\'valueMax\',this.value)"></div></div></div>'
+    +'<div class="intel-section" id="intel-search"><div class="intel-section-hdr"><i class="ti ti-filter"></i><div class="intel-section-title">Live search &amp; filter</div><div class="intel-section-sub">Refine manually · '+allCases.length+' active cases</div></div>'
+    +'<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px">'
+    +'<select id="filter-disruption" onchange="applyInsightFilter()" style="'+selectStyle+'">'
+    +'<option value="">All disruption types</option>'
+    +'<option value="Weather"'+optSel('Weather',df.disruption)+'>Weather</option>'
+    +'<option value="ATC Restrictions"'+optSel('ATC Restrictions',df.disruption)+'>ATC Restrictions</option>'
+    +'<option value="Delay"'+optSel('Delay',df.disruption)+'>Delay</option>'
+    +'<option value="Cancellation"'+optSel('Cancellation',df.disruption)+'>Cancellation</option>'
+    +'<option value="Denied Boarding"'+optSel('Denied Boarding',df.disruption)+'>Denied Boarding</option>'
+    +'<option value="Downgrade"'+optSel('Downgrade',df.disruption)+'>Downgrade</option>'
+    +'</select>'
+    +'<select id="filter-jurisdiction" onchange="applyInsightFilter()" style="'+selectStyle+'">'
+    +'<option value="">All jurisdictions</option>'
+    +'<option value="england-wales"'+optSel('england-wales',df.jurisdiction)+'>England &amp; Wales</option>'
+    +'<option value="france"'+optSel('france',df.jurisdiction)+'>France</option>'
+    +'<option value="spain"'+optSel('spain',df.jurisdiction)+'>Spain</option>'
+    +'</select>'
+    +'<select id="filter-triage" onchange="applyInsightFilter()" style="'+selectStyle+'">'
+    +'<option value="">All classifications</option>'
+    +'<option value="DEFEND"'+optSel('DEFEND',df.triage)+'>Defend</option>'
+    +'<option value="INVESTIGATE"'+optSel('INVESTIGATE',df.triage)+'>Investigate</option>'
+    +'<option value="ESCALATE"'+optSel('ESCALATE',df.triage)+'>Escalate</option>'
+    +'</select>'
+    +'<select id="filter-cpr" onchange="applyInsightFilter()" style="'+selectStyle+'">'
+    +'<option value="">All CPR urgency</option>'
+    +'<option value="urgent"'+optSel('urgent',df.cpr)+'>Urgent ≤ 3 days</option>'
+    +'<option value="watch"'+optSel('watch',df.cpr)+'>Watch 4-10 days</option>'
+    +'<option value="normal"'+optSel('normal',df.cpr)+'>Normal &gt; 10 days</option>'
+    +'</select>'
+    +'</div>'
+    +'<div class="filter-row"><div class="filter-group"><div class="filter-label">Solicitor / CMC</div><input id="filter-solicitor" class="filter-input" placeholder="Filter by firm name…" value="'+escapeHtml(intelFilters.solicitor)+'" oninput="applyInsightFilter()"></div>'
+    +'<div class="filter-group"><div class="filter-label">Claim value (min / max)</div><div class="filter-row"><input id="filter-value-min" class="filter-input" type="number" placeholder="Min" value="'+escapeHtml(intelFilters.valueMin)+'" oninput="applyInsightFilter()"><input id="filter-value-max" class="filter-input" type="number" placeholder="Max" value="'+escapeHtml(intelFilters.valueMax)+'" oninput="applyInsightFilter()"></div></div></div>'
     +'<div><button type="button" class="fpill" onclick="clearIntelFilters()">Clear all filters</button></div></div>'
-    +'<div class="intel-count">Showing '+filtered.length+' of '+allCases.length+' cases</div>'
-    +'<div class="intel-list" id="intel-case-list">'+(caseRows||'<div class="intel-empty">No cases match the current filters.</div>')+'</div></div>'
-    +'<div class="intel-section"><div class="intel-section-hdr"><i class="ti ti-brain"></i><div class="intel-section-title">AI-surfaced correlations</div></div><div class="corr-grid">'+renderCorrelationCards(_correlations)+'</div></div>'
+    +'</div>'
+    +'<div style="width:300px;flex-shrink:0;position:sticky;top:60px">'
+    +'<div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid var(--border)">Cases <span id="case-count">'+allCases.length+'</span></div>'
+    +'<div id="insight-case-list" style="height:calc(100vh - 200px);overflow-y:auto"></div>'
+    +'</div>'
+    +'</div>'
     +'<div class="intel-section"><div class="intel-section-hdr"><i class="ti ti-flag"></i><div class="intel-section-title">Agency / CMC tracker</div><div class="intel-section-sub">Flags by agency — focus defence strategy</div></div>'
     +'<div class="panel"><table class="agency-table"><thead><tr><th>Firm name</th><th>Claims filed</th><th>Jurisdictions</th><th>Disruption types</th><th>Avg claim value</th><th>Triage split</th></tr></thead><tbody>'+agencyRows+'</tbody></table></div></div></div>';
+  applyInsightFilter();
 }
 
 function filteredPastCases(){
@@ -669,6 +754,7 @@ window.addEventListener('load',function(){
   renderTabs();
   renderPanel();
   hydrateBatchDemoCases(function(){renderPanel();});
+  setInterval(cyclePlaceholder,3000);
 });
 </script>
 <script src="shared_nav.js"></script>
