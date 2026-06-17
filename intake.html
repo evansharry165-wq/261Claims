@@ -70,8 +70,12 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 .upload-zone h3{font-size:13px;font-weight:500;color:var(--text);margin-bottom:4px}
 .upload-zone p{font-size:11px;color:var(--text3)}
 
-/* case workspace */
-.cw{padding:20px}
+.summary-card{background:var(--surface);border:1px solid var(--border);padding:16px;margin-bottom:14px}
+.summary-ref{font-size:10px;font-family:var(--mono);color:var(--text3);margin-bottom:10px}
+.summary-row{display:flex;gap:12px;padding:6px 0}
+.summary-label{font-size:11px;color:var(--text3);width:120px;flex-shrink:0}
+.summary-value{font-size:12px;color:var(--text);font-weight:400;flex:1}
+
 .cw-header{background:var(--surface);border:1px solid var(--border);border-radius:var(--r3);padding:14px 16px;margin-bottom:14px}
 .cw-ref{font-size:10px;font-family:var(--mono);color:var(--text3);margin-bottom:2px}
 .cw-name{font-size:16px;font-weight:500;color:var(--text);margin-bottom:5px}
@@ -750,18 +754,14 @@ function renderEmailConnector(){
     +'</div></div>';
 
   if(emailConnectorParsed==='hartley'){
-    return '<div class="cw"><div class="mass-banner"><i class="ti ti-plug-connected"></i> <strong>Email connector</strong> — simulates Outlook MCP / Microsoft Graph parsing. In production, incoming LOCs at legal@[airline].com would auto-create intake records.</div>'
+    return '<div class="cw">'
       +renderEmailParseResult()
       +'</div>';
   }
 
-  return '<div class="cw"><div class="mass-banner"><i class="ti ti-plug-connected"></i> <strong>Email connector</strong> — simulates Outlook MCP / Microsoft Graph parsing. In production, incoming LOCs at legal@[airline].com would auto-create intake records.</div>'
+  return '<div class="cw">'
     +inboxHtml
-    +'<div class="section-card"><div class="sc-header"><i class="ti ti-info-circle"></i><div class="sc-title">How it works</div></div><div class="sc-body" style="font-size:12px;color:var(--text2);line-height:1.6">'
-    +'<p style="margin-bottom:8px">1. Incoming LOCs arrive at the connected legal inbox.</p>'
-    +'<p style="margin-bottom:8px">2. AI extracts claimant, flight, route, compensation and flags gaps (booking ref, passenger count).</p>'
-    +'<p>3. Missing fields trigger a gap-filling email draft before the case enters triage.</p>'
-    +'</div></div></div>';
+    +'</div>';
 }
 
 function renderMassPanel(){
@@ -1001,10 +1001,14 @@ function renderActivityFeed(c){
     +'</div></div>';
 }
 
+function summaryRow(label,value){
+  return '<div class="summary-row"><div class="summary-label">'+escapeHtml(label)+'</div><div class="summary-value">'+value+'</div></div>';
+}
+
 function renderCaseWorkspace(c,J){
   var insights=c.intakeInsights||(typeof buildIntakeInsights==='function'?buildIntakeInsights(c,{}):{});
   var assignee=USERS[c.assignedTo];
-  var ck=intakeClassKey(c.classification||insights.classification);
+  var route=(c.dep&&c.arr&&c.dep!=='TBD')?c.dep+' → '+c.arr:'Pending';
   var points=(c.points&&c.points.length)?c.points:[
     {n:1,claim:'Passenger and flight details extracted',evidenceStatus:'amber',evidenceDoc:'Needs legal review'},
     {n:2,claim:'Disruption reason identified as '+(c.disruptionType||'pending'),evidenceStatus:'amber',evidenceDoc:'Confirm in triage'},
@@ -1015,59 +1019,30 @@ function renderCaseWorkspace(c,J){
     var q=depositSearch.toLowerCase();
     return !q||x.ref.toLowerCase().indexOf(q)>=0||x.claimant.toLowerCase().indexOf(q)>=0||(x.flightNum||'').toLowerCase().indexOf(q)>=0;
   }).slice(0,6);
+  var stageBadge='<span class="cw-badge" style="background:'+stageBg('intake')+';color:'+stageColor('intake')+'">'+t('stage_intake')+'</span>';
 
   return '<div class="cw">'
-    +'<div class="cw-header"><div class="cw-ref">'+escapeHtml(c.ref)+'</div>'
-    +'<div style="display:flex;align-items:flex-start;gap:10px;flex-wrap:wrap">'
-    +'<div style="flex:1;min-width:200px"><div class="cw-name">'+escapeHtml(c.claimant)+' v. [Airline]</div>'
-    +'<div class="cw-meta"><span><i class="ti ti-building"></i>'+escapeHtml(c.solicitor)+'</span>'
-    +'<span><i class="ti ti-plane"></i>'+escapeHtml(c.flight)+'</span>'
-    +'<span><i class="ti ti-world"></i>'+J.flag+' '+escapeHtml(J.name)+'</span>'
-    +'<span><i class="ti ti-cash"></i>'+escapeHtml(c.value)+'</span>'
-    +(assignee?'<span><i class="ti ti-user"></i>'+escapeHtml(assignee.name)+'</span>':'')
-    +'</div></div>'
-    +'<span class="class-pill class-'+ck+'">'+escapeHtml(c.classification||insights.classification||'INVESTIGATE')+'</span>'
-    +'<span class="cw-badge" style="background:'+stageBg('intake')+';color:'+stageColor('intake')+'">'+t('stage_intake')+'</span>'
-    +'</div></div>'
-
-    +renderIntakeInsightStrip(c,insights)
-
-    +'<div class="insight-grid">'
-    +'<div class="section-card" style="margin:0"><div class="sc-header"><i class="ti ti-plane-departure"></i><div class="sc-title">Flight & claim details</div></div><div class="sc-body"><div class="field-grid">'
-    +fieldHtml('Flight number',c.flightNum)
-    +fieldHtml('Route',(c.dep&&c.arr&&c.dep!=='TBD')?c.dep+' → '+c.arr:'Pending')
-    +fieldHtml('Flight date',c.flightDate)
-    +fieldHtml('Claim type',c.type)
-    +fieldHtml('Disruption',c.disruptionType)
-    +fieldHtml('Complexity',c.cat?'Cat '+c.cat:'Pending')
-    +fieldHtml('LOC received',c.locDate)
-    +fieldHtml('Compensation sought',c.value)
-    +'</div>'
-    +(c.triageNote?'<div style="margin-top:10px;padding:10px 12px;background:var(--surface2);border-radius:var(--r);border:1px solid var(--border);font-size:11px;color:var(--text2);line-height:1.55"><strong style="color:var(--text);font-size:10px;text-transform:uppercase;letter-spacing:.06em">Extraction note</strong><br>'+escapeHtml(c.triageNote)+'</div>':'')
-    +'</div></div>'
-    +renderCprTimeline(c,insights,J)
+    +'<div class="summary-card">'
+    +'<div class="summary-ref">'+escapeHtml(c.ref)+'</div>'
+    +summaryRow('Claimant',escapeHtml(c.claimant))
+    +summaryRow('Solicitor firm',escapeHtml(c.solicitor))
+    +summaryRow('Flight',escapeHtml(c.flightNum)+' — '+escapeHtml(route))
+    +summaryRow('Date',escapeHtml(c.flightDate||'Pending'))
+    +summaryRow('Jurisdiction',escapeHtml(J.flag+' '+J.name))
+    +summaryRow('Claim value',escapeHtml(c.value))
+    +summaryRow('Claim type',escapeHtml(c.type))
+    +summaryRow('Assigned to',escapeHtml(assignee?assignee.name:'Unassigned'))
+    +summaryRow('Stage',stageBadge)
     +'</div>'
 
-    +'<div class="insight-grid" style="margin-bottom:12px">'
-    +renderExtractionMeta(c,insights)
-    +'<div class="insight-card"><div class="insight-card-hdr"><i class="ti ti-scale"></i> Legal framework</div>'
-    +'<div style="font-size:12px;color:var(--text);font-weight:500;margin-bottom:4px">'+escapeHtml(c.type||'EC261')+'</div>'
-    +'<div style="font-size:11px;color:var(--text2);line-height:1.55;margin-bottom:8px">'+escapeHtml(J.procedureNote||'')+'</div>'
-    +'<div style="font-size:10px;color:var(--text3)"><i class="ti ti-clock"></i> Limitation: '+escapeHtml(J.limitationNote||'—')+'</div>'
-    +'</div></div>'
-
-    +'<div class="section-card"><div class="sc-header"><i class="ti ti-list-check"></i><div class="sc-title">Initial issues for triage · '+points.length+' identified</div></div><div class="sc-body">'
+    +'<div class="section-card" style="margin-bottom:12px"><div class="sc-body">'
     +points.map(function(p){
       var cls=p.evidenceStatus==='green'?'g':p.evidenceStatus==='red'?'r':'a';
       return '<div class="point-item"><div class="pt-dot pt-'+cls+'"></div><div class="pt-n">'+p.n+'</div><div style="flex:1"><div class="pt-claim">'+escapeHtml(p.claim)+'</div><div class="pt-ev">'+escapeHtml(p.evidenceDoc||'Pending')+'</div></div><span class="pt-status ps-'+cls+'">'+(cls==='g'?'Ready':cls==='r'?'Missing':'Review')+'</span></div>';
     }).join('')
     +'</div></div>'
 
-    +renderActivityFeed(c)
-
-    +'<div class="section-card"><div class="sc-header"><i class="ti ti-file-search"></i><div class="sc-title">Document deposit and AI summary</div></div><div class="sc-body">'
-    +'<div style="font-size:12px;color:var(--text2);line-height:1.5;margin-bottom:10px">Upload supporting documents, search for the correct existing case, and deposit the file into that case file for AI scanning and legal review.</div>'
-    +'<div class="field-grid" style="margin-bottom:10px">'+fieldHtml('Selected document',pendingSupportFile?pendingSupportFile.name:'No document selected')+fieldHtml('Current case documents',docs.length+' deposited')+'</div>'
+    +'<div class="section-card" style="margin-bottom:12px"><div class="sc-body">'
     +'<div style="display:flex;gap:8px;margin-bottom:10px"><button class="btn-advance" style="width:auto;padding:7px 12px" onclick="triggerSupportUpload()"><i class="ti ti-upload"></i> Choose document</button><input class="chk-text" style="max-width:none;flex:1" placeholder="Search case ref, claimant, or flight" value="'+escapeHtml(depositSearch)+'" oninput="setDepositSearch(this.value)"></div>'
     +(pendingSupportFile?'<div style="border:1px solid var(--border);border-radius:var(--r2);overflow:hidden;margin-bottom:10px">'+candidates.map(function(x){return '<div class="point-item" style="padding:9px 10px"><div class="pt-dot pt-a"></div><div style="flex:1"><div class="pt-claim">'+escapeHtml(x.ref)+' · '+escapeHtml(x.claimant)+'</div><div class="pt-ev">'+escapeHtml(x.flightNum)+' · '+escapeHtml(t('stage_'+x.stage)||x.stage)+'</div></div><button class="chk-save" onclick="depositIntoCase(&quot;'+escapeHtml(x.ref)+'&quot;)">Deposit here</button></div>';}).join('')+'</div>':'')
     +(docs.length?docs.map(function(d){return '<div style="background:var(--green-faint);border:1px solid #BBF7D0;border-radius:var(--r);padding:9px 10px;margin-top:6px"><div style="font-size:12px;font-weight:500;color:var(--green);margin-bottom:3px"><i class="ti ti-file-check"></i> '+escapeHtml(d.name)+'</div><div style="font-size:11px;color:var(--text2);line-height:1.5">'+escapeHtml(d.summary)+'</div></div>';}).join(''):'<div style="font-size:11px;color:var(--text3)">No supporting documents deposited into this case yet.</div>')
