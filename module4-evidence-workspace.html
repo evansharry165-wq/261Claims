@@ -70,6 +70,8 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 .fdp-warn{color:var(--red);font-weight:500}
 .btn-sm{font-size:11px;font-weight:500;padding:7px 14px;border-radius:var(--r);border:none;cursor:pointer;font-family:var(--font);display:inline-flex;align-items:center;gap:5px}
 .btn-secondary{font-size:11px;font-weight:500;padding:7px 14px;border-radius:var(--r);border:1px solid var(--border2);cursor:pointer;font-family:var(--font);display:inline-flex;align-items:center;gap:5px;background:var(--surface2);color:var(--text2)}
+.btn-primary{font-size:11px;font-weight:500;padding:7px 14px;border-radius:var(--r);border:none;cursor:pointer;font-family:var(--font);display:inline-flex;align-items:center;gap:5px;background:var(--ink);color:#fff}
+.btn-primary:hover{opacity:.92}
 .btn-navy{background:var(--navy);color:#fff}
 .btn-navy:hover{background:var(--navy2)}
 
@@ -965,7 +967,7 @@ function renderMain(){
   if(primaryType){
     opsPanel='<div class="card"><div class="card-body open">'
       +'<div style="border:1px solid #FDE68A;background:#FFFBEB;border-radius:var(--r2);padding:14px 16px;margin-bottom:12px"><div style="font-size:13px;font-weight:500;margin-bottom:4px;display:flex;align-items:center;gap:6px"><i class="ti ti-certificate" style="color:var(--amber)"></i> Gold evidence pack</div><div style="font-size:28px;font-weight:500;color:var(--amber);margin-bottom:4px">'+pack.gold+'%</div><div style="font-size:11px;color:var(--text2);line-height:1.55">DefendAble targets the gold pack on every case — the most complete aviation defence. Higher collection demand, but the strongest position for legal.</div><div style="font-size:10px;color:var(--text3);margin-top:6px">'+pack.goldDone+' of '+pack.goldTotal+' key & secondary documents on file</div></div>'
-      +'<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn-secondary" onclick="requestAllOutstanding()"><i class="ti ti-send"></i> Request all outstanding</button><button class="btn-sm btn-navy" onclick="pullFromRepository()" style="background:var(--green);border-color:var(--green)"><i class="ti ti-database"></i> Pull from repository</button><button class="btn-sm" onclick="requestEvidenceCompletion()" style="border:1px solid var(--border2);background:var(--surface2);color:var(--text2)"><i class="ti ti-user-question"></i> Request outstanding from DIO</button><a class="btn-sm" href="repository.html" onclick="sessionStorage.setItem(\'dfa_repo_area\',\'evidence\')" style="border:1px solid var(--border2);background:var(--surface2);color:var(--text2);text-decoration:none"><i class="ti ti-database"></i> Open filing system</a>'
+      +'<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn-primary" onclick="requestAllOutstanding()"><i class="ti ti-send"></i> Request all outstanding</button><button class="btn-secondary" onclick="window.open(\'dio.html\',\'_blank\')"><i class="ti ti-upload"></i> File via DIO</button><button class="btn-secondary" onclick="window.location.href=\'repository.html\'"><i class="ti ti-database"></i> Evidence repository</button>'
       +(pack.gold>=100
         ?'<button class="btn-sm btn-navy" onclick="moveToDrafting()" style="background:var(--purple);border-color:var(--purple)"><i class="ti ti-file-pencil"></i> Move to drafting</button>'
         :'<button class="btn-sm" disabled title="Complete the key evidence items to advance" style="opacity:0.5;cursor:not-allowed;background:var(--surface3);color:var(--text3);border-color:var(--border)"><i class="ti ti-file-pencil"></i> Move to drafting</button>')
@@ -1072,7 +1074,7 @@ function renderMain(){
 
     function tierBlock(tier,ids,label,dot,upCount,pullId){
       return '<div class="ev-tier">'
-        +'<div class="ev-tier-divider">'+label+' — '+upCount+' of '+ids.length+' on file</div>'
+        +'<div class="ev-tier-divider">'+label+'</div>'
         +'<table class="ev-table"><tbody>'
         +ids.map(renderItem).join('')
         +'</tbody></table>'
@@ -1081,7 +1083,7 @@ function renderMain(){
 
     /* verdictHtml */
     var vHtml='';
-    if(ver){
+    if(ver&&ver.cls==='verdict-defend'){
       vHtml='<div class="verdict '+ver.cls+'"><i class="ti '+ver.icon+' verdict-icon" style="color:'+ver.col+'"></i>'
         +'<div><div class="verdict-title" style="color:'+ver.col+'">'+ver.title+'</div>'
         +'<div class="verdict-sub">'+ver.sub+'</div></div></div>';
@@ -1103,9 +1105,9 @@ function renderMain(){
       +'<div class="prog-stat" style="margin-left:auto;font-weight:500">'+r.pct+'% complete</div>'
       +'</div>'
       +vHtml
-      +tierBlock('K',kList,'Key evidence — proves extraordinary circumstances','#C0392B',kUp,'k')
-      +tierBlock('S',sList,'Secondary evidence — supports and contextualises the defence','#F59E0B',sUp,'s')
-      +tierBlock('W',wList,'Wider evidence — standard aviation reference documents','#8B5CF6',wUp,'w')
+      +tierBlock('K',kList,'Key evidence · '+kUp+' of '+kList.length+' on file','#C0392B',kUp,'k')
+      +tierBlock('S',sList,'Secondary evidence · '+sUp+' of '+sList.length+' on file','#F59E0B',sUp,'s')
+      +tierBlock('W',wList,'Wider reference · '+wUp+' of '+wList.length+' on file','#8B5CF6',wUp,'w')
       +'</div></div>';
   }
 

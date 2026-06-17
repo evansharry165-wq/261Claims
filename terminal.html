@@ -98,6 +98,12 @@ function allCasesForTerminal(){
   return out;
 }
 
+function healthLabel(h){
+  if(h>=70)return '<span style="display:inline-flex;align-items:center;gap:5px"><span style="width:8px;height:8px;border-radius:50%;background:#16A34A;flex-shrink:0"></span><span style="font-size:11px;color:#16A34A;font-weight:500">Ready</span></span>';
+  if(h>=40)return '<span style="display:inline-flex;align-items:center;gap:5px"><span style="width:8px;height:8px;border-radius:50%;background:#D97706;flex-shrink:0"></span><span style="font-size:11px;color:#D97706;font-weight:500">Review</span></span>';
+  return '<span style="display:inline-flex;align-items:center;gap:5px"><span style="width:8px;height:8px;border-radius:50%;background:#DC2626;flex-shrink:0"></span><span style="font-size:11px;color:#DC2626;font-weight:500">Issues</span></span>';
+}
+
 function renderQueue(){
   if(typeof t==='function'){
     var titleEl=document.getElementById('term-title');
@@ -114,13 +120,12 @@ function renderQueue(){
   el.innerHTML='<table><thead><tr><th>Case</th><th>Claimant</th><th>Flight</th><th>Docs</th><th>Health</th><th>CPR</th><th></th></tr></thead><tbody>'
     +queue.map(function(r){
       var urg=r.cprDaysLeft<=3?'urgent':r.cprDaysLeft<=7?'warn':'ok';
-      var sc=r.status==='ready'?'score-ready':r.status==='warnings'?'score-warn':'score-block';
       return '<tr onclick="location.href=\'case.html?ref='+encodeURIComponent(r.ref)+'&tab=terminal\'">'
         +'<td><div class="td-ref">'+escapeHtml(r.ref)+'</div></td>'
         +'<td><div class="td-name">'+escapeHtml(r.claimant)+'</div><div style="font-size:10px;color:var(--text3)">'+escapeHtml(r.solicitor||'')+'</div></td>'
         +'<td>'+escapeHtml(r.flightNum||'—')+'</td>'
         +'<td>'+r.docCount+'</td>'
-        +'<td><span class="score '+sc+'">'+r.score+'</span></td>'
+        +'<td>'+healthLabel(r.score||r.healthScore||0)+'</td>'
         +'<td><span class="dp dp-'+urg+'">'+r.cprDaysLeft+'d</span></td>'
         +'<td style="color:var(--teal);font-weight:500;font-size:11px">Open →</td></tr>';
     }).join('')

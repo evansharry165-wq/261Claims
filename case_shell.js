@@ -6,8 +6,7 @@ var CaseShell = (function () {
     { id: 'deadlines', label: 'Deadlines', icon: 'ti-calendar-due', frame: 'module3-cpr-workspace.html' },
     { id: 'evidence', label: 'Evidence', icon: 'ti-folder-open', frame: 'module4-evidence-workspace.html' },
     { id: 'documents', label: 'Documents', icon: 'ti-file-pencil', frame: 'module5-drafting-workspace.html' },
-    { id: 'terminal', label: 'Terminal', icon: 'ti-send', frame: 'module8-terminal-workspace.html' },
-    { id: 'activity', label: 'Activity', icon: 'ti-history', frame: false }
+    { id: 'terminal', label: 'Terminal', icon: 'ti-send', frame: 'module8-terminal-workspace.html' }
   ];
 
   var FRAME_MAP = {
@@ -120,12 +119,6 @@ var CaseShell = (function () {
     var J = typeof getJurisdiction === 'function' ? getJurisdiction(c.jurisdiction) : { name: '', flag: '' };
     var urg = typeof daysUrgency === 'function' ? daysUrgency(c.cprDaysLeft) : 'ok';
     var evPct = typeof getEffectiveEvidencePct === 'function' ? getEffectiveEvidencePct(c) : c.evidencePct || 0;
-    var readyDraft = evPct >= 100 || c.evidenceReady;
-    var cls = readyDraft && c.stage === 'evidence' ? 'DRAFTING' : c.classification || '';
-    var clsBg =
-      cls === 'DRAFTING' ? 'var(--purple-faint)' : cls === 'ESCALATE' ? 'var(--red-faint)' : cls === 'DEFEND' ? 'var(--green-faint)' : 'var(--surface3)';
-    var clsCol =
-      cls === 'DRAFTING' ? 'var(--purple)' : cls === 'ESCALATE' ? 'var(--red)' : cls === 'DEFEND' ? 'var(--green)' : 'var(--text3)';
     var evCol = typeof evPctColor === 'function' ? evPctColor(evPct) : '#94A3B8';
     var notifCount = typeof unreadNotificationCount === 'function' ? unreadNotificationCount(getActiveUser()) : 0;
 
@@ -150,7 +143,6 @@ var CaseShell = (function () {
       ' ' +
       escapeHtml(J.name) +
       '</span>' +
-      (cls ? '<span class="case-bar-pill" style="background:' + clsBg + ';color:' + clsCol + '">' + escapeHtml(cls) + '</span>' : '') +
       '<span class="case-bar-cpr dp-' +
       urg +
       '">CPR ' +

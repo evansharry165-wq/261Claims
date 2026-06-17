@@ -376,14 +376,14 @@ var C={
   ref:_caseRef,name:_i.claimant||'Rebecca Walsh',sol:_i.solicitor||'Clarke & Partners',flight:_i.flight||'HC 307 — MAN → AMS',flightNum:_i.flightNum||'HC 307',dep:_i.dep||'MAN',arr:_i.arr||'AMS',flightDate:_i.flightDate||'9 April 2026',value:_i.value||'€250',type:_i.type||'EC261 — ATC delay',date:_i.date||'Today',points:_i.points||[],jurisdiction:_i.jurisdiction||'england-wales',disruptionType:_i.disruptionType||'ATC Restrictions',classification:_i.classification||'',cat:_i.cat||(_caseData&&_caseData.cat)||'',triageNote:_i.triageNote||'',assignedTo:_i.assignedTo||getActiveUser()
 };
 var J=getJurisdiction(C.jurisdiction);
-var checked={jurisdiction:!!C.jurisdiction,claim:!!C.type,cpr:false,points:false};
+var checked={jurisdiction:!!C.jurisdiction,claim:!!C.type,points:false};
 var rationaleOpen=false;
 var audit=[];
 function escapeHtml(v){return String(v==null?'':v).replace(/[&<>"']/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch];});}
 function ts(){return new Date().toLocaleString('en-GB',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});}
 function log(t,type){audit.unshift({t:t,type:type||'action',time:ts()});renderAudit();}
 function updateUser(){var uid=getActiveUser(),u=USERS[uid]||USERS.SB;document.getElementById('top-av').textContent=u.initials;document.getElementById('top-user').textContent=u.name;}
-function allDone(){return checked.jurisdiction&&checked.claim&&checked.cpr&&checked.points&&!!C.classification;}
+function allDone(){return checked.jurisdiction&&checked.claim&&checked.points&&!!C.classification;}
 function toggleCheck(id){checked[id]=!checked[id];log((checked[id]?'Completed ':'Reopened ')+id.replace(/_/g,' '),'action');render();}
 function setClassification(v){C.classification=v;log('Triage classification set to '+v,'ai');render();}
 function saveTriageNote(){var el=document.getElementById('triage-note');C.triageNote=el?el.value:C.triageNote;log('Triage note saved','note');render();}
@@ -513,7 +513,7 @@ function renderMain(){
     +renderFinancialCard()
     +rationaleBlock
     +'<div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.09em;color:var(--text3);margin:16px 0 8px">Confirm before proceeding</div>'
-    +'<div class="checklist">'+checkHtml('jurisdiction','Jurisdiction and limitation checked',J.limitationNote)+checkHtml('claim','Claim type and value verified',C.type+' · '+C.value)+checkHtml('cpr','CPR response deadline confirmed',(J.keyDates&&J.keyDates[0]?J.keyDates[0].label:'Acknowledge LOC')+' · '+(J.responseWindow||21)+' days')+checkHtml('points','Points of claim reviewed',pts.length+' pleaded issue'+(pts.length!==1?'s':''))+'</div>'
+    +'<div class="checklist">'+checkHtml('jurisdiction','Jurisdiction and limitation checked',J.limitationNote)+checkHtml('claim','Claim type and value verified',C.type+' · '+C.value)+checkHtml('points','Points of claim reviewed',pts.length+' pleaded issue'+(pts.length!==1?'s':''))+'</div>'
     +triageNoteBlock
     +'<div class="advance-wrap"><button class="btn-advance" '+(allDone()?'':'disabled')+' onclick="advanceToCPR()"><i class="ti ti-arrow-right"></i> Complete triage and open CPR</button><div class="advance-hint">'+(allDone()?'Ready to continue to CPR deadlines.':'Complete all required checks and choose a classification to continue.')+'</div></div>';
 }

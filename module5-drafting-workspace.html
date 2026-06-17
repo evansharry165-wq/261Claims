@@ -1064,6 +1064,25 @@ function showDraftToast(msg){
   showDraftToast._tm=setTimeout(function(){t.classList.remove('show');},2800);
 }
 
+function docStatusPillHtml(id){
+  if(docApproved[id]){
+    return '<span style="font-size:10px;padding:1px 6px;background:#DCF5E7;color:#166534;border-radius:2px;margin-left:6px">Approved</span>';
+  }
+  var st=docStates[id]||{};
+  if(st.generated||st.status==='draft'){
+    return '<span style="font-size:10px;padding:1px 6px;background:#FEF3C7;color:#92400E;border-radius:2px;margin-left:6px">Draft</span>';
+  }
+  return '';
+}
+
+function syncDocStatusPill(btn,id){
+  btn.querySelectorAll('[data-doc-pill],.doc-status').forEach(function(el){el.remove();});
+  var pill=docStatusPillHtml(id);
+  if(pill){
+    btn.insertAdjacentHTML('beforeend',pill.replace('<span ','<span data-doc-pill="1" '));
+  }
+}
+
 function syncDocBtnStates(){
   document.querySelectorAll('.doc-btn').forEach(function(btn){
     var onclick=btn.getAttribute('onclick')||'';
@@ -1074,11 +1093,7 @@ function syncDocBtnStates(){
     btn.classList.toggle('open',!!openDocs[id]);
     btn.classList.toggle('minimized',!!minimizedDocs[id]&&!docFocused);
     btn.classList.toggle('saved-case',!!storedInRepo[id]);
-    var tagEl=btn.querySelector('.doc-status');
-    if(tagEl&&storedInRepo[id]&&docApproved[id]){
-      tagEl.className='doc-status ds-approved';
-      tagEl.textContent='In case file';
-    }
+    syncDocStatusPill(btn,id);
   });
 }
 
@@ -1150,12 +1165,10 @@ function renderLibraryHome(){
     var st=docStates[id]||{};
     var isAp=!!docApproved[id];
     var inCase=!!storedInRepo[id];
-    var statusCls=isAp?'ds-approved':(st.generated||st.status==='draft')?'ds-draft':'ds-empty';
-    var statusTxt=isAp?(inCase?'Approved · in case file':'Approved'):(st.generated||st.status==='draft')?'Draft':'Not started';
+    var statusPill=docStatusPillHtml(id);
     return '<button class="doc-card" onclick="openDoc(\''+id+'\')">'
-      +'<h4><i class="ti '+DOC_ICONS[id]+'"></i>'+(DOC_NAMES[id]||id)+'</h4>'
+      +'<h4><i class="ti '+DOC_ICONS[id]+'"></i>'+(DOC_NAMES[id]||id)+(statusPill?statusPill.replace('margin-left:6px','margin-left:8px'):'')+'</h4>'
       +'<p>'+(DOC_SECTIONS[id]||'Legal document')+'</p>'
-      +'<span class="dc-status '+statusCls+'">'+statusTxt+'</span>'
       +'</button>';
   }).join('');
   return '<div class="library-home">'
@@ -1284,14 +1297,7 @@ function requestGenerateDraft(id){
 }
 
 function showGatheringOverlay(id){
-  hideGatheringOverlay();
-  var html='<div class="gathering-overlay" id="gathering-overlay" role="dialog" aria-label="Before we draft">'
-    +buildGatheringPanelHtml(id)+'</div>';
-  document.body.insertAdjacentHTML('beforeend',html);
-  document.body.classList.add('gathering-overlay-open');
-  var overlay=document.getElementById('gathering-overlay');
-  if(overlay)overlay.scrollTop=0;
-  if(typeof notifyCaseShell==='function')notifyCaseShell('gatheringOpen',{open:true});
+  generateDoc(id);
 }
 
 function hideGatheringOverlay(){
@@ -1597,23 +1603,10 @@ function downloadDoc(id, closeAfter){
 }
 
 function updateDocBtn(id, status){
-  const statusMap={
-    draft:{cls:'ds-draft',txt:'Draft'},
-    approved:{cls:'ds-approved',txt:'Approved'},
-    ready:{cls:'ds-ready',txt:'Ready'},
-    empty:{cls:'ds-empty',txt:'Not started'}
-  };
-  const s = statusMap[status]||statusMap.empty;
-  document.querySelectorAll('.doc-btn').forEach(btn=>{
-    const nameEl=btn.querySelector('.doc-btn-name');
-    if(!nameEl)return;
-    const tagEl=btn.querySelector('.doc-status');
-    if(!tagEl)return;
-    // match by onclick
-    const onclick=btn.getAttribute('onclick')||'';
+  document.querySelectorAll('.doc-btn').forEach(function(btn){
+    var onclick=btn.getAttribute('onclick')||'';
     if(onclick.includes("'"+id+"'")){
-      tagEl.className='doc-status '+s.cls;
-      tagEl.textContent=s.txt;
+      syncDocStatusPill(btn,id);
     }
   });
 }

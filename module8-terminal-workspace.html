@@ -247,6 +247,12 @@ function closeCaseAfterSend(){
   render();
 }
 
+function terminalHealthStatus(score){
+  if(score>=70)return {dot:'#16A34A',text:'#16A34A',label:'Case ready for dispatch'};
+  if(score>=40)return {dot:'#D97706',text:'#D97706',label:'Review before sending'};
+  return {dot:'#DC2626',text:'#DC2626',label:'Issues to resolve'};
+}
+
 function render(){
   loadSendForm();
   var caseData=getCaseData();
@@ -256,7 +262,6 @@ function render(){
     if(sendForm.selectedDocs[key]===undefined)sendForm.selectedDocs[key]=true;
   });
 
-  var scoreCol=health.status==='ready'?'var(--green)':health.status==='warnings'?'var(--amber)':'var(--red)';
   var checksHtml=health.checks.map(function(ch){
     var dot=ch.status==='pass'?'check-pass':ch.status==='warn'?'check-warn':'check-fail';
     return '<div class="check-row"><div class="check-dot '+dot+'"></div><div><div class="check-label">'+escapeHtml(ch.label)+'</div>'
@@ -281,15 +286,18 @@ function render(){
       +'</div>'
     :'';
 
+  var healthStatus=terminalHealthStatus(health.score);
+  var statusHtml='<span style="display:inline-flex;align-items:center;gap:6px"><span style="width:10px;height:10px;border-radius:50%;background:'+healthStatus.dot+';flex-shrink:0"></span><span style="font-size:12px;color:'+healthStatus.text+';font-weight:500">'+healthStatus.label+'</span></span>';
+
   document.getElementById('main').innerHTML=
     sentBanner
     +'<div class="term-hero"><div class="term-hero-icon"><i class="ti ti-send"></i></div><div><h1>Terminal — finish &amp; send</h1>'
     +'<p>Final review before dispatch. Health check compares your case file, evidence, CPR status and approved documents — then send the response pack without returning to Repository.</p>'
     +'<div style="font-size:11px;color:var(--text3);margin-top:6px;font-family:var(--mono)">'+escapeHtml(C.ref)+' · '+escapeHtml(C.name)+' · '+escapeHtml(C.flight)+'</div></div>'
-    +'<div class="health-score"><div class="health-ring" style="color:'+scoreCol+'">'+health.score+'</div><div class="health-label">Health score</div></div></div>'
+    +'<div class="health-score">'+statusHtml+'</div></div>'
 
     +'<div class="summary-strip">'
-    +'<div class="sum-tile"><div class="sum-lbl">Status</div><div class="sum-val" style="color:'+scoreCol+'">'+escapeHtml(health.status)+'</div></div>'
+    +'<div class="sum-tile"><div class="sum-lbl">Status</div><div class="sum-val" style="color:'+healthStatus.text+'">'+escapeHtml(healthStatus.label)+'</div></div>'
     +'<div class="sum-tile"><div class="sum-lbl">Evidence</div><div class="sum-val">'+health.evidencePct+'%</div></div>'
     +'<div class="sum-tile"><div class="sum-lbl">Documents</div><div class="sum-val">'+health.documents.length+'</div></div>'
     +'<div class="sum-tile"><div class="sum-lbl">CPR</div><div class="sum-val">'+C.cprDaysLeft+'d</div></div></div>'
