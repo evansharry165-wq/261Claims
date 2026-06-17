@@ -467,7 +467,7 @@ function buildTerminalQueueZone(uid){
     return '<div class="task-row" data-ref="'+escapeHtml(r.ref)+'" data-tab="terminal">'
       +'<div class="task-dot '+urg+'"></div>'
       +'<div><div class="task-action">'+escapeHtml(r.claimant)+' — '+escapeHtml(typeof t==='function'?t('finishAndSend'):'Finish & send')+'</div>'
-      +'<div class="task-claimant"><span class="task-ref">'+escapeHtml(r.ref)+'</span> · '+escapeHtml(r.flightNum||'')+' · health <span style="color:'+sc+';font-family:var(--mono)">'+r.score+'</span></div></div>'
+      +'<div class="task-claimant"><span class="task-ref">'+escapeHtml(r.ref)+'</span> · '+escapeHtml(r.flightNum||'')+'</div></div>'
       +'<div class="task-meta"><span class="req-age-pill '+urg+'">CPR '+r.cprDaysLeft+'d</span></div>'
       +'</div>';
   }).join('');
