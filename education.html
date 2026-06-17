@@ -175,7 +175,6 @@ html.embed-mode .page{height:100%!important}
       <span style="font-size:9px;background:#EAF3DE;color:#3B6D11;padding:1px 5px;border-radius:8px;margin-left:4px">LIVE</span>
     </div>
     <div class="sb-item" onclick="showSection('contribute', event)"><i class="ti ti-pencil-plus"></i> Contribute update</div>
-    <div class="sb-item" onclick="showSection('repository_learning', event)"><i class="ti ti-database"></i> Repository learning</div>
   </div>
 
   <div class="main" id="main"></div>
@@ -414,24 +413,6 @@ templates: {
       +'</div>';
   }
 },
-
-repository_learning: {
-  title: 'Repository learning',
-  sub: 'How closed cases feed recommendations, evidence strategy, drafting and training',
-  content: function(){
-    return '<div class="panel"><div class="panel-hdr"><i class="ti ti-database" style="font-size:14px;color:var(--green)"></i><div><div class="panel-title">Closed case repository</div><div class="panel-sub">Outcome data becomes reusable legal and operational learning</div></div></div>'
-      +'<div class="panel-body" style="font-size:12px;color:var(--text2);line-height:1.7">'
-      +'When a case is closed, the platform stores the outcome, evidence pack, AI rationale, approved drafting, applied case law and settlement/payment data. New claims are compared against this repository to flag similar facts and recommend whether to defend, settle, pay or escalate.'
-      +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px">'
-      +'<a class="article-card" href="repository.html"><div class="ac-tag tag-proc"><i class="ti ti-database" style="font-size:11px"></i>Repository</div><div class="ac-title">Open repository module</div><div class="ac-summary">Search defended, settled, paid and withdrawn cases with similarity suggestions and evidence playbooks.</div><div class="ac-footer"><span class="ac-read">Open <i class="ti ti-arrow-right" style="font-size:10px"></i></span></div></a>'
-      + articleCard('ti-brain','tag-law','AI Learning','Similarity matching and recommendations','The engine compares disruption type, jurisdiction, solicitor, route, claim value, evidence profile and outcome to suggest the best next step for new cases.','Workflow · 6 min')
-      + articleCard('ti-folder-open','tag-proc','Evidence','Evidence playbook reuse','Successful evidence packs become source lists for future similar cases, reducing manual evidence chasing and improving consistency.','Evidence · 7 min')
-      + articleCard('ti-school','tag-reg','Training','Case law applied to facts','Repository outcomes update training material so users understand how Wallentin-Hermann, Sturgeon, van der Lans and Pešková apply in real claims.','Education · 8 min')
-      +'</div></div></div>';
-  }
-},
-
-
 
   'france-spain': {
     title: 'France & Spain — Jurisdiction guide',

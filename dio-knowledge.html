@@ -108,8 +108,8 @@ function renderForm(prefill){
     +['Weather','ATC','Technical','Denied Boarding','Cancellation','All'].map(function(d){
       return '<label><input type="checkbox" name="dist" value="'+d+'"> '+d+'</label>';
     }).join('')+'</div>'
-    +'<label class="req">Summary</label><textarea id="k-summary" placeholder="Minimum 100 characters — full detail for solicitors"></textarea>'
-    +'<label>Risk note</label><textarea id="k-risk" placeholder="How this affects current cases, what solicitors should do"></textarea>'
+    +'<label class="req">Summary</label><textarea id="k-summary" placeholder="Summary..."></textarea>'
+    +'<label>Risk note</label><textarea id="k-risk" placeholder="Application note..."></textarea>'
     +'<label><input type="checkbox" id="k-action-req" onchange="document.getElementById(\'action-wrap\').style.display=this.checked?\'block\':\'none\'"> Action required?</label>'
     +'<div id="action-wrap" style="display:none"><label>Action note</label><input id="k-action-note"></div>'
     +'<button class="btn" onclick="publishUpdate()">Publish to '+escapeHtml(profile.label)+' team</button>';
@@ -190,7 +190,6 @@ function renderIntel(){
         +'<div class="intel-summary">'+escapeHtml(e.summary)+'</div>'
         +(e.riskNote?'<div class="intel-summary" style="font-style:italic;color:var(--ink3)">Risk: '+escapeHtml(e.riskNote)+'</div>':'')
         +(e.actionRequired&&e.actionNote?'<div class="intel-action">'+escapeHtml(e.actionNote)+'</div>':'')
-        +'<button class="link-btn" onclick="prefillForm(\''+escapeHtml(e.title).replace(/'/g,"\\'")+'\')">Add to knowledge base</button>'
         +'</div>';
     }).join('');
   }).catch(function(){

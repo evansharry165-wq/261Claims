@@ -141,7 +141,7 @@ function render(){
     var liveHtml=live?'<div class="row-meta" style="margin-top:4px;color:var(--accent)"><i class="ti ti-'+(live.source==='opensky'?'antenna':'database')+'"></i> '+escapeHtml(live.summary)+'</div>':'';
     return '<div class="row"><div class="row-main"><div class="row-title">'+escapeHtml(e.flight)+' · '+escapeHtml(e.route)+'</div>'
       +'<div class="row-meta">'+escapeHtml(when)+' · Delay '+e.delay+'min · '+escapeHtml(e.type)+'</div>'
-      +'<div class="row-meta" style="margin-top:4px">Evidence: '+escapeHtml((e.evidence||[]).join(' · '))+'</div>'+liveHtml+'</div>'
+      +liveHtml+'</div>'
       +'<div class="row-side"><span class="badge '+riskCls+'">'+escapeHtml(e.risk)+'</span><br>'
       +(e.archived?'<span class="btn btn-done" style="margin-top:6px"><i class="ti ti-check"></i> Archived ✓</span>'
         :'<button class="btn btn-amber" style="margin-top:6px" onclick="archiveEvent(\''+e.id+'\')"><i class="ti ti-archive"></i> Archive now</button>')
@@ -150,17 +150,13 @@ function render(){
 
   document.getElementById('app').innerHTML=
     '<h1 class="page-title">'+escapeHtml(profile.label)+' Today — '+escapeHtml(profile.user.full)+'</h1>'
-    +'<p class="page-sub">Documentary Intelligence — evidence archive, requests, disruption monitoring &amp; knowledge</p>'
 
-    +'<div class="section"><div class="section-rule"><div class="section-title"><i class="ti ti-inbox"></i> Evidence requests</div>'
-    +(requests.length?'<a class="section-link" href="requests.html">View all</a>':'')+'</div><div class="panel">'+reqHtml+'</div></div>'
+    +'<div class="section"><div class="section-rule"><div class="section-title"><i class="ti ti-inbox"></i> Requests</div></div><div class="panel">'+reqHtml+'</div></div>'
 
-    +'<div class="section"><div class="section-rule"><div class="section-title"><i class="ti ti-file-search"></i> Evidence gaps (no request yet)</div>'
-    +'<a class="section-link" href="cases.html">All cases</a></div><div class="panel">'+gapHtml+'</div></div>'
+    +'<div class="section"><div class="section-rule"><div class="section-title"><i class="ti ti-file-search"></i> Evidence gaps</div></div><div class="panel">'+gapHtml+'</div></div>'
 
-    +'<div class="section"><div class="section-rule"><div class="section-title"><i class="ti ti-radar"></i> Disruption event digest — last 48h</div>'
+    +'<div class="section"><div class="section-rule"><div class="section-title"><i class="ti ti-radar"></i> Events — last 48h</div>'
     +'<button type="button" class="btn" id="live-flight-btn" style="margin-left:auto;font-size:11px" onclick="refreshLiveFlights()"><i class="ti ti-radar"></i> Refresh live status</button></div>'
-    +'<div class="note"><i class="ti ti-clock-exclamation"></i> Evidence data has a limited retention window. Archive within 48h of disruption to preserve extraordinary circumstances defence capability.</div>'
     +'<div class="panel">'+evtHtml+'</div></div>'
 
     +'<div class="section"><div class="section-rule"><div class="section-title"><i class="ti ti-gavel"></i> Legal intelligence — '+escapeHtml(profile.label)+'</div>'

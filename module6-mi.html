@@ -1024,7 +1024,15 @@ function exportReport(){
   a.click();
 }
 
-render();
+if(typeof render==='function'){
+  renderTabs();
+  renderActiveTab();
+  if(typeof buildMIData==='function') buildMIData();
+  if(typeof renderOverview==='function' && typeof DATA !== 'undefined'){
+    renderOverview(DATA.stats);
+  }
+  if(typeof renderGlobalNav==='function')renderGlobalNav();
+}
 </script>
 <script>
 /* ── Nav + user switcher ── */
@@ -1102,7 +1110,14 @@ function switchUser(id){
     if(el){el.classList.toggle('current',uid===id);}
   });
   if(typeof renderGlobalNav==='function')renderGlobalNav();
-  if(typeof render==='function'){renderTabs();renderActiveTab();}
+  if(typeof render==='function'){
+    renderTabs();
+    renderActiveTab();
+    if(typeof buildMIData==='function') buildMIData();
+    if(typeof renderOverview==='function' && typeof DATA !== 'undefined'){
+      renderOverview(DATA.stats);
+    }
+  }
   if(typeof _render==='function')_render();
 }
 (function initNav(){

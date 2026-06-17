@@ -277,7 +277,6 @@ function render(){
     return '<div class="ev-item"><div class="ev-head"><span class="dot '+(s==='red'?'dot-red':'dot-amber')+'"></span>'
       +'<div class="ev-claim">'+escapeHtml(p.claim)+'</div></div>'
       +'<div class="ev-doc">'+escapeHtml(p.evidenceDoc||'')+'</div>'
-      +'<div class="ev-hint">Obtain from: '+escapeHtml(DIO.sourceHint(p.evidenceDoc))+'</div>'
       +reqNote
       +'<button class="btn btn-upload" onclick="triggerUpload('+p.n+',\''+escapeHtml(reqId)+'\',\''+escapeHtml(p.claim).replace(/'/g,"\\'")+'\')"><i class="ti ti-upload"></i> Upload for: '+escapeHtml((p.evidenceDoc||p.claim).slice(0,40))+'</button>'
       +confirm+'</div>';
@@ -308,19 +307,17 @@ function render(){
     +'<span>CPR deadline: <strong>'+(CASE_DATA.cprDaysLeft||'—')+' days</strong></span>'
     +'</div></div>'
 
-    +'<div class="section-rule"><div class="section-title">What is needed</div></div>'
     +'<div class="grid">'
     +'<div class="panel"><div class="panel-hdr">Evidence required</div>'+reqHtml+'</div>'
     +'<div class="panel"><div class="panel-hdr">Already on file</div>'+fileHtml+'</div>'
     +'</div>'
 
-    +'<div class="section-rule"><div class="section-title">Upload to case</div></div>'
     +'<div class="panel" style="padding:14px">'
     +'<div class="dropzone" id="dropzone"><i class="ti ti-cloud-upload" style="font-size:28px;color:var(--accent)"></i>'
     +'<p>Drop evidence file here or click to browse</p>'
     +'<p id="bulk-filename" style="color:var(--confirm);font-weight:500">'+(bulkName?escapeHtml(bulkName):'')+'</p></div>'
-    +'<div class="form-row"><div><label>Case reference</label><input id="case-ref-field" value="'+escapeHtml(CASE_REF)+'" readonly></div>'
-    +'<div><label>Document type</label><select id="doc-type">'
+    +'<div class="form-row"><div><input id="case-ref-field" value="'+escapeHtml(CASE_REF)+'" readonly></div>'
+    +'<div><select id="doc-type">'
     +'<option>METAR</option><option>ATFM data</option><option>ADS-B track</option><option>TOPS record</option>'
     +'<option>NOTAM</option><option>Crew roster</option><option>Other</option></select></div></div>'
     +'<div style="margin-bottom:12px"><label>Notes</label><textarea id="file-notes" placeholder="Optional context for this filing"></textarea></div>'
