@@ -147,6 +147,21 @@ input[type=file].filing-file-input{display:none}
 .stage-evidence{background:var(--blue-faint);color:var(--blue-text)}
 .stage-drafting{background:var(--green-faint);color:var(--green)}
 
+.tree-item{display:flex;align-items:center;gap:8px;padding:6px 14px;font-size:12px;cursor:pointer;border-left:3px solid transparent;color:var(--text2)}
+.tree-group{margin-bottom:2px}
+.tree-year{display:flex;align-items:center;gap:4px;padding:7px 14px;font-size:12px;cursor:pointer;color:var(--text);font-weight:600;background:var(--surface2);border-bottom:1px solid var(--border)}
+.tree-year:hover{background:var(--surface3)}
+.tree-month{margin-left:0}
+.tree-month-hdr{display:flex;align-items:center;gap:4px;padding:6px 14px 6px 22px;font-size:11px;font-weight:600;cursor:pointer;color:var(--text2);text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--border2)}
+.tree-month-hdr:hover{background:var(--surface2)}
+.tree-date{margin-left:0}
+.tree-date-hdr{display:flex;align-items:center;gap:4px;padding:5px 14px 5px 32px;font-size:11px;cursor:pointer;color:var(--text2);border-bottom:1px solid var(--border2)}
+.tree-date-hdr:hover{background:var(--surface2)}
+.tree-case{padding:6px 14px 6px 44px;cursor:pointer;border-bottom:1px solid var(--border2);border-left:3px solid transparent}
+.tree-case:hover{background:var(--surface2)}
+.tree-case.active{background:var(--accent-faint);border-left-color:var(--accent)}
+.tree-case-ref{display:flex;align-items:center;margin-bottom:2px}
+.tree-case-name{font-size:10px;color:var(--text3);padding-left:15px}
 </style>
 </head>
 <body>
