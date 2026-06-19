@@ -407,6 +407,7 @@ var activeArea='evidence', activeOutcome='all', query='', selectedRef='', eviden
 var caseFilingTab='live', caseFilingRef='', caseFilingFolder='all', caseFilingDocId='', caseFilingSearch='', caseFilingEditing=false, caseDocFullView=false, caseDocFocusView=false;
 var filingView='browse';
 var filingPath={categoryId:null,year:null,month:null,date:null};
+var treeOpenYears={}, treeOpenMonths={}, treeOpenDates={};
 var filingSearch='';
 var CLOSED_CASES=[
   {ref:'REP-2025-0142',claimant:'Nadia Collins',solicitor:'Clarke & Partners',flightNum:'HC 203',route:'LGW to ALC',disruptionType:'Weather',jurisdiction:'england-wales',outcome:'defended',value:'EUR 250',saving:'EUR 250',days:18,confidence:94,summary:'Defended after METAR, SIGMET and ATFM records showed unsafe convective weather at Alicante. Letter of response reused weather evidence bundle.',evidence:['Operational delay records system report','METAR/TAF','SIGMET','NOTAM','Eurocontrol ATFM'],caseLaw:['Wallentin-Hermann','Sturgeon'],education:'Weather evidence pack - complete guide',recommendation:'For similar weather claims, pull METAR/SIGMET first and challenge compensation under Art 5(3).'},
@@ -523,16 +524,109 @@ function saveCaseDocEdit(){
   caseFilingEditing=false;
   render();
 }
+function parseFlightDateToSort(dateStr){
+  // Parse '14 March 2026' → {year:'2026', month:'March', monthNum:3, day:14, sortKey:'2026-03-14'}
+  if(!dateStr)return null;
+  var months={'january':1,'february':2,'march':3,'april':4,'may':5,'june':6,
+    'july':7,'august':8,'september':9,'october':10,'november':11,'december':12,
+    'enero':1,'febrero':2,'marzo':3,'abril':4,'mayo':5,'junio':6,
+    'julio':7,'agosto':8,'septiembre':9,'octubre':10,'noviembre':11,'diciembre':12,
+    'janvier':1,'février':2,'mars':3,'avril':4,'mai':5,'juin':6,
+    'juillet':7,'août':8,'septembre':9,'octobre':10,'novembre':11,'décembre':12};
+  var parts=dateStr.trim().split(/\s+/);
+  if(parts.length<3)return null;
+  var day=parseInt(parts[0],10);
+  var monthName=parts[1].toLowerCase().replace(/[.,]/g,'');
+  var year=parts[2];
+  var monthNum=months[monthName]||0;
+  if(!monthNum)return null;
+  var MONTH_NAMES=['','January','February','March','April','May','June',
+    'July','August','September','October','November','December'];
+  return {
+    year:year,
+    month:MONTH_NAMES[monthNum]||parts[1],
+    monthNum:monthNum,
+    day:day,
+    displayDate:day+' '+MONTH_NAMES[monthNum]+' '+year,
+    sortKey:year+'-'+String(monthNum).padStart(2,'0')+'-'+String(day).padStart(2,'0')
+  };
+}
+
+function toggleTreeYear(y){treeOpenYears[y]=!treeOpenYears[y];render();}
+function toggleTreeMonth(k){treeOpenMonths[k]=!treeOpenMonths[k];render();}
+function toggleTreeDate(k){treeOpenDates[k]=!treeOpenDates[k];render();}
+
 function renderCaseFileTree(){
   var cases=CaseFiling.listCases({query:caseFilingSearch});
-  if(!caseFilingRef&&cases.length)caseFilingRef=cases[0].ref;
-  return cases.map(function(c){
-    var docCount=(c.documents||[]).length;
-    var active=caseFilingRef===c.ref?' active':'';
-    return '<div class="tree-item'+active+'" onclick="setCaseFilingRef(&quot;'+escapeHtml(c.ref)+'&quot;)"><i class="ti ti-briefcase"></i><span>'+escapeHtml(c.ref)+'</span><span class="tree-count">'+docCount+'</span></div>'
-      +'<div class="tree-nested"'+(caseFilingRef===c.ref?'':' style="display:none"')+'>'
-      +'<div style="font-size:10px;color:var(--text3);padding:4px 14px 6px 28px">'+escapeHtml(c.claimant)+' · '+escapeHtml(c.flightNum)+'</div></div>';
-  }).join('')||'<div class="empty-note">No live case files yet. Upload a LOC in Intake to create one.</div>';
+  if(!cases.length)return '<div class="empty-note">No live case files yet. Upload a LOC in Intake to create one.</div>';
+
+  // Auto-select first case if none selected
+  if(!caseFilingRef){ caseFilingRef=cases[0].ref; }
+
+  // Build hierarchy: year → month → date → cases
+  var tree={};
+  var unparsed=[];
+  cases.forEach(function(c){
+    var parsed=parseFlightDateToSort(c.flightDate);
+    if(!parsed){ unparsed.push(c); return; }
+    var y=parsed.year;
+    var mk=y+'-'+String(parsed.monthNum).padStart(2,'0');
+    var dk=parsed.sortKey;
+    if(!tree[y])tree[y]={months:{}};
+    if(!tree[y].months[mk])tree[y].months[mk]={label:parsed.month+' '+y,dates:{}};
+    if(!tree[y].months[mk].dates[dk])tree[y].months[mk].dates[dk]={label:parsed.displayDate,cases:[]};
+    tree[y].months[mk].dates[dk].cases.push(c);
+  });
+
+  var html='';
+
+  // Render hierarchy
+  var years=Object.keys(tree).sort().reverse();
+  years.forEach(function(y){
+    var yOpen=treeOpenYears[y]!==false; // default open
+    html+='<div class="tree-year" onclick="toggleTreeYear(&quot;'+y+'&quot;)" style="display:flex;align-items:center;gap:6px;padding:6px 12px;font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.06em;cursor:pointer;user-select:none;border-top:1px solid var(--border)"><i class="ti '+(yOpen?'ti-chevron-down':'ti-chevron-right')+'"></i>'+y+'</div>';
+    if(!yOpen)return;
+
+    var months=Object.keys(tree[y].months).sort().reverse();
+    months.forEach(function(mk){
+      var mNode=tree[y].months[mk];
+      var mOpen=treeOpenMonths[mk]!==false; // default open
+      html+='<div class="tree-month-hdr" onclick="toggleTreeMonth(&quot;'+mk+'&quot;)" style="display:flex;align-items:center;gap:6px;padding:5px 12px 5px 20px;font-size:11px;font-weight:500;color:var(--text3);cursor:pointer;user-select:none"><i class="ti '+(mOpen?'ti-chevron-down':'ti-chevron-right')+'"></i>'+escapeHtml(mNode.label)+'</div>';
+      if(!mOpen)return;
+
+      var dates=Object.keys(mNode.dates).sort().reverse();
+      dates.forEach(function(dk){
+        var dNode=mNode.dates[dk];
+        var dOpen=treeOpenDates[dk]!==false; // default open
+        html+='<div class="tree-date-hdr" onclick="toggleTreeDate(&quot;'+dk+'&quot;)" style="display:flex;align-items:center;gap:6px;padding:4px 12px 4px 28px;font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;cursor:pointer;user-select:none"><i class="ti '+(dOpen?'ti-chevron-down':'ti-chevron-right')+'"></i>'+escapeHtml(dNode.label)+'</div>';
+        if(!dOpen)return;
+
+        dNode.cases.forEach(function(c){
+          var docCount=(c.documents||[]).length;
+          var active=caseFilingRef===c.ref;
+          html+='<div class="tree-item tree-case'+(active?' active':'')+'" onclick="setCaseFilingRef(&quot;'+escapeHtml(c.ref)+'&quot;)" style="padding:5px 12px 5px 36px" title="'+escapeHtml(c.ref)+'">'
+            +'<i class="ti ti-briefcase" style="flex-shrink:0"></i>'
+            +'<span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'
+              +escapeHtml(c.claimant)
+              +'<span style="font-size:9px;color:var(--text3);margin-left:5px;font-family:var(--mono)">'+escapeHtml(c.flightNum||c.ref)+'</span>'
+            +'</span>'
+            +(docCount?'<span class="tree-count">'+docCount+'</span>':'')
+            +'</div>';
+        });
+      });
+    });
+  });
+
+  // Unparsed cases at the bottom
+  if(unparsed.length){
+    html+='<div style="padding:6px 12px;font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;border-top:1px solid var(--border)">No date</div>';
+    unparsed.forEach(function(c){
+      var active=caseFilingRef===c.ref;
+      html+='<div class="tree-item'+(active?' active':'')+'" onclick="setCaseFilingRef(&quot;'+escapeHtml(c.ref)+'&quot;)"><i class="ti ti-briefcase"></i><span>'+escapeHtml(c.ref)+'</span></div>';
+    });
+  }
+
+  return html;
 }
 function renderCaseFolderNav(){
   if(!caseFilingRef)return '';
