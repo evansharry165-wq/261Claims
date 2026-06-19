@@ -691,15 +691,46 @@ function copyGapFillEmail(){
 function createCaseFromEmail(){
   var hartleyRef='DEF-2026-EW-0089';
   var existing=typeof getCase==='function'?getCase(hartleyRef):null;
+
+  // File the LOC document into the case repository
+  try{
+    var repoKey='dfa_repo_'+hartleyRef;
+    var repoFiles=JSON.parse(sessionStorage.getItem(repoKey)||'[]');
+    var locAlreadyFiled=repoFiles.some(function(f){return f.name==='HC1184_Hartley_LetterOfClaim_22May2026.pdf';});
+    if(!locAlreadyFiled){
+      repoFiles.unshift({
+        name:'HC1184_Hartley_LetterOfClaim_22May2026.pdf',
+        url:'templates/HC1184_Hartley_LetterOfClaim_22May2026.pdf',
+        type:'Letter of Claim',
+        source:'Pemberton & Associates',
+        filedAt:'22 May 2026',
+        filedBy:'Email connector',
+        caseRef:hartleyRef
+      });
+      sessionStorage.setItem(repoKey,JSON.stringify(repoFiles));
+    }
+    // Also record in the case evidence state as LOC on file
+    var evKey='dfa_evidence_'+hartleyRef;
+    var evState=JSON.parse(sessionStorage.getItem(evKey)||'{}');
+    if(!evState.locFiled){
+      evState.locFiled=true;
+      evState.locDoc={
+        name:'HC1184_Hartley_LetterOfClaim_22May2026.pdf',
+        url:'templates/HC1184_Hartley_LetterOfClaim_22May2026.pdf'
+      };
+      sessionStorage.setItem(evKey,JSON.stringify(evState));
+    }
+  }catch(e){}
+
   if(existing){
     selectedRef=hartleyRef;
     try{sessionStorage.setItem('dfa_case',JSON.stringify(existing));}catch(e){}
     intakeTab='new';
-    showToast('Case '+hartleyRef+' already exists — opened in intake queue.');
+    showToast('LOC filed — case DEF-2026-EW-0089 opened.');
     render();
     return;
   }
-  showToast('Case created from email — '+hartleyRef+' (Daniel Hartley).');
+  showToast('Case created from LOC — DEF-2026-EW-0089 (Daniel Hartley). Document filed.');
   intakeTab='new';
   render();
 }
@@ -718,6 +749,7 @@ function renderEmailParseResult(){
     parsedFieldRow('ok','Route','LTN → BCN (diverted VLC)'),
     parsedFieldRow('ok','Claim type','EC261 / UK261 — Diversion'),
     parsedFieldRow('ok','Disruption','Weather — diversion to Valencia'),
+    parsedFieldRow('ok','Attachment','<a href="templates/HC1184_Hartley_LetterOfClaim_22May2026.pdf" target="_blank" style="color:var(--blue-text);text-decoration:none"><i class="ti ti-paperclip" style="font-size:10px"></i> HC1184_Hartley_LetterOfClaim_22May2026.pdf</a>'),
     parsedFieldRow('ok','Compensation','£39,000 EC261'),
     parsedFieldRow('warn','Consequential loss','£38,250 (Montreal Convention — flag for senior review)'),
     parsedFieldRow('warn','Recommended triage','ESCALATE — high exposure'),
@@ -748,7 +780,7 @@ function renderEmailParseResult(){
 function renderEmailConnector(){
   var inboxHtml='<div class="ec-inbox-card"><div class="ec-inbox-header"><div><div style="font-size:12px;font-weight:500;color:var(--text)"><i class="ti ti-mail" style="color:var(--blue-text);margin-right:4px"></i>Legal inbox — legal@[airline].com</div><div style="font-size:10px;color:var(--text3);margin-top:2px">Outlook connector · Microsoft Graph API (demo simulation)</div></div><span class="ec-connected">Connected</span></div>'
     +'<div style="padding:12px 14px">'
-    +'<div class="ec-email unread"><div class="ec-from">clerk@pemberton-associates.co.uk</div><div class="ec-subject">Letter of Claim — Hartley, Daniel — Flight HC1184 13 March 2026</div><div class="ec-preview">"Dear Legal Department, We write on behalf of our client Mr Daniel Hartley..."</div><div class="ec-meta"><span class="ec-time">Today 09:14</span><button class="ec-parse-btn" onclick="parseEmailConnector(\'hartley\')">Parse &amp; create case →</button></div></div>'
+    +'<div class="ec-email unread"><div class="ec-from">clerk@pemberton-associates.co.uk</div><div class="ec-subject">Letter of Claim — Hartley, Daniel — Flight HC1184 13 March 2026</div><div class="ec-preview">"Dear Legal Department, We write on behalf of our client Mr Daniel Hartley..."</div><div class="ec-meta"><span class="ec-time">Today 09:14</span><span style="font-size:10px;color:var(--text3);margin-right:8px"><i class="ti ti-paperclip" style="font-size:10px"></i> ' + LOC_FILENAME + '</span><button class="ec-parse-btn" onclick="parseEmailConnector(\'hartley\')">Parse &amp; create case →</button></div></div>'
     +'<div class="ec-email unread"><div class="ec-from">claims@airhelp.com</div><div class="ec-subject">RE: EC261 Compensation Claim — Walsh, Rebecca — EZY2847</div><div class="ec-preview">"Please find attached our Letter of Claim in respect of..."</div><div class="ec-meta"><span class="ec-time">Yesterday 16:30</span><button class="ec-parse-btn" onclick="showToast(\'Parsing demo available for Hartley email only.\')">Parse &amp; create case →</button></div></div>'
     +'<div class="ec-email read"><div class="ec-from">info@bottandco.com</div><div class="ec-subject">Letter of Claim — Morrison, Thomas — Flight HC442</div><div class="ec-preview">"We act on behalf of Thomas Morrison in connection with..."</div><div class="ec-meta"><span class="ec-time">10 Jun 2026</span><span class="ec-status"><i class="ti ti-circle-check"></i> Case created — DEF-2026-EW-0094</span></div></div>'
     +'</div></div>';
