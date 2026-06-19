@@ -176,8 +176,28 @@ function handlePointUpload(e){
       aliasRef:CASE_DATA&&CASE_DATA.ref
     });
   }
+  // Close the loop — mark request as received in case workspace
+  try{
+    var caseKey='dfa_evidence_'+CASE_REF;
+    var wsSt=JSON.parse(sessionStorage.getItem(caseKey)||'{}');
+    if(!wsSt.evidenceRequests)wsSt.evidenceRequests={};
+    Object.keys(wsSt.evidenceRequests).forEach(function(reqId){
+      if(wsSt.evidenceRequests[reqId].status==='pending'){
+        wsSt.evidenceRequests[reqId].status='received';
+        wsSt.evidenceRequests[reqId].receivedAt=new Date().toISOString();
+        wsSt.evidenceRequests[reqId].receivedBy='E. Hughes';
+      }
+    });
+    if(!wsSt.pullState)wsSt.pullState={};
+    if(!wsSt.uploads)wsSt.uploads={};
+    wsSt.pullState['montreal_conv']='done';
+    wsSt.uploads['montreal_conv']=f.name;
+    if(!wsSt.pointOverrides)wsSt.pointOverrides={};
+    if(pendingPointId)wsSt.pointOverrides[String(pendingPointId.pointN)]='green';
+    sessionStorage.setItem(caseKey,JSON.stringify(wsSt));
+  }catch(e){}
   pendingPointId=null;
-  showToast('✓ '+f.name+' filed — item marked received');
+  showToast('Filed — solicitor notified. Evidence pack updated.');
   render();
 }
 

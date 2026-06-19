@@ -698,6 +698,13 @@ function loadWorkspaceState(){
     if(st.requestSent)requestSent=st.requestSent;
     if(st.audit&&st.audit.length)audit=st.audit;
     if(st.evidenceRequests)evidenceRequests=st.evidenceRequests;
+    // Auto-promote received DIO items to on-file
+    Object.keys(evidenceRequests).forEach(function(id){
+      var req=evidenceRequests[id];
+      if(req&&req.status==='received'&&!uploads[id]){
+        pullState[id]='done';
+      }
+    });
   }catch(e){}
 }
 function syncEvidenceToCase(){
@@ -1002,10 +1009,6 @@ function renderMain(){
                  :item.tier==='S'?'<span class="ev-tag tag-sec">Secondary</span>'
                  :'<span class="ev-tag tag-wide">Wider</span>';
       var upTag=isUp?'<span class="ev-tag tag-up"><i class="ti ti-check" style="font-size:9px"></i> On file</span>':'';
-      var srcHtml=item.link?('<a href="'+item.link+'" target="_blank" rel="noopener">'+item.src+' ↗</a>'):item.src;
-      var apiPill=item.auto?'<span class="ev-api-pill"><i class="ti ti-plug" style="font-size:9px"></i>API ready</span>':'';
-      var conf=evidenceConfidence(id);
-      var confPill='<span class="ev-api-pill" style="background:'+conf.bg+';color:'+conf.col+'"><i class="ti ti-brain" style="font-size:9px"></i>'+conf.label+'</span>';
       var reqPill='';
       if(req&&!isUp){
         if(isReceived)reqPill='<span class="ev-status-pill received"><i class="ti ti-inbox" style="font-size:9px"></i> Received</span>';
@@ -1033,42 +1036,37 @@ function renderMain(){
           +'<button class="btn-ev btn-ev-ghost" onclick="triggerUpload(\''+id+'\',\''+item.name.replace(/'/g,"\\'")+'\')"><i class="ti ti-upload"></i> Upload</button>'
           +'</div>';
       }
-      var fileRow=uploads[id]?'<div class="ev-file">'+uploads[id]+'</div>':'';
-      var reqRow='';
-      if(req&&!isUp){
-        var statusText=isReceived?'Ready to upload and file'
-          :isOverdue?'No response from '+req.recipient+' — chase recommended'
-          :'With '+req.recipient+' since '+req.requestedAt;
-        reqRow='<div class="ev-req-note'+(isOverdue?' overdue':'')+'"><i class="ti ti-'+(isOverdue?'alert-circle':'arrow-right')+'"></i><span>'+statusText+'</span></div>';
+      var whyText=item.why||item.desc||'';
+      var flashTags='';
+      if(!isUp){
+        if(item.link){
+          flashTags+='<a href="'+item.link+'" target="_blank" rel="noopener" class="ev-flash-tag">'+escapeHtml(item.src)+' ↗</a>';
+        }
+        if(id==='montreal_conv'||id==='consequential_loss'){
+          flashTags+=getCaseLawMatches(C.jurisdiction,primaryType).map(function(m){
+            return '<a href="'+m.anchor+'" target="_blank" class="ev-flash-tag">'+escapeHtml(m.title)+' ↗</a>';
+          }).join('');
+        }
       }
-      var repoMatch=getRepositoryMatch(id);
-      var repoRow=(!isUp&&repoMatch)?'<div class="ev-api-note" style="color:var(--green)"><i class="ti ti-database" style="font-size:9px"></i> In repository: '+repoMatch.filename+'</div>':'';
-      var apiRow=(item.auto&&!isUp&&!repoMatch)?'<div class="ev-api-note">'+item.api+'</div>':'';
-      var compRow='';
-      if(item.components&&item.components.length){
-        compRow='<div style="padding:4px 0 0;font-size:10px;color:var(--text3);line-height:1.6">'+item.components.map(function(c){return '<span style="display:inline-block;border:1px solid var(--rule);border-radius:2px;padding:2px 7px;margin:2px 4px 2px 0">'+c+'</span>';}).join('')+'</div>';
-      }
-      var flashTags=getCaseLawMatches(C.jurisdiction,primaryType).map(function(match){
-        return '<a href="'+match.anchor+'" target="_blank" class="ev-flash-tag">See: '+escapeHtml(match.title)+' ↗</a>';
-      }).join('');
-      if(id==='montreal_conv'){
-        flashTags+='<a href="education.html#case-law" target="_blank" class="ev-flash-tag">See: Montreal Convention — challenge causation ↗</a>';
-      }else if(!flashTags&&item.tier==='K'){
-        flashTags=getCaseLawMatches(C.jurisdiction,primaryType).slice(0,1).map(function(match){
-          return '<a href="'+match.anchor+'" target="_blank" class="ev-flash-tag">See: '+escapeHtml(match.title)+' ↗</a>';
-        }).join('');
-      }
-      var flashRow=flashTags?'<div class="ev-flash-tags">'+flashTags+'</div>':'';
-      var rowCls='ev-item'+(isUp?' ev-uploaded':(item.auto?' ev-api':''))+(isRequested&&!isUp?' ev-requested'+(isOverdue?' ev-overdue':''):'');
-      return '<tr class="'+rowCls+'">'
-        +'<td class="ev-dot-col"><div class="ev-dot '+dotCls+'"></div></td>'
-        +'<td><div class="ev-name">'+item.name+tierTag+upTag+reqPill+'</div>'
-        +'<div class="ev-why">'+item.why+'</div>'
-        +flashRow
-        +'<div class="ev-meta"><div class="ev-source"><i class="ti ti-database" style="font-size:10px"></i>'+srcHtml+'</div>'+apiPill+confPill+'</div>'
-        +fileRow+reqRow+repoRow+apiRow+compRow
+      return '<tr class="ev-item'+(isUp?' ev-done':'')+(item.tier?(' ev-tier-'+item.tier.toLowerCase()):'')+'" id="ev-'+id+'">'
+        +'<td style="width:20px;padding:10px 12px 10px 0;vertical-align:top">'
+          +'<span class="ev-dot '+dotCls+'"></span>'
         +'</td>'
-        +'<td class="ev-actions-col">'+actionBtn+'</td>'
+        +'<td class="ev-info">'
+          +'<div class="ev-name">'
+            +escapeHtml(item.name)
+            +tierTag
+            +upTag
+            +reqPill
+          +'</div>'
+          +'<div class="ev-why" style="font-size:11px;color:var(--text3);line-height:1.4;margin-bottom:'+(flashTags&&!isUp?'4px':'0')+'">'
+            +whyText.slice(0,90)+(whyText.length>90?'…':'')
+          +'</div>'
+          +(flashTags&&!isUp?'<div style="margin-top:2px">'+flashTags+'</div>':'')
+        +'</td>'
+        +'<td class="ev-actions" style="padding:10px 0 10px 12px;vertical-align:top;white-space:nowrap">'
+          +actionBtn
+        +'</td>'
         +'</tr>';
     }
 
@@ -1111,7 +1109,7 @@ function renderMain(){
       +'</div></div>';
   }
 
-  var moveReady=pack.gold>=100;
+  var moveReady=r.pct===100;
   var stageAdvance='<div class="stage-advance" style="margin-top:14px;padding:12px 16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r3);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">'
     +'<div style="font-size:12px;color:var(--text2)">'+(moveReady?'Gold evidence pack complete — ready for drafting.':'Complete key evidence items to unlock drafting. Gold pack: '+pack.gold+'%.')+'</div>'
     +(moveReady
@@ -1203,38 +1201,57 @@ function requestEvidenceCompletion(){
 function triggerUpload(id,name){pendingUpload={id:id,name:name};document.getElementById('file-input').click();}
 
 function requestAllOutstanding(){
-  var list=getList('K');
-  var secondary=getList('S');
-  var allItems=list.concat(secondary);
+  // Simulate pulling all evidence except Montreal Convention
+  // third-party contracts — which requires DIO involvement
+  var AUTO_RESOLVE=[
+    'tops','disco','aims','safetynet',
+    'eurocontrol','ogimet','met_office','notam',
+    'connected','network_out','lido','hermes','max_ops','dpm','internal_email',
+    'flightradar','flightstats','ops_review','airport_web',
+    'case_studies','weather_briefs','eurocontrol_w','caa_docs','ac_ops','airport_info',
+    'overnight_docs','crew_docs'
+  ];
+
   var count=0;
-  allItems.forEach(function(id){
-    if(!uploads[id]&&!evidenceRequests[id]&&LIB[id]&&!LIB[id].auto){
-      evidenceRequests[id]={
-        id:id,
-        name:LIB[id].name,
-        recipient:'Ops team',
-        recipientEmail:'',
-        requestedBy:C.user||'Solicitor',
-        requestedAt:(function(){
-          var d=new Date();
-          var months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-          return d.getDate()+' '+months[d.getMonth()]+' '+d.getFullYear()+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
-        })(),
-        requestedAtMs:Date.now(),
-        slaDays:5,
-        status:'pending',
-        note:'Batch request — '+C.ref,
-        caseRef:C.ref,
-        cprDaysLeft:C.cprDaysLeft||21
-      };
+  AUTO_RESOLVE.forEach(function(id){
+    if(LIB[id]&&!uploads[id]&&pullState[id]!=='done'){
+      pullState[id]='done';
       count++;
     }
   });
-  if(count===0){
-    alert('No outstanding items to request — all evidence either on file or already requested.');
-    return;
+
+  // Montreal Convention item stays outstanding — raise DIO request
+  var montrealId='montreal_conv';
+  if(LIB[montrealId]&&!uploads[montrealId]){
+    evidenceRequests[montrealId]={
+      id:montrealId,
+      name:LIB[montrealId]?LIB[montrealId].name:'Third-party contract documentation',
+      recipient:'DIO — Emma Hughes',
+      recipientEmail:'e.hughes@airline.com',
+      requestedBy:C.user||'S. Booth',
+      requestedAt:(function(){
+        var d=new Date();
+        return d.getDate()+' '
+          +['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][d.getMonth()]
+          +' '+d.getFullYear()+' '
+          +String(d.getHours()).padStart(2,'0')+':'
+          +String(d.getMinutes()).padStart(2,'0');
+      })(),
+      requestedAtMs:Date.now(),
+      slaDays:3,
+      status:'pending',
+      note:'Montreal Convention consequential loss — £38,250 claimed. Require third-party contract documentation to challenge causation and foreseeability. Priority: ESCALATE.',
+      caseRef:C.ref,
+      cprDaysLeft:C.cprDaysLeft||3
+    };
   }
-  log('Batch evidence request raised — '+count+' item'+(count===1?'':'s')+' requested from Ops team','request');
+
+  if(count>0){
+    log('Evidence pull complete — '+count+' items retrieved. '
+      +'1 item outstanding: Montreal Convention documentation '
+      +'requested from DIO.','pull');
+  }
+
   saveWorkspaceState();
   render();
 }
@@ -1338,6 +1355,8 @@ try{
   if(C.date) D.flightDate = C.date;
 }catch(e){}
 if(_i.disruptionType||C.disruptionType) primaryType=_i.disruptionType||C.disruptionType;
+if(_i.secondaryType) secondaryType=_i.secondaryType;
+else if(C.ref==='DEF-2026-EW-0089') secondaryType='Crew Hours / Overnight Delay';
 try{
   var urlParams=new URLSearchParams(window.location.search);
   activeRequestId=urlParams.get('request')||sessionStorage.getItem('dfa_active_request')||null;
@@ -1345,31 +1364,6 @@ try{
 }catch(e){}
 loadWorkspaceState();
 applyDIOEvidenceSync();
-// Seed demo requests for Hartley if none exist
-if(C.ref==='DEF-2026-EW-0089'&&Object.keys(evidenceRequests).length===0){
-  var baseMs=Date.now()-(8*86400000);
-  var baseMs2=Date.now()-(2*86400000);
-  evidenceRequests['eurocontrol']={
-    id:'eurocontrol',name:'Eurocontrol CRCO reference',
-    recipient:'Ops team',recipientEmail:'ops-legal@[client].com',
-    requestedBy:'S. Booth',
-    requestedAt:'4 Jun 2026 10:00',requestedAtMs:baseMs,
-    slaDays:5,status:'pending',
-    note:'ATFM slot restriction certificate for HC1184 13 March 2026. Case DEF-2026-EW-0089. CPR deadline 3 days.',
-    caseRef:'DEF-2026-EW-0089',cprDaysLeft:3
-  };
-  evidenceRequests['aims']={
-    id:'aims',name:'Crew roster records (AIMS)',
-    recipient:'Crew scheduling',
-    recipientEmail:'crew-scheduling@[client].com',
-    requestedBy:'S. Booth',
-    requestedAt:'10 Jun 2026 14:30',requestedAtMs:baseMs2,
-    slaDays:5,status:'pending',
-    note:'Crew availability records for HC1184 13 March 2026. Confirm no preventable crew shortage.',
-    caseRef:'DEF-2026-EW-0089',cprDaysLeft:3
-  };
-  saveWorkspaceState();
-}
 /* ── Init ── */
 if(!audit.length)log('Evidence workspace opened — ' + C.name,'create');
 render();
@@ -1394,6 +1388,7 @@ render();
           jurisdiction:caseData.jurisdiction||'england-wales',
           lang:caseData.lang||'en',
           disruptionType:caseData.disruptionType||'',
+          secondaryType:caseData.secondaryType||'',
           classification:caseData.classification||'',
           triageNote:caseData.triageNote||'',
           cprDaysLeft:caseData.cprDaysLeft!=null?caseData.cprDaysLeft:undefined,

@@ -207,43 +207,7 @@
   }
 
   function ensureDemoEvidenceRequests() {
-    try {
-      var key = 'dfa_evidence_DEF-2026-EW-0089';
-      var st = JSON.parse(sessionStorage.getItem(key) || 'null');
-      if (st && st.evidenceRequests && Object.keys(st.evidenceRequests).length) return;
-      var baseMs = Date.now() - 8 * 86400000;
-      var baseMs2 = Date.now() - 2 * 86400000;
-      st = st || {};
-      st.evidenceRequests = {
-        eurocontrol: {
-          id: 'eurocontrol',
-          name: 'Eurocontrol CRCO reference',
-          recipient: 'Ops team',
-          recipientEmail: 'ops-legal@[client].com',
-          requestedBy: 'S. Booth',
-          requestedAt: '4 Jun 2026 10:00',
-          requestedAtMs: baseMs,
-          slaDays: 5,
-          status: 'pending',
-          caseRef: 'DEF-2026-EW-0089',
-          cprDaysLeft: 3,
-        },
-        aims: {
-          id: 'aims',
-          name: 'Crew roster records (AIMS)',
-          recipient: 'Crew scheduling',
-          recipientEmail: 'crew-scheduling@[client].com',
-          requestedBy: 'S. Booth',
-          requestedAt: '10 Jun 2026 14:30',
-          requestedAtMs: baseMs2,
-          slaDays: 5,
-          status: 'pending',
-          caseRef: 'DEF-2026-EW-0089',
-          cprDaysLeft: 3,
-        },
-      };
-      sessionStorage.setItem(key, JSON.stringify(st));
-    } catch (e) {}
+    /* Hartley demo requests are created via Request all outstanding in evidence workspace */
   }
 
   function findRequestForPoint(ref, point) {
@@ -254,6 +218,14 @@
     for (var i = 0; i < keys.length; i++) {
       var req = reqs[keys[i]];
       var name = String(req.name || '').toLowerCase();
+      if (
+        keys[i] === 'montreal_conv' &&
+        (String(point.claim || '').toLowerCase().indexOf('montreal') >= 0 ||
+          doc.indexOf('montreal') >= 0 ||
+          doc.indexOf('third-party') >= 0)
+      ) {
+        return req;
+      }
       if (
         doc.indexOf(name.slice(0, 8)) >= 0 ||
         name.indexOf('metar') >= 0 && doc.indexOf('metar') >= 0 ||
