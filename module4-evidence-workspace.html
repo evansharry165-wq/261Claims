@@ -974,7 +974,7 @@ function renderMain(){
   if(primaryType){
     opsPanel='<div class="card"><div class="card-body open">'
       +'<div style="border:1px solid #FDE68A;background:#FFFBEB;border-radius:var(--r2);padding:14px 16px;margin-bottom:12px"><div style="font-size:13px;font-weight:500;margin-bottom:4px;display:flex;align-items:center;gap:6px"><i class="ti ti-certificate" style="color:var(--amber)"></i> Gold evidence pack</div><div style="font-size:28px;font-weight:500;color:var(--amber);margin-bottom:4px">'+pack.gold+'%</div><div style="font-size:11px;color:var(--text2);line-height:1.55">DefendAble targets the gold pack on every case — the most complete aviation defence. Higher collection demand, but the strongest position for legal.</div><div style="font-size:10px;color:var(--text3);margin-top:6px">'+pack.goldDone+' of '+pack.goldTotal+' key & secondary documents on file</div></div>'
-      +'<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn-primary" onclick="requestAllOutstanding()"><i class="ti ti-send"></i> Request all outstanding</button><button class="btn-secondary" onclick="window.open(\'dio.html\',\'_blank\')"><i class="ti ti-upload"></i> File via DIO</button><button class="btn-secondary" onclick="window.location.href=\'repository.html\'"><i class="ti ti-database"></i> Evidence repository</button>'
+      +'<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn-primary" onclick="pullFromRepository()"><i class="ti ti-download"></i> Pull from repository</button><button class="btn-secondary" onclick="requestAllOutstanding()"><i class="ti ti-send"></i> Request outstanding</button><button class="btn-secondary" onclick="window.location.href=\'repository.html\'"><i class="ti ti-database"></i> Evidence repository</button>'
       +(pack.gold>=100
         ?'<button class="btn-sm btn-navy" onclick="moveToDrafting()" style="background:var(--purple);border-color:var(--purple)"><i class="ti ti-file-pencil"></i> Move to drafting</button>'
         :'<button class="btn-sm" disabled title="Complete the key evidence items to advance" style="opacity:0.5;cursor:not-allowed;background:var(--surface3);color:var(--text3);border-color:var(--border)"><i class="ti ti-file-pencil"></i> Move to drafting</button>')
@@ -1200,9 +1200,46 @@ function requestEvidenceCompletion(){
 
 function triggerUpload(id,name){pendingUpload={id:id,name:name};document.getElementById('file-input').click();}
 
+function pullFromRepository(){
+  // Pull all evidence that is already available in the repository or via API
+  // These are items the solicitor can retrieve themselves without DIO involvement
+  var REPO_AVAILABLE=[
+    'tops','disco','aims','safetynet',
+    'eurocontrol','ogimet','met_office','notam',
+    'connected','network_out','lido','hermes','max_ops','dpm','internal_email',
+    'flightradar','flightstats','ops_review','airport_web',
+    'case_studies','weather_briefs','eurocontrol_w','caa_docs','ac_ops','airport_info',
+    'overnight_docs','crew_docs'
+  ];
+
+  var pulled=0;
+  var alreadyHad=0;
+  REPO_AVAILABLE.forEach(function(id){
+    if(LIB[id]){
+      if(uploads[id]||pullState[id]==='done'){
+        alreadyHad++;
+      } else {
+        pullState[id]='done';
+        pulled++;
+      }
+    }
+  });
+
+  if(pulled===0){
+    showToast('Repository already pulled — '+alreadyHad+' items on file. Use Request outstanding for any gaps.');
+    render();
+    return;
+  }
+
+  log('Repository pull complete — '+pulled+' item'+(pulled===1?'':'s')+' retrieved from repository and internal systems.','pull');
+  showToast(pulled+' item'+(pulled===1?'':'s')+' pulled from repository. Check for any outstanding items below.');
+  saveWorkspaceState();
+  render();
+}
+
 function requestAllOutstanding(){
-  // Simulate pulling all evidence except Montreal Convention
-  // third-party contracts — which requires DIO involvement
+  // Raise DIO requests for items NOT resolved by the repository pull
+  // Only the Montreal Convention third-party contract requires DIO involvement
   var AUTO_RESOLVE=[
     'tops','disco','aims','safetynet',
     'eurocontrol','ogimet','met_office','notam',
