@@ -665,7 +665,7 @@ function renderIntelligence(){
     +'<div style="display:flex;gap:16px;align-items:flex-start">'
     +'<div style="flex:1;min-width:0">'
     +buildAiSearchPanel()
-    +'<div class="intel-section" id="intel-search"><div class="intel-section-hdr"><i class="ti ti-filter"></i><div class="intel-section-title">Live search &amp; filter</div><div class="intel-section-sub">Refine manually · '+allCases.length+' active cases</div></div>'
+    +'<div class="intel-section" id="intel-search"><div class="intel-section-hdr"><div class="panel-band-icon blue"><i class="ti ti-filter"></i></div><div class="intel-section-title">Live search &amp; filter</div><div class="intel-section-sub">Refine manually · '+allCases.length+' active cases</div></div>'
     +'<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px">'
     +'<select id="filter-disruption" onchange="applyInsightFilter()" style="'+selectStyle+'">'
     +'<option value="">All disruption types</option>'
@@ -704,7 +704,7 @@ function renderIntelligence(){
     +'<div id="insight-case-list" style="height:calc(100vh - 200px);overflow-y:auto"></div>'
     +'</div>'
     +'</div>'
-    +'<div class="intel-section"><div class="intel-section-hdr"><i class="ti ti-flag"></i><div class="intel-section-title">Agency / CMC tracker</div><div class="intel-section-sub">Flags by agency — focus defence strategy</div></div>'
+    +'<div class="intel-section"><div class="intel-section-hdr"><div class="panel-band-icon blue"><i class="ti ti-flag"></i></div><div class="intel-section-title">Agency / CMC tracker</div><div class="intel-section-sub">Flags by agency — focus defence strategy</div></div>'
     +'<div class="panel"><table class="agency-table"><thead><tr><th>Firm name</th><th>Claims filed</th><th>Jurisdictions</th><th>Disruption types</th><th>Avg claim value</th><th>Triage split</th></tr></thead><tbody>'+agencyRows+'</tbody></table></div></div></div>';
   applyInsightFilter();
 }
@@ -725,9 +725,9 @@ function renderPastCases(){
   var tabs=['all','defended','settled','paid','withdrawn'].map(function(o){
     return '<button class="tab '+(activeOutcome===o?'active':'')+'" onclick="activeOutcome=\''+o+'\';renderPanel()">'+(o==='all'?'All':outcomeLabel(o))+'</button>';
   }).join('');
-  document.getElementById('tab-panel').innerHTML='<div class="past-wrap"><div class="grid-main"><div class="panel"><div class="panel-hdr"><div class="panel-title">Past cases archive</div><div class="tabbar">'+tabs+'</div><input style="margin-top:10px;width:100%;font-size:12px;padding:7px 10px;border:1px solid var(--border);border-radius:var(--r);font-family:var(--font)" placeholder="Search past cases…" value="'+escapeHtml(query)+'" oninput="query=this.value;renderPanel()"></div>'
+  document.getElementById('tab-panel').innerHTML='<div class="past-wrap"><div class="grid-main"><div class="panel"><div class="panel-hdr"><div class="panel-title"><div class="panel-band-icon blue"><i class="ti ti-archive"></i></div>Past cases archive</div><div class="tabbar">'+tabs+'</div><input style="margin-top:10px;width:100%;font-size:12px;padding:7px 10px;border:1px solid var(--border);border-radius:var(--r);font-family:var(--font)" placeholder="Search past cases…" value="'+escapeHtml(query)+'" oninput="query=this.value;renderPanel()"></div>'
     +rows.map(function(c){return '<div class="case-card" onclick="selectedRef=\''+c.ref+'\';renderPanel()"><div class="ref">'+escapeHtml(c.ref)+'</div><div class="name">'+escapeHtml(c.claimant)+' · '+escapeHtml(c.flightNum)+'</div><div class="meta">'+escapeHtml(c.disruptionType)+' · <span class="pill '+outcomeClass(c.outcome)+'">'+outcomeLabel(c.outcome)+'</span> · '+c.confidence+'% confidence</div></div>';}).join('')
-    +'</div><div class="panel">'+(selected?'<div class="panel-hdr"><div class="panel-title">Case insight</div></div><div class="detail-body"><div class="kv"><div class="kv-label">Outcome</div><div><span class="pill '+outcomeClass(selected.outcome)+'">'+outcomeLabel(selected.outcome)+'</span></div></div><div class="kv"><div class="kv-label">Saving</div><div>'+escapeHtml(selected.saving)+'</div></div><div class="kv"><div class="kv-label">Time to close</div><div>'+selected.days+' days</div></div><div style="margin-top:10px">'+escapeHtml(selected.summary)+'</div><div style="margin-top:10px;color:var(--blue-text)"><strong>Recommendation:</strong> '+escapeHtml(selected.recommendation)+'</div></div>':'<div class="detail-body">Select a case.</div>')+'</div></div><p style="margin-top:12px;font-size:12px;color:var(--text3)">Active cases are on <a href="cases.html" style="color:var(--blue-text)">Cases</a>.</p></div>';
+    +'</div><div class="panel">'+(selected?'<div class="panel-hdr"><div class="panel-title"><div class="panel-band-icon teal"><i class="ti ti-brain"></i></div>Case insight</div></div><div class="detail-body"><div class="kv"><div class="kv-label">Outcome</div><div><span class="pill '+outcomeClass(selected.outcome)+'">'+outcomeLabel(selected.outcome)+'</span></div></div><div class="kv"><div class="kv-label">Saving</div><div>'+escapeHtml(selected.saving)+'</div></div><div class="kv"><div class="kv-label">Time to close</div><div>'+selected.days+' days</div></div><div style="margin-top:10px">'+escapeHtml(selected.summary)+'</div><div style="margin-top:10px;color:var(--blue-text)"><strong>Recommendation:</strong> '+escapeHtml(selected.recommendation)+'</div></div>':'<div class="detail-body">Select a case.</div>')+'</div></div><p style="margin-top:12px;font-size:12px;color:var(--text3)">Active cases are on <a href="cases.html" style="color:var(--blue-text)">Cases</a>.</p></div>';
 }
 
 function renderPanel(){
