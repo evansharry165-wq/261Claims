@@ -613,3 +613,115 @@ h1, h2, h3, .greeting, .zone-title, .panel-title, .ch-name,
 .ir-sol {
   font-family: var(--mono) !important;
 }
+
+/* ── Zone & panel header band upgrade ── */
+
+/* Remove old floating zone-hdr above panels */
+.zone-hdr {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0 !important;
+  gap: 8px;
+}
+
+/* Zone title now lives inside panel-band — suppress old standalone style */
+.zone-hdr .zone-title {
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+  color: var(--text, #1A1A2E) !important;
+  font-family: var(--font) !important;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* The new header band — sits inside .panel as first child */
+.panel-band {
+  padding: 10px 16px;
+  background: var(--surface2, #F7F7F9);
+  border-bottom: 0.5px solid var(--rule, #D8D8E0);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.panel-band-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.panel-band-icon {
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 14px;
+}
+
+/* Icon colour variants */
+.panel-band-icon.red   { background: var(--alert-faint,  #FBF0F0); color: var(--alert,  #8B1A1A); }
+.panel-band-icon.amber { background: var(--caution-faint,#FDF4E3); color: var(--caution,#7A4E00); }
+.panel-band-icon.blue  { background: var(--accent-faint, #EEF2F8); color: var(--accent, #1B3A6B); }
+.panel-band-icon.green { background: var(--confirm-faint,#EEF7F2); color: var(--confirm,#1A5C3A); }
+.panel-band-icon.teal  { background: #F0FAF8;                      color: #0D6B5E; }
+
+.panel-band-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text, #1A1A2E);
+  font-family: var(--font);
+}
+
+.panel-band-sub {
+  font-size: 11px;
+  color: var(--text3, #6B6B80);
+  margin-top: 1px;
+}
+
+.panel-band-action {
+  font-size: 11px;
+  color: var(--accent, #1B3A6B);
+  text-decoration: none;
+  cursor: pointer;
+  background: none;
+  border: none;
+  font-family: var(--font);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.panel-band-action:hover { text-decoration: underline; }
+
+/* Override old panel-hdr to match band style */
+.panel-hdr {
+  padding: 10px 16px !important;
+  background: var(--surface2, #F7F7F9) !important;
+  border-bottom: 0.5px solid var(--rule, #D8D8E0) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+}
+
+.panel-title {
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  color: var(--text, #1A1A2E) !important;
+  font-family: var(--font) !important;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.panel-sub {
+  font-size: 11px !important;
+  color: var(--text3, #6B6B80) !important;
+  margin-top: 2px !important;
+}
