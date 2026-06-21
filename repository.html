@@ -560,8 +560,11 @@ function renderCaseFileTree(){
   var cases=CaseFiling.listCases({query:caseFilingSearch});
   if(!cases.length)return '<div class="empty-note">No live case files yet. Upload a LOC in Intake to create one.</div>';
 
-  // Auto-select first case if none selected
-  if(!caseFilingRef){ caseFilingRef=cases[0].ref; }
+  // Auto-select first case with a valid flight date
+  if(!caseFilingRef){
+    var firstValid=cases.find(function(c){return !!parseFlightDateToSort(c.flightDate);});
+    if(firstValid)caseFilingRef=firstValid.ref;
+  }
 
   // Build hierarchy: year → month → date → cases
   var tree={};
@@ -617,14 +620,7 @@ function renderCaseFileTree(){
     });
   });
 
-  // Unparsed cases at the bottom
-  if(unparsed.length){
-    html+='<div style="padding:6px 12px;font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;border-top:1px solid var(--border)">No date</div>';
-    unparsed.forEach(function(c){
-      var active=caseFilingRef===c.ref;
-      html+='<div class="tree-item'+(active?' active':'')+'" onclick="setCaseFilingRef(&quot;'+escapeHtml(c.ref)+'&quot;)"><i class="ti ti-briefcase"></i><span>'+escapeHtml(c.ref)+'</span></div>';
-    });
-  }
+  // Cases without a valid flightDate are excluded from the tree
 
   return html;
 }
