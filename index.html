@@ -450,8 +450,7 @@ function buildOutstandingRequests(uid){
       +'<span style="font-size:10px;color:var(--text3)">CPR '+ (req.cprDaysLeft||'?') +'d</span></div>'
       +'</div>';
   }).join('');
-  return '<div class="zone" style="margin-bottom:14px"><div class="zone-hdr">'
-    +'<div class="zone-title"><i class="ti ti-send"></i> Evidence requests</div>'
+  return '<div class="zone" style="margin-bottom:14px"><div class="panel"><div class="panel-band"><div class="panel-band-left"><div class="panel-band-icon red"><i class="ti ti-send"></i></div><div class="panel-band-title">Evidence requests</div></div>'
     +'<span class="zone-link" style="cursor:default;font-size:10px;color:var(--text3)">'+countLabel+'</span>'
     +'</div><div class="panel">'+rows+'</div></div>';
 }
@@ -471,8 +470,7 @@ function buildTerminalQueueZone(uid){
       +'<div class="task-meta"><span class="req-age-pill '+urg+'">CPR '+r.cprDaysLeft+'d</span></div>'
       +'</div>';
   }).join('');
-  return '<div class="zone" style="margin-bottom:14px"><div class="zone-hdr">'
-    +'<div class="zone-title"><i class="ti ti-send"></i> '+escapeHtml(typeof t==='function'?t('terminalQueue'):'Terminal send queue')+'</div>'
+  return '<div class="zone" style="margin-bottom:14px"><div class="panel"><div class="panel-band"><div class="panel-band-left"><div class="panel-band-icon blue"><i class="ti ti-send"></i></div><div class="panel-band-title">'+escapeHtml(typeof t==="function"?t('terminalQueue'):'Terminal send queue')+'</div></div>'
     +'<a class="zone-link" href="terminal.html">'+escapeHtml(typeof t==='function'?t('viewAll'):'View all')+'</a>'
     +'</div><div class="panel">'+rows+'</div></div>';
 }
@@ -493,9 +491,9 @@ function renderLegalWork(uid,u,cases){
     +'</div></div>'
     +heroSearchHtml()
     +quickActionsHtml()
-    +'<div class="zone"><div class="zone-hdr"><div class="zone-title"><i class="ti ti-list-check"></i> Today\'s priorities</div><a class="zone-link" href="cases.html?sort=urgency">'+escapeHtml(t('viewAll'))+'</a></div><div class="panel">'+priorityTasksHtml(tasks)+'</div></div>'
+    +'<div class="zone"><div class="panel"><div class="panel-band"><div class="panel-band-left"><div class="panel-band-icon red"><i class="ti ti-list-check"></i></div><div class="panel-band-title">Today\'s priorities</div></div></div><a class="panel-band-action" href="cases.html?sort=urgency">'+escapeHtml(t('viewAll'))+'</a></div>'+priorityTasksHtml(tasks)+'</div></div>'
     +buildTerminalQueueZone(uid)
-    +'<div class="zone"><div class="zone-hdr"><div class="zone-title"><i class="ti ti-calendar"></i> Deadlines this month</div><span class="zone-link" style="cursor:default;color:var(--text3)">Deadlines, case notes and comments by month</span></div><div class="panel">'+calendarHtml(events)+'</div></div>';
+    +'<div class="zone"><div class="panel"><div class="panel-band"><div class="panel-band-left"><div class="panel-band-icon blue"><i class="ti ti-calendar"></i></div><div class="panel-band-title">Deadlines this month</div></div><span class="panel-band-action" style="cursor:default;color:var(--text3)">June 2026</span></div>'+calendarHtml(events)+'</div></div>';
 
   bindCaseClicks(document.getElementById('page'));
   WorkDashboard.recordVisit(uid);
@@ -589,13 +587,11 @@ function renderDIOWork(u){
     +'</div></div>'
     +knowledgeAlertBanner()
     +'<div class="work-grid">'
-    +'<div class="zone"><div class="zone-hdr"><div class="zone-title"><i class="ti ti-clock-exclamation"></i> Evidence requests — '+jurLabel+'</div>'
+    +'<div class="zone"><div class="panel"><div class="panel-band"><div class="panel-band-left"><div class="panel-band-icon red"><i class="ti ti-clock-exclamation"></i></div><div class="panel-band-title">Evidence requests — '+jurLabel+'</div></div></div>'
       +(allRequests.length?'<a class="zone-link" href="requests.html">View all</a>':'')
     +'</div><div class="panel">'+reqRows+'</div></div>'
-    +'<div class="zone"><div class="zone-hdr"><div class="zone-title"><i class="ti ti-file-search"></i> Evidence gaps — '+jurLabel+'</div>'
-      +'<a class="zone-link" href="cases.html">All cases</a>'
-    +'</div><div class="panel">'+gapRows+'</div></div>'
-    +'<div class="zone"><div class="zone-hdr"><div class="zone-title"><i class="ti ti-upload"></i> Quick file to repository</div>'
+    +'<div class="zone"><div class="panel"><div class="panel-band"><div class="panel-band-left"><div class="panel-band-icon amber"><i class="ti ti-file-search"></i></div><div class="panel-band-title">Evidence gaps — '+jurLabel+'</div></div></div><a class="panel-band-action" href="cases.html">All cases</a></div>'+gapRows+'</div></div>'
+    +'<div class="zone"><div class="panel"><div class="panel-band"><div class="panel-band-left"><div class="panel-band-icon blue"><i class="ti ti-upload"></i></div><div class="panel-band-title">Quick file to repository</div></div></div>'
       +'<a class="zone-link" href="repository.html">Open repository</a>'
     +'</div><div class="panel">'
       +'<div style="padding:14px;text-align:center;border:2px dashed var(--rule);cursor:pointer;background:var(--surface2)" onclick="location.href=\'repository.html\'">'
@@ -603,7 +599,7 @@ function renderDIOWork(u){
         +'<div style="font-size:12px;color:var(--ink2);font-weight:500">Drop files or click to file evidence</div>'
         +'<div style="font-size:11px;color:var(--ink4);margin-top:3px">Files are tagged to '+jurLabel+' automatically</div>'
       +'</div></div></div>'
-    +'<div class="zone" id="dio-intelligence-zone"><div class="zone-hdr"><div class="zone-title"><i class="ti ti-gavel"></i> Legal intelligence — '+jurLabel+'</div>'
+    +'<div class="zone" id="dio-intelligence-zone"><div class="panel"><div class="panel-band"><div class="panel-band-left"><div class="panel-band-icon blue"><i class="ti ti-gavel"></i></div><div class="panel-band-title">Legal intelligence — '+jurLabel+'</div></div></div>'
       +'<a class="zone-link" href="education.html?section=live-updates">View all</a>'
     +'</div><div class="panel" id="dio-intel-panel"><div style="font-size:11px;color:var(--ink4);padding:8px 0">Loading...</div></div></div>'
     +'</div>';
@@ -661,10 +657,10 @@ function renderEvidenceWork(u){
     +'</div></div>'
     +knowledgeAlertBanner()
     +'<div class="work-grid">'
-    +'<div class="zone"><div class="zone-hdr"><div class="zone-title"><i class="ti ti-sparkles"></i> Since you last logged in</div></div><div class="panel">'+updatesHtml(updates)+'</div></div>'
-    +'<div class="zone"><div class="zone-hdr"><div class="zone-title"><i class="ti ti-list-check"></i> '+escapeHtml(t('doNow'))+'</div><a class="zone-link" href="requests.html">'+escapeHtml(t('viewAll'))+'</a></div><div class="panel">'+tasksHtml(tasks)+'</div></div>'
+    +'<div class="zone"><div class="panel"><div class="panel-band"><div class="panel-band-left"><div class="panel-band-icon blue"><i class="ti ti-sparkles"></i></div><div class="panel-band-title">Since you last logged in</div></div></div>'+updatesHtml(updates)+'</div></div>'
+    +'<div class="zone"><div class="panel"><div class="panel-band"><div class="panel-band-left"><div class="panel-band-icon red"><i class="ti ti-list-check"></i></div><div class="panel-band-title">'+escapeHtml(t('doNow'))+'</div></div><a class="panel-band-action" href="requests.html">'+escapeHtml(t('viewAll'))+'</a></div>'+tasksHtml(tasks)+'</div></div>'
     +'</div>'
-    +'<div class="zone"><div class="zone-hdr"><div class="zone-title"><i class="ti ti-database"></i> Repository filing</div><a class="zone-link" href="repository.html">Open repository</a></div><div class="panel"><div class="update-row" onclick="location.href=\'repository.html\'"><div class="update-icon"><i class="ti ti-calendar"></i></div><div class="update-body"><div class="update-text">14 Mar 2026 · HC 1184 — passenger care records outstanding</div><div class="update-meta">Evidence filing · Legal pull pending</div></div></div><div class="update-row" onclick="location.href=\'repository.html\'"><div class="update-icon"><i class="ti ti-circle-check"></i></div><div class="update-body"><div class="update-text">28 Apr 2026 · HC 330 weather gold pack ready</div><div class="update-meta">Ready for legal team</div></div></div></div></div>'
+    +'<div class="zone"><div class="panel"><div class="panel-band"><div class="panel-band-left"><div class="panel-band-icon blue"><i class="ti ti-database"></i></div><div class="panel-band-title">Repository filing</div></div><a class="panel-band-action" href="repository.html">Open repository</a></div><div class="update-row" onclick="location.href=\'repository.html\'"><div class="update-icon"><i class="ti ti-calendar"></i></div><div class="update-body"><div class="update-text">14 Mar 2026 · HC 1184 — passenger care records outstanding</div><div class="update-meta">Evidence filing · Legal pull pending</div></div></div><div class="update-row" onclick="location.href=\'repository.html\'"><div class="update-icon"><i class="ti ti-circle-check"></i></div><div class="update-body"><div class="update-text">28 Apr 2026 · HC 330 weather gold pack ready</div><div class="update-meta">Ready for legal team</div></div></div></div></div>'
     +demoToursHtml();
 
   bindCaseClicks(document.getElementById('page'));
