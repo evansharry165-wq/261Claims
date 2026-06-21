@@ -7,734 +7,616 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{--ink:#1A1A2E;--ink2:#2D2D44;--ink3:#6B6B80;--ink4:#9B9BAA;--rule:#D8D8E0;--rule2:#EBEBF0;--surface:#FFFFFF;--surface2:#F7F7F9;--surface3:#EFEFF2;--accent:#1B3A6B;--accent2:#254E91;--accent-faint:#EEF2F8;--confirm:#1A5C3A;--confirm-faint:#EEF7F2;--caution:#7A4E00;--caution-faint:#FDF4E3;--alert:#8B1A1A;--alert-faint:#FBF0F0;--navy:var(--ink);--navy2:var(--ink2);--navy3:var(--ink2);--blue:var(--accent2);--blue-faint:var(--accent-faint);--blue-text:var(--accent);--green:var(--confirm);--green-l:#2A7A4F;--green-faint:var(--confirm-faint);--amber:var(--caution);--amber-faint:var(--caution-faint);--red:var(--alert);--red-faint:var(--alert-faint);--border:var(--rule);--border2:var(--rule2);--text:var(--ink);--text2:var(--ink2);--text3:var(--ink3);--font:'Helvetica Neue','Arial',sans-serif;--font-serif:'Georgia','Times New Roman',serif;--font-doc:'Georgia','Times New Roman',serif;--mono:'Courier New','Courier',monospace;--purple:#4338CA;--purple-faint:var(--accent-faint);--r:3px;--r2:4px;--r3:5px}
+:root{--ink:#1A1A2E;--ink2:#2D2D44;--ink3:#6B6B80;--ink4:#9B9BAA;--rule:#D8D8E0;--rule2:#EBEBF0;--surface:#FFFFFF;--surface2:#F7F7F9;--surface3:#EFEFF2;--accent:#1B3A6B;--accent-faint:#EEF2F8;--confirm:#1A5C3A;--confirm-faint:#EEF7F2;--caution:#7A4E00;--caution-faint:#FDF4E3;--alert:#8B1A1A;--alert-faint:#FBF0F0;--navy:var(--ink);--blue:var(--accent);--blue-faint:var(--accent-faint);--blue-text:var(--accent);--green:var(--confirm);--green-faint:var(--confirm-faint);--amber:var(--caution);--amber-faint:var(--caution-faint);--red:var(--alert);--red-faint:var(--alert-faint);--purple:#4338CA;--purple-faint:#EEEDFE;--border:var(--rule);--border2:var(--rule2);--text:var(--ink);--text2:var(--ink2);--text3:var(--ink3);--font:'Helvetica Neue','Arial',sans-serif;--font-serif:'Georgia','Times New Roman',serif;--mono:'Courier New','Courier',monospace;--r:3px;--r2:4px;--r3:5px}
 html,body{height:100%;font-family:var(--font);background:var(--surface2);color:var(--text);font-size:14px}
-.global-nav{background:var(--navy);height:48px;display:flex;align-items:center;padding:0 20px;gap:0;flex-shrink:0;border-bottom:1px solid rgba(255,255,255,0.07)}
-.gn-logo{display:flex;align-items:center;gap:8px;text-decoration:none;margin-right:20px}.gn-mark{width:28px;height:28px;background:var(--blue);border-radius:4px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px}.gn-name{font-size:14px;font-weight:500;color:#fff}.gn-links{display:flex;align-items:center;gap:2px;flex:1}.gn-link{display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r);font-size:12px;font-weight:500;color:rgba(255,255,255,0.5);text-decoration:none;white-space:nowrap}.gn-link:hover{background:rgba(255,255,255,0.08);color:#fff}.gn-link.active{background:rgba(42,111,219,0.35);color:#fff}.gn-right{display:flex;align-items:center;gap:8px;margin-left:8px}.repo-nav{background:rgba(34,168,99,0.15);border:1px solid rgba(34,168,99,0.35);color:#D1FAE5}.repo-nav.active{background:rgba(34,168,99,0.28);color:#fff}.gn-user-btn{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:20px;padding:3px 10px 3px 4px;cursor:pointer}.gn-av{width:24px;height:24px;border-radius:50%;background:#1C2E44;color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500}.gn-user{font-size:11px;font-weight:500;color:rgba(255,255,255,0.8)}
-.page{height:calc(100vh - 48px);overflow:auto;padding:22px 24px}
-.hero{background:linear-gradient(135deg,#0B1628,#123D2A);border-radius:var(--r3);padding:22px;color:#fff;margin-bottom:16px;display:flex;justify-content:space-between;gap:18px;align-items:flex-start}.hero h1{font-size:22px;font-weight:500;margin-bottom:6px}.hero p{font-size:13px;color:rgba(255,255,255,0.72);line-height:1.6;max-width:760px}.hero-actions{display:flex;gap:8px;flex-wrap:wrap}.hero-btn{font-size:12px;text-decoration:none;color:#fff;border:1px solid rgba(255,255,255,0.18);background:rgba(255,255,255,0.08);padding:8px 12px;border-radius:var(--r);display:flex;align-items:center;gap:6px}
-.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}.grid-main{display:grid;grid-template-columns:1.25fr .75fr;gap:14px;margin-bottom:14px}.panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--r3);overflow:hidden}.panel-hdr{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px}.panel-title{font-size:13px;font-weight:500;display:flex;align-items:center;gap:7px}.panel-sub{font-size:11px;color:var(--text3);margin-top:2px}.panel-body{padding:14px 16px}
-.stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:13px 15px}.stat-label{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);font-weight:500;margin-bottom:7px}.stat-val{font-size:24px;font-weight:500;line-height:1}.stat-sub{font-size:11px;color:var(--text3);margin-top:5px}
-.search-row{display:flex;gap:8px;padding:12px 16px;border-bottom:1px solid var(--border);background:var(--surface2)}.search-row input,.search-row select{font-size:12px;border:1px solid var(--border);border-radius:var(--r);background:var(--surface);padding:8px 10px;font-family:var(--font);color:var(--text)}.search-row input{flex:1}.search-row select{width:150px}
-.case-card{padding:13px 16px;border-bottom:1px solid var(--border);display:grid;grid-template-columns:1fr auto;gap:12px;cursor:pointer}.case-card:hover{background:var(--surface2)}.case-card:last-child{border-bottom:none}.ref{font-family:var(--mono);font-size:10px;color:var(--text3);margin-bottom:2px}.name{font-size:13px;font-weight:500}.meta{font-size:11px;color:var(--text2);line-height:1.5;margin-top:3px}.pill{font-size:10px;font-weight:500;padding:3px 8px;border-radius:20px;display:inline-flex;align-items:center;gap:4px;white-space:nowrap}.p-defended{background:var(--green-faint);color:var(--green)}.p-settled{background:var(--amber-faint);color:var(--amber)}.p-withdrawn{background:var(--surface3);color:var(--text2)}.p-paid{background:var(--blue-faint);color:var(--blue-text)}
-.tabbar{display:flex;gap:6px;flex-wrap:wrap}.tab{font-size:11px;border:1px solid var(--border);background:var(--surface2);color:var(--text2);padding:5px 10px;border-radius:20px;cursor:pointer;font-family:var(--font)}.tab.active{background:var(--navy);color:#fff;border-color:var(--navy)}
-.insight{border:1px solid var(--border);border-radius:var(--r2);padding:11px 12px;margin-bottom:9px;background:var(--surface2)}.insight-title{font-size:12px;font-weight:500;margin-bottom:4px;display:flex;gap:7px;align-items:center}.insight-copy{font-size:11px;color:var(--text2);line-height:1.55}.link-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.link-card{border:1px solid var(--border);border-radius:var(--r2);padding:10px;text-decoration:none;color:var(--text);background:var(--surface2)}.link-card:hover{border-color:var(--border2);background:#fff}.link-card i{color:var(--blue-text);margin-right:5px}.link-card div{font-size:12px;font-weight:500}.link-card span{display:block;font-size:10px;color:var(--text3);margin-top:2px}
-.detail{position:sticky;top:12px}.detail-empty{font-size:12px;color:var(--text3);line-height:1.6;padding:24px;text-align:center}.kv{display:grid;grid-template-columns:120px 1fr;gap:8px;font-size:12px;padding:7px 0;border-bottom:1px solid var(--border)}.kv:last-child{border-bottom:none}.kv-label{color:var(--text3)}.kv-val{font-weight:500}.ev-list{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}.ev{font-size:10px;padding:3px 7px;border-radius:20px;background:var(--purple-faint);color:var(--purple)}.case-law{font-size:11px;color:var(--text2);line-height:1.55;margin-top:8px;padding:8px 10px;border-left:3px solid var(--blue);background:var(--blue-faint);border-radius:0 var(--r) var(--r) 0}
-.user-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.3);z-index:500}.user-modal.open{display:flex;justify-content:flex-end;padding:52px 20px 0}.user-dropdown{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);width:230px;box-shadow:0 4px 20px rgba(0,0,0,0.15);overflow:hidden}.ud-header{padding:10px 14px;border-bottom:1px solid var(--border);font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:var(--text3)}.ud-item{display:flex;align-items:center;gap:10px;padding:9px 14px;cursor:pointer}.ud-item:hover,.ud-item.current{background:var(--blue-faint)}.ud-av{width:28px;height:28px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500}.ud-name{font-size:12px;font-weight:500}.ud-role{font-size:10px;color:var(--text3)}.ud-tick{margin-left:auto;color:var(--green);font-size:14px;display:none}.ud-item.current .ud-tick{display:block}
 
-.gateway-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:16px}
-.gateway{position:relative;overflow:hidden;background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:18px;text-decoration:none;color:var(--text);cursor:pointer;min-height:210px;display:flex;flex-direction:column;justify-content:space-between;transition:transform .15s,box-shadow .15s,border-color .15s}
-.gateway:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(15,23,42,.08);border-color:var(--border2)}
-.gateway::after{content:'';position:absolute;right:-42px;top:-42px;width:120px;height:120px;border-radius:50%;background:rgba(42,111,219,.08)}
-.gw-icon{width:42px;height:42px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:14px}
-.gw-title{font-size:18px;font-weight:500;letter-spacing:-.02em;margin-bottom:6px}.gw-copy{font-size:12px;color:var(--text2);line-height:1.65;margin-bottom:14px}.gw-meta{display:flex;gap:6px;flex-wrap:wrap}.gw-chip{font-size:10px;font-weight:500;padding:3px 8px;border-radius:20px;background:var(--surface3);color:var(--text2)}
-.area-nav{display:flex;gap:8px;margin-bottom:14px}.area-btn{border:1px solid var(--border);background:var(--surface);border-radius:999px;padding:7px 12px;font-size:12px;font-family:var(--font);cursor:pointer;color:var(--text2);display:flex;align-items:center;gap:6px}.area-btn.active{background:var(--navy);border-color:var(--navy);color:#fff}.area-btn.home{margin-left:auto;background:var(--green-faint);border-color:#BBF7D0;color:var(--green)}
-.repo-table{width:100%;border-collapse:collapse;font-size:12px}.repo-table th{text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);font-weight:500;padding:0 10px 9px 0;border-bottom:2px solid var(--border)}.repo-table td{padding:10px 10px 10px 0;border-bottom:1px solid var(--border);vertical-align:top}.source-card{border:1px solid var(--border);border-radius:var(--r2);padding:11px 12px;background:var(--surface2);margin-bottom:8px}.source-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.source-name{font-size:12px;font-weight:500}.source-meta{font-size:10px;color:var(--text3);margin-top:2px}.source-why{font-size:11px;color:var(--text2);line-height:1.55;margin-top:7px}.law-card{border:1px solid var(--border);border-left:4px solid var(--blue);border-radius:var(--r2);padding:13px 14px;background:var(--surface);margin-bottom:10px}.law-title{font-size:13px;font-weight:500;margin-bottom:5px}.law-summary{font-size:12px;color:var(--text2);line-height:1.65}.ai-box{background:linear-gradient(135deg,var(--blue-faint),#fff);border:1px solid #BFDBFE;border-radius:var(--r2);padding:12px;margin-bottom:12px}.ai-label{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.06em;color:var(--blue-text);margin-bottom:5px}.empty-note{font-size:12px;color:var(--text3);padding:22px;text-align:center;line-height:1.6}
+/* ── Nav ── */
+.global-nav{background:var(--navy);height:48px;display:flex;align-items:center;padding:0 20px;gap:0;flex-shrink:0}
+.gn-logo{display:flex;align-items:center;gap:8px;text-decoration:none;margin-right:20px}
+.gn-mark{width:28px;height:28px;background:var(--blue);border-radius:4px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px}
+.gn-name{font-size:14px;font-weight:500;color:#fff}
+.gn-links{display:flex;align-items:center;gap:2px;flex:1}
+.gn-link{display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r);font-size:12px;font-weight:500;color:rgba(255,255,255,0.5);text-decoration:none}
+.gn-link:hover{background:rgba(255,255,255,0.08);color:#fff}
+.gn-link.active{background:rgba(42,111,219,0.35);color:#fff}
+.gn-right{display:flex;align-items:center;gap:8px;margin-left:8px}
+.gn-user-btn{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:20px;padding:3px 10px 3px 4px;cursor:pointer}
+.gn-av{width:24px;height:24px;border-radius:50%;background:#1C2E44;color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500}
+.gn-user{font-size:11px;font-weight:500;color:rgba(255,255,255,0.8)}
 
+/* ── Page ── */
+.page{height:calc(100vh - 48px);overflow:hidden;display:flex;flex-direction:column;padding:18px 24px 0}
+.page-header{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:14px;flex-wrap:wrap}
+.page-title{font-family:var(--font-serif);font-size:22px;font-weight:400;letter-spacing:-0.02em;margin-bottom:3px}
+.page-sub{font-size:12px;color:var(--text3)}
+.stat-bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.stat-chip{font-size:11px;font-weight:500;padding:5px 11px;border-radius:3px;border:1px solid var(--rule);background:var(--surface);color:var(--text2);display:inline-flex;align-items:center;gap:5px}
+.stat-chip.blue{background:var(--blue-faint);border-color:#BFDBFE;color:var(--blue-text)}
+.stat-chip.green{background:var(--green-faint);border-color:#BBF7D0;color:var(--green)}
 
-.evidence-layout{display:grid;grid-template-columns:320px 1fr;gap:14px}.calendar-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--r3);overflow:hidden}.calendar-day{padding:12px 14px;border-bottom:1px solid var(--border);cursor:pointer;display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center}.calendar-day:hover,.calendar-day.active{background:var(--blue-faint)}.day-num{width:38px;height:38px;border-radius:12px;background:var(--surface3);display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:500}.day-num span{font-size:9px;text-transform:uppercase;color:var(--text3)}.day-title{font-size:12px;font-weight:500}.day-sub{font-size:10px;color:var(--text3);margin-top:2px}.pack-score{font-size:10px;font-weight:500;padding:3px 7px;border-radius:20px;background:var(--green-faint);color:var(--green)}.pack-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}.pack-card{border:1px solid var(--border);border-radius:var(--r2);padding:12px;background:var(--surface2)}.pack-card.gold{border-color:#FDE68A;background:#FFFBEB}.pack-title{font-size:12px;font-weight:500;display:flex;align-items:center;gap:6px;margin-bottom:5px}.pack-copy{font-size:11px;color:var(--text2);line-height:1.5}.source-table{width:100%;border-collapse:collapse;font-size:12px}.source-table th{text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);font-weight:500;padding:0 8px 8px 0;border-bottom:2px solid var(--border)}.source-table td{padding:9px 8px 9px 0;border-bottom:1px solid var(--border);vertical-align:top}.status-ok{background:var(--green-faint);color:var(--green)}.status-wait{background:var(--amber-faint);color:var(--amber)}.status-gap{background:var(--red-faint);color:var(--red)}.request-box{border:1px dashed var(--border2);border-radius:var(--r2);padding:12px;background:var(--surface2);margin-top:12px}.request-box textarea{width:100%;min-height:58px;border:1px solid var(--border);border-radius:var(--r);font-family:var(--font);font-size:12px;padding:8px;resize:vertical;margin-top:8px}.mini-btn{font-size:11px;border:1px solid var(--border2);border-radius:var(--r);background:#fff;padding:6px 9px;cursor:pointer;color:var(--text2);font-family:var(--font);display:inline-flex;gap:5px;align-items:center;text-decoration:none}.mini-btn.primary{background:var(--navy);border-color:var(--navy);color:#fff}.attach-strip{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.case-chip{font-size:10px;padding:4px 7px;border-radius:20px;background:var(--blue-faint);color:var(--blue-text);border:1px solid #BFDBFE}
+/* ── Tabs ── */
+.tab-row{display:flex;gap:0;margin-bottom:14px;border-bottom:1px solid var(--border)}
+.tab-btn{font-size:12px;font-weight:500;padding:9px 16px;border:none;background:none;color:var(--text3);cursor:pointer;font-family:var(--font);border-bottom:2px solid transparent;margin-bottom:-1px;display:flex;align-items:center;gap:6px}
+.tab-btn.active{color:var(--text);border-bottom-color:var(--navy)}
+.tab-btn:hover:not(.active){color:var(--text2)}
 
-/* ── Evidence filing system (SharePoint mirror) ── */
-.filing-layout{display:grid;grid-template-columns:280px 1fr 260px;gap:14px;min-height:520px}
-.filing-tree{background:var(--surface);border:1px solid var(--border);border-radius:var(--r3);overflow:hidden;display:flex;flex-direction:column}
-.filing-tree-hdr{padding:12px 14px;border-bottom:1px solid var(--border);font-size:12px;font-weight:500;display:flex;align-items:center;gap:7px}
-.filing-tree-body{flex:1;overflow-y:auto;padding:8px 0}
-.tree-item{display:flex;align-items:center;gap:7px;padding:7px 14px;cursor:pointer;font-size:12px;color:var(--text2);border-left:3px solid transparent}
-.tree-item:hover{background:var(--surface2)}
-.tree-item.active{background:var(--blue-faint);border-left-color:var(--blue);color:var(--blue-text);font-weight:500}
-.tree-item i{font-size:14px;flex-shrink:0;color:var(--text3)}
-.tree-item.active i{color:var(--blue-text)}
-.tree-item .tree-count{margin-left:auto;font-size:10px;color:var(--text3);background:var(--surface3);padding:1px 6px;border-radius:10px}
-.tree-nested{padding-left:14px}
-.tree-year,.tree-month{font-size:11px;padding:5px 14px 5px 28px;color:var(--text3);cursor:pointer;display:flex;align-items:center;gap:6px}
-.tree-year:hover,.tree-month:hover{background:var(--surface2);color:var(--text2)}
-.tree-year.active,.tree-month.active{color:var(--blue-text);font-weight:500}
-.tree-day{font-size:11px;padding:5px 14px 5px 42px;color:var(--text3);cursor:pointer;display:flex;align-items:center;gap:6px}
-.tree-day:hover{background:var(--surface2);color:var(--text2)}
-.tree-day.active{color:var(--blue-text);font-weight:500;background:var(--blue-faint)}
-.filing-main{background:var(--surface);border:1px solid var(--border);border-radius:var(--r3);overflow:hidden;display:flex;flex-direction:column}
-.filing-toolbar{padding:10px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:var(--surface2)}
-.breadcrumb{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--text3);flex:1;min-width:0;flex-wrap:wrap}
-.breadcrumb span{cursor:pointer;color:var(--blue-text)}
-.breadcrumb span:hover{text-decoration:underline}
-.breadcrumb .bc-sep{color:var(--text3)}
-.filing-search{font-size:12px;border:1px solid var(--border);border-radius:var(--r);padding:7px 10px;width:180px;font-family:var(--font)}
-.evidence-header{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:12px}
-.evidence-header h1{font-size:18px;font-weight:500;letter-spacing:-.01em}
-.evidence-header-meta{font-size:12px;color:var(--text3);margin-top:3px}
-.evidence-toolbar{padding:10px 14px;gap:12px;background:var(--surface)}
-.search-wrap{position:relative;flex:1;min-width:180px;max-width:360px;margin-left:auto}
-.search-wrap>i.ti-search{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:15px;pointer-events:none}
-.search-wrap input[type=search]{width:100%;padding:8px 30px 8px 34px;font-size:13px;border:1px solid var(--border);border-radius:var(--r2);font-family:var(--font);background:var(--surface2);color:var(--text);-webkit-appearance:none;appearance:none}
-.search-wrap input[type=search]:focus{outline:none;border-color:var(--accent2);background:var(--surface);box-shadow:0 0 0 3px rgba(37,78,145,.08)}
-.search-wrap input[type=search]::-webkit-search-cancel-button{display:none}
-.search-clear{position:absolute;right:6px;top:50%;transform:translateY(-50%);border:none;background:transparent;color:var(--text3);cursor:pointer;padding:4px;border-radius:var(--r);display:flex;align-items:center;justify-content:center}
-.search-clear:hover{color:var(--text2);background:var(--surface3)}
-.evidence-layout-clean .filing-layout{grid-template-columns:232px 1fr}
-.evidence-layout-clean .filing-tree-hdr{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--text3);font-weight:500}
-.evidence-layout-clean .folder-grid{grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:8px;padding:12px}
-.evidence-layout-clean .folder-card{padding:12px 10px;border-radius:var(--r2);min-height:0}
-.evidence-layout-clean .folder-card i{font-size:22px;margin-bottom:6px}
-.evidence-layout-clean .folder-card .fc-name{font-size:11px;line-height:1.35}
-.evidence-layout-clean .file-table th,.evidence-layout-clean .file-table td{padding:9px 12px}
-.evidence-layout-clean .filing-sidebar .panel-body{padding:10px 12px}
-.activity-row{padding:8px 0;border-bottom:1px solid var(--border);font-size:11px;line-height:1.45;color:var(--text2)}
-.activity-row:last-child{border-bottom:none}
-.activity-row time{display:block;font-size:10px;color:var(--text3);margin-top:2px}
-.evidence-empty{padding:40px 20px;text-align:center;color:var(--text3);font-size:13px;line-height:1.6}
-.evidence-empty i{font-size:32px;display:block;margin-bottom:10px;color:var(--text4)}
-.filing-body{flex:1;overflow-y:auto;padding:0}
+/* ── Three-column layout ── */
+.repo-layout{display:grid;grid-template-columns:260px 1fr 280px;gap:0;flex:1;min-height:0;border:1px solid var(--border);border-radius:var(--r3);overflow:hidden;background:var(--surface);margin-bottom:18px}
+
+/* ── Left: case tree ── */
+.repo-tree{border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
+.repo-tree-hdr{padding:11px 14px;border-bottom:1px solid var(--border);background:var(--surface2);display:flex;align-items:center;gap:7px}
+.repo-tree-hdr-title{font-size:13px;font-weight:500;color:var(--text)}
+.repo-tree-body{flex:1;overflow-y:auto}
+.tree-year-row{display:flex;align-items:center;gap:6px;padding:8px 14px;font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.06em;cursor:pointer;background:var(--surface2);border-bottom:1px solid var(--border);user-select:none}
+.tree-year-row:hover{background:var(--surface3)}
+.tree-month-row{display:flex;align-items:center;gap:6px;padding:6px 14px 6px 24px;font-size:11px;font-weight:500;color:var(--text3);cursor:pointer;border-bottom:1px solid var(--border2);user-select:none}
+.tree-month-row:hover{background:var(--surface2);color:var(--text2)}
+.tree-date-row{display:flex;align-items:center;gap:6px;padding:5px 14px 5px 34px;font-size:11px;color:var(--text3);cursor:pointer;border-bottom:1px solid var(--border2);user-select:none}
+.tree-date-row:hover{background:var(--surface2);color:var(--text2)}
+.tree-case-row{display:flex;align-items:flex-start;gap:7px;padding:8px 14px 8px 44px;cursor:pointer;border-bottom:1px solid var(--border2);border-left:3px solid transparent}
+.tree-case-row:hover{background:var(--surface2)}
+.tree-case-row.active{background:var(--accent-faint);border-left-color:var(--accent)}
+.tree-case-claimant{font-size:12px;font-weight:500;color:var(--text);line-height:1.3}
+.tree-case-ref{font-size:10px;font-family:var(--mono);color:var(--text3);margin-top:1px}
+.tree-count{margin-left:auto;font-size:10px;color:var(--text3);background:var(--surface3);padding:1px 6px;border-radius:10px;flex-shrink:0}
+.tree-chevron{font-size:10px;color:var(--text3);flex-shrink:0}
+
+/* ── Middle: document list ── */
+.repo-main{display:flex;flex-direction:column;overflow:hidden;border-right:1px solid var(--border)}
+.repo-main-hdr{padding:11px 14px;border-bottom:1px solid var(--border);background:var(--surface2);display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.repo-breadcrumb{font-size:11px;color:var(--text3);display:flex;align-items:center;gap:4px}
+.repo-breadcrumb span{color:var(--blue-text);cursor:pointer}
+.repo-breadcrumb span:hover{text-decoration:underline}
+.repo-breadcrumb .bc-sep{color:var(--text3)}
+.repo-search{font-size:12px;border:1px solid var(--border);border-radius:var(--r);padding:6px 10px;width:180px;font-family:var(--font);background:var(--surface)}
+.repo-main-body{flex:1;overflow-y:auto}
+.case-strip{display:flex;flex-wrap:wrap;gap:6px;padding:10px 14px;border-bottom:1px solid var(--border);background:var(--surface2)}
+.case-chip{font-size:10px;padding:3px 8px;border-radius:20px;background:var(--surface3);color:var(--text2)}
+.case-chip.live{background:var(--green-faint);color:var(--green)}
+.case-chip.stage-intake,.case-chip.stage-triage{background:var(--amber-faint);color:var(--amber)}
+.case-chip.stage-evidence{background:var(--blue-faint);color:var(--blue-text)}
+.case-chip.stage-drafting{background:var(--green-faint);color:var(--green)}
+.folder-tabs{display:flex;gap:0;padding:0 14px;border-bottom:1px solid var(--border);overflow-x:auto}
+.folder-tab{font-size:11px;padding:8px 12px;border:none;background:none;color:var(--text3);cursor:pointer;font-family:var(--font);border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap;display:flex;align-items:center;gap:5px}
+.folder-tab.active{color:var(--text);border-bottom-color:var(--navy)}
+.folder-tab:hover:not(.active){color:var(--text2)}
+.folder-tab .f-count{font-size:10px;background:var(--surface3);color:var(--text3);padding:1px 5px;border-radius:10px}
+.folder-tab.active .f-count{background:var(--navy);color:#fff}
 .file-table{width:100%;border-collapse:collapse;font-size:12px}
-.file-table th{text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);font-weight:500;padding:10px 14px;border-bottom:2px solid var(--border);background:var(--surface2);position:sticky;top:0}
+.file-table th{text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);font-weight:500;padding:9px 14px;border-bottom:2px solid var(--border);background:var(--surface2);position:sticky;top:0}
 .file-table td{padding:10px 14px;border-bottom:1px solid var(--border);vertical-align:middle}
-.file-table tr:hover td{background:var(--surface2)}
-.file-name{font-weight:500;display:flex;align-items:center;gap:7px}
-.file-name i{color:var(--blue-text);font-size:15px}
+.file-table tr:hover td{background:var(--surface2);cursor:pointer}
+.file-table tr.active td{background:var(--accent-faint)}
+.file-name{font-weight:500;display:flex;align-items:center;gap:7px;color:var(--text)}
+.file-name i{color:var(--blue-text);font-size:14px}
 .file-meta{font-size:10px;color:var(--text3);margin-top:2px}
-.tier-k{background:var(--red-faint);color:var(--red)}.tier-s{background:var(--amber-faint);color:var(--amber)}.tier-w{background:var(--purple-faint);color:var(--purple)}
-.upload-zone{border:2px dashed var(--border2);border-radius:var(--r2);padding:18px;text-align:center;margin:14px;background:var(--surface2);cursor:pointer;transition:border-color .15s,background .15s}
-.upload-zone:hover,.upload-zone.dragover{border-color:var(--blue);background:var(--blue-faint)}
-.upload-zone i{font-size:28px;color:var(--text3);display:block;margin-bottom:8px}
-.upload-zone p{font-size:12px;color:var(--text2);line-height:1.5}
-.upload-zone strong{color:var(--blue-text)}
-.upload-form{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding:14px;border-top:1px solid var(--border);background:var(--surface2)}
-.upload-form label{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);display:block;margin-bottom:3px}
-.upload-form input,.upload-form select{width:100%;font-size:12px;padding:7px 9px;border:1px solid var(--border);border-radius:var(--r);font-family:var(--font)}
-.upload-form input.ai-filled{background:var(--blue-faint);border-color:#BFDBFE;color:var(--blue-text)}
-.ai-upload-bar{background:linear-gradient(135deg,var(--blue-faint),#fff);border:1px solid #BFDBFE;border-radius:var(--r2);padding:12px 14px;margin:14px;font-size:12px;color:var(--text2);line-height:1.55}
-.ai-upload-bar strong{color:var(--blue-text)}
-.ai-fields{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;padding:0 14px 14px;background:var(--surface2);border-top:1px solid var(--border)}
-.ai-fields label{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);display:block;margin-bottom:3px}
-.ai-fields input{width:100%;font-size:12px;padding:7px 9px;border:1px solid var(--border);border-radius:var(--r);font-family:var(--font)}
-.ai-fields input.ai-filled{background:var(--blue-faint);border-color:#BFDBFE;color:var(--blue-text)}
-.filing-sidebar{background:var(--surface);border:1px solid var(--border);border-radius:var(--r3);overflow:hidden}
-.filing-sidebar .panel-body{max-height:400px;overflow-y:auto}
-.view-toggle{display:flex;gap:4px}.view-toggle button{font-size:11px;padding:5px 10px;border:1px solid var(--border);background:var(--surface);border-radius:var(--r);cursor:pointer;font-family:var(--font);color:var(--text2)}
-.view-toggle button.active{background:var(--navy);color:#fff;border-color:var(--navy)}
-.sp-path{font-family:var(--mono);font-size:10px;color:var(--text3);background:var(--surface3);padding:8px 12px;border-radius:var(--r);margin:12px 14px 0;line-height:1.6;word-break:break-all}
-.pull-banner{background:linear-gradient(135deg,var(--green-faint),#fff);border:1px solid #BBF7D0;border-radius:var(--r2);padding:11px 14px;margin:14px;font-size:12px;color:var(--text2);line-height:1.55}
-.pull-banner strong{color:var(--green)}
-.evidence-upload-toggle{font-size:11px;border:1px solid var(--border);background:var(--surface);border-radius:var(--r);padding:6px 10px;cursor:pointer;font-family:var(--font);color:var(--text2);display:inline-flex;gap:5px;align-items:center}
-.evidence-upload-toggle:hover{border-color:var(--border2);color:var(--text)}
-.folder-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;padding:14px}
-.folder-card{border:1px solid var(--border);border-radius:var(--r2);padding:14px 12px;cursor:pointer;text-align:center;background:var(--surface2);transition:all .15s}
-.folder-card:hover{border-color:var(--blue);background:var(--blue-faint);transform:translateY(-1px)}
-.folder-card i{font-size:28px;color:var(--blue-text);display:block;margin-bottom:8px}
-.folder-card .fc-name{font-size:12px;font-weight:500;line-height:1.35}
-.folder-card .fc-count{font-size:10px;color:var(--text3);margin-top:4px}
-input[type=file].filing-file-input{display:none}
+.file-pill{font-size:10px;font-weight:500;padding:2px 7px;border-radius:20px}
+.pill-ok{background:var(--green-faint);color:var(--green)}
+.pill-wait{background:var(--amber-faint);color:var(--amber)}
+.mini-btn{font-size:11px;border:1px solid var(--border2);border-radius:var(--r);background:var(--surface);padding:5px 9px;cursor:pointer;color:var(--text2);font-family:var(--font);display:inline-flex;gap:5px;align-items:center;text-decoration:none;white-space:nowrap}
+.mini-btn:hover{border-color:var(--border);color:var(--text)}
+.mini-btn.primary{background:var(--navy);border-color:var(--navy);color:#fff}
+.mini-btn.primary:hover{opacity:.9}
+.empty-note{font-size:12px;color:var(--text3);padding:30px 20px;text-align:center;line-height:1.7}
+.empty-note i{font-size:24px;display:block;margin-bottom:8px;opacity:.4}
 
-/* ── Live case files ── */
-.case-preview{padding:14px 16px;font-size:12px;line-height:1.65;color:var(--text);white-space:pre-wrap;font-family:Georgia,serif;max-height:min(52vh,520px);overflow-y:auto;background:var(--surface)}
-.case-preview[contenteditable=true]{box-shadow:inset 0 0 0 2px var(--blue);outline:none}
-.doc-fullpage{position:fixed;inset:0;z-index:600;background:rgba(11,22,40,0.55);display:flex;align-items:center;justify-content:center;padding:24px}
-.doc-fullpage-inner{background:var(--surface);border:1px solid var(--border);border-radius:var(--r3);width:min(920px,100%);max-height:calc(100vh - 48px);display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,0.25)}
-.doc-fullpage-hdr{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-shrink:0}
-.doc-fullpage-title{font-size:15px;font-weight:500;line-height:1.35}
-.doc-fullpage-meta{font-size:11px;color:var(--text3);margin-top:4px}
-.doc-fullpage-body{padding:20px 24px 28px;overflow-y:auto;flex:1;font-size:13px;line-height:1.7;color:var(--text);white-space:pre-wrap;font-family:Georgia,serif}
-.doc-fullpage-actions{display:flex;gap:8px;flex-shrink:0}
-.filing-layout.doc-focused{grid-template-columns:280px 1fr}
-.filing-layout.doc-focused .filing-sidebar .case-preview-panel{display:none}
-.case-preview-expanded .case-preview{max-height:none;min-height:320px}
-.case-meta-strip{display:flex;flex-wrap:wrap;gap:6px;padding:10px 14px;border-bottom:1px solid var(--border);background:var(--surface2)}
-.case-meta-chip{font-size:10px;padding:3px 8px;border-radius:20px;background:var(--surface3);color:var(--text2)}
-.case-meta-chip.live{background:var(--green-faint);color:var(--green)}
-.case-file-row{cursor:pointer}
-.case-file-row.active td{background:var(--blue-faint)}
-.stage-intake{background:var(--purple-faint);color:var(--purple)}
-.stage-triage,.stage-cpr{background:var(--amber-faint);color:var(--amber)}
-.stage-evidence{background:var(--blue-faint);color:var(--blue-text)}
-.stage-drafting{background:var(--green-faint);color:var(--green)}
+/* ── Right: document preview ── */
+.repo-preview{display:flex;flex-direction:column;overflow:hidden}
+.repo-preview-hdr{padding:11px 14px;border-bottom:1px solid var(--border);background:var(--surface2)}
+.repo-preview-title{font-size:12px;font-weight:500;color:var(--text);margin-bottom:2px;display:flex;align-items:center;gap:6px}
+.repo-preview-meta{font-size:10px;color:var(--text3)}
+.repo-preview-body{flex:1;overflow-y:auto;padding:14px 16px;font-size:12px;line-height:1.7;color:var(--text);font-family:var(--font-serif);white-space:pre-wrap}
+.repo-preview-actions{padding:10px 14px;border-top:1px solid var(--border);display:flex;gap:7px;flex-wrap:wrap}
+.repo-preview-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:var(--text3);text-align:center;padding:30px;font-size:12px;line-height:1.6}
+.repo-preview-empty i{font-size:28px;display:block;margin-bottom:10px;opacity:.3}
 
-.tree-item{display:flex;align-items:center;gap:8px;padding:6px 14px;font-size:12px;cursor:pointer;border-left:3px solid transparent;color:var(--text2)}
-.tree-group{margin-bottom:2px}
-.tree-year{display:flex;align-items:center;gap:4px;padding:7px 14px;font-size:12px;cursor:pointer;color:var(--text);font-weight:600;background:var(--surface2);border-bottom:1px solid var(--border)}
-.tree-year:hover{background:var(--surface3)}
-.tree-month{margin-left:0}
-.tree-month-hdr{display:flex;align-items:center;gap:4px;padding:6px 14px 6px 22px;font-size:11px;font-weight:600;cursor:pointer;color:var(--text2);text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--border2)}
-.tree-month-hdr:hover{background:var(--surface2)}
-.tree-date{margin-left:0}
-.tree-date-hdr{display:flex;align-items:center;gap:4px;padding:5px 14px 5px 32px;font-size:11px;cursor:pointer;color:var(--text2);border-bottom:1px solid var(--border2)}
-.tree-date-hdr:hover{background:var(--surface2)}
-.tree-case{padding:6px 14px 6px 44px;cursor:pointer;border-bottom:1px solid var(--border2);border-left:3px solid transparent}
-.tree-case:hover{background:var(--surface2)}
-.tree-case.active{background:var(--accent-faint);border-left-color:var(--accent)}
-.tree-case-ref{display:flex;align-items:center;margin-bottom:2px}
-.tree-case-name{font-size:10px;color:var(--text3);padding-left:15px}
+/* ── Closed outcomes layout ── */
+.closed-layout{display:grid;grid-template-columns:1fr 340px;gap:0;flex:1;min-height:0;border:1px solid var(--border);border-radius:var(--r3);overflow:hidden;background:var(--surface);margin-bottom:18px}
+.closed-list{border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
+.closed-list-hdr{padding:10px 14px;border-bottom:1px solid var(--border);background:var(--surface2);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.closed-tabs{display:flex;gap:4px;flex-wrap:wrap;flex:1}
+.closed-tab{font-size:11px;border:1px solid var(--border);background:var(--surface2);color:var(--text2);padding:4px 10px;border-radius:20px;cursor:pointer;font-family:var(--font)}
+.closed-tab.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+.closed-search{font-size:12px;border:1px solid var(--border);border-radius:var(--r);padding:6px 10px;width:160px;font-family:var(--font)}
+.closed-list-body{flex:1;overflow-y:auto}
+.closed-card{padding:12px 16px;border-bottom:1px solid var(--border);cursor:pointer;display:grid;grid-template-columns:1fr auto;gap:10px}
+.closed-card:hover{background:var(--surface2)}
+.closed-card.active{background:var(--accent-faint)}
+.cc-ref{font-family:var(--mono);font-size:10px;color:var(--text3);margin-bottom:2px}
+.cc-name{font-size:12px;font-weight:500}
+.cc-meta{font-size:11px;color:var(--text3);line-height:1.4;margin-top:2px}
+.outcome-pill{font-size:10px;font-weight:500;padding:3px 8px;border-radius:20px;white-space:nowrap}
+.p-defended{background:var(--green-faint);color:var(--green)}
+.p-settled{background:var(--amber-faint);color:var(--amber)}
+.p-withdrawn{background:var(--surface3);color:var(--text2)}
+.p-paid{background:var(--blue-faint);color:var(--blue-text)}
+.closed-detail{display:flex;flex-direction:column;overflow:hidden}
+.closed-detail-hdr{padding:11px 14px;border-bottom:1px solid var(--border);background:var(--surface2)}
+.closed-detail-body{flex:1;overflow-y:auto;padding:14px 16px}
+.kv{display:grid;grid-template-columns:110px 1fr;gap:6px;font-size:12px;padding:6px 0;border-bottom:1px solid var(--border2)}
+.kv:last-child{border-bottom:none}
+.kv-label{color:var(--text3)}
+.kv-val{font-weight:500}
+.ev-list{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+.ev{font-size:10px;padding:2px 7px;border-radius:20px;background:var(--purple-faint);color:var(--purple)}
+.case-law-note{font-size:11px;color:var(--text2);line-height:1.6;margin-top:8px;padding:8px 10px;border-left:3px solid var(--blue);background:var(--blue-faint);border-radius:0 var(--r) var(--r) 0}
+
+/* ── User modal ── */
+.user-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.3);z-index:500}
+.user-modal.open{display:flex;justify-content:flex-end;padding:52px 20px 0}
+.user-dropdown{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);width:230px;overflow:hidden}
+.ud-header{padding:10px 14px;border-bottom:1px solid var(--border);font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:var(--text3)}
+.ud-section{padding:4px 14px 2px;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.06em;color:var(--text3)}
+.ud-divider{height:1px;background:var(--border);margin:4px 0}
+.ud-item{display:flex;align-items:center;gap:10px;padding:9px 14px;cursor:pointer}
+.ud-item:hover,.ud-item.current{background:var(--accent-faint)}
+.ud-av{width:28px;height:28px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500}
+.ud-name{font-size:12px;font-weight:500}
+.ud-role{font-size:10px;color:var(--text3)}
+.ud-tick{margin-left:auto;color:var(--green);font-size:14px;display:none}
+.ud-item.current .ud-tick{display:block}
 </style>
 </head>
 <body>
 <script src="shared_data.js"></script>
 <script src="shared_theme.js"></script>
 <script src="case_helpers.js"></script>
-<script src="dio_helpers.js"></script>
-<script src="evidence_filing.js"></script>
 <script src="case_filing.js"></script>
+<script src="evidence_filing.js"></script>
+
 <nav class="global-nav">
-  <a href="index.html" class="gn-logo"><div class="gn-mark"><i class="ti ti-lock"></i></div><span class="gn-name">DefendAble</span></a>
+  <a href="index.html" class="gn-logo"><div class="gn-mark"><i class="ti ti-archive"></i></div><span class="gn-name">DefendAble</span></a>
   <div class="gn-links" id="gn-links"></div>
   <div class="gn-right">
-    <div class="gn-user-btn" onclick="toggleUserMenu()"><div class="gn-av" id="nav-av">SB</div><span class="gn-user" id="nav-user">S. Booth</span><i class="ti ti-chevron-down" style="font-size:10px;color:rgba(255,255,255,0.4)"></i></div>
+    <div class="gn-user-btn" onclick="toggleUserMenu()"><div class="gn-av" id="nav-av">SB</div><span class="gn-user" id="nav-user">S. Booth</span></div>
   </div>
 </nav>
-<div class="page" id="page"></div>
-<div id="doc-fullpage-overlay" class="doc-fullpage" style="display:none" onclick="if(event.target===this)closeCaseDocFullPage()"></div>
-<div id="user-modal" class="user-modal" onclick="if(event.target===this)closeMenu()"><div class="user-dropdown">
-  <div class="ud-header">Switch user — demo</div>
-  <div class="ud-item" id="ud-SB" onclick="switchUser('SB')"><div class="ud-av">SB</div><div><div class="ud-name">Sarah Booth</div><div class="ud-role">Head of Legal Ops</div></div><i class="ti ti-check ud-tick"></i></div>
-  <div class="ud-item" id="ud-JP" onclick="switchUser('JP')"><div class="ud-av">JP</div><div><div class="ud-name">James Patel</div><div class="ud-role">Senior Solicitor</div></div><i class="ti ti-check ud-tick"></i></div>
-  <div class="ud-item" id="ud-KR" onclick="switchUser('KR')"><div class="ud-av">KR</div><div><div class="ud-name">Kiran Rahman</div><div class="ud-role">Solicitor</div></div><i class="ti ti-check ud-tick"></i></div>
-  <div style="height:1px;background:var(--border);margin:4px 0"></div>
-  <div class="ud-item" id="ud-MD" onclick="switchUser('MD')"><div class="ud-av" style="background:#1a3a6b">MD</div><div><div class="ud-name">Marie Dupont</div><div class="ud-role">Juriste senior</div></div><i class="ti ti-check ud-tick"></i></div>
-  <div class="ud-item" id="ud-PL" onclick="switchUser('PL')"><div class="ud-av" style="background:#1a3a6b">PL</div><div><div class="ud-name">Pierre Laurent</div><div class="ud-role">Juriste</div></div><i class="ti ti-check ud-tick"></i></div>
-  <div style="height:1px;background:var(--border);margin:4px 0"></div>
-  <div class="ud-item" id="ud-CG" onclick="switchUser('CG')"><div class="ud-av" style="background:#6b1a1a">CG</div><div><div class="ud-name">Carlos García</div><div class="ud-role">Abogado senior</div></div><i class="ti ti-check ud-tick"></i></div>
-  <div class="ud-item" id="ud-IM" onclick="switchUser('IM')"><div class="ud-av" style="background:#6b1a1a">IM</div><div><div class="ud-name">Isabel Martín</div><div class="ud-role">Abogada</div></div><i class="ti ti-check ud-tick"></i></div>
-    <div style="height:1px;background:var(--border);margin:4px 0"></div>
-    <div style="padding:4px 14px 2px;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.06em;color:var(--text3)">Documentary Intelligence</div>
+
+<div class="page" id="page-root">
+  <div class="page-header">
+    <div>
+      <div class="page-title">Repository</div>
+      <div class="page-sub">Document storage — file, organise and pull into case workspaces</div>
+    </div>
+    <div class="stat-bar" id="repo-stats"></div>
+  </div>
+  <div class="tab-row">
+    <button class="tab-btn active" id="tab-live" onclick="setTab('live')"><i class="ti ti-folder-open"></i> Live case files</button>
+    <button class="tab-btn" id="tab-closed" onclick="setTab('closed')"><i class="ti ti-archive"></i> Closed outcomes</button>
+  </div>
+  <div id="repo-body" style="flex:1;min-height:0;display:flex;flex-direction:column"></div>
+</div>
+
+<div id="user-modal" class="user-modal" onclick="if(event.target===this)closeMenu()">
+  <div class="user-dropdown">
+    <div class="ud-header">Switch user — demo</div>
+    <div class="ud-item" id="ud-SB" onclick="switchUser('SB')"><div class="ud-av">SB</div><div><div class="ud-name">Sarah Booth</div><div class="ud-role">Senior solicitor</div></div><i class="ti ti-check ud-tick"></i></div>
+    <div class="ud-item" id="ud-JP" onclick="switchUser('JP')"><div class="ud-av">JP</div><div><div class="ud-name">James Patel</div><div class="ud-role">Senior solicitor</div></div><i class="ti ti-check ud-tick"></i></div>
+    <div class="ud-item" id="ud-KR" onclick="switchUser('KR')"><div class="ud-av">KR</div><div><div class="ud-name">Kiran Rahman</div><div class="ud-role">Solicitor</div></div><i class="ti ti-check ud-tick"></i></div>
+    <div class="ud-divider"></div>
+    <div class="ud-item" id="ud-MD" onclick="switchUser('MD')"><div class="ud-av" style="background:#1a3a6b">MD</div><div><div class="ud-name">Marie Dupont</div><div class="ud-role">Juriste senior</div></div><i class="ti ti-check ud-tick"></i></div>
+    <div class="ud-item" id="ud-PL" onclick="switchUser('PL')"><div class="ud-av" style="background:#1a3a6b">PL</div><div><div class="ud-name">Pierre Laurent</div><div class="ud-role">Juriste</div></div><i class="ti ti-check ud-tick"></i></div>
+    <div class="ud-divider"></div>
+    <div class="ud-item" id="ud-CG" onclick="switchUser('CG')"><div class="ud-av" style="background:#6b1a1a">CG</div><div><div class="ud-name">Carlos García</div><div class="ud-role">Abogado senior</div></div><i class="ti ti-check ud-tick"></i></div>
+    <div class="ud-item" id="ud-IM" onclick="switchUser('IM')"><div class="ud-av" style="background:#6b1a1a">IM</div><div><div class="ud-name">Isabel Martín</div><div class="ud-role">Abogada</div></div><i class="ti ti-check ud-tick"></i></div>
+    <div class="ud-divider"></div>
+    <div class="ud-section">Documentary Intelligence</div>
     <div class="ud-item" id="ud-EH" onclick="switchUser('EH')"><div class="ud-av" style="background:#164E63">EH</div><div><div class="ud-name">Emma Hughes</div><div class="ud-role">DIO — England & Wales</div></div><i class="ti ti-check ud-tick"></i></div>
     <div class="ud-item" id="ud-FD" onclick="switchUser('FD')"><div class="ud-av" style="background:#4A3728">FD</div><div><div class="ud-name">Françoise Durand</div><div class="ud-role">DIO — France</div></div><i class="ti ti-check ud-tick"></i></div>
     <div class="ud-item" id="ud-SR" onclick="switchUser('SR')"><div class="ud-av" style="background:#2D4A3E">SR</div><div><div class="ud-name">Sofia Ramos</div><div class="ud-role">DIO — España</div></div><i class="ti ti-check ud-tick"></i></div>
-</div></div>
+  </div>
+</div>
+
+<script src="shared_nav.js"></script>
+<script src="shared_user_switch.js"></script>
 <script>
-function isEvidenceTeam(){var uid=getActiveUser();var u=USERS[uid];return u&&(u.team==='evidence'||u.team==='dio');}
-function sharePointPath(path){
-  var base='SharePoint / Evidence Repository';
-  if(!path.categoryId)return base;
-  var cat=EvidenceFiling.categoryById(path.categoryId);
-  var segs=[base,cat?cat.name:path.categoryId];
-  if(path.year)segs.push(path.year);
-  if(path.month){var m=EvidenceFiling.MONTHS[parseInt(path.month,10)-1];segs.push(m||path.month);}
-  if(path.date){var p=EvidenceFiling.dateParts(path.date);segs.push(p.dayLabel);}
-  return segs.join(' / ');
-}
-function setFilingPath(p){filingPath=Object.assign({categoryId:null,year:null,month:null,date:null},p||{});filingView='browse';render();}
-function filingBreadcrumb(){
-  var parts=[{label:'All categories',action:"setFilingPath({})"}];
-  if(filingPath.categoryId){var c=EvidenceFiling.categoryById(filingPath.categoryId);parts.push({label:c?c.name:filingPath.categoryId,action:"setFilingPath({categoryId:'"+filingPath.categoryId+"'})"});}
-  if(filingPath.year)parts.push({label:filingPath.year,action:"setFilingPath({categoryId:'"+filingPath.categoryId+"',year:'"+filingPath.year+"'})"});
-  if(filingPath.month)parts.push({label:EvidenceFiling.MONTHS[parseInt(filingPath.month,10)-1],action:"setFilingPath({categoryId:'"+filingPath.categoryId+"',year:'"+filingPath.year+"',month:"+filingPath.month+"})"});
-  if(filingPath.date){var dp=EvidenceFiling.dateParts(filingPath.date);parts.push({label:dp.dayLabel,action:filingPath.categoryId?"setFilingPath({categoryId:'"+filingPath.categoryId+"',year:'"+filingPath.year+"',month:"+filingPath.month+"})":null});}
-  return parts.map(function(p,i){return (i?'<span class="bc-sep">›</span>':'')+(p.action?'<span onclick="'+p.action+'">'+escapeHtml(p.label)+'</span>':'<span>'+escapeHtml(p.label)+'</span>');}).join('');
-}
-function renderFilingTree(){
-  var tree=EvidenceFiling.getFolderTree();
-  var cats=EvidenceFiling.FILING_CATEGORIES;
-  var html='';
-  cats.forEach(function(cat){
-    var node=tree[cat.id];
-    var total=node?Object.keys(node.years).reduce(function(s,y){return s+Object.keys(node.years[y].months).reduce(function(s2,m){return s2+Object.keys(node.years[y].months[m].days).reduce(function(s3,d){return s3+node.years[y].months[m].days[d].count;},0);},0);},0):0;
-    var active=filingPath.categoryId===cat.id&&!filingPath.year;
-    html+='<div class="tree-item'+(active?' active':'')+'" onclick="setFilingPath({categoryId:\''+cat.id+'\'})"><i class="ti '+cat.icon+'"></i><span>'+escapeHtml(shortCategoryName(cat.name))+'</span><span class="tree-count">'+total+'</span></div>';
-    if(filingPath.categoryId===cat.id&&node){
-      var years=Object.keys(node.years).sort().reverse();
-      years.forEach(function(y){
-        var yActive=filingPath.year===y&&!filingPath.month;
-        html+='<div class="tree-year'+(yActive?' active':'')+'" onclick="event.stopPropagation();setFilingPath({categoryId:\''+cat.id+'\',year:\''+y+'\'})"><i class="ti ti-chevron-'+(filingPath.year===y?'down':'right')+'" style="font-size:10px"></i>'+y+'</div>';
-        if(filingPath.year===y){
-          var months=Object.keys(node.years[y].months).sort(function(a,b){return parseInt(b,10)-parseInt(a,10);});
-          months.forEach(function(m){
-            var mn=node.years[y].months[m];
-            var mActive=filingPath.month===parseInt(m,10)&&!filingPath.date;
-            html+='<div class="tree-month'+(mActive?' active':'')+'" onclick="event.stopPropagation();setFilingPath({categoryId:\''+cat.id+'\',year:\''+y+'\',month:'+m+'})"><i class="ti ti-chevron-'+(filingPath.month===parseInt(m,10)?'down':'right')+'" style="font-size:10px"></i>'+mn.name+'</div>';
-            if(filingPath.month===parseInt(m,10)){
-              Object.keys(mn.days).sort().reverse().forEach(function(d){
-                var day=mn.days[d];
-                html+='<div class="tree-day'+(filingPath.date===d?' active':'')+'" onclick="event.stopPropagation();setFilingPath({categoryId:\''+cat.id+'\',year:\''+y+'\',month:'+m+',date:\''+d+'\'})"><i class="ti ti-calendar-event" style="font-size:10px"></i>'+escapeHtml(day.label)+' <span class="tree-count">'+day.count+'</span></div>';
-              });
-            }
-          });
-        }
-      });
-    }
-  });
-  return html;
-}
-function renderFilingContent(){
-  var eh=isEvidenceTeam();
-  if(filingSearch){
-    var files=EvidenceFiling.searchFiles(filingSearch);
-    return renderFileTable(files,true);
-  }
-  if(filingPath.date&&!filingPath.categoryId){
-    var dayFiles=EvidenceFiling.getFilesInPath(null,null,null,filingPath.date);
-    return '<div style="padding:12px 14px 0;font-size:12px;color:var(--text2)">All evidence filed for <strong>'+escapeHtml(EvidenceFiling.dateParts(filingPath.date).dayLabel)+'</strong> across every category.</div>'+renderFileTable(dayFiles,false);
-  }
-  if(!filingPath.categoryId){
-    var tree=EvidenceFiling.getFolderTree();
-    return '<div class="folder-grid">'+EvidenceFiling.FILING_CATEGORIES.map(function(cat){
-      var node=tree[cat.id];
-      var count=node?EvidenceFiling.getFilesInPath(cat.id).length:0;
-      return '<div class="folder-card" onclick="setFilingPath({categoryId:\''+cat.id+'\'})"><i class="ti '+cat.icon+'"></i><div class="fc-name">'+escapeHtml(shortCategoryName(cat.name))+'</div><div class="fc-count">'+count+' file'+(count===1?'':'s')+'</div></div>';
-    }).join('')+'</div>';
-  }
-  if(filingPath.categoryId&&!filingPath.year){
-    var tree=EvidenceFiling.getFolderTree();
-    var node=tree[filingPath.categoryId];
-    if(!node||!Object.keys(node.years).length)return '<div class="empty-note">No files in this category yet.'+(eh?' Use upload below to add the first file.':'')+'</div>';
-    return '<div class="folder-grid">'+Object.keys(node.years).sort().reverse().map(function(y){
-      var count=EvidenceFiling.getFilesInPath(filingPath.categoryId,y).length;
-      return '<div class="folder-card" onclick="setFilingPath({categoryId:\''+filingPath.categoryId+'\',year:\''+y+'\'})"><i class="ti ti-calendar"></i><div class="fc-name">'+y+'</div><div class="fc-count">'+count+' file'+(count===1?'':'s')+'</div></div>';
-    }).join('')+'</div>';
-  }
-  if(filingPath.year&&!filingPath.month){
-    var tree=EvidenceFiling.getFolderTree();
-    var months=tree[filingPath.categoryId]&&tree[filingPath.categoryId].years[filingPath.year]?tree[filingPath.categoryId].years[filingPath.year].months:{};
-    return '<div class="folder-grid">'+Object.keys(months).sort(function(a,b){return parseInt(b,10)-parseInt(a,10);}).map(function(m){
-      var count=EvidenceFiling.getFilesInPath(filingPath.categoryId,filingPath.year,m).length;
-      return '<div class="folder-card" onclick="setFilingPath({categoryId:\''+filingPath.categoryId+'\',year:\''+filingPath.year+'\',month:'+m+'})"><i class="ti ti-folder"></i><div class="fc-name">'+months[m].name+'</div><div class="fc-count">'+count+' file'+(count===1?'':'s')+'</div></div>';
-    }).join('')+'</div>';
-  }
-  if(filingPath.month&&!filingPath.date){
-    var tree=EvidenceFiling.getFolderTree();
-    var days=tree[filingPath.categoryId]&&tree[filingPath.categoryId].years[filingPath.year]&&tree[filingPath.categoryId].years[filingPath.year].months[filingPath.month]?tree[filingPath.categoryId].years[filingPath.year].months[filingPath.month].days:{};
-    return '<div class="folder-grid">'+Object.keys(days).sort().reverse().map(function(d){
-      return '<div class="folder-card" onclick="setFilingPath({categoryId:\''+filingPath.categoryId+'\',year:\''+filingPath.year+'\',month:'+filingPath.month+',date:\''+d+'\'})"><i class="ti ti-calendar-event"></i><div class="fc-name">'+escapeHtml(days[d].label)+'</div><div class="fc-count">'+days[d].count+' file'+(days[d].count===1?'':'s')+'</div></div>';
-    }).join('')+'</div>';
-  }
-  var files=EvidenceFiling.getFilesInPath(filingPath.categoryId,filingPath.year,filingPath.month,filingPath.date);
-  return renderFileTable(files,false);
-}
-function renderFileTable(files,fromSearch){
-  var eh=isEvidenceTeam();
-  if(!files.length)return '<div class="evidence-empty"><i class="ti ti-search-off"></i>No files'+(fromSearch?' match your search':' in this folder')+'.'+(eh?' Upload using the panel below.':'')+'</div>';
-  var rows=files.map(function(f){
-    var tierCls=f.tier==='K'?'tier-k':f.tier==='S'?'tier-s':'tier-w';
-    var ext=f.filename.split('.').pop().toLowerCase();
-    var icon=ext==='pdf'?'ti-file-type-pdf':ext==='msg'?'ti-mail':ext==='docx'?'ti-file-word':'ti-file';
-    return '<tr><td><div class="file-name"><i class="ti '+icon+'"></i><div><div>'+escapeHtml(f.filename)+'</div><div class="file-meta">'+escapeHtml(f.flights.join(', '))+(f.routes?' · '+escapeHtml(f.routes):'')+'</div></div></div></td><td><span class="pill '+tierCls+'">'+f.tier+'</span></td><td>'+escapeHtml(f.dayLabel)+'</td><td>'+escapeHtml(f.source)+'</td><td>'+EvidenceFiling.formatSize(f.size)+'</td><td>'+(eh?'<button class="mini-btn" onclick="deleteFilingFile(\''+f.id+'\')" title="Remove file"><i class="ti ti-trash"></i></button> ':'')+'<button class="mini-btn primary" onclick="pullFileToCase(\''+f.id+'\')" title="Queue for evidence pack"><i class="ti ti-download"></i> Pull</button></td></tr>';
-  }).join('');
-  return '<table class="file-table"><thead><tr><th>File</th><th>Tier</th><th>Date</th><th>Source</th><th>Size</th><th>Action</th></tr></thead><tbody>'+rows+'</tbody></table>';
-}
-var pendingUploadFile=null;
-function renderUploadPanel(){
-  if(!isEvidenceTeam())return '';
-  var catOpts=EvidenceFiling.FILING_CATEGORIES.map(function(c){return '<option value="'+c.id+'"'+(filingPath.categoryId===c.id?' selected':'')+'>'+escapeHtml(c.name)+'</option>';}).join('');
-  var dateVal=filingPath.date||'';
-  return '<div class="upload-zone" id="upload-zone" onclick="document.getElementById(\'filing-file-input\').click()" ondragover="event.preventDefault();this.classList.add(\'dragover\')" ondragleave="this.classList.remove(\'dragover\')" ondrop="handleFilingDrop(event)"><i class="ti ti-cloud-upload"></i><p><strong>Upload evidence</strong> — drag here or click to browse<br><span style="font-size:11px;color:var(--text3)">AI fills category, flight and date from the filename</span></p></div><input type="file" id="filing-file-input" class="filing-file-input" onchange="handleFilingFileSelect(event)"><div id="ai-upload-review" style="display:none"><div class="ai-upload-bar"><strong><i class="ti ti-sparkles"></i> AI document analysis</strong> — review the extracted fields below, then confirm upload.</div><div class="ai-fields"><div><label>Category</label><input id="ai-doc-category" class="ai-filled" readonly></div><div><label>Doc type</label><input id="ai-doc-type" class="ai-filled" readonly></div><div><label>Flight</label><input id="ai-doc-flight" class="ai-filled"></div><div><label>From</label><input id="ai-doc-dep" class="ai-filled"></div><div><label>To</label><input id="ai-doc-arr" class="ai-filled"></div></div><div class="ai-fields" style="grid-template-columns:1fr 1fr 1fr 1fr 1fr"><div><label>Date</label><input id="ai-doc-date" type="date" class="ai-filled"></div><div><label>Route</label><input id="ai-doc-route" class="ai-filled"></div><div><label>Source</label><select id="ai-doc-source"><option>Manual</option><option>API</option><option>SharePoint migration</option></select></div><div style="grid-column:span 2;display:flex;align-items:flex-end;gap:6px"><button class="mini-btn primary" style="flex:1;justify-content:center;padding:9px" onclick="confirmAiUpload()"><i class="ti ti-check"></i> Confirm upload</button><button class="mini-btn" onclick="cancelAiUpload()">Cancel</button></div></div></div><div class="upload-form"><div><label>Category</label><select id="upload-category">'+catOpts+'</select></div><div><label>Operation date</label><input type="date" id="upload-date" value="'+dateVal+'"></div><div><label>Flight number(s)</label><input type="text" id="upload-flights" placeholder="HC 1184"></div><div><label>Route</label><input type="text" id="upload-route" placeholder="LTN-BCN"></div><div><label>Source</label><select id="upload-source"><option>Manual</option><option>API</option><option>SharePoint migration</option></select></div><div style="display:flex;align-items:flex-end"><button class="mini-btn primary" style="width:100%;justify-content:center;padding:9px" onclick="document.getElementById(\'filing-file-input\').click()"><i class="ti ti-upload"></i> Choose file</button></div></div>';
-}
-function aiParseFilename(name){
-  var n=String(name||'').replace(/\.[^.]+$/,'');
-  var out={categoryId:'tops',categoryLabel:'Operational delay records system',docType:'Flight Details',flight:'',dep:'',arr:'',date:'',route:''};
-  var upper=n.toUpperCase();
-  if(upper.indexOf('EUROCONTROL')>=0||upper.indexOf('ATFM')>=0){out.categoryId='eurocontrol';out.categoryLabel='Eurocontrol';out.docType='Flight Data';}
-  else if(upper.indexOf('CREW SCHEDULING SYSTEM')>=0||upper.indexOf('CREW')>=0||upper.indexOf('FDP')>=0){out.categoryId='aims';out.categoryLabel='Crew scheduling system';out.docType='Crew Route';}
-  else if(upper.indexOf('DISRUPTION DATA SYSTEM')>=0){out.categoryId='disco';out.categoryLabel='Disruption data system';out.docType='Disruption Record';}
-  else if(upper.indexOf('DPM')>=0||upper.indexOf('OPSREVIEW')>=0||upper.indexOf('DAILYOPS')>=0){out.categoryId='dpm';out.categoryLabel='DPM';out.docType='Daily Ops Review';}
-  else if(upper.indexOf('METAR')>=0||upper.indexOf('SIGMET')>=0){out.categoryId='weather';out.categoryLabel='Weather';out.docType='METAR / SIGMET';}
-  else if(upper.indexOf('OPERATIONAL DELAY RECORDS SYSTEM')>=0){out.categoryId='tops';out.categoryLabel='Operational delay records system';out.docType='Flight Details';}
-  var fm=n.match(/([A-Z]{2}\s?\d{3,4})/i);if(fm)out.flight=fm[1].replace(/(\d+)/,' $1').trim().toUpperCase();
-  var rm=n.match(/([A-Z]{3})[_\-\s]+([A-Z]{3})/i);if(rm){out.dep=rm[1].toUpperCase();out.arr=rm[2].toUpperCase();out.route=out.dep+'-'+out.arr;}
-  var dm=n.match(/(\d{1,2})([A-Z]{3})(\d{2,4})/i);
-  if(dm){
-    var months={JAN:1,FEB:2,MAR:3,APR:4,MAY:5,JUN:6,JUL:7,AUG:8,SEP:9,OCT:10,NOV:11,DEC:12};
-    var mo=months[dm[2].toUpperCase()];
-    if(mo){var yr=dm[3].length===2?'20'+dm[3]:dm[3];out.date=yr+'-'+String(mo).padStart(2,'0')+'-'+String(dm[1]).padStart(2,'0');}
-  }
-  if(!out.date){var iso=n.match(/(\d{4})-(\d{2})-(\d{2})/);if(iso)out.date=iso[0];}
-  if(!out.date){var dmy=n.match(/(\d{1,2})([A-Za-z]+)(\d{4})/);if(dmy){var parsed=new Date(dmy[3],['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'].indexOf(dmy[2].slice(0,3).toLowerCase()),dmy[1]);if(!isNaN(parsed))out.date=parsed.toISOString().slice(0,10);}}
-  if(!out.flight&&upper.indexOf('EZY')>=0){var ez=n.match(/EZY\s?(\d{3,4})/i);if(ez)out.flight='EZY '+ez[1];}
-  if(!out.dep&&upper.indexOf('MAN')>=0)out.dep='MAN';
-  if(!out.arr&&upper.indexOf('BER')>=0)out.arr='BER';
-  if(out.dep&&out.arr&&!out.route)out.route=out.dep+'-'+out.arr;
-  return out;
-}
-function showAiReview(file,parsed){
-  pendingUploadFile=file;
-  document.getElementById('ai-upload-review').style.display='block';
-  document.getElementById('ai-doc-category').value=parsed.categoryLabel;
-  document.getElementById('ai-doc-type').value=parsed.docType;
-  document.getElementById('ai-doc-flight').value=parsed.flight;
-  document.getElementById('ai-doc-dep').value=parsed.dep;
-  document.getElementById('ai-doc-arr').value=parsed.arr;
-  document.getElementById('ai-doc-date').value=parsed.date||'';
-  document.getElementById('ai-doc-route').value=parsed.route;
-  document.getElementById('upload-category').value=parsed.categoryId;
-  if(parsed.date)document.getElementById('upload-date').value=parsed.date;
-  if(parsed.flight)document.getElementById('upload-flights').value=parsed.flight;
-  if(parsed.route)document.getElementById('upload-route').value=parsed.route;
-  pendingUploadFile._parsed=parsed;
-}
-function cancelAiUpload(){pendingUploadFile=null;document.getElementById('ai-upload-review').style.display='none';}
-function confirmAiUpload(){if(pendingUploadFile)processFilingUpload(pendingUploadFile,true);}
-function handleFilingFileSelect(e){var f=e.target.files[0];if(f){showAiReview(f,aiParseFilename(f.name));}e.target.value='';}
-function handleFilingDrop(e){e.preventDefault();document.getElementById('upload-zone').classList.remove('dragover');var f=e.dataTransfer.files[0];if(f)showAiReview(f,aiParseFilename(f.name));}
-function processFilingUpload(file,fromAi){
-  if(!file||!isEvidenceTeam())return;
-  var cat=document.getElementById('upload-category').value;
-  var date=document.getElementById('upload-date').value;
-  if(fromAi)date=document.getElementById('ai-doc-date').value||date;
-  if(!date){alert('Please set the operation date before uploading.');return;}
-  var flights=(fromAi?document.getElementById('ai-doc-flight').value:document.getElementById('upload-flights').value||'').split(/[,;]/).map(function(s){return s.trim();}).filter(Boolean);
-  var route=fromAi?document.getElementById('ai-doc-route').value:document.getElementById('upload-route').value||'';
-  var source=(fromAi?document.getElementById('ai-doc-source'):document.getElementById('upload-source')).value||'Manual';
-  var uid=getActiveUser(), u=USERS[uid]||{};
-  EvidenceFiling.uploadFile({categoryId:cat,date:date,filename:file.name,flights:flights,routes:route,source:source,size:file.size,uploadedBy:uid,uploadedByName:u.full||u.name});
-  var parts=EvidenceFiling.dateParts(date);
-  pendingUploadFile=null;
-  document.getElementById('ai-upload-review').style.display='none';
-  setFilingPath({categoryId:cat,year:parts.year,month:parts.month,date:date});
-}
-function deleteFilingFile(id){if(confirm('Remove this file from the filing system?')){EvidenceFiling.deleteFile(id);render();}}
-function pullFileToCase(fileId){
-  var f=EvidenceFiling.getAllFiles().find(function(x){return x.id===fileId;});
-  if(!f)return;
-  try{
-    var pending=JSON.parse(sessionStorage.getItem('dfa_pending_pulls')||'[]');
-    pending.push({fileId:f.id,filename:f.filename,libKey:f.libKey,categoryId:f.categoryId,date:f.date,flights:f.flights,pulledAt:new Date().toISOString()});
-    sessionStorage.setItem('dfa_pending_pulls',JSON.stringify(pending.slice(0,50)));
-    EvidenceFiling.addAuditEntry('Legal pull queued: "'+f.filename+'" for evidence pack assembly','pull',(USERS[getActiveUser()]||{}).full||'Legal user');
-    alert('Queued for evidence pack.\n\nOpen the case Evidence tab and use Pull from repository to attach.');
-  }catch(e){}
+// ── State ──
+var activeTab = 'live';
+var selectedRef = null;
+var selectedFolder = 'all';
+var selectedDocId = null;
+var docSearch = '';
+var closedOutcome = 'all';
+var closedQuery = '';
+var closedRef = null;
+
+// Tree open/close state — default all open
+var treeYears = {};
+var treeMonths = {};
+var treeDates = {};
+
+// ── Helpers ──
+function esc(v){ return String(v==null?'':v).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
+
+function setTab(t){
+  activeTab = t;
+  document.getElementById('tab-live').classList.toggle('active', t==='live');
+  document.getElementById('tab-closed').classList.toggle('active', t==='closed');
   render();
 }
-function buildEvidenceDaysFromFiling(){
-  var dates={};
-  EvidenceFiling.getAllFiles().forEach(function(f){
-    if(!dates[f.date])dates[f.date]={date:f.date,label:f.dayLabel,flights:{},routes:f.routes,sources:[]};
-    f.flights.forEach(function(fl){dates[f.date].flights[fl]=true;});
-    var cat=EvidenceFiling.categoryById(f.categoryId);
-    dates[f.date].sources.push({name:cat?cat.name.split('—')[0].trim():f.categoryId,type:f.source==='Manual'?'Manual':'API',status:'On file',pack:f.tier==='K'?'Key':'Secondary',linked:'',fileId:f.id});
-  });
-  return Object.keys(dates).sort().reverse().map(function(d){
-    var sum=EvidenceFiling.getDaySummary(d);
-    var day=dates[d];
-    return {date:d,label:day.label,routes:day.routes||'Multiple routes',flights:Object.keys(day.flights),completion:sum.gold,gold:sum.goldReady,summary:sum.fileCount+' evidence files on file across '+Object.keys(day.flights).length+' flight(s). Gold pack '+sum.gold+'%.',sources:day.sources};
-  });
-}
-var activeArea='evidence', activeOutcome='all', query='', selectedRef='', evidenceFilter='All';
-var caseFilingTab='live', caseFilingRef='', caseFilingFolder='all', caseFilingDocId='', caseFilingSearch='', caseFilingEditing=false, caseDocFullView=false, caseDocFocusView=false;
-var filingView='browse';
-var filingPath={categoryId:null,year:null,month:null,date:null};
-var treeOpenYears={}, treeOpenMonths={}, treeOpenDates={};
-var filingSearch='';
-var CLOSED_CASES=[
-  {ref:'REP-2025-0142',claimant:'Nadia Collins',solicitor:'Clarke & Partners',flightNum:'HC 203',route:'LGW to ALC',disruptionType:'Weather',jurisdiction:'england-wales',outcome:'defended',value:'EUR 250',saving:'EUR 250',days:18,confidence:94,summary:'Defended after METAR, SIGMET and ATFM records showed unsafe convective weather at Alicante. Letter of response reused weather evidence bundle.',evidence:['Operational delay records system report','METAR/TAF','SIGMET','NOTAM','Eurocontrol ATFM'],caseLaw:['Wallentin-Hermann','Sturgeon'],education:'Weather evidence pack - complete guide',recommendation:'For similar weather claims, pull METAR/SIGMET first and challenge compensation under Art 5(3).'},
-  {ref:'REP-2025-0178',claimant:'Oliver James',solicitor:'Pemberton & Associates',flightNum:'HC 442',route:'LGW to BCN',disruptionType:'ATC Restrictions',jurisdiction:'england-wales',outcome:'defended',value:'EUR 250',saving:'EUR 250',days:12,confidence:97,summary:'Clean ATC slot defence. Eurocontrol regulation data matched Operational delay records system delay codes and claimant withdrew after response.',evidence:['Eurocontrol regulation','Operational delay records system delay code','Network Outlook','Disruption data system log'],caseLaw:['Wallentin-Hermann'],education:'ATC restrictions - the clean defence',recommendation:'High-confidence defend where Eurocontrol regulation directly matches the delay window.'},
-  {ref:'REP-2025-0199',claimant:'Mathilde Roux',solicitor:'Cabinet Lefevre',flightNum:'HC 742',route:'CDG to LTN',disruptionType:'ATC Restrictions',jurisdiction:'france',outcome:'settled',value:'EUR 250',saving:'EUR 120',days:28,confidence:82,summary:'Settled commercially after mandatory French mediation timetable risk. ATC evidence was strong but care records were incomplete.',evidence:['Eurocontrol data','Operational delay records system report','MTV mediation note'],caseLaw:['Wallentin-Hermann'],education:'France and Spain jurisdiction guide',recommendation:'In French claims, flag MTV mediation and care-record gaps early even when liability defence is strong.'},
-  {ref:'REP-2025-0206',claimant:'Carlos Vega',solicitor:'Bufete Sanchez',flightNum:'HC 612',route:'BCN to LGW',disruptionType:'Technical Issues',jurisdiction:'spain',outcome:'paid',value:'EUR 250',saving:'EUR 0',days:9,confidence:76,summary:'Paid after Maintenance records system showed routine technical defect. Repository marks this as non-defendable under van der Lans.',evidence:['Maintenance records system record','Operational delay records system report','Maintenance log'],caseLaw:['van der Lans','Wallentin-Hermann'],education:'Technical defences are high risk',recommendation:'Technical issues require exceptional external cause; otherwise recommend settlement/payment.'},
-  {ref:'REP-2025-0217',claimant:'Emma Lloyd',solicitor:'Slater & Gordon',flightNum:'HC 556',route:'LHR to DUB',disruptionType:'Birdstrike',jurisdiction:'england-wales',outcome:'withdrawn',value:'EUR 250',saving:'EUR 250',days:21,confidence:89,summary:'Claim withdrawn after Maintenance records system engineering inspection and Safety reporting system confirmed birdstrike and reasonable turnaround measures.',evidence:['Maintenance records system inspection','Safety reporting system report','Crew report','Airport bird log'],caseLaw:['Peskova'],education:'Birdstrike evidence pack',recommendation:'Birdstrike claims should auto-request Maintenance records system, crew report and airport log.'}
-];
-var EVIDENCE_SOURCES=[
-  {group:'Always required',name:'Operational delay records system - Flight Details & Legislation Report',tier:'Key',source:'Internal operational delay records system',auto:'API-ready',why:'Primary operational record confirming scheduled and actual times, delay codes and EC261 legislation evidence.'},
-  {group:'Always required',name:'Disruption data system - Disruption Record',tier:'Key',source:'Internal disruption data system',auto:'API-ready',why:'Operational disruption log with timeline, decisions and communications during the disruption.'},
-  {group:'Always required',name:'Crew scheduling system - Crew Route & FDP Tables',tier:'Key',source:'Internal crew scheduling system',auto:'API-ready',why:'Crew duty and FDP data; required for crew hours, knock-on delay and overnight disruption analysis.'},
-  {group:'Always required',name:'Safety reporting system Reports',tier:'Key',source:'Internal safety reporting system',auto:'API-ready',why:'Safety and operational event records, particularly important for diversions and technical events.'},
-  {group:'ATC',name:'Eurocontrol - ATFM Regulations & Flight Data',tier:'Key',source:'Eurocontrol NOP',auto:'API-ready',why:'Independent confirmation of ATC flow restrictions and network-level disruption.'},
-  {group:'Weather',name:'Ogimet - METAR & TAF Reports',tier:'Key',source:'Ogimet',auto:'API-ready',why:'Official aerodrome weather observations and forecasts aligned to the disruption decision time.'},
-  {group:'Weather',name:'Met Office - Daily Impact Hazard Forecast',tier:'Key',source:'Met Office',auto:'API-ready',why:'Broader weather context and hazard forecasts supporting extraordinary circumstances.'},
-  {group:'Airport',name:'NOTAM Records',tier:'Key',source:'NOTAM Search',auto:'API-ready',why:'Aerodrome notices confirming restrictions, closures, works, or operational limitations.'},
-  {group:'Technical',name:'Maintenance records system - Technical Event Record',tier:'Key',source:'Internal maintenance records system',auto:'API-ready',why:'Maintenance and technical log for technical issues, birdstrike, lightning and ground damage.'},
-  {group:'Passenger care',name:'PAX OPS - Passenger Communications',tier:'Secondary',source:'Internal PAX OPS',auto:'API-ready',why:'SMS/email notifications and welfare communications to prove Article 9 care steps.'},
-  {group:'Operational context',name:'DPM Notes',tier:'Secondary',source:'Internal Operations',auto:'Manual upload',why:'Disruption planning notes explaining why decisions were taken and what mitigations were considered.'},
-  {group:'Wider reference',name:'Case Studies & Judgements',tier:'Wider',source:'Repository / Education',auto:'Internal',why:'Prior outcomes and legal authorities used to align evidence strategy and drafting.'}
-];
 
-var EVIDENCE_DAYS=[
-  {date:'2026-03-14',label:'14 Mar 2026',routes:'LTN-BCN / MAN-AMS',flights:['HC 1184','HC 307'],completion:92,gold:true,summary:'Weather diversion at BCN and ATC slot restrictions across western Europe. Gold pack complete for HC 1184; HC 307 pending passenger-care records.',sources:[
-    {name:'Operational delay records system flight details',type:'API',status:'On file',pack:'Key',linked:'AC-2026-0089'},
-    {name:'Disruption data system disruption record',type:'API',status:'On file',pack:'Key',linked:'AC-2026-0089'},
-    {name:'Eurocontrol ATFM regulation',type:'API',status:'On file',pack:'Secondary',linked:'AC-2026-0091'},
-    {name:'METAR / TAF / SIGMET',type:'API',status:'On file',pack:'Secondary',linked:'AC-2026-0089'},
-    {name:'Valencia ground handling records',type:'Manual',status:'Requested',pack:'Secondary',linked:'AC-2026-0089'}]},
-  {date:'2026-04-09',label:'09 Apr 2026',routes:'MAN-AMS',flights:['HC 307'],completion:74,gold:false,summary:'ATC delay evidence collected. Gold pack requires airport documents and PAX OPS passenger-care communications before drafting.',sources:[
-    {name:'Operational delay records system delay code',type:'API',status:'On file',pack:'Key',linked:'AC-2026-0091'},
-    {name:'Eurocontrol regulation',type:'API',status:'On file',pack:'Key',linked:'AC-2026-0091'},
-    {name:'Airport Documents brief',type:'API',status:'Pending',pack:'Secondary',linked:'AC-2026-0091'},
-    {name:'PAX OPS passenger comms',type:'API',status:'Gap',pack:'Secondary',linked:'AC-2026-0091'}]},
-  {date:'2026-04-28',label:'28 Apr 2026',routes:'LGW-ALC',flights:['HC 330'],completion:100,gold:true,summary:'Weather delay evidence complete. Gold pack includes METAR, SIGMET, NOTAM, Operational delay records system, Disruption data system, passenger comms and DPM notes. Ready for lawyer use.',sources:[
-    {name:'Operational delay records system report',type:'API',status:'On file',pack:'Key',linked:'AC-2026-0076'},
-    {name:'METAR / SIGMET',type:'API',status:'On file',pack:'Key',linked:'AC-2026-0076'},
-    {name:'NOTAM records',type:'API',status:'On file',pack:'Secondary',linked:'AC-2026-0076'},
-    {name:'DPM notes',type:'Manual',status:'On file',pack:'Secondary',linked:'AC-2026-0076'},
-    {name:'Passenger communications',type:'API',status:'On file',pack:'Secondary',linked:'AC-2026-0076'}]}
-];
-var activeEvidenceDay='2026-03-14';
+function getActiveUser(){ return (typeof window._activeUser !== 'undefined' ? window._activeUser : null) || (localStorage.getItem('dfa_active_user')) || 'SB'; }
 
-var LAW_SUMMARIES=[
-  {law:'Wallentin-Hermann',caseRef:'REP-2025-0178',title:'ATC slot restrictions and the two-limb extraordinary circumstances test',summary:'The company successfully applied Wallentin-Hermann by showing the ATC restriction was external to normal airline operations and outside actual control. Eurocontrol regulation data and Operational delay records system delay codes were aligned, making the defence objective and credible.',application:'Use where the restriction is independently evidenced and directly overlaps the delay window.'},
-  {law:'van der Lans',caseRef:'REP-2025-0206',title:'Routine technical defects are not extraordinary',summary:'The repository marks this as a paid case because Maintenance records system showed a routine component issue. The AI learning warns users not to over-defend technical claims without evidence of sabotage, hidden manufacturer defect, or an external cause.',application:'Recommend settlement/payment unless Maintenance records system proves an exceptional external technical cause.'},
-  {law:'Peskova',caseRef:'REP-2025-0217',title:'Birdstrike as extraordinary circumstances',summary:'The company successfully defended by combining Maintenance records system inspection, Safety reporting system report, crew report and airport bird log. Peskova supported the external nature of the event, while evidence showed reasonable measures after impact.',application:'Auto-request Maintenance records system, crew report, Safety reporting system and airport bird records for all birdstrike claims.'},
-  {law:'Sturgeon',caseRef:'REP-2025-0142',title:'Arrival delay threshold and compensation exposure',summary:'The weather defence acknowledged the Sturgeon three-hour arrival threshold but avoided compensation through Article 5(3). This teaches users to separate threshold analysis from the extraordinary circumstances defence.',application:'Confirm arrival delay first, then test whether objective evidence supports Article 5(3).'}
-];
-function escapeHtml(v){return String(v==null?'':v).replace(/[&<>"']/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch];});}
-function shortCategoryName(name){return String(name||'').split('—')[0].trim();}
-function renderEvidenceSearchInput(){
-  return '<div class="search-wrap"><i class="ti ti-search"></i><input type="search" placeholder="Search files, flights, routes…" value="'+escapeHtml(filingSearch)+'" oninput="filingSearch=this.value;render()">'+(filingSearch?'<button type="button" class="search-clear" onclick="filingSearch=\'\';render()" aria-label="Clear search"><i class="ti ti-x"></i></button>':'')+'</div>';
-}
-function renderEvidenceViewToggle(){
-  return '<div class="view-toggle"><button class="'+(filingView==='browse'?'active':'')+'" onclick="filingView=\'browse\';render()"><i class="ti ti-folders"></i> Browse</button><button class="'+(filingView==='calendar'?'active':'')+'" onclick="filingView=\'calendar\';render()"><i class="ti ti-calendar"></i> By date</button></div>';
-}
-function renderFilingActivity(){
-  var rows=EvidenceFiling.getAuditLog().slice(0,10);
-  if(!rows.length)return '<div class="evidence-empty" style="padding:20px 0"><i class="ti ti-history"></i>No activity yet.</div>';
-  return rows.map(function(e){
-    return '<div class="activity-row">'+escapeHtml(e.t)+'<time>'+escapeHtml(e.time)+' · '+escapeHtml(e.by)+'</time></div>';
-  }).join('');
-}
-function getStoredCases(){try{return JSON.parse(sessionStorage.getItem('dfa_repository')||'[]').map(function(c){return {ref:c.ref,claimant:c.claimant||'Stored case',solicitor:'Internal repository',flightNum:c.flightNum||'Stored',route:'Case file',disruptionType:c.disruptionType||'Resolved claim',jurisdiction:'england-wales',outcome:'defended',value:c.value||'TBC',saving:'TBC',days:0,confidence:88,summary:'Stored from drafting workspace. Documents, evidence pack and AI rationale retained for future matching.',evidence:c.documents||['Approved response'],caseLaw:['Repository learning'],education:'Internal precedent',recommendation:'Review stored evidence and draft versions before handling a similar new claim.'};});}catch(e){return [];}}
-function repoCases(){return CLOSED_CASES.concat(getStoredCases());}
-function outcomeLabel(o){return {defended:'Defended',settled:'Settled',paid:'Paid',withdrawn:'Withdrawn'}[o]||o;}
-function outcomeClass(o){return o==='defended'?'p-defended':o==='settled'?'p-settled':o==='paid'?'p-paid':'p-withdrawn';}
-function similarityScore(c, live){var score=0;if(c.disruptionType===live.disruptionType)score+=45;if(c.jurisdiction===live.jurisdiction)score+=25;if((c.solicitor||'').split(' ')[0]===(live.solicitor||'').split(' ')[0])score+=10;if(String(c.value).replace(/\D/g,'')===String(live.value).replace(/\D/g,''))score+=10;return Math.min(98,score+(c.outcome==='defended'?8:0));}
-function filteredCases(){var q=query.toLowerCase();return repoCases().filter(function(c){var ok=activeOutcome==='all'||c.outcome===activeOutcome;var hay=[c.ref,c.claimant,c.solicitor,c.flightNum,c.route,c.disruptionType,c.jurisdiction,c.outcome,c.summary,c.evidence.join(' '),c.caseLaw.join(' ')].join(' ').toLowerCase();return ok&&(!q||hay.indexOf(q)>=0);});}
-function setArea(area){activeArea=area;render();}
-function select(ref){selectedRef=ref;render();}
-function shell(content){return '<div class="area-nav"><button class="area-btn '+(activeArea==='cases'?'active':'')+'" onclick="setArea(\'cases\')"><i class="ti ti-briefcase"></i>Cases</button><button class="area-btn '+(activeArea==='evidence'?'active':'')+'" onclick="setArea(\'evidence\')"><i class="ti ti-folder-open"></i>Evidence</button><button class="area-btn home" onclick="setArea(\'hub\')"><i class="ti ti-layout-grid"></i>Repository home</button></div>'+content;}
-function render(){var uid=getActiveUser(), u=USERS[uid]||USERS.SB;document.getElementById('nav-av').textContent=u.initials;document.getElementById('nav-user').textContent=u.name;document.querySelectorAll('.ud-item').forEach(function(el){el.classList.toggle('current',el.id==='ud-'+uid);});if(activeArea==='cases'){renderCases();renderCaseDocFullOverlay();if(typeof renderGlobalNav==='function')renderGlobalNav();return;}caseDocFullView=false;renderCaseDocFullOverlay();if(activeArea==='evidence'){renderEvidence();if(typeof renderGlobalNav==='function')renderGlobalNav();return;}renderEvidence();if(typeof renderGlobalNav==='function')renderGlobalNav();}
-function renderHub(){var all=repoCases(), defended=all.filter(c=>c.outcome==='defended').length, settled=all.filter(c=>c.outcome==='settled').length;document.getElementById('page').innerHTML='<div class="hero"><div><h1>Repository Command Centre</h1><p>The repository is split into three working areas: closed case outcomes, reusable evidence file structures, and education generated from case law applied in real aviation claims.</p></div><div class="hero-actions"><a class="hero-btn" href="module1-intake.html"><i class="ti ti-upload"></i>Ingest claim</a><a class="hero-btn" href="module4-evidence.html"><i class="ti ti-folder-open"></i>Evidence module</a></div></div><div class="gateway-grid"><div class="gateway" onclick="setArea(\'cases\')"><div><div class="gw-icon" style="background:var(--green-faint);color:var(--green)"><i class="ti ti-briefcase"></i></div><div class="gw-title">1. Cases</div><div class="gw-copy">Live case files for active matters — browse, view and edit documents created from intake and drafting. Closed outcomes remain searchable for strategy.</div></div><div class="gw-meta"><span class="gw-chip">'+(typeof CaseFiling!=='undefined'?CaseFiling.listCases().length:0)+' live files</span><span class="gw-chip">'+all.length+' closed</span><span class="gw-chip">Team access</span></div></div><div class="gateway" onclick="setArea(\'evidence\')"><div><div class="gw-icon" style="background:var(--purple-faint);color:var(--purple)"><i class="ti ti-folder-open"></i></div><div class="gw-title">2. Evidence filing</div><div class="gw-copy">SharePoint-mirror filing system: evidence types organised by year, month and operation date. Evidence team uploads; legal team pulls into packs.</div></div><div class="gw-meta"><span class="gw-chip">SharePoint mirror</span><span class="gw-chip">Gold packs</span><span class="gw-chip">Direct pull</span></div></div><div class="gateway" onclick="setArea(\'education\')"><div><div class="gw-icon" style="background:var(--blue-faint);color:var(--blue-text)"><i class="ti ti-school"></i></div><div class="gw-title">3. Education</div><div class="gw-copy">AI summaries explain the law, how it applied to closed cases, and what users should do next time.</div></div><div class="gw-meta"><span class="gw-chip">Case law</span><span class="gw-chip">Playbooks</span><span class="gw-chip">Training</span></div></div></div>'+renderLiveSuggestions();}
-function caseWorkspaceUrl(ref){
-  var uid=typeof getActiveUser==='function'?getActiveUser():'SB';
-  var u=typeof USERS!=='undefined'?USERS[uid]:null;
-  if(u&&u.team==='dio')return 'dio-case.html?ref='+encodeURIComponent(ref);
-  return 'case.html?ref='+encodeURIComponent(ref);
-}
-function setCaseFilingRef(ref){caseFilingRef=ref;caseFilingFolder='all';caseFilingDocId='';caseFilingEditing=false;caseDocFullView=false;caseDocFocusView=false;render();}
-function setCaseFilingFolder(folder){caseFilingFolder=folder;caseFilingDocId='';caseFilingEditing=false;caseDocFullView=false;render();}
-function selectCaseDoc(docId){caseFilingDocId=docId;caseFilingEditing=false;render();}
-function openCaseDocFullPage(){if(!caseFilingRef||!caseFilingDocId)return;caseDocFullView=true;caseFilingEditing=false;renderCaseDocFullOverlay();}
-function closeCaseDocFullPage(){caseDocFullView=false;renderCaseDocFullOverlay();}
-function toggleCaseDocFocus(){caseDocFocusView=!caseDocFocusView;render();}
-function toggleCaseDocEdit(){caseFilingEditing=!caseFilingEditing;render();}
-function renderCaseDocFullOverlay(){
-  var el=document.getElementById('doc-fullpage-overlay');
-  if(!el)return;
-  if(!caseDocFullView||!caseFilingRef||!caseFilingDocId){el.style.display='none';el.innerHTML='';return;}
-  var d=CaseFiling.getDocument(caseFilingRef,caseFilingDocId);
-  if(!d){el.style.display='none';return;}
-  var safe=(d.content||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  var c=CaseFiling.getCase(caseFilingRef);
-  el.style.display='flex';
-  el.innerHTML='<div class="doc-fullpage-inner"><div class="doc-fullpage-hdr"><div><div class="doc-fullpage-title">'+escapeHtml(d.name)+'</div>'
-    +'<div class="doc-fullpage-meta">'+escapeHtml(caseFilingRef)+' · '+escapeHtml((c&&c.claimant)||'')+' · '+escapeHtml(d.filename)+' · '+escapeHtml(d.uploadedAt)+'</div></div>'
-    +'<div class="doc-fullpage-actions"><button class="mini-btn" onclick="toggleCaseDocEdit();closeCaseDocFullPage()"><i class="ti ti-pencil"></i> Edit in sidebar</button>'
-    +'<a class="mini-btn" href="'+caseWorkspaceUrl(caseFilingRef)+'"><i class="ti ti-external-link"></i> Open case</a>'
-    +'<button class="mini-btn primary" onclick="closeCaseDocFullPage()"><i class="ti ti-x"></i> Close</button></div></div>'
-    +'<div class="doc-fullpage-body">'+safe+'</div></div>';
-}
-document.addEventListener('keydown',function(e){if(e.key==='Escape'&&caseDocFullView)closeCaseDocFullPage();});
-function saveCaseDocEdit(){
-  if(!caseFilingRef||!caseFilingDocId)return;
-  var el=document.getElementById('case-doc-preview');
-  if(!el)return;
-  var uid=getActiveUser(), u=USERS[uid]||{};
-  CaseFiling.updateDocument(caseFilingRef,caseFilingDocId,{content:el.innerText||el.textContent||'',uploadedByName:u.full||u.name});
-  CaseFiling.addActivity(caseFilingRef,'Document edited in repository','edit',u.full||u.name);
-  caseFilingEditing=false;
-  render();
-}
-function parseFlightDateToSort(dateStr){
-  // Parse '14 March 2026' → {year:'2026', month:'March', monthNum:3, day:14, sortKey:'2026-03-14'}
-  if(!dateStr)return null;
-  var months={'january':1,'february':2,'march':3,'april':4,'may':5,'june':6,
-    'july':7,'august':8,'september':9,'october':10,'november':11,'december':12,
-    'enero':1,'febrero':2,'marzo':3,'abril':4,'mayo':5,'junio':6,
-    'julio':7,'agosto':8,'septiembre':9,'octubre':10,'noviembre':11,'diciembre':12,
-    'janvier':1,'février':2,'mars':3,'avril':4,'mai':5,'juin':6,
-    'juillet':7,'août':8,'septembre':9,'octobre':10,'novembre':11,'décembre':12};
-  var parts=dateStr.trim().split(/\s+/);
-  if(parts.length<3)return null;
-  var day=parseInt(parts[0],10);
-  var monthName=parts[1].toLowerCase().replace(/[.,]/g,'');
-  var year=parts[2];
-  var monthNum=months[monthName]||0;
-  if(!monthNum)return null;
-  var MONTH_NAMES=['','January','February','March','April','May','June',
-    'July','August','September','October','November','December'];
+// ── Parse flight date (multilingual) ──
+var MONTH_MAP = {
+  january:1,february:2,march:3,april:4,may:5,june:6,july:7,august:8,september:9,october:10,november:11,december:12,
+  enero:1,febrero:2,marzo:3,abril:4,mayo:5,junio:6,julio:7,agosto:8,septiembre:9,octubre:10,noviembre:11,diciembre:12,
+  janvier:1,'février':2,'f\xe9vrier':2,mars:3,avril:4,mai:5,juin:6,juillet:7,'\xe2o\xfbt':8,septembre:9,octobre:10,novembre:11,'d\xe9cembre':12,
+  fév:2,avr:4,juil:7,aoû:8,déc:12,
+  ene:1,feb:2,mar:3,abr:4,jun:6,jul:7,ago:8,sep:9,oct:10,nov:11,dic:12,
+  jan:1,jun2:6,jun3:7
+};
+var MONTH_NAMES = ['','January','February','March','April','May','June','July','August','September','October','November','December'];
+
+function parseFlightDate(s){
+  if(!s) return null;
+  var parts = s.trim().split(/[\s]+/);
+  if(parts.length < 3) return null;
+  var day = parseInt(parts[0], 10);
+  var mName = parts[1].toLowerCase().replace(/[.,]/g,'').normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  var year = parts[2];
+  var mNum = MONTH_MAP[mName] || MONTH_MAP[mName.substring(0,3)] || 0;
+  if(!mNum || isNaN(day)) return null;
   return {
-    year:year,
-    month:MONTH_NAMES[monthNum]||parts[1],
-    monthNum:monthNum,
-    day:day,
-    displayDate:day+' '+MONTH_NAMES[monthNum]+' '+year,
-    sortKey:year+'-'+String(monthNum).padStart(2,'0')+'-'+String(day).padStart(2,'0')
+    year: year,
+    monthNum: mNum,
+    monthLabel: MONTH_NAMES[mNum],
+    day: day,
+    monthKey: year + '-' + String(mNum).padStart(2,'0'),
+    dateKey: year + '-' + String(mNum).padStart(2,'0') + '-' + String(day).padStart(2,'0'),
+    displayDate: day + ' ' + MONTH_NAMES[mNum] + ' ' + year
   };
 }
 
-function toggleTreeYear(y){treeOpenYears[y]=!treeOpenYears[y];render();}
-function toggleTreeMonth(k){treeOpenMonths[k]=!treeOpenMonths[k];render();}
-function toggleTreeDate(k){treeOpenDates[k]=!treeOpenDates[k];render();}
+// ── Build tree from ALL_CASES ──
+function buildCaseTree(){
+  var cases = typeof ALL_CASES !== 'undefined' ? ALL_CASES : [];
+  var tree = {};
+  cases.forEach(function(c){
+    var p = parseFlightDate(c.flightDate);
+    if(!p) return;
+    if(!tree[p.year]) tree[p.year] = { months: {} };
+    if(!tree[p.year].months[p.monthKey]) tree[p.year].months[p.monthKey] = { label: p.monthLabel + ' ' + p.year, dates: {} };
+    if(!tree[p.year].months[p.monthKey].dates[p.dateKey]) tree[p.year].months[p.monthKey].dates[p.dateKey] = { label: p.displayDate, cases: [] };
+    tree[p.year].months[p.monthKey].dates[p.dateKey].cases.push(c);
+  });
+  return tree;
+}
 
-function renderCaseFileTree(){
-  var cases=CaseFiling.listCases({query:caseFilingSearch});
-  if(!cases.length)return '<div class="empty-note">No live case files yet. Upload a LOC in Intake to create one.</div>';
+// ── Case workspace URL ──
+function caseWorkspaceUrl(ref){
+  return 'case.html?ref=' + encodeURIComponent(ref);
+}
 
-  // Auto-select first case with a valid flight date
-  if(!caseFilingRef){
-    var firstValid=cases.find(function(c){return !!parseFlightDateToSort(c.flightDate);});
-    if(firstValid)caseFilingRef=firstValid.ref;
+// ── Stage label ──
+function stageLabel(s){
+  return {intake:'Intake',triage:'Triage',evidence:'Evidence',drafting:'Drafting',resolve:'Resolved'}[s] || s;
+}
+
+// ── Render live case files ──
+function renderLiveTab(){
+  var cases = typeof ALL_CASES !== 'undefined' ? ALL_CASES : [];
+  var live = cases.filter(function(c){ return c.stage !== 'resolve'; });
+  var docTotal = 0;
+  if(typeof CaseFiling !== 'undefined'){
+    try{ docTotal = CaseFiling.listCases().reduce(function(s,c){ return s + (c.documents||[]).length; }, 0); } catch(e){}
   }
 
-  // Build hierarchy: year → month → date → cases
-  var tree={};
-  var unparsed=[];
-  cases.forEach(function(c){
-    var parsed=parseFlightDateToSort(c.flightDate);
-    if(!parsed){ unparsed.push(c); return; }
-    var y=parsed.year;
-    var mk=y+'-'+String(parsed.monthNum).padStart(2,'0');
-    var dk=parsed.sortKey;
-    if(!tree[y])tree[y]={months:{}};
-    if(!tree[y].months[mk])tree[y].months[mk]={label:parsed.month+' '+y,dates:{}};
-    if(!tree[y].months[mk].dates[dk])tree[y].months[mk].dates[dk]={label:parsed.displayDate,cases:[]};
-    tree[y].months[mk].dates[dk].cases.push(c);
-  });
+  // Stats
+  document.getElementById('repo-stats').innerHTML =
+    '<span class="stat-chip blue"><i class="ti ti-folder"></i> ' + live.length + ' live files</span>'
+    + '<span class="stat-chip green"><i class="ti ti-file-text"></i> ' + docTotal + ' documents</span>';
 
-  var html='';
+  // Auto-select first case with valid date if none
+  if(!selectedRef){
+    var tree = buildCaseTree();
+    var years = Object.keys(tree).sort().reverse();
+    outer: for(var yi=0;yi<years.length;yi++){
+      var months = Object.keys(tree[years[yi]].months).sort().reverse();
+      for(var mi=0;mi<months.length;mi++){
+        var dates = Object.keys(tree[years[yi]].months[months[mi]].dates).sort().reverse();
+        for(var di=0;di<dates.length;di++){
+          var cs = tree[years[yi]].months[months[mi]].dates[dates[di]].cases;
+          if(cs.length){ selectedRef = cs[0].ref; break outer; }
+        }
+      }
+    }
+  }
 
-  // Render hierarchy
-  var years=Object.keys(tree).sort().reverse();
+  var body = document.getElementById('repo-body');
+  body.innerHTML = '';
+  body.style.display = 'flex';
+  body.style.flexDirection = 'column';
+
+  var layout = document.createElement('div');
+  layout.className = 'repo-layout';
+  layout.innerHTML = renderCaseTree() + renderDocPanel() + renderPreviewPanel();
+  body.appendChild(layout);
+}
+
+function renderCaseTree(){
+  var tree = buildCaseTree();
+  var years = Object.keys(tree).sort().reverse();
+  var html = '';
+
   years.forEach(function(y){
-    var yOpen=treeOpenYears[y]!==false; // default open
-    html+='<div class="tree-year" onclick="toggleTreeYear(&quot;'+y+'&quot;)" style="display:flex;align-items:center;gap:6px;padding:6px 12px;font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.06em;cursor:pointer;user-select:none;border-top:1px solid var(--border)"><i class="ti '+(yOpen?'ti-chevron-down':'ti-chevron-right')+'"></i>'+y+'</div>';
-    if(!yOpen)return;
+    var yOpen = treeYears[y] !== false;
+    html += '<div class="tree-year-row" onclick="toggleYear(\'' + y + '\')">'
+      + '<i class="ti ti-chevron-' + (yOpen ? 'down' : 'right') + ' tree-chevron"></i>'
+      + y + '</div>';
+    if(!yOpen) return;
 
-    var months=Object.keys(tree[y].months).sort().reverse();
+    var months = Object.keys(tree[y].months).sort().reverse();
     months.forEach(function(mk){
-      var mNode=tree[y].months[mk];
-      var mOpen=treeOpenMonths[mk]!==false; // default open
-      html+='<div class="tree-month-hdr" onclick="toggleTreeMonth(&quot;'+mk+'&quot;)" style="display:flex;align-items:center;gap:6px;padding:5px 12px 5px 20px;font-size:11px;font-weight:500;color:var(--text3);cursor:pointer;user-select:none"><i class="ti '+(mOpen?'ti-chevron-down':'ti-chevron-right')+'"></i>'+escapeHtml(mNode.label)+'</div>';
-      if(!mOpen)return;
+      var mNode = tree[y].months[mk];
+      var mOpen = treeMonths[mk] !== false;
+      html += '<div class="tree-month-row" onclick="toggleMonth(\'' + mk + '\')">'
+        + '<i class="ti ti-chevron-' + (mOpen ? 'down' : 'right') + ' tree-chevron"></i>'
+        + esc(mNode.label) + '</div>';
+      if(!mOpen) return;
 
-      var dates=Object.keys(mNode.dates).sort().reverse();
+      var dates = Object.keys(mNode.dates).sort().reverse();
       dates.forEach(function(dk){
-        var dNode=mNode.dates[dk];
-        var dOpen=treeOpenDates[dk]!==false; // default open
-        html+='<div class="tree-date-hdr" onclick="toggleTreeDate(&quot;'+dk+'&quot;)" style="display:flex;align-items:center;gap:6px;padding:4px 12px 4px 28px;font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;cursor:pointer;user-select:none"><i class="ti '+(dOpen?'ti-chevron-down':'ti-chevron-right')+'"></i>'+escapeHtml(dNode.label)+'</div>';
-        if(!dOpen)return;
+        var dNode = mNode.dates[dk];
+        var dOpen = treeDates[dk] !== false;
+        var cCount = dNode.cases.length;
+        html += '<div class="tree-date-row" onclick="toggleDate(\'' + dk + '\')">'
+          + '<i class="ti ti-chevron-' + (dOpen ? 'down' : 'right') + ' tree-chevron"></i>'
+          + esc(dNode.label)
+          + '<span class="tree-count">' + cCount + '</span></div>';
+        if(!dOpen) return;
 
         dNode.cases.forEach(function(c){
-          var docCount=(c.documents||[]).length;
-          var active=caseFilingRef===c.ref;
-          html+='<div class="tree-item tree-case'+(active?' active':'')+'" onclick="setCaseFilingRef(&quot;'+escapeHtml(c.ref)+'&quot;)" style="padding:5px 12px 5px 36px" title="'+escapeHtml(c.ref)+'">'
-            +'<i class="ti ti-briefcase" style="flex-shrink:0"></i>'
-            +'<span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'
-              +escapeHtml(c.claimant)
-              +'<span style="font-size:9px;color:var(--text3);margin-left:5px;font-family:var(--mono)">'+escapeHtml(c.flightNum||c.ref)+'</span>'
-            +'</span>'
-            +(docCount?'<span class="tree-count">'+docCount+'</span>':'')
-            +'</div>';
+          var active = selectedRef === c.ref;
+          html += '<div class="tree-case-row' + (active ? ' active' : '') + '" onclick="selectCase(\'' + esc(c.ref) + '\')">'
+            + '<div><div class="tree-case-claimant">' + esc(c.claimant) + '</div>'
+            + '<div class="tree-case-ref">' + esc(c.ref) + ' · ' + esc(c.flightNum) + '</div></div>'
+            + '</div>';
         });
       });
     });
   });
 
-  // Cases without a valid flightDate are excluded from the tree
+  if(!html) html = '<div class="empty-note">No cases with flight dates found.</div>';
 
-  return html;
+  return '<div class="repo-tree">'
+    + '<div class="repo-tree-hdr"><div class="panel-band-icon blue"><i class="ti ti-briefcase"></i></div><span class="repo-tree-hdr-title">Live cases</span></div>'
+    + '<div class="repo-tree-body">' + html + '</div>'
+    + '</div>';
 }
-function renderCaseFolderNav(){
-  if(!caseFilingRef)return '';
-  var counts=CaseFiling.getFolderCounts(caseFilingRef);
-  return CaseFiling.CASE_FOLDERS.map(function(f){
-  var active=caseFilingFolder===f.id?' active':'';
-  return '<div class="tree-item tree-nested'+active+'" onclick="setCaseFilingFolder(&quot;'+f.id+'&quot;)"><i class="ti '+f.icon+'"></i><span>'+escapeHtml(f.name)+'</span><span class="tree-count">'+(counts[f.id]||0)+'</span></div>';
-  }).join('');
-}
-function renderCaseFileTable(){
-  if(!caseFilingRef)return '<div class="empty-note">Select a case from the left to browse its live file.</div>';
-  var c=CaseFiling.getCase(caseFilingRef);
-  if(!c)return '<div class="empty-note">Case file not found.</div>';
-  var docs=CaseFiling.getDocuments(caseFilingRef,caseFilingFolder);
-  if(caseFilingSearch){
-    var q=caseFilingSearch.toLowerCase();
-    docs=docs.filter(function(d){return [d.name,d.filename,d.content].join(' ').toLowerCase().indexOf(q)>=0;});
+
+function renderDocPanel(){
+  if(!selectedRef){
+    return '<div class="repo-main"><div class="repo-main-body"><div class="empty-note"><i class="ti ti-mouse-pointer"></i>Select a case from the left to browse its documents.</div></div></div>';
   }
-  var folder=caseFilingFolder==='all'?'All folders':(CaseFiling.folderById(caseFilingFolder)||{}).name||caseFilingFolder;
-  var header='<div class="case-meta-strip">'
-    +'<span class="case-meta-chip live"><i class="ti ti-circle-filled" style="font-size:7px"></i> Live case file</span>'
-    +'<span class="case-meta-chip">'+escapeHtml(c.claimant)+'</span>'
-    +'<span class="case-meta-chip">'+escapeHtml(c.flightNum)+'</span>'
-    +'<span class="case-meta-chip stage-'+escapeHtml(c.stage)+'">'+escapeHtml(CaseFiling.stageLabel(c.stage))+'</span>'
-    +'<span class="case-meta-chip">Evidence '+((c.evidencePct||0)+'%')+'</span>'
-    +'<a class="mini-btn" href="'+caseWorkspaceUrl(c.ref)+'" style="margin-left:auto"><i class="ti ti-external-link"></i>Open case workspace</a>'
-    +'</div>';
-  if(!docs.length)return header+'<div class="empty-note">No documents in '+escapeHtml(folder)+' yet.</div>';
-  var rows=docs.map(function(d){
-    var active=caseFilingDocId===d.id?' active':'';
-    return '<tr class="case-file-row'+active+'" onclick="selectCaseDoc(&quot;'+escapeHtml(d.id)+'&quot;)" ondblclick="selectCaseDoc(&quot;'+escapeHtml(d.id)+'&quot;);openCaseDocFullPage()"><td><div class="file-name"><i class="ti ti-file-text"></i>'+escapeHtml(d.name)+'</div><div class="file-meta">'+escapeHtml(d.filename)+' · '+escapeHtml(d.uploadedAt)+'</div></td><td><span class="pill '+(d.status==='approved'?'p-defended':'status-wait')+'">'+escapeHtml(d.status||'on file')+'</span></td><td>'+escapeHtml(d.uploadedByName||'')+'</td><td>'+CaseFiling.formatSize(d.size)+'</td><td><button class="mini-btn" onclick="event.stopPropagation();selectCaseDoc(&quot;'+escapeHtml(d.id)+'&quot;);openCaseDocFullPage()" title="Open full page"><i class="ti ti-arrows-maximize"></i></button></td></tr>';
-  }).join('');
-  return header+'<table class="file-table"><thead><tr><th>Document</th><th>Status</th><th>Added by</th><th>Size</th><th></th></tr></thead><tbody>'+rows+'</tbody></table>';
-}
-function renderCaseDocPreview(){
-  if(!caseFilingRef||!caseFilingDocId)return '<div class="panel-body"><div class="detail-empty">Select a document to view or edit its contents.</div></div>';
-  var d=CaseFiling.getDocument(caseFilingRef,caseFilingDocId);
-  if(!d)return '<div class="panel-body"><div class="detail-empty">Document not found.</div></div>';
-  var safe=(d.content||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  return '<div class="panel-hdr"><div><div class="panel-title"><div class="panel-band-icon blue"><i class="ti ti-file-text"></i></div>'+escapeHtml(d.name)+'</div><div class="panel-sub">'+escapeHtml(d.filename)+' · '+escapeHtml(d.source||'case file')+'</div></div>'
-    +'<div style="display:flex;gap:6px;flex-wrap:wrap">'
-    +'<button class="mini-btn primary" onclick="openCaseDocFullPage()"><i class="ti ti-arrows-maximize"></i> Full page</button>'
-    +(caseFilingEditing
-      ?'<button class="mini-btn primary" onclick="saveCaseDocEdit()"><i class="ti ti-device-floppy"></i>Save</button>'
-      :'<button class="mini-btn" onclick="toggleCaseDocEdit()"><i class="ti ti-pencil"></i>Edit</button>')
-    +'<button class="mini-btn" onclick="toggleCaseDocFocus()" title="Expand preview"><i class="ti ti-'+(caseDocFocusView?'layout-sidebar-right-expand':'layout-sidebar-right-collapse')+'"></i></button>'
-    +'</div></div><div class="case-preview" id="case-doc-preview"'+(caseFilingEditing?' contenteditable="true"':'')+'>'+safe+'</div>';
-}
-function renderLiveCaseFiles(){
-  var live=CaseFiling.listCases();
-  var docTotal=live.reduce(function(s,c){return s+(c.documents||[]).length;},0);
-  var stats='<div class="grid-4"><div class="stat"><div class="stat-label">Live case files</div><div class="stat-val">'+live.length+'</div><div class="stat-sub">Created from intake</div></div><div class="stat"><div class="stat-label">Documents on file</div><div class="stat-val">'+docTotal+'</div><div class="stat-sub">View &amp; edit by team</div></div><div class="stat"><div class="stat-label">In drafting</div><div class="stat-val">'+live.filter(function(c){return c.stage==='drafting';}).length+'</div><div class="stat-sub">Legal documents active</div></div><div class="stat"><div class="stat-label">At intake</div><div class="stat-val">'+live.filter(function(c){return c.stage==='intake'||c.stage==='triage';}).length+'</div><div class="stat-sub">New matters</div></div></div>';
-  var expandedPreview=(caseDocFocusView&&caseFilingDocId)?'<div class="case-preview-expanded" style="margin:12px 14px 0;border:1px solid var(--border);border-radius:var(--r3);overflow:hidden;background:var(--surface)">'+renderCaseDocPreview()+'</div>':'';
-  var sidebarPreviewBody=(caseDocFocusView&&caseFilingDocId)?'<div class="panel-body"><div class="detail-empty" style="padding:16px">Document expanded below the file list. <button class="mini-btn" onclick="toggleCaseDocFocus()"><i class="ti ti-layout-sidebar-right-collapse"></i> Show in sidebar</button></div></div>':'<div class="case-preview-panel">'+renderCaseDocPreview()+'</div>';
-  var layout='<div class="filing-layout'+(caseDocFocusView&&caseFilingDocId?' doc-focused':'')+'"><div class="filing-tree"><div class="filing-tree-hdr"><i class="ti ti-briefcase"></i> Live cases</div><div class="filing-tree-body">'+renderCaseFileTree()+'</div>'
-    +(caseFilingRef?'<div style="border-top:1px solid var(--border);padding:8px 0"><div style="font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);padding:6px 14px">Folders</div>'+renderCaseFolderNav()+'<div class="tree-item tree-nested'+(caseFilingFolder==='all'?' active':'')+'" onclick="setCaseFilingFolder(&quot;all&quot;)"><i class="ti ti-folders"></i><span>All documents</span></div></div>':'')
-    +'</div><div class="filing-main"><div class="filing-toolbar"><div class="breadcrumb"><span onclick="setCaseFilingFolder(&quot;all&quot;)">Case files</span><span class="bc-sep">›</span><span>'+escapeHtml(caseFilingRef||'Select case')+'</span>'+(caseFilingFolder!=='all'?'<span class="bc-sep">›</span><span>'+escapeHtml((CaseFiling.folderById(caseFilingFolder)||{}).name||caseFilingFolder)+'</span>':'')+'</div><input class="filing-search" placeholder="Search documents…" value="'+escapeHtml(caseFilingSearch)+'" oninput="caseFilingSearch=this.value;render()"></div><div class="filing-body">'+renderCaseFileTable()+expandedPreview+'</div></div><div class="filing-sidebar">'+sidebarPreviewBody+'</div></div>';
-  return stats+layout;
-}
-function renderClosedOutcomes(){
-  var all=repoCases(), rows=filteredCases();
-  if(!selectedRef&&rows.length)selectedRef=rows[0].ref;
-  var selected=all.find(function(c){return c.ref===selectedRef;})||rows[0];
-  var tabs=['all','defended','settled','paid','withdrawn'].map(function(o){return '<button class="tab '+(activeOutcome===o?'active':'')+'" onclick="activeOutcome=&quot;'+o+'&quot;;render()">'+(o==='all'?'All':outcomeLabel(o))+'</button>';}).join('');
-  return '<div class="grid-main"><div class="panel"><div class="panel-hdr"><div><div class="panel-title"><div class="panel-band-icon blue"><i class="ti ti-archive"></i></div>Closed outcome library</div><div class="panel-sub">Settled, defended, paid and withdrawn claims for strategy matching</div></div><div class="tabbar">'+tabs+'</div></div><div class="search-row"><input placeholder="Search closed cases..." value="'+escapeHtml(query)+'" oninput="query=this.value;render()"></div>'+rows.map(function(c){return caseCard(c);}).join('')+'</div><div class="panel detail"><div class="panel-hdr"><div><div class="panel-title"><div class="panel-band-icon blue"><i class="ti ti-brain"></i></div>Case insight</div><div class="panel-sub">Outcome, evidence and legal learning</div></div></div>'+(selected?detailHtml(selected):'<div class="detail-empty">Select a case.</div>')+'</div></div>';
-}
-function renderCases(){
-  var tabBar='<div class="tabbar" style="margin-bottom:14px"><button class="tab '+(caseFilingTab==='live'?'active':'')+'" onclick="caseFilingTab=&quot;live&quot;;render()"><i class="ti ti-folder-symlink"></i> Live case files</button><button class="tab '+(caseFilingTab==='closed'?'active':'')+'" onclick="caseFilingTab=&quot;closed&quot;;render()"><i class="ti ti-archive"></i> Closed outcomes</button></div>';
-  var hero='<div class="hero"><div><h1>'+(caseFilingTab==='live'?'Live Case Files':'Closed Case Outcomes')+'</h1>'+(caseFilingTab==='closed'?'<p>Search closed claims by outcome, issue, evidence, case law or solicitor for strategy and training.</p>':'')+'</div><div class="hero-actions"><a class="hero-btn" href="intake.html"><i class="ti ti-upload"></i>New claim intake</a>'+(caseFilingTab==='live'?'<a class="hero-btn" href="case.html?ref=AC-2026-0089"><i class="ti ti-file-pencil"></i>Open drafting</a>':'')+'</div></div>';
-  var body=caseFilingTab==='live'?renderLiveCaseFiles():renderClosedOutcomes();
-  document.getElementById('page').innerHTML=shell(hero+tabBar+body+(caseFilingTab==='closed'?renderLiveSuggestions():''));
-}
-function caseCard(c){return '<div class="case-card" onclick="select(&quot;'+c.ref+'&quot;)"><div><div class="ref">'+escapeHtml(c.ref)+'</div><div class="name">'+escapeHtml(c.claimant)+' · '+escapeHtml(c.flightNum)+'</div><div class="meta">'+escapeHtml(c.route)+' · '+escapeHtml(c.disruptionType)+' · '+escapeHtml(c.solicitor)+'<br>'+escapeHtml(c.summary)+'</div></div><div style="text-align:right"><span class="pill '+outcomeClass(c.outcome)+'">'+outcomeLabel(c.outcome)+'</span><div style="font-size:10px;color:var(--text3);margin-top:6px">'+c.confidence+'% confidence</div></div></div>';}
-function detailHtml(c){return '<div class="panel-body"><div class="kv"><div class="kv-label">Outcome</div><div class="kv-val"><span class="pill '+outcomeClass(c.outcome)+'">'+outcomeLabel(c.outcome)+'</span></div></div><div class="kv"><div class="kv-label">Saving</div><div class="kv-val">'+escapeHtml(c.saving)+'</div></div><div class="kv"><div class="kv-label">Time to close</div><div class="kv-val">'+c.days+' days</div></div><div class="kv"><div class="kv-label">Jurisdiction</div><div class="kv-val">'+escapeHtml(getJurisdiction(c.jurisdiction).name)+'</div></div><div class="case-law"><strong>Learning:</strong> '+escapeHtml(c.recommendation)+'</div><div class="ev-list">'+c.evidence.map(e=>'<span class="ev">'+escapeHtml(e)+'</span>').join('')+'</div><div class="case-law"><strong>Case law applied:</strong> '+escapeHtml(c.caseLaw.join(', '))+'</div></div>';}
-function renderEvidence(){
-  var eh=isEvidenceTeam();
-  var allFiles=EvidenceFiling.getAllFiles();
-  var EVIDENCE_DAYS_LIVE=buildEvidenceDaysFromFiling();
-  var day=EVIDENCE_DAYS_LIVE.find(function(d){return d.date===activeEvidenceDay;})||EVIDENCE_DAYS_LIVE[0];
-  if(day&&!EVIDENCE_DAYS_LIVE.find(function(d){return d.date===activeEvidenceDay;}))activeEvidenceDay=day.date;
-  var header='<div class="evidence-header"><div><h1>Evidence</h1><div class="evidence-header-meta">'+allFiles.length+' files · '+EvidenceFiling.FILING_CATEGORIES.length+' categories'+(eh?' · upload by type and operation date':' · pull into case evidence packs')+'</div></div>'+renderEvidenceViewToggle()+'</div>';
-  var browsePanel='';
-  if(filingView==='browse'){
-    browsePanel='<div class="filing-layout evidence-layout-clean"><div class="filing-tree"><div class="filing-tree-hdr"><i class="ti ti-folders"></i> Categories</div><div class="filing-tree-body">'+renderFilingTree()+'</div></div><div class="filing-main"><div class="filing-toolbar evidence-toolbar"><div class="breadcrumb">'+filingBreadcrumb()+'</div>'+renderEvidenceSearchInput()+'</div><div class="filing-body">'+renderFilingContent()+'</div>'+renderUploadPanel()+'</div></div>';
-  } else if(!day){
-    browsePanel='<div class="evidence-empty"><i class="ti ti-calendar-off"></i>No operation days filed yet.'+(eh?' Upload evidence to create the first day folder.':'')+'</div>';
+
+  var c = (typeof ALL_CASES !== 'undefined' ? ALL_CASES : []).find(function(x){ return x.ref === selectedRef; });
+  if(!c) return '<div class="repo-main"><div class="repo-main-body"><div class="empty-note">Case not found.</div></div></div>';
+
+  // Get documents from CaseFiling store
+  var docs = [];
+  if(typeof CaseFiling !== 'undefined'){
+    try{ docs = CaseFiling.getDocuments(selectedRef, selectedFolder) || []; } catch(e){}
+  }
+  if(docSearch){
+    var q = docSearch.toLowerCase();
+    docs = docs.filter(function(d){ return [d.name||'',d.filename||''].join(' ').toLowerCase().indexOf(q) >= 0; });
+  }
+
+  // Folder counts
+  var FOLDERS = (typeof CaseFiling !== 'undefined' && CaseFiling.CASE_FOLDERS) ? CaseFiling.CASE_FOLDERS : [
+    {id:'correspondence',name:'Correspondence',icon:'ti-mail'},
+    {id:'legal-drafts',name:'Legal drafts',icon:'ti-file-text'},
+    {id:'evidence',name:'Evidence',icon:'ti-database'},
+    {id:'intake',name:'Intake',icon:'ti-upload'}
+  ];
+  var folderCounts = {};
+  var allDocs = [];
+  if(typeof CaseFiling !== 'undefined'){
+    try{ allDocs = CaseFiling.getDocuments(selectedRef, 'all') || []; } catch(e){}
+  }
+  FOLDERS.forEach(function(f){
+    folderCounts[f.id] = allDocs.filter(function(d){ return d.folder === f.id; }).length;
+  });
+  folderCounts.all = allDocs.length;
+
+  var stageCls = 'stage-' + (c.stage||'intake');
+  var strip = '<div class="case-strip">'
+    + '<span class="case-chip live"><i class="ti ti-circle-filled" style="font-size:7px"></i> Live</span>'
+    + '<span class="case-chip">' + esc(c.claimant) + '</span>'
+    + '<span class="case-chip">' + esc(c.flightNum) + '</span>'
+    + '<span class="case-chip ' + stageCls + '">' + stageLabel(c.stage) + '</span>'
+    + '<span class="case-chip">Evidence ' + (c.evidencePct||0) + '%</span>'
+    + '<a class="mini-btn primary" href="' + caseWorkspaceUrl(c.ref) + '" style="margin-left:auto"><i class="ti ti-external-link"></i> Open workspace</a>'
+    + '</div>';
+
+  var folderTabsHtml = '<div class="folder-tabs">'
+    + '<button class="folder-tab' + (selectedFolder==='all'?' active':'') + '" onclick="setFolder(\'all\')">All <span class="f-count">' + folderCounts.all + '</span></button>'
+    + FOLDERS.map(function(f){
+      return '<button class="folder-tab' + (selectedFolder===f.id?' active':'') + '" onclick="setFolder(\'' + f.id + '\')">'
+        + '<i class="ti ' + f.icon + '"></i>' + esc(f.name) + ' <span class="f-count">' + (folderCounts[f.id]||0) + '</span></button>';
+    }).join('')
+    + '</div>';
+
+  var tableHtml;
+  if(!docs.length){
+    tableHtml = '<div class="empty-note"><i class="ti ti-file-off"></i>No documents filed yet in this folder.<br>'
+      + '<a href="' + caseWorkspaceUrl(c.ref) + '" class="mini-btn primary" style="margin-top:10px;display:inline-flex"><i class="ti ti-external-link"></i> Open workspace to file documents</a></div>';
   } else {
-    var complete=day.sources.filter(function(s){return s.status==='On file';}).length;
-    var calendar='<div class="calendar-panel"><div class="panel-hdr"><div class="panel-title"><div class="panel-band-icon blue"><i class="ti ti-calendar"></i></div>Operation dates</div></div>'
-      +EVIDENCE_DAYS_LIVE.map(function(d){
-        var parts=d.label.split(' ');
-        return '<div class="calendar-day'+(d.date===activeEvidenceDay?' active':'')+'" onclick="activeEvidenceDay=&quot;'+d.date+'&quot;;render()"><div class="day-num">'+parts[0]+'<span>'+parts[1]+'</span></div><div><div class="day-title">'+escapeHtml(d.routes)+'</div><div class="day-sub">'+d.flights.map(escapeHtml).join(' · ')+' · '+(d.gold?'Gold pack ready':'In progress')+'</div></div><div class="pack-score">'+d.completion+'%</div></div>';
-      }).join('')+'</div>';
-    var sourceRows=day.sources.map(function(s){
-      var pullBtn=s.fileId?'<button class="mini-btn primary" onclick="pullFileToCase(\''+s.fileId+'\')" title="Queue for evidence pack"><i class="ti ti-download"></i>Pull</button> <button class="mini-btn" onclick="setFilingPath({date:\''+day.date+'\'});filingView=\'browse\';render()" title="Open in folder view"><i class="ti ti-folder-open"></i></button>':'';
-      return '<tr><td><strong>'+escapeHtml(s.name)+'</strong><div class="source-meta">'+escapeHtml(s.pack)+' · '+escapeHtml(s.type)+'</div></td><td><span class="pill status-ok">'+escapeHtml(s.status)+'</span></td><td>'+pullBtn+'</td></tr>';
-    }).join('');
-    var main='<div class="panel"><div class="panel-hdr"><div><div class="panel-title"><div class="panel-band-icon blue"><i class="ti ti-folder-open"></i></div>'+escapeHtml(day.label)+'</div><div class="panel-sub">'+complete+' of '+day.sources.length+' sources on file · '+escapeHtml(day.routes)+'</div></div><button class="mini-btn" onclick="setFilingPath({date:\''+day.date+'\'});filingView=\'browse\';render()"><i class="ti ti-folders"></i>Browse files</button></div><div class="panel-body"><table class="source-table"><thead><tr><th>Source</th><th>Status</th><th></th></tr></thead><tbody>'+sourceRows+'</tbody></table></div></div>';
-    browsePanel='<div class="evidence-layout">'+calendar+'<div>'+main+'</div></div>';
+    tableHtml = '<table class="file-table"><thead><tr><th>Document</th><th>Folder</th><th>Filed by</th><th>Status</th><th></th></tr></thead><tbody>'
+      + docs.map(function(d){
+        var active = selectedDocId === d.id;
+        var folder = FOLDERS.find(function(f){ return f.id === d.folder; });
+        return '<tr class="' + (active ? 'active' : '') + '" onclick="selectDoc(\'' + esc(d.id) + '\')">'
+          + '<td><div class="file-name"><i class="ti ti-file-text"></i>' + esc(d.name) + '</div><div class="file-meta">' + esc(d.filename||'') + ' · ' + esc(d.uploadedAt||'') + '</td>'
+          + '<td><span style="font-size:10px;color:var(--text3)">' + esc((folder||{}).name||d.folder||'') + '</span></td>'
+          + '<td style="font-size:11px;color:var(--text3)">' + esc(d.uploadedByName||'') + '</td>'
+          + '<td><span class="file-pill ' + (d.status==='approved'?'pill-ok':'pill-wait') + '">' + esc(d.status||'on file') + '</span></td>'
+          + '<td><a class="mini-btn" href="' + caseWorkspaceUrl(c.ref) + '" title="Open in workspace"><i class="ti ti-arrow-right"></i></a></td>'
+          + '</tr>';
+      }).join('')
+      + '</tbody></table>';
   }
-  document.getElementById('page').innerHTML=shell(header+browsePanel);
+
+  var toolbar = '<div class="repo-main-hdr">'
+    + '<div class="repo-breadcrumb"><span onclick="selectedRef=null;render()">Case files</span><span class="bc-sep">›</span><span>' + esc(selectedRef) + '</span></div>'
+    + '<input class="repo-search" placeholder="Search documents…" value="' + esc(docSearch) + '" oninput="docSearch=this.value;renderDocPanelOnly()">'
+    + '</div>';
+
+  return '<div class="repo-main">' + toolbar + strip + folderTabsHtml + '<div class="repo-main-body">' + tableHtml + '</div></div>';
 }
-function renderLiveSuggestions(){var all=repoCases();var live=ALL_CASES.filter(c=>c.stage!=='resolve').map(function(c){var best=all.slice().sort((a,b)=>similarityScore(b,c)-similarityScore(a,c))[0];return {live:c,best:best,score:best?similarityScore(best,c):0};}).sort((a,b)=>b.score-a.score).slice(0,4);return '<div class="panel"><div class="panel-hdr"><div><div class="panel-title"><div class="panel-band-icon blue"><i class="ti ti-sparkles"></i></div>Live-case similarity suggestions</div><div class="panel-sub">New matters flagged against repository outcomes</div></div></div>'+live.map(x=>'<div class="case-card"><div><div class="ref">'+escapeHtml(x.live.ref)+' to '+escapeHtml(x.best.ref)+'</div><div class="name">'+escapeHtml(x.live.claimant)+' matches '+escapeHtml(x.best.claimant)+'</div><div class="meta"><strong>Suggested action:</strong> '+escapeHtml(x.best.recommendation)+'</div></div><div><span class="pill p-defended">'+x.score+'% match</span></div></div>').join('')+'</div>';}
-function toggleUserMenu(){document.getElementById('user-modal').classList.toggle('open');}
-function closeMenu(){document.getElementById('user-modal').classList.remove('open');}
-function switchUser(id){setActiveUser(id);sessionStorage.removeItem('dfa_lang');closeMenu();if(typeof renderGlobalNav==='function')renderGlobalNav();render();}
-try{if(sessionStorage.getItem('dfa_repo_area')==='evidence'){activeArea='evidence';sessionStorage.removeItem('dfa_repo_area');}}catch(e){}
-try{var repoCase=sessionStorage.getItem('dfa_repo_case');if(repoCase){caseFilingRef=repoCase;caseFilingTab='live';activeArea='cases';sessionStorage.removeItem('dfa_repo_case');}}catch(e){}
-if(window.location.hash==='#evidence'){activeArea='evidence';filingView='browse';}
-if(window.location.hash==='#cases'){activeArea='cases';caseFilingTab='live';}
-render();
+
+function renderPreviewPanel(){
+  if(!selectedDocId){
+    return '<div class="repo-preview"><div class="repo-preview-empty"><i class="ti ti-file-search"></i>Select a document to preview its contents.</div></div>';
+  }
+  var d = null;
+  if(typeof CaseFiling !== 'undefined'){
+    try{ d = CaseFiling.getDocument(selectedRef, selectedDocId); } catch(e){}
+  }
+  if(!d) return '<div class="repo-preview"><div class="repo-preview-empty"><i class="ti ti-file-off"></i>Document not found.</div></div>';
+
+  var safe = (d.content||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  return '<div class="repo-preview">'
+    + '<div class="repo-preview-hdr">'
+      + '<div class="repo-preview-title"><i class="ti ti-file-text" style="color:var(--blue-text)"></i>' + esc(d.name) + '</div>'
+      + '<div class="repo-preview-meta">' + esc(d.filename||'') + ' · ' + esc(d.uploadedAt||'') + '</div>'
+    + '</div>'
+    + '<div class="repo-preview-body">' + (safe||'<span style="color:var(--text3)">No content preview available.</span>') + '</div>'
+    + '<div class="repo-preview-actions">'
+      + '<a class="mini-btn primary" href="' + caseWorkspaceUrl(selectedRef) + '"><i class="ti ti-external-link"></i> Open in workspace</a>'
+      + '<button class="mini-btn" onclick="selectedDocId=null;renderDocPanelOnly()"><i class="ti ti-x"></i> Close</button>'
+    + '</div>'
+  + '</div>';
+}
+
+// ── Closed outcomes ──
+function renderClosedTab(){
+  var cases = typeof ALL_CLOSED_CASES !== 'undefined' ? ALL_CLOSED_CASES : (typeof repoCases === 'function' ? repoCases() : []);
+  var filtered = cases.filter(function(c){
+    if(closedOutcome !== 'all' && c.outcome !== closedOutcome) return false;
+    if(closedQuery){
+      var q = closedQuery.toLowerCase();
+      return [c.ref,c.claimant,c.flightNum,c.route,c.disruptionType,c.summary||''].join(' ').toLowerCase().indexOf(q) >= 0;
+    }
+    return true;
+  });
+
+  document.getElementById('repo-stats').innerHTML =
+    '<span class="stat-chip"><i class="ti ti-archive"></i> ' + cases.length + ' closed cases</span>';
+
+  if(!closedRef && filtered.length) closedRef = filtered[0].ref;
+  var selected = cases.find(function(c){ return c.ref === closedRef; }) || filtered[0];
+
+  var tabs = ['all','defended','settled','paid','withdrawn'].map(function(o){
+    var labels = {all:'All',defended:'Defended',settled:'Settled',paid:'Paid',withdrawn:'Withdrawn'};
+    return '<button class="closed-tab' + (closedOutcome===o?' active':'') + '" onclick="closedOutcome=\'' + o + '\';render()">' + labels[o] + '</button>';
+  }).join('');
+
+  var cards = filtered.map(function(c){
+    var oc = {defended:'p-defended',settled:'p-settled',paid:'p-paid',withdrawn:'p-withdrawn'}[c.outcome]||'';
+    var ol = {defended:'Defended',settled:'Settled',paid:'Paid',withdrawn:'Withdrawn'}[c.outcome]||c.outcome;
+    return '<div class="closed-card' + (closedRef===c.ref?' active':'') + '" onclick="closedRef=\'' + esc(c.ref) + '\';render()">'
+      + '<div><div class="cc-ref">' + esc(c.ref) + '</div><div class="cc-name">' + esc(c.claimant) + ' · ' + esc(c.flightNum) + '</div>'
+      + '<div class="cc-meta">' + esc(c.route) + ' · ' + esc(c.disruptionType) + '</div></div>'
+      + '<span class="outcome-pill ' + oc + '">' + ol + '</span>'
+      + '</div>';
+  }).join('') || '<div class="empty-note">No cases match this filter.</div>';
+
+  var detailHtml = '<div class="repo-preview-empty"><i class="ti ti-mouse-pointer"></i>Select a case to view the outcome detail.</div>';
+  if(selected){
+    var oc = {defended:'p-defended',settled:'p-settled',paid:'p-paid',withdrawn:'p-withdrawn'}[selected.outcome]||'';
+    var ol = {defended:'Defended',settled:'Settled',paid:'Paid',withdrawn:'Withdrawn'}[selected.outcome]||selected.outcome;
+    detailHtml = '<div class="closed-detail-hdr">'
+      + '<div style="font-size:12px;font-weight:500">' + esc(selected.claimant) + ' · ' + esc(selected.flightNum) + '</div>'
+      + '<div style="font-size:10px;font-family:var(--mono);color:var(--text3);margin-top:2px">' + esc(selected.ref) + '</div>'
+      + '</div>'
+      + '<div class="closed-detail-body">'
+      + '<div class="kv"><div class="kv-label">Outcome</div><div class="kv-val"><span class="outcome-pill ' + oc + '">' + ol + '</span></div></div>'
+      + '<div class="kv"><div class="kv-label">Saving</div><div class="kv-val">' + esc(selected.saving||'—') + '</div></div>'
+      + '<div class="kv"><div class="kv-label">Days to close</div><div class="kv-val">' + (selected.days||'—') + '</div></div>'
+      + '<div class="kv"><div class="kv-label">Route</div><div class="kv-val">' + esc(selected.route||'—') + '</div></div>'
+      + '<div class="kv"><div class="kv-label">Disruption</div><div class="kv-val">' + esc(selected.disruptionType||'—') + '</div></div>'
+      + (selected.evidence&&selected.evidence.length ? '<div class="ev-list">' + selected.evidence.map(function(e){ return '<span class="ev">' + esc(e) + '</span>'; }).join('') + '</div>' : '')
+      + (selected.recommendation ? '<div class="case-law-note">' + esc(selected.recommendation) + '</div>' : '')
+      + '</div>';
+  }
+
+  var body = document.getElementById('repo-body');
+  body.innerHTML = '';
+  body.style.display = 'flex';
+  body.style.flexDirection = 'column';
+
+  var layout = document.createElement('div');
+  layout.className = 'closed-layout';
+  layout.innerHTML =
+    '<div class="closed-list">'
+      + '<div class="closed-list-hdr"><div class="closed-tabs">' + tabs + '</div><input class="closed-search" placeholder="Search…" value="' + esc(closedQuery) + '" oninput="closedQuery=this.value;render()"></div>'
+      + '<div class="closed-list-body">' + cards + '</div>'
+    + '</div>'
+    + '<div class="closed-detail">' + detailHtml + '</div>';
+  body.appendChild(layout);
+}
+
+// ── Tree toggle ──
+function toggleYear(y){ treeYears[y] = treeYears[y] === false ? true : false; renderLiveTab(); }
+function toggleMonth(mk){ treeMonths[mk] = treeMonths[mk] === false ? true : false; renderLiveTab(); }
+function toggleDate(dk){ treeDates[dk] = treeDates[dk] === false ? true : false; renderLiveTab(); }
+
+// ── Selection ──
+function selectCase(ref){
+  selectedRef = ref;
+  selectedFolder = 'all';
+  selectedDocId = null;
+  renderLiveTab();
+}
+function setFolder(f){
+  selectedFolder = f;
+  selectedDocId = null;
+  renderDocPanelOnly();
+}
+function selectDoc(id){
+  selectedDocId = selectedDocId === id ? null : id;
+  renderDocPanelOnly();
+}
+
+// ── Partial re-renders ──
+function renderDocPanelOnly(){
+  var layout = document.querySelector('.repo-layout');
+  if(!layout){ renderLiveTab(); return; }
+  var panels = layout.children;
+  if(panels[1]) panels[1].outerHTML = renderDocPanel();
+  if(panels[2]) panels[2].outerHTML = renderPreviewPanel();
+}
+
+// ── Main render ──
+function render(){
+  if(typeof renderGlobalNav === 'function') renderGlobalNav();
+  var uid = getActiveUser();
+  var u = typeof USERS !== 'undefined' ? USERS[uid] : null;
+  if(u){
+    var av = document.getElementById('nav-av');
+    var nu = document.getElementById('nav-user');
+    if(av) av.textContent = u.initials || uid;
+    if(nu) nu.textContent = (u.name || u.full || uid).replace(/^(\S+\s\S)\S+/,'$1');
+  }
+  document.querySelectorAll('.ud-item').forEach(function(el){ el.classList.toggle('current', el.id === 'ud-' + uid); });
+  if(activeTab === 'live') renderLiveTab();
+  else renderClosedTab();
+}
+
+// Compatibility shims
+function toggleUserMenu(){ var m = document.getElementById('user-modal'); if(m) m.classList.toggle('open'); }
+function closeMenu(){ var m = document.getElementById('user-modal'); if(m) m.classList.remove('open'); }
+function switchUser(uid){
+  if(typeof window._activeUser !== 'undefined') window._activeUser = uid;
+  localStorage.setItem('dfa_active_user', uid);
+  selectedRef = null; selectedDocId = null; selectedFolder = 'all';
+  closeMenu(); render();
+}
+
+window.addEventListener('load', render);
 </script>
-<script src="shared_nav.js"></script>
 </body>
 </html>
