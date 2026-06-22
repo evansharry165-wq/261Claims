@@ -209,6 +209,64 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 .ud-role{font-size:10px;color:var(--text3)}
 .ud-tick{margin-left:auto;color:var(--confirm);font-size:14px;display:none}
 .ud-item.current .ud-tick{display:block}
+
+/* ── Evidence filing: folder grid ── */
+.folder-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:10px;padding:14px}
+.folder-card{border:1px solid var(--border);border-radius:var(--r2);padding:16px 12px;cursor:pointer;text-align:center;background:var(--surface2);transition:all .15s}
+.folder-card:hover{border-color:var(--accent);background:var(--accent-faint);transform:translateY(-1px)}
+.folder-card i{font-size:26px;color:var(--blue-text);display:block;margin-bottom:8px}
+.folder-card .fc-name{font-size:11px;font-weight:500;line-height:1.35;color:var(--text)}
+.folder-card .fc-count{font-size:10px;color:var(--text3);margin-top:4px}
+/* ── Filing layout: tree + main ── */
+.filing-layout-ev{display:grid;grid-template-columns:232px 1fr;gap:0;flex:1;min-height:0;border:1px solid var(--border);border-radius:var(--r3);overflow:hidden;background:var(--surface);margin-bottom:18px}
+.filing-tree-ev{border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;background:var(--surface)}
+.filing-tree-ev-hdr{padding:10px 14px;border-bottom:1px solid var(--border);background:var(--surface2);display:flex;align-items:center;gap:7px;font-size:12px;font-weight:500}
+.filing-tree-ev-body{flex:1;overflow-y:auto}
+.filing-main-ev{display:flex;flex-direction:column;overflow:hidden}
+.filing-toolbar-ev{padding:10px 14px;border-bottom:1px solid var(--border);background:var(--surface2);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.ev-breadcrumb{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--text3);flex:1;flex-wrap:wrap}
+.ev-breadcrumb b{color:var(--blue-text);cursor:pointer;font-weight:400}
+.ev-breadcrumb b:hover{text-decoration:underline}
+.ev-breadcrumb .bc-sep{color:var(--text3)}
+.filing-body-ev{flex:1;overflow-y:auto}
+/* ── Tree items ── */
+.ev-tree-group{padding:5px 14px 3px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);background:var(--surface2);border-bottom:1px solid var(--border);border-top:1px solid var(--border)}
+.ev-tree-group:first-child{border-top:none}
+.ev-tree-item{display:flex;align-items:center;gap:7px;padding:7px 14px;cursor:pointer;font-size:11px;color:var(--text2);border-left:3px solid transparent;border-bottom:1px solid var(--border2)}
+.ev-tree-item:hover{background:var(--surface2)}
+.ev-tree-item.active{background:var(--accent-faint);border-left-color:var(--accent);color:var(--accent);font-weight:500}
+.ev-tree-item i{font-size:14px;flex-shrink:0;color:var(--text3)}
+.ev-tree-item.active i{color:var(--accent)}
+.ev-tree-item .ev-tree-count{margin-left:auto;font-size:10px;color:var(--text3);background:var(--surface3);padding:1px 6px;border-radius:10px;flex-shrink:0}
+.ev-tree-item.active .ev-tree-count{background:var(--accent);color:#fff}
+.ev-tree-sub{padding-left:12px}
+.ev-tree-sub .ev-tree-item{font-size:10px;padding:5px 14px 5px 20px}
+/* ── File table ── */
+.ev-file-table{width:100%;border-collapse:collapse;font-size:12px}
+.ev-file-table th{text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);font-weight:500;padding:9px 14px;border-bottom:2px solid var(--border);background:var(--surface2);position:sticky;top:0}
+.ev-file-table td{padding:10px 14px;border-bottom:1px solid var(--border);vertical-align:middle}
+.ev-file-table tr:hover td{background:var(--surface2)}
+.tier-k{background:var(--accent-faint);color:var(--blue-text);font-size:10px;font-weight:500;padding:2px 7px;border-radius:20px}
+.tier-s{background:var(--surface3);color:var(--text2);font-size:10px;font-weight:500;padding:2px 7px;border-radius:20px}
+.tier-w{background:var(--surface3);color:var(--text3);font-size:10px;font-weight:500;padding:2px 7px;border-radius:20px}
+/* ── Global evidence search ── */
+.ev-global-search{display:flex;align-items:center;gap:8px;margin-bottom:12px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:8px 14px}
+.ev-global-search i{font-size:16px;color:var(--text3);flex-shrink:0}
+.ev-global-search input{flex:1;border:none;outline:none;font-size:13px;font-family:var(--font);color:var(--text);background:none}
+.ev-global-search input::placeholder{color:var(--text3)}
+.ev-search-result-count{font-size:11px;color:var(--text3);white-space:nowrap}
+/* ── Upload ── */
+.upload-zone{border:2px dashed var(--border2);border-radius:var(--r2);padding:16px;text-align:center;margin:14px;background:var(--surface2);cursor:pointer}
+.upload-zone:hover,.upload-zone.dragover{border-color:var(--accent);background:var(--accent-faint)}
+.upload-zone i{font-size:24px;color:var(--text3);display:block;margin-bottom:6px}
+.upload-zone p{font-size:11px;color:var(--text2);line-height:1.5}
+.upload-zone strong{color:var(--blue-text)}
+.upload-form{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding:14px;border-top:1px solid var(--border);background:var(--surface2)}
+.upload-form label{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);display:block;margin-bottom:4px}
+.upload-form input,.upload-form select{width:100%;font-size:12px;padding:6px 9px;border:1px solid var(--border);border-radius:var(--r);font-family:var(--font);background:var(--surface)}
+input[type=file].filing-file-input{display:none}
+.evidence-empty{padding:40px 20px;text-align:center;color:var(--text3);font-size:12px;line-height:1.6}
+.evidence-empty i{font-size:28px;display:block;margin-bottom:10px;opacity:.4}
 </style>
 </head>
 <body>
@@ -268,6 +326,8 @@ var caseRef = null;
 var caseFolder = 'all';
 var evCat = null;
 var evSearch = '';
+var filingPath = {categoryId:null,year:null,month:null,date:null};
+var filingSearch = '';
 var caseSearch = '';
 var treeY = {}, treeM = {}, treeD = {};
 
@@ -506,177 +566,242 @@ function renderDocHub(){
 // ══════════════════════════════════════
 //  EVIDENCE TAB
 // ══════════════════════════════════════
+
+// ── Evidence filing: helper functions ──
 var EV_GROUPS = ['Always required','ATC','Weather','Airport','Technical','Passenger care','Operational context','Wider reference'];
 
-function renderEvidence(){
+function shortCatName(name){ return name.split('—')[0].trim(); }
+
+function setFilingPath(p){
+  filingPath = Object.assign({categoryId:null,year:null,month:null,date:null}, p||{});
+  filingSearch = '';
+  renderEvidence();
+}
+
+function evBreadcrumb(){
   var cats = typeof EvidenceFiling!=='undefined' ? EvidenceFiling.FILING_CATEGORIES : [];
-  var allFiles = typeof EvidenceFiling!=='undefined' ? EvidenceFiling.getAllFiles() : [];
+  var parts = ['<b onclick="setFilingPath({})">All categories</b>'];
+  if(filingPath.categoryId){
+    var c = cats.find(function(x){ return x.id===filingPath.categoryId; });
+    parts.push('<span class="bc-sep">›</span><b onclick="setFilingPath({categoryId:\''+filingPath.categoryId+'\'})">'+esc(c?shortCatName(c.name):filingPath.categoryId)+'</b>');
+  }
+  if(filingPath.year) parts.push('<span class="bc-sep">›</span><b onclick="setFilingPath({categoryId:\''+filingPath.categoryId+'\',year:\''+filingPath.year+'\'})">'+filingPath.year+'</b>');
+  if(filingPath.month){
+    var mn = typeof EvidenceFiling!=='undefined' ? (EvidenceFiling.MONTHS||[])[parseInt(filingPath.month,10)-1]||'' : '';
+    parts.push('<span class="bc-sep">›</span><b onclick="setFilingPath({categoryId:\''+filingPath.categoryId+'\',year:\''+filingPath.year+'\',month:'+filingPath.month+'})">'+mn+'</b>');
+  }
+  if(filingPath.date){
+    var dp = typeof EvidenceFiling!=='undefined' ? EvidenceFiling.dateParts(filingPath.date) : {dayLabel:filingPath.date};
+    parts.push('<span class="bc-sep">›</span>'+esc(dp.dayLabel));
+  }
+  return parts.join('');
+}
 
-  // Default to first category
-  if(!evCat && cats.length) evCat = cats[0].id;
-
-  var totalFiles = allFiles.length;
-  var keyFiles = allFiles.filter(function(f){ return f.tier==='K'; }).length;
-
-  document.getElementById('repo-stats').innerHTML =
-    '<span class="stat-chip blue"><i class="ti ti-database"></i> '+totalFiles+' evidence files</span>'
-    +'<span class="stat-chip green"><i class="ti ti-star"></i> '+keyFiles+' key documents</span>';
-
-  // Build category counts
-  var catCounts={};
+function renderEvFilingTree(){
+  if(typeof EvidenceFiling==='undefined') return '';
+  var cats = EvidenceFiling.FILING_CATEGORIES;
+  var allFiles = EvidenceFiling.getAllFiles();
+  var catCounts = {};
   allFiles.forEach(function(f){ catCounts[f.categoryId]=(catCounts[f.categoryId]||0)+1; });
-
-  // Sidebar
-  var sideHtml='';
+  var html = '';
   EV_GROUPS.forEach(function(g){
     var inGroup = cats.filter(function(c){ return c.group===g; });
     if(!inGroup.length) return;
-    sideHtml += '<div class="ev-group-hdr">'+esc(g)+'</div>';
+    html += '<div class="ev-tree-group">'+esc(g)+'</div>';
     inGroup.forEach(function(cat){
       var cnt = catCounts[cat.id]||0;
-      sideHtml += '<div class="ev-cat-row'+(evCat===cat.id?' active':'')+' ev-tier-'+cat.tier.toLowerCase()+'" onclick="selEvCat(\''+esc(cat.id)+'\')">'
-        +'<i class="ti '+esc(cat.icon)+' ev-cat-icon"></i>'
-        +'<span class="ev-cat-name">'+esc(cat.name)+'</span>'
-        +'<span class="ev-cat-count">'+cnt+'</span>'
-        +'</div>';
+      var active = filingPath.categoryId===cat.id;
+      html += '<div class="ev-tree-item'+(active?' active':'')+'" onclick="setFilingPath({categoryId:\''+cat.id+'\'})">'
+        +'<i class="ti '+cat.icon+'"></i><span>'+esc(shortCatName(cat.name))+'</span>'
+        +'<span class="ev-tree-count">'+cnt+'</span></div>';
+      // Show year sub-items if this category is active
+      if(active && filingPath.categoryId){
+        var tree = EvidenceFiling.getFolderTree();
+        var node = tree[cat.id];
+        if(node){
+          Object.keys(node.years).sort().reverse().forEach(function(y){
+            var yActive = filingPath.year===y;
+            html += '<div class="ev-tree-item ev-tree-sub'+(yActive?' active':'')+'" onclick="event.stopPropagation();setFilingPath({categoryId:\''+cat.id+'\',year:\''+y+'\'})">'
+              +'<i class="ti ti-calendar"></i><span>'+y+'</span>'
+              +'<span class="ev-tree-count">'+EvidenceFiling.getFilesInPath(cat.id,y).length+'</span></div>';
+          });
+        }
+      }
     });
   });
+  return html;
+}
 
-  // Main panel
-  var selCat = cats.find(function(c){ return c.id===evCat; });
-  var files = allFiles.filter(function(f){ return f.categoryId===evCat; });
-  if(evSearch){ var q=evSearch.toLowerCase(); files=files.filter(function(f){ return (f.filename+' '+(f.flights||[]).join(' ')+' '+f.routes).toLowerCase().indexOf(q)>=0; }); }
-
-  var summary='';
-  if(selCat){
-    var allInCat = allFiles.filter(function(f){ return f.categoryId===evCat; });
-    var uniqueDates = {};
-    allInCat.forEach(function(f){ uniqueDates[f.date]=true; });
-    summary = '<div class="ev-summary-bar">'
-      +'<div class="ev-sum-cell"><div class="ev-sum-label">Files on record</div><div class="ev-sum-val">'+allInCat.length+'</div><div class="ev-sum-sub">'+esc(selCat.name.split('—')[0].trim())+'</div></div>'
-      +'<div class="ev-sum-cell"><div class="ev-sum-label">Operations days</div><div class="ev-sum-val">'+Object.keys(uniqueDates).length+'</div><div class="ev-sum-sub">Distinct event dates</div></div>'
-      +'<div class="ev-sum-cell"><div class="ev-sum-label">Category tier</div><div class="ev-sum-val">'+esc(selCat.tier)+'</div><div class="ev-sum-sub">'+(selCat.tier==='K'?'Key — always required':'Supplementary')+'</div></div>'
-      +'</div>';
+function renderEvFilingContent(){
+  if(typeof EvidenceFiling==='undefined') return '<div class="evidence-empty"><i class="ti ti-database-off"></i>Evidence filing system not loaded.</div>';
+  
+  // Global search
+  if(filingSearch){
+    var files = EvidenceFiling.searchFiles(filingSearch);
+    return renderEvFileTable(files, true);
   }
+  // All categories — folder grid
+  if(!filingPath.categoryId){
+    var tree = EvidenceFiling.getFolderTree();
+    var cats = EvidenceFiling.FILING_CATEGORIES;
+    return '<div class="folder-grid">'+cats.map(function(cat){
+      var node = tree[cat.id];
+      var count = node ? EvidenceFiling.getFilesInPath(cat.id).length : 0;
+      return '<div class="folder-card" onclick="setFilingPath({categoryId:\''+cat.id+'\'})">'
+        +'<i class="ti '+cat.icon+'"></i>'
+        +'<div class="fc-name">'+esc(shortCatName(cat.name))+'</div>'
+        +'<div class="fc-count">'+count+' file'+(count===1?'':'s')+'</div>'
+        +'</div>';
+    }).join('')+'</div>';
+  }
+  // Category selected — show years
+  if(filingPath.categoryId && !filingPath.year){
+    var tree = EvidenceFiling.getFolderTree();
+    var node = tree[filingPath.categoryId];
+    if(!node||!Object.keys(node.years).length) return '<div class="evidence-empty"><i class="ti ti-folder-off"></i>No files in this category yet.</div>';
+    return '<div class="folder-grid">'+Object.keys(node.years).sort().reverse().map(function(y){
+      var count = EvidenceFiling.getFilesInPath(filingPath.categoryId,y).length;
+      return '<div class="folder-card" onclick="setFilingPath({categoryId:\''+filingPath.categoryId+'\',year:\''+y+'\'})">'
+        +'<i class="ti ti-calendar"></i><div class="fc-name">'+y+'</div><div class="fc-count">'+count+' file'+(count===1?'':'s')+'</div></div>';
+    }).join('')+'</div>';
+  }
+  // Year selected — show months
+  if(filingPath.year && !filingPath.month){
+    var tree = EvidenceFiling.getFolderTree();
+    var months = tree[filingPath.categoryId]&&tree[filingPath.categoryId].years[filingPath.year] ? tree[filingPath.categoryId].years[filingPath.year].months : {};
+    if(!Object.keys(months).length) return '<div class="evidence-empty"><i class="ti ti-folder-off"></i>No files for '+filingPath.year+'.</div>';
+    return '<div class="folder-grid">'+Object.keys(months).sort(function(a,b){return parseInt(b,10)-parseInt(a,10);}).map(function(m){
+      var count = EvidenceFiling.getFilesInPath(filingPath.categoryId,filingPath.year,m).length;
+      var mn = (EvidenceFiling.MONTHS||[])[parseInt(m,10)-1]||m;
+      return '<div class="folder-card" onclick="setFilingPath({categoryId:\''+filingPath.categoryId+'\',year:\''+filingPath.year+'\',month:'+m+'})">'
+        +'<i class="ti ti-folder"></i><div class="fc-name">'+mn+'</div><div class="fc-count">'+count+' file'+(count===1?'':'s')+'</div></div>';
+    }).join('')+'</div>';
+  }
+  // Month selected — show days
+  if(filingPath.month && !filingPath.date){
+    var tree = EvidenceFiling.getFolderTree();
+    var days = tree[filingPath.categoryId]&&tree[filingPath.categoryId].years[filingPath.year]&&tree[filingPath.categoryId].years[filingPath.year].months[filingPath.month] ? tree[filingPath.categoryId].years[filingPath.year].months[filingPath.month].days : {};
+    if(!Object.keys(days).length) return '<div class="evidence-empty"><i class="ti ti-calendar-off"></i>No files for this month.</div>';
+    return '<div class="folder-grid">'+Object.keys(days).sort().reverse().map(function(d){
+      return '<div class="folder-card" onclick="setFilingPath({categoryId:\''+filingPath.categoryId+'\',year:\''+filingPath.year+'\',month:'+filingPath.month+',date:\''+d+'\'})">'
+        +'<i class="ti ti-calendar-event"></i><div class="fc-name">'+esc(days[d].label||d)+'</div><div class="fc-count">'+days[d].count+' file'+(days[d].count===1?'':'s')+'</div></div>';
+    }).join('')+'</div>';
+  }
+  // Date selected — show file table
+  var files = EvidenceFiling.getFilesInPath(filingPath.categoryId,filingPath.year,filingPath.month,filingPath.date);
+  return renderEvFileTable(files, false);
+}
 
-  var fileRows = files.length ? files.map(function(f){
-    var badge = f.tier==='K'?'ev-badge-k':'ev-badge-s';
-    var badgeLabel = f.tier==='K'?'Key':'Supplementary';
-    return '<div class="ev-file-row">'
-      +'<div class="ev-file-icon"><i class="ti ti-file-certificate"></i></div>'
-      +'<div style="flex:1;min-width:0">'
-        +'<div class="ev-file-name">'+esc(f.filename)+'</div>'
-        +'<div class="ev-file-meta">'
-          +'<span><i class="ti ti-calendar" style="font-size:10px"></i> '+esc(f.dayLabel||f.date)+'</span>'
-          +(f.flights&&f.flights.length?'<span><i class="ti ti-plane" style="font-size:10px"></i> '+esc(f.flights.join(', '))+'</span>':'')
-          +(f.routes?'<span>'+esc(f.routes)+'</span>':'')
-          +'<span>'+esc(f.source||'')+'</span>'
-          +'<span>'+esc(f.sizeLabel||'')+'</span>'
-        +'</div>'
-      +'</div>'
-      +'<div class="ev-file-side">'
-        +'<span class="ev-badge '+badge+'">'+badgeLabel+'</span>'
-        +'<div style="margin-top:6px;font-size:10px;color:var(--text3)">'+esc(f.uploadedByName||f.uploadedBy||'')+'</div>'
-      +'</div>'
-    +'</div>';
-  }).join('') : '<div class="empty-note"><i class="ti ti-file-off"></i>No files in this category'+(evSearch?' matching "'+esc(evSearch)+'"':'')+'.</div>';
+function renderEvFileTable(files, fromSearch){
+  var isEH = typeof isEvidenceTeam === 'function' ? isEvidenceTeam() : false;
+  if(!files.length) return '<div class="evidence-empty"><i class="ti ti-file-off"></i>No files'+(fromSearch?' match your search':' in this folder')+'.</div>';
+  var rows = files.map(function(f){
+    var ext = (f.filename||'').split('.').pop().toLowerCase();
+    var icon = ext==='pdf'?'ti-file-type-pdf':ext==='msg'?'ti-mail':ext==='docx'?'ti-file-word':'ti-file';
+    var tierCls = f.tier==='K'?'tier-k':f.tier==='S'?'tier-s':'tier-w';
+    var dp = typeof EvidenceFiling!=='undefined' ? EvidenceFiling.dateParts(f.date||'') : {dayLabel:f.date||''};
+    return '<tr>'
+      +'<td><div style="display:flex;align-items:center;gap:7px"><i class="ti '+icon+'" style="font-size:16px;color:var(--blue-text)"></i>'
+        +'<div><div style="font-size:12px;font-weight:500">'+esc(f.filename)+'</div>'
+        +'<div style="font-size:10px;color:var(--text3)">'+esc((f.flights||[]).join(', '))+(f.routes?' · '+esc(f.routes):'')+'</div></div></div></td>'
+      +'<td><span class="'+tierCls+'">'+f.tier+'</span></td>'
+      +'<td style="font-size:11px;color:var(--text3)">'+esc(dp.dayLabel)+'</td>'
+      +'<td style="font-size:11px;color:var(--text3)">'+esc(f.source||'')+'</td>'
+      +'<td style="font-size:11px;color:var(--text3)">'+(typeof EvidenceFiling!=='undefined'?EvidenceFiling.formatSize(f.size||0):'')+'</td>'
+      +'<td style="white-space:nowrap">'
+        +(isEH?'<button class="mini-btn" onclick="deleteFilingFile(\''+f.id+'\')" title="Remove"><i class="ti ti-trash"></i></button> ':'')
+        +'<button class="mini-btn primary" onclick="pullFileToCase(\''+f.id+'\')" title="Pull to case pack"><i class="ti ti-download"></i> Pull</button>'
+      +'</td>'
+    +'</tr>';
+  }).join('');
+  return '<table class="ev-file-table"><thead><tr><th>File</th><th>Tier</th><th>Date</th><th>Source</th><th>Size</th><th></th></tr></thead><tbody>'+rows+'</tbody></table>';
+}
 
-  // Audit log
-  var audit = typeof EvidenceFiling!=='undefined' ? (EvidenceFiling.getAuditLog()||[]).slice(0,8) : [];
-  var auditHtml = audit.map(function(a){
-    return '<div class="audit-row"><div class="audit-dot"></div><div class="audit-text">'+esc(a.t)+'</div><div class="audit-time">'+esc(a.time||'')+'</div></div>';
-  }).join('') || '<div class="empty-note" style="padding:14px">No audit entries yet.</div>';
+function renderEvidence(){
+  if(typeof EvidenceFiling==='undefined'){
+    document.getElementById('repo-stats').innerHTML = '';
+    var body = document.getElementById('repo-body');
+    body.innerHTML = '<div class="evidence-empty"><i class="ti ti-database-off"></i>Evidence filing system unavailable.</div>';
+    return;
+  }
+  var allFiles = EvidenceFiling.getAllFiles();
+  var keyFiles = allFiles.filter(function(f){ return f.tier==='K'; }).length;
+  var isEH = typeof isEvidenceTeam === 'function' ? isEvidenceTeam() : false;
 
-  var mainHtml = '<div class="ev-main">'
-    +'<div class="ev-main-hdr">'
-      +'<div class="panel-band-left"><div class="panel-band-icon teal"><i class="ti ti-'+(selCat?selCat.icon.replace('ti-',''):'database')+'"></i></div><span class="panel-band-title">'+esc(selCat?selCat.name:'Select a category')+'</span></div>'
-      +'<input class="ev-search" placeholder="Search files…" value="'+esc(evSearch)+'" oninput="evSearch=this.value;renderEvidence()">'
-    +'</div>'
-    +'<div class="ev-main-body">'
-      + summary
-      + '<div class="ev-upload-row"><span style="font-size:11px;color:var(--text3);flex:1">'+files.length+' file'+(files.length===1?'':'s')+' in this category</span>'
-        +'<button class="mini-btn primary" onclick="alert(\'File upload — connect to intake pipeline\')"><i class="ti ti-upload"></i> Upload file</button>'
-      +'</div>'
-      + fileRows
-      +'<div style="padding:10px 16px 6px;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);border-top:1px solid var(--border);margin-top:4px">Audit log</div>'
-      + auditHtml
-    +'</div>'
-  +'</div>';
+  document.getElementById('repo-stats').innerHTML =
+    '<span class="stat-chip blue"><i class="ti ti-database"></i> '+allFiles.length+' files</span>'
+    +'<span class="stat-chip green"><i class="ti ti-star"></i> '+keyFiles+' key</span>'
+    +(isEH?'<span class="stat-chip"><i class="ti ti-upload"></i> Evidence team</span>':'');
 
   var body = document.getElementById('repo-body');
   body.innerHTML = '';
-  var wrap = document.createElement('div');
-  wrap.style.cssText = 'display:grid;grid-template-columns:260px 1fr;flex:1;min-height:0;border:1px solid var(--border);border-radius:5px;overflow:hidden;background:var(--surface);margin-bottom:18px';
-  wrap.innerHTML = '<div class="ev-sidebar"><div class="panel-band"><div class="panel-band-left"><div class="panel-band-icon teal"><i class="ti ti-database"></i></div><span class="panel-band-title">Evidence categories</span></div></div><div class="ev-sidebar-body">'+sideHtml+'</div></div>'+mainHtml;
-  body.appendChild(wrap);
-}
+  body.style.display = 'flex';
+  body.style.flexDirection = 'column';
 
-// ══════════════════════════════════════
-//  CLOSED OUTCOMES TAB
-// ══════════════════════════════════════
-var closedFilter='all', closedQ='', closedRef=null;
-var OUTCOME_LABELS={all:'All',defended:'Defended',settled:'Settled',paid:'Paid',withdrawn:'Withdrawn'};
+  // Global search bar
+  var searchBar = document.createElement('div');
+  searchBar.className = 'ev-global-search';
+  searchBar.innerHTML = '<i class="ti ti-search"></i>'
+    +'<input type="search" placeholder="Search all evidence — flight number, date, document type…" value="'+esc(filingSearch)+'" oninput="filingSearch=this.value;renderEvidence()" autocomplete="off">'
+    +(filingSearch?'<span class="ev-search-result-count" id="ev-result-count"></span>':'');
+  body.appendChild(searchBar);
 
-function renderClosed(){
-  var cases = typeof ALL_CLOSED_CASES!=='undefined' ? ALL_CLOSED_CASES : [];
-  var filtered = cases.filter(function(c){
-    if(closedFilter!=='all'&&c.outcome!==closedFilter) return false;
-    if(closedQ){ var q=closedQ.toLowerCase(); return [c.ref,c.claimant,c.flightNum,c.route,c.disruptionType].join(' ').toLowerCase().indexOf(q)>=0; }
-    return true;
-  });
-  document.getElementById('repo-stats').innerHTML='<span class="stat-chip"><i class="ti ti-archive"></i> '+cases.length+' closed cases</span>';
-  if(!closedRef&&filtered.length) closedRef=filtered[0].ref;
+  // Layout
+  var layout = document.createElement('div');
+  layout.className = 'filing-layout-ev';
 
-  var otabs=Object.keys(OUTCOME_LABELS).map(function(o){
-    return '<button class="ftab'+(closedFilter===o?' active':'')+'" onclick="closedFilter=\''+o+'\';closedRef=null;renderClosed()">'+OUTCOME_LABELS[o]+'</button>';
-  }).join('');
+  // Tree sidebar
+  var treeSide = document.createElement('div');
+  treeSide.className = 'filing-tree-ev';
+  treeSide.innerHTML = '<div class="filing-tree-ev-hdr"><div class="panel-band-icon blue"><i class="ti ti-folders"></i></div>Categories</div>'
+    +'<div class="filing-tree-ev-body">'+renderEvFilingTree()+'</div>';
 
-  var cards=filtered.map(function(c){
-    var oc={defended:'p-onfile',settled:'p-draft',paid:'ds-on',withdrawn:'ds-idle'}[c.outcome]||'';
-    return '<div class="file-row'+(closedRef===c.ref?' active':'')+'" onclick="closedRef=\''+esc(c.ref)+'\';renderClosed()" style="cursor:pointer;border-left:3px solid transparent'+(closedRef===c.ref?';border-left-color:var(--accent);background:var(--accent-faint)':'')+'">'
-      +'<div style="flex:1"><div class="file-name">'+esc(c.claimant)+' · '+esc(c.flightNum)+'</div>'
-        +'<div class="file-meta">'+esc(c.ref)+' · '+esc(c.route||'')+'</div>'
-      +'</div>'
-      +'<span class="doc-status ds-'+c.outcome+'">'+OUTCOME_LABELS[c.outcome]+'</span>'
-      +'</div>';
-  }).join('')||'<div class="empty-note">No cases match this filter.</div>';
-
-  var sel = cases.find(function(c){ return c.ref===closedRef; });
-  var detailHtml='<div class="doc-hub-empty"><i class="ti ti-mouse-pointer"></i>Select a closed case to view the outcome.</div>';
-  if(sel){
-    detailHtml='<div style="padding:14px 16px;flex:1;overflow-y:auto">'
-      +'<div style="font-family:var(--font-serif);font-size:15px;margin-bottom:10px">'+esc(sel.claimant)+'</div>'
-      +'<div style="font-size:10px;font-family:var(--mono);color:var(--text3);margin-bottom:14px">'+esc(sel.ref)+' · '+esc(sel.flightNum)+'</div>'
-      +[['Outcome',OUTCOME_LABELS[sel.outcome]||sel.outcome],['Saving',sel.saving||'—'],['Days to close',(sel.days||'—')],['Route',sel.route||'—'],['Disruption',sel.disruptionType||'—']].map(function(kv){
-        return '<div style="display:grid;grid-template-columns:110px 1fr;gap:6px;font-size:12px;padding:7px 0;border-bottom:1px solid var(--border2)">'
-          +'<div style="color:var(--text3)">'+kv[0]+'</div><div style="font-weight:500">'+esc(kv[1])+'</div></div>';
-      }).join('')
-      +(sel.recommendation?'<div style="font-size:11px;color:var(--text2);line-height:1.6;margin-top:10px;padding:8px 10px;border-left:3px solid var(--accent);background:var(--accent-faint)">'+esc(sel.recommendation)+'</div>':'')
-      +'</div>';
-  }
-
-  var body=document.getElementById('repo-body');
-  body.innerHTML='';
-  var wrap=document.createElement('div');
-  wrap.style.cssText='display:grid;grid-template-columns:1fr 320px;flex:1;min-height:0;border:1px solid var(--border);border-radius:5px;overflow:hidden;background:var(--surface);margin-bottom:18px';
-  wrap.innerHTML='<div class="case-docs">'
-    +'<div class="case-docs-hdr"><div class="folder-tabs" style="flex:1;padding:0">'+otabs+'</div><input class="repo-search" placeholder="Search…" value="'+esc(closedQ)+'" oninput="closedQ=this.value;renderClosed()"></div>'
-    +'<div class="case-docs-body">'+cards+'</div>'
+  // Main panel
+  var mainSide = document.createElement('div');
+  mainSide.className = 'filing-main-ev';
+  var content = renderEvFilingContent();
+  var resultCount = filingSearch ? (content.match(/<tr>/g)||[]).length : null;
+  mainSide.innerHTML = '<div class="filing-toolbar-ev">'
+    +'<div class="ev-breadcrumb">'+evBreadcrumb()+'</div>'
+    +(isEH && !filingSearch?'<button class="mini-btn primary" onclick="document.getElementById(\'filing-file-input\').click()"><i class="ti ti-upload"></i> Upload</button>':'')
     +'</div>'
-    +'<div class="doc-hub" style="border-left:1px solid var(--border);display:flex;flex-direction:column">'
-      +'<div class="panel-band"><div class="panel-band-left"><div class="panel-band-icon blue"><i class="ti ti-archive"></i></div><span class="panel-band-title">Outcome detail</span></div></div>'
-      +(sel?detailHtml:'<div class="doc-hub-empty"><i class="ti ti-mouse-pointer"></i>Select a case.</div>')
-    +'</div>';
-  body.appendChild(wrap);
+    +'<div class="filing-body-ev">'+content+'</div>'
+    +(isEH?renderEvUploadPanel():'');
+
+  layout.appendChild(treeSide);
+  layout.appendChild(mainSide);
+  body.appendChild(layout);
+
+  // Update result count
+  if(resultCount !== null){
+    var rc = document.getElementById('ev-result-count');
+    if(rc) rc.textContent = resultCount + ' result'+(resultCount===1?'':'s');
+  }
 }
 
-// ── Interaction helpers ──
-function toggleY(y){ treeY[y]=treeY[y]===false?true:false; renderCases(); }
-function toggleM(m){ treeM[m]=treeM[m]===false?true:false; renderCases(); }
-function toggleD(d){ treeD[d]=treeD[d]===false?true:false; renderCases(); }
-function selCase(ref){ caseRef=ref; caseFolder='all'; caseSearch=''; renderCases(); }
-function setFolder(f){ caseFolder=f; refreshPanels(); }
-function selEvCat(id){ evCat=id; renderEvidence(); }
+function renderEvUploadPanel(){
+  if(typeof EvidenceFiling==='undefined') return '';
+  var catOpts = EvidenceFiling.FILING_CATEGORIES.map(function(c){
+    return '<option value="'+c.id+'"'+(filingPath.categoryId===c.id?' selected':'')+'>'+esc(c.name)+'</option>';
+  }).join('');
+  var dateVal = filingPath.date||'';
+  return '<div class="upload-zone" onclick="document.getElementById(\'filing-file-input\').click()" ondragover="event.preventDefault();this.classList.add(\'dragover\')" ondragleave="this.classList.remove(\'dragover\')" ondrop="handleFilingDrop(event)">'
+    +'<i class="ti ti-cloud-upload"></i>'
+    +'<p><strong>Upload evidence</strong> — drag here or click to browse<br><span style="font-size:11px;color:var(--text3)">Category, flight and date extracted from filename</span></p>'
+    +'</div>'
+    +'<input type="file" id="filing-file-input" class="filing-file-input" onchange="handleFilingFileSelect(event)">'
+    +'<div class="upload-form">'
+      +'<div><label>Category</label><select id="upload-category">'+catOpts+'</select></div>'
+      +'<div><label>Operation date</label><input type="date" id="upload-date" value="'+dateVal+'"></div>'
+      +'<div><label>Flight number(s)</label><input type="text" id="upload-flights" placeholder="HC 1184"></div>'
+      +'<div><label>Route</label><input type="text" id="upload-route" placeholder="LTN-BCN"></div>'
+      +'<div><label>Source</label><select id="upload-source"><option>Manual</option><option>API</option><option>SharePoint</option></select></div>'
+      +'<div style="display:flex;align-items:flex-end"><button class="mini-btn primary" style="width:100%;justify-content:center;padding:9px" onclick="document.getElementById(\'filing-file-input\').click()"><i class="ti ti-upload"></i> Choose file</button></div>'
+    +'</div>';
+}
+
+function selEvCat(id){ filingPath.categoryId=id; filingPath.year=null; filingPath.month=null; filingPath.date=null; renderEvidence(); }
+
 
 function refreshPanels(){
   var wrap=document.querySelector('[style*="grid-template-columns:240px"]');
