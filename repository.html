@@ -235,8 +235,8 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
     <div class="stat-bar" id="repo-stats"></div>
   </div>
   <div class="tab-row">
-    <button class="tab-btn active" id="tab-cases" onclick="setTab('cases')"><i class="ti ti-briefcase"></i> Cases</button>
-    <button class="tab-btn" id="tab-evidence" onclick="setTab('evidence')"><i class="ti ti-database"></i> Evidence</button>
+    <button class="tab-btn" id="tab-cases" onclick="setTab('cases')"><i class="ti ti-briefcase"></i> Cases</button>
+    <button class="tab-btn active" id="tab-evidence" onclick="setTab('evidence')"><i class="ti ti-database"></i> Evidence</button>
     <button class="tab-btn" id="tab-closed" onclick="setTab('closed')"><i class="ti ti-archive"></i> Closed outcomes</button>
   </div>
   <div class="repo-body" id="repo-body"></div>
@@ -263,7 +263,7 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 <script src="shared_user_switch.js"></script>
 <script>
 // ── State ──
-var TAB = 'cases';
+var TAB = 'evidence';
 var caseRef = null;
 var caseFolder = 'all';
 var evCat = null;
