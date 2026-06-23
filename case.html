@@ -130,7 +130,14 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 </div>
 
 <script src="shared_nav.js"></script>
-<script>window.addEventListener('load', function(){ CaseShell.init(); });</script>
+<script>
+function bootCaseShell(){
+  if(typeof CaseShell!=='undefined'&&typeof CaseShell.init==='function')CaseShell.init();
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bootCaseShell);
+else bootCaseShell();
+window.addEventListener('load',bootCaseShell);
+</script>
 
 <div id="user-modal" class="user-modal" onclick="if(event.target===this)closeMenu()">
   <div class="user-dropdown">

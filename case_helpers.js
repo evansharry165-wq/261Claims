@@ -589,7 +589,29 @@ function markCaseResolved(ref, outcome, meta) {
   return true;
 }
 
+function normaliseAssigneeId(id) {
+  return String(id == null ? '' : id).trim().toUpperCase();
+}
+
+function caseAssignedToUser(c, uid) {
+  if (!c) return false;
+  var normUid = normaliseAssigneeId(uid);
+  if (normUid === 'SB') return true;
+  return normaliseAssigneeId(c.assignedTo) === normUid;
+}
+
+function getCasesForUser(uid, stage) {
+  uid = normaliseAssigneeId(uid || (typeof getActiveUser === 'function' ? getActiveUser() : 'SB'));
+  var pool = typeof ALL_CASES !== 'undefined' ? ALL_CASES : [];
+  return pool.filter(function (c) {
+    if (!caseAssignedToUser(c, uid)) return false;
+    if (stage && c.stage !== stage) return false;
+    return true;
+  });
+}
+
 function getMergedCasesForUser(uid, stage) {
+  uid = normaliseAssigneeId(uid || (typeof getActiveUser === 'function' ? getActiveUser() : 'SB'));
   var merged = getCasesForUser(uid, stage);
   var seen = {};
   merged.forEach(function (c) {
@@ -613,7 +635,7 @@ function getMergedCasesForUser(uid, stage) {
 
   if (typeof uploadedCases !== 'undefined') {
     uploadedCases.forEach(function (c) {
-      if (c.assignedTo !== uid) return;
+      if (!caseAssignedToUser(c, uid)) return;
       if (stage && c.stage !== stage) return;
       if (seen[c.ref]) return;
       merged.push(c);

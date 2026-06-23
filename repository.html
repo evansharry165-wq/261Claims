@@ -831,7 +831,16 @@ function render(){
   else renderClosed();
 }
 
-window.addEventListener('load', render);
+function initRepository(){
+  if(typeof EvidenceFiling==='undefined'){
+    setTimeout(initRepository,50);
+    return;
+  }
+  render();
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',initRepository);
+else initRepository();
+window.addEventListener('load',initRepository);
 </script>
 </body>
 </html>

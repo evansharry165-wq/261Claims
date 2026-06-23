@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>DefendAble — Mass upload</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--ink:#1A1A2E;--ink2:#2D2D44;--ink3:#6B6B80;--ink4:#9B9BAA;--rule:#D8D8E0;--rule2:#EBEBF0;--surface:#FFFFFF;--surface2:#F7F7F9;--surface3:#EFEFF2;--accent:#1B3A6B;--accent2:#254E91;--accent-faint:#EEF2F8;--confirm:#1A5C3A;--confirm-faint:#EEF7F2;--caution:#7A4E00;--caution-faint:#FDF4E3;--alert:#8B1A1A;--alert-faint:#FBF0F0;--navy:var(--ink);--blue:var(--accent2);--blue-faint:var(--accent-faint);--blue-text:var(--accent);--border:var(--rule);--text:var(--ink);--text2:var(--ink2);--text3:var(--ink3);--font:'Helvetica Neue','Arial',sans-serif;--font-serif:'Georgia','Times New Roman',serif;--mono:'Courier New','Courier',monospace;--r:3px;--r2:4px}
+html,body{min-height:100%;font-family:var(--font);background:var(--surface2);color:var(--text);font-size:14px}
+.global-nav{background:var(--navy);height:48px;display:flex;align-items:center;padding:0 20px}
+.gn-logo{display:flex;align-items:center;gap:8px;text-decoration:none;margin-right:20px}
+.gn-mark{width:28px;height:28px;background:var(--blue);border-radius:4px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px}
+.gn-name{font-size:14px;font-weight:500;color:#fff}
+.gn-links{display:flex;align-items:center;gap:2px;flex:1}
+.gn-link{display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r);font-size:12px;font-weight:500;color:rgba(255,255,255,0.5);text-decoration:none}
+.gn-link:hover{background:rgba(255,255,255,0.08);color:#fff}
+.gn-link.active{background:rgba(42,111,219,0.35);color:#fff}
+.gn-right{display:flex;align-items:center;gap:8px;margin-left:8px}
+.gn-user-btn{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:20px;padding:3px 10px 3px 4px;cursor:pointer}
+.gn-av{width:24px;height:24px;border-radius:50%;background:#1C2E44;color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500}
+.gn-user{font-size:11px;font-weight:500;color:rgba(255,255,255,0.85)}
+.page{max-width:960px;margin:0 auto;padding:20px 24px 32px}
+.page-title{font-family:var(--font-serif);font-size:22px;font-weight:400;margin-bottom:4px}
+.page-sub{font-size:12px;color:var(--text3);margin-bottom:18px}
+.upload-zone{border:2px dashed var(--border);border-radius:var(--r2);padding:36px 24px;text-align:center;background:var(--surface);cursor:pointer;margin-bottom:16px}
+.upload-zone:hover,.upload-zone.dragover{border-color:var(--accent);background:var(--accent-faint)}
+.upload-zone i{font-size:32px;color:var(--text3);display:block;margin-bottom:10px}
+.upload-zone p{font-size:12px;color:var(--text2);line-height:1.55}
+.upload-zone strong{color:var(--blue-text)}
+.panel{background:var(--surface);border:1px solid var(--rule);border-radius:4px;overflow:hidden;margin-bottom:16px}
+.panel-hdr{padding:12px 16px;border-bottom:1px solid var(--rule);font-size:13px;font-weight:500;display:flex;align-items:center;justify-content:space-between}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{text-align:left;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.09em;color:var(--text3);padding:10px 14px;border-bottom:1px solid var(--rule)}
+td{padding:10px 14px;border-bottom:1px solid var(--rule2);vertical-align:middle}
+tbody tr:last-child td{border-bottom:none}
+.td-mono{font-family:var(--mono);font-size:11px;color:var(--text3)}
+.status-pill{font-size:10px;font-weight:500;padding:2px 8px;border-radius:20px;border:1px solid var(--rule);background:var(--surface2);color:var(--text2)}
+.status-pill.ready{border-color:#BBF7D0;background:var(--confirm-faint);color:var(--confirm)}
+.status-pill.pending{border-color:#FDE68A;background:var(--caution-faint);color:var(--caution)}
+.actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.btn-primary{display:inline-flex;align-items:center;gap:6px;padding:10px 16px;background:var(--navy);color:#fff;border:none;font-size:12px;font-weight:500;font-family:var(--font);cursor:pointer}
+.btn-primary:disabled{opacity:.45;cursor:not-allowed}
+.btn-outline{display:inline-flex;align-items:center;gap:6px;padding:10px 14px;background:var(--surface);border:1px solid var(--rule);color:var(--text2);font-size:12px;text-decoration:none}
+.empty{padding:28px;text-align:center;color:var(--text3);font-size:12px}
+input[type=file]{display:none}
+</style>
+</head>
+<body>
+<script src="shared_data.js"></script>
+<script src="shared_theme.js"></script>
+<script src="case_helpers.js"></script>
+
+<nav class="global-nav">
+  <a href="index.html" class="gn-logo"><div class="gn-mark"><i class="ti ti-lock"></i></div><span class="gn-name">DefendAble</span></a>
+  <div class="gn-links" id="gn-links"></div>
+  <div class="gn-right">
+    <div class="gn-user-btn" onclick="toggleUserMenu()">
+      <div class="gn-av" id="nav-av">SB</div>
+      <span class="gn-user" id="nav-user">S. Booth</span>
+    </div>
+  </div>
+</nav>
+
+<div class="page">
+  <div class="page-title">Mass upload</div>
+  <div class="page-sub">Batch deposit — upload multiple letters of claim for intake lead review</div>
+
+  <div class="upload-zone" id="upload-zone" onclick="document.getElementById('batch-files').click()"
+    ondragover="event.preventDefault();this.classList.add('dragover')"
+    ondragleave="this.classList.remove('dragover')"
+    ondrop="handleBatchDrop(event)">
+    <i class="ti ti-cloud-upload"></i>
+    <p><strong>Drop LOC files here</strong> or click to browse<br>PDF and DOCX · multiple files supported</p>
+  </div>
+  <input type="file" id="batch-files" accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" multiple onchange="handleBatchSelect(event)">
+
+  <div class="panel">
+    <div class="panel-hdr">
+      <span>Uploaded files</span>
+      <span id="file-count" style="font-size:11px;color:var(--text3);font-weight:400">0 files</span>
+    </div>
+    <div id="table-wrap">
+      <div class="empty" id="empty-state"><i class="ti ti-files" style="font-size:28px;opacity:.35;display:block;margin-bottom:8px"></i>No files uploaded yet</div>
+      <table id="batch-table" style="display:none">
+        <thead><tr>
+          <th>Filename</th><th>Extracted claimant</th><th>Flight</th><th>Status</th>
+        </tr></thead>
+        <tbody id="batch-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button class="btn-primary" id="process-btn" disabled onclick="processBatch()"><i class="ti ti-player-play"></i> Process batch</button>
+    <a href="intake.html" class="btn-outline"><i class="ti ti-arrow-left"></i> Back to intake</a>
+  </div>
+</div>
+
+<script>
+var batchFiles=[];
+
+function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+
+function guessMeta(name){
+  var base=name.replace(/\.(pdf|docx)$/i,'');
+  var flight=(base.match(/\b(HC|EZY|U2)\s*\d{3,4}\b/i)||[])[0]||'—';
+  var claimant=base.replace(/[_-]+/g,' ').replace(/\b(HC|EZY|U2)\s*\d{3,4}\b/gi,'').trim()||'Pending extraction';
+  return {claimant:claimant.slice(0,48),flight:flight.toUpperCase()};
+}
+
+function addBatchFiles(fileList){
+  Array.prototype.forEach.call(fileList||[],function(file){
+    if(!/\.(pdf|docx)$/i.test(file.name))return;
+    if(batchFiles.some(function(f){return f.name===file.name&&f.size===file.size;}))return;
+    var meta=guessMeta(file.name);
+    batchFiles.push({file:file,name:file.name,claimant:meta.claimant,flight:meta.flight,status:'Pending'});
+  });
+  renderBatchTable();
+}
+
+function handleBatchSelect(e){addBatchFiles(e.target.files);e.target.value='';}
+function handleBatchDrop(e){
+  e.preventDefault();
+  document.getElementById('upload-zone').classList.remove('dragover');
+  addBatchFiles(e.dataTransfer.files);
+}
+
+function renderBatchTable(){
+  var tbody=document.getElementById('batch-tbody');
+  var table=document.getElementById('batch-table');
+  var empty=document.getElementById('empty-state');
+  var count=document.getElementById('file-count');
+  var btn=document.getElementById('process-btn');
+  count.textContent=batchFiles.length+' file'+(batchFiles.length===1?'':'s');
+  btn.disabled=!batchFiles.length;
+  if(!batchFiles.length){table.style.display='none';empty.style.display='block';tbody.innerHTML='';return;}
+  empty.style.display='none';table.style.display='table';
+  tbody.innerHTML=batchFiles.map(function(row,i){
+    var st=row.status==='Ready'?'ready':'pending';
+    return '<tr><td>'+esc(row.name)+'</td><td>'+esc(row.claimant)+'</td><td class="td-mono">'+esc(row.flight)+'</td>'
+      +'<td><span class="status-pill '+st+'">'+esc(row.status)+'</span></td></tr>';
+  }).join('');
+}
+
+function processBatch(){
+  batchFiles.forEach(function(row){row.status='Ready';});
+  renderBatchTable();
+  alert('Batch queued for processing — '+batchFiles.length+' file'+(batchFiles.length===1?'':'s')+' marked ready (demo).');
+}
+
+function toggleUserMenu(){}
+function boot(){
+  var uid=typeof getActiveUser==='function'?getActiveUser():'SB';
+  var u=typeof USERS!=='undefined'?USERS[uid]:null;
+  if(u){var a=document.getElementById('nav-av');if(a)a.textContent=u.initials;var n=document.getElementById('nav-user');if(n)n.textContent=u.name;}
+  if(typeof renderGlobalNav==='function')renderGlobalNav();
+  renderBatchTable();
+}
+window.addEventListener('load',boot);
+</script>
+<script src="shared_nav.js"></script>
+</body>
+</html>

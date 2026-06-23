@@ -32,6 +32,17 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 .stat-chip.new{background:var(--blue-faint);border-color:#BFDBFE;color:var(--blue-text)}
 .stat-chip.active{background:var(--green-faint);border-color:#BBF7D0;color:var(--green)}
 
+.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+@media(max-width:720px){.stat-grid{grid-template-columns:1fr}}
+.stat-card{background:var(--surface);border:1px solid var(--rule);border-radius:4px;padding:14px 16px}
+.stat-card .stat-val{font-size:24px;font-weight:400;font-family:var(--font-serif);color:var(--text);line-height:1.1}
+.stat-card .stat-label{font-size:10px;text-transform:uppercase;letter-spacing:0.09em;color:var(--text3);margin-top:4px}
+.watch-row{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--rule);font-size:12px;color:var(--text2);cursor:pointer}
+.watch-row:last-child{border-bottom:none}
+.watch-row:hover{background:var(--surface2)}
+.watch-row.urgent{color:var(--red)}
+.watch-row.warn{color:var(--caution)}
+
 .hero-search{margin-bottom:12px}
 .search-wrap{position:relative;width:100%}
 .search-wrap i{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:14px;pointer-events:none}
@@ -252,6 +263,25 @@ function priorityTasksHtml(tasks){
       +'<div class="priority-ref">'+escapeHtml(tk.ref)+'</div></div>'
       +'<div class="priority-meta"><div class="task-deadline '+urg+'">'+escapeHtml(urgencyLabel(cpr))+'</div></div></div>';
   }).join('');
+}
+
+function statCardsHtml(summary){
+  return '<div class="stat-grid">'
+    +'<div class="stat-card"><div class="stat-val">'+summary.active+'</div><div class="stat-label">Active cases</div></div>'
+    +'<div class="stat-card"><div class="stat-val">'+summary.urgent+'</div><div class="stat-label">CPR ≤7 days</div></div>'
+    +'<div class="stat-card"><div class="stat-val">'+summary.tasks+'</div><div class="stat-label">Tasks now</div></div>'
+    +'</div>';
+}
+
+function watchHtml(cases){
+  var items=typeof buildWatchItems==='function'?buildWatchItems(cases):[];
+  var rows=items.length?items.map(function(w){
+    var cls=w.urgency<=3?'urgent':w.urgency<=7?'warn':'';
+    return '<div class="watch-row '+cls+'" data-ref="'+escapeHtml(w.ref)+'" data-tab="'+escapeHtml(w.tab||'overview')+'">'
+      +'<i class="ti ti-alert-triangle" style="font-size:13px;flex-shrink:0"></i>'
+      +'<span>'+escapeHtml(w.text)+'</span></div>';
+  }).join(''):'<div class="empty-row">'+escapeHtml(t('noUrgentDeadlines'))+'</div>';
+  return '<div class="zone zone-watch"><div class="panel"><div class="panel-band"><div class="panel-band-left"><div class="panel-band-icon amber"><i class="ti ti-eye"></i></div><div class="panel-band-title">'+escapeHtml(t('watch'))+'</div></div><a class="panel-band-action" href="cases.html?sort=urgency">'+escapeHtml(t('viewAll'))+'</a></div><div class="panel">'+rows+'</div></div></div>';
 }
 
 function heroSearchHtml(){
@@ -476,7 +506,7 @@ function buildTerminalQueueZone(uid){
 }
 
 function renderLegalWork(uid,u,cases){
-  var tasks=collectDoNowTasks(cases,6);
+  var tasks=collectDoNowTasks(cases,3);
   var updates=WorkDashboard.getUpdatesSinceLogin(cases,uid);
   var events=WorkDashboard.buildCalendarEvents(cases);
   var summary=WorkDashboard.roleSummary(uid,cases,updates,tasks);
@@ -491,7 +521,9 @@ function renderLegalWork(uid,u,cases){
     +'</div></div>'
     +heroSearchHtml()
     +quickActionsHtml()
-    +'<div class="zone"><div class="panel"><div class="panel-band"><div class="panel-band-left"><div class="panel-band-icon red"><i class="ti ti-list-check"></i></div><div class="panel-band-title">Today\'s priorities</div></div></div><a class="panel-band-action" href="cases.html?sort=urgency">'+escapeHtml(t('viewAll'))+'</a></div>'+priorityTasksHtml(tasks)+'</div></div>'
+    +statCardsHtml(summary)
+    +'<div class="zone"><div class="panel"><div class="panel-band"><div class="panel-band-left"><div class="panel-band-icon red"><i class="ti ti-list-check"></i></div><div class="panel-band-title">'+escapeHtml(t('doNow'))+'</div></div><a class="panel-band-action" href="cases.html?sort=urgency">'+escapeHtml(t('viewAll'))+'</a></div>'+priorityTasksHtml(tasks)+'</div></div>'
+    +watchHtml(cases)
     +buildTerminalQueueZone(uid)
     +'<div class="zone"><div class="panel"><div class="panel-band"><div class="panel-band-left"><div class="panel-band-icon blue"><i class="ti ti-calendar"></i></div><div class="panel-band-title">Deadlines this month</div></div><span class="panel-band-action" style="cursor:default;color:var(--text3)">June 2026</span></div>'+calendarHtml(events)+'</div></div>';
 

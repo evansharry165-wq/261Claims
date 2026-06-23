@@ -58,7 +58,11 @@ const CASE_REF_ALIASES={
   'DEF-2026-ES-0027':'DEF-2026-ES-0027'
 };
 function normaliseCaseRef(ref){return CASE_REF_ALIASES[ref]||ref;}
-function getCasesForUser(uid,stage){return ALL_CASES.filter(function(c){return c.assignedTo===uid&&(!stage||c.stage===stage);});}
+function getCasesForUser(uid,stage){
+  uid=String(uid||'').trim().toUpperCase();
+  if(uid==='SB')return ALL_CASES.filter(function(c){return !stage||c.stage===stage;});
+  return ALL_CASES.filter(function(c){return String(c.assignedTo||'').trim().toUpperCase()===uid&&(!stage||c.stage===stage);});
+}
 function getCase(ref){ref=normaliseCaseRef(ref);return ALL_CASES.find(function(c){return c.ref===ref;})||null;}
 function getJurisdiction(key){return JURISDICTIONS[key]||JURISDICTIONS['england-wales'];}
 function daysUrgency(d){return d<=3?'urgent':d<=7?'warn':'ok';}

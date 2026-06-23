@@ -235,10 +235,19 @@ function renderCaseList(){
   renderCases();
 }
 
+function ensureCaseListChrome(){
+  var searchRow=document.querySelector('.search-row');
+  var filterBar=document.getElementById('filter-bar');
+  if(searchRow)searchRow.style.display='';
+  if(filterBar)filterBar.style.display='';
+}
+
 function renderCases(){
+  ensureCaseListChrome();
   if(isDIO()){
-    document.querySelector('.search-row').style.display='none';
-    document.getElementById('filter-bar').style.display='none';
+    var searchRow=document.querySelector('.search-row');
+    if(searchRow)searchRow.style.display='none';
+    var fb=document.getElementById('filter-bar');if(fb)fb.style.display='none';
     document.querySelector('thead').style.display='none';
     document.querySelector('table').style.display='none';
     document.getElementById('hdr-title').textContent='Cases — evidence view';
@@ -260,7 +269,8 @@ function renderCases(){
   resetDIOView();
   var uid=getActiveUser();
   var params=getParams();
-  var q=(document.getElementById('search').value||'').toLowerCase();
+  var searchEl=document.getElementById('search');
+  var q=((searchEl&&searchEl.value)||'').toLowerCase();
   var allCases=typeof getMergedCasesForUser==='function'?getMergedCasesForUser(uid):getCasesForUser(uid);
   var activeCount=allCases.filter(function(c){return c.stage!=='resolve';}).length;
   var cases=allCases.slice();
@@ -320,20 +330,25 @@ function switchUser(id){
 }
 
 window.addEventListener('load', function(){
-  // Ensure case_helpers.js functions are available before rendering
+  ensureCaseListChrome();
   var attempts = 0;
   function tryRender(){
     if(typeof getNextAction === 'function' && typeof filterCasesByParam === 'function'){
       renderCases();
+      if(typeof renderGlobalNav==='function')renderGlobalNav();
     } else if(attempts < 20){
       attempts++;
       setTimeout(tryRender, 50);
     } else {
-      renderCases(); // render anyway after 1s
+      renderCases();
+      if(typeof renderGlobalNav==='function')renderGlobalNav();
     }
   }
   tryRender();
 });
+if(document.readyState!=='loading'){
+  ensureCaseListChrome();
+}
 </script>
 
 <div id="user-modal" class="user-modal" onclick="if(event.target===this)closeMenu()">
