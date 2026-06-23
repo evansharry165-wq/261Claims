@@ -1,0 +1,211 @@
+/* ═══════════════════════════════════════════════════════
+   easyJet brand theme — colour override
+   Prepended automatically — do not edit this block manually.
+   ═══════════════════════════════════════════════════════ */
+
+:root {
+  /* Accent → easyJet orange */
+  --accent:           #FF6600;
+  --accent2:          #E55A00;
+  --accent-faint:     #FFF4EE;
+
+  /* Surfaces → pure white + light greys */
+  --surface:          #FFFFFF;
+  --surface2:         #F5F5F5;
+  --surface3:         #F0F0F0;
+
+  /* Rules → softer borders */
+  --rule:             #E8E8E8;
+  --rule2:            #F0F0F0;
+
+  /* Primary text → near-black */
+  --ink:              #111111;
+  --ink2:             #444444;
+  --ink3:             #888888;
+  --ink4:             #BBBBBB;
+
+  /* Semantic colours — tuned for white surfaces */
+  --confirm:          #2E7D32;
+  --confirm-faint:    #F1F8F1;
+  --caution:          #B45309;
+  --caution-faint:    #FFFBF0;
+  --alert:            #C0392B;
+  --alert-faint:      #FFF5F5;
+
+  /* Aliases — keep all existing variable references working */
+  --navy:             #111111;
+  --navy2:            #333333;
+  --text:             var(--ink);
+  --text2:            var(--ink2);
+  --text3:            var(--ink3);
+  --border:           var(--rule);
+  --border2:          var(--rule2);
+  --blue:             #FF6600;
+  --blue-faint:       #FFF4EE;
+  --blue-text:        #E55A00;
+  --green:            var(--confirm);
+  --green-faint:      var(--confirm-faint);
+  --amber:            var(--caution);
+  --amber-faint:      var(--caution-faint);
+  --red:              var(--alert);
+  --red-faint:        var(--alert-faint);
+}
+
+/* ── Page background ── */
+html, body {
+  background: #F5F5F5 !important;
+}
+
+/* ── Global nav — white surface, orange top stripe ── */
+.global-nav,
+.gn-bar {
+  background: #FFFFFF !important;
+  border-bottom: 1px solid #E8E8E8 !important;
+  box-shadow: inset 0 3px 0 0 #FF6600 !important;
+}
+
+.gn-mark {
+  background: #FF6600 !important;
+}
+
+.gn-name {
+  color: #111111 !important;
+}
+
+.gn-link {
+  color: #666666 !important;
+  background: transparent !important;
+}
+.gn-link:hover {
+  color: #111111 !important;
+  background: rgba(255,102,0,0.06) !important;
+}
+.gn-link.active {
+  color: #FF6600 !important;
+  background: rgba(255,102,0,0.08) !important;
+  border-bottom-color: #FF6600 !important;
+}
+
+/* User pill / avatar */
+.gn-av {
+  background: #FFF4EE !important;
+  color: #FF6600 !important;
+}
+.gn-user {
+  color: #333333 !important;
+}
+.gn-user-btn {
+  background: rgba(0,0,0,0.04) !important;
+  border-color: #E8E8E8 !important;
+}
+
+/* User dropdown active item */
+.gn-ud-active {
+  background: #FFF4EE !important;
+}
+.gn-ud-active .gn-ud-name {
+  color: #FF6600 !important;
+}
+
+/* ── Case refs and accent links ── */
+.case-ref-link,
+.ref-link,
+.task-ref,
+.td-ref,
+.ch-ref,
+.cr-ref,
+.cw-ref,
+.lp-ref,
+.case-ref {
+  color: #FF6600 !important;
+}
+
+/* ── Primary CTA buttons ── */
+.btn-primary,
+.gp-btn-generate,
+.btn-ev.btn-request {
+  background: #FF6600 !important;
+  border-color: #FF6600 !important;
+  color: #FFFFFF !important;
+}
+.btn-primary:hover,
+.gp-btn-generate:hover {
+  background: #E55A00 !important;
+  border-color: #E55A00 !important;
+}
+
+/* ── Active sidebar and tree items ── */
+.sb-item.active,
+.rs-item.active,
+.tree-item.active,
+.doc-btn.active,
+.doc-btn.open {
+  color: #FF6600 !important;
+  background: #FFF4EE !important;
+  border-left-color: #FF6600 !important;
+}
+
+/* ── Filter chips and pills active state ── */
+.chip.active,
+.filter-chip.active,
+.fpill.active,
+.ftoggle.active,
+.intel-filter.active,
+.tab-sort.active {
+  background: #FF6600 !important;
+  border-color: #FF6600 !important;
+  color: #FFFFFF !important;
+}
+
+/* ── Upload zone hover ── */
+.upload-zone:hover,
+.upload-zone.dragover {
+  border-color: #FF6600 !important;
+  background: #FFF4EE !important;
+}
+
+/* ── Evidence and repository card hover ── */
+.ev-cat-card:hover,
+.ev-card:hover,
+.section-card:hover {
+  border-color: #FF6600 !important;
+}
+.ev-cat-card:hover .ev-cat-icon,
+.ev-card:hover .ev-card-icon {
+  background: #FFF4EE !important;
+  color: #FF6600 !important;
+}
+
+/* ── Waiting and info strips ── */
+.waiting-strip,
+.waiting-pill {
+  background: #FFF4EE !important;
+  border-color: #FFD9C0 !important;
+  color: #C44B00 !important;
+}
+
+/* ── Intake queue selected row ── */
+.qi-row.selected,
+.qi.sel {
+  background: #FFF4EE !important;
+  border-left-color: #FF6600 !important;
+}
+
+/* ── Panel band icon — blue variant ── */
+.panel-band-icon.blue {
+  background: #FFF4EE !important;
+  color: #FF6600 !important;
+}
+
+/* ── Tab active underline ── */
+.tab-btn.active {
+  border-bottom-color: #FF6600 !important;
+  color: #111111 !important;
+}
+
+.ct.active {
+  color: #FF6600 !important;
+  border-bottom-color: #FF6600 !important;
+}
+
+/* ══ End easyJet brand override ══ */
