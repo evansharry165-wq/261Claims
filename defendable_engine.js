@@ -147,35 +147,34 @@ var DefendAbleEngine = (function () {
       var positive = /\bnot possible|\bsame weather|\bmandatory|\bper se|\bno spare|\bcurfew/i.test(combined) && relevant;
       if (relevant) {
         if (negative && !/\bnot possible|\bsame weather|\bmandatory|\bcurfew/i.test(combined)) {
-          findings.push(chk.label + ' — FLAG: availability unclear or not deployed. Pull ' + chk.systems.join(' + ') + ' from Databricks before confirming defence.');
+          findings.push(chk.label.replace(' — available and considered?', '').replace(' — rostered and deployment attempted?', '') + ': verify in Databricks — may defeat EC.');
           status = 'red';
-          statusLabel = 'DISPOSITIVE — VERIFY';
+          statusLabel = 'CHECK REQUIRED';
         } else if (positive) {
-          findings.push(chk.label + ' — Documented as not possible due to external constraint. Corroborate with ' + chk.systems.join(' + ') + '.');
+          findings.push(chk.label.split(' —')[0] + ': documented as not possible (external constraint).');
         } else {
-          findings.push(chk.label + ' — Referenced in ICC/network context. Confirm in Databricks: ' + chk.systems.join(', ') + '.');
-          if (status === 'green') { status = 'amber'; statusLabel = 'CONFIRM ON FILE'; }
+          findings.push(chk.label.split(' —')[0] + ': confirm in Databricks.');
+          if (status === 'green') { status = 'amber'; statusLabel = 'CONFIRM'; }
         }
-      } else {
-        findings.push(chk.label + ' — Screen on every case. Pull ' + chk.systems.join(' + ') + ' to confirm measures taken or not possible.');
-        if (status === 'green') { status = 'amber'; statusLabel = 'PULL & CONFIRM'; }
       }
     });
     if (/standby.*available.*not deployed|available but assigned|could have deployed/i.test(combined)) {
       status = 'red';
       statusLabel = 'DEFENCE AT RISK';
-      findings.push('CRITICAL: Evidence suggests standby resource existed but was not deployed — reasonable measures failure may defeat EC defence entirely.');
+      findings.push('Standby resource may have existed but was not used — this can defeat the EC defence.');
     }
-    if (networkCtx && /heavy|network delay|no spare|saturation|curfew/i.test(networkCtx)) {
-      findings.push('Network context applied: ' + networkCtx.trim());
+    if (!findings.length) {
+      findings.push('Pull standby aircraft/crew logs and recovery records from Databricks before confirming defence.');
+      status = 'amber';
+      statusLabel = 'CONFIRM';
     }
     return {
       id: 'U-8', type: 'measures',
       question: 'Reasonable measures — did the carrier take ALL steps within its power to avoid or minimise delay?',
       status: status, statusLabel: statusLabel,
       conclusion: findings.join(' '),
-      authority: 'Wallentin-Hermann (C-549/07); CJEU — failure here defeats EC even when extraordinary circumstances established',
-      dataUsed: 'Databricks: gold.crew_scheduling · gold.flight_operations · silver.passenger_comms'
+      authority: 'Wallentin-Hermann (C-549/07)',
+      dataUsed: 'AIMS · TOPS · MAX-OPS'
     };
   }
 
