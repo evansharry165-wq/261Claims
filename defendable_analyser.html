@@ -82,7 +82,7 @@ textarea:focus{outline:none;border-color:var(--or);background:#fff}
 .vw{font-size:30px;font-weight:900;letter-spacing:-.5px;margin-bottom:6px}
 .vw.defend{color:var(--gn)}
 .vw.settle{color:var(--am)}
-.vw.escalate,.vw.concede{color:var(--rd)}
+.vw.investigate{color:var(--bl)}
 .vsub{font-size:11px;color:var(--t2);line-height:1.5;margin-bottom:8px}
 .vfs{text-align:left}
 .vf{display:flex;gap:5px;margin-bottom:5px;font-size:11px;line-height:1.4}
@@ -101,7 +101,28 @@ textarea:focus{outline:none;border-color:var(--or);background:#fff}
 .empty-t{font-size:13px;font-weight:700;color:var(--t2);margin-bottom:5px}
 .empty-s{font-size:11px;line-height:1.6}
 .foot{text-align:center;padding:14px;font-size:10px;color:var(--t3);border-top:1px solid var(--bd);margin-top:4px}
-@media(max-width:900px){.results.on{grid-template-columns:1fr}.col-body{max-height:none}}
+.flow{display:none;background:#fff;border:1.5px solid var(--bd);border-radius:4px;padding:14px 18px;margin-bottom:14px}
+.flow.on{display:block}
+.flow-t{font-size:9px;font-weight:700;letter-spacing:1.1px;text-transform:uppercase;color:var(--t3);margin-bottom:10px}
+.flow-r{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.fs{display:flex;align-items:center;gap:6px;font-size:10px;font-weight:700;padding:6px 10px;border-radius:3px;border:1.5px solid var(--bd);color:var(--t3);background:var(--gy);transition:all .25s}
+.fs .fn{width:18px;height:18px;border-radius:50%;background:var(--bd);color:#fff;font-size:9px;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0}
+.fs.on{border-color:var(--or);color:var(--dk);background:var(--orl)}
+.fs.on .fn{background:var(--or)}
+.fs.done{border-color:var(--gn);color:var(--gn);background:var(--gnl)}
+.fs.done .fn{background:var(--gn)}
+.farr{color:var(--t3);font-size:12px}
+.mode{display:flex;align-items:center;gap:8px}
+.mtog{display:flex;border:1px solid rgba(255,255,255,.2);border-radius:3px;overflow:hidden}
+.mbtn{background:transparent;border:none;color:rgba(255,255,255,.5);font-size:9px;font-weight:700;padding:5px 10px;cursor:pointer;letter-spacing:.5px}
+.mbtn.on{background:var(--or);color:#fff}
+.mbtn:hover:not(.on){color:#fff;background:rgba(255,255,255,.08)}
+.api-panel{display:none;background:var(--bll);border:1px solid #BFDBFE;border-radius:4px;padding:10px 14px;margin-bottom:14px;font-size:11px;color:var(--bl)}
+.api-panel.on{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.api-panel input{flex:1;min-width:200px;border:1px solid #BFDBFE;border-radius:3px;padding:6px 10px;font-size:11px}
+.col.active{box-shadow:0 0 0 2px var(--or)}
+.col.wait{opacity:.55}
+@media(max-width:900px){.results.on{grid-template-columns:1fr}.col-body{max-height:none}.flow-r{flex-direction:column;align-items:flex-start}.farr{display:none}}
 </style>
 </head>
 <body>
@@ -111,7 +132,13 @@ textarea:focus{outline:none;border-color:var(--or);background:#fff}
     <span class="logo">DefendAble</span>
     <span class="logo-s">EC261 / UK261 Intelligence Engine</span>
   </div>
-  <div class="badge">INTELLIGENCE DEMO</div>
+  <div class="mode">
+    <div class="mtog">
+      <button class="mbtn on" id="modeDemo" onclick="setMode('demo')">DEMO ENGINE</button>
+      <button class="mbtn" id="modeLive" onclick="setMode('live')">LIVE AI</button>
+    </div>
+    <div class="badge">INTELLIGENCE DEMO</div>
+  </div>
 </div>
 
 <div class="wrap">
@@ -137,6 +164,25 @@ textarea:focus{outline:none;border-color:var(--or);background:#fff}
       <span class="ch" onclick="sx('medical')">Medical emergency</span>
       <span class="ch" onclick="sx('security')">Security alert</span>
       <span class="ch" onclick="sx('disruptive')">Disruptive passenger</span>
+    </div>
+  </div>
+
+  <div class="api-panel" id="apiPanel">
+    <span>Anthropic API key (session only):</span>
+    <input type="password" id="apiKey" placeholder="sk-ant-…" autocomplete="off">
+    <button class="ch" style="font-size:11px;padding:5px 12px" onclick="saveApiKey()">Save</button>
+  </div>
+
+  <div class="flow" id="flow">
+    <div class="flow-t">Tandem workflow — ICC summary drives both engines</div>
+    <div class="flow-r">
+      <div class="fs" id="fs1"><span class="fn">1</span> ICC Summary</div>
+      <span class="farr">→</span>
+      <div class="fs" id="fs2"><span class="fn">A</span> Engine A — Keywords &amp; Evidence</div>
+      <span class="farr">→</span>
+      <div class="fs" id="fs3"><span class="fn">B</span> Engine B — Legal Decision Tree</div>
+      <span class="farr">→</span>
+      <div class="fs" id="fs4"><span class="fn">✓</span> Case Output</div>
     </div>
   </div>
 
@@ -190,7 +236,41 @@ textarea:focus{outline:none;border-color:var(--or);background:#fff}
   <div class="foot">DefendAble &nbsp;·&nbsp; Confidential IP &nbsp;·&nbsp; EC261 / UK261 Intelligence Engine &nbsp;·&nbsp; 14 disruption types &nbsp;·&nbsp; 16 universal legal nodes</div>
 </div>
 
+<script src="defendable_engine.js"></script>
 <script>
+var analysisMode='demo';
+function setMode(m){
+  analysisMode=m;
+  document.getElementById('modeDemo').classList.toggle('on',m==='demo');
+  document.getElementById('modeLive').classList.toggle('on',m==='live');
+  document.getElementById('apiPanel').classList.toggle('on',m==='live');
+}
+function saveApiKey(){
+  var k=document.getElementById('apiKey').value.trim();
+  if(k){try{sessionStorage.setItem('dfa_anthropic_key',k);}catch(e){}}
+  he();se('API key saved for this session.');
+  setTimeout(he,2000);
+}
+(function(){
+  try{var k=sessionStorage.getItem('dfa_anthropic_key');if(k)document.getElementById('apiKey').value=k;}catch(e){}
+})();
+
+function flowStep(step){
+  var ids=['fs1','fs2','fs3','fs4'];
+  ids.forEach(function(id,i){
+    var el=document.getElementById(id);
+    el.classList.remove('on','done');
+    if(i<step)el.classList.add('done');
+    else if(i===step)el.classList.add('on');
+  });
+}
+function colState(a,b,c){
+  var cols=document.querySelectorAll('.col');
+  cols[0].className='col'+(a?' active':b?' wait':'');
+  cols[1].className='col'+(b?' active':c?' wait':'');
+  cols[2].className='col'+(c?' active':' wait');
+}
+
 const EX={
   atc:"Flight was overnight delayed in LTN due to ATC restrictions network wide. Flight was delayed by CTOTs in LTN until airport curfew was breached and flight OND. This was completed the next day on time.",
   wx:"HC 1184 LTN–BCN 14/03/26. Thunderstorms BCN — approach below minima, mandatory ATC diversion Valencia. Standby LTN could not position — thunderstorms BCN. Passengers cared for Valencia, coach transfer arranged.",
@@ -340,46 +420,50 @@ async function run(){
   var btn=document.getElementById('abtn');
   btn.disabled=true;
   he();
-  ss('Parsing disruption description and identifying keywords...');
   document.getElementById('res').classList.add('on');
+  document.getElementById('flow').classList.add('on');
+  flowStep(0);
+  colState(false,false,false);
   ld();
-  try{
-    ss('Applying Wallentin-Hermann two-limb test and evaluating all legal nodes...');
-    var resp=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',
-      headers:{
-        'Content-Type':'application/json',
-        'anthropic-version':'2023-06-01',
-        'anthropic-dangerous-direct-browser-access':'true'
-      },
-      body:JSON.stringify({
-        model:'claude-sonnet-4-6',
-        max_tokens:4000,
-        system:SYS,
-        messages:[{role:'user',content:'Analyse this disruption description and return the JSON only — no other text:\n\n"'+inp+'"'}]
-      })
-    });
-    if(!resp.ok){
-      var er=await resp.json();
-      throw new Error(er.error&&er.error.message?er.error.message:'API error '+resp.status);
-    }
-    var data=await resp.json();
-    var raw=data.content&&data.content.find(function(b){return b.type==='text';})?data.content.find(function(b){return b.type==='text';}).text:'';
-    var result;
-    try{
-      var clean=raw.replace(/^```json\s*/,'').replace(/^```\s*/,'').replace(/\s*```$/,'').trim();
-      result=JSON.parse(clean);
-    }catch(err){
-      var m=raw.match(/\{[\s\S]*\}/);
-      if(m)result=JSON.parse(m[0]);
-      else throw new Error('Could not parse the response. Please try again.');
-    }
-    rA(result,inp);
-    rB(result);
-    rC(result);
+  var apiKey='';
+  try{apiKey=sessionStorage.getItem('dfa_anthropic_key')||document.getElementById('apiKey').value.trim();}catch(ex){}
+  if(analysisMode==='live'&&!apiKey){
+    btn.disabled=false;
     hs();
+    se('Live AI mode requires an Anthropic API key. Enter one above or switch to Demo Engine.');
+    return;
+  }
+  try{
+    await DefendAbleEngine.analyze(inp,{
+      mode:analysisMode,
+      apiKey:apiKey,
+      onProgress:function(type,stage,result){
+        if(type==='stage'){
+          flowStep(stage==='parse'?0:stage==='engineA'?1:stage==='engineB'?2:stage==='output'?3:0);
+          if(stage==='parse'){ss('Reading ICC disruption summary…');colState(false,true,true);}
+          if(stage==='engineA'){ss('Engine A — parsing keywords and firing evidence triggers…');colState(true,false,true);}
+          if(stage==='engineB'){ss('Engine B — running universal nodes and legal decision tree…');colState(false,true,false);}
+          if(stage==='output'){ss('Synthesising evidence pack and verdict…');colState(false,false,true);}
+        }
+        if(type==='partial'){
+          if(stage==='A')rA(result,inp);
+          if(stage==='B')rB(result);
+        }
+        if(type==='done'){
+          rA(result,inp);
+          rB(result);
+          rC(result);
+          flowStep(4);
+          colState(false,false,false);
+          document.querySelectorAll('.fs').forEach(function(el){el.classList.add('done');el.classList.remove('on');});
+          hs();
+        }
+      }
+    });
   }catch(err){
     hs();
+    flowStep(0);
+    colState(false,false,false);
     se('Analysis failed: '+err.message);
     var ep='<div class="empty"><div class="empty-i">❌</div><div class="empty-t">Analysis failed</div><div class="empty-s">'+e(err.message)+'</div></div>';
     document.getElementById('bodyA').innerHTML=ep;
@@ -438,8 +522,8 @@ function nd(n){
 
 function rC(r){
   var v=r.verdict||'DEFEND';
-  var vc=v==='DEFEND'?'defend':v==='ESCALATE'||v==='CONCEDE'?'escalate':'settle';
-  var vbg=v==='DEFEND'?'var(--gnl)':v==='ESCALATE'||v==='CONCEDE'?'var(--rdl)':'var(--aml)';
+  var vc=v==='DEFEND'?'defend':v==='ESCALATE'||v==='CONCEDE'?'escalate':v==='INVESTIGATE'?'investigate':'settle';
+  var vbg=v==='DEFEND'?'var(--gnl)':v==='ESCALATE'||v==='CONCEDE'?'var(--rdl)':v==='INVESTIGATE'?'var(--bll)':'var(--aml)';
   var fl='';
   var flags=r.verdictFlags||[];
   for(var i=0;i<flags.length;i++){
