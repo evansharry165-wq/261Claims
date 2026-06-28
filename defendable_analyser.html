@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DefendAble — Intelligence Engine</title>
+<style>
+:root{--or:#FF6600;--orl:#FFF0E6;--orm:#FFD4B3;--dk:#1A1A2E;--wh:#FFFFFF;--gy:#F7F7F7;--bd:#E2E2E2;--t2:#555;--t3:#888;--gn:#16A34A;--gnl:#DCFCE7;--am:#D97706;--aml:#FEF3C7;--rd:#DC2626;--rdl:#FEE2E2;--bl:#1D4ED8;--bll:#EBF3FB;--pu:#7C3AED}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;background:#EFEFEF;color:var(--dk);font-size:13px;min-height:100vh}
+.hdr{background:var(--dk);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;border-bottom:3px solid var(--or);position:sticky;top:0;z-index:50}
+.logo{font-size:22px;font-weight:900;color:var(--or)}
+.logo-s{font-size:11px;color:rgba(255,255,255,.4);margin-left:8px}
+.badge{background:var(--or);color:#fff;font-size:9px;font-weight:700;padding:3px 9px;border-radius:2px;letter-spacing:.8px}
+.wrap{max-width:1400px;margin:0 auto;padding:20px 18px}
+.icard{background:#fff;border:2px solid var(--or);border-radius:4px;padding:20px 24px;margin-bottom:16px}
+.ey{font-size:9px;font-weight:700;color:var(--or);letter-spacing:1.2px;text-transform:uppercase;margin-bottom:4px}
+.it{font-size:16px;font-weight:700;margin-bottom:3px}
+.is{font-size:11px;color:var(--t2);margin-bottom:12px;line-height:1.5}
+.irow{display:flex;gap:10px;align-items:flex-start}
+textarea{flex:1;border:1.5px solid var(--bd);border-radius:4px;padding:10px 12px;font-size:13px;font-family:Arial;color:var(--dk);resize:vertical;min-height:80px;line-height:1.55;background:var(--gy)}
+textarea:focus{outline:none;border-color:var(--or);background:#fff}
+.abtn{background:var(--or);color:#fff;border:none;border-radius:4px;padding:0 20px;height:80px;font-size:13px;font-weight:700;cursor:pointer;min-width:130px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;transition:background .15s}
+.abtn:hover{background:#E05500}
+.abtn:disabled{background:#ccc;color:#999;cursor:not-allowed}
+.chips{margin-top:10px;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.chl{font-size:10px;color:var(--t3);font-weight:600}
+.ch{background:var(--orl);border:1px solid var(--orm);color:var(--or);font-size:10px;padding:3px 8px;border-radius:2px;cursor:pointer;font-weight:600}
+.ch:hover{background:var(--orm)}
+.sbar{display:none;background:var(--dk);color:#fff;padding:10px 16px;border-radius:4px;margin-bottom:14px;font-size:11px;align-items:center;gap:8px}
+.sbar.on{display:flex}
+.spin{width:13px;height:13px;border:2px solid rgba(255,255,255,.3);border-top-color:var(--or);border-radius:50%;animation:sp .8s linear infinite;flex-shrink:0}
+@keyframes sp{to{transform:rotate(360deg)}}
+.ebar{display:none;background:var(--rdl);border:1px solid #FECACA;border-radius:4px;padding:10px 14px;font-size:11px;color:var(--rd);margin-bottom:14px}
+.ebar.on{display:block}
+.results{display:none;gap:14px;margin-bottom:16px}
+.results.on{display:grid;grid-template-columns:1fr 1fr 1fr}
+.col{background:#fff;border-radius:4px;border:1.5px solid var(--bd);overflow:hidden;display:flex;flex-direction:column}
+.col-hdr{padding:13px 16px;flex-shrink:0}
+.col-hdr.or{background:var(--or)}
+.col-hdr.dk{background:var(--dk)}
+.col-hdr.gy{background:var(--gy);border-bottom:2px solid var(--or)}
+.col-eye{font-size:9px;font-weight:800;letter-spacing:1.3px;color:rgba(255,255,255,.7);margin-bottom:2px}
+.col-eye.ac{color:var(--or)}
+.col-title{font-size:14px;font-weight:700;color:#fff}
+.col-title.dk{color:var(--dk)}
+.col-sub{font-size:10px;color:rgba(255,255,255,.6);margin-top:2px}
+.col-body{padding:14px;overflow-y:auto;flex:1;max-height:72vh}
+.kwbox{background:var(--orl);border:1px solid var(--orm);border-radius:4px;padding:9px 11px;font-size:12.5px;line-height:1.85;margin-bottom:12px}
+.kw{background:var(--or);color:#fff;font-weight:700;padding:1px 6px;border-radius:2px;font-size:11px}
+.sdiv{display:flex;align-items:center;gap:8px;margin:5px 0 10px}
+.sdl{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--t3);white-space:nowrap}
+.sline{flex:1;height:1px;background:var(--bd)}
+.trig{border:1.5px solid var(--bd);border-radius:4px;margin-bottom:8px;overflow:hidden}
+.trh{background:var(--gy);padding:6px 10px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.trkw{background:var(--or);color:#fff;font-size:10px;font-weight:700;padding:2px 6px;border-radius:2px}
+.trar{color:var(--t3);font-size:10px}
+.trtr{font-size:10.5px;font-weight:700;color:var(--dk)}
+.trb{padding:8px 10px}
+.trrow{display:flex;align-items:flex-start;gap:6px;margin-bottom:5px;font-size:11px}
+.trrow:last-child{margin-bottom:0}
+.trsys{background:var(--dk);color:#fff;font-size:9px;font-weight:700;padding:2px 5px;border-radius:2px;white-space:nowrap;flex-shrink:0;margin-top:1px}
+.trdoc{color:var(--t2);line-height:1.35}
+.trpur{font-size:10px;color:var(--t3);margin-top:1px}
+.nd{border-radius:4px;margin-bottom:8px;overflow:hidden;border:1.5px solid var(--bd)}
+.ndh{padding:7px 10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:#FAFAFA}
+.ndid{font-size:9.5px;font-weight:800;padding:2px 6px;border-radius:2px;flex-shrink:0}
+.ndid.u{background:var(--dk);color:#fff}
+.ndid.d{background:var(--or);color:#fff}
+.ndid.s{background:var(--pu);color:#fff}
+.ndq{font-size:11.5px;font-weight:700;flex:1;color:var(--dk)}
+.ndst{font-size:10px;font-weight:700;padding:2px 6px;border-radius:2px;flex-shrink:0}
+.ndst.green{background:var(--gnl);color:var(--gn)}
+.ndst.amber{background:var(--aml);color:var(--am)}
+.ndst.red{background:var(--rdl);color:var(--rd)}
+.ndst.info{background:var(--bll);color:var(--bl)}
+.ndb{padding:8px 10px;background:#fff;border-top:1px solid var(--bd)}
+.ndc{font-size:11px;color:var(--t2);line-height:1.5;margin-bottom:4px}
+.nda{font-size:10px;color:var(--t3);font-style:italic}
+.ndd{font-size:10px;color:var(--bl);margin-top:3px;font-weight:600}
+.vbox{border-radius:4px;padding:16px;text-align:center;margin-bottom:14px}
+.vw{font-size:30px;font-weight:900;letter-spacing:-.5px;margin-bottom:6px}
+.vw.defend{color:var(--gn)}
+.vw.settle{color:var(--am)}
+.vw.escalate,.vw.concede{color:var(--rd)}
+.vsub{font-size:11px;color:var(--t2);line-height:1.5;margin-bottom:8px}
+.vfs{text-align:left}
+.vf{display:flex;gap:5px;margin-bottom:5px;font-size:11px;line-height:1.4}
+.out-sub{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--t3);margin:12px 0 8px;padding-bottom:4px;border-bottom:1px solid var(--bd)}
+.ev-i{display:flex;align-items:flex-start;gap:6px;margin-bottom:7px;font-size:11px}
+.ev-n{color:var(--dk);line-height:1.3;font-weight:600}
+.ev-s{color:var(--t3);font-size:10px;margin-top:1px}
+.chi{display:flex;align-items:flex-start;gap:6px;margin-bottom:6px;font-size:11px;line-height:1.4}
+.chd{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:3px}
+.chd.green{background:var(--gn)}
+.chd.amber{background:var(--am)}
+.chd.red{background:var(--rd)}
+.cht{color:var(--t2)}
+.empty{text-align:center;padding:48px 16px;color:var(--t3)}
+.empty-i{font-size:32px;margin-bottom:10px}
+.empty-t{font-size:13px;font-weight:700;color:var(--t2);margin-bottom:5px}
+.empty-s{font-size:11px;line-height:1.6}
+.foot{text-align:center;padding:14px;font-size:10px;color:var(--t3);border-top:1px solid var(--bd);margin-top:4px}
+@media(max-width:900px){.results.on{grid-template-columns:1fr}.col-body{max-height:none}}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div style="display:flex;align-items:baseline">
+    <span class="logo">DefendAble</span>
+    <span class="logo-s">EC261 / UK261 Intelligence Engine</span>
+  </div>
+  <div class="badge">INTELLIGENCE DEMO</div>
+</div>
+
+<div class="wrap">
+  <div class="icard">
+    <div class="ey">Disruption Analysis</div>
+    <div class="it">Enter a disruption description</div>
+    <div class="is">Type exactly as ICC or Network Control would write it. DefendAble parses the keywords, fires evidence collection triggers, and applies the full legal decision tree — showing everything a solicitor needs before they open the file.</div>
+    <div class="irow">
+      <textarea id="inp" placeholder="e.g. Flight was overnight delayed in LTN due to ATC restrictions network wide. Flight was delayed by CTOTs in LTN until airport curfew was breached and flight OND. This was completed the next day on time."></textarea>
+      <button class="abtn" id="abtn" onclick="run()">
+        <span style="font-size:20px">⚡</span>
+        <span>Analyse</span>
+      </button>
+    </div>
+    <div class="chips">
+      <span class="chl">Try:</span>
+      <span class="ch" onclick="sx('atc')">ATC / CTOT overnight</span>
+      <span class="ch" onclick="sx('wx')">Weather diversion</span>
+      <span class="ch" onclick="sx('bird')">Birdstrike</span>
+      <span class="ch" onclick="sx('strike')">Industrial action</span>
+      <span class="ch" onclick="sx('cascade')">Cascading delay</span>
+      <span class="ch" onclick="sx('tech')">Hidden defect</span>
+      <span class="ch" onclick="sx('medical')">Medical emergency</span>
+      <span class="ch" onclick="sx('security')">Security alert</span>
+      <span class="ch" onclick="sx('disruptive')">Disruptive passenger</span>
+    </div>
+  </div>
+
+  <div class="ebar" id="eb"></div>
+  <div class="sbar" id="sb"><div class="spin"></div><span id="st">Analysing disruption...</span></div>
+
+  <div class="results" id="res">
+    <div class="col">
+      <div class="col-hdr or">
+        <div class="col-eye">ENGINE A</div>
+        <div class="col-title">Keyword Intelligence</div>
+        <div class="col-sub">Keywords identified · Evidence triggers fired · Systems queried</div>
+      </div>
+      <div class="col-body" id="bodyA">
+        <div class="empty">
+          <div class="empty-i">🔍</div>
+          <div class="empty-t">Awaiting disruption input</div>
+          <div class="empty-s">Engine A parses the ICC description, identifies trigger keywords, and maps each one to the evidence it fires and the system it comes from.</div>
+        </div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="col-hdr dk">
+        <div class="col-eye ac">ENGINE B</div>
+        <div class="col-title">Legal Decision Tree</div>
+        <div class="col-sub">Universal nodes · Disruption analysis · Wallentin-Hermann test</div>
+      </div>
+      <div class="col-body" id="bodyB">
+        <div class="empty">
+          <div class="empty-i">⚖️</div>
+          <div class="empty-t">Awaiting disruption input</div>
+          <div class="empty-s">Engine B runs 16 universal legal checks on every case then applies the disruption-specific decision tree — thinking through every legal question a solicitor would ask.</div>
+        </div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="col-hdr gy">
+        <div class="col-title dk">Case Output</div>
+        <div style="font-size:10px;color:var(--t2);margin-top:2px">Pre-staged before the solicitor opens the file</div>
+      </div>
+      <div class="col-body" id="bodyC">
+        <div class="empty">
+          <div class="empty-i">📋</div>
+          <div class="empty-t">Awaiting analysis</div>
+          <div class="empty-s">Evidence pack status, reasoning chain, and DEFEND / SETTLE / CONCEDE / ESCALATE recommendation appear here once the engines have run.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot">DefendAble &nbsp;·&nbsp; Confidential IP &nbsp;·&nbsp; EC261 / UK261 Intelligence Engine &nbsp;·&nbsp; 14 disruption types &nbsp;·&nbsp; 16 universal legal nodes</div>
+</div>
+
+<script>
+const EX={
+  atc:"Flight was overnight delayed in LTN due to ATC restrictions network wide. Flight was delayed by CTOTs in LTN until airport curfew was breached and flight OND. This was completed the next day on time.",
+  wx:"HC 1184 LTN–BCN 14/03/26. Thunderstorms BCN — approach below minima, mandatory ATC diversion Valencia. Standby LTN could not position — thunderstorms BCN. Passengers cared for Valencia, coach transfer arranged.",
+  bird:"G-EZAB birdstrike on approach MAN. Aircraft AOG — engine ingestion confirmed, mandatory EASA inspection required. Replacement aircraft unavailable. Flight cancelled. Passengers rebooked next day.",
+  strike:"ATC industrial action France — sector capacity reduced 60%. ATFM restrictions imposed Eurocontrol. All flights via French airspace delayed or cancelled. Third-party strike confirmed NOTAM.",
+  cascade:"Late inbound aircraft from BCN delayed due to weather on prior rotation. Crew reached FTL limits on inbound sector. No standby crew available LGW. Flight delayed 4h 20m. Same tail operating three sectors today.",
+  tech:"G-EZTK hydraulic fault identified during pre-flight checks LGW. MEL dispatch not possible — Category A defect. Aircraft AOG. Maintenance believe possible hidden manufacturing defect — no prior AD or service bulletin for this failure mode. No spare aircraft available. Flight cancelled.",
+  medical:"Flight EZY4356 BCN–LTN diverted to OPO due to passenger welfare incident — pax cardiac arrest. Severity of incident and time taken to disembark pax meant crew were out of hours. Standby A/C could not save the flight as none could make it in time due to airport curfew at OPO. Flight completed following day under EZY9356.",
+  security:"Flight delayed LGW due to security alert — suspicious item found in hold. Airport security authority mandated full hold search and passenger re-screening. Police attended. Two passengers offloaded. Baggage reconciliation required. Delay 3h 45m.",
+  disruptive:"Flight EZY7821 returned to gate at LGW after departure due to highly disruptive passenger — threatening behaviour toward cabin crew. Police met aircraft. Passenger and baggage offloaded. Baggage reconciliation required. Delay 1h 55m to departure. Arrival delay at destination 2h 10m."
+};
+
+function sx(k){document.getElementById('inp').value=EX[k];}
+
+const SYS=`You are DefendAble's legal intelligence engine for in-house aviation legal teams defending EC261/UK261 passenger compensation claims. You think and act exactly like a senior aviation solicitor with deep expertise in EC261, UK261, the Wallentin-Hermann two-limb test, and all relevant CJEU and UK case law. You cannot afford to miss anything.
+
+Return ONLY a single valid JSON object. No markdown fences. No preamble. No explanation outside the JSON. The JSON must follow this exact structure:
+
+{
+  "keywords": [
+    {
+      "phrase": "exact phrase from the input that triggered this",
+      "tree": "DT-X: Disruption Type Name",
+      "triggers": [
+        {
+          "system": "SYSTEM NAME",
+          "document": "specific document or data retrieved",
+          "purpose": "legal purpose of this evidence"
+        }
+      ]
+    }
+  ],
+  "universalHighlighted": "the original input text verbatim with each trigger keyword or phrase wrapped in <KW>phrase</KW> tags",
+  "nodes": [
+    {
+      "id": "U-1",
+      "type": "universal",
+      "question": "the legal question this node evaluates",
+      "status": "green",
+      "statusLabel": "CONFIRMED",
+      "conclusion": "what the system concludes written as the system reasoning through it out loud as a solicitor would",
+      "authority": "relevant case law or statutory provision",
+      "dataUsed": "what evidence or data was consulted to reach this conclusion"
+    }
+  ],
+  "evidencePack": [
+    {
+      "status": "collected",
+      "name": "document name",
+      "source": "system it comes from"
+    }
+  ],
+  "reasoningChain": [
+    {
+      "status": "green",
+      "text": "one plain-English sentence summarising this step in the reasoning"
+    }
+  ],
+  "verdict": "DEFEND",
+  "verdictSub": "2-3 sentence plain English explanation of why this verdict was reached and what the solicitor needs to do",
+  "verdictFlags": [
+    {
+      "type": "action",
+      "text": "specific action or flag for the solicitor"
+    }
+  ]
+}
+
+Node types: universal for the 16 universal nodes, disruption for disruption-specific tree nodes, secondary for any secondary disruption analysis.
+Status values: green (confirmed/satisfied), amber (flagged/needs attention), red (risk/defence weakness), info (neutral information).
+Verdict values: DEFEND, SETTLE, CONCEDE, ESCALATE.
+Flag types: action (something the solicitor must do), risk (a legal risk), note (useful information).
+
+UNIVERSAL NODES — run all relevant ones on every case:
+
+U-1 JURISDICTION: UK261 applies to flights departing UK airports on any carrier, or flights to UK airports on UK/EU carriers. EC261 applies to flights departing EU airports. UK261 limitation: England and Wales 6 years, Scotland 5 years. EC261 limitation by national law: France 2 years, Spain 1 year, Germany 3 years. Montreal Convention Art 29: 2-year absolute time bar runs concurrently. Operating carrier vs contractual carrier: liability attaches to the operating carrier under Art 2(b).
+
+U-2 LIMITATION: Is the claim in time? Calculate from flight date. Flag if borderline. Montreal 2-year absolute bar runs separately and concurrently — a claim may be in time under UK261 but barred under Montreal. CMCs often file at the last moment — check court claim form issue date not letter date.
+
+U-3 STANDING: Claimant must hold a confirmed reservation on the flight (Art 2(a)). Post-PACCAR: CMC assignments may be champertous if no valid litigation funding agreement — flag if CMC acting without disclosed assignment. Each passenger individually confirmed on manifest.
+
+U-4 CHECK-IN COMPLIANCE: Art 3(2)(a) — passenger must have presented for check-in at the time indicated by the carrier, or if no time indicated at least 45 minutes before scheduled departure. If late, Regulation does not apply.
+
+U-5 DELAY THRESHOLD: Sturgeon v Condor (C-402/07): delay measured at ARRIVAL — moment doors open and passengers can disembark. 3+ hours at final destination triggers Art 7. For overnight delays where flight operated next day, calculate from scheduled arrival to actual next-day arrival. Folkerts v Air France (C-11/11): connecting flights on through booking — delay at final destination, distance from first departure.
+
+U-6 ART 7 COMPENSATION BAND: Great circle distance to final destination. Up to 1500km: 250 euros. Intra-EU over 1500km and all 1500-3500km: 400 euros. Non-intra-EU over 3500km: 600 euros. 50% reductions apply. Flag CMC overclaims — wrong band claimed is extremely common.
+
+U-7 EXTRAORDINARY CIRCUMSTANCES GATE: Wallentin-Hermann v Alitalia (C-549/07). BOTH limbs required. Limb 1: circumstance NOT inherent in normal exercise of carrier's activity. Limb 2: circumstance beyond carrier's actual control. If either limb fails the defence fails entirely.
+
+U-8 REASONABLE MEASURES: Mandatory even after extraordinary circumstances confirmed. Carrier must take all measures within its power to avoid or minimise delay. Standby aircraft: was one available and why not deployed? Standby crew: pull AIMS standby log. Slot recovery attempted? Rerouting considered? FAILURE HERE DEFEATS THE DEFENCE EVEN WITH VALID EXTRAORDINARY CIRCUMSTANCES.
+
+U-9 ART 8: Rerouting or reimbursement must be offered for cancellations and delays expected to be 5 or more hours. Three options: full reimbursement, rerouting at earliest opportunity, or rerouting at later date. Flag if delay exceeded 5 hours and no Art 8 offer is evidenced.
+
+U-10 ART 9 DUTY OF CARE: Applies to ALL delays of 2 or more hours regardless of extraordinary circumstances. Meals and refreshments. Two telephone calls or emails. Hotel accommodation plus transport if overnight stay necessary. Same obligations at diversion airports. OVERNIGHT DELAY: hotel mandatory — flag as action. Pull ground handler catering and HOTAC records.
+
+U-11 MONTREAL CONVENTION ART 19: Consequential loss claims. Art 22 SDR cap: 4694 SDR per passenger approximately 4600 pounds. Art 12: EC261 compensation deducted from Montreal award. Art 29: 2-year absolute bar. Escalate high-value consequential loss claims.
+
+U-12 ART 10 DOWNGRADING: Lower class than booked — 30% up to 1500km, 50% for 1500-3500km, 75% non-intra-EU over 3500km. Not excused by extraordinary circumstances.
+
+U-13 FOLKERTS CONNECTING FLIGHTS: Single through booking — delay at final destination, compensation distance from first departure to final destination. Operating carrier on first leg bears liability for delay at final destination.
+
+U-14 ART 13 RECOURSE: Carrier may seek recourse from responsible third party — ATC providers, handlers, manufacturers, airport authorities. Flag early. Separate limitation periods — frequently lost through delay.
+
+U-15 ADR VS LITIGATION: CAA, CEDR, AviationADR up to 15000 pounds. Small claims under 10000 pounds: no costs recovery — litigation cost likely exceeds claim value. Batch strategy: same disruption event, EC decision applies to all.
+
+U-16 SETTLE VS DEFEND: Defend if EC clean, evidence complete, value justifies cost. Settle if evidence gaps, EC weak, or litigation cost exceeds value. Part 36 for claims over 10000 pounds. Concession warning: conceding EC without documenting reason creates precedent CMCs exploit.
+
+DISRUPTION TREES:
+
+DT-1 ATC/ATFM: Eurocontrol CTOT = extraordinary circumstances confirmed immediately, both limbs satisfied. TOPS delay code 81-89. Pešková (C-315/15): third-party ATC strike = EC. CRITICAL — CURFEW BREACH: if CTOT pushed flight past airport curfew causing overnight delay with next-day operation, the OND is a direct consequence of the EC event. Delay = scheduled arrival to actual next-day arrival. Art 9 hotel mandatory. Art 8 must have been offered once delay exceeded 5 hours. Pull: Eurocontrol ATFM data, CTOT confirmation, TOPS delay record, NOTAM, FlightStats cross-carrier corroboration.
+
+DT-2 WEATHER DESTINATION: METAR below ILS minima = EC. SIGMET = strongest corroboration. Mandatory ATC diversion instruction = Limb 2 satisfied. TAF foreseeability at departure = claimant vulnerability — address. Secondary weather blocking standby = independently satisfies Wallentin-Hermann. Pull: Ogimet METAR TAF SIGMET for destination origin and diversion airports, lightning data, Flightradar24 diversion track, TOPS diversion record, SafetyNet if crew weather decision.
+
+DT-3 WEATHER ORIGIN OR EN ROUTE: LVP in force at origin = systemic EC. De-icing routine = ordinary. De-icing systemic abnormal = may be EC. SNOWTAM plus authority runway closure = EC. Pull: origin METAR, LVP NOTAM, SNOWTAM, de-icing log.
+
+DT-4 BIRDSTRIKE: Pešková — per se EC, both limbs automatically satisfied. AMOS mandatory inspection = primary evidence, without it claim unsubstantiated. Engine ingestion = borescope plus possible engine change. SafetyNet mandatory. Pull: AMOS full inspection record, SafetyNet, TOPS, airport wildlife authority.
+
+DT-5 TECHNICAL: Van der Lans (C-257/14) — routine maintenance faults NOT EC. External cause: lightning strike to aircraft, ground damage = EC. Hidden defect: Germanwings (C-257/14) — not detectable despite proper maintenance = potentially EC. MEL dispatch possibility is critical node — if MEL dispatch was possible and carrier chose not to dispatch, voluntary grounding undermines EC argument. Pull: AMOS defect log, MEL record, maintenance compliance, SafetyNet, TOPS, OEM records.
+
+DT-6 CREW AND FTL: FTL alone is NOT EC. Root cause mandatory first node. Sickness = ordinary. Prior ATC or weather causing FTL exhaustion: root cause determines EC. Standby crew available and not deployed = reasonable measures failure. Pull: AIMS FDP record, standby log, TOPS line of flying, DISCO.
+
+DT-7 INDUSTRIAL ACTION: First node = own staff vs third party. Krüsemann (C-601/17): own staff strike NOT EC — settle. Pešková: genuine third party (ATC authority, airport operator, independent handler) = EC. Pull: DISCO, NOTAM, published union or authority notice, TOPS.
+
+DT-8 SECURITY: Externally initiated by authority = EC. Mandatory search or evacuation = externally imposed. Baggage reconciliation after offload = mandatory security regulation. Pull: SafetyNet, TOPS delay code 91-96, police or airport authority records, ground handler security log.
+
+DT-9 MEDICAL: Not inherent = EC. Carrier legally obliged to respond — mandatory not discretionary. Prior sector medical causing cascade: document causal chain. Delay extended beyond necessary = reasonable measures issue. Pull: SafetyNet, TOPS line of flying, Flightradar24 if diversion, ground handler medical log.
+
+DT-10 DISRUPTIVE PASSENGER: External behaviour = EC. SafetyNet = primary evidence. Police attendance corroborates. Baggage reconciliation after offload mandatory. Pull: SafetyNet, TOPS, ground handler, police attendance record.
+
+DT-11 NATURAL DISASTER: Volcanic ash SIGMET type VA, earthquake, government travel ban = EC. Foreseeability challenge for prolonged events. Pull: NOTAM, SIGMET, government notice, Met Office.
+
+DT-12 ATM SYSTEM FAILURE: NATS or Eurocontrol system outage = third-party infrastructure = EC. Cross-carrier impact corroborates. Pull: NOTAM, Eurocontrol statement, NATS notice, FlightStats.
+
+DT-13 CASCADING ROTATION: Cascade itself NOT EC. Root cause at start of rotation chain determines EC. Pull full tail line of flying from TOPS — most important document. Recovery analysis mandatory. Alternative aircraft: pull TOPS fleet state. Pull: TOPS full rotation, Flightradar24 each sector, DISCO root cause.
+
+DT-14 HIDDEN DEFECT: Germanwings plus LE v TAP (C-74/19). Unknown failure mode plus within certified service life plus no prior AD or SB = potentially EC. AMOS maintenance compliance mandatory. Subsequent OEM AD or SB issued after the event = supportive evidence that failure mode was previously unknown. Pull: AMOS full maintenance history, OEM airworthiness directives, service bulletins, technical investigation report.
+
+EVIDENCE SYSTEMS: TOPS (operational delay records, delay codes, flight data, tail line of flying, fleet state, diversion records), AIMS (crew scheduling, FDP records, standby log, rest calculations), AMOS (maintenance records, defect log, MEL records, AOG records, inspection reports), DISCO (disruption classification), SafetyNet (safety reporting — mandatory for birdstrike, medical, security, disruptive passenger, technical incidents), HERMES (correspondence, PNR, booking records), MAX-OPS (passenger communications), Ogimet-API (METAR and TAF), SIGMET-feed, NOTAM-feed, Eurocontrol-NM-API (ATFM regulations, CTOT data), FlightStats-API (cross-carrier corroboration), Flightradar24-API (flight tracks and diversion confirmation), Lightning-data-Blitzortung-Vaisala, Met-Office, Ground-handler-records (catering, HOTAC, removal, reconciliation), DPM-Notes, ICC-internal-email, Airport-wildlife-authority, OEM-records.
+
+KEY AUTHORITIES: Wallentin-Hermann v Alitalia C-549/07, Pešková v Travel Service C-315/15, Germanwings v Henning C-257/14, Van der Lans v KLM C-257/14, Krüsemann v TUIfly C-601/17, Folkerts v Air France C-11/11, Sturgeon v Condor C-402/07, LE v TAP Air Portugal C-74/19, Montreal Convention Arts 19 22 29.
+
+Be comprehensive. Surface every applicable legal issue including limitation, Art 9, Art 8, Art 10, Art 13, Montreal Convention, quantum, ADR routing, and reasonable measures — even when not mentioned in the description. Think like a senior aviation solicitor who cannot afford to miss anything. Return ONLY the JSON object.`;
+
+async function run(){
+  var inp=document.getElementById('inp').value.trim();
+  if(!inp){se('Please enter a disruption description.');return;}
+  var btn=document.getElementById('abtn');
+  btn.disabled=true;
+  he();
+  ss('Parsing disruption description and identifying keywords...');
+  document.getElementById('res').classList.add('on');
+  ld();
+  try{
+    ss('Applying Wallentin-Hermann two-limb test and evaluating all legal nodes...');
+    var resp=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'anthropic-version':'2023-06-01',
+        'anthropic-dangerous-direct-browser-access':'true'
+      },
+      body:JSON.stringify({
+        model:'claude-sonnet-4-6',
+        max_tokens:4000,
+        system:SYS,
+        messages:[{role:'user',content:'Analyse this disruption description and return the JSON only — no other text:\n\n"'+inp+'"'}]
+      })
+    });
+    if(!resp.ok){
+      var er=await resp.json();
+      throw new Error(er.error&&er.error.message?er.error.message:'API error '+resp.status);
+    }
+    var data=await resp.json();
+    var raw=data.content&&data.content.find(function(b){return b.type==='text';})?data.content.find(function(b){return b.type==='text';}).text:'';
+    var result;
+    try{
+      var clean=raw.replace(/^```json\s*/,'').replace(/^```\s*/,'').replace(/\s*```$/,'').trim();
+      result=JSON.parse(clean);
+    }catch(err){
+      var m=raw.match(/\{[\s\S]*\}/);
+      if(m)result=JSON.parse(m[0]);
+      else throw new Error('Could not parse the response. Please try again.');
+    }
+    rA(result,inp);
+    rB(result);
+    rC(result);
+    hs();
+  }catch(err){
+    hs();
+    se('Analysis failed: '+err.message);
+    var ep='<div class="empty"><div class="empty-i">❌</div><div class="empty-t">Analysis failed</div><div class="empty-s">'+e(err.message)+'</div></div>';
+    document.getElementById('bodyA').innerHTML=ep;
+    document.getElementById('bodyB').innerHTML=ep;
+    document.getElementById('bodyC').innerHTML=ep;
+  }
+  btn.disabled=false;
+}
+
+function rA(r,orig){
+  var h='';
+  var hi=r.universalHighlighted||orig;
+  hi=hi.replace(/<KW>(.*?)<\/KW>/g,'<span class="kw">$1</span>');
+  h+='<div style="margin-bottom:12px"><div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--t3);margin-bottom:7px">Keywords Detected in Input</div><div class="kwbox">'+hi+'</div></div>';
+  h+='<div class="sdiv"><div class="sdl">Evidence Triggers Fired</div><div class="sline"></div></div>';
+  var kws=r.keywords||[];
+  for(var i=0;i<kws.length;i++){
+    var k=kws[i];
+    h+='<div class="trig"><div class="trh"><span class="trkw">'+e(k.phrase)+'</span><span class="trar">→</span><span class="trtr">'+e(k.tree)+'</span></div><div class="trb">';
+    var ts=k.triggers||[];
+    for(var j=0;j<ts.length;j++){
+      var t=ts[j];
+      h+='<div class="trrow"><span class="trsys">'+e(t.system)+'</span><div><div class="trdoc"><strong>'+e(t.document)+'</strong></div><div class="trpur">'+e(t.purpose)+'</div></div></div>';
+    }
+    h+='</div></div>';
+  }
+  document.getElementById('bodyA').innerHTML=h;
+}
+
+function rB(r){
+  var h='';
+  var nodes=r.nodes||[];
+  var u=nodes.filter(function(n){return n.type==='universal';});
+  var d=nodes.filter(function(n){return n.type==='disruption';});
+  var s=nodes.filter(function(n){return n.type==='secondary';});
+  if(u.length){
+    h+='<div class="sdiv"><div class="sdl">Universal Legal Nodes</div><div class="sline"></div></div>';
+    for(var i=0;i<u.length;i++)h+=nd(u[i]);
+  }
+  if(d.length){
+    h+='<div class="sdiv" style="margin-top:14px"><div class="sdl">Disruption-Specific Tree</div><div class="sline"></div></div>';
+    for(var i=0;i<d.length;i++)h+=nd(d[i]);
+  }
+  if(s.length){
+    h+='<div class="sdiv" style="margin-top:14px"><div class="sdl">Secondary Disruption Analysis</div><div class="sline"></div></div>';
+    for(var i=0;i<s.length;i++)h+=nd(s[i]);
+  }
+  document.getElementById('bodyB').innerHTML=h||'<div style="color:var(--t3);font-size:11px;padding:8px">No nodes returned.</div>';
+}
+
+function nd(n){
+  var ic=n.type==='universal'?'u':n.type==='secondary'?'s':'d';
+  var si=n.status==='green'?'✓':n.status==='amber'?'⚠':n.status==='red'?'✗':'ℹ';
+  return '<div class="nd"><div class="ndh"><span class="ndid '+ic+'">'+e(n.id)+'</span><span class="ndq">'+e(n.question)+'</span><span class="ndst '+n.status+'">'+si+' '+e(n.statusLabel)+'</span></div><div class="ndb"><div class="ndc">'+e(n.conclusion)+'</div>'+(n.authority?'<div class="nda">Authority: '+e(n.authority)+'</div>':'')+(n.dataUsed?'<div class="ndd">📂 '+e(n.dataUsed)+'</div>':'')+'</div></div>';
+}
+
+function rC(r){
+  var v=r.verdict||'DEFEND';
+  var vc=v==='DEFEND'?'defend':v==='ESCALATE'||v==='CONCEDE'?'escalate':'settle';
+  var vbg=v==='DEFEND'?'var(--gnl)':v==='ESCALATE'||v==='CONCEDE'?'var(--rdl)':'var(--aml)';
+  var fl='';
+  var flags=r.verdictFlags||[];
+  for(var i=0;i<flags.length;i++){
+    var f=flags[i];
+    var fc=f.type==='action'?'var(--or)':f.type==='risk'?'var(--rd)':'var(--t2)';
+    var fi=f.type==='action'?'▶':f.type==='risk'?'⚠':'ℹ';
+    fl+='<div class="vf"><span style="color:'+fc+';flex-shrink:0;font-weight:700">'+fi+'</span><span>'+e(f.text)+'</span></div>';
+  }
+  var h='<div class="vbox" style="background:'+vbg+'"><div class="vw '+vc+'">'+e(v)+'</div><div class="vsub">'+e(r.verdictSub||'')+'</div>'+(fl?'<div class="vfs">'+fl+'</div>':'')+'</div>';
+  h+='<div class="out-sub">Evidence Pack</div>';
+  var ep=r.evidencePack||[];
+  for(var i=0;i<ep.length;i++){
+    var item=ep[i];
+    var ic=item.status==='collected'?'✅':item.status==='flagged'?'⚠️':'❌';
+    h+='<div class="ev-i"><span style="flex-shrink:0;font-size:12px;margin-top:1px">'+ic+'</span><div><div class="ev-n">'+e(item.name)+'</div><div class="ev-s">'+e(item.source)+'</div></div></div>';
+  }
+  h+='<div class="out-sub">Reasoning Chain</div>';
+  var rc=r.reasoningChain||[];
+  for(var i=0;i<rc.length;i++){
+    var c=rc[i];
+    h+='<div class="chi"><div class="chd '+c.status+'"></div><div class="cht">'+e(c.text)+'</div></div>';
+  }
+  document.getElementById('bodyC').innerHTML=h;
+}
+
+function ld(){
+  var s='<div class="empty"><div class="spin" style="margin:0 auto 12px;width:22px;height:22px;border-width:2.5px"></div><div class="empty-t">Running...</div></div>';
+  document.getElementById('bodyA').innerHTML=s;
+  document.getElementById('bodyB').innerHTML=s;
+  document.getElementById('bodyC').innerHTML=s;
+}
+function ss(m){document.getElementById('st').textContent=m;document.getElementById('sb').classList.add('on');}
+function hs(){document.getElementById('sb').classList.remove('on');}
+function se(m){var el=document.getElementById('eb');el.textContent=m;el.classList.add('on');}
+function he(){document.getElementById('eb').classList.remove('on');}
+function e(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+document.getElementById('inp').addEventListener('keydown',function(ev){if((ev.ctrlKey||ev.metaKey)&&ev.key==='Enter')run();});
+</script>
+</body>
+</html>
