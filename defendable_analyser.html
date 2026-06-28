@@ -83,7 +83,20 @@ textarea:focus{outline:none;border-color:var(--or);background:#fff}
 .vw.defend{color:var(--gn)}
 .vw.settle{color:var(--am)}
 .vw.investigate{color:var(--bl)}
-.vsub{font-size:11px;color:var(--t2);line-height:1.5;margin-bottom:8px}
+.vw.escalate,.vw.concede{color:var(--rd)}
+.narr{background:var(--dk);color:#fff;border-radius:4px;padding:12px 18px;margin-bottom:14px;font-size:11px;line-height:1.55}
+.narr strong{color:var(--or);font-weight:700}
+.net-lbl{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--t3);margin:12px 0 6px}
+.net-inp{width:100%;border:1.5px solid var(--bd);border-radius:4px;padding:8px 12px;font-size:12px;font-family:Arial;color:var(--dk);background:var(--gy);min-height:44px;resize:vertical;line-height:1.45}
+.net-inp:focus{outline:none;border-color:var(--or);background:#fff}
+.chips-defeat{margin-top:8px}
+.ch-defeat{background:var(--rdl);border-color:#FECACA;color:var(--rd)}
+.ch-defeat:hover{background:#FECACA}
+.ndid.m{background:var(--am);color:#fff}
+.nd.measures{border-color:var(--am);border-width:2px}
+.trdbk{font-size:8px;color:var(--bl);font-weight:600;margin-top:2px}
+.vcond{font-size:10px;font-weight:700;color:var(--am);margin-top:6px;padding:6px 10px;background:rgba(255,255,255,.6);border-radius:3px;text-align:left}
+.vpull{font-size:10px;color:var(--t2);margin-top:8px;text-align:left}
 .vfs{text-align:left}
 .vf{display:flex;gap:5px;margin-bottom:5px;font-size:11px;line-height:1.4}
 .out-sub{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--t3);margin:12px 0 8px;padding-bottom:4px;border-bottom:1px solid var(--bd)}
@@ -157,10 +170,15 @@ textarea:focus{outline:none;border-color:var(--or);background:#fff}
 </div>
 
 <div class="wrap">
+  <div class="narr">
+    <strong>From ICC summary to legal recommendation — before the file is opened.</strong>
+    Engine A reads the operational disruption text, fires Databricks evidence pulls into the case file, and Engine B applies the full in-house legal framework — claim heads, extraordinary circumstances, reasonable measures, and authorities — to recommend DEFEND, SETTLE, or CONCEDE.
+  </div>
+
   <div class="icard">
-    <div class="ey">Disruption Analysis</div>
-    <div class="it">Enter a disruption description</div>
-    <div class="is">Type exactly as ICC or Network Control would write it. DefendAble parses the keywords, fires evidence collection triggers, and applies the full legal decision tree — showing everything a solicitor needs before they open the file.</div>
+    <div class="ey">Step 1 — ICC Disruption Summary</div>
+    <div class="it">Enter the disruption description</div>
+    <div class="is">Type exactly as ICC or Network Control would write it. Keywords trigger automated evidence pulls from Databricks (TOPS, AIMS, AMOS, Eurocontrol, etc.) before the solicitor opens the file.</div>
     <div class="irow">
       <textarea id="inp" placeholder="e.g. Flight was overnight delayed in LTN due to ATC restrictions network wide. Flight was delayed by CTOTs in LTN until airport curfew was breached and flight OND. This was completed the next day on time."></textarea>
       <button class="abtn" id="abtn" onclick="run()">
@@ -168,17 +186,24 @@ textarea:focus{outline:none;border-color:var(--or);background:#fff}
         <span>Analyse</span>
       </button>
     </div>
+    <div class="net-lbl">Step 1b — Network context (optional)</div>
+    <textarea class="net-inp" id="net" placeholder="e.g. Heavy ATFM day — 35% network delay. No spare tails at LTN overnight. Standby captain available at LGW but assigned to priority rotation."></textarea>
     <div class="chips">
-      <span class="chl">Try:</span>
+      <span class="chl">Defend:</span>
       <span class="ch" onclick="sx('atc')">ATC / CTOT overnight</span>
       <span class="ch" onclick="sx('wx')">Weather diversion</span>
       <span class="ch" onclick="sx('bird')">Birdstrike</span>
-      <span class="ch" onclick="sx('strike')">Industrial action</span>
-      <span class="ch" onclick="sx('cascade')">Cascading delay</span>
+      <span class="ch" onclick="sx('strike')">Industrial action (3rd party)</span>
       <span class="ch" onclick="sx('tech')">Hidden defect</span>
       <span class="ch" onclick="sx('medical')">Medical emergency</span>
       <span class="ch" onclick="sx('security')">Security alert</span>
       <span class="ch" onclick="sx('disruptive')">Disruptive passenger</span>
+    </div>
+    <div class="chips chips-defeat">
+      <span class="chl">Can't defend:</span>
+      <span class="ch ch-defeat" onclick="sx('crewillness')">Crew illness (Lipton)</span>
+      <span class="ch ch-defeat" onclick="sx('ownstrike')">Own-staff strike</span>
+      <span class="ch ch-defeat" onclick="sx('cascade')">Cascade / no standby</span>
     </div>
   </div>
 
@@ -193,7 +218,7 @@ textarea:focus{outline:none;border-color:var(--or);background:#fff}
     <div class="flow-r">
       <div class="fs" id="fs1"><span class="fn">1</span> ICC Summary</div>
       <span class="farr">→</span>
-      <div class="fs" id="fs2"><span class="fn">A</span> Engine A — Keywords &amp; Evidence</div>
+      <div class="fs" id="fs2"><span class="fn">A</span> Engine A — Keywords → Databricks Pulls</div>
       <span class="farr">→</span>
       <div class="fs" id="fs3"><span class="fn">B</span> Engine B — Legal Decision Tree</div>
       <span class="farr">→</span>
@@ -221,7 +246,7 @@ textarea:focus{outline:none;border-color:var(--or);background:#fff}
       <div class="col-hdr or">
         <div class="col-eye">ENGINE A</div>
         <div class="col-title">Keyword Intelligence</div>
-        <div class="col-sub">Keywords identified · Evidence triggers fired · Systems queried</div>
+        <div class="col-sub">Keywords · Databricks evidence pulls · Case file staging</div>
       </div>
       <div class="col-body" id="bodyA">
         <div class="empty">
@@ -308,10 +333,23 @@ const EX={
   tech:"G-EZTK hydraulic fault identified during pre-flight checks LGW. MEL dispatch not possible — Category A defect. Aircraft AOG. Maintenance believe possible hidden manufacturing defect — no prior AD or service bulletin for this failure mode. No spare aircraft available. Flight cancelled.",
   medical:"Flight EZY4356 BCN–LTN diverted to OPO due to passenger welfare incident — pax cardiac arrest. Severity of incident and time taken to disembark pax meant crew were out of hours. Standby A/C could not save the flight as none could make it in time due to airport curfew at OPO. Flight completed following day under EZY9356.",
   security:"Flight delayed LGW due to security alert — suspicious item found in hold. Airport security authority mandated full hold search and passenger re-screening. Police attended. Two passengers offloaded. Baggage reconciliation required. Delay 3h 45m.",
-  disruptive:"Flight EZY7821 returned to gate at LGW after departure due to highly disruptive passenger — threatening behaviour toward cabin crew. Police met aircraft. Passenger and baggage offloaded. Baggage reconciliation required. Delay 1h 55m to departure. Arrival delay at destination 2h 10m."
+  disruptive:"Flight EZY7821 returned to gate at LGW after departure due to highly disruptive passenger — threatening behaviour toward cabin crew. Police met aircraft. Passenger and baggage offloaded. Baggage reconciliation required. Delay 1h 55m to departure. Arrival delay at destination 2h 10m.",
+  crewillness:"Flight EZY4412 LGW–BCN captain reported sick 90 minutes before report. no standby crew available within FDP window. Flight cancelled. Passengers rebooked next available.",
+  ownstrike:"Network disruption — cabin crew industrial action (own staff union). 14 flights cancelled LGW/LTN. Flight cancelled. NOT third-party action."
 };
 
-function sx(k){document.getElementById('inp').value=EX[k];}
+var NET={
+  atc:'Heavy ATFM day — network delay 35%. No spare tails at LTN overnight. Eurocontrol flow restrictions network-wide.',
+  wx:'Thunderstorms BCN and VLC. Standby at LTN could not position due to same weather system. No fleet recovery available.',
+  cascade:'Late inbound rotation. Weather root on prior BCN sector. No standby crew rostered at LGW for this duty period.',
+  crewillness:'Two captains reported sick at LGW base this morning. Standby captain was available but assigned to priority rotation EZY412.',
+  ownstrike:'Own-staff cabin crew strike — union ballot confirmed. NOT third-party. 14 cancellations across LGW/LTN.'
+};
+
+function sx(k){
+  document.getElementById('inp').value=EX[k];
+  document.getElementById('net').value=NET[k]||'';
+}
 
 const SYS=`You are DefendAble's legal intelligence engine for in-house aviation legal teams defending EC261/UK261 passenger compensation claims. You think and act exactly like a senior aviation solicitor with deep expertise in EC261, UK261, the Wallentin-Hermann two-limb test, and all relevant CJEU and UK case law. You cannot afford to miss anything.
 
@@ -462,9 +500,11 @@ async function run(){
     return;
   }
   try{
+    var netCtx=document.getElementById('net').value.trim();
     await DefendAbleEngine.analyze(inp,{
       mode:analysisMode,
       apiKey:apiKey,
+      networkContext:netCtx,
       onProgress:function(type,stage,result){
         if(type==='stage'){
           flowStep(stage==='parse'?0:stage==='engineA'?1:stage==='engineB'?2:stage==='output'?3:0);
@@ -506,8 +546,10 @@ function rA(r,orig){
   var h='';
   var hi=r.universalHighlighted||orig;
   hi=hi.replace(/<KW>(.*?)<\/KW>/g,'<span class="kw">$1</span>');
-  h+='<div style="margin-bottom:12px"><div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--t3);margin-bottom:7px">Keywords Detected in Input</div><div class="kwbox">'+hi+'</div></div>';
-  h+='<div class="sdiv"><div class="sdl">Evidence Triggers Fired</div><div class="sline"></div></div>';
+  h+='<div style="margin-bottom:12px"><div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--t3);margin-bottom:7px">Keywords Detected in ICC Summary</div><div class="kwbox">'+hi+'</div></div>';
+  if(r.networkContext)h+='<div style="font-size:10px;color:var(--t2);margin-bottom:10px;padding:8px;background:var(--gy);border-radius:3px"><strong style="color:var(--dk)">Network context applied:</strong> '+e(r.networkContext)+'</div>';
+  h+='<div class="sdiv"><div class="sdl">Databricks Evidence Pulls Queued</div><div class="sline"></div></div>';
+  if(r.pullCount)h+='<div style="font-size:10px;color:var(--t2);margin-bottom:10px">'+r.pullCount+' automated pull(s) queued to case file</div>';
   var kws=r.keywords||[];
   for(var i=0;i<kws.length;i++){
     var k=kws[i];
@@ -515,7 +557,7 @@ function rA(r,orig){
     var ts=k.triggers||[];
     for(var j=0;j<ts.length;j++){
       var t=ts[j];
-      h+='<div class="trrow"><span class="trsys">'+e(t.system)+'</span><div><div class="trdoc"><strong>'+e(t.document)+'</strong></div><div class="trpur">'+e(t.purpose)+'</div></div></div>';
+      h+='<div class="trrow"><span class="trsys">'+e(t.system)+'</span><div><div class="trdoc"><strong>'+e(t.document)+'</strong></div><div class="trpur">'+e(t.purpose)+'</div>'+(t.databricks?'<div class="trdbk">⬡ Databricks: '+e(t.databricks)+'</div>':'')+'</div></div>';
     }
     h+='</div></div>';
   }
@@ -548,12 +590,17 @@ function rLandscape(r){
 function rB(r){
   var h='';
   var nodes=r.nodes||[];
+  var measures=nodes.filter(function(n){return n.type==='measures';});
   var claims=nodes.filter(function(n){return n.type==='claim';});
   var u=nodes.filter(function(n){return n.type==='universal';});
   var d=nodes.filter(function(n){return n.type==='disruption';});
   var s=nodes.filter(function(n){return n.type==='secondary';});
+  if(measures.length){
+    h+='<div class="sdiv"><div class="sdl">⚠ Reasonable Measures — Dispositive on Every Case</div><div class="sline"></div></div>';
+    for(var m=0;m<measures.length;m++)h+=nd(measures[m],true);
+  }
   if(claims.length){
-    h+='<div class="sdiv"><div class="sdl">Claim Heads Detected</div><div class="sline"></div></div>';
+    h+='<div class="sdiv" style="margin-top:14px"><div class="sdl">Claim Heads Detected</div><div class="sline"></div></div>';
     for(var i=0;i<claims.length;i++)h+=nd(claims[i]);
   }
   if(u.length){
@@ -571,15 +618,15 @@ function rB(r){
   document.getElementById('bodyB').innerHTML=h||'<div style="color:var(--t3);font-size:11px;padding:8px">No nodes returned.</div>';
 }
 
-function nd(n){
-  var ic=n.type==='universal'?'u':n.type==='secondary'?'s':n.type==='claim'?'c':'d';
+function nd(n,isMeasures){
+  var ic=n.type==='universal'?'u':n.type==='secondary'?'s':n.type==='claim'?'c':n.type==='measures'?'m':'d';
   var si=n.status==='green'?'✓':n.status==='amber'?'⚠':n.status==='red'?'✗':'ℹ';
-  return '<div class="nd"><div class="ndh"><span class="ndid '+ic+'">'+e(n.id)+'</span><span class="ndq">'+e(n.question)+'</span><span class="ndst '+n.status+'">'+si+' '+e(n.statusLabel)+'</span></div><div class="ndb"><div class="ndc">'+e(n.conclusion)+'</div>'+(n.authority?'<div class="nda">Authority: '+e(n.authority)+'</div>':'')+(n.dataUsed?'<div class="ndd">📂 '+e(n.dataUsed)+'</div>':'')+'</div></div>';
+  return '<div class="nd'+(isMeasures?' measures':'')+'"><div class="ndh"><span class="ndid '+ic+'">'+e(n.id)+'</span><span class="ndq">'+e(n.question)+'</span><span class="ndst '+n.status+'">'+si+' '+e(n.statusLabel)+'</span></div><div class="ndb"><div class="ndc">'+e(n.conclusion)+'</div>'+(n.authority?'<div class="nda">Authority: '+e(n.authority)+'</div>':'')+(n.dataUsed?'<div class="ndd">📂 '+e(n.dataUsed)+'</div>':'')+'</div></div>';
 }
 
 function rC(r){
   var v=r.verdict||'DEFEND';
-  var vc=v==='DEFEND'?'defend':v==='ESCALATE'||v==='CONCEDE'?'escalate':v==='INVESTIGATE'?'investigate':'settle';
+  var vc=v==='DEFEND'?'defend':v==='ESCALATE'||v==='CONCEDE'?'concede':v==='INVESTIGATE'?'investigate':'settle';
   var vbg=v==='DEFEND'?'var(--gnl)':v==='ESCALATE'||v==='CONCEDE'?'var(--rdl)':v==='INVESTIGATE'?'var(--bll)':'var(--aml)';
   var fl='';
   var flags=r.verdictFlags||[];
@@ -589,7 +636,7 @@ function rC(r){
     var fi=f.type==='action'?'▶':f.type==='risk'?'⚠':'ℹ';
     fl+='<div class="vf"><span style="color:'+fc+';flex-shrink:0;font-weight:700">'+fi+'</span><span>'+e(f.text)+'</span></div>';
   }
-  var h='<div class="vbox" style="background:'+vbg+'"><div class="vw '+vc+'">'+e(v)+'</div><div class="vsub">'+e(r.verdictSub||'')+'</div>'+(fl?'<div class="vfs">'+fl+'</div>':'')+'</div>';
+  var h='<div class="vbox" style="background:'+vbg+'"><div class="vw '+vc+'">'+e(v)+'</div><div class="vsub">'+e(r.verdictSub||'')+'</div>'+(r.verdictConditional?'<div class="vcond">'+e(r.verdictConditional)+'</div>':'')+(r.pullCount?'<div class="vpull">⬡ '+r.pullCount+' Databricks evidence pull(s) pre-staged to case file</div>':'')+(fl?'<div class="vfs">'+fl+'</div>':'')+'</div>';
   h+='<div class="out-sub">Evidence Pack</div>';
   var ep=r.evidencePack||[];
   for(var i=0;i<ep.length;i++){

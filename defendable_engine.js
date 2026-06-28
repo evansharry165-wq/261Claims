@@ -84,11 +84,129 @@ var DefendAbleEngine = (function () {
       { system: 'HERMES', document: 'Booking & notification records', purpose: 'Cancellation notice period, class booked, check-in status' },
       { system: 'MAX-OPS', document: 'Art 8 offer & passenger communications', purpose: 'Rerouting/reimbursement compliance' }
     ]},
+    { re: /\bown staff|\bcabin crew strike|\bpilot strike|\bground staff strike|\bcrew union|\bown crews?\s strike/i, phrase: 'Own-staff industrial action (NOT EC)', tree: 'DT-7: Krüsemann — Own Staff', triggers: [
+      { system: 'DISCO', document: 'Disruption classification — own vs third party', purpose: 'Krüsemann (C-601/17): own staff strike is NOT EC' },
+      { system: 'HERMES', document: 'Union/industrial relations correspondence', purpose: 'Confirm own-staff vs third-party action' },
+      { system: 'TOPS', document: 'Cancellation/delay records', purpose: 'Operational impact documentation' }
+    ]},
     { re: /\bltn\b|\blgw\b|\bman\b|\bbcn\b|\bopo\b|\bvlc\b|\bezy\d+/i, phrase: 'Route / flight reference', tree: 'Universal: Jurisdiction & quantum', triggers: [
       { system: 'HERMES', document: 'PNR & booking records', purpose: 'Standing, check-in compliance, compensation band distance' },
       { system: 'TOPS', document: 'Flight details — route, distance, scheduled times', purpose: 'Art 7 band calculation & delay threshold' }
     ]}
   ];
+
+  var DBK = {
+    'TOPS': 'gold.flight_operations',
+    'AIMS': 'gold.crew_scheduling',
+    'AMOS': 'gold.maintenance_records',
+    'DISCO': 'silver.disruption_events',
+    'SafetyNet': 'gold.safety_reports',
+    'HERMES': 'gold.passenger_bookings',
+    'MAX-OPS': 'silver.passenger_comms',
+    'EUROCONTROL-NM-API': 'bronze.eurocontrol_atfm',
+    'Ogimet-API': 'bronze.meteorological',
+    'NOTAM-feed': 'bronze.notam_live',
+    'Flightradar24-API': 'bronze.flight_tracking',
+    'FlightStats-API': 'bronze.network_delays',
+    'Ground-handler-records': 'silver.ground_handling',
+    'OEM-records': 'gold.oem_airworthiness',
+    'Airport-wildlife-authority': 'bronze.wildlife_strikes',
+    'Met-Office': 'bronze.met_office',
+    'SIGMET-feed': 'bronze.sigmet',
+    'DPM-Notes': 'silver.legal_correspondence'
+  };
+
+  function decorateTriggers(triggers) {
+    return (triggers || []).map(function (t) {
+      var copy = Object.assign({}, t);
+      copy.databricks = DBK[t.system] || ('silver.' + String(t.system).toLowerCase().replace(/[^a-z0-9]+/g, '_'));
+      copy.pullStatus = 'queued';
+      return copy;
+    });
+  }
+
+  KEYWORD_RULES.forEach(function (rule) {
+    rule.triggers = decorateTriggers(rule.triggers);
+  });
+
+  var RM_CHECKS = [
+    { key: 'standby_aircraft', label: 'Standby aircraft — available and considered?', systems: ['TOPS', 'AIMS'], patterns: [/\bstandby a\/?c|\bspare aircraft|\breplacement aircraft|\btail swap/i] },
+    { key: 'standby_crew', label: 'Standby crew — rostered and deployment attempted?', systems: ['AIMS'], patterns: [/\bstandby crew|\breserve crew|\bcrew swap/i] },
+    { key: 'rerouting', label: 'Rerouting / alternative airport considered?', systems: ['TOPS', 'MAX-OPS'], patterns: [/\brerout|\bdiversion|\balternate airport|\bcoach transfer/i] },
+    { key: 'slot_recovery', label: 'Slot recovery / delay minimisation attempted?', systems: ['EUROCONTROL-NM-API', 'TOPS'], patterns: [/\bctot|\bslot|\batfm|\bdelay code/i] }
+  ];
+
+  function buildReasonableMeasuresNode(text, networkCtx) {
+    var combined = (text + ' ' + (networkCtx || '')).toLowerCase();
+    var findings = [];
+    var status = 'green';
+    var statusLabel = 'MEASURES DOCUMENTED';
+    RM_CHECKS.forEach(function (chk) {
+      var relevant = chk.patterns.some(function (p) { return p.test(combined); });
+      var negative = /\bno standby|\bnot available|\bcould not|\bunavailable|\bnone could|\bnot deployed/i.test(combined) && relevant;
+      var positive = /\bnot possible|\bsame weather|\bmandatory|\bper se|\bno spare|\bcurfew/i.test(combined) && relevant;
+      if (relevant) {
+        if (negative && !/\bnot possible|\bsame weather|\bmandatory|\bcurfew/i.test(combined)) {
+          findings.push(chk.label + ' — FLAG: availability unclear or not deployed. Pull ' + chk.systems.join(' + ') + ' from Databricks before confirming defence.');
+          status = 'red';
+          statusLabel = 'DISPOSITIVE — VERIFY';
+        } else if (positive) {
+          findings.push(chk.label + ' — Documented as not possible due to external constraint. Corroborate with ' + chk.systems.join(' + ') + '.');
+        } else {
+          findings.push(chk.label + ' — Referenced in ICC/network context. Confirm in Databricks: ' + chk.systems.join(', ') + '.');
+          if (status === 'green') { status = 'amber'; statusLabel = 'CONFIRM ON FILE'; }
+        }
+      } else {
+        findings.push(chk.label + ' — Screen on every case. Pull ' + chk.systems.join(' + ') + ' to confirm measures taken or not possible.');
+        if (status === 'green') { status = 'amber'; statusLabel = 'PULL & CONFIRM'; }
+      }
+    });
+    if (/standby.*available.*not deployed|available but assigned|could have deployed/i.test(combined)) {
+      status = 'red';
+      statusLabel = 'DEFENCE AT RISK';
+      findings.push('CRITICAL: Evidence suggests standby resource existed but was not deployed — reasonable measures failure may defeat EC defence entirely.');
+    }
+    if (networkCtx && /heavy|network delay|no spare|saturation|curfew/i.test(networkCtx)) {
+      findings.push('Network context applied: ' + networkCtx.trim());
+    }
+    return {
+      id: 'U-8', type: 'measures',
+      question: 'Reasonable measures — did the carrier take ALL steps within its power to avoid or minimise delay?',
+      status: status, statusLabel: statusLabel,
+      conclusion: findings.join(' '),
+      authority: 'Wallentin-Hermann (C-549/07); CJEU — failure here defeats EC even when extraordinary circumstances established',
+      dataUsed: 'Databricks: gold.crew_scheduling · gold.flight_operations · silver.passenger_comms'
+    };
+  }
+
+  function applyDirectorEnhancements(text, networkCtx, result) {
+    if (!result) return result;
+    result.networkContext = networkCtx || '';
+    (result.keywords || []).forEach(function (k) {
+      k.triggers = decorateTriggers(k.triggers);
+    });
+    var rmNode = buildReasonableMeasuresNode(text, networkCtx);
+    var nodes = (result.nodes || []).filter(function (n) { return n.id !== 'U-8' && n.type !== 'measures'; });
+    result.nodes = [rmNode].concat(nodes);
+    if (result.verdict === 'DEFEND' && !result.verdictConditional) {
+      var gaps = (result.evidencePack || []).filter(function (e) { return e.status === 'flagged'; }).map(function (e) { return e.name; });
+      result.verdictConditional = gaps.length
+        ? 'Subject to: ' + gaps.slice(0, 3).join('; ') + (gaps.length > 3 ? ' (+ ' + (gaps.length - 3) + ' more)' : '') + ' on file.'
+        : 'Subject to evidence pack completeness confirmed in Databricks.';
+    }
+    if ((result.verdict === 'SETTLE' || result.verdict === 'CONCEDE') && !result.verdictConditional) {
+      result.verdictConditional = 'EC defence not available or not sustainable on current evidence — see reasonable measures and authority nodes.';
+    }
+    var pulls = [];
+    (result.keywords || []).forEach(function (k) {
+      (k.triggers || []).forEach(function (t) {
+        pulls.push({ system: t.system, table: t.databricks, document: t.document, status: 'queued' });
+      });
+    });
+    result.databricksPulls = pulls;
+    result.pullCount = pulls.length;
+    return result;
+  }
 
   var UNIVERSAL_BASE = [
     { id: 'U-1', type: 'universal', question: 'Does UK261 or EC261 apply — and which limitation period governs?', status: 'green', statusLabel: 'CONFIRMED', conclusion: 'UK departure or UK/EU carrier inbound to UK engages UK261. EU departure engages EC261. Limitation: England & Wales 6 years; Montreal Art 29 two-year bar runs concurrently — check both.', authority: 'UK261 Reg 4; EC261 Art 2; Montreal Convention Art 29', dataUsed: 'Route parsing from ICC summary + HERMES booking data' },
@@ -122,13 +240,14 @@ var DefendAbleEngine = (function () {
           { status: 'flagged', name: 'Art 8 rerouting offer records', source: 'MAX-OPS' }
         ],
         reasoningChain: [
-          { status: 'green', text: 'ICC keywords identify third-party ATC/ATFM flow control — Engine A fires Eurocontrol, TOPS, and NOTAM pulls.' },
-          { status: 'green', text: 'Wallentin-Hermann both limbs satisfied — ATC restriction not inherent and beyond carrier control.' },
-          { status: 'amber', text: 'Overnight curfew breach extends delay measurement to next-day arrival — Art 9 hotel duty triggered.' },
-          { status: 'amber', text: 'Reasonable measures and Art 8 offer records must be verified before final defence letter.' }
+          { status: 'green', text: 'Reading ICC summary: third-party ATC flow control identified — queuing Databricks pulls from Eurocontrol ATFM, TOPS, and NOTAM feeds.' },
+          { status: 'green', text: 'Wallentin-Hermann both limbs satisfied on ATC/ATFM — this is not inherent in normal carrier activity and is beyond our control.' },
+          { status: 'amber', text: 'Reasonable measures: confirm no standby tail could have recovered the slot before curfew — TOPS fleet state required even where EC is established.' },
+          { status: 'amber', text: 'Overnight OND extends Sturgeon delay measurement; Art 9 hotel duty mandatory — HOTAC must be on file regardless of EC outcome.' }
         ],
         verdict: 'DEFEND',
-        verdictSub: 'Strong extraordinary circumstances defence on third-party ATC/ATFM restrictions. Curfew-driven overnight delay is direct consequence of EC event. Pull Art 9 HOTAC and Art 8 offer records before issuing Letter of Response.',
+        verdictSub: 'Third-party ATC/ATFM restriction establishes extraordinary circumstances. Curfew-driven overnight is direct consequence. Do not issue Letter of Response until Art 9 HOTAC and Art 8 offer records confirmed in Databricks.',
+        verdictConditional: 'Subject to: HOTAC & catering records; Art 8 rerouting offer records on file.',
         verdictFlags: [
           { type: 'action', text: 'Pull HOTAC and catering records for overnight delay — Art 9 compliance' },
           { type: 'action', text: 'Confirm Art 8 rerouting/reimbursement offer documented in MAX-OPS' },
@@ -204,7 +323,10 @@ var DefendAbleEngine = (function () {
         ]),
         evidencePack: [{ status: 'collected', name: 'TOPS full tail line of flying', source: 'TOPS' }, { status: 'flagged', name: 'AIMS standby crew log', source: 'AIMS' }, { status: 'flagged', name: 'DISCO root cause — prior weather', source: 'DISCO' }, { status: 'flagged', name: 'Prior sector METAR/SIGMET', source: 'Ogimet-API' }],
         reasoningChain: [{ status: 'amber', text: 'Cascade detected — must establish root cause at rotation start, not the cascade itself.' }, { status: 'amber', text: 'Weather on prior rotation may provide EC if METAR/SIGMET corroborates.' }, { status: 'red', text: 'Standby crew availability is critical — failure to deploy defeats defence.' }],
-        verdict: 'SETTLE', verdictSub: 'Defence depends on proving weather root cause AND demonstrating no available standby crew. Evidence gaps on standby log and prior-sector weather create settlement risk.', verdictFlags: [{ type: 'action', text: 'Pull AIMS standby log immediately — reasonable measures node is dispositive' }, { type: 'risk', text: 'FTL without proven EC root cause = weak defence' }]
+        verdict: 'SETTLE',
+        verdictSub: 'Root-cause weather may support EC, but ICC states no standby crew at LGW. Reasonable measures node is dispositive — without AIMS standby log proving none were deployable, defence fails. Recommend settlement unless evidence contradicts ICC summary.',
+        verdictConditional: 'EC defence not sustainable unless AIMS standby log and prior-sector METAR disprove reasonable measures failure.',
+        verdictFlags: [{ type: 'action', text: 'Pull AIMS standby log immediately — reasonable measures node is dispositive' }, { type: 'risk', text: 'FTL without proven EC root cause = weak defence' }]
       }
     },
     tech: {
@@ -252,6 +374,75 @@ var DefendAbleEngine = (function () {
         evidencePack: [{ status: 'collected', name: 'SafetyNet disruptive passenger report', source: 'SafetyNet' }, { status: 'collected', name: 'TOPS return-to-gate & delay record', source: 'TOPS' }, { status: 'flagged', name: 'Police attendance record', source: 'Ground-handler-records' }],
         reasoningChain: [{ status: 'green', text: 'Disruptive passenger with police attendance — established EC under DT-10.' }, { status: 'green', text: 'Baggage reconciliation is mandatory post-offload — explains delay duration.' }],
         verdict: 'DEFEND', verdictSub: 'Disruptive passenger with police involvement is strong EC. SafetyNet and police records should be on file before response.', verdictFlags: [{ type: 'action', text: 'Confirm police attendance record attached to evidence pack' }]
+      }
+    },
+    crewillness: {
+      match: /crew illness|pilot illness|captain sick|crew sick|crew unavailable.*sick/i,
+      result: {
+        keywords: [
+          { phrase: 'captain reported sick', tree: 'UL-02: Lipton — NOT EC', triggers: KEYWORD_RULES[16].triggers },
+          { phrase: 'no standby crew', tree: 'DT-6: Crew — reasonable measures', triggers: KEYWORD_RULES[6].triggers },
+          { phrase: 'Flight cancelled', tree: 'CL-02: Cancellation claim head', triggers: KEYWORD_RULES[17].triggers }
+        ],
+        universalHighlighted: 'Flight EZY4412 LGW–BCN <KW>captain reported sick</KW> 90 minutes before report. <KW>no standby crew</KW> available within FDP window. <KW>Flight cancelled</KW>. Passengers rebooked next available.',
+        nodes: UNIVERSAL_BASE.map(function (n) {
+          if (n.id === 'U-7') return Object.assign({}, n, { status: 'red', statusLabel: 'NOT EC', conclusion: 'Lipton v BA Cityflyer [2024] UKSC 24: crew illness is NOT an extraordinary circumstance. Internal crew shortages are inherent in normal carrier activity — both Wallentin-Hermann limbs fail.' });
+          if (n.id === 'U-8') return Object.assign({}, n, { status: 'red', statusLabel: 'ROSTERING ISSUE', conclusion: 'Supreme Court confirmed carrier must demonstrate adequate crew rostering. Sick captain without deployable standby raises operational planning question — but does not establish EC.' });
+          return n;
+        }).concat([
+          { id: 'DT-18', type: 'disruption', question: 'Crew illness pleaded as extraordinary circumstances?', status: 'red', statusLabel: 'NOT EC — LIPTON', conclusion: 'Do not defend on EC grounds. Lipton [2024] UKSC 24 is dispositive — pilot/cabin crew illness is within carrier control. Review AIMS rostering adequacy separately for mitigation argument only.', authority: 'Lipton v BA Cityflyer [2024] UKSC 24', dataUsed: 'AIMS sickness record; TOPS cancellation; crew roster history' },
+          { id: 'UL-02', type: 'universal', question: 'Lipton applied — any crew illness plea in claim?', status: 'red', statusLabel: 'AUTHORITY BINDING', conclusion: 'Binding UK Supreme Court authority. Conceding EC on crew illness creates CMC precedent — document concession rationale if settling.', authority: 'Lipton [2024] UKSC 24', dataUsed: 'Letter of claim; AIMS' }
+        ]),
+        evidencePack: [
+          { status: 'collected', name: 'AIMS crew sickness & roster record', source: 'AIMS' },
+          { status: 'collected', name: 'TOPS cancellation record', source: 'TOPS' },
+          { status: 'flagged', name: 'AIMS standby crew availability log', source: 'AIMS' },
+          { status: 'collected', name: 'MAX-OPS rebooking communications', source: 'MAX-OPS' }
+        ],
+        reasoningChain: [
+          { status: 'red', text: 'ICC summary describes crew sickness cancellation — Lipton [2024] UKSC 24 confirms this is NOT extraordinary circumstances.' },
+          { status: 'red', text: 'No EC defence available. Quantum and Art 8/9 compliance remain relevant but do not establish a Wallentin-Hermann defence.' },
+          { status: 'amber', text: 'Review whether adequate standby crew rostering existed — may affect mitigation but not EC outcome.' },
+          { status: 'green', text: 'Recommend CONCEDE or Part 36 settlement unless claimant overclaims quantum or limitation bars apply.' }
+        ],
+        verdict: 'CONCEDE',
+        verdictSub: 'Crew illness is not extraordinary circumstances following Lipton UKSC 24. Do not issue EC defence. Assess quantum, Art 8/9 compliance, and limitation only — recommend concession or controlled settlement.',
+        verdictConditional: 'No EC defence. Settle on quantum/limitation grounds only if CMC overclaims or Art 8/9 gaps exist.',
+        verdictFlags: [
+          { type: 'risk', text: 'Do NOT concede on EC without documenting Lipton authority — creates precedent' },
+          { type: 'action', text: 'Verify Art 8 rerouting and Art 9 care were offered — may reduce exposure' },
+          { type: 'note', text: 'Check limitation and CMC quantum band — wrong band claims are common' }
+        ]
+      }
+    },
+    ownstrike: {
+      match: /own staff strike|cabin crew strike|pilot strike|crew union|ground staff strike/i,
+      result: {
+        keywords: [
+          { phrase: 'cabin crew industrial action', tree: 'DT-7: Own staff — NOT EC', triggers: KEYWORD_RULES[5].triggers },
+          { phrase: 'Flight cancelled', tree: 'CL-02: Cancellation', triggers: KEYWORD_RULES[17].triggers }
+        ],
+        universalHighlighted: 'Network disruption — <KW>cabin crew industrial action</KW> (own staff union). 14 flights cancelled LGW/LTN. <KW>Flight cancelled</KW>. NOT third-party action.',
+        nodes: UNIVERSAL_BASE.map(function (n) {
+          if (n.id === 'U-7') return Object.assign({}, n, { status: 'red', statusLabel: 'NOT EC', conclusion: 'Krüsemann (C-601/17): industrial action by own staff is NOT extraordinary circumstances. Distinct from third-party ATC/airport strikes under Pešková.' });
+          return n;
+        }).concat([
+          { id: 'DT-7', type: 'disruption', question: 'Industrial action — own staff or third party?', status: 'red', statusLabel: 'OWN STAFF — SETTLE', conclusion: 'ICC confirms own-staff action. Krüsemann is dispositive — not EC. Do not run third-party strike defence tree.', authority: 'Krüsemann v TUIfly (C-601/17)', dataUsed: 'DISCO classification; union notices; NOTAM check' }
+        ]),
+        evidencePack: [
+          { status: 'collected', name: 'DISCO disruption classification', source: 'DISCO' },
+          { status: 'collected', name: 'Union/industrial relations notice', source: 'HERMES' },
+          { status: 'collected', name: 'TOPS cancellation records', source: 'TOPS' }
+        ],
+        reasoningChain: [
+          { status: 'red', text: 'Own-staff industrial action — Krüsemann confirms no EC defence.' },
+          { status: 'amber', text: 'Screen Art 8 rerouting offers and Art 9 care — parallel obligations may reduce exposure.' },
+          { status: 'green', text: 'Batch settle strategy: same event, same legal outcome for all affected flights.' }
+        ],
+        verdict: 'SETTLE',
+        verdictSub: 'Own-staff strike is not extraordinary circumstances under Krüsemann. Recommend settlement batch across affected flights unless limitation or quantum defects identified in LOC.',
+        verdictConditional: 'No EC defence on industrial action grounds. Settle subject to quantum and limitation review.',
+        verdictFlags: [{ type: 'note', text: 'Apply Krüsemann outcome to all claims from this strike event' }]
       }
     }
   };
@@ -372,7 +563,12 @@ var DefendAbleEngine = (function () {
     return result;
   }
 
-  function buildFallback(text) {
+  function finalize(text, networkCtx, result) {
+    result = enrichWithLandscape(text, result);
+    return applyDirectorEnhancements(text, networkCtx, result);
+  }
+
+  function buildFallback(text, networkCtx) {
     var keywords = detectKeywords(text);
     if (!keywords.length) {
       keywords = [{ phrase: 'Operational disruption', tree: 'DT-13: Cascading / General', triggers: [
@@ -401,7 +597,7 @@ var DefendAbleEngine = (function () {
         evidencePack.push({ status: 'flagged', name: tr.document, source: tr.system });
       });
     });
-    return enrichWithLandscape(text, {
+    return finalize(text, networkCtx, {
       keywords: keywords,
       universalHighlighted: highlightKeywords(text, keywords),
       nodes: nodes,
@@ -417,7 +613,8 @@ var DefendAbleEngine = (function () {
     });
   }
 
-  function resolveAnalysis(text) {
+  function resolveAnalysis(text, networkCtx) {
+    networkCtx = networkCtx || '';
     var trimmed = text.trim();
     var result;
     if (typeof EX !== 'undefined') {
@@ -426,24 +623,24 @@ var DefendAbleEngine = (function () {
         var key = keys[i];
         if (EX[key] && trimmed === EX[key].trim()) {
           result = JSON.parse(JSON.stringify(SCENARIOS[key].result));
-          return enrichWithLandscape(trimmed, result);
+          return finalize(trimmed, networkCtx, result);
         }
       }
     }
     var scenario = matchScenario(trimmed);
     if (scenario) {
       result = JSON.parse(JSON.stringify(scenario));
-      return enrichWithLandscape(trimmed, result);
+      return finalize(trimmed, networkCtx, result);
     }
-    return buildFallback(trimmed);
+    return buildFallback(trimmed, networkCtx);
   }
 
-  function analyzeDemo(text, onProgress) {
+  function analyzeDemo(text, networkCtx, onProgress) {
     onProgress = onProgress || function () {};
     return (async function () {
       onProgress('stage', 'parse', 'Reading ICC disruption summary…');
       await delay(600);
-      var result = resolveAnalysis(text);
+      var result = resolveAnalysis(text, networkCtx);
       onProgress('stage', 'engineA', 'Engine A — identifying keywords and firing evidence triggers…');
       await delay(900);
       onProgress('partial', 'A', result);
@@ -465,7 +662,7 @@ var DefendAbleEngine = (function () {
     return SYS_PROMPT || '';
   }
 
-  async function analyzeLive(text, apiKey, onProgress) {
+  async function analyzeLive(text, apiKey, networkCtx, onProgress) {
     onProgress = onProgress || function () {};
     onProgress('stage', 'parse', 'Connecting to Claude — live legal intelligence…');
     var resp = await fetch('https://api.anthropic.com/v1/messages', {
@@ -497,7 +694,7 @@ var DefendAbleEngine = (function () {
       if (m) result = JSON.parse(m[0]);
       else throw new Error('Could not parse AI response.');
     }
-    result = enrichWithLandscape(text, result);
+    result = finalize(text, networkCtx || '', result);
     onProgress('done', null, result);
     return result;
   }
@@ -506,9 +703,10 @@ var DefendAbleEngine = (function () {
     opts = opts || {};
     var mode = opts.mode || 'demo';
     var apiKey = opts.apiKey || '';
+    var networkContext = opts.networkContext || '';
     var onProgress = opts.onProgress || function () {};
-    if (mode === 'live' && apiKey) return analyzeLive(text, apiKey, onProgress);
-    return analyzeDemo(text, onProgress);
+    if (mode === 'live' && apiKey) return analyzeLive(text, apiKey, networkContext, onProgress);
+    return analyzeDemo(text, networkContext, onProgress);
   }
 
   return { analyze: analyze, detectKeywords: detectKeywords, resolveAnalysis: resolveAnalysis };
