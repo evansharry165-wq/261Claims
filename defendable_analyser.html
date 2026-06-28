@@ -122,7 +122,22 @@ textarea:focus{outline:none;border-color:var(--or);background:#fff}
 .api-panel input{flex:1;min-width:200px;border:1px solid #BFDBFE;border-radius:3px;padding:6px 10px;font-size:11px}
 .col.active{box-shadow:0 0 0 2px var(--or)}
 .col.wait{opacity:.55}
-@media(max-width:900px){.results.on{grid-template-columns:1fr}.col-body{max-height:none}.flow-r{flex-direction:column;align-items:flex-start}.farr{display:none}}
+.lscape{display:none;background:#fff;border:1.5px solid var(--bd);border-radius:4px;padding:14px 18px;margin-bottom:14px}
+.lscape.on{display:block}
+.ls-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px}
+.ls-title{font-size:11px;font-weight:700;color:var(--dk)}
+.ls-stats{display:flex;gap:10px;flex-wrap:wrap}
+.ls-stat{font-size:10px;font-weight:700;padding:4px 10px;border-radius:3px;background:var(--gy);color:var(--t2)}
+.ls-stat em{font-style:normal;color:var(--or)}
+.ls-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.ls-col-h{font-size:9px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--t3);margin-bottom:6px;padding-bottom:4px;border-bottom:1px solid var(--bd)}
+.ls-items{display:flex;flex-wrap:wrap;gap:4px}
+.ls-tag{font-size:9px;font-weight:600;padding:3px 7px;border-radius:2px;border:1px solid var(--bd);color:var(--t3);background:#FAFAFA;line-height:1.3}
+.ls-tag.on{border-color:var(--or);color:var(--or);background:var(--orl)}
+.ls-tag.neg{border-color:var(--rd);color:var(--rd);background:var(--rdl)}
+.ls-tag.all{border-color:var(--gn);color:var(--gn);background:var(--gnl)}
+.ndid.c{background:var(--bl);color:#fff}
+@media(max-width:900px){.results.on{grid-template-columns:1fr}.col-body{max-height:none}.flow-r{flex-direction:column;align-items:flex-start}.farr{display:none}.ls-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -186,6 +201,18 @@ textarea:focus{outline:none;border-color:var(--or);background:#fff}
     </div>
   </div>
 
+  <div class="lscape" id="lscape">
+    <div class="ls-hdr">
+      <div class="ls-title">Complete claim &amp; defence landscape — screened on every analysis</div>
+      <div class="ls-stats" id="lsStats"></div>
+    </div>
+    <div class="ls-grid">
+      <div><div class="ls-col-h">Claim heads (passenger grounds)</div><div class="ls-items" id="lsClaims"></div></div>
+      <div><div class="ls-col-h">EC defences (disruption types)</div><div class="ls-items" id="lsDefences"></div></div>
+      <div><div class="ls-col-h">Universal legal issues</div><div class="ls-items" id="lsLegal"></div></div>
+    </div>
+  </div>
+
   <div class="ebar" id="eb"></div>
   <div class="sbar" id="sb"><div class="spin"></div><span id="st">Analysing disruption...</span></div>
 
@@ -208,7 +235,7 @@ textarea:focus{outline:none;border-color:var(--or);background:#fff}
       <div class="col-hdr dk">
         <div class="col-eye ac">ENGINE B</div>
         <div class="col-title">Legal Decision Tree</div>
-        <div class="col-sub">Universal nodes · Disruption analysis · Wallentin-Hermann test</div>
+        <div class="col-sub">Claim heads · Universal nodes · EC defences · Wallentin-Hermann</div>
       </div>
       <div class="col-body" id="bodyB">
         <div class="empty">
@@ -233,9 +260,10 @@ textarea:focus{outline:none;border-color:var(--or);background:#fff}
     </div>
   </div>
 
-  <div class="foot">DefendAble &nbsp;·&nbsp; Confidential IP &nbsp;·&nbsp; EC261 / UK261 Intelligence Engine &nbsp;·&nbsp; 14 disruption types &nbsp;·&nbsp; 16 universal legal nodes</div>
+  <div class="foot">DefendAble &nbsp;·&nbsp; Confidential IP &nbsp;·&nbsp; 11 claim heads &nbsp;·&nbsp; 18 EC defences &nbsp;·&nbsp; 12 universal legal issues &nbsp;·&nbsp; Full landscape screened every analysis</div>
 </div>
 
+<script src="defendable_framework.js"></script>
 <script src="defendable_engine.js"></script>
 <script>
 var analysisMode='demo';
@@ -453,6 +481,7 @@ async function run(){
           rA(result,inp);
           rB(result);
           rC(result);
+          rLandscape(result);
           flowStep(4);
           colState(false,false,false);
           document.querySelectorAll('.fs').forEach(function(el){el.classList.add('done');el.classList.remove('on');});
@@ -493,14 +522,42 @@ function rA(r,orig){
   document.getElementById('bodyA').innerHTML=h;
 }
 
+function rLandscape(r){
+  var ls=r.landscape;
+  if(!ls)return;
+  document.getElementById('lscape').classList.add('on');
+  document.getElementById('lsStats').innerHTML=
+    '<span class="ls-stat"><em>'+ls.claimsMatched+'</em>/'+ls.claimsTotal+' claim heads</span>'+
+    '<span class="ls-stat"><em>'+ls.defencesMatched+'</em>/'+ls.defencesTotal+' EC defences</span>'+
+    '<span class="ls-stat"><em>'+ls.legalMatched+'</em>/'+ls.legalTotal+' legal issues</span>';
+  function tags(items,elId){
+    var h='';
+    for(var i=0;i<items.length;i++){
+      var it=items[i];
+      var cls='ls-tag'+(it.matched?(it.isNegative?' neg':' on'):'');
+      if(it.alwaysScreen&&it.matched)cls='ls-tag all';
+      h+='<span class="'+cls+'" title="'+(it.note||it.authority||'')+'">'+e(it.id)+' '+e(it.name.split('—')[0].trim())+'</span>';
+    }
+    document.getElementById(elId).innerHTML=h;
+  }
+  tags(ls.claims,'lsClaims');
+  tags(ls.defences,'lsDefences');
+  tags(ls.legal,'lsLegal');
+}
+
 function rB(r){
   var h='';
   var nodes=r.nodes||[];
+  var claims=nodes.filter(function(n){return n.type==='claim';});
   var u=nodes.filter(function(n){return n.type==='universal';});
   var d=nodes.filter(function(n){return n.type==='disruption';});
   var s=nodes.filter(function(n){return n.type==='secondary';});
+  if(claims.length){
+    h+='<div class="sdiv"><div class="sdl">Claim Heads Detected</div><div class="sline"></div></div>';
+    for(var i=0;i<claims.length;i++)h+=nd(claims[i]);
+  }
   if(u.length){
-    h+='<div class="sdiv"><div class="sdl">Universal Legal Nodes</div><div class="sline"></div></div>';
+    h+='<div class="sdiv'+(claims.length?' style="margin-top:14px"':'')+'"><div class="sdl">Universal Legal Nodes</div><div class="sline"></div></div>';
     for(var i=0;i<u.length;i++)h+=nd(u[i]);
   }
   if(d.length){
@@ -515,7 +572,7 @@ function rB(r){
 }
 
 function nd(n){
-  var ic=n.type==='universal'?'u':n.type==='secondary'?'s':'d';
+  var ic=n.type==='universal'?'u':n.type==='secondary'?'s':n.type==='claim'?'c':'d';
   var si=n.status==='green'?'✓':n.status==='amber'?'⚠':n.status==='red'?'✗':'ℹ';
   return '<div class="nd"><div class="ndh"><span class="ndid '+ic+'">'+e(n.id)+'</span><span class="ndq">'+e(n.question)+'</span><span class="ndst '+n.status+'">'+si+' '+e(n.statusLabel)+'</span></div><div class="ndb"><div class="ndc">'+e(n.conclusion)+'</div>'+(n.authority?'<div class="nda">Authority: '+e(n.authority)+'</div>':'')+(n.dataUsed?'<div class="ndd">📂 '+e(n.dataUsed)+'</div>':'')+'</div></div>';
 }

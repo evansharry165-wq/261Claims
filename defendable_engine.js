@@ -51,6 +51,39 @@ var DefendAbleEngine = (function () {
       { system: 'TOPS', document: 'Return-to-gate & delay record', purpose: 'Operational timeline and delay measurement' },
       { system: 'Ground-handler-records', document: 'Police attendance & baggage reconciliation', purpose: 'Corroborate offload and mandatory security steps' }
     ]},
+    { re: /\bvolcanic|\bearthquake|\bflood|\bhurricane|\bnatural disaster|\bsigmet.*va\b/i, phrase: 'Natural disaster', tree: 'DT-11: Natural Disaster', triggers: [
+      { system: 'NOTAM-feed', document: 'Government/meteorological notices', purpose: 'External event beyond carrier control' },
+      { system: 'SIGMET-feed', document: 'SIGMET VA / weather warning', purpose: 'Volcanic ash or severe weather corroboration' },
+      { system: 'Met-Office', document: 'Official weather/disaster bulletin', purpose: 'Foreseeability and duration analysis' }
+    ]},
+    { re: /\bnats\b.*\boutage|\beurocontrol.*\boutage|\batm system|\bnetwork failure/i, phrase: 'ATM system failure', tree: 'DT-12: ATM System Failure', triggers: [
+      { system: 'NOTAM-feed', document: 'NATS/Eurocontrol outage notice', purpose: 'Third-party infrastructure failure' },
+      { system: 'FlightStats-API', document: 'Cross-carrier delay corroboration', purpose: 'Network-wide impact confirms external cause' }
+    ]},
+    { re: /\btravel ban|\bairspace closure|\bpolitical|\bgovernment.*restrict|\bwar zone/i, phrase: 'Government / political restriction', tree: 'DT-14: Political Instability', triggers: [
+      { system: 'NOTAM-feed', document: 'Airspace closure / travel ban NOTAM', purpose: 'Government-imposed restriction' },
+      { system: 'DISCO', document: 'Disruption classification', purpose: 'External imposition documentation' }
+    ]},
+    { re: /\bdrone\b|\buas\b|\bairspace closure.*drone/i, phrase: 'Drone incursion', tree: 'DT-15: Drone Incursion', triggers: [
+      { system: 'NOTAM-feed', document: 'Drone-related airspace closure', purpose: 'Authority-mandated closure = EC' },
+      { system: 'SafetyNet', document: 'Operational safety report', purpose: 'Event documentation' }
+    ]},
+    { re: /\bcovid|\bpandemic|\bquarantine|\btravel restriction/i, phrase: 'COVID / pandemic restriction', tree: 'DT-16: Pandemic Restrictions', triggers: [
+      { system: 'NOTAM-feed', document: 'Government health/travel restrictions', purpose: 'Externally imposed public health measure' },
+      { system: 'HERMES', document: 'Passenger communication records', purpose: 'Art 8/9 compliance during restriction period' }
+    ]},
+    { re: /\bsabotage|\bterror|\bbomb threat|\bthreat to aircraft/i, phrase: 'Sabotage / terrorism threat', tree: 'DT-17: Sabotage/Terrorism', triggers: [
+      { system: 'SafetyNet', document: 'Security threat report', purpose: 'External security event = EC' },
+      { system: 'TOPS', document: 'Delay/cancellation record', purpose: 'Operational timeline' }
+    ]},
+    { re: /\bcrew illness|\bpilot illness|\bcrew sick|\bcaptain sick/i, phrase: 'Crew illness (NOT EC — Lipton)', tree: 'UL-02: Lipton v BA Cityflyer', triggers: [
+      { system: 'AIMS', document: 'Crew roster & sickness record', purpose: 'Lipton [2024] UKSC 24 — crew illness NOT extraordinary circumstances' },
+      { system: 'TOPS', document: 'Cancellation/delay record', purpose: 'Document operational impact and rostering adequacy' }
+    ]},
+    { re: /\bcancel(l)?ed|\bdenied boarding|\bdowngrad|\bearly depart|\bschedule change/i, phrase: 'Claim type indicator', tree: 'Claim heads scan', triggers: [
+      { system: 'HERMES', document: 'Booking & notification records', purpose: 'Cancellation notice period, class booked, check-in status' },
+      { system: 'MAX-OPS', document: 'Art 8 offer & passenger communications', purpose: 'Rerouting/reimbursement compliance' }
+    ]},
     { re: /\bltn\b|\blgw\b|\bman\b|\bbcn\b|\bopo\b|\bvlc\b|\bezy\d+/i, phrase: 'Route / flight reference', tree: 'Universal: Jurisdiction & quantum', triggers: [
       { system: 'HERMES', document: 'PNR & booking records', purpose: 'Standing, check-in compliance, compensation band distance' },
       { system: 'TOPS', document: 'Flight details — route, distance, scheduled times', purpose: 'Art 7 band calculation & delay threshold' }
@@ -278,6 +311,67 @@ var DefendAbleEngine = (function () {
     return bestScore >= 2 ? best : null;
   }
 
+  function enrichWithLandscape(text, result) {
+    if (typeof DefendAbleFramework === 'undefined') return result;
+    var ls = DefendAbleFramework.landscapeSummary(text);
+    result.landscape = ls;
+
+    var claimNodes = ls.claims.filter(function (c) { return c.matched; }).map(function (c) {
+      return {
+        id: c.id, type: 'claim',
+        question: c.name + (c.article ? ' (' + c.article + ')' : ''),
+        status: 'amber', statusLabel: 'CLAIM HEAD',
+        conclusion: c.note || 'Claim head identified from ICC summary — verify quantum and evidence.',
+        authority: c.article || 'EC261/UK261',
+        dataUsed: (c.evidence || []).join('; ')
+      };
+    });
+
+    var defenceNodes = ls.defences.filter(function (d) { return d.matched && !d.isNegative; }).map(function (d) {
+      return {
+        id: d.id, type: 'disruption',
+        question: d.name + ' — extraordinary circumstances?',
+        status: 'green', statusLabel: 'EC CANDIDATE',
+        conclusion: 'ICC keywords match this defence tree. ' + (d.authority || '') + ' Pull: ' + (d.evidence || []).join(', ') + '.',
+        authority: d.authority,
+        dataUsed: (d.evidence || []).join('; ')
+      };
+    });
+
+    var negativeNodes = ls.defences.filter(function (d) { return d.matched && d.isNegative; }).map(function (d) {
+      return {
+        id: d.id, type: 'disruption',
+        question: d.name,
+        status: 'red', statusLabel: 'NOT EC',
+        conclusion: d.authority + ' — this is NOT an extraordinary circumstance. Do not concede on EC grounds.',
+        authority: d.authority,
+        dataUsed: (d.evidence || []).join('; ')
+      };
+    });
+
+    var frameworkUniversal = DefendAbleFramework.buildUniversalNodes(text);
+    var existingIds = {};
+    (result.nodes || []).forEach(function (n) { existingIds[n.id] = true; });
+    var merged = claimNodes.concat(
+      frameworkUniversal.filter(function (n) { return !existingIds[n.id]; })
+    ).concat(result.nodes || []);
+    existingIds = {};
+    merged.forEach(function (n) { existingIds[n.id] = true; });
+    merged = merged.concat(
+      defenceNodes.filter(function (n) { return !existingIds[n.id]; })
+    ).concat(
+      negativeNodes.filter(function (n) { return !existingIds[n.id]; })
+    );
+    result.nodes = merged;
+
+    if (!result.reasoningChain) result.reasoningChain = [];
+    result.reasoningChain.unshift({
+      status: 'green',
+      text: 'Landscape scan: ' + ls.claimsMatched + '/' + ls.claimsTotal + ' claim heads · ' + ls.defencesMatched + '/' + ls.defencesTotal + ' EC defences · ' + ls.legalMatched + '/' + ls.legalTotal + ' universal legal issues screened.'
+    });
+    return result;
+  }
+
   function buildFallback(text) {
     var keywords = detectKeywords(text);
     if (!keywords.length) {
@@ -307,7 +401,7 @@ var DefendAbleEngine = (function () {
         evidencePack.push({ status: 'flagged', name: tr.document, source: tr.system });
       });
     });
-    return {
+    return enrichWithLandscape(text, {
       keywords: keywords,
       universalHighlighted: highlightKeywords(text, keywords),
       nodes: nodes,
@@ -320,22 +414,27 @@ var DefendAbleEngine = (function () {
       verdict: 'INVESTIGATE',
       verdictSub: 'Keywords detected and evidence triggers fired. Full legal analysis pending complete evidence pack — review disruption tree manually or switch to Live AI mode.',
       verdictFlags: [{ type: 'action', text: 'Pull all flagged evidence items before triage decision' }, { type: 'note', text: 'Try a preset chip example for a full curated demo analysis' }]
-    };
+    });
   }
 
   function resolveAnalysis(text) {
     var trimmed = text.trim();
+    var result;
     if (typeof EX !== 'undefined') {
       var keys = Object.keys(SCENARIOS);
       for (var i = 0; i < keys.length; i++) {
         var key = keys[i];
         if (EX[key] && trimmed === EX[key].trim()) {
-          return JSON.parse(JSON.stringify(SCENARIOS[key].result));
+          result = JSON.parse(JSON.stringify(SCENARIOS[key].result));
+          return enrichWithLandscape(trimmed, result);
         }
       }
     }
     var scenario = matchScenario(trimmed);
-    if (scenario) return JSON.parse(JSON.stringify(scenario));
+    if (scenario) {
+      result = JSON.parse(JSON.stringify(scenario));
+      return enrichWithLandscape(trimmed, result);
+    }
     return buildFallback(trimmed);
   }
 
@@ -398,6 +497,7 @@ var DefendAbleEngine = (function () {
       if (m) result = JSON.parse(m[0]);
       else throw new Error('Could not parse AI response.');
     }
+    result = enrichWithLandscape(text, result);
     onProgress('done', null, result);
     return result;
   }
