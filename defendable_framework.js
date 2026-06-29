@@ -16,7 +16,7 @@ var DefendAbleFramework = (function () {
   ];
 
   var EC_DEFENCES = [
-    { id: 'DT-01', name: 'ATC / ATFM restrictions (CTOT, curfew, OND)', patterns: [/\bctot\b|\batfm\b|\batc restriction|\beurocontrol|\bnetwork wide\b/i], triggers: ['EUROCONTROL-NM-API', 'TOPS', 'NOTAM-feed'], authority: 'Pešková (C-315/15); Wallentin-Hermann' },
+    { id: 'DT-01', name: 'ATC / ATFM restrictions (CTOT, curfew, OND)', patterns: [/\bctots?\b|\batfm\b|\batc restriction|\beurocontrol|\bnetwork wide\b/i], triggers: ['EUROCONTROL-NM-API', 'TOPS', 'NOTAM-feed'], authority: 'Pešková (C-315/15); Wallentin-Hermann' },
     { id: 'DT-02', name: 'Weather — destination (diversion, below minima)', patterns: [/\bthunderstorm|\bdiversion|\bbelow minima|\bsigmet|\bmetar.*dest/i], triggers: ['Ogimet-API', 'TOPS', 'Flightradar24-API'], authority: 'Wallentin-Hermann; mandatory ATC diversion' },
     { id: 'DT-03', name: 'Weather — origin or en route (LVP, SNOWTAM, de-icing)', patterns: [/\blvp\b|\bsnowtam|\bde-ic|\brunway closure|\borigin weather/i], triggers: ['Ogimet-API', 'NOTAM-feed', 'TOPS'], authority: 'Systemic LVP/SNOWTAM = EC; routine de-icing = ordinary' },
     { id: 'DT-04', name: 'Birdstrike / wildlife strike', patterns: [/\bbirdstrike|\bbird strike|\bwildlife|\bingestion\b/i], triggers: ['AMOS', 'SafetyNet', 'Airport-wildlife-authority'], authority: 'Pešková — per se EC' },

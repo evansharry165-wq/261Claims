@@ -27,6 +27,128 @@ var DefendAbleDemoV2 = (function () {
     return has(text, /\bthunderstorm|\bweather\b/i) && !isWeatherDiversionCase(text);
   }
 
+  function isOwnStaffStrike(text) {
+    return (has(text, /\bown\b[\s\S]{0,50}\bstrike|\bpilot union|\bpilot staff participating|\bown pilot|\bown staff strike|\bcarrier own pilot|\bpilot union strike|\bown crews?\b/i)
+      && !isHandlerStrike(text) && !has(text, /\batc industrial|\bthird.party strike/i));
+  }
+
+  function isHandlerStrike(text) {
+    return has(text, /\bhandler|\bbaggage handler|\bground handler|\bground staff|\bcdg\b/i) && has(text, /\bindustrial|strike/i);
+  }
+
+  function isThirdPartyAtcIndustrial(text) {
+    return has(text, /\batc industrial action\b/i)
+      || (has(text, /\bindustrial action|\bstrike\b/i) && has(text, /\batc\b|\batfm\b|\beurocontrol\b/i) && !isHandlerStrike(text) && !isOwnStaffStrike(text));
+  }
+
+  function isCrewIllness(text) {
+    return has(text, /\bcrew illness|\bpilot sick|\bcaptain sick|\bcrew sick|\bpilot illness|\bcrew unavailable.*sick/i);
+  }
+
+  function isBirdstrikeCase(text) {
+    return has(text, /\bbirdstrike|\bbird strike|\bingestion\b/i);
+  }
+
+  function isMedicalCase(text) {
+    return has(text, /\bmedical|\bcardiac|\bwelfare incident|\bpassenger welfare|\bmedical emergency/i);
+  }
+
+  function isSecurityCase(text) {
+    return has(text, /\bsecurity alert|\bsuspicious item|\bhold search|\bre-screen|\bpolice attended/i) && !isDisruptiveCase(text);
+  }
+
+  function isDisruptiveCase(text) {
+    return has(text, /\bdisruptive passenger|\bunruly passenger|\bthreatening behaviour/i)
+      || (has(text, /\breturned to gate\b/i) && has(text, /\bpassenger|\boffload|\bpolice/i));
+  }
+
+  function isHiddenDefectCase(text) {
+    return has(text, /\bhidden.*defect|\bmanufacturing defect|\bno prior ad\b/i)
+      || (has(text, /\bhydraulic\b/i) && has(text, /\bmel dispatch not|\bcategory a\b/i));
+  }
+
+  function isCascadeCase(text) {
+    return has(text, /\blate inbound|\bcascad|\bprior rotation/i) && has(text, /\bftl\b|\bout of hours|\bcrew.*limit|\bcrew reached\b/i);
+  }
+
+  function isPositioningComplex(text) {
+    return has(text, /\bpositioning\b/) && has(text, /\b18\s*hour|\bwake rule|\bfuel leak|\baog\b/i);
+  }
+
+  function isAtcHandlerCompound(text) {
+    return isHandlerStrike(text) && (hasAtcFlow(text) || has(text, /\batc delay|\batc delays|\batc restriction/i));
+  }
+
+  function isAtcOndCase(text) {
+    return hasAtcFlow(text) && has(text, /\bond\b|\bnext day\b|\bcurfew\b/i) && !has(text, /\bindustrial|strike|handler/i);
+  }
+
+  /* Keyword → evidence rules aligned with defendable_framework.js + v1 engine */
+  var KEYWORD_RULES = [
+    { re: /\bctots?\b|\batfm\b|\batc restriction|\bnetwork wide\b|\beurocontrol\b/i, phrase: 'ATC/ATFM', tree: 'DT-01: ATC/ATFM', eventMatch: /ctot|atfm|atc|flow control/i, triggers: [
+      { system: 'EUROCONTROL-NM-API', document: 'CTOT/ATFM assignment log', purpose: 'Confirm third-party flow control' },
+      { system: 'TOPS', document: 'Delay codes 81-89', purpose: 'Operational corroboration' }
+    ]},
+    { re: /\bcurfew\b|\bond\b|\bovernight delay\b|\bnext day\b/i, phrase: 'OND/curfew', tree: 'DT-01: OND', eventMatch: /ond|overnight|next day|curfew/i, triggers: [
+      { system: 'TOPS', document: 'Next-day operation record', purpose: 'Sturgeon delay measurement' },
+      { system: 'Ground-handler-records', document: 'HOTAC records', purpose: 'Art 9 compliance' }
+    ]},
+    { re: /\bthunderstorm|\bweather|\bdiversion|\bbelow minima|\bsigmet/i, phrase: 'weather destination', tree: 'DT-02: Weather destination', eventMatch: /weather|thunderstorm|below minima|diversion/i, triggers: [
+      { system: 'Ogimet-API', document: 'METAR/TAF destination', purpose: 'Below-minima or arrival weather' }
+    ]},
+    { re: /\blvp\b|\bsnowtam|\bde-ic|\brunway closure|\borigin weather/i, phrase: 'weather origin/LVP', tree: 'DT-03: Weather origin', eventMatch: /lvp|snowtam|de-ic|origin weather|runway closure/i, triggers: [
+      { system: 'Ogimet-API', document: 'METAR/TAF origin', purpose: 'Systemic LVP/SNOWTAM' },
+      { system: 'NOTAM-feed', document: 'LVP/SNOWTAM NOTAM', purpose: 'External runway conditions' }
+    ]},
+    { re: /\bbirdstrike|\bbird strike|\bingestion\b/i, phrase: 'birdstrike', tree: 'DT-04: Birdstrike', eventMatch: /birdstrike|ingestion/i, triggers: [
+      { system: 'AMOS', document: 'Birdstrike report', purpose: 'Mandatory inspection record' }
+    ]},
+    { re: /\bhidden defect|\bmanufacturing defect|\bno prior ad\b|\bcategory a|\bmel dispatch not/i, phrase: 'hidden defect', tree: 'DT-05/14: Technical', eventMatch: /hidden|manufacturing|hydraulic|defect|category a/i, triggers: [
+      { system: 'AMOS', document: 'Defect and maintenance history', purpose: 'Matkustaja / van der Lans gate' },
+      { system: 'OEM-records', document: 'AD/SB and failure mode', purpose: 'Unknown failure mode' }
+    ]},
+    { re: /\bftl\b|\bcrew.*(limit|hours|duty)|\bstandby crew|\bout of hours/i, phrase: 'crew FTL', tree: 'DT-06: Crew FTL', eventMatch: /ftl|out of hours|crew.*limit|crew hours/i, triggers: [
+      { system: 'AIMS', document: 'FDP record', purpose: 'Crew limits — not independent EC' }
+    ]},
+    { re: /\bindustrial action|\bstrike\b/i, phrase: 'industrial action', tree: 'DT-07: Industrial action', eventMatch: /industrial|strike/i, triggers: [
+      { system: 'DISCO', document: 'Own vs third-party classification', purpose: 'Krüsemann gate' },
+      { system: 'NOTAM-feed', document: 'Strike notice', purpose: 'Third-party corroboration' }
+    ]},
+    { re: /\bhandler|\bbaggage handler|\bground handler/i, phrase: 'handler strike', tree: 'DT-07: Third-party handler', eventMatch: /handler|baggage/i, triggers: [
+      { system: 'DISCO', document: 'Handler classification', purpose: 'Confirm third-party not Krüsemann own-staff' }
+    ]},
+    { re: /\bsecurity alert|\bsuspicious|\bhold search|\bre-screen/i, phrase: 'security alert', tree: 'DT-08: Security', eventMatch: /security|suspicious|hold search/i, triggers: [
+      { system: 'SafetyNet', document: 'Security incident report', purpose: 'Authority-mandated action' }
+    ]},
+    { re: /\bmedical|\bcardiac|\bpassenger welfare|\bwelfare incident/i, phrase: 'medical emergency', tree: 'DT-09: Medical', eventMatch: /medical|cardiac|welfare/i, triggers: [
+      { system: 'SafetyNet', document: 'Medical/welfare incident report', purpose: 'Mandatory carrier response' }
+    ]},
+    { re: /\bdisruptive|\bunruly|\breturned to gate|\bthreatening behaviour/i, phrase: 'disruptive passenger', tree: 'DT-10: Disruptive passenger', eventMatch: /disruptive|unruly|threatening/i, triggers: [
+      { system: 'SafetyNet', document: 'Disruptive passenger report', purpose: 'External behaviour EC' }
+    ]},
+    { re: /\bvolcanic|\bash\b|\bearthquake|\bflood|\bhurricane|\bnatural disaster/i, phrase: 'natural disaster', tree: 'DT-11: Natural disaster', eventMatch: /volcanic|earthquake|flood|hurricane|natural disaster/i, triggers: [
+      { system: 'NOTAM-feed', document: 'Disaster NOTAM', purpose: 'Government/meteorological event' }
+    ]},
+    { re: /\bnats\b.*\boutage|\beurocontrol.*\boutage|\batm system|\bnetwork failure/i, phrase: 'ATM outage', tree: 'DT-12: ATM failure', eventMatch: /outage|atm system|network failure/i, triggers: [
+      { system: 'NOTAM-feed', document: 'ATM outage notice', purpose: 'Third-party infrastructure' }
+    ]},
+    { re: /\bcascade|\brotation|\blate inbound|\binbound aircraft/i, phrase: 'cascade', tree: 'DT-13: Cascade', eventMatch: /cascade|late inbound|rotation/i, triggers: [
+      { system: 'TOPS', document: 'Inbound/rotation record', purpose: 'Root cause at chain start' }
+    ]},
+    { re: /\bpositioning\b/i, phrase: 'positioning', tree: 'DT-18: Positioning', eventMatch: /positioning/i, triggers: [
+      { system: 'TOPS', document: 'Positioning line of flying', purpose: 'Separate causal event' }
+    ]},
+    { re: /\b18\s*hour|\bwake rule/i, phrase: '18 hour wake rule', tree: 'DT-20: Wake rule', eventMatch: /18.hour|wake rule|fatigue/i, triggers: [
+      { system: 'AIMS', document: 'FDP and rest audit', purpose: 'DT-20 judgment node' }
+    ]},
+    { re: /\bno standby|\bno spare|\bcould not be rescued/i, phrase: 'no standby aircraft', tree: 'U-8: Reasonable measures', eventMatch: /standby|spare|rescued/i, triggers: [
+      { system: 'TOPS', document: 'Fleet state and recovery log', purpose: 'Reasonable measures gate' }
+    ]},
+    { re: /\bcrew illness|\bpilot sick|\bcrew sick/i, phrase: 'crew illness', tree: 'UL-02: Lipton — NOT EC', eventMatch: /illness|sick/i, triggers: [
+      { system: 'AIMS', document: 'Sickness record', purpose: 'Lipton UKSC 24 — not EC' }
+    ]}
+  ];
+
   function escRe(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
 
   function highlight(text, phrases) {
@@ -172,6 +294,23 @@ var DefendAbleDemoV2 = (function () {
         verdict: 'CONCEDE',
         verdictSub: 'Own-staff industrial action is not EC under Krüsemann. Concede on EC grounds; review Art 8 rerouting and Art 7 quantum only.',
         verdictFlags: [{ type: 'note', text: 'Document Krüsemann authority if settling batch claims from same event' }]
+      });
+    },
+
+    crewIllness: function (text) {
+      return fullResult(text, {
+        causationStructure: 'SEQUENTIAL',
+        causationStructureReason: 'Crew illness caused operational disruption — Lipton gate applies.',
+        chain: [
+          ev('E1', 'Captain/crew illness — unable to operate', { lof: 'OWN_OPERATION', ecCandidate: false, ecReason: 'Lipton [2024] UKSC 24 — crew illness is NOT extraordinary circumstances.', delay: 'caused delay/cancellation', link: 'FINAL_EVENT' })
+        ],
+        keywords: [{ phrase: 'crew illness', tree: 'UL-02: Lipton — NOT EC', chainEventRef: 'E1', triggers: [{ system: 'AIMS', document: 'Sickness and roster record', purpose: 'Confirm illness-based unavailability' }] }],
+        nodes: [
+          { id: 'DT-18', type: 'disruption', chainEventRef: 'E1', question: 'Crew illness — extraordinary circumstances?', status: 'red', statusLabel: 'NOT EC — LIPTON', conclusion: 'Crew illness is within carrier control under Lipton v BA Cityflyer [2024] UKSC 24. Do not run EC defence.', authority: 'Lipton [2024] UKSC 24', dataUsed: 'AIMS sickness record', chainConsequence: 'EC defence unavailable — assess quantum and Art 8/9 only.' }
+        ],
+        verdict: 'CONCEDE',
+        verdictSub: 'Crew illness is not EC under Lipton. Concede on EC grounds; review Art 8 rerouting and Art 7 quantum only.',
+        verdictFlags: [{ type: 'note', text: 'Document Lipton UKSC 24 authority in response' }]
       });
     },
 
@@ -478,6 +617,27 @@ var DefendAbleDemoV2 = (function () {
     return ips;
   }
 
+  var DEFENCE_EVENT_MAP = {
+    'DT-01': /ctot|atfm|atc|flow control/i,
+    'DT-02': /weather|thunderstorm|below minima|diversion/i,
+    'DT-03': /lvp|snowtam|de-ic|origin weather|runway closure/i,
+    'DT-04': /birdstrike|ingestion/i,
+    'DT-05': /hidden|manufacturing|hydraulic|defect|category a|technical/i,
+    'DT-06': /ftl|out of hours|crew.*limit|crew hours/i,
+    'DT-07': /industrial|strike|handler|baggage/i,
+    'DT-08': /security|suspicious|hold search/i,
+    'DT-09': /medical|cardiac|welfare/i,
+    'DT-10': /disruptive|unruly|threatening/i,
+    'DT-11': /volcanic|earthquake|flood|hurricane|natural disaster/i,
+    'DT-12': /outage|atm system|network failure/i,
+    'DT-13': /cascade|late inbound|rotation/i,
+    'DT-14': /travel ban|airspace closure|government|political/i,
+    'DT-15': /drone|uas/i,
+    'DT-16': /covid|pandemic|quarantine/i,
+    'DT-17': /sabotage|terror|bomb threat/i,
+    'DT-18': /illness|sick/i
+  };
+
   function buildDefaultNodes(text, chain) {
     var nodes = [];
     if (typeof DefendAbleFramework !== 'undefined') {
@@ -490,8 +650,9 @@ var DefendAbleDemoV2 = (function () {
         });
       });
       DefendAbleFramework.detectDefences(text).filter(function (d) { return d.matched; }).forEach(function (d) {
+        var ref = findEventRef(chain, DEFENCE_EVENT_MAP[d.id]);
         nodes.push({
-          id: d.id, type: 'disruption', chainEventRef: 'E1',
+          id: d.id, type: 'disruption', chainEventRef: ref,
           question: d.name + ' — extraordinary circumstances?',
           status: d.isNegative ? 'red' : 'green',
           statusLabel: d.isNegative ? 'NOT EC' : 'EC CANDIDATE',
@@ -530,7 +691,7 @@ var DefendAbleDemoV2 = (function () {
         add('Positioning aircraft AOG / technical event' + (has(text, /\bfuel leak/i) ? ' — fuel leak' : ''), { lof: 'POSITIONING', ecCandidate: false, ecReason: 'Technical on positioning — chain break candidate.', chainBreak: true, chainBreakReason: 'Ordinary technical may intervene — van der Lans.' });
       }
     }
-    if (has(text, /\bthunderstorm|\bweather|\blvp\b|\bfog\b/i) || (has(text, /\bdiversion|\bbelow minima\b/i) && has(text, /\bweather\b/i))) {
+    if (has(text, /\bthunderstorm|\bweather|\bfog\b/i) || (has(text, /\bdiversion|\bbelow minima\b/i) && has(text, /\bweather|thunderstorm/i))) {
       var apt = extractAirport(text);
       if (isWeatherDiversionCase(text)) {
         add('Weather at destination — approach below minima' + (apt ? ' (' + apt + ')' : ''), { lof: 'THIRD_PARTY', ecCandidate: true, ecReason: 'Below-minima weather requires diversion.', linkReason: 'Meteorological external event.' });
@@ -550,8 +711,8 @@ var DefendAbleDemoV2 = (function () {
       add('Diversion below minima', { lof: 'OWN_OPERATION', ecCandidate: true, ecReason: 'Diversion consequence.', linkReason: 'Safety-mandated diversion.' });
     }
     if (has(text, /\bindustrial action|\bstrike\b/i)) {
-      var own = has(text, /\bown\b|\bpilot union|\bcabin crew union|\bcarrier own|\bpilot staff participating/i) && !has(text, /\bhandler|\bbaggage|\batc\b|\bthird.party|\bcdg\b/i);
-      var handler = has(text, /\bhandler|\bbaggage|\bground staff|\bcdg\b/i);
+      var own = isOwnStaffStrike(text);
+      var handler = isHandlerStrike(text);
       add((handler ? 'Third-party ground handler' : own ? 'Own-staff' : 'Third-party') + ' industrial action', { lof: handler || !own ? 'THIRD_PARTY' : 'OWN_OPERATION', ecCandidate: !own, ecReason: own ? 'Krüsemann — own staff NOT EC.' : 'Third-party strike — Pešková EC candidate.', linkReason: 'Industrial action in causal chain.' });
     }
     if (has(text, /\bbirdstrike|\bbird strike|\bingestion\b/i)) {
@@ -566,8 +727,29 @@ var DefendAbleDemoV2 = (function () {
     if (has(text, /\bdisruptive|\breturned to gate|\bthreatening behaviour/i)) {
       add('Disruptive passenger — return to gate', { lof: 'THIRD_PARTY', ecCandidate: true, ecReason: 'External passenger behaviour.', linkReason: 'Safety event.' });
     }
-    if (has(text, /\bmedical|\bcardiac|\bwelfare|\bdiverted.*opo/i)) {
-      add('Medical emergency / welfare diversion', { lof: 'OWN_OPERATION', ecCandidate: true, ecReason: 'Mandatory carrier response.', linkReason: 'Medical diversion.' });
+    if (has(text, /\bmedical|\bcardiac|\bwelfare|\bdiverted\b/i)) {
+      add('Medical emergency / passenger welfare incident' + (has(text, /\bdivert/i) ? ' — diversion' : ''), { lof: 'OWN_OPERATION', ecCandidate: true, ecReason: 'Mandatory carrier response to medical/welfare event.', linkReason: 'Medical/welfare event.' });
+    }
+    if (has(text, /\blvp\b|\bsnowtam|\bde-ic|\brunway closure|\borigin weather/i)) {
+      add('Origin/en-route weather — LVP / SNOWTAM / de-icing' + (has(text, /\blvp/i) ? ' (LVP in force)' : ''), { lof: 'THIRD_PARTY', ecCandidate: has(text, /\blvp|snowtam|runway closure/i), ecReason: 'Systemic LVP/SNOWTAM may be EC; routine de-icing alone is ordinary.', linkReason: 'Origin airport conditions.' });
+    }
+    if (has(text, /\bvolcanic|\bash\b|\bearthquake|\bflood|\bhurricane|\bnatural disaster/i)) {
+      add('Natural disaster / severe meteorological event', { lof: 'THIRD_PARTY', ecCandidate: true, ecReason: 'Government/meteorological event beyond carrier control.', linkReason: 'Natural disaster.' });
+    }
+    if (has(text, /\bnats\b.*\boutage|\beurocontrol.*\boutage|\batm system failure|\bnetwork failure/i)) {
+      add('ATM / network system failure', { lof: 'THIRD_PARTY', ecCandidate: true, ecReason: 'Third-party infrastructure outage.', linkReason: 'External system failure.' });
+    }
+    if (has(text, /\bdrone\b|\buas\b|\bairspace closure.*drone/i)) {
+      add('Drone incursion — authority-mandated airspace closure', { lof: 'THIRD_PARTY', ecCandidate: true, ecReason: 'Authority-imposed closure.', linkReason: 'Drone/UAS event.' });
+    }
+    if (has(text, /\bcovid|\bpandemic|\bquarantine|\btravel restriction/i)) {
+      add('Government travel / health restriction', { lof: 'THIRD_PARTY', ecCandidate: true, ecReason: 'Externally imposed public health measure.', linkReason: 'Pandemic restriction.' });
+    }
+    if (has(text, /\bsabotage|\bterror|\bbomb threat|\bthreat to aircraft/i)) {
+      add('Security threat / sabotage event', { lof: 'THIRD_PARTY', ecCandidate: true, ecReason: 'External security threat.', linkReason: 'Sabotage/terror threat.' });
+    }
+    if (has(text, /\bdenied boarding|\boverbook/i)) {
+      add('Denied boarding / overbooking event', { lof: 'OWN_OPERATION', ecCandidate: false, ecReason: 'Art 4 denied boarding — EC defence not available; assess Art 7/8/9.', link: 'FINAL_EVENT' });
     }
     if (has(text, /\blate inbound|\bcascade|\brotation|\bprior rotation/i)) {
       add('Late inbound / cascading rotation delay', { lof: 'OWN_OPERATION', ecCandidate: false, ecReason: 'Cascade NOT EC — root cause at chain start.', linkReason: 'Prior sector impact.' });
@@ -606,65 +788,81 @@ var DefendAbleDemoV2 = (function () {
     return { events: events, structure: structure };
   }
 
+  function findEventRef(chain, eventMatch) {
+    if (!eventMatch) return chain[0] ? chain[0].id : 'E1';
+    for (var i = 0; i < chain.length; i++) {
+      if (eventMatch.test(chain[i].description)) return chain[i].id;
+    }
+    return chain[0] ? chain[0].id : 'E1';
+  }
+
   function buildKeywords(text, chain) {
     var kws = [];
-    var rules = [
-      { re: /\bctots?\b|\batfm\b|\batc delay/i, phrase: 'ATC/CTOT', tree: 'DT-01: ATC/ATFM' },
-      { re: /\bindustrial action|\bstrike\b/i, phrase: 'industrial action', tree: 'DT-07: Industrial action' },
-      { re: /\bhandler|\bbaggage/i, phrase: 'baggage handler', tree: 'DT-07: Third-party handler' },
-      { re: /\bpositioning\b/i, phrase: 'positioning', tree: 'DT-18: Positioning' },
-      { re: /\b18\s*hour|\bwake rule/i, phrase: '18 hour wake rule', tree: 'DT-20: Wake rule' },
-      { re: /\bond\b|\bovernight|\bnext day/i, phrase: 'OND', tree: 'DT-01: OND/curfew' },
-      { re: /\bbirdstrike/i, phrase: 'birdstrike', tree: 'DT-04: Birdstrike' },
-      { re: /\bweather|\bthunderstorm|\blvp|\bdiversion/i, phrase: 'weather', tree: 'DT-02/DT-03: Weather' },
-      { re: /\bhidden defect|\bmanufacturing/i, phrase: 'hidden defect', tree: 'DT-14: Hidden defect' },
-      { re: /\bno standby|\bno spare/i, phrase: 'no standby aircraft', tree: 'U-8: Reasonable measures' }
-    ];
-    var ref = chain[0] ? chain[0].id : 'E1';
-    rules.forEach(function (r) {
-      if (r.re.test(norm(text))) {
-        kws.push({ phrase: r.phrase, tree: r.tree, chainEventRef: ref, triggers: [{ system: 'TOPS', document: 'Operational record', purpose: 'Corroborate ' + r.phrase }] });
-      }
+    var seen = {};
+    KEYWORD_RULES.forEach(function (rule) {
+      if (!rule.re.test(norm(text))) return;
+      var key = rule.tree + rule.phrase;
+      if (seen[key]) return;
+      seen[key] = true;
+      var ref = findEventRef(chain, rule.eventMatch);
+      kws.push({
+        phrase: rule.phrase,
+        tree: rule.tree,
+        chainEventRef: ref,
+        triggers: (rule.triggers || []).map(function (tr) {
+          return { system: tr.system, document: tr.document, purpose: tr.purpose };
+        })
+      });
     });
     return kws;
   }
 
   function resolveVerdict(text, chain, judgmentNodes) {
-    if (has(text, /\bown\b.*\bstrike|\bpilot union|\bpilot staff participating|\bown pilot|\bown staff strike/i) && !has(text, /\bhandler|\batc industrial|\bthird.party/i)) return { v: 'CONCEDE', sub: 'Own-staff industrial action — Krüsemann. Not EC. Concede and review quantum/Art 8 only.', conditions: [] };
-    if (has(text, /\bcrew illness|\bpilot sick|\bcaptain sick|\bcrew sick/i)) return { v: 'CONCEDE', sub: 'Crew illness — Lipton [2024] UKSC 24. Not EC.', conditions: [] };
-    if (has(text, /\bpositioning\b/) && (has(text, /\bfuel leak|\b18\s*hour|\bwake rule/i) || chain.length >= 4)) return { v: 'JUDGMENT_REQUIRED', sub: 'Positioning complex chain — J1/J2 judgment nodes outstanding before DEFEND.', conditions: [] };
+    if (isOwnStaffStrike(text)) return { v: 'CONCEDE', sub: 'Own-staff industrial action — Krüsemann. Not EC. Concede and review quantum/Art 8 only.', conditions: [] };
+    if (isCrewIllness(text)) return { v: 'CONCEDE', sub: 'Crew illness — Lipton [2024] UKSC 24. Not EC.', conditions: [] };
+    if (has(text, /\bdenied boarding|\boverbook/i)) return { v: 'CONCEDE', sub: 'Denied boarding under Art 4 — EC defence not available. Assess Art 7/8/9 compliance only.', conditions: [] };
+    if (isPositioningComplex(text)) return { v: 'JUDGMENT_REQUIRED', sub: 'Positioning complex chain — judgment nodes outstanding before DEFEND.', conditions: [] };
     if (isWeatherArrivalDelayCase(text) && hasAtcFlow(text)) {
       var apt = extractAirport(text) || 'destination';
-      return { v: 'DEFEND_WITH_CONDITIONS', sub: 'Weather at arrival with ATFM/CTOT consequence. Confirm METAR and Eurocontrol data — no diversion in ICC.', conditions: ['METAR/TAF confirms weather at ' + apt + ' at ETA', 'Eurocontrol ATFM/CTOT log on file', 'TOPS confirms 3+ hour arrival delay'] };
+      return { v: 'DEFEND_WITH_CONDITIONS', sub: 'Weather at arrival with ATFM/CTOT consequence. Confirm METAR and Eurocontrol data — no diversion in ICC.', conditions: ['METAR/TAF confirms weather at ' + apt + ' at ETA', 'Eurocontrol ATFM/CTOT log on file', 'TOPS confirms arrival delay duration'] };
     }
-    if (has(text, /\batc\b|\bctots?\b/i) && has(text, /\bhandler|\bbaggage.*industrial|\bindustrial.*handler/i)) return { v: 'DEFEND_WITH_CONDITIONS', sub: 'ATC plus third-party handler strike — strong EC candidates. Confirm DISCO third-party classification and reasonable measures.', conditions: ['DISCO confirms handler strike is third-party', 'TOPS fleet state confirms no undeployed spare aircraft', 'Art 9 HOTAC for OND if applicable'] };
-    if (hasAtcFlow(text) && has(text, /\bond\b|\bnext day\b/i)) return { v: 'DEFEND_WITH_CONDITIONS', sub: 'ATC/ATFM EC with OND — confirm Art 9 and Art 8.', conditions: ['HOTAC records on file', 'Art 8 offer evidenced'] };
-    if (hasAtcFlow(text) && has(text, /\bbirdstrike/i)) return { v: 'DEFEND', sub: 'Strong per se or established EC candidate. Pull evidence pack before response.', conditions: [] };
-    if (has(text, /\bhidden defect|\bmanufacturing defect|\bno prior ad/i)) return { v: 'DEFEND_WITH_CONDITIONS', sub: 'Hidden defect candidate — Matkustaja C-385/23. OEM and AMOS compliance required.', conditions: ['OEM confirms unknown failure mode', 'Full AMOS maintenance history on file'] };
-    if (has(text, /\blvp\b.*\bhydraulic|hydraulic.*\blvp|simultaneous/i)) return { v: 'JUDGMENT_REQUIRED', sub: 'Concurrent causes — neither alone may cross 3-hour threshold. Dominant cause judgment required.', conditions: [] };
+    if (isAtcHandlerCompound(text)) return { v: 'DEFEND_WITH_CONDITIONS', sub: 'ATC plus third-party handler strike — strong EC candidates. Confirm DISCO third-party classification and reasonable measures.', conditions: ['DISCO confirms handler strike is third-party', 'TOPS fleet state confirms no undeployed spare aircraft', 'Art 9 HOTAC for OND if applicable'] };
+    if (isAtcOndCase(text)) return { v: 'DEFEND_WITH_CONDITIONS', sub: 'ATC/ATFM EC with OND — confirm Art 9 and Art 8.', conditions: ['HOTAC records on file', 'Art 8 offer evidenced'] };
+    if (isBirdstrikeCase(text)) return { v: 'DEFEND_WITH_CONDITIONS', sub: 'Birdstrike per se EC under Pešková. Confirm AMOS report and reasonable measures.', conditions: ['AMOS birdstrike report on file'] };
+    if (isHiddenDefectCase(text)) return { v: 'DEFEND_WITH_CONDITIONS', sub: 'Hidden defect candidate — Matkustaja C-385/23. OEM and AMOS compliance required.', conditions: ['OEM confirms unknown failure mode', 'Full AMOS maintenance history on file'] };
+    if (isWeatherDiversionCase(text) && has(text, /\bthunderstorm|\bweather\b/i)) return { v: 'DEFEND_WITH_CONDITIONS', sub: 'Weather diversion — confirm METAR/TAF and reasonable measures on recovery.', conditions: ['METAR/TAF below minima evidenced', 'Art 9 care at alternate if applicable'] };
+    if (isThirdPartyAtcIndustrial(text)) return { v: 'DEFEND', sub: 'Third-party ATC industrial action. Pull NOTAM and Eurocontrol ATFM data.', conditions: [] };
+    if (isMedicalCase(text)) return { v: 'DEFEND_WITH_CONDITIONS', sub: 'Medical/welfare event — strong EC candidate. Confirm incident records.', conditions: ['Medical/welfare incident report on file'] };
+    if (isSecurityCase(text)) return { v: 'DEFEND', sub: 'Authority-mandated security action. Pull security incident log.', conditions: [] };
+    if (isDisruptiveCase(text)) return { v: 'DEFEND', sub: 'Disruptive passenger — established EC. Pull cabin and police records.', conditions: [] };
+    if (isCascadeCase(text)) return { v: 'JUDGMENT_REQUIRED', sub: 'Cascade delay — establish EC at chain root before DEFEND.', conditions: [] };
+    if (has(text, /\blvp\b.*\bhydraulic|hydraulic.*\blvp|simultaneous/i)) return { v: 'JUDGMENT_REQUIRED', sub: 'Concurrent causes — dominant cause judgment required.', conditions: [] };
+    if (has(text, /\bvolcanic|\bash\b|\bearthquake|\bnatural disaster/i)) return { v: 'DEFEND_WITH_CONDITIONS', sub: 'Natural disaster EC candidate. Confirm NOTAM/SIGMET.', conditions: ['NOTAM or official disaster bulletin on file'] };
+    if (has(text, /\bnats\b.*\boutage|\beurocontrol.*\boutage|\batm system/i)) return { v: 'DEFEND_WITH_CONDITIONS', sub: 'ATM infrastructure failure. Confirm outage notice.', conditions: ['NOTAM/official outage confirmation'] };
     if (judgmentNodes && judgmentNodes.length) return { v: 'JUDGMENT_REQUIRED', sub: judgmentNodes.length + ' judgment node(s) require human decision or further evidence.', conditions: [] };
     if (chain.some(function (e) { return e.chainBreak; })) return { v: 'JUDGMENT_REQUIRED', sub: 'Chain break candidate identified — do not DEFEND until resolved.', conditions: [] };
+    if (hasAtcFlow(text)) return { v: 'DEFEND_WITH_CONDITIONS', sub: 'ATC/ATFM EC candidate. Pull Eurocontrol and TOPS before response.', conditions: ['Eurocontrol ATFM/CTOT log', 'TOPS delay record'] };
     return { v: 'INVESTIGATE', sub: 'Keywords and chain identified. Pull evidence pack and complete legal review before triage.', conditions: [] };
   }
 
   function matchCurated(text) {
     var t = norm(text);
-    if (has(text, /\bpositioning\b/) && has(text, /\b18\s*hour|\bwake rule|\bfuel leak|\baog\b/i)) return CURATED.positioning(text);
-    if (has(text, /\bown\b.*\bstrike|\bpilot union|\bpilot staff participating/i) && !has(text, /\bhandler|\batc industrial/i)) return CURATED.ownStrike(text);
-    if ((has(text, /\bhandler|\bbaggage handler/i) && has(text, /\bindustrial|strike/i)) || (has(text, /\bcdg\b/i) && has(text, /\bindustrial|strike/i))) {
-      if (has(text, /\batc|ctots?|delay/i)) return CURATED.atcHandlerOnd(text);
-    }
-    if (hasAtcFlow(text) && has(text, /\bond\b|\bnext day\b/i) && !has(text, /\bindustrial|strike|handler/i)) return CURATED.atc(text);
-    if (t.indexOf('flight delayed ltn due to eurocontrol ctot') >= 0) return CURATED.atc(text);
+    /* Order matters — most specific / negative gates first */
+    if (isOwnStaffStrike(text)) return CURATED.ownStrike(text);
+    if (isCrewIllness(text)) return CURATED.crewIllness(text);
+    if (isPositioningComplex(text)) return CURATED.positioning(text);
+    if (isAtcHandlerCompound(text)) return CURATED.atcHandlerOnd(text);
     if (isWeatherArrivalDelayCase(text) && hasAtcFlow(text)) return CURATED.weatherCtotDelay(text);
+    if (isAtcOndCase(text)) return CURATED.atc(text);
+    if (t.indexOf('flight delayed ltn due to eurocontrol ctot') >= 0) return CURATED.atc(text);
     if (isWeatherDiversionCase(text) && has(text, /\bthunderstorm|\bweather\b/i)) return CURATED.weather(text);
-    if (has(text, /\bbirdstrike|\bbird strike|\bingestion\b/i)) return CURATED.birdstrike(text);
-    if (has(text, /\batc industrial action\b/i) || (has(text, /\bindustrial action\b/i) && has(text, /\batc\b|\batfm\b|\beurocontrol\b/i) && !has(text, /\bhandler|\bbaggage/i))) return CURATED.industrialThirdParty(text);
-    if (has(text, /\blate inbound|\bcascade|\bprior rotation/i) && has(text, /\bftl\b|\bout of hours|\bcrew.*limit/i)) return CURATED.cascade(text);
-    if (has(text, /\bhidden.*defect|\bmanufacturing defect|\bcategory a\b/i) || (has(text, /\bhydraulic\b/i) && has(text, /\bmel dispatch not\b/i))) return CURATED.technical(text);
-    if (has(text, /\bmedical|\bcardiac|\bwelfare\b/i) && has(text, /\bdivert/i)) return CURATED.medical(text);
-    if (has(text, /\bsecurity alert|\bsuspicious item|\bhold search/i)) return CURATED.security(text);
-    if (has(text, /\bdisruptive passenger|\bthreatening behaviour|\breturned to gate/i)) return CURATED.disruptive(text);
+    if (isBirdstrikeCase(text)) return CURATED.birdstrike(text);
+    if (isThirdPartyAtcIndustrial(text)) return CURATED.industrialThirdParty(text);
+    if (isCascadeCase(text)) return CURATED.cascade(text);
+    if (isHiddenDefectCase(text)) return CURATED.technical(text);
+    if (isMedicalCase(text)) return CURATED.medical(text);
+    if (isSecurityCase(text)) return CURATED.security(text);
+    if (isDisruptiveCase(text)) return CURATED.disruptive(text);
     return null;
   }
 
