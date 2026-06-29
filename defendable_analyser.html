@@ -867,6 +867,8 @@ function isMaterialNode(n) {
   if (n.statusLabel && /VERIFY|JUDGMENT|CONCEDE|NOT EC|RISK|HOLD/i.test(n.statusLabel)) return true;
   return false;
 }
+
+function extractCaseMeta(text) {
   var t = text || '';
   var flights = t.match(/\b[A-Z]{2,3}\s?\d{3,4}\b/g);
   var out = { flights: [], ond: false, cancelled: false, structure: '' };
