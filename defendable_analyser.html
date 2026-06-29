@@ -161,6 +161,13 @@ textarea:focus{outline:none;border-color:var(--orange);background:var(--white)}
 .api-inp:focus{outline:none;border-color:var(--orange)}
 .api-btn{background:var(--white);border:1px solid #BFDBFE;color:var(--blue);font-size:11px;font-weight:700;padding:7px 12px;border-radius:4px;cursor:pointer}
 .api-btn:hover{background:#EFF6FF}
+.demo-panel{background:var(--green-light);border:1.5px solid #BBF7D0;border-radius:4px;padding:12px 16px;margin-bottom:16px}
+.demo-lbl{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--green);margin-bottom:6px}
+.mode-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:8px}
+.mode-opt{font-size:11px;display:flex;align-items:center;gap:6px;cursor:pointer;color:var(--text2)}
+.mode-opt input{accent-color:var(--orange)}
+.live-panel{display:none;margin-top:12px;padding-top:12px;border-top:1px solid #BFDBFE}
+.live-panel.on{display:block}
 @media(max-width:900px){.results.on{grid-template-columns:1fr}.col-body{max-height:none}.jcols,.artblk{grid-template-columns:1fr}}
 </style>
 </head>
@@ -202,12 +209,20 @@ textarea:focus{outline:none;border-color:var(--orange);background:var(--white)}
     </div>
   </div>
 
-  <div class="api-panel" id="apiPanel">
-    <div class="api-lbl">Anthropic API key (required)</div>
-    <div class="api-note">DefendAble runs three Claude API calls from your browser. Your key is stored only in this tab&rsquo;s session memory and sent directly to Anthropic — not through any DefendAble server.</div>
-    <div class="api-row">
-      <input type="password" class="api-inp" id="apiKey" placeholder="sk-ant-…" autocomplete="off" spellcheck="false">
-      <button type="button" class="api-btn" onclick="saveApiKey()">Save key</button>
+  <div class="demo-panel" id="demoPanel">
+    <div class="demo-lbl">Demo intelligence — no API key required</div>
+    <div class="api-note">DefendAble runs a full three-pass analysis locally using the decision trees, keyword engine, and curated scenario library. Type ICC text or use an example chip, then click Analyse.</div>
+    <div class="mode-row">
+      <label class="mode-opt"><input type="radio" name="engineMode" value="demo" id="modeDemo" checked onchange="setEngineMode()"> Demo mode (default)</label>
+      <label class="mode-opt"><input type="radio" name="engineMode" value="live" id="modeLive" onchange="setEngineMode()"> Live AI (Claude API — optional)</label>
+    </div>
+    <div class="live-panel" id="livePanel">
+      <div class="api-lbl" style="color:var(--blue)">Anthropic API key</div>
+      <div class="api-note" style="margin-bottom:8px">Only needed for Live AI. Your key is stored in this tab&rsquo;s session memory and sent directly to Anthropic — not through any DefendAble server.</div>
+      <div class="api-row">
+        <input type="password" class="api-inp" id="apiKey" placeholder="sk-ant-…" autocomplete="off" spellcheck="false">
+        <button type="button" class="api-btn" onclick="saveApiKey()">Save key</button>
+      </div>
     </div>
   </div>
 
@@ -256,6 +271,8 @@ textarea:focus{outline:none;border-color:var(--orange);background:var(--white)}
   <div class="foot">DefendAble · EC261/UK261 Intelligence Engine · 20 disruption types · 16 universal legal nodes · 3-pass chain analysis</div>
 </div>
 
+<script src="defendable_framework.js"></script>
+<script src="defendable_demo_v2.js"></script>
 <script>
 
 const PASS1_SYS = `You are DefendAble's chain decomposition engine. You are NOT applying legal tests yet. Your sole job in this pass is to read the ICC disruption summary and decompose it into a precise, ordered timeline of causal events.
@@ -636,11 +653,22 @@ function getApiKey() {
   return (el && el.value.trim()) || '';
 }
 
+function isLiveMode() {
+  var el = document.getElementById('modeLive');
+  return el && el.checked;
+}
+
+function setEngineMode() {
+  var live = isLiveMode();
+  document.getElementById('livePanel').classList.toggle('on', live);
+  document.getElementById('demoPanel').style.background = live ? 'var(--blue-light)' : 'var(--green-light)';
+  document.getElementById('demoPanel').style.borderColor = live ? '#BFDBFE' : '#BBF7D0';
+}
+
 function saveApiKey() {
   var k = getApiKey();
   if (!k) { showErr('Enter your Anthropic API key first.'); return; }
   try { sessionStorage.setItem(API_KEY_STORAGE, k); } catch (e) {}
-  document.getElementById('apiPanel').classList.add('ok');
   hideErr();
   showErr('API key saved for this session.');
   setTimeout(hideErr, 2500);
@@ -649,11 +677,9 @@ function saveApiKey() {
 (function initApiKey() {
   try {
     var k = sessionStorage.getItem(API_KEY_STORAGE);
-    if (k) {
-      document.getElementById('apiKey').value = k;
-      document.getElementById('apiPanel').classList.add('ok');
-    }
+    if (k) document.getElementById('apiKey').value = k;
   } catch (e) {}
+  setEngineMode();
 })();
 
 async function callClaude(system, userMsg, apiKey) {
@@ -700,19 +726,7 @@ function mergeResult(pass1, pass2, pass3) {
   return r;
 }
 
-async function run() {
-  var inp = document.getElementById('inp').value.trim();
-  if (!inp) { showErr('Please enter a disruption description.'); return; }
-  var apiKey = getApiKey();
-  if (!apiKey) {
-    showErr('An Anthropic API key is required. Enter your key above and click Save key, then Analyse again.');
-    document.getElementById('apiPanel').scrollIntoView({ behavior: 'smooth', block: 'center' });
-    return;
-  }
-  try { sessionStorage.setItem(API_KEY_STORAGE, apiKey); } catch (e) {}
-  var btn = document.getElementById('abtn');
-  btn.disabled = true;
-  hideErr();
+function beginAnalysisUI() {
   document.getElementById('res').classList.add('on');
   document.getElementById('pbar').classList.add('on');
   setProgress(1);
@@ -720,33 +734,86 @@ async function run() {
   document.getElementById('bodyA').innerHTML = load;
   document.getElementById('bodyB').innerHTML = '<div class="empty"><div class="empty-t">Awaiting Pass 2...</div></div>';
   document.getElementById('bodyC').innerHTML = '<div class="empty"><div class="empty-t">Awaiting Pass 3...</div></div>';
+}
 
+function finishAnalysisUI() {
+  [1,2,3].forEach(function(n){ var el=document.getElementById('ps'+n); el.classList.remove('on'); el.classList.add('done'); });
+}
+
+async function runDemo(inp) {
+  if (typeof DefendAbleDemoV2 === 'undefined') throw new Error('Demo engine failed to load — refresh the page.');
+  var pass2 = null;
+  await DefendAbleDemoV2.runDemo(inp, function (event, a, b) {
+    if (event === 'pass') setProgress(a);
+    else if (event === 'pass1') {
+      renderChain(a, pass2, inp);
+      setProgress(2);
+      document.getElementById('bodyB').innerHTML = '<div class="empty"><div class="spin" style="margin:0 auto 12px;width:22px;height:22px;border-width:2.5px"></div><div class="empty-t">Mapping evidence...</div></div>';
+    } else if (event === 'pass2') {
+      pass2 = a;
+      renderEvidencePreview(pass2);
+      setProgress(3);
+      document.getElementById('bodyC').innerHTML = '<div class="empty"><div class="spin" style="margin:0 auto 12px;width:22px;height:22px;border-width:2.5px"></div><div class="empty-t">Applying legal tree...</div></div>';
+    } else if (event === 'done') {
+      var result = a;
+      renderChain(result, pass2, inp);
+      renderLegal(result);
+      renderOutput(result);
+      finishAnalysisUI();
+    }
+  });
+}
+
+async function runLive(inp, apiKey) {
   var pass1, pass2, pass3;
+  pass1 = await callClaude(PASS1_SYS, 'Analyse this ICC disruption description and return the chain decomposition JSON only:\n\n"' + inp + '"', apiKey);
+  renderChain(pass1, pass2, inp);
+  setProgress(2);
+  var load = '<div class="empty"><div class="spin" style="margin:0 auto 12px;width:22px;height:22px;border-width:2.5px"></div><div class="empty-t">Running...</div></div>';
+  document.getElementById('bodyB').innerHTML = load;
+
+  pass2 = await callClaude(PASS2_SYS,
+    'ICC disruption summary:\n"' + inp + '"\n\nPass 1 chain decomposition:\n' + JSON.stringify(pass1) +
+    '\n\nAnalyse the evidence requirements for this chain and return the evidence intelligence JSON only.', apiKey);
+  renderEvidencePreview(pass2);
+  setProgress(3);
+  document.getElementById('bodyC').innerHTML = load;
+
+  pass3 = await callClaude(PASS3_SYS,
+    'ICC disruption summary:\n"' + inp + '"\n\nPass 1 chain decomposition:\n' + JSON.stringify(pass1) +
+    '\n\nPass 2 evidence analysis:\n' + JSON.stringify(pass2) +
+    '\n\nApply the full legal framework and return the complete analysis JSON only.', apiKey);
+
+  var result = mergeResult(pass1, pass2, pass3);
+  renderChain(result, pass2, inp);
+  renderLegal(result);
+  renderOutput(result);
+  finishAnalysisUI();
+  return { pass1: pass1, pass2: pass2, pass3: pass3 };
+}
+
+async function run() {
+  var inp = document.getElementById('inp').value.trim();
+  if (!inp) { showErr('Please enter a disruption description.'); return; }
+  var live = isLiveMode();
+  var apiKey = getApiKey();
+  if (live && !apiKey) {
+    showErr('Live AI mode requires an Anthropic API key. Enter your key below, or switch to Demo mode.');
+    document.getElementById('demoPanel').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+  if (live) try { sessionStorage.setItem(API_KEY_STORAGE, apiKey); } catch (e) {}
+  var btn = document.getElementById('abtn');
+  btn.disabled = true;
+  hideErr();
+  beginAnalysisUI();
+
+  var pass1, pass2;
   try {
-    pass1 = await callClaude(PASS1_SYS, 'Analyse this ICC disruption description and return the chain decomposition JSON only:\n\n"' + inp + '"', apiKey);
-    renderChain(pass1, pass2, inp);
-    setProgress(2);
-    document.getElementById('bodyB').innerHTML = load;
-
-    pass2 = await callClaude(PASS2_SYS,
-      'ICC disruption summary:\n"' + inp + '"\n\nPass 1 chain decomposition:\n' + JSON.stringify(pass1) +
-      '\n\nAnalyse the evidence requirements for this chain and return the evidence intelligence JSON only.', apiKey);
-    renderEvidencePreview(pass2);
-    setProgress(3);
-    document.getElementById('bodyC').innerHTML = load;
-
-    pass3 = await callClaude(PASS3_SYS,
-      'ICC disruption summary:\n"' + inp + '"\n\nPass 1 chain decomposition:\n' + JSON.stringify(pass1) +
-      '\n\nPass 2 evidence analysis:\n' + JSON.stringify(pass2) +
-      '\n\nApply the full legal framework and return the complete analysis JSON only.', apiKey);
-
-    var result = mergeResult(pass1, pass2, pass3);
-    renderChain(result, pass2, inp);
-    renderLegal(result);
-    renderOutput(result);
-    [1,2,3].forEach(function(n){ var el=document.getElementById('ps'+n); el.classList.remove('on'); el.classList.add('done'); });
+    if (live) await runLive(inp, apiKey);
+    else await runDemo(inp);
   } catch (err) {
-    var which = !pass1 ? 'Pass 1 (chain decomposition)' : !pass2 ? 'Pass 2 (evidence intelligence)' : 'Pass 3 (legal analysis)';
+    var which = live ? (!pass1 ? 'Pass 1 (chain decomposition)' : !pass2 ? 'Pass 2 (evidence intelligence)' : 'Pass 3 (legal analysis)') : 'Demo analysis';
     showErr(which + ' failed: ' + err.message + ' — please retry.');
     var ep = '<div class="empty"><div class="empty-t">Failed at ' + esc(which) + '</div><div style="font-size:11px;margin-top:8px;line-height:1.5">' + esc(err.message) + '</div></div>';
     if (!pass1) document.getElementById('bodyA').innerHTML = ep;
