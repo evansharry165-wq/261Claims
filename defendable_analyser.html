@@ -29,13 +29,13 @@ textarea:focus{outline:none;border-color:var(--orange);background:var(--white)}
 .ch:hover{background:var(--orange-mid)}
 .pbar{display:none;background:var(--dark);color:var(--white);padding:12px 16px;border-radius:4px;margin-bottom:14px}
 .pbar.on{display:block}
-.psteps{display:flex;gap:16px;flex-wrap:wrap}
+.psteps{display:flex;gap:20px;flex-wrap:wrap}
 .pstep{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:600;color:rgba(255,255,255,.45)}
 .pstep.on{color:var(--white)}
 .pstep.done{color:var(--green)}
 .spin{width:13px;height:13px;border:2px solid rgba(255,255,255,.3);border-top-color:var(--orange);border-radius:50%;animation:sp .8s linear infinite;flex-shrink:0}
 .pstep.done .spin{display:none}
-.pstep.done::before{content:'✓';color:var(--green);font-weight:900}
+.pstep.done::before{content:'✓';color:var(--green);font-weight:900;font-size:14px}
 @keyframes sp{to{transform:rotate(360deg)}}
 .ebar{display:none;background:var(--red-light);border:1px solid #FECACA;border-radius:4px;padding:10px 14px;font-size:11px;color:var(--red);margin-bottom:14px}
 .ebar.on{display:block}
@@ -50,31 +50,38 @@ textarea:focus{outline:none;border-color:var(--orange);background:var(--white)}
 .col-title{font-size:14px;font-weight:700;color:var(--white)}
 .col-title.dk{color:var(--dark)}
 .col-sub{font-size:10px;color:rgba(255,255,255,.6);margin-top:2px}
+.col-sub.dk{color:var(--text2)}
 .col-body{padding:14px;overflow-y:auto;flex:1;max-height:78vh}
-.cstruct{background:var(--orange-light);border:1px solid var(--orange-mid);border-radius:4px;padding:9px 11px;font-size:11px;line-height:1.55;margin-bottom:12px;color:var(--text2)}
-.cevent{border:1.5px solid var(--border);border-radius:4px;margin-bottom:4px;overflow:hidden}
+.cstruct-badge{display:inline-block;background:var(--dark);color:var(--white);font-size:10px;font-weight:800;padding:4px 10px;border-radius:2px;letter-spacing:.5px;margin-bottom:6px}
+.cstruct-reason{font-size:11px;color:var(--text2);line-height:1.5;margin-bottom:12px}
+.cevent{border:1.5px solid var(--border);border-radius:4px;margin-bottom:2px;overflow:hidden}
 .cevent.brk{border-color:var(--red);border-width:2px}
-.cevh{padding:8px 10px;background:#FAFAFA}
-.cenum{background:var(--orange);color:var(--white);font-size:10px;font-weight:800;padding:2px 7px;border-radius:2px;margin-right:6px}
+.cevh{padding:10px;background:#FAFAFA}
+.cenum{background:var(--orange);color:var(--white);font-size:10px;font-weight:800;padding:2px 7px;border-radius:2px;flex-shrink:0}
 .cedesc{font-size:11.5px;font-weight:700;color:var(--dark);line-height:1.4}
 .cemeta{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
 .cetag{font-size:9px;font-weight:700;padding:2px 6px;border-radius:2px}
-.cetag.lof{background:var(--dark);color:var(--white)}
-.cetag.ec{background:var(--green-light);color:var(--green)}
-.cetag.nec{background:var(--red-light);color:var(--red)}
-.cetag.jud{background:var(--amber-light);color:var(--amber)}
-.cetag.unk{background:var(--blue-light);color:var(--blue)}
+.cetag.lof-own{background:var(--green-light);color:var(--green)}
+.cetag.lof-pos{background:var(--amber-light);color:var(--amber)}
+.cetag.lof-tp{background:var(--blue-light);color:var(--blue)}
+.cetag.lof-unk{background:var(--grey);color:var(--text3)}
+.cetag.ec-y{background:var(--green-light);color:var(--green)}
+.cetag.ec-n{background:var(--red-light);color:var(--red)}
+.cetag.ec-st{background:var(--blue-light);color:var(--blue)}
 .cetag.disc{background:var(--purple-light);color:var(--purple)}
-.carr{text-align:center;color:var(--text3);font-size:14px;padding:2px 0}
-.cbrk{background:var(--red-light);color:var(--red);font-size:9px;font-weight:800;padding:3px 8px;border-radius:2px;margin-top:6px;display:inline-block}
-.kwpills{display:flex;flex-wrap:wrap;gap:4px;margin-top:10px}
+.cetag.unk{background:var(--grey);color:var(--text3)}
+.ce-note{font-size:10px;color:var(--text2);margin-top:6px;line-height:1.45}
+.carr{text-align:center;color:var(--text3);font-size:14px;padding:4px 0;line-height:1.4}
+.cbrk{background:var(--red-light);color:var(--red);font-size:9px;font-weight:800;padding:4px 8px;border-radius:2px;margin-top:8px;display:inline-block}
+.kwpills{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
 .kwpill{background:var(--orange-light);border:1px solid var(--orange-mid);color:var(--orange);font-size:9px;font-weight:600;padding:3px 7px;border-radius:2px}
 .kwbox{background:var(--orange-light);border:1px solid var(--orange-mid);border-radius:4px;padding:9px 11px;font-size:12px;line-height:1.85;margin-top:10px}
 .kw{background:var(--orange);color:var(--white);font-weight:700;padding:1px 6px;border-radius:2px;font-size:11px}
-.sdiv{display:flex;align-items:center;gap:8px;margin:10px 0 8px}
+.sdiv{display:flex;align-items:center;gap:8px;margin:12px 0 8px}
 .sdl{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);white-space:nowrap}
 .sline{flex:1;height:1px;background:var(--border)}
-.collapse-hdr{font-size:10px;font-weight:700;color:var(--text2);cursor:pointer;padding:6px 0;display:flex;justify-content:space-between;align-items:center}
+.mini-list{margin:0 0 8px 16px;font-size:10px;color:var(--text2);line-height:1.5}
+.collapse-hdr{font-size:10px;font-weight:700;color:var(--text2);cursor:pointer;padding:8px 0;display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--border);margin-top:4px}
 .collapse-body{display:block}
 .collapse-body.hide{display:none}
 .nd{border-radius:4px;margin-bottom:8px;overflow:hidden;border:1.5px solid var(--border)}
@@ -96,38 +103,46 @@ textarea:focus{outline:none;border-color:var(--orange);background:var(--white)}
 .ndcc{font-size:10px;color:var(--blue);margin-top:3px;font-weight:600}
 .jbox{background:var(--amber-light);border:2px solid var(--amber);border-radius:4px;padding:12px;margin-bottom:10px}
 .jlbl{font-size:9px;font-weight:800;letter-spacing:1px;color:var(--amber);text-transform:uppercase;margin-bottom:8px}
-.jcols{display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:10px}
+.jcols{display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:10px;margin-top:8px}
 .jcol h4{font-size:9px;text-transform:uppercase;color:var(--text3);margin-bottom:4px}
-.jcol ul{margin:0;padding-left:14px;line-height:1.5;color:var(--text2)}
-.dynreq{border-left:3px solid var(--purple);padding:8px 10px;margin-bottom:8px;background:var(--purple-light);border-radius:0 4px 4px 0;font-size:11px}
+.jtext{font-size:10px;color:var(--text2);line-height:1.5;white-space:pre-wrap}
+.dynreq{border-left:3px solid var(--purple);padding:8px 10px;margin-bottom:8px;background:var(--purple-light);border-radius:0 4px 4px 0;font-size:11px;line-height:1.4}
 .dynlbl{font-size:9px;font-weight:800;color:var(--purple);margin-bottom:4px}
 .vbox{border-radius:4px;padding:16px;text-align:center;margin-bottom:14px}
 .vw{font-size:34px;font-weight:900;letter-spacing:-.5px;margin-bottom:6px}
 .vw.defend{color:var(--green)}
 .vw.defend-cond{color:var(--orange)}
-.vw.settle{color:var(--amber)}
-.vw.concede,.vw.escalate{color:var(--red)}
 .vw.judgment{color:var(--orange)}
-.vsub{font-size:11px;color:var(--text2);line-height:1.55;text-align:left}
+.vw.settle{color:var(--text3)}
+.vw.concede,.vw.escalate{color:var(--red)}
+.vsub{font-size:11px;color:var(--text2);line-height:1.55;text-align:left;margin-top:8px}
 .vconds{text-align:left;margin-top:10px;font-size:11px;color:var(--text2)}
 .vconds ol{margin:6px 0 0 18px;line-height:1.55}
 .jout{background:var(--amber-light);border:1px solid var(--amber);border-radius:4px;padding:10px 12px;margin-top:10px;text-align:left;font-size:11px}
 .jout h4{font-size:9px;text-transform:uppercase;color:var(--amber);margin-bottom:6px}
-.out-sub{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin:12px 0 8px;padding-bottom:4px;border-bottom:1px solid var(--border)}
+.out-sub{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin:14px 0 8px;padding-bottom:4px;border-bottom:1px solid var(--border)}
 .vf{display:flex;gap:6px;margin-bottom:6px;font-size:11px;line-height:1.4;align-items:flex-start}
+.fi{font-weight:700;flex-shrink:0}
+.fi.act{color:var(--orange)}
+.fi.rsk{color:var(--red)}
+.fi.jud{color:var(--amber)}
+.fi.note{color:var(--text3)}
 .artblk{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px}
-.artitem{font-size:10px;padding:8px;border-radius:4px;border:1px solid var(--border);text-align:center}
+.artitem{font-size:10px;padding:8px;border-radius:4px;border:1px solid var(--border);text-align:center;line-height:1.4}
 .artitem.ok{background:var(--green-light);border-color:#BBF7D0;color:var(--green)}
 .artitem.bad{background:var(--red-light);border-color:#FECACA;color:var(--red)}
 .artitem.unk{background:var(--grey);color:var(--text3)}
 .ev-i{display:flex;align-items:flex-start;gap:6px;margin-bottom:8px;font-size:11px}
 .ev-n{font-weight:600;color:var(--dark);line-height:1.3}
-.ev-s{font-size:10px;color:var(--text3)}
-.pri{font-size:8px;font-weight:800;padding:1px 5px;border-radius:2px;margin-left:4px}
-.pri.CRITICAL{background:var(--red-light);color:var(--red)}
-.pri.IMPORTANT{background:var(--amber-light);color:var(--amber)}
-.pri.SUPPORTING{background:var(--grey);color:var(--text3)}
-.ip-i{font-size:11px;margin-bottom:6px;padding:6px 8px;background:var(--grey);border-radius:4px;line-height:1.4}
+.ev-s{font-size:10px;color:var(--text3);margin-top:2px}
+.pri{font-size:8px;font-weight:800;padding:1px 5px;border-radius:2px;margin-left:4px;vertical-align:middle}
+.pri.CRITICAL,.pri.critical{background:var(--red-light);color:var(--red)}
+.pri.IMPORTANT,.pri.important{background:var(--amber-light);color:var(--amber)}
+.pri.SUPPORTING,.pri.supporting{background:var(--grey);color:var(--text3)}
+.ip-i{font-size:11px;margin-bottom:6px;padding:8px 10px;background:var(--grey);border-radius:4px;line-height:1.4;border-left:3px solid var(--border)}
+.ip-i.risk-red{border-left-color:var(--red);background:var(--red-light)}
+.ip-i.risk-amb{border-left-color:var(--amber);background:var(--amber-light)}
+.ip-i.risk-grn{border-left-color:var(--green);background:var(--green-light)}
 .chi{display:flex;align-items:flex-start;gap:8px;margin-bottom:8px;font-size:11px;line-height:1.45}
 .chd{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:4px}
 .chd.green{background:var(--green)}
@@ -137,7 +152,7 @@ textarea:focus{outline:none;border-color:var(--orange);background:var(--white)}
 .foot{text-align:center;padding:14px;font-size:10px;color:var(--text3);border-top:1px solid var(--border);margin-top:4px}
 .empty{text-align:center;padding:40px 16px;color:var(--text3)}
 .empty-t{font-size:13px;font-weight:700;color:var(--text2);margin-bottom:5px}
-@media(max-width:900px){.results.on{grid-template-columns:1fr}.col-body{max-height:none}.jcols{grid-template-columns:1fr}.artblk{grid-template-columns:1fr}}
+@media(max-width:900px){.results.on{grid-template-columns:1fr}.col-body{max-height:none}.jcols,.artblk{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -154,7 +169,7 @@ textarea:focus{outline:none;border-color:var(--orange);background:var(--white)}
   <div class="icard">
     <div class="ey">Disruption Analysis</div>
     <div class="it">Enter a disruption description</div>
-    <div class="is">Type exactly as ICC or Network Control would write it. DefendAble decomposes the causal chain, maps the evidence, and applies the full legal decision tree — showing its reasoning at every step.</div>
+    <div class="is">Type exactly as ICC or Network Control would write it. DefendAble decomposes the causal chain, maps evidence requirements, and applies the full legal decision tree — showing its reasoning at every step.</div>
     <div class="irow">
       <textarea id="inp" placeholder="e.g. Flight delayed LTN due to Eurocontrol CTOT restriction, network-wide ATFM regulation in force. All carriers affected. Airport curfew breached. Flight OND — completed next day."></textarea>
       <button class="abtn" id="abtn" onclick="run()">
@@ -192,7 +207,7 @@ textarea:focus{outline:none;border-color:var(--orange);background:var(--white)}
     <div class="col">
       <div class="col-hdr or">
         <div class="col-eye">Engine A</div>
-        <div class="col-title">Causal Chain Map</div>
+        <div class="col-title">Causal Chain &amp; Keywords</div>
         <div class="col-sub">Multi-cause decomposition</div>
       </div>
       <div class="col-body" id="bodyA">
@@ -202,7 +217,7 @@ textarea:focus{outline:none;border-color:var(--orange);background:var(--white)}
     <div class="col">
       <div class="col-hdr dk">
         <div class="col-eye">Engine B</div>
-        <div class="col-title">Legal Decision Tree</div>
+        <div class="col-title">Legal Analysis</div>
         <div class="col-sub">Universal · Disruption · Judgment nodes</div>
       </div>
       <div class="col-body" id="bodyB">
@@ -212,7 +227,7 @@ textarea:focus{outline:none;border-color:var(--orange);background:var(--white)}
     <div class="col">
       <div class="col-hdr gy">
         <div class="col-title dk">Case Output</div>
-        <div style="font-size:10px;color:var(--text2);margin-top:2px">Verdict · Art 8/9 · Evidence · Reasoning</div>
+        <div class="col-sub dk">Pre-staged before the solicitor opens the file</div>
       </div>
       <div class="col-body" id="bodyC">
         <div class="empty"><div class="empty-t">Awaiting analysis</div></div>
@@ -224,153 +239,332 @@ textarea:focus{outline:none;border-color:var(--orange);background:var(--white)}
 </div>
 
 <script>
-const PASS1_SYS = `You are DefendAble Pass 1 — the Chain Decomposition Engine for in-house aviation legal teams analysing ICC disruption summaries for EC261/UK261 claims.
 
-YOUR ROLE: Establish the factual causal chain ONLY. Do NOT apply any legal test, do NOT reach conclusions about extraordinary circumstances, do NOT recommend a verdict, and do NOT identify evidence to pull. Facts and sequencing only.
-
-Read the ICC disruption summary and decompose it into a sequence of causal events in chronological order. Multi-cause chains are normal — a disruption may involve ATC delay, then crew FTL, then curfew breach. Each event is analysed independently in later passes.
-
-For each event in the causal chain identify:
-- eventNumber (integer, starting at 1)
-- description (plain English, one sentence)
-- lineOfFlying: OWN (carrier's own scheduled passenger operation), POSITIONING (deadhead/positioning sector for crew or aircraft), or THIRD PARTY (external actor — ATC, weather authority, airport security, passenger behaviour, etc.)
-- preliminaryECStatus: EC_CANDIDATE | NOT_EC | UNKNOWN | JUDGMENT — factual classification only, not a legal conclusion. Use JUDGMENT where the facts are insufficient to classify without evidence.
-- delayContribution (e.g. "2h 15m", "caused cancellation", "none — upstream only", or "unknown")
-- chainBreak (boolean) — true if this event breaks the causal link to the passenger delay (e.g. carrier had recovery opportunity that was not taken, or an intervening voluntary decision)
-- causedBy (eventNumber or null) — which prior event caused this one
-- discoveredFromEvidence (boolean, default false) — only true if the ICC summary itself references evidence that revealed this event
-- keywords: array of { phrase, relatedTo } — ICC phrases that map to this event
-
-Also return:
-- causationStructure: 2-3 sentence overview of how events connect to the final passenger outcome
-- timingGaps: array of { gap, significance } — unexplained time periods or missing timestamps
-- ambiguities: array of { issue, whyItMatters } — factual uncertainties that later passes must resolve
-- keywords: top-level array of all ICC keywords identified with eventNumber
-
-Return ONLY a single valid JSON object. No markdown fences. No preamble.`;
-const PASS2_SYS = `You are DefendAble Pass 2 — the Evidence Intelligence Engine for in-house aviation legal teams defending EC261/UK261 claims.
-
-YOUR ROLE: Given an ICC disruption summary and the Pass 1 chain decomposition JSON, identify what evidence is needed, what is missing, what intervention points existed, and the status of Art 8 and Art 9 obligations. Do NOT apply the full legal decision tree or reach a verdict — that is Pass 3.
-
-EVIDENCE SYSTEMS: TOPS (operational delay records, delay codes, flight data, tail line of flying, fleet state, diversion records), AIMS (crew scheduling, FDP records, standby log, rest calculations, sickness records), AMOS (maintenance records, defect log, MEL records, AOG records, inspection reports), DISCO (disruption classification), SafetyNet (safety reporting), HERMES (correspondence, PNR, booking records), MAX-OPS (passenger communications), Ogimet-API (METAR/TAF/SIGMET), SIGMET-feed, NOTAM-feed, Eurocontrol-NM-API (ATFM/CTOT), FlightStats-API, Flightradar24-API, Ground-handler-records (catering, HOTAC, reconciliation), OEM-records, Airport-wildlife-authority, Met-Office, DPM-Notes.
-
-For each causal event in the chain, identify evidence pulls required. Flag items as dynamicTrigger: true when the evidence need was NOT obvious from the ICC summary alone but emerges from chain analysis.
-
-Return ONLY a single valid JSON object matching the Pass 2 schema. No markdown fences. No preamble.
-
-Required top-level keys: evidencePack, dynamicEvidenceRequests, interventionPoints, art9Status, art8Status, keywords, universalHighlighted.
-
-evidencePack items: status (collected|flagged|missing), name, source, priority (CRITICAL|IMPORTANT|SUPPORTING), dynamicTrigger (boolean), linkedEvent (number), purpose.
-
-dynamicEvidenceRequests items: triggeredBy, request, priority, legalReason, linkedEvent.
-
-interventionPoints items: description, outcome (taken|not_taken|unknown|not_possible), couldHavePrevented, linkedEvent, systemsToCheck.
-
-art9Status: triggered (boolean), meals/comms/hotel each compliant|non_compliant|unknown|not_triggered, notes.
-
-art8Status: triggered (boolean), evidenced (boolean), notes.`;
-const PASS3_SYS = `You are DefendAble Pass 3 — the Legal Analysis and Verdict Engine for in-house aviation legal teams defending EC261/UK261 passenger compensation claims. You think and act exactly like a senior aviation solicitor with deep expertise in EC261, UK261, the Wallentin-Hermann two-limb test, and all relevant CJEU and UK case law. You cannot afford to miss anything.
-
-You receive: (1) the ICC disruption summary, (2) Pass 1 chain decomposition JSON, (3) Pass 2 evidence intelligence JSON.
-
-Apply the FULL legal framework to EACH event in the causal chain independently. Multi-cause chains require per-event legal analysis — do not collapse the disruption into a single type. Identify chain breaks, judgment nodes requiring human decision, and produce a verdict reflecting genuine legal complexity.
-
-Return ONLY a single valid JSON object per DEFENDABLE_V2_SCHEMA. No markdown fences. No preamble.
-
-VERDICT values: DEFEND, DEFEND_WITH_CONDITIONS, SETTLE, CONCEDE, JUDGMENT_REQUIRED, ESCALATE.
-
-NODE types: universal, disruption, secondary, judgment, measures, claim.
-NODE status: green, amber, red, info.
-FLAG types: action, risk, judgment, note.
-
-JUDGMENT nodes (type: judgment) MUST include: question, factsFor (array), factsAgainst (array), resolvingEvidence, consequencesIfYes, consequencesIfNo, status: amber, statusLabel: JUDGMENT REQUIRED.
-
-UNIVERSAL NODES — run all relevant ones on every case:
-
-U-1 JURISDICTION: UK261 applies to flights departing UK airports on any carrier, or flights to UK airports on UK/EU carriers. EC261 applies to flights departing EU airports. UK261 limitation: England and Wales 6 years, Scotland 5 years. EC261 limitation by national law: France 2 years, Spain 1 year, Germany 3 years. Montreal Convention Art 29: 2-year absolute time bar runs concurrently. Operating carrier vs contractual carrier: liability attaches to the operating carrier under Art 2(b).
-
-U-2 LIMITATION: Is the claim in time? Calculate from flight date. Flag if borderline. Montreal 2-year absolute bar runs separately and concurrently — a claim may be in time under UK261 but barred under Montreal. CMCs often file at the last moment — check court claim form issue date not letter date.
-
-U-3 STANDING: Claimant must hold a confirmed reservation on the flight (Art 2(a)). Post-PACCAR: CMC assignments may be champertous if no valid litigation funding agreement — flag if CMC acting without disclosed assignment. Each passenger individually confirmed on manifest.
-
-U-4 CHECK-IN COMPLIANCE: Art 3(2)(a) — passenger must have presented for check-in at the time indicated by the carrier, or if no time indicated at least 45 minutes before scheduled departure. If late, Regulation does not apply.
-
-U-5 DELAY THRESHOLD: Sturgeon v Condor (C-402/07): delay measured at ARRIVAL — moment doors open and passengers can disembark. 3+ hours at final destination triggers Art 7. For overnight delays where flight operated next day, calculate from scheduled arrival to actual next-day arrival. Folkerts v Air France (C-11/11): connecting flights on through booking — delay at final destination, distance from first departure.
-
-U-6 ART 7 COMPENSATION BAND: Great circle distance to final destination. Up to 1500km: 250 euros. Intra-EU over 1500km and all 1500-3500km: 400 euros. Non-intra-EU over 3500km: 600 euros. 50% reductions apply. Flag CMC overclaims — wrong band claimed is extremely common.
-
-U-7 EXTRAORDINARY CIRCUMSTANCES GATE: Wallentin-Hermann v Alitalia (C-549/07). BOTH limbs required. Limb 1: circumstance NOT inherent in normal exercise of carrier's activity. Limb 2: circumstance beyond carrier's actual control. If either limb fails the defence fails entirely.
-
-U-8 REASONABLE MEASURES: Mandatory even after extraordinary circumstances confirmed. Carrier must take all measures within its power to avoid or minimise delay. Standby aircraft: was one available and why not deployed? Standby crew: pull AIMS standby log. Slot recovery attempted? Rerouting considered? FAILURE HERE DEFEATS THE DEFENCE EVEN WITH VALID EXTRAORDINARY CIRCUMSTANCES.
-
-U-9 ART 8: Rerouting or reimbursement must be offered for cancellations and delays expected to be 5 or more hours. Three options: full reimbursement, rerouting at earliest opportunity, or rerouting at later date. Flag if delay exceeded 5 hours and no Art 8 offer is evidenced.
-
-U-10 ART 9 DUTY OF CARE: Applies to ALL delays of 2 or more hours regardless of extraordinary circumstances. Meals and refreshments. Two telephone calls or emails. Hotel accommodation plus transport if overnight stay necessary. Same obligations at diversion airports. OVERNIGHT DELAY: hotel mandatory — flag as action. Pull ground handler catering and HOTAC records.
-
-U-11 MONTREAL CONVENTION ART 19: Consequential loss claims. Art 22 SDR cap: 4694 SDR per passenger approximately 4600 pounds. Art 12: EC261 compensation deducted from Montreal award. Art 29: 2-year absolute bar. Escalate high-value consequential loss claims.
-
-U-12 ART 10 DOWNGRADING: Lower class than booked — 30% up to 1500km, 50% for 1500-3500km, 75% non-intra-EU over 3500km. Not excused by extraordinary circumstances.
-
-U-13 FOLKERTS CONNECTING FLIGHTS: Single through booking — delay at final destination, compensation distance from first departure to final destination. Operating carrier on first leg bears liability for delay at final destination.
-
-U-14 ART 13 RECOURSE: Carrier may seek recourse from responsible third party — ATC providers, handlers, manufacturers, airport authorities. Flag early. Separate limitation periods — frequently lost through delay.
-
-U-15 ADR VS LITIGATION: CAA, CEDR, AviationADR up to 15000 pounds. Small claims under 10000 pounds: no costs recovery — litigation cost likely exceeds claim value. Batch strategy: same disruption event, EC decision applies to all.
-
-U-16 SETTLE VS DEFEND: Defend if EC clean, evidence complete, value justifies cost. Settle if evidence gaps, EC weak, or litigation cost exceeds value. Part 36 for claims over 10000 pounds. Concession warning: conceding EC without documenting reason creates precedent CMCs exploit.
-
-DISRUPTION TREES (apply per chain event):
-
-DT-01 ATC/ATFM: Eurocontrol CTOT = extraordinary circumstances, both limbs satisfied. TOPS delay code 81-89. Pešková (C-315/15). CURFEW BREACH/OND: delay = scheduled arrival to actual next-day arrival. Art 9 hotel mandatory. Pull: Eurocontrol ATFM, CTOT, TOPS, NOTAM, FlightStats.
-
-DT-02 WEATHER DESTINATION: METAR below minima = EC. Mandatory ATC diversion = Limb 2. Secondary weather blocking standby independently satisfies EC. Pull: Ogimet METAR/TAF/SIGMET, TOPS diversion, FR24 track.
-
-DT-03 WEATHER ORIGIN/EN ROUTE: LVP/SNOWTAM = systemic EC. Routine de-icing = ordinary. Pull: origin METAR, LVP NOTAM, SNOWTAM, de-icing log.
-
-DT-04 BIRDSTRIKE: Pešková — per se EC. AMOS inspection mandatory. Pull: AMOS, SafetyNet, wildlife authority.
-
-DT-05 TECHNICAL ROUTINE: Van der Lans — routine maintenance faults NOT EC. MEL dispatch node critical. Pull: AMOS defect log, MEL record, SafetyNet.
-
-DT-06 CREW/FTL ROOT CAUSE: FTL alone NOT EC. Root cause mandatory. Lipton v BA Cityflyer [2024] UKSC 24 — crew illness NOT EC. Standby crew not deployed = reasonable measures failure. Pull: AIMS FDP, standby log, TOPS rotation.
-
-DT-07 INDUSTRIAL ACTION: Krüsemann (C-601/17): own staff NOT EC. Pešková: third party IS EC. First node: own vs third party. Pull: DISCO, NOTAM, union notice.
-
-DT-08 SECURITY: Authority-initiated = EC. Pull: SafetyNet, TOPS codes 91-96, police/airport records.
-
-DT-09 MEDICAL: Mandatory carrier response = EC. Pull: SafetyNet, TOPS, ground handler medical log.
-
-DT-10 DISRUPTIVE PASSENGER: External behaviour = EC. Pull: SafetyNet, TOPS, police record.
-
-DT-11 NATURAL DISASTER: Volcanic ash, earthquake, flood = EC. Pull: NOTAM, SIGMET, Met Office.
-
-DT-12 ATM SYSTEM FAILURE: NATS/Eurocontrol outage = EC. Pull: NOTAM, Eurocontrol statement, FlightStats.
-
-DT-13 CASCADING ROTATION: Cascade NOT EC — root cause at chain start. Pull full tail line of flying from TOPS. Pull: TOPS rotation, DISCO root cause, FR24 each sector.
-
-DT-14 GOVERNMENT/POLITICAL: Travel ban, airspace closure = EC. Pull: NOTAM, DISCO, HERMES.
-
-DT-15 DRONE INCURSION: Authority-mandated closure = EC. Pull: NOTAM, SafetyNet.
-
-DT-16 PANDEMIC RESTRICTIONS: Government-imposed = EC if externally imposed. Pull: NOTAM, HERMES, DISCO.
-
-DT-17 SABOTAGE/TERRORISM: External threat = EC. Pull: SafetyNet, TOPS, security records.
-
-DT-18 CREW ILLNESS: Lipton v BA Cityflyer [2024] UKSC 24 — NOT extraordinary circumstances. Internal crew shortages within carrier control. Do NOT defend on EC grounds. Pull: AIMS sickness record, roster adequacy.
-
-DT-19 POSITIONING FLIGHT: Operating crew positioning on earlier sector disrupted by prior event. Line-of-flying analysis: is delay on passenger sector caused by positioning chain? Root cause at positioning sector start determines EC. Carrier operational planning for crew positioning is within carrier control unless root cause is genuine EC on positioning sector. Pull: AIMS crew pairing log, TOPS line of flying both sectors, DISCO classification per sector.
-
-DT-20 18-HOUR WAKE RULE: CS FTL.1.225 / ORO.FTL.225 — combination of standby and FDP must not exceed 18 hours awake time. Fatigue-based crew unavailability following long awake period may be JUDGMENT node: was fatigue consequence of prior EC event or inadequate rostering? If crew member could not operate due to 18-hour wake rule after carrier-controlled standby/positioning chain, reasonable measures and rostering adequacy must be assessed. Pull: AIMS FDP record, standby log, rest calculations, wake time audit.
-
-EVIDENCE SYSTEMS: TOPS, AIMS, AMOS, DISCO, SafetyNet, HERMES, MAX-OPS, Ogimet-API, SIGMET-feed, NOTAM-feed, Eurocontrol-NM-API, FlightStats-API, Flightradar24-API, Ground-handler-records, OEM-records, Airport-wildlife-authority, Met-Office, DPM-Notes.
-
-KEY AUTHORITIES: Wallentin-Hermann v Alitalia C-549/07, Pešková v Travel Service C-315/15, Germanwings v Henning C-257/14, Van der Lans v KLM C-257/14, Krüsemann v TUIfly C-601/17, Folkerts v Air France C-11/11, Sturgeon v Condor C-402/07, LE v TAP Air Portugal C-74/19, Lipton v BA Cityflyer [2024] UKSC 24, Matkustaja A v Finnair C-385/23, Montreal Convention Arts 19 22 29.
-
-DEFENDABLE_V2_SCHEMA top-level keys:
-causationStructure, causalChain (enriched with legalECStatus, chainBreakReason), keywords, universalHighlighted, nodes, evidencePack, dynamicEvidenceRequests, interventionPoints, art9Status, art8Status, reasoningChain, verdict, verdictSub, verdictConditions (array, for DEFEND_WITH_CONDITIONS), judgmentNodesOutstanding (array of {id, question}), verdictFlags.
-
-Each node: id, type, question, status, statusLabel, conclusion, authority, dataUsed, chainConsequence, linkedEvent (optional).
-
-Be comprehensive. Surface every applicable legal issue. For multi-cause chains, show how each event's legal outcome affects the next. Use JUDGMENT_REQUIRED verdict when outstanding judgment nodes prevent final determination. Use DEFEND_WITH_CONDITIONS with numbered verdictConditions when defence depends on specific evidence. Return ONLY the JSON object.`;
+const PASS1_SYS = `You are DefendAble's chain decomposition engine. You are NOT applying legal tests yet. Your sole job in this pass is to read the ICC disruption summary and decompose it into a precise, ordered timeline of causal events.
+
+You think like a senior aviation solicitor reading a disruption note for the first time — before forming any legal view. You are establishing the facts of what happened, in what order, and how each event connects to the next.
+
+RETURN ONLY VALID JSON. No markdown. No preamble. No explanation outside the JSON.
+
+OUTPUT SCHEMA FOR PASS 1:
+{
+  "causationStructure": "SEQUENTIAL | CONCURRENT | DOMINANT | INTERVENING | COMPLEX | UNKNOWN",
+  "causationStructureReason": "One sentence explaining why this structure was identified",
+  "causalChain": [
+    {
+      "id": "E1",
+      "description": "Precise description of this discrete event",
+      "lineOfFlying": "OWN_OPERATION | POSITIONING | THIRD_PARTY | UNKNOWN",
+      "lineOfFlyingReason": "Why this classification was made",
+      "preliminaryECCandidate": true,
+      "preliminaryECReason": "Why this might or might not be EC — no legal conclusion yet, just the question",
+      "delayContribution": "confirmed_X_hours | estimated_X_hours | unknown — explain",
+      "timingData": "Any timing information extractable from the ICC summary",
+      "butForQuestion": "But for this event, would the next event in the chain have occurred? State precisely.",
+      "chainLinkToNext": "ESTABLISHED | ASSUMED | DISPUTED | FINAL_EVENT",
+      "chainLinkReason": "Why this causal connection is established, assumed, or disputed"
+    }
+  ],
+  "timingGaps": ["List any timing information needed but absent from the ICC summary"],
+  "ambiguities": ["List any aspects of the chain that cannot be determined from the ICC summary alone"],
+  "additionalInformationNeeded": ["List specific questions that would resolve the ambiguities"],
+  "multiCauseFlag": true,
+  "numberOfDistinctCausalEvents": 0
+}
+
+CAUSATION STRUCTURE DEFINITIONS:
+SEQUENTIAL: Event A causes Event B causes Event C. Each event is a direct consequence of the one before.
+CONCURRENT: Events A and B occur simultaneously and both contribute to the delay independently.
+DOMINANT: Multiple events contribute but one is significantly more impactful. Time arithmetic needed.
+INTERVENING: An EC chain is established at the root but an ordinary event intervenes and may break it.
+COMPLEX: More than one structure applies simultaneously. Most real difficult claims fall here.
+UNKNOWN: Insufficient information in the ICC summary to determine structure.
+
+LINE OF FLYING DEFINITIONS:
+OWN_OPERATION: Event occurred on the carrier's own scheduled service on the line of flying for the claimant's flight.
+POSITIONING: Event occurred on a positioning movement operated by the carrier to get crew or aircraft to the operating base.
+THIRD_PARTY: Event occurred on a flight operated by another carrier or entity.
+UNKNOWN: Cannot be determined from the ICC summary.
+
+DECOMPOSITION RULES:
+1. Identify EVERY discrete event mentioned, implied, or inferable — do not combine causally distinct events.
+2. Sequence events in strict chronological order.
+3. The but-for link between each pair of adjacent events must be stated as a precise question, not a conclusion.
+4. Do NOT apply Wallentin-Hermann or any legal test. Do not use the words "extraordinary circumstances" in this pass. That is Pass 3.
+5. If the ICC summary is ambiguous about event order, state both possible sequences and flag for resolution.
+6. Crew FTL/OOH is never the first event in a chain — something caused it. Identify what.
+7. If a positioning flight is mentioned, treat it as a separate causal event from the main operation.
+8. If an AOG, fuel leak, technical defect, or maintenance event is mentioned that was not the original stated cause, treat it as a new causal event requiring its own analysis.
+9. Where timing data is present, extract it and assign it to the relevant event.
+10. State clearly what timing information is needed but absent — this is critical for dominant cause analysis.`;
+const PASS2_SYS = `You are DefendAble's evidence intelligence engine. You receive the ICC disruption summary AND the causal chain decomposition from Pass 1. Your job is to:
+
+1. For each event in the causal chain, define the complete evidence required to establish or defeat the extraordinary circumstances argument at that event.
+2. Map any available evidence documents to the events they speak to.
+3. Read available evidence for unexpected findings not in the ICC summary — and add new events to the chain where found.
+4. Generate dynamic evidence requests for anything the evidence reveals that was not anticipated.
+5. Identify every intervention point where the carrier could have taken reasonable measures.
+6. State the legal consequence of each missing evidence item — not just "missing" but what the absence implies.
+
+RETURN ONLY VALID JSON. No markdown. No preamble.
+
+OUTPUT SCHEMA FOR PASS 2:
+{
+  "updatedCausalChain": [
+    {
+      "id": "E1",
+      "description": "Event description — updated if evidence reveals more detail",
+      "evidenceRequired": [
+        {
+          "evidenceType": "TOPS delay record",
+          "system": "TOPS",
+          "whatItProves": "Confirms delay code, actual departure time, and duration",
+          "whatAbsenceImplies": "Cannot independently verify delay duration or cause",
+          "absenceConsequenceForChain": "Limb 1 of Wallentin-Hermann unsupported at this event",
+          "priority": "CRITICAL | IMPORTANT | SUPPORTING",
+          "status": "COLLECTED | PENDING | MISSING | DYNAMICALLY_TRIGGERED"
+        }
+      ],
+      "evidenceAvailable": ["List of evidence documents provided and what they show for this event"],
+      "unexpectedFindings": [
+        {
+          "finding": "What was found in the evidence that was not in the ICC summary",
+          "source": "Which evidence document revealed this",
+          "newCausalEventCreated": true,
+          "newEventId": "E4",
+          "newEventDescription": "Description of the new event identified"
+        }
+      ]
+    }
+  ],
+  "dynamicEvidenceRequests": [
+    {
+      "trigger": "What was found in the evidence that triggered this request",
+      "evidenceRequested": "Precisely what evidence is now needed",
+      "system": "Which system to query",
+      "chainEventRef": "Which event in the chain this relates to",
+      "priority": "CRITICAL | IMPORTANT | SUPPORTING",
+      "legalReason": "Why this evidence is needed and what it will prove or disprove"
+    }
+  ],
+  "interventionPoints": [
+    {
+      "pointId": "IP1",
+      "chainEventRef": "E2",
+      "description": "What reasonable measure was available at this point",
+      "evidenceRequired": "What evidence would show whether this measure was taken",
+      "evidenceStatus": "EVIDENCED | NOT_EVIDENCED | UNKNOWN",
+      "outcome": "MEASURES_TAKEN | MEASURES_NOT_TAKEN | UNKNOWN",
+      "consequence": "If measures not taken — what is the legal consequence for the reasonable measures defence"
+    }
+  ],
+  "evidencePack": [
+    {
+      "status": "collected | flagged | missing | dynamically_triggered",
+      "name": "Document name",
+      "source": "System source",
+      "chainEventRef": "E1",
+      "whatItProves": "What this document establishes",
+      "absenceConsequence": "What absence of this document implies for the chain",
+      "priority": "critical | important | supporting",
+      "dynamicTrigger": false
+    }
+  ],
+  "artNineStatus": {
+    "delayExceeds2Hours": true,
+    "mealsEvidenced": "EVIDENCED | NOT_EVIDENCED | UNKNOWN",
+    "communicationsEvidenced": "EVIDENCED | NOT_EVIDENCED | UNKNOWN",
+    "overnightOccurred": false,
+    "hotelEvidenced": "EVIDENCED | NOT_EVIDENCED | UNKNOWN | NOT_APPLICABLE",
+    "artNineRisk": "NONE | LOW | MEDIUM | HIGH",
+    "artNineNote": "What Art 9 action is required"
+  },
+  "artEightStatus": {
+    "triggered": false,
+    "cancellationOccurred": false,
+    "delayExceeds5Hours": false,
+    "artEightOfferEvidenced": "EVIDENCED | NOT_EVIDENCED | UNKNOWN | NOT_APPLICABLE",
+    "artEightRisk": "NONE | LOW | MEDIUM | HIGH",
+    "artEightNote": "What Art 8 action is required"
+  }
+}
+
+EVIDENCE READING RULES:
+1. For every piece of evidence provided, extract all data relevant to any event in the causal chain.
+2. TOPS line of flying: read for prior sector delays, AOG statuses, positioning flights, fleet state — these frequently reveal events not in the ICC summary.
+3. AIMS FDP records: extract crew duty start time, current FDP, maximum FDP, time OOH was reached — allows calculation of whether EC timing caused the OOH or whether it was independent.
+4. AMOS records: read for defect category, MEL classification, maintenance history, and whether any prior defect on the same system exists.
+5. METAR data: extract visibility, cloud ceiling, wind at time of intended approach — compare against aircraft type ILS minima.
+6. Where evidence is inconsistent with the ICC summary, flag this explicitly as a discrepancy.
+
+DYNAMIC TRIGGER RULES — generate a dynamic evidence request when:
+- TOPS shows a prior sector delay not mentioned in the ICC summary
+- TOPS shows the aircraft was positioning from another airport
+- TOPS shows AOG status that was not the stated cause
+- AIMS shows the crew's FDP was already elevated before the disrupting event
+- AMOS shows a defect not mentioned in the ICC summary
+- AIMS standby log shows standby crew were also OOH — why?
+- Any evidence document shows timing that contradicts the ICC summary
+- Ground handler records are absent despite an overnight or long delay
+
+INTERVENTION POINT IDENTIFICATION — create an intervention point for each of:
+- Slot recovery: after an ATC restriction, did operations attempt to recover an earlier slot?
+- Alternative aircraft: was a spare aircraft available at any point before the 3-hour threshold?
+- Crew recovery timing: if crew OOH was foreseeable from event timing, when was replacement crew sourced?
+- Passenger rerouting: was rerouting via alternative carrier considered?
+- Art 9 provision: were meals and accommodation provided proactively?
+- Early rebooking: for cancellations, were passengers proactively contacted?`;
+const PASS3_SYS = `You are DefendAble's legal decision engine. You are a senior aviation solicitor with complete expertise in EC261/UK261, the Wallentin-Hermann two-limb test, and all relevant CJEU and UK case law. You are professionally accountable for every conclusion you reach.
+
+You receive the ICC disruption summary, the causal chain from Pass 1, and the evidence analysis from Pass 2. Apply the full legal framework and produce a complete, accurate, legally sound analysis.
+
+RETURN ONLY VALID JSON. No markdown. No preamble. Nothing outside the JSON.
+
+OUTPUT SCHEMA FOR PASS 3:
+{
+  "causalChain": [],
+  "keywords": [{"phrase":"","tree":"DT-X: Name","chainEventRef":"E1","triggers":[{"system":"","document":"","purpose":""}]}],
+  "universalHighlighted": "ICC text with <KW>phrase</KW> tags",
+  "nodes": [
+    {
+      "id": "U-1",
+      "type": "universal | disruption | secondary | intervention",
+      "chainEventRef": "E1 | ALL | null",
+      "question": "The legal question this node evaluates",
+      "status": "green | amber | red | info",
+      "statusLabel": "CONFIRMED | FLAGGED | RISK | PENDING | JUDGMENT_REQUIRED | CONCEDE",
+      "conclusion": "Senior solicitor reasoning aloud — precise and direct",
+      "authority": "Case law or statutory provision",
+      "dataUsed": "Evidence consulted",
+      "chainConsequence": "What this node's conclusion means for the chain",
+      "judgmentRequired": false
+    }
+  ],
+  "judgmentNodes": [
+    {
+      "nodeId": "J1",
+      "chainEventRef": "E5",
+      "question": "The precise legal question requiring human judgment",
+      "factsFor": "Facts supporting chain holds / EC established",
+      "factsAgainst": "Facts supporting chain breaks / EC fails",
+      "additionalEvidenceNeeded": "What specific evidence would resolve this",
+      "consequenceIfChainHolds": "Legal outcome if judgment favours carrier",
+      "consequenceIfChainBreaks": "Legal outcome if judgment goes against carrier"
+    }
+  ],
+  "interventionPoints": [],
+  "dynamicEvidenceRequests": [],
+  "evidencePack": [],
+  "reasoningChain": [
+    {
+      "status": "green | amber | red",
+      "chainEventRef": "E1 | ALL",
+      "text": "One plain English sentence — what was concluded and why",
+      "chainConsequence": "What this means for the next step"
+    }
+  ],
+  "artNineStatus": {},
+  "artEightStatus": {},
+  "verdict": "DEFEND | DEFEND_WITH_CONDITIONS | SETTLE | CONCEDE | JUDGMENT_REQUIRED | ESCALATE",
+  "verdictConditions": ["Conditions for DEFEND_WITH_CONDITIONS — precise and actionable"],
+  "verdictSub": "2-4 sentences written as a senior solicitor briefing a colleague",
+  "verdictFlags": [{"type": "action | risk | judgment | note", "text": "Specific flag"}]
+}
+
+UNIVERSAL NODES — run ALL of these on every case:
+
+U-1 JURISDICTION: UK261 applies to flights departing UK airports. EC261 applies to flights departing EU airports. UK261 limitation: England and Wales 6 years (Limitation Act 1980 s.5); Scotland 5 years. EC261 by national law: France 2 years; Spain 1 year; Germany 3 years. Montreal Convention Art 29: 2-year absolute time bar runs concurrently. Operating carrier vs contractual carrier: liability attaches to operating carrier under Art 2(b).
+
+U-2 LIMITATION: Calculate from flight date. Flag if borderline. Montreal 2-year bar runs separately — a claim may be in time under UK261 but barred under Montreal for consequential loss. Check court claim form issue date, not LOC date.
+
+U-3 STANDING: Confirmed reservation required (Art 2(a)). Post-PACCAR: CMC assignments may be champertous — flag if no valid assignment disclosed. Each passenger individually confirmed on manifest.
+
+U-4 CHECK-IN COMPLIANCE: Art 3(2)(a) — presented at check-in at time indicated, or if not indicated at least 45 minutes before scheduled departure. If late, Regulation does not apply.
+
+U-5 DELAY THRESHOLD: Sturgeon v Condor (C-402/07) — delay measured at ARRIVAL (doors open). 3+ hours at final destination. For OND with next-day operation: delay = scheduled arrival to actual next-day arrival. Connecting flights: Folkerts v Air France (C-11/11) — delay at final destination on through booking.
+
+U-6 ART 7 COMPENSATION BAND: Great circle distance to final destination. Up to 1,500km: €250. Intra-EU over 1,500km and all 1,500-3,500km: €400. Non-intra-EU over 3,500km: €600. 50% reductions apply. Flag CMC overclaims — wrong band is extremely common.
+
+U-7 EXTRAORDINARY CIRCUMSTANCES GATE: Wallentin-Hermann v Alitalia (C-549/07). BOTH limbs required. Limb 1: circumstance NOT inherent in the normal exercise of the carrier's activity. Limb 2: circumstance beyond the carrier's ACTUAL control. Applied INDEPENDENTLY to each event in the causal chain.
+
+U-8 REASONABLE MEASURES: Mandatory even after EC is confirmed — Wallentin-Hermann para 40. Evaluated at EVERY intervention point identified in Pass 2. A failed intervention point = RED risk = defence fails even if EC is established. Standby aircraft, standby crew, slot recovery, rerouting, early notification — each is a separate intervention point.
+
+U-9 ART 8: Rerouting or reimbursement must be offered for all cancellations and delays expected to be 5+ hours. Three options: full reimbursement (+ return flight), rerouting at earliest opportunity, rerouting at later date. Failure to offer = standalone head of claim independent of EC.
+
+U-10 ART 9: Applies to ALL delays of 2+ hours regardless of EC. Meals and refreshments. Two calls or emails. Hotel + transport if overnight. Same obligations at diversion airports (Art 9(2)). OVERNIGHT = hotel mandatory. Art 9 breach succeeds independently even where EC defence is good.
+
+U-11 MONTREAL CONVENTION ART 19: Consequential loss. Art 22(1) SDR cap: 4,694 SDR (~£4,600). Art 12(1): EC261 compensation deducted from Montreal award. Art 29: 2-year absolute bar. Escalate high-value consequential loss claims.
+
+U-12 ART 10 DOWNGRADING: Lower class than booked — 30% (up to 1,500km), 50% (1,500-3,500km), 75% (non-intra-EU over 3,500km). Not excused by EC.
+
+U-13 FOLKERTS CONNECTING FLIGHTS: C-11/11. Single through booking — delay at final destination, distance from first departure to final destination. Operating carrier on first leg bears liability for delay at final destination.
+
+U-14 ART 13 RECOURSE: Carrier may seek recourse against third party responsible. Flag early — separate limitation periods, frequently lost through delay.
+
+U-15 ADR VS LITIGATION: CAA/CEDR/AviationADR up to £15,000. Small claims under £10,000: no costs recovery. Part 36 for claims over £10,000. Batch strategy: same disruption event, EC decision applies to all claims.
+
+U-16 SETTLE VS DEFEND: Defend if EC clean, evidence complete, value justifies cost. Settle if evidence gaps, EC weak, or litigation cost exceeds value. Concession warning: conceding EC without documenting reason creates precedent CMCs exploit.
+
+DISRUPTION-SPECIFIC TREES:
+
+DT-1 ATC/ATFM: Eurocontrol CTOT = EC confirmed immediately — both limbs satisfied. TOPS delay code 81-89. Peskova C-315/15: third-party ATC industrial action = EC. CURFEW BREACH causing OND: the OND and next-day delay are direct consequences of the EC event. Delay under Sturgeon = scheduled arrival to actual next-day arrival. Art 9 hotel mandatory for overnight. Art 8 must be offered once delay exceeded 5 hours. Pull: Eurocontrol ATFM, CTOT confirmation, TOPS delay record, NOTAM, FlightStats.
+
+DT-2 WEATHER DESTINATION: METAR below ILS approach minima = EC. SIGMET = strongest corroboration. ATC mandatory diversion instruction = Limb 2 beyond doubt. TAF foreseeability at departure = claimant vulnerability. Standby blocked by same weather = secondary EC independently satisfying Wallentin-Hermann. Pull: Ogimet METAR/TAF/SIGMET, lightning data, Flightradar24 diversion track, TOPS, SafetyNet.
+
+DT-3 WEATHER ORIGIN/EN ROUTE: LVP systemic = EC. De-icing routine = ordinary. De-icing systemic abnormal = may be EC. SNOWTAM + airport authority runway closure = EC. Pull: Ogimet origin METAR, LVP NOTAM, SNOWTAM, de-icing log.
+
+DT-4 BIRDSTRIKE: Peskova C-315/15 — per se EC, both limbs automatically satisfied. AMOS mandatory inspection = primary evidence — without it claim is unsubstantiated. Engine ingestion: borescope mandatory, possibly engine change. Pull: AMOS full inspection record, SafetyNet, TOPS, airport wildlife authority.
+
+DT-5 TECHNICAL: Van der Lans v KLM (C-257/14) — routine maintenance faults NOT EC. External cause (lightning strike to aircraft, ground damage) = EC. Hidden defect: Germanwings (C-257/14) + Matkustaja v Finnair (C-385/23, CJEU June 2024 — cite as current leading authority) — not detectable despite proper maintenance, no prior AD/SB, within certified service life = potentially EC. MEL dispatch possibility critical: if MEL Category A (no dispatch), carrier had no discretion. Pull: AMOS defect log, MEL record, full maintenance history, SafetyNet, TOPS, OEM records.
+
+DT-6 CREW/FTL: FTL alone is NEVER EC — Lipton v BA Cityflyer [2024] UKSC 24 confirms crew illness not EC; FTL exhaustion is never an independent EC event. Root cause of FTL exhaustion is ALWAYS the first question. If root cause is ATC → DT-1. If root cause is weather → DT-2/DT-3. If root cause is crew sickness → ORDINARY — CONCEDE on this point. If root cause is prior disruption → DT-13. Pull: AIMS FDP record, AIMS standby log, TOPS line of flying.
+
+DT-7 INDUSTRIAL ACTION: FIRST NODE — own staff vs third party determines the entire case. Krüsemann v TUIfly (C-601/17): own-staff strike NOT EC — concede immediately. Peskova C-315/15: genuine third party (ATC authority, airport operator, independent handler) = EC. Pull: DISCO, NOTAM, published union/authority notice, TOPS.
+
+DT-8 SECURITY: Externally initiated by police, airport security, or government = EC. Mandatory search = externally imposed. Baggage reconciliation after offload = mandatory security regulation. Pull: SafetyNet, TOPS delay code 91-96, police/airport authority records, ground handler security log.
+
+DT-9 MEDICAL: Not inherent in normal operations = EC. Carrier legally obligated to respond — mandatory not discretionary. Prior sector medical causing cascade: pull TOPS line of flying + SafetyNet + document causal chain. Pull: SafetyNet, TOPS, Flightradar24 if diversion, ground handler medical log.
+
+DT-10 DISRUPTIVE PASSENGER: External behaviour = EC. SafetyNet = primary evidence. Police attendance corroborates. Baggage reconciliation mandatory. Pull: SafetyNet, TOPS, ground handler removal and reconciliation, police attendance.
+
+DT-11 NATURAL DISASTER: Volcanic ash (SIGMET type VA), earthquake, flood, hurricane, government travel ban = EC. Foreseeability challenge for prolonged events. Pull: NOTAM, SIGMET, government notice, Met Office.
+
+DT-12 ATM SYSTEM FAILURE: NATS/Eurocontrol outage = third-party infrastructure = EC. Cross-carrier impact corroborates. Pull: NOTAM, official Eurocontrol/NATS statement, FlightStats, TOPS.
+
+DT-13 CASCADING ROTATION: Cascade itself is NOT EC. Root cause at start of rotation chain determines EC status. TOPS full tail line of flying is the single most critical document. Root cause identified → apply appropriate disruption tree to it. Recovery analysis mandatory at every turnaround. Pull: TOPS full rotation, Flightradar24, DISCO.
+
+DT-14 HIDDEN MANUFACTURING DEFECT: Germanwings (C-257/14) + LE v TAP Air Portugal (C-74/19) + Matkustaja v Finnair (C-385/23, CJEU June 2024 — CURRENT LEADING AUTHORITY). Three conditions: (1) failure mode unknown to manufacturer at time of failure; (2) component within certified service life and inspection interval; (3) all scheduled maintenance carried out. Absence of prior AD/SB evidences condition 1. Subsequent OEM AD/SB after the event = paradoxically supportive. Pull: AMOS full maintenance history, OEM AD/SB search, OEM technical investigation report.
+
+DT-15 DENIED BOARDING: Art 4 — NO EC DEFENCE AVAILABLE. Carrier always liable for involuntary denied boarding. Art 7, Art 8, Art 9 all apply immediately. Do not attempt EC defence.
+
+DT-16 CANCELLATION SHORT NOTICE: Art 5 — EC defence available. December 2021 EU ruling: flight moved 1+ hour earlier within 14 days = treated as cancellation.
+
+DT-17 GOVERNMENT/POLITICAL/CONFLICT/DRONE: Political instability, conflict-zone airspace closure, government travel ban, pandemic restriction, drone incursion closed by CAA/police = EC. Pull: NOTAM, government notice, police/authority statement.
+
+DT-18 POSITIONING FLIGHT DISRUPTION: Positioning flight is a separate causal event requiring its own EC analysis. Root cause of the positioning disruption determines EC status via the relevant specific tree. Key question: was the positioning necessary for the claimant's flight to operate?
+
+DT-19 CREW POSITIONING DELAYED — INTERVENING CAUSE ANALYSIS: When crew delayed on positioning and then goes OOH, evaluate whether any ordinary event intervened between EC root cause and crew going OOH. Apply but-for test: but for the intervening event, would the crew have gone OOH anyway from the EC delay alone? If yes — chain holds. If no — chain broken at the intervening event. If genuinely ambiguous — JUDGMENT NODE.
+
+DT-20 18-HOUR WAKE RULE ANALYSIS: ALWAYS A JUDGMENT NODE — never resolve automatically. Present: (1) when did crew member begin last rest period; (2) when was replacement required; (3) does the gap equal or exceed 18 hours; (4) was this because of EC root cause timing or carrier's operational decisions. If EC root cause timing is the sole reason → chain holds. If carrier delayed sourcing replacement crew → reasonable measures failure at that intervention point.
+
+MULTI-CAUSE CHAIN RULES:
+1. Apply Wallentin-Hermann independently to EACH event, not just the first.
+2. State but-for conclusion for each causal link explicitly.
+3. Identify any point where an ordinary circumstance intervenes — chain break candidate.
+4. Concurrent cause: determine if either event alone would cause 3+ hours. Neither alone but combined → JUDGMENT_REQUIRED.
+5. Dominant cause: calculate or estimate delay contribution of each event.
+6. Never assume chain holds through an ambiguous node. Flag as JUDGMENT_REQUIRED.
+7. DEFEND requires: (a) EC at root; (b) unbroken chain; (c) all intervention points evidenced; (d) no critical evidence gaps.
+
+VERDICT RULES:
+DEFEND: All four conditions met. Clean case, complete evidence, no judgment nodes outstanding.
+DEFEND_WITH_CONDITIONS: EC established and chain holds but specific conditions must be met first. State conditions precisely.
+SETTLE: EC cannot be established, chain broken by ordinary cause, or reasonable measures failed critically.
+CONCEDE: Own-staff strike (Krüsemann), crew illness (Lipton 2024 UKSC 24), routine technical fault (van der Lans) — clear defeat. State the authority.
+JUDGMENT_REQUIRED: One or more nodes cannot be resolved without human judgment or additional evidence. List all outstanding judgment nodes.
+ESCALATE: Montreal consequential loss above SDR cap, novel legal point, high-value group action.
+
+Also populate the complete output schema fields from Section D: causationStructure, causationStructureReason, timingGaps, ambiguities, additionalInformationNeeded, multiCauseFlag, numberOfDistinctCausalEvents — enriched causalChain with ecStatus, ecLimb1, ecLimb2, ecAuthority, butForConclusion, chainBreak, chainBreakReason on each event.`;
 
 const EXAMPLES = {
   atc: "Flight delayed LTN due to Eurocontrol CTOT restriction, network-wide ATFM regulation in force. All carriers affected. Airport curfew breached. Flight OND — completed next day.",
@@ -389,11 +583,8 @@ const EXAMPLES = {
 function sx(k){ document.getElementById('inp').value = EXAMPLES[k] || ''; }
 
 function parseClaudeJSON(rawText) {
-  let clean = (rawText || '').trim();
-  if (clean.startsWith('```')) {
-    clean = clean.replace(/^```json\s*/i, '').replace(/^```\s*/i, '');
-    clean = clean.replace(/\s*```$/, '').trim();
-  }
+  let clean = rawText.trim();
+  clean = clean.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/\s*```$/, '').trim();
   const start = clean.indexOf('{');
   const end = clean.lastIndexOf('}');
   if (start !== -1 && end !== -1) clean = clean.substring(start, end + 1);
@@ -401,13 +592,13 @@ function parseClaudeJSON(rawText) {
 }
 
 function esc(s) {
-  if (!s) return '';
+  if (s == null) return '';
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
 function setProgress(step) {
   [1,2,3].forEach(function(n) {
-    const el = document.getElementById('ps' + n);
+    var el = document.getElementById('ps' + n);
     el.classList.remove('on','done');
     if (n < step) el.classList.add('done');
     else if (n === step) el.classList.add('on');
@@ -415,15 +606,13 @@ function setProgress(step) {
 }
 
 function showErr(msg) {
-  const el = document.getElementById('eb');
-  el.textContent = msg;
-  el.classList.add('on');
+  document.getElementById('eb').textContent = msg;
+  document.getElementById('eb').classList.add('on');
 }
-
 function hideErr() { document.getElementById('eb').classList.remove('on'); }
 
 async function callClaude(system, userMsg) {
-  const resp = await fetch('https://api.anthropic.com/v1/messages', {
+  var resp = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -438,226 +627,268 @@ async function callClaude(system, userMsg) {
     })
   });
   if (!resp.ok) {
-    const er = await resp.json().catch(function(){ return {}; });
+    var er = await resp.json().catch(function(){ return {}; });
     throw new Error((er.error && er.error.message) || 'API error ' + resp.status);
   }
-  const data = await resp.json();
-  const raw = ((data.content || []).find(function(b){ return b.type === 'text'; }) || {}).text || '';
+  var data = await resp.json();
+  var raw = ((data.content || []).find(function(b){ return b.type === 'text'; }) || {}).text || '';
   return parseClaudeJSON(raw);
 }
 
+function mergeResult(pass1, pass2, pass3) {
+  var r = Object.assign({}, pass3);
+  if (!r.causationStructure && pass1.causationStructure) r.causationStructure = pass1.causationStructure;
+  if (!r.causationStructureReason && pass1.causationStructureReason) r.causationStructureReason = pass1.causationStructureReason;
+  if (!r.causalChain || !r.causalChain.length) r.causalChain = pass3.causalChain || pass1.causalChain || [];
+  if (!r.timingGaps && pass1.timingGaps) r.timingGaps = pass1.timingGaps;
+  if (!r.ambiguities && pass1.ambiguities) r.ambiguities = pass1.ambiguities;
+  if (!r.additionalInformationNeeded && pass1.additionalInformationNeeded) r.additionalInformationNeeded = pass1.additionalInformationNeeded;
+  if (r.multiCauseFlag == null && pass1.multiCauseFlag != null) r.multiCauseFlag = pass1.multiCauseFlag;
+  if (!r.numberOfDistinctCausalEvents && pass1.numberOfDistinctCausalEvents) r.numberOfDistinctCausalEvents = pass1.numberOfDistinctCausalEvents;
+  if (!r.evidencePack || !r.evidencePack.length) r.evidencePack = pass3.evidencePack || pass2.evidencePack || [];
+  if (!r.dynamicEvidenceRequests || !r.dynamicEvidenceRequests.length) r.dynamicEvidenceRequests = pass3.dynamicEvidenceRequests || pass2.dynamicEvidenceRequests || [];
+  if (!r.interventionPoints || !r.interventionPoints.length) r.interventionPoints = pass3.interventionPoints || pass2.interventionPoints || [];
+  if (!r.artNineStatus || !Object.keys(r.artNineStatus).length) r.artNineStatus = pass3.artNineStatus || pass2.artNineStatus || {};
+  if (!r.artEightStatus || !Object.keys(r.artEightStatus).length) r.artEightStatus = pass3.artEightStatus || pass2.artEightStatus || {};
+  if (!r.judgmentNodes) r.judgmentNodes = pass3.judgmentNodes || [];
+  return r;
+}
+
 async function run() {
-  const inp = document.getElementById('inp').value.trim();
+  var inp = document.getElementById('inp').value.trim();
   if (!inp) { showErr('Please enter a disruption description.'); return; }
-  const btn = document.getElementById('abtn');
+  var btn = document.getElementById('abtn');
   btn.disabled = true;
   hideErr();
   document.getElementById('res').classList.add('on');
   document.getElementById('pbar').classList.add('on');
   setProgress(1);
-  document.getElementById('bodyA').innerHTML = '<div class="empty"><div class="spin" style="margin:0 auto 12px;width:22px;height:22px;border-width:2.5px"></div><div class="empty-t">Pass 1 running...</div></div>';
+  var load = '<div class="empty"><div class="spin" style="margin:0 auto 12px;width:22px;height:22px;border-width:2.5px"></div><div class="empty-t">Running...</div></div>';
+  document.getElementById('bodyA').innerHTML = load;
   document.getElementById('bodyB').innerHTML = '<div class="empty"><div class="empty-t">Awaiting Pass 2...</div></div>';
   document.getElementById('bodyC').innerHTML = '<div class="empty"><div class="empty-t">Awaiting Pass 3...</div></div>';
 
-  let pass1, pass2, result;
+  var pass1, pass2, pass3;
   try {
-    pass1 = await callClaude(PASS1_SYS,
-      'Analyse this ICC disruption description and return the chain decomposition JSON only:\n\n"' + inp + '"');
-    renderChain(pass1, null, inp);
+    pass1 = await callClaude(PASS1_SYS, 'Analyse this ICC disruption description and return the chain decomposition JSON only:\n\n"' + inp + '"');
+    renderChain(pass1, pass2, inp);
     setProgress(2);
-    document.getElementById('bodyB').innerHTML = '<div class="empty"><div class="spin" style="margin:0 auto 12px;width:22px;height:22px;border-width:2.5px"></div><div class="empty-t">Pass 2 running...</div></div>';
+    document.getElementById('bodyB').innerHTML = load;
 
     pass2 = await callClaude(PASS2_SYS,
       'ICC disruption summary:\n"' + inp + '"\n\nPass 1 chain decomposition:\n' + JSON.stringify(pass1) +
       '\n\nAnalyse the evidence requirements for this chain and return the evidence intelligence JSON only.');
+    renderEvidencePreview(pass2);
     setProgress(3);
-    document.getElementById('bodyC').innerHTML = '<div class="empty"><div class="spin" style="margin:0 auto 12px;width:22px;height:22px;border-width:2.5px"></div><div class="empty-t">Pass 3 running...</div></div>';
+    document.getElementById('bodyC').innerHTML = load;
 
-    result = await callClaude(PASS3_SYS,
+    pass3 = await callClaude(PASS3_SYS,
       'ICC disruption summary:\n"' + inp + '"\n\nPass 1 chain decomposition:\n' + JSON.stringify(pass1) +
       '\n\nPass 2 evidence analysis:\n' + JSON.stringify(pass2) +
       '\n\nApply the full legal framework and return the complete analysis JSON only.');
 
-    if (!result.evidencePack && pass2.evidencePack) result.evidencePack = pass2.evidencePack;
-    if (!result.dynamicEvidenceRequests && pass2.dynamicEvidenceRequests) result.dynamicEvidenceRequests = pass2.dynamicEvidenceRequests;
-    if (!result.interventionPoints && pass2.interventionPoints) result.interventionPoints = pass2.interventionPoints;
-    if (!result.art9Status && pass2.art9Status) result.art9Status = pass2.art9Status;
-    if (!result.art8Status && pass2.art8Status) result.art8Status = pass2.art8Status;
-    if (!result.keywords && pass2.keywords) result.keywords = pass2.keywords;
-    if (!result.universalHighlighted && pass2.universalHighlighted) result.universalHighlighted = pass2.universalHighlighted;
-    if (!result.causalChain && pass1.causalChain) result.causalChain = pass1.causalChain;
-    if (!result.causationStructure && pass1.causationStructure) result.causationStructure = pass1.causationStructure;
-
+    var result = mergeResult(pass1, pass2, pass3);
     renderChain(result, pass2, inp);
     renderLegal(result);
     renderOutput(result);
-    [1,2,3].forEach(function(n){ document.getElementById('ps'+n).classList.remove('on'); document.getElementById('ps'+n).classList.add('done'); });
+    [1,2,3].forEach(function(n){ var el=document.getElementById('ps'+n); el.classList.remove('on'); el.classList.add('done'); });
   } catch (err) {
-    const which = !pass1 ? 'Pass 1 (chain decomposition)' : !pass2 ? 'Pass 2 (evidence intelligence)' : 'Pass 3 (legal analysis)';
+    var which = !pass1 ? 'Pass 1 (chain decomposition)' : !pass2 ? 'Pass 2 (evidence intelligence)' : 'Pass 3 (legal analysis)';
     showErr(which + ' failed: ' + err.message + ' — please retry.');
-    const ep = '<div class="empty"><div class="empty-t">Analysis failed at ' + esc(which) + '</div><div style="font-size:11px;margin-top:8px">' + esc(err.message) + '</div></div>';
+    var ep = '<div class="empty"><div class="empty-t">Failed at ' + esc(which) + '</div><div style="font-size:11px;margin-top:8px;line-height:1.5">' + esc(err.message) + '</div></div>';
     if (!pass1) document.getElementById('bodyA').innerHTML = ep;
     else if (!pass2) document.getElementById('bodyB').innerHTML = ep;
     else document.getElementById('bodyC').innerHTML = ep;
-    setProgress(0);
     document.getElementById('pbar').classList.remove('on');
+    setProgress(0);
   }
   btn.disabled = false;
 }
 
-function ecClass(s) {
-  const v = (s || '').toUpperCase();
-  if (v.includes('NOT')) return 'nec';
-  if (v.includes('JUDGMENT')) return 'jud';
-  if (v.includes('EC') || v.includes('CANDIDATE')) return 'ec';
-  if (v.includes('UNKNOWN')) return 'unk';
-  return 'unk';
+function lofBadge(lof) {
+  var v = (lof || '').toUpperCase();
+  if (v.indexOf('POSITION') >= 0) return { cls: 'pos', label: 'POSITIONING' };
+  if (v.indexOf('THIRD') >= 0) return { cls: 'tp', label: 'THIRD PARTY' };
+  if (v.indexOf('OWN') >= 0) return { cls: 'own', label: 'OWN' };
+  return { cls: 'unk', label: 'UNKNOWN' };
+}
+
+function dynMap(pass2) {
+  var m = {};
+  (pass2 && pass2.evidencePack || []).forEach(function(e) {
+    if (e.dynamicTrigger && e.chainEventRef) m[e.chainEventRef] = true;
+  });
+  (pass2 && pass2.dynamicEvidenceRequests || []).forEach(function(d) {
+    if (d.chainEventRef) m[d.chainEventRef] = true;
+  });
+  (pass2 && pass2.updatedCausalChain || []).forEach(function(ev) {
+    (ev.unexpectedFindings || []).forEach(function(f) {
+      if (f.newEventId) m[f.newEventId] = true;
+    });
+  });
+  return m;
 }
 
 function renderChain(r, pass2, inp) {
-  let h = '';
-  if (r.causationStructure) h += '<div class="cstruct"><strong>Causation structure:</strong> ' + esc(r.causationStructure) + '</div>';
-  const chain = r.causalChain || [];
-  const dynEvents = {};
-  (pass2 && pass2.evidencePack || []).concat(pass2 && pass2.dynamicEvidenceRequests || []).forEach(function(item) {
-    if (item.dynamicTrigger && item.linkedEvent) dynEvents[item.linkedEvent] = true;
-  });
+  var h = '';
+  if (r.causationStructure) {
+    h += '<div class="cstruct-badge">' + esc(r.causationStructure) + '</div>';
+    if (r.causationStructureReason) h += '<div class="cstruct-reason">' + esc(r.causationStructureReason) + '</div>';
+  }
+  var chain = r.causalChain || [];
+  var dyn = dynMap(pass2);
   chain.forEach(function(ev, idx) {
-    if (idx > 0) h += '<div class="carr">↓</div>';
-    const brk = ev.chainBreak;
-    h += '<div class="cevent' + (brk ? ' brk' : '') + '"><div class="cevh">';
-    h += '<span class="cenum">' + (ev.eventNumber || idx+1) + '</span>';
-    h += '<span class="cedesc">' + esc(ev.description) + '</span>';
+    if (idx > 0) h += '<div class="carr">↓ <span style="font-size:9px;color:var(--text3)">' + esc(ev.chainLinkReason || ev.butForQuestion || '') + '</span></div>';
+    var lof = lofBadge(ev.lineOfFlying);
+    var eid = ev.id || ('E' + (idx + 1));
+    h += '<div class="cevent' + (ev.chainBreak ? ' brk' : '') + '"><div class="cevh">';
+    h += '<div style="display:flex;align-items:flex-start;gap:6px"><span class="cenum">' + esc(eid) + '</span>';
+    h += '<div style="flex:1"><div class="cedesc">' + esc(ev.description) + '</div>';
     h += '<div class="cemeta">';
-    h += '<span class="cetag lof">' + esc(ev.lineOfFlying || 'OWN') + '</span>';
-    h += '<span class="cetag ' + ecClass(ev.preliminaryECStatus || ev.legalECStatus) + '">' + esc(ev.preliminaryECStatus || ev.legalECStatus || 'UNKNOWN') + '</span>';
+    h += '<span class="cetag lof-' + lof.cls + '">' + lof.label + '</span>';
+    if (ev.preliminaryECCandidate != null) h += '<span class="cetag ' + (ev.preliminaryECCandidate ? 'ec-y' : 'ec-n') + '">' + (ev.preliminaryECCandidate ? 'EC candidate' : 'Not EC candidate') + '</span>';
+    if (ev.ecStatus) h += '<span class="cetag ec-st">' + esc(ev.ecStatus) + '</span>';
     if (ev.delayContribution) h += '<span class="cetag unk">Δ ' + esc(ev.delayContribution) + '</span>';
-    if (ev.discoveredFromEvidence || dynEvents[ev.eventNumber]) h += '<span class="cetag disc">🔍 Discovered</span>';
+    if (ev.discoveredFromEvidence || dyn[eid]) h += '<span class="cetag disc">🔍 Discovered</span>';
     h += '</div>';
-    if (brk) h += '<div class="cbrk">⚠ CHAIN BREAK' + (ev.chainBreakReason ? ': ' + esc(ev.chainBreakReason) : '') + '</div>';
-    h += '</div></div>';
+    if (ev.preliminaryECReason) h += '<div class="ce-note">' + esc(ev.preliminaryECReason) + '</div>';
+    if (ev.butForConclusion) h += '<div class="ce-note"><strong>But-for:</strong> ' + esc(ev.butForConclusion) + '</div>';
+    if (ev.chainBreak) h += '<div class="cbrk">⚠ CHAIN BREAK' + (ev.chainBreakReason ? ': ' + esc(ev.chainBreakReason) : '') + '</div>';
+    h += '</div></div></div></div>';
   });
-  const kws = r.keywords || [];
+  if ((r.timingGaps || []).length) {
+    h += '<div class="sdiv"><div class="sdl">Timing gaps</div><div class="sline"></div></div><ul class="mini-list">';
+    r.timingGaps.forEach(function(g){ h += '<li>' + esc(typeof g === 'string' ? g : g.gap || JSON.stringify(g)) + '</li>'; });
+    h += '</ul>';
+  }
+  var kws = r.keywords || [];
   if (kws.length) {
-    h += '<div class="sdiv"><div class="sdl">ICC keywords</div><div class="sline"></div></div><div class="kwpills">';
+    h += '<div class="sdiv"><div class="sdl">Keywords</div><div class="sline"></div></div><div class="kwpills">';
     kws.forEach(function(k) {
-      h += '<span class="kwpill">' + esc(k.phrase) + (k.eventNumber ? ' → E' + k.eventNumber : '') + '</span>';
+      h += '<span class="kwpill" title="' + esc(k.tree || '') + '">' + esc(k.phrase) + (k.chainEventRef ? ' → ' + esc(k.chainEventRef) : '') + '</span>';
     });
     h += '</div>';
   }
-  const hi = (r.universalHighlighted || inp || '');
+  var hi = r.universalHighlighted || inp || '';
   if (hi) h += '<div class="kwbox">' + hi.replace(/<KW>(.*?)<\/KW>/g, '<span class="kw">$1</span>') + '</div>';
   document.getElementById('bodyA').innerHTML = h || '<div class="empty"><div class="empty-t">No chain data</div></div>';
 }
 
+function renderEvidencePreview(pass2) {
+  var h = '<div class="sdiv"><div class="sdl">Evidence mapping (Pass 2)</div><div class="sline"></div></div>';
+  h += '<div style="font-size:11px;color:var(--text2);margin-bottom:10px">' + (pass2.evidencePack || []).length + ' evidence items · ' + (pass2.dynamicEvidenceRequests || []).length + ' dynamic requests · ' + (pass2.interventionPoints || []).length + ' intervention points identified</div>';
+  (pass2.dynamicEvidenceRequests || []).slice(0, 4).forEach(function(d) {
+    h += '<div class="dynreq"><div class="dynlbl">🔍 Dynamically Identified</div><div><strong>' + esc(d.evidenceRequested) + '</strong></div></div>';
+  });
+  document.getElementById('bodyB').innerHTML = h;
+}
+
+function renderJudgmentBox(j) {
+  var h = '<div class="jbox"><div class="jlbl">⚖ JUDGMENT REQUIRED — ' + esc(j.nodeId || '') + (j.chainEventRef ? ' · ' + esc(j.chainEventRef) : '') + '</div>';
+  h += '<div style="font-weight:700;font-size:12px;margin-bottom:8px">' + esc(j.question) + '</div>';
+  h += '<div class="jcols"><div class="jcol"><h4>Facts for</h4><div class="jtext">' + esc(j.factsFor) + '</div></div>';
+  h += '<div class="jcol"><h4>Facts against</h4><div class="jtext">' + esc(j.factsAgainst) + '</div></div></div>';
+  if (j.additionalEvidenceNeeded) h += '<div style="font-size:10px;margin-top:8px"><strong>Resolving evidence:</strong> ' + esc(j.additionalEvidenceNeeded) + '</div>';
+  if (j.consequenceIfChainHolds || j.consequenceIfChainBreaks) {
+    h += '<div style="font-size:10px;margin-top:6px;color:var(--text2)">';
+    if (j.consequenceIfChainHolds) h += '<div><strong>If chain holds:</strong> ' + esc(j.consequenceIfChainHolds) + '</div>';
+    if (j.consequenceIfChainBreaks) h += '<div><strong>If chain breaks:</strong> ' + esc(j.consequenceIfChainBreaks) + '</div>';
+    h += '</div>';
+  }
+  h += '</div>';
+  return h;
+}
+
 function renderNode(n) {
-  const ic = n.type === 'judgment' ? 'j' : n.type === 'disruption' ? 'd' : n.type === 'secondary' ? 's' : 'u';
-  const si = n.status === 'green' ? '✓' : n.status === 'amber' ? '⚠' : n.status === 'red' ? '✗' : '·';
-  let h = '<div class="nd"><div class="ndh">';
+  var ic = n.type === 'judgment' ? 'j' : n.type === 'disruption' ? 'd' : n.type === 'secondary' || n.type === 'intervention' ? 's' : 'u';
+  var si = n.status === 'green' ? '✓' : n.status === 'amber' ? '⚠' : n.status === 'red' ? '✗' : '·';
+  var h = '<div class="nd"><div class="ndh">';
   h += '<span class="ndid ' + ic + '">' + esc(n.id || '') + '</span>';
   h += '<span class="ndst ' + (n.status || 'info') + '">' + si + ' ' + esc(n.statusLabel || '') + '</span>';
   h += '<span class="ndq">' + esc(n.question) + '</span></div><div class="ndb">';
   h += '<div class="ndc">' + esc(n.conclusion) + '</div>';
   if (n.authority) h += '<div class="nda">' + esc(n.authority) + '</div>';
-  if (n.chainConsequence) h += '<div class="ndcc">Chain: ' + esc(n.chainConsequence) + '</div>';
+  if (n.chainConsequence) h += '<div class="ndcc">Chain: ' + esc(n.chainConsequence) + (n.chainEventRef ? ' (' + esc(n.chainEventRef) + ')' : '') + '</div>';
   h += '</div></div>';
   return h;
 }
 
-function renderJudgmentBox(n) {
-  let h = '<div class="jbox"><div class="jlbl">⚖ Judgment Required — ' + esc(n.id || '') + '</div>';
-  h += '<div style="font-weight:700;font-size:12px;margin-bottom:8px">' + esc(n.question) + '</div>';
-  h += '<div class="jcols"><div class="jcol"><h4>Facts for</h4><ul>';
-  (n.factsFor || []).forEach(function(f){ h += '<li>' + esc(f) + '</li>'; });
-  h += '</ul></div><div class="jcol"><h4>Facts against</h4><ul>';
-  (n.factsAgainst || []).forEach(function(f){ h += '<li>' + esc(f) + '</li>'; });
-  h += '</ul></div></div>';
-  if (n.resolvingEvidence) h += '<div style="font-size:10px;margin-top:8px;color:var(--text2)"><strong>Resolving evidence:</strong> ' + esc(n.resolvingEvidence) + '</div>';
-  if (n.consequencesIfYes || n.consequencesIfNo) {
-    h += '<div style="font-size:10px;margin-top:6px;color:var(--text2)">';
-    if (n.consequencesIfYes) h += '<div><strong>If yes:</strong> ' + esc(n.consequencesIfYes) + '</div>';
-    if (n.consequencesIfNo) h += '<div><strong>If no:</strong> ' + esc(n.consequencesIfNo) + '</div>';
-    h += '</div>';
-  }
-  h += '</div>';
-  return h;
+function toggleSec(id) {
+  var el = document.getElementById(id + '-sec');
+  if (el) el.classList.toggle('hide');
 }
 
 function renderLegal(r) {
-  const nodes = r.nodes || [];
-  const judgments = nodes.filter(function(n){ return n.type === 'judgment'; });
-  const universal = nodes.filter(function(n){ return n.type === 'universal'; });
-  const disruption = nodes.filter(function(n){ return n.type === 'disruption'; });
-  const secondary = nodes.filter(function(n){ return n.type === 'secondary' || n.type === 'measures'; });
-  let h = '';
+  var nodes = r.nodes || [];
+  var judgments = r.judgmentNodes || nodes.filter(function(n){ return n.type === 'judgment' || n.judgmentRequired; });
+  var universal = nodes.filter(function(n){ return n.type === 'universal'; });
+  var disruption = nodes.filter(function(n){ return n.type === 'disruption'; });
+  var secondary = nodes.filter(function(n){ return n.type === 'secondary' || n.type === 'intervention'; });
+  var h = '';
 
   if (judgments.length) {
     h += '<div class="sdiv"><div class="sdl">Judgment nodes</div><div class="sline"></div></div>';
-    judgments.forEach(function(n){ h += renderJudgmentBox(n); });
+    judgments.forEach(function(j){ h += renderJudgmentBox(j); });
   }
 
-  h += '<div class="collapse-hdr" onclick="toggleSec(\'uni\')">Universal nodes <span id="uni-cnt">(' + universal.length + ')</span> <span id="uni-arr">▼</span></div>';
+  h += '<div class="collapse-hdr" onclick="toggleSec(\'uni\')">Universal nodes (' + universal.length + ') <span>▼</span></div>';
   h += '<div class="collapse-body" id="uni-sec">';
   universal.forEach(function(n){ h += renderNode(n); });
   h += '</div>';
 
-  h += '<div class="collapse-hdr" onclick="toggleSec(\'dis\')">Disruption-specific nodes <span>(' + disruption.length + ')</span> <span>▼</span></div>';
+  h += '<div class="collapse-hdr" onclick="toggleSec(\'dis\')">Disruption-specific nodes (' + disruption.length + ') <span>▼</span></div>';
   h += '<div class="collapse-body" id="dis-sec">';
   disruption.forEach(function(n){ h += renderNode(n); });
   h += '</div>';
 
   if (secondary.length) {
-    h += '<div class="collapse-hdr" onclick="toggleSec(\'sec\')">Secondary / intervention <span>(' + secondary.length + ')</span> <span>▼</span></div>';
+    h += '<div class="collapse-hdr" onclick="toggleSec(\'sec\')">Secondary / intervention (' + secondary.length + ') <span>▼</span></div>';
     h += '<div class="collapse-body" id="sec-sec">';
     secondary.forEach(function(n){ h += renderNode(n); });
     h += '</div>';
   }
 
-  const dyn = r.dynamicEvidenceRequests || [];
+  var dyn = r.dynamicEvidenceRequests || [];
   if (dyn.length) {
     h += '<div class="sdiv"><div class="sdl">Dynamic evidence requests</div><div class="sline"></div></div>';
     dyn.forEach(function(d) {
       h += '<div class="dynreq"><div class="dynlbl">🔍 Dynamically Identified</div>';
-      h += '<div><strong>' + esc(d.request) + '</strong>';
+      h += '<div><strong>' + esc(d.evidenceRequested) + '</strong>';
       if (d.priority) h += '<span class="pri ' + esc(d.priority) + '">' + esc(d.priority) + '</span></div>';
-      h += '<div style="font-size:10px;color:var(--text3);margin-top:4px">Triggered by: ' + esc(d.triggeredBy) + '</div>';
+      h += '<div style="font-size:10px;color:var(--text3);margin-top:3px">Trigger: ' + esc(d.trigger) + ' · ' + esc(d.system || '') + '</div>';
       h += '<div style="font-size:10px;color:var(--text2);margin-top:2px">' + esc(d.legalReason) + '</div></div>';
     });
   }
   document.getElementById('bodyB').innerHTML = h;
 }
 
-function toggleSec(id) {
-  const el = document.getElementById(id + '-sec');
-  if (el) el.classList.toggle('hide');
-}
-
-function artClass(v) {
-  if (v === 'compliant') return 'ok';
-  if (v === 'non_compliant') return 'bad';
+function artCls(v) {
+  if (v === 'EVIDENCED') return 'ok';
+  if (v === 'NOT_EVIDENCED') return 'bad';
   return 'unk';
 }
 
 function evIcon(s) {
-  if (s === 'collected') return '✅';
-  if (s === 'missing') return '❌';
-  if (s === 'flagged') return '⚠️';
+  var v = (s || '').toLowerCase();
+  if (v === 'collected') return '✅';
+  if (v === 'missing') return '❌';
+  if (v === 'flagged') return '⚠️';
   return '🔍';
 }
 
 function flagIcon(t) {
-  if (t === 'action') return '<span style="color:var(--orange);font-weight:700">▶</span>';
-  if (t === 'risk') return '<span style="color:var(--red);font-weight:700">⚠</span>';
-  if (t === 'judgment') return '<span style="color:var(--amber);font-weight:700">⚖</span>';
-  return '<span style="color:var(--text3)">ℹ</span>';
+  if (t === 'action') return '<span class="fi act">▶</span>';
+  if (t === 'risk') return '<span class="fi rsk">⚠</span>';
+  if (t === 'judgment') return '<span class="fi jud">⚖</span>';
+  return '<span class="fi note">ℹ</span>';
 }
 
 function verdictClass(v) {
   if (v === 'DEFEND') return 'defend';
   if (v === 'DEFEND_WITH_CONDITIONS') return 'defend-cond';
+  if (v === 'JUDGMENT_REQUIRED') return 'judgment';
   if (v === 'SETTLE') return 'settle';
   if (v === 'CONCEDE') return 'concede';
-  if (v === 'JUDGMENT_REQUIRED') return 'judgment';
   if (v === 'ESCALATE') return 'escalate';
   return 'settle';
 }
@@ -665,29 +896,32 @@ function verdictClass(v) {
 function verdictBg(v) {
   if (v === 'DEFEND') return 'var(--green-light)';
   if (v === 'DEFEND_WITH_CONDITIONS' || v === 'JUDGMENT_REQUIRED') return 'var(--amber-light)';
-  if (v === 'SETTLE') return 'var(--amber-light)';
+  if (v === 'SETTLE') return 'var(--grey)';
   if (v === 'CONCEDE' || v === 'ESCALATE') return 'var(--red-light)';
   return 'var(--blue-light)';
 }
 
+function riskCls(l) {
+  if (l === 'red') return 'risk-red';
+  if (l === 'amber') return 'risk-amb';
+  return 'risk-grn';
+}
+
 function renderOutput(r) {
-  const v = r.verdict || 'DEFEND';
-  let h = '<div class="vbox" style="background:' + verdictBg(v) + '">';
+  var v = r.verdict || 'DEFEND';
+  var h = '<div class="vbox" style="background:' + verdictBg(v) + '">';
   h += '<div class="vw ' + verdictClass(v) + '">' + esc(v.replace(/_/g, ' ')) + '</div>';
 
   if (v === 'DEFEND_WITH_CONDITIONS' && (r.verdictConditions || []).length) {
     h += '<div class="vconds"><strong>Conditions:</strong><ol>';
-    r.verdictConditions.forEach(function(c, i){ h += '<li>' + esc(c) + '</li>'; });
+    r.verdictConditions.forEach(function(c){ h += '<li>' + esc(c) + '</li>'; });
     h += '</ol></div>';
   }
 
-  const jNodes = r.judgmentNodesOutstanding || (r.nodes || []).filter(function(n){ return n.type === 'judgment'; });
+  var jNodes = r.judgmentNodes || [];
   if (v === 'JUDGMENT_REQUIRED' && jNodes.length) {
-    h += '<div class="jout"><h4>' + jNodes.length + ' outstanding judgment node(s)</h4><ul style="margin:0;padding-left:16px">';
-    jNodes.forEach(function(j) {
-      const q = j.question || j;
-      h += '<li>' + esc(typeof q === 'string' ? q : q.question) + '</li>';
-    });
+    h += '<div class="jout"><h4>' + jNodes.length + ' outstanding judgment node(s)</h4><ul style="margin:0;padding-left:16px;line-height:1.5">';
+    jNodes.forEach(function(j){ h += '<li>' + esc(j.question) + '</li>'; });
     h += '</ul></div>';
   }
 
@@ -697,22 +931,23 @@ function renderOutput(r) {
     h += '<div class="vf">' + flagIcon(f.type) + '<span>' + esc(f.text) + '</span></div>';
   });
 
-  const a9 = r.art9Status || {};
-  if (a9.triggered) {
+  var a9 = r.artNineStatus || {};
+  if (a9.delayExceeds2Hours || a9.artNineRisk && a9.artNineRisk !== 'NONE') {
     h += '<div class="out-sub">Art 9 Status</div><div class="artblk">';
-    h += '<div class="artitem ' + artClass(a9.meals) + '">Meals<br><strong>' + esc(a9.meals || 'unknown') + '</strong></div>';
-    h += '<div class="artitem ' + artClass(a9.comms) + '">Comms<br><strong>' + esc(a9.comms || 'unknown') + '</strong></div>';
-    h += '<div class="artitem ' + artClass(a9.hotel) + '">Hotel<br><strong>' + esc(a9.hotel || 'unknown') + '</strong></div>';
+    h += '<div class="artitem ' + artCls(a9.mealsEvidenced) + '">Meals<br><strong>' + esc((a9.mealsEvidenced || 'unknown').replace(/_/g,' ')) + '</strong></div>';
+    h += '<div class="artitem ' + artCls(a9.communicationsEvidenced) + '">Comms<br><strong>' + esc((a9.communicationsEvidenced || 'unknown').replace(/_/g,' ')) + '</strong></div>';
+    h += '<div class="artitem ' + artCls(a9.hotelEvidenced) + '">Hotel<br><strong>' + esc((a9.hotelEvidenced || 'unknown').replace(/_/g,' ')) + '</strong></div>';
     h += '</div>';
-    if (a9.notes) h += '<div style="font-size:10px;color:var(--text2);margin-bottom:8px">' + esc(a9.notes) + '</div>';
+    if (a9.artNineNote) h += '<div style="font-size:10px;color:var(--text2);margin-bottom:8px">' + esc(a9.artNineNote) + '</div>';
   }
 
-  const a8 = r.art8Status || {};
-  if (a8.triggered) {
+  var a8 = r.artEightStatus || {};
+  if (a8.triggered || a8.cancellationOccurred || a8.delayExceeds5Hours) {
     h += '<div class="out-sub">Art 8 Status</div>';
-    h += '<div class="artitem ' + (a8.evidenced ? 'ok' : 'bad') + '" style="margin-bottom:10px">';
-    h += (a8.evidenced ? 'Offer evidenced' : '⚠ Art 8 triggered — offer NOT evidenced');
-    if (a8.notes) h += '<div style="font-size:10px;margin-top:4px">' + esc(a8.notes) + '</div>';
+    var a8ok = a8.artEightOfferEvidenced === 'EVIDENCED';
+    h += '<div class="artitem ' + (a8ok ? 'ok' : 'bad') + '" style="margin-bottom:10px;text-align:left;padding:10px">';
+    h += a8ok ? 'Art 8 offer evidenced' : '⚠ Art 8 triggered — offer ' + esc((a8.artEightOfferEvidenced || 'UNKNOWN').replace(/_/g,' ').toLowerCase());
+    if (a8.artEightNote) h += '<div style="font-size:10px;margin-top:4px">' + esc(a8.artEightNote) + '</div>';
     h += '</div>';
   }
 
@@ -720,16 +955,22 @@ function renderOutput(r) {
   (r.evidencePack || []).forEach(function(ev) {
     h += '<div class="ev-i"><span>' + evIcon(ev.status) + '</span><div>';
     h += '<div class="ev-n">' + esc(ev.name);
-    if (ev.priority) h += '<span class="pri ' + esc(ev.priority) + '">' + esc(ev.priority) + '</span>';
-    if (ev.dynamicTrigger) h += ' <span style="color:var(--purple);font-size:9px">🔍 Dynamic</span>';
-    h += '</div><div class="ev-s">' + esc(ev.source) + (ev.purpose ? ' — ' + esc(ev.purpose) : '') + '</div></div></div>';
+    var pr = (ev.priority || '').toUpperCase();
+    if (pr) h += '<span class="pri ' + pr + '">' + pr + '</span>';
+    if (ev.dynamicTrigger || (ev.status || '').indexOf('dynamic') >= 0) h += ' <span style="color:var(--purple);font-size:9px">🔍 Dynamic</span>';
+    h += '</div><div class="ev-s">' + esc(ev.source);
+    if (ev.chainEventRef) h += ' · ' + esc(ev.chainEventRef);
+    if (ev.whatItProves) h += ' — ' + esc(ev.whatItProves);
+    h += '</div></div></div>';
   });
 
   if ((r.interventionPoints || []).length) {
     h += '<div class="out-sub">Intervention Points</div>';
     r.interventionPoints.forEach(function(ip) {
-      h += '<div class="ip-i"><strong>' + esc(ip.description) + '</strong> — ' + esc(ip.outcome || 'unknown');
-      if (ip.couldHavePrevented) h += '<div style="font-size:10px;color:var(--text3);margin-top:2px">' + esc(ip.couldHavePrevented) + '</div>';
+      var rl = ip.riskLevel || (ip.outcome === 'MEASURES_NOT_TAKEN' ? 'red' : ip.outcome === 'MEASURES_TAKEN' ? 'green' : 'amber');
+      h += '<div class="ip-i ' + riskCls(rl) + '"><strong>' + esc(ip.description || ip.pointId) + '</strong>';
+      h += ' — ' + esc(ip.outcome || ip.evidenceStatus || 'unknown');
+      if (ip.legalConsequence || ip.consequence) h += '<div style="font-size:10px;color:var(--text3);margin-top:2px">' + esc(ip.legalConsequence || ip.consequence) + '</div>';
       h += '</div>';
     });
   }
@@ -737,14 +978,12 @@ function renderOutput(r) {
   if ((r.reasoningChain || []).length) {
     h += '<div class="out-sub">Reasoning Chain</div>';
     r.reasoningChain.forEach(function(step) {
-      h += '<div class="chi"><span class="chd ' + esc(step.status || 'amber') + '"></span><span class="cht">' + esc(step.text) + '</span></div>';
+      h += '<div class="chi"><span class="chd ' + esc(step.status || 'amber') + '"></span><span class="cht">';
+      if (step.chainEventRef) h += '<span style="font-size:9px;color:var(--text3);font-weight:700">' + esc(step.chainEventRef) + ' · </span>';
+      h += esc(step.text);
+      if (step.chainConsequence) h += '<div style="font-size:10px;color:var(--text3);margin-top:2px">→ ' + esc(step.chainConsequence) + '</div>';
+      h += '</span></div>';
     });
-  }
-
-  const judgments = (r.nodes || []).filter(function(n){ return n.type === 'judgment'; });
-  if (judgments.length && v !== 'JUDGMENT_REQUIRED') {
-    h += '<div class="out-sub">Judgment nodes</div>';
-    judgments.forEach(function(n){ h += renderJudgmentBox(n); });
   }
 
   document.getElementById('bodyC').innerHTML = h;
@@ -753,6 +992,7 @@ function renderOutput(r) {
 document.getElementById('inp').addEventListener('keydown', function(ev) {
   if ((ev.ctrlKey || ev.metaKey) && ev.key === 'Enter') run();
 });
+
 </script>
 </body>
 </html>
