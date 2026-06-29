@@ -7,6 +7,26 @@ var DefendAbleDemoV2 = (function () {
 
   function has(t, re) { return re.test(norm(t)); }
 
+  function hasAtcFlow(text) {
+    return has(text, /\bctots?\b|\batfm\b|\beurocontrol\b|\batc\s+(delay|delays|restriction|restrictions)\b/i);
+  }
+
+  function extractAirport(text) {
+    var m = (text || '').match(/(?:arrival\s+destination|destination|diversion\s+to|at)\s*\(([A-Za-z]{3})\)/i);
+    if (m) return m[1].toUpperCase();
+    m = (text || '').match(/\(([A-Za-z]{3})\)/);
+    if (m) return m[1].toUpperCase();
+    return null;
+  }
+
+  function isWeatherDiversionCase(text) {
+    return has(text, /\bdiversion|\bvalencia|\bbelow\s+minima|\bapproach\s+below|\balternate\s+airport|\bmandatory\s+atc\s+diversion/i);
+  }
+
+  function isWeatherArrivalDelayCase(text) {
+    return has(text, /\bthunderstorm|\bweather\b/i) && !isWeatherDiversionCase(text);
+  }
+
   function escRe(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
 
   function highlight(text, phrases) {
@@ -209,6 +229,35 @@ var DefendAbleDemoV2 = (function () {
         verdictConditions: ['METAR/TAF confirms below-minima at destination', 'TOPS confirms standby positioning failure was weather-driven not undeployed spare', 'Art 9 care records at alternate airport on file'],
         verdictSub: 'Weather diversion is strong EC. Confirm METAR evidence and that no spare aircraft was available but undeployed before final DEFEND.',
         verdictFlags: [{ type: 'action', text: 'Pull METAR/TAF for destination at ETA' }, { type: 'action', text: 'Confirm Art 9 care at Valencia' }]
+      });
+    },
+
+    weatherCtotDelay: function (text) {
+      var apt = extractAirport(text) || 'arrival airport';
+      return fullResult(text, {
+        causationStructure: 'SEQUENTIAL',
+        causationStructureReason: 'Weather at arrival destination caused ATFM/CTOT flow restrictions and delay exceeded 3 hours — no diversion.',
+        chain: [
+          ev('E1', 'Thunderstorms at arrival destination (' + apt + ')', { lof: 'THIRD_PARTY', ecCandidate: true, ecReason: 'Meteorological conditions at destination beyond carrier control — EC candidate.', delay: 'unknown', linkReason: 'Weather at arrival airport.' }),
+          ev('E2', 'CTOT / ATFM restrictions imposed due to weather disruption', { lof: 'THIRD_PARTY', ecCandidate: true, ecReason: 'Third-party flow control consequence of systemic weather — not carrier operational decision.', delay: 'unknown', linkReason: 'ATFM response to weather capacity impact.' }),
+          ev('E3', 'Arrival delay at destination exceeded 3 hours', { lof: 'OWN_OPERATION', ecCandidate: true, ecReason: 'Delay at arrival attributable to weather/ATFM chain if but-for test satisfied.', delay: '3+ hours', link: 'FINAL_EVENT', linkReason: 'Passenger delay measured at arrival — Sturgeon/Gonzales arrival delay.' })
+        ],
+        keywords: [
+          { phrase: 'thunderstorms', tree: 'DT-02: Weather', chainEventRef: 'E1', triggers: [{ system: 'METAR-feed', document: 'METAR/TAF ' + apt, purpose: 'Confirm weather at destination at ETA' }] },
+          { phrase: 'CTOT', tree: 'DT-01: ATC/ATFM', chainEventRef: 'E2', triggers: [{ system: 'EUROCONTROL-NM-API', document: 'CTOT/ATFM assignment log', purpose: 'Confirm weather-related flow restrictions' }, { system: 'TOPS', document: 'Delay codes 81-89', purpose: 'Operational corroboration' }] }
+        ],
+        nodes: [
+          { id: 'DT-02', type: 'disruption', chainEventRef: 'E1', question: 'Weather at arrival — extraordinary circumstances?', status: 'green', statusLabel: 'EC CANDIDATE', conclusion: 'Thunderstorms at arrival destination are beyond carrier control. Confirm METAR/TAF at ETA.', authority: 'Pešková; established weather EC', dataUsed: 'METAR/TAF ' + apt, chainConsequence: 'EC at root if both Wallentin-Hermann limbs satisfied.' },
+          { id: 'DT-01', type: 'disruption', chainEventRef: 'E2', question: 'ATFM/CTOT — extraordinary circumstances?', status: 'green', statusLabel: 'EC CANDIDATE', conclusion: 'Weather-driven ATFM restrictions are third-party flow control — EC candidate if evidenced.', authority: 'Pešková; Wallentin-Hermann', dataUsed: 'Eurocontrol ATFM; TOPS', chainConsequence: 'Compounding EC at ATFM layer if linked to weather root.' }
+        ],
+        verdict: 'DEFEND_WITH_CONDITIONS',
+        verdictConditions: ['METAR/TAF confirms thunderstorms at ' + apt + ' at ETA', 'Eurocontrol ATFM/CTOT log confirms weather-related flow restrictions', 'TOPS delay record confirms 3+ hour arrival delay and delay codes'],
+        verdictSub: 'Weather at arrival (' + apt + ') with CTOT/ATFM consequence and 3+ hour delay. No diversion in chain. Confirm METAR, Eurocontrol ATFM data, and TOPS delay measurement before Letter of Response.',
+        verdictFlags: [
+          { type: 'action', text: 'Pull METAR/TAF for ' + apt + ' at ETA' },
+          { type: 'action', text: 'Eurocontrol ATFM/CTOT log for weather-related restrictions' },
+          { type: 'action', text: 'TOPS delay record — confirm 3+ hours at arrival' }
+        ]
       });
     },
 
@@ -481,11 +530,24 @@ var DefendAbleDemoV2 = (function () {
         add('Positioning aircraft AOG / technical event' + (has(text, /\bfuel leak/i) ? ' — fuel leak' : ''), { lof: 'POSITIONING', ecCandidate: false, ecReason: 'Technical on positioning — chain break candidate.', chainBreak: true, chainBreakReason: 'Ordinary technical may intervene — van der Lans.' });
       }
     }
-    if (has(text, /\bctot\b|\batc\b|\batfm\b|\beurocontrol\b/i) && !events.length) {
-      add('ATC / CTOT / ATFM restriction imposed', { lof: 'THIRD_PARTY', ecCandidate: true, ecReason: 'Third-party flow control.', linkReason: 'External ATC delay.' });
+    if (has(text, /\bthunderstorm|\bweather|\blvp\b|\bfog\b/i) || (has(text, /\bdiversion|\bbelow minima\b/i) && has(text, /\bweather\b/i))) {
+      var apt = extractAirport(text);
+      if (isWeatherDiversionCase(text)) {
+        add('Weather at destination — approach below minima' + (apt ? ' (' + apt + ')' : ''), { lof: 'THIRD_PARTY', ecCandidate: true, ecReason: 'Below-minima weather requires diversion.', linkReason: 'Meteorological external event.' });
+        if (has(text, /\bdiversion|\bvalencia|\balternate\b/i)) {
+          add('Diversion to alternate airport' + (has(text, /valencia/i) ? ' (Valencia)' : apt ? ' (alternate from ' + apt + ')' : ''), { lof: 'OWN_OPERATION', ecCandidate: true, ecReason: 'Safety-mandated diversion consequence of weather.', linkReason: 'Mandatory diversion.' });
+        }
+      } else if (has(text, /\barrival\s+destination|at\s+arrival|destination\s*\(/i) || apt) {
+        add('Thunderstorms at arrival destination' + (apt ? ' (' + apt + ')' : ''), { lof: 'THIRD_PARTY', ecCandidate: true, ecReason: 'Weather at arrival airport — EC candidate.', linkReason: 'Meteorological conditions at destination.' });
+      } else {
+        add('Weather disruption' + (has(text, /\blvp|fog/i) ? ' — LVP/fog' : ''), { lof: 'THIRD_PARTY', ecCandidate: true, ecReason: 'Weather below minima or systemic conditions.', linkReason: 'Meteorological external event.' });
+      }
     }
-    if (has(text, /\bthunderstorm|\bweather|\bdiversion|\bbelow minima|\blvp\b|\bfog\b/i)) {
-      add('Weather disruption' + (has(text, /\bdiversion/i) ? ' — diversion below minima' : has(text, /\blvp|fog/i) ? ' — LVP/fog' : ''), { lof: 'THIRD_PARTY', ecCandidate: true, ecReason: 'Weather below minima or systemic LVP.', linkReason: 'Meteorological external event.' });
+    if (hasAtcFlow(text) && !events.some(function (e) { return /ctot|atfm|flow control/i.test(e.description); })) {
+      add('CTOT / ATFM restrictions' + (has(text, /weather|thunderstorm/i) ? ' due to weather disruption' : ''), { lof: 'THIRD_PARTY', ecCandidate: true, ecReason: 'Third-party flow control.', linkReason: 'External ATFM delay.' });
+    }
+    if (has(text, /\bdiversion|\bbelow minima\b/i) && !events.some(function (e) { return /diversion/i.test(e.description); })) {
+      add('Diversion below minima', { lof: 'OWN_OPERATION', ecCandidate: true, ecReason: 'Diversion consequence.', linkReason: 'Safety-mandated diversion.' });
     }
     if (has(text, /\bindustrial action|\bstrike\b/i)) {
       var own = has(text, /\bown\b|\bpilot union|\bcabin crew union|\bcarrier own|\bpilot staff participating/i) && !has(text, /\bhandler|\bbaggage|\batc\b|\bthird.party|\bcdg\b/i);
@@ -522,6 +584,9 @@ var DefendAbleDemoV2 = (function () {
     if (has(text, /\bno standby crew|\bno sby crew/i)) {
       add('No standby crew available', { lof: 'OWN_OPERATION', ecCandidate: false, ecReason: 'Reasonable measures — AIMS standby log.', linkReason: 'Crew recovery failure.' });
     }
+    if (has(text, /\b3\s*\+?\s*hours?\b|\bover\s+3\s+hour|\b3h\b|\b4h\s*\d+m\b|\bdelay.{0,30}3\s+hour/i)) {
+      add('Arrival delay exceeded 3 hours', { lof: 'OWN_OPERATION', ecCandidate: true, ecReason: 'Delay at arrival — measure against EC root cause chain.', delay: '3+ hours', linkReason: 'Passenger delay at destination.' });
+    }
     if (has(text, /\bond\b|\bovernight\b|\bnext day\b|\bfollowing day\b/i)) {
       add('Overnight delay — flight operated next day', { lof: 'OWN_OPERATION', ecCandidate: true, ecReason: 'OND consequence of prior chain — Sturgeon to next-day arrival.', delay: 'overnight', link: 'FINAL_EVENT', linkReason: 'Final passenger outcome.' });
     }
@@ -544,7 +609,7 @@ var DefendAbleDemoV2 = (function () {
   function buildKeywords(text, chain) {
     var kws = [];
     var rules = [
-      { re: /\bctot\b|\batfm\b|\batc delay/i, phrase: 'ATC/CTOT', tree: 'DT-01: ATC/ATFM' },
+      { re: /\bctots?\b|\batfm\b|\batc delay/i, phrase: 'ATC/CTOT', tree: 'DT-01: ATC/ATFM' },
       { re: /\bindustrial action|\bstrike\b/i, phrase: 'industrial action', tree: 'DT-07: Industrial action' },
       { re: /\bhandler|\bbaggage/i, phrase: 'baggage handler', tree: 'DT-07: Third-party handler' },
       { re: /\bpositioning\b/i, phrase: 'positioning', tree: 'DT-18: Positioning' },
@@ -568,9 +633,13 @@ var DefendAbleDemoV2 = (function () {
     if (has(text, /\bown\b.*\bstrike|\bpilot union|\bpilot staff participating|\bown pilot|\bown staff strike/i) && !has(text, /\bhandler|\batc industrial|\bthird.party/i)) return { v: 'CONCEDE', sub: 'Own-staff industrial action — Krüsemann. Not EC. Concede and review quantum/Art 8 only.', conditions: [] };
     if (has(text, /\bcrew illness|\bpilot sick|\bcaptain sick|\bcrew sick/i)) return { v: 'CONCEDE', sub: 'Crew illness — Lipton [2024] UKSC 24. Not EC.', conditions: [] };
     if (has(text, /\bpositioning\b/) && (has(text, /\bfuel leak|\b18\s*hour|\bwake rule/i) || chain.length >= 4)) return { v: 'JUDGMENT_REQUIRED', sub: 'Positioning complex chain — J1/J2 judgment nodes outstanding before DEFEND.', conditions: [] };
-    if (has(text, /\batc\b|\bctot\b/i) && has(text, /\bhandler|\bbaggage.*industrial|\bindustrial.*handler/i)) return { v: 'DEFEND_WITH_CONDITIONS', sub: 'ATC plus third-party handler strike — strong EC candidates. Confirm DISCO third-party classification and reasonable measures.', conditions: ['DISCO confirms handler strike is third-party', 'TOPS fleet state confirms no undeployed spare aircraft', 'Art 9 HOTAC for OND if applicable'] };
-    if (has(text, /\bctot\b|\batfm\b|\batc restriction/i) && has(text, /\bond\b|\bnext day\b/i)) return { v: 'DEFEND_WITH_CONDITIONS', sub: 'ATC/ATFM EC with OND — confirm Art 9 and Art 8.', conditions: ['HOTAC records on file', 'Art 8 offer evidenced'] };
-    if (has(text, /\bctot\b|\batfm\b|\bbirdstrike/i)) return { v: 'DEFEND', sub: 'Strong per se or established EC candidate. Pull evidence pack before response.', conditions: [] };
+    if (isWeatherArrivalDelayCase(text) && hasAtcFlow(text)) {
+      var apt = extractAirport(text) || 'destination';
+      return { v: 'DEFEND_WITH_CONDITIONS', sub: 'Weather at arrival with ATFM/CTOT consequence. Confirm METAR and Eurocontrol data — no diversion in ICC.', conditions: ['METAR/TAF confirms weather at ' + apt + ' at ETA', 'Eurocontrol ATFM/CTOT log on file', 'TOPS confirms 3+ hour arrival delay'] };
+    }
+    if (has(text, /\batc\b|\bctots?\b/i) && has(text, /\bhandler|\bbaggage.*industrial|\bindustrial.*handler/i)) return { v: 'DEFEND_WITH_CONDITIONS', sub: 'ATC plus third-party handler strike — strong EC candidates. Confirm DISCO third-party classification and reasonable measures.', conditions: ['DISCO confirms handler strike is third-party', 'TOPS fleet state confirms no undeployed spare aircraft', 'Art 9 HOTAC for OND if applicable'] };
+    if (hasAtcFlow(text) && has(text, /\bond\b|\bnext day\b/i)) return { v: 'DEFEND_WITH_CONDITIONS', sub: 'ATC/ATFM EC with OND — confirm Art 9 and Art 8.', conditions: ['HOTAC records on file', 'Art 8 offer evidenced'] };
+    if (hasAtcFlow(text) && has(text, /\bbirdstrike/i)) return { v: 'DEFEND', sub: 'Strong per se or established EC candidate. Pull evidence pack before response.', conditions: [] };
     if (has(text, /\bhidden defect|\bmanufacturing defect|\bno prior ad/i)) return { v: 'DEFEND_WITH_CONDITIONS', sub: 'Hidden defect candidate — Matkustaja C-385/23. OEM and AMOS compliance required.', conditions: ['OEM confirms unknown failure mode', 'Full AMOS maintenance history on file'] };
     if (has(text, /\blvp\b.*\bhydraulic|hydraulic.*\blvp|simultaneous/i)) return { v: 'JUDGMENT_REQUIRED', sub: 'Concurrent causes — neither alone may cross 3-hour threshold. Dominant cause judgment required.', conditions: [] };
     if (judgmentNodes && judgmentNodes.length) return { v: 'JUDGMENT_REQUIRED', sub: judgmentNodes.length + ' judgment node(s) require human decision or further evidence.', conditions: [] };
@@ -583,11 +652,12 @@ var DefendAbleDemoV2 = (function () {
     if (has(text, /\bpositioning\b/) && has(text, /\b18\s*hour|\bwake rule|\bfuel leak|\baog\b/i)) return CURATED.positioning(text);
     if (has(text, /\bown\b.*\bstrike|\bpilot union|\bpilot staff participating/i) && !has(text, /\bhandler|\batc industrial/i)) return CURATED.ownStrike(text);
     if ((has(text, /\bhandler|\bbaggage handler/i) && has(text, /\bindustrial|strike/i)) || (has(text, /\bcdg\b/i) && has(text, /\bindustrial|strike/i))) {
-      if (has(text, /\batc|ctot|delay/i)) return CURATED.atcHandlerOnd(text);
+      if (has(text, /\batc|ctots?|delay/i)) return CURATED.atcHandlerOnd(text);
     }
-    if (has(text, /\bctot\b|\batfm\b/i) && has(text, /\bond\b|\bnext day\b/i) && !has(text, /\bindustrial|strike|handler/i)) return CURATED.atc(text);
+    if (hasAtcFlow(text) && has(text, /\bond\b|\bnext day\b/i) && !has(text, /\bindustrial|strike|handler/i)) return CURATED.atc(text);
     if (t.indexOf('flight delayed ltn due to eurocontrol ctot') >= 0) return CURATED.atc(text);
-    if (has(text, /\bthunderstorm|\bdiversion.*valencia|\bbelow minima/i)) return CURATED.weather(text);
+    if (isWeatherArrivalDelayCase(text) && hasAtcFlow(text)) return CURATED.weatherCtotDelay(text);
+    if (isWeatherDiversionCase(text) && has(text, /\bthunderstorm|\bweather\b/i)) return CURATED.weather(text);
     if (has(text, /\bbirdstrike|\bbird strike|\bingestion\b/i)) return CURATED.birdstrike(text);
     if (has(text, /\batc industrial action\b/i) || (has(text, /\bindustrial action\b/i) && has(text, /\batc\b|\batfm\b|\beurocontrol\b/i) && !has(text, /\bhandler|\bbaggage/i))) return CURATED.industrialThirdParty(text);
     if (has(text, /\blate inbound|\bcascade|\bprior rotation/i) && has(text, /\bftl\b|\bout of hours|\bcrew.*limit/i)) return CURATED.cascade(text);
