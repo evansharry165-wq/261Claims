@@ -489,9 +489,10 @@ function caseFromFilingRecord(cf) {
   }
   var jur = cf.jurisdiction || 'england-wales';
   var langByJur = { 'england-wales': 'en', france: 'fr', spain: 'es' };
+  var locDate = cf.locDate || cf.createdAt || '';
   var cprDaysLeft = cf.cprDaysLeft;
-  if (cprDaysLeft == null && cf.locDate) {
-    var parsed = parseLocDateReceived(cf.locDate);
+  if (cprDaysLeft == null && locDate) {
+    var parsed = parseLocDateReceived(locDate);
     cprDaysLeft = Math.max(0, Math.round((new Date(parsed.getTime() + 21 * 86400000) - Date.now()) / 86400000));
   }
   if (cprDaysLeft == null) cprDaysLeft = 21;
@@ -508,7 +509,7 @@ function caseFromFilingRecord(cf) {
     flightDate: cf.flightDate || '',
     value: cf.value || '',
     type: cf.type || cf.claimType || 'EC261 — New claim',
-    locDate: cf.locDate || '',
+    locDate: locDate,
     stage: cf.stage || 'intake',
     cat: cf.cat || 'B',
     jurisdiction: jur,
@@ -526,14 +527,31 @@ function caseFromFilingRecord(cf) {
   };
 }
 
+function normaliseCaseFilingRecord(c) {
+  return caseFromFilingRecord(c);
+}
+
+function overlayFilingOnCase(existing, converted) {
+  return Object.assign({}, existing, converted, {
+    points: existing.points && existing.points.length ? existing.points : converted.points,
+    loaStatus: existing.loaStatus || converted.loaStatus,
+    triageNote: existing.triageNote || converted.triageNote,
+    classification: existing.classification || converted.classification,
+  });
+}
+
 function resolveCase(ref) {
   ref = typeof normaliseCaseRef === 'function' ? normaliseCaseRef(ref) : ref;
   var c = typeof getCase === 'function' ? getCase(ref) : null;
-  if (c) return c;
   if (typeof CaseFiling !== 'undefined') {
     var cf = CaseFiling.getCase(ref);
-    if (cf) return caseFromFilingRecord(cf);
+    if (cf) {
+      var converted = caseFromFilingRecord(cf);
+      if (c && converted) return overlayFilingOnCase(c, converted);
+      if (converted) return converted;
+    }
   }
+  if (c) return c;
   if (typeof uploadedCases !== 'undefined') {
     for (var i = 0; i < uploadedCases.length; i++) {
       if (uploadedCases[i].ref === ref) return uploadedCases[i];
@@ -613,9 +631,9 @@ function getCasesForUser(uid, stage) {
 function getMergedCasesForUser(uid, stage) {
   uid = normaliseAssigneeId(uid || (typeof getActiveUser === 'function' ? getActiveUser() : 'SB'));
   var merged = getCasesForUser(uid, stage);
-  var seen = {};
-  merged.forEach(function (c) {
-    seen[c.ref] = true;
+  var indexByRef = {};
+  merged.forEach(function (c, i) {
+    indexByRef[c.ref] = i;
   });
 
   if (typeof CaseFiling !== 'undefined') {
@@ -623,12 +641,15 @@ function getMergedCasesForUser(uid, stage) {
     if (stage) opts.stage = stage;
     try {
       CaseFiling.listCases(opts).forEach(function (cf) {
-        if (seen[cf.ref]) return;
         var converted = caseFromFilingRecord(cf);
         if (!converted) return;
         if (stage && converted.stage !== stage) return;
-        merged.push(converted);
-        seen[cf.ref] = true;
+        if (indexByRef[converted.ref] != null) {
+          merged[indexByRef[converted.ref]] = overlayFilingOnCase(merged[indexByRef[converted.ref]], converted);
+        } else {
+          merged.push(converted);
+          indexByRef[converted.ref] = merged.length - 1;
+        }
       });
     } catch (e) { /* filing store unavailable */ }
   }
@@ -637,9 +658,12 @@ function getMergedCasesForUser(uid, stage) {
     uploadedCases.forEach(function (c) {
       if (!caseAssignedToUser(c, uid)) return;
       if (stage && c.stage !== stage) return;
-      if (seen[c.ref]) return;
-      merged.push(c);
-      seen[c.ref] = true;
+      if (indexByRef[c.ref] != null) {
+        merged[indexByRef[c.ref]] = Object.assign({}, merged[indexByRef[c.ref]], c);
+      } else {
+        merged.push(c);
+        indexByRef[c.ref] = merged.length - 1;
+      }
     });
   }
 
