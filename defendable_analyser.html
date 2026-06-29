@@ -3,163 +3,141 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DefendAble — Intelligence Engine</title>
+<title>DefendAble — Intelligence Engine v2</title>
 <style>
-:root{--or:#FF6600;--orl:#FFF0E6;--orm:#FFD4B3;--dk:#1A1A2E;--wh:#FFFFFF;--gy:#F7F7F7;--bd:#E2E2E2;--t2:#555;--t3:#888;--gn:#16A34A;--gnl:#DCFCE7;--am:#D97706;--aml:#FEF3C7;--rd:#DC2626;--rdl:#FEE2E2;--bl:#1D4ED8;--bll:#EBF3FB;--pu:#7C3AED}
+:root{--orange:#FF6600;--orange-light:#FFF0E6;--orange-mid:#FFD4B3;--dark:#1A1A2E;--white:#FFFFFF;--grey:#F7F7F7;--border:#E2E2E2;--text2:#555555;--text3:#888888;--green:#16A34A;--green-light:#DCFCE7;--amber:#D97706;--amber-light:#FEF3C7;--red:#DC2626;--red-light:#FEE2E2;--blue:#1D4ED8;--blue-light:#EBF3FB;--purple:#7C3AED;--purple-light:#EDE9FE}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:Arial,sans-serif;background:#EFEFEF;color:var(--dk);font-size:13px;min-height:100vh}
-.hdr{background:var(--dk);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;border-bottom:3px solid var(--or);position:sticky;top:0;z-index:50}
-.logo{font-size:22px;font-weight:900;color:var(--or)}
+body{font-family:Arial,sans-serif;background:#EFEFEF;color:var(--dark);font-size:13px;min-height:100vh}
+.hdr{background:var(--dark);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;border-bottom:3px solid var(--orange);position:sticky;top:0;z-index:50}
+.logo{font-size:22px;font-weight:900;color:var(--orange)}
 .logo-s{font-size:11px;color:rgba(255,255,255,.4);margin-left:8px}
-.badge{background:var(--or);color:#fff;font-size:9px;font-weight:700;padding:3px 9px;border-radius:2px;letter-spacing:.8px}
+.badge{background:var(--white);color:var(--orange);font-size:9px;font-weight:700;padding:3px 9px;border-radius:2px;letter-spacing:.8px;text-transform:uppercase}
 .wrap{max-width:1400px;margin:0 auto;padding:20px 18px}
-.icard{background:#fff;border:2px solid var(--or);border-radius:4px;padding:20px 24px;margin-bottom:16px}
-.ey{font-size:9px;font-weight:700;color:var(--or);letter-spacing:1.2px;text-transform:uppercase;margin-bottom:4px}
+.icard{background:var(--white);border:2px solid var(--orange);border-radius:4px;padding:20px 24px;margin-bottom:16px}
+.ey{font-size:9px;font-weight:700;color:var(--orange);letter-spacing:1.2px;text-transform:uppercase;margin-bottom:4px}
 .it{font-size:16px;font-weight:700;margin-bottom:3px}
-.is{font-size:11px;color:var(--t2);margin-bottom:12px;line-height:1.5}
+.is{font-size:11px;color:var(--text2);margin-bottom:12px;line-height:1.5}
 .irow{display:flex;gap:10px;align-items:flex-start}
-textarea{flex:1;border:1.5px solid var(--bd);border-radius:4px;padding:10px 12px;font-size:13px;font-family:Arial;color:var(--dk);resize:vertical;min-height:80px;line-height:1.55;background:var(--gy)}
-textarea:focus{outline:none;border-color:var(--or);background:#fff}
-.abtn{background:var(--or);color:#fff;border:none;border-radius:4px;padding:0 20px;height:80px;font-size:13px;font-weight:700;cursor:pointer;min-width:130px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;transition:background .15s}
+textarea{flex:1;border:1.5px solid var(--border);border-radius:4px;padding:10px 12px;font-size:13px;font-family:Arial;color:var(--dark);resize:vertical;min-height:90px;line-height:1.55;background:var(--grey)}
+textarea:focus{outline:none;border-color:var(--orange);background:var(--white)}
+.abtn{background:var(--orange);color:var(--white);border:none;border-radius:4px;padding:0 20px;min-height:90px;font-size:13px;font-weight:700;cursor:pointer;min-width:130px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
 .abtn:hover{background:#E05500}
 .abtn:disabled{background:#ccc;color:#999;cursor:not-allowed}
 .chips{margin-top:10px;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
-.chl{font-size:10px;color:var(--t3);font-weight:600}
-.ch{background:var(--orl);border:1px solid var(--orm);color:var(--or);font-size:10px;padding:3px 8px;border-radius:2px;cursor:pointer;font-weight:600}
-.ch:hover{background:var(--orm)}
-.sbar{display:none;background:var(--dk);color:#fff;padding:10px 16px;border-radius:4px;margin-bottom:14px;font-size:11px;align-items:center;gap:8px}
-.sbar.on{display:flex}
-.spin{width:13px;height:13px;border:2px solid rgba(255,255,255,.3);border-top-color:var(--or);border-radius:50%;animation:sp .8s linear infinite;flex-shrink:0}
+.chl{font-size:10px;color:var(--text3);font-weight:600}
+.ch{background:var(--orange-light);border:1px solid var(--orange-mid);color:var(--orange);font-size:10px;padding:3px 8px;border-radius:2px;cursor:pointer;font-weight:600}
+.ch:hover{background:var(--orange-mid)}
+.pbar{display:none;background:var(--dark);color:var(--white);padding:12px 16px;border-radius:4px;margin-bottom:14px}
+.pbar.on{display:block}
+.psteps{display:flex;gap:16px;flex-wrap:wrap}
+.pstep{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:600;color:rgba(255,255,255,.45)}
+.pstep.on{color:var(--white)}
+.pstep.done{color:var(--green)}
+.spin{width:13px;height:13px;border:2px solid rgba(255,255,255,.3);border-top-color:var(--orange);border-radius:50%;animation:sp .8s linear infinite;flex-shrink:0}
+.pstep.done .spin{display:none}
+.pstep.done::before{content:'✓';color:var(--green);font-weight:900}
 @keyframes sp{to{transform:rotate(360deg)}}
-.ebar{display:none;background:var(--rdl);border:1px solid #FECACA;border-radius:4px;padding:10px 14px;font-size:11px;color:var(--rd);margin-bottom:14px}
+.ebar{display:none;background:var(--red-light);border:1px solid #FECACA;border-radius:4px;padding:10px 14px;font-size:11px;color:var(--red);margin-bottom:14px}
 .ebar.on{display:block}
 .results{display:none;gap:14px;margin-bottom:16px}
 .results.on{display:grid;grid-template-columns:1fr 1fr 1fr}
-.col{background:#fff;border-radius:4px;border:1.5px solid var(--bd);overflow:hidden;display:flex;flex-direction:column}
+.col{background:var(--white);border-radius:4px;border:1.5px solid var(--border);overflow:hidden;display:flex;flex-direction:column}
 .col-hdr{padding:13px 16px;flex-shrink:0}
-.col-hdr.or{background:var(--or)}
-.col-hdr.dk{background:var(--dk)}
-.col-hdr.gy{background:var(--gy);border-bottom:2px solid var(--or)}
+.col-hdr.or{background:var(--orange)}
+.col-hdr.dk{background:var(--dark)}
+.col-hdr.gy{background:var(--grey);border-bottom:2px solid var(--orange)}
 .col-eye{font-size:9px;font-weight:800;letter-spacing:1.3px;color:rgba(255,255,255,.7);margin-bottom:2px}
-.col-eye.ac{color:var(--or)}
-.col-title{font-size:14px;font-weight:700;color:#fff}
-.col-title.dk{color:var(--dk)}
+.col-title{font-size:14px;font-weight:700;color:var(--white)}
+.col-title.dk{color:var(--dark)}
 .col-sub{font-size:10px;color:rgba(255,255,255,.6);margin-top:2px}
-.col-body{padding:14px;overflow-y:auto;flex:1;max-height:72vh}
-.kwbox{background:var(--orl);border:1px solid var(--orm);border-radius:4px;padding:9px 11px;font-size:12.5px;line-height:1.85;margin-bottom:12px}
-.kw{background:var(--or);color:#fff;font-weight:700;padding:1px 6px;border-radius:2px;font-size:11px}
-.sdiv{display:flex;align-items:center;gap:8px;margin:5px 0 10px}
-.sdl{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--t3);white-space:nowrap}
-.sline{flex:1;height:1px;background:var(--bd)}
-.trig{border:1.5px solid var(--bd);border-radius:4px;margin-bottom:8px;overflow:hidden}
-.trh{background:var(--gy);padding:6px 10px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
-.trkw{background:var(--or);color:#fff;font-size:10px;font-weight:700;padding:2px 6px;border-radius:2px}
-.trar{color:var(--t3);font-size:10px}
-.trtr{font-size:10.5px;font-weight:700;color:var(--dk)}
-.trb{padding:8px 10px}
-.trrow{display:flex;align-items:flex-start;gap:6px;margin-bottom:5px;font-size:11px}
-.trrow:last-child{margin-bottom:0}
-.trsys{background:var(--dk);color:#fff;font-size:9px;font-weight:700;padding:2px 5px;border-radius:2px;white-space:nowrap;flex-shrink:0;margin-top:1px}
-.trdoc{color:var(--t2);line-height:1.35}
-.trpur{font-size:10px;color:var(--t3);margin-top:1px}
-.nd{border-radius:4px;margin-bottom:8px;overflow:hidden;border:1.5px solid var(--bd)}
-.ndh{padding:7px 10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:#FAFAFA}
+.col-body{padding:14px;overflow-y:auto;flex:1;max-height:78vh}
+.cstruct{background:var(--orange-light);border:1px solid var(--orange-mid);border-radius:4px;padding:9px 11px;font-size:11px;line-height:1.55;margin-bottom:12px;color:var(--text2)}
+.cevent{border:1.5px solid var(--border);border-radius:4px;margin-bottom:4px;overflow:hidden}
+.cevent.brk{border-color:var(--red);border-width:2px}
+.cevh{padding:8px 10px;background:#FAFAFA}
+.cenum{background:var(--orange);color:var(--white);font-size:10px;font-weight:800;padding:2px 7px;border-radius:2px;margin-right:6px}
+.cedesc{font-size:11.5px;font-weight:700;color:var(--dark);line-height:1.4}
+.cemeta{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+.cetag{font-size:9px;font-weight:700;padding:2px 6px;border-radius:2px}
+.cetag.lof{background:var(--dark);color:var(--white)}
+.cetag.ec{background:var(--green-light);color:var(--green)}
+.cetag.nec{background:var(--red-light);color:var(--red)}
+.cetag.jud{background:var(--amber-light);color:var(--amber)}
+.cetag.unk{background:var(--blue-light);color:var(--blue)}
+.cetag.disc{background:var(--purple-light);color:var(--purple)}
+.carr{text-align:center;color:var(--text3);font-size:14px;padding:2px 0}
+.cbrk{background:var(--red-light);color:var(--red);font-size:9px;font-weight:800;padding:3px 8px;border-radius:2px;margin-top:6px;display:inline-block}
+.kwpills{display:flex;flex-wrap:wrap;gap:4px;margin-top:10px}
+.kwpill{background:var(--orange-light);border:1px solid var(--orange-mid);color:var(--orange);font-size:9px;font-weight:600;padding:3px 7px;border-radius:2px}
+.kwbox{background:var(--orange-light);border:1px solid var(--orange-mid);border-radius:4px;padding:9px 11px;font-size:12px;line-height:1.85;margin-top:10px}
+.kw{background:var(--orange);color:var(--white);font-weight:700;padding:1px 6px;border-radius:2px;font-size:11px}
+.sdiv{display:flex;align-items:center;gap:8px;margin:10px 0 8px}
+.sdl{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);white-space:nowrap}
+.sline{flex:1;height:1px;background:var(--border)}
+.collapse-hdr{font-size:10px;font-weight:700;color:var(--text2);cursor:pointer;padding:6px 0;display:flex;justify-content:space-between;align-items:center}
+.collapse-body{display:block}
+.collapse-body.hide{display:none}
+.nd{border-radius:4px;margin-bottom:8px;overflow:hidden;border:1.5px solid var(--border)}
+.ndh{padding:7px 10px;display:flex;align-items:flex-start;gap:8px;flex-wrap:wrap;background:#FAFAFA}
 .ndid{font-size:9.5px;font-weight:800;padding:2px 6px;border-radius:2px;flex-shrink:0}
-.ndid.u{background:var(--dk);color:#fff}
-.ndid.d{background:var(--or);color:#fff}
-.ndid.s{background:var(--pu);color:#fff}
-.ndq{font-size:11.5px;font-weight:700;flex:1;color:var(--dk)}
+.ndid.u{background:var(--dark);color:var(--white)}
+.ndid.d{background:var(--orange);color:var(--white)}
+.ndid.s{background:var(--purple);color:var(--white)}
+.ndid.j{background:var(--amber);color:var(--white)}
+.ndq{font-size:11.5px;font-weight:700;flex:1;color:var(--dark);line-height:1.35}
 .ndst{font-size:10px;font-weight:700;padding:2px 6px;border-radius:2px;flex-shrink:0}
-.ndst.green{background:var(--gnl);color:var(--gn)}
-.ndst.amber{background:var(--aml);color:var(--am)}
-.ndst.red{background:var(--rdl);color:var(--rd)}
-.ndst.info{background:var(--bll);color:var(--bl)}
-.ndb{padding:8px 10px;background:#fff;border-top:1px solid var(--bd)}
-.ndc{font-size:11px;color:var(--t2);line-height:1.5;margin-bottom:4px}
-.nda{font-size:10px;color:var(--t3);font-style:italic}
-.ndd{font-size:10px;color:var(--bl);margin-top:3px;font-weight:600}
+.ndst.green{background:var(--green-light);color:var(--green)}
+.ndst.amber{background:var(--amber-light);color:var(--amber)}
+.ndst.red{background:var(--red-light);color:var(--red)}
+.ndst.info{background:var(--blue-light);color:var(--blue)}
+.ndb{padding:8px 10px;background:var(--white);border-top:1px solid var(--border)}
+.ndc{font-size:11px;color:var(--text2);line-height:1.5;margin-bottom:4px}
+.nda{font-size:10px;color:var(--text3);font-style:italic}
+.ndcc{font-size:10px;color:var(--blue);margin-top:3px;font-weight:600}
+.jbox{background:var(--amber-light);border:2px solid var(--amber);border-radius:4px;padding:12px;margin-bottom:10px}
+.jlbl{font-size:9px;font-weight:800;letter-spacing:1px;color:var(--amber);text-transform:uppercase;margin-bottom:8px}
+.jcols{display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:10px}
+.jcol h4{font-size:9px;text-transform:uppercase;color:var(--text3);margin-bottom:4px}
+.jcol ul{margin:0;padding-left:14px;line-height:1.5;color:var(--text2)}
+.dynreq{border-left:3px solid var(--purple);padding:8px 10px;margin-bottom:8px;background:var(--purple-light);border-radius:0 4px 4px 0;font-size:11px}
+.dynlbl{font-size:9px;font-weight:800;color:var(--purple);margin-bottom:4px}
 .vbox{border-radius:4px;padding:16px;text-align:center;margin-bottom:14px}
-.vw{font-size:30px;font-weight:900;letter-spacing:-.5px;margin-bottom:6px}
-.vw.defend{color:var(--gn)}
-.vw.settle{color:var(--am)}
-.vw.investigate{color:var(--bl)}
-.vw.escalate,.vw.concede{color:var(--rd)}
-.narr{background:var(--dk);color:#fff;border-radius:4px;padding:12px 18px;margin-bottom:14px;font-size:11px;line-height:1.55}
-.narr strong{color:var(--or);font-weight:700}
-.net-lbl{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--t3);margin:12px 0 6px}
-.net-inp{width:100%;border:1.5px solid var(--bd);border-radius:4px;padding:8px 12px;font-size:12px;font-family:Arial;color:var(--dk);background:var(--gy);min-height:44px;resize:vertical;line-height:1.45}
-.net-inp:focus{outline:none;border-color:var(--or);background:#fff}
-.chips-defeat{margin-top:8px}
-.ch-defeat{background:var(--rdl);border-color:#FECACA;color:var(--rd)}
-.ch-defeat:hover{background:#FECACA}
-.ndid.m{background:var(--am);color:#fff}
-.nd.measures{border-color:var(--am);border-width:2px}
-.trdbk{font-size:8px;color:var(--bl);font-weight:600;margin-top:2px}
-.vcond{font-size:10px;font-weight:700;color:var(--am);margin-top:6px;padding:6px 10px;background:rgba(255,255,255,.6);border-radius:3px;text-align:left}
-.vpull{font-size:10px;color:var(--t2);margin-top:8px;text-align:left}
-.vfs{text-align:left}
-.vf{display:flex;gap:5px;margin-bottom:5px;font-size:11px;line-height:1.4}
-.out-sub{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--t3);margin:12px 0 8px;padding-bottom:4px;border-bottom:1px solid var(--bd)}
-.ev-i{display:flex;align-items:flex-start;gap:6px;margin-bottom:7px;font-size:11px}
-.ev-n{color:var(--dk);line-height:1.3;font-weight:600}
-.ev-s{color:var(--t3);font-size:10px;margin-top:1px}
-.chi{display:flex;align-items:flex-start;gap:6px;margin-bottom:6px;font-size:11px;line-height:1.4}
-.chd{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:3px}
-.chd.green{background:var(--gn)}
-.chd.amber{background:var(--am)}
-.chd.red{background:var(--rd)}
-.cht{color:var(--t2)}
-.empty{text-align:center;padding:48px 16px;color:var(--t3)}
-.empty-i{font-size:32px;margin-bottom:10px}
-.empty-t{font-size:13px;font-weight:700;color:var(--t2);margin-bottom:5px}
-.empty-s{font-size:11px;line-height:1.6}
-.foot{text-align:center;padding:14px;font-size:10px;color:var(--t3);border-top:1px solid var(--bd);margin-top:4px}
-.flow{display:none;background:#fff;border:1.5px solid var(--bd);border-radius:4px;padding:14px 18px;margin-bottom:14px}
-.flow.on{display:block}
-.flow-t{font-size:9px;font-weight:700;letter-spacing:1.1px;text-transform:uppercase;color:var(--t3);margin-bottom:10px}
-.flow-r{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
-.fs{display:flex;align-items:center;gap:6px;font-size:10px;font-weight:700;padding:6px 10px;border-radius:3px;border:1.5px solid var(--bd);color:var(--t3);background:var(--gy);transition:all .25s}
-.fs .fn{width:18px;height:18px;border-radius:50%;background:var(--bd);color:#fff;font-size:9px;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0}
-.fs.on{border-color:var(--or);color:var(--dk);background:var(--orl)}
-.fs.on .fn{background:var(--or)}
-.fs.done{border-color:var(--gn);color:var(--gn);background:var(--gnl)}
-.fs.done .fn{background:var(--gn)}
-.farr{color:var(--t3);font-size:12px}
-.mode{display:flex;align-items:center;gap:8px}
-.mtog{display:flex;border:1px solid rgba(255,255,255,.2);border-radius:3px;overflow:hidden}
-.mbtn{background:transparent;border:none;color:rgba(255,255,255,.5);font-size:9px;font-weight:700;padding:5px 10px;cursor:pointer;letter-spacing:.5px}
-.mbtn.on{background:var(--or);color:#fff}
-.mbtn:hover:not(.on){color:#fff;background:rgba(255,255,255,.08)}
-.api-panel{display:none;background:var(--bll);border:1px solid #BFDBFE;border-radius:4px;padding:10px 14px;margin-bottom:14px;font-size:11px;color:var(--bl)}
-.api-panel.on{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.api-panel input{flex:1;min-width:200px;border:1px solid #BFDBFE;border-radius:3px;padding:6px 10px;font-size:11px}
-.col.active{box-shadow:0 0 0 2px var(--or)}
-.col.wait{opacity:.55}
-.lscape{display:none;background:#fff;border:1.5px solid var(--bd);border-radius:4px;padding:14px 18px;margin-bottom:14px}
-.lscape.on{display:block}
-.lscape-compact{display:none;background:#fff;border:1px solid var(--bd);border-radius:4px;padding:10px 14px;margin-bottom:14px;font-size:11px;color:var(--t2);cursor:pointer}
-.lscape-compact.on{display:block}
-.lscape-compact:hover{border-color:var(--or)}
-.lscape-detail{display:none;margin-top:10px}
-.lscape-detail.open{display:block}
-.adv{font-size:10px;color:var(--t3);text-align:center;margin-top:8px}
-.adv a{color:var(--or);cursor:pointer;text-decoration:underline}
-.adv-panel{display:none;background:var(--bll);border:1px solid #BFDBFE;border-radius:4px;padding:10px 14px;margin-bottom:14px;font-size:11px}
-.adv-panel.on{display:block}
-.ls-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px}
-.ls-title{font-size:11px;font-weight:700;color:var(--dk)}
-.ls-stats{display:flex;gap:10px;flex-wrap:wrap}
-.ls-stat{font-size:10px;font-weight:700;padding:4px 10px;border-radius:3px;background:var(--gy);color:var(--t2)}
-.ls-stat em{font-style:normal;color:var(--or)}
-.ls-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
-.ls-col-h{font-size:9px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--t3);margin-bottom:6px;padding-bottom:4px;border-bottom:1px solid var(--bd)}
-.ls-items{display:flex;flex-wrap:wrap;gap:4px}
-.ls-tag{font-size:9px;font-weight:600;padding:3px 7px;border-radius:2px;border:1px solid var(--bd);color:var(--t3);background:#FAFAFA;line-height:1.3}
-.ls-tag.on{border-color:var(--or);color:var(--or);background:var(--orl)}
-.ls-tag.neg{border-color:var(--rd);color:var(--rd);background:var(--rdl)}
-.ls-tag.all{border-color:var(--gn);color:var(--gn);background:var(--gnl)}
-.ndid.c{background:var(--bl);color:#fff}
-@media(max-width:900px){.results.on{grid-template-columns:1fr}.col-body{max-height:none}.flow-r{flex-direction:column;align-items:flex-start}.farr{display:none}.ls-grid{grid-template-columns:1fr}}
+.vw{font-size:34px;font-weight:900;letter-spacing:-.5px;margin-bottom:6px}
+.vw.defend{color:var(--green)}
+.vw.defend-cond{color:var(--orange)}
+.vw.settle{color:var(--amber)}
+.vw.concede,.vw.escalate{color:var(--red)}
+.vw.judgment{color:var(--orange)}
+.vsub{font-size:11px;color:var(--text2);line-height:1.55;text-align:left}
+.vconds{text-align:left;margin-top:10px;font-size:11px;color:var(--text2)}
+.vconds ol{margin:6px 0 0 18px;line-height:1.55}
+.jout{background:var(--amber-light);border:1px solid var(--amber);border-radius:4px;padding:10px 12px;margin-top:10px;text-align:left;font-size:11px}
+.jout h4{font-size:9px;text-transform:uppercase;color:var(--amber);margin-bottom:6px}
+.out-sub{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin:12px 0 8px;padding-bottom:4px;border-bottom:1px solid var(--border)}
+.vf{display:flex;gap:6px;margin-bottom:6px;font-size:11px;line-height:1.4;align-items:flex-start}
+.artblk{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px}
+.artitem{font-size:10px;padding:8px;border-radius:4px;border:1px solid var(--border);text-align:center}
+.artitem.ok{background:var(--green-light);border-color:#BBF7D0;color:var(--green)}
+.artitem.bad{background:var(--red-light);border-color:#FECACA;color:var(--red)}
+.artitem.unk{background:var(--grey);color:var(--text3)}
+.ev-i{display:flex;align-items:flex-start;gap:6px;margin-bottom:8px;font-size:11px}
+.ev-n{font-weight:600;color:var(--dark);line-height:1.3}
+.ev-s{font-size:10px;color:var(--text3)}
+.pri{font-size:8px;font-weight:800;padding:1px 5px;border-radius:2px;margin-left:4px}
+.pri.CRITICAL{background:var(--red-light);color:var(--red)}
+.pri.IMPORTANT{background:var(--amber-light);color:var(--amber)}
+.pri.SUPPORTING{background:var(--grey);color:var(--text3)}
+.ip-i{font-size:11px;margin-bottom:6px;padding:6px 8px;background:var(--grey);border-radius:4px;line-height:1.4}
+.chi{display:flex;align-items:flex-start;gap:8px;margin-bottom:8px;font-size:11px;line-height:1.45}
+.chd{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:4px}
+.chd.green{background:var(--green)}
+.chd.amber{background:var(--amber)}
+.chd.red{background:var(--red)}
+.cht{color:var(--text2);flex:1}
+.foot{text-align:center;padding:14px;font-size:10px;color:var(--text3);border-top:1px solid var(--border);margin-top:4px}
+.empty{text-align:center;padding:40px 16px;color:var(--text3)}
+.empty-t{font-size:13px;font-weight:700;color:var(--text2);margin-bottom:5px}
+@media(max-width:900px){.results.on{grid-template-columns:1fr}.col-body{max-height:none}.jcols{grid-template-columns:1fr}.artblk{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -169,251 +147,143 @@ textarea:focus{outline:none;border-color:var(--or);background:#fff}
     <span class="logo">DefendAble</span>
     <span class="logo-s">EC261 / UK261 Intelligence Engine</span>
   </div>
-  <div class="badge">INTELLIGENCE DEMO</div>
+  <div class="badge">Intelligence v2</div>
 </div>
 
 <div class="wrap">
-  <div class="narr">Paste an ICC disruption summary → DefendAble pulls evidence and applies the legal framework → <strong>DEFEND / SETTLE / CONCEDE</strong> before the solicitor opens the file.</div>
-
   <div class="icard">
-    <div class="it">ICC disruption summary</div>
-    <div class="is">Write it as ICC / Network Control would. Click an example below to try one.</div>
+    <div class="ey">Disruption Analysis</div>
+    <div class="it">Enter a disruption description</div>
+    <div class="is">Type exactly as ICC or Network Control would write it. DefendAble decomposes the causal chain, maps the evidence, and applies the full legal decision tree — showing its reasoning at every step.</div>
     <div class="irow">
-      <textarea id="inp" placeholder="e.g. Flight was overnight delayed in LTN due to ATC restrictions network wide. Flight was delayed by CTOTs in LTN until airport curfew was breached and flight OND. This was completed the next day on time."></textarea>
+      <textarea id="inp" placeholder="e.g. Flight delayed LTN due to Eurocontrol CTOT restriction, network-wide ATFM regulation in force. All carriers affected. Airport curfew breached. Flight OND — completed next day."></textarea>
       <button class="abtn" id="abtn" onclick="run()">
         <span style="font-size:20px">⚡</span>
         <span>Analyse</span>
       </button>
     </div>
-    <div class="net-lbl">Network context <span style="font-weight:400;color:var(--t3)">(optional — e.g. heavy delay day, spare aircraft status)</span></div>
-    <textarea class="net-inp" id="net" placeholder="Optional: what was happening across the network that day?"></textarea>
     <div class="chips">
       <span class="chl">Examples:</span>
       <span class="ch" onclick="sx('atc')">ATC / CTOT overnight</span>
-      <span class="ch" onclick="sx('wx')">Weather diversion</span>
-      <span class="ch" onclick="sx('bird')">Birdstrike</span>
-      <span class="ch" onclick="sx('strike')">Industrial action (3rd party)</span>
-      <span class="ch" onclick="sx('tech')">Hidden defect</span>
+      <span class="ch" onclick="sx('weather')">Weather diversion</span>
+      <span class="ch" onclick="sx('birdstrike')">Birdstrike</span>
+      <span class="ch" onclick="sx('industrial')">Industrial action</span>
+      <span class="ch" onclick="sx('cascade')">Cascading delay</span>
+      <span class="ch" onclick="sx('technical')">Hidden defect</span>
       <span class="ch" onclick="sx('medical')">Medical emergency</span>
       <span class="ch" onclick="sx('security')">Security alert</span>
       <span class="ch" onclick="sx('disruptive')">Disruptive passenger</span>
-    </div>
-    <div class="chips chips-defeat">
-      <span class="ch ch-defeat" onclick="sx('crewillness')">Crew illness</span>
-      <span class="ch ch-defeat" onclick="sx('ownstrike')">Own-staff strike</span>
-      <span class="ch ch-defeat" onclick="sx('cascade')">Cascade delay</span>
-    </div>
-  </div>
-
-  <div class="adv-panel" id="advPanel">
-    <div style="font-weight:700;margin-bottom:6px">Live AI mode (optional — for testing only)</div>
-    <div style="margin-bottom:8px;color:var(--t2)">Uses Claude to analyse custom text. Requires an Anthropic API key. The demo examples above work without this.</div>
-    <input type="password" id="apiKey" placeholder="Anthropic API key" autocomplete="off" style="width:100%;border:1px solid #BFDBFE;border-radius:3px;padding:6px 10px;font-size:11px;margin-bottom:6px">
-    <button class="ch" style="font-size:11px;padding:5px 12px" onclick="saveApiKey()">Save key</button>
-    <button class="ch" style="font-size:11px;padding:5px 12px;margin-left:6px" onclick="setMode('live')">Use Live AI</button>
-    <button class="ch" style="font-size:11px;padding:5px 12px;margin-left:6px" onclick="setMode('demo')">Back to demo</button>
-  </div>
-  <div class="adv" id="advLink"><a onclick="toggleAdv()">Advanced options</a></div>
-
-  <div class="flow" id="flow">
-    <div class="flow-r">
-      <div class="fs" id="fs1"><span class="fn">1</span> ICC</div>
-      <span class="farr">→</span>
-      <div class="fs" id="fs2"><span class="fn">2</span> Evidence pulls</div>
-      <span class="farr">→</span>
-      <div class="fs" id="fs3"><span class="fn">3</span> Legal analysis</div>
-      <span class="farr">→</span>
-      <div class="fs" id="fs4"><span class="fn">4</span> Recommendation</div>
-    </div>
-  </div>
-
-  <div class="lscape-compact" id="lscapeCompact" onclick="toggleLandscape()"></div>
-  <div class="lscape" id="lscape">
-    <div class="ls-hdr">
-      <div class="ls-title">Legal checks screened</div>
-      <div class="ls-stats" id="lsStats"></div>
-    </div>
-    <div class="lscape-detail ls-grid" id="lscapeDetail">
-      <div><div class="ls-col-h">Claims</div><div class="ls-items" id="lsClaims"></div></div>
-      <div><div class="ls-col-h">Defences</div><div class="ls-items" id="lsDefences"></div></div>
-      <div><div class="ls-col-h">Legal issues</div><div class="ls-items" id="lsLegal"></div></div>
+      <span class="ch" onclick="sx('ownStrike')">Own staff strike</span>
+      <span class="ch" onclick="sx('positioning')">Positioning flight complex</span>
     </div>
   </div>
 
   <div class="ebar" id="eb"></div>
-  <div class="sbar" id="sb"><div class="spin"></div><span id="st">Analysing disruption...</span></div>
+
+  <div class="pbar" id="pbar">
+    <div class="psteps">
+      <div class="pstep" id="ps1"><div class="spin"></div><span>Decomposing causal chain...</span></div>
+      <div class="pstep" id="ps2"><div class="spin"></div><span>Mapping evidence requirements...</span></div>
+      <div class="pstep" id="ps3"><div class="spin"></div><span>Applying legal decision tree...</span></div>
+    </div>
+  </div>
 
   <div class="results" id="res">
     <div class="col">
       <div class="col-hdr or">
-        <div class="col-title">Evidence &amp; keywords</div>
-        <div class="col-sub">What to pull from Databricks</div>
+        <div class="col-eye">Engine A</div>
+        <div class="col-title">Causal Chain Map</div>
+        <div class="col-sub">Multi-cause decomposition</div>
       </div>
       <div class="col-body" id="bodyA">
-        <div class="empty">
-          <div class="empty-i">🔍</div>
-          <div class="empty-t">Awaiting disruption input</div>
-          <div class="empty-s">Keywords from the ICC text map to evidence pulls — TOPS, AIMS, Eurocontrol, etc.</div>
-        </div>
+        <div class="empty"><div class="empty-t">Awaiting analysis</div></div>
       </div>
     </div>
     <div class="col">
       <div class="col-hdr dk">
-        <div class="col-title">Legal analysis</div>
-        <div class="col-sub">Claim heads · EC test · Reasonable measures</div>
+        <div class="col-eye">Engine B</div>
+        <div class="col-title">Legal Decision Tree</div>
+        <div class="col-sub">Universal · Disruption · Judgment nodes</div>
       </div>
       <div class="col-body" id="bodyB">
-        <div class="empty">
-          <div class="empty-i">⚖️</div>
-          <div class="empty-t">Awaiting disruption input</div>
-          <div class="empty-s">Runs the legal framework — including reasonable measures on every case.</div>
-        </div>
+        <div class="empty"><div class="empty-t">Awaiting analysis</div></div>
       </div>
     </div>
     <div class="col">
       <div class="col-hdr gy">
-        <div class="col-title dk">Recommendation</div>
-        <div style="font-size:10px;color:var(--t2);margin-top:2px">Verdict, gaps, and next steps</div>
+        <div class="col-title dk">Case Output</div>
+        <div style="font-size:10px;color:var(--text2);margin-top:2px">Verdict · Art 8/9 · Evidence · Reasoning</div>
       </div>
       <div class="col-body" id="bodyC">
-        <div class="empty">
-          <div class="empty-i">📋</div>
-          <div class="empty-t">Awaiting analysis</div>
-          <div class="empty-s">DEFEND, SETTLE, or CONCEDE — with evidence gaps flagged.</div>
-        </div>
+        <div class="empty"><div class="empty-t">Awaiting analysis</div></div>
       </div>
     </div>
   </div>
 
-  <div class="foot">DefendAble Intelligence Demo</div>
+  <div class="foot">DefendAble · EC261/UK261 Intelligence Engine · 20 disruption types · 16 universal legal nodes · 3-pass chain analysis</div>
 </div>
 
-<script src="defendable_framework.js"></script>
-<script src="defendable_engine.js"></script>
 <script>
-var analysisMode='demo';
-function toggleAdv(){
-  document.getElementById('advPanel').classList.toggle('on');
-}
-function toggleLandscape(){
-  document.getElementById('lscapeDetail').classList.toggle('open');
-  document.getElementById('lscape').classList.toggle('on');
-}
-function setMode(m){
-  analysisMode=m;
-  if(m==='live'){document.getElementById('advPanel').classList.add('on');}
-}
-function saveApiKey(){
-  var k=document.getElementById('apiKey').value.trim();
-  if(k){try{sessionStorage.setItem('dfa_anthropic_key',k);}catch(e){}}
-  he();se('API key saved.');
-  setTimeout(he,2000);
-}
-(function(){
-  try{var k=sessionStorage.getItem('dfa_anthropic_key');if(k)document.getElementById('apiKey').value=k;}catch(e){}
-})();
+const PASS1_SYS = `You are DefendAble Pass 1 — the Chain Decomposition Engine for in-house aviation legal teams analysing ICC disruption summaries for EC261/UK261 claims.
 
-function flowStep(step){
-  var ids=['fs1','fs2','fs3','fs4'];
-  ids.forEach(function(id,i){
-    var el=document.getElementById(id);
-    el.classList.remove('on','done');
-    if(i<step)el.classList.add('done');
-    else if(i===step)el.classList.add('on');
-  });
-}
-function colState(a,b,c){
-  var cols=document.querySelectorAll('.col');
-  cols[0].className='col'+(a?' active':b?' wait':'');
-  cols[1].className='col'+(b?' active':c?' wait':'');
-  cols[2].className='col'+(c?' active':' wait');
-}
+YOUR ROLE: Establish the factual causal chain ONLY. Do NOT apply any legal test, do NOT reach conclusions about extraordinary circumstances, do NOT recommend a verdict, and do NOT identify evidence to pull. Facts and sequencing only.
 
-const EX={
-  atc:"Flight was overnight delayed in LTN due to ATC restrictions network wide. Flight was delayed by CTOTs in LTN until airport curfew was breached and flight OND. This was completed the next day on time.",
-  wx:"HC 1184 LTN–BCN 14/03/26. Thunderstorms BCN — approach below minima, mandatory ATC diversion Valencia. Standby LTN could not position — thunderstorms BCN. Passengers cared for Valencia, coach transfer arranged.",
-  bird:"G-EZAB birdstrike on approach MAN. Aircraft AOG — engine ingestion confirmed, mandatory EASA inspection required. Replacement aircraft unavailable. Flight cancelled. Passengers rebooked next day.",
-  strike:"ATC industrial action France — sector capacity reduced 60%. ATFM restrictions imposed Eurocontrol. All flights via French airspace delayed or cancelled. Third-party strike confirmed NOTAM.",
-  cascade:"Late inbound aircraft from BCN delayed due to weather on prior rotation. Crew reached FTL limits on inbound sector. No standby crew available LGW. Flight delayed 4h 20m. Same tail operating three sectors today.",
-  tech:"G-EZTK hydraulic fault identified during pre-flight checks LGW. MEL dispatch not possible — Category A defect. Aircraft AOG. Maintenance believe possible hidden manufacturing defect — no prior AD or service bulletin for this failure mode. No spare aircraft available. Flight cancelled.",
-  medical:"Flight EZY4356 BCN–LTN diverted to OPO due to passenger welfare incident — pax cardiac arrest. Severity of incident and time taken to disembark pax meant crew were out of hours. Standby A/C could not save the flight as none could make it in time due to airport curfew at OPO. Flight completed following day under EZY9356.",
-  security:"Flight delayed LGW due to security alert — suspicious item found in hold. Airport security authority mandated full hold search and passenger re-screening. Police attended. Two passengers offloaded. Baggage reconciliation required. Delay 3h 45m.",
-  disruptive:"Flight EZY7821 returned to gate at LGW after departure due to highly disruptive passenger — threatening behaviour toward cabin crew. Police met aircraft. Passenger and baggage offloaded. Baggage reconciliation required. Delay 1h 55m to departure. Arrival delay at destination 2h 10m.",
-  crewillness:"Flight EZY4412 LGW–BCN captain reported sick 90 minutes before report. no standby crew available within FDP window. Flight cancelled. Passengers rebooked next available.",
-  ownstrike:"Network disruption — cabin crew industrial action (own staff union). 14 flights cancelled LGW/LTN. Flight cancelled. NOT third-party action."
-};
+Read the ICC disruption summary and decompose it into a sequence of causal events in chronological order. Multi-cause chains are normal — a disruption may involve ATC delay, then crew FTL, then curfew breach. Each event is analysed independently in later passes.
 
-var NET={
-  atc:'Heavy ATFM day — network delay 35%. No spare tails at LTN overnight. Eurocontrol flow restrictions network-wide.',
-  wx:'Thunderstorms BCN and VLC. Standby at LTN could not position due to same weather system. No fleet recovery available.',
-  cascade:'Late inbound rotation. Weather root on prior BCN sector. No standby crew rostered at LGW for this duty period.',
-  crewillness:'Two captains reported sick at LGW base this morning. Standby captain was available but assigned to priority rotation EZY412.',
-  ownstrike:'Own-staff cabin crew strike — union ballot confirmed. NOT third-party. 14 cancellations across LGW/LTN.'
-};
+For each event in the causal chain identify:
+- eventNumber (integer, starting at 1)
+- description (plain English, one sentence)
+- lineOfFlying: OWN (carrier's own scheduled passenger operation), POSITIONING (deadhead/positioning sector for crew or aircraft), or THIRD PARTY (external actor — ATC, weather authority, airport security, passenger behaviour, etc.)
+- preliminaryECStatus: EC_CANDIDATE | NOT_EC | UNKNOWN | JUDGMENT — factual classification only, not a legal conclusion. Use JUDGMENT where the facts are insufficient to classify without evidence.
+- delayContribution (e.g. "2h 15m", "caused cancellation", "none — upstream only", or "unknown")
+- chainBreak (boolean) — true if this event breaks the causal link to the passenger delay (e.g. carrier had recovery opportunity that was not taken, or an intervening voluntary decision)
+- causedBy (eventNumber or null) — which prior event caused this one
+- discoveredFromEvidence (boolean, default false) — only true if the ICC summary itself references evidence that revealed this event
+- keywords: array of { phrase, relatedTo } — ICC phrases that map to this event
 
-function sx(k){
-  document.getElementById('inp').value=EX[k];
-  document.getElementById('net').value=NET[k]||'';
-}
+Also return:
+- causationStructure: 2-3 sentence overview of how events connect to the final passenger outcome
+- timingGaps: array of { gap, significance } — unexplained time periods or missing timestamps
+- ambiguities: array of { issue, whyItMatters } — factual uncertainties that later passes must resolve
+- keywords: top-level array of all ICC keywords identified with eventNumber
 
-const SYS=`You are DefendAble's legal intelligence engine for in-house aviation legal teams defending EC261/UK261 passenger compensation claims. You think and act exactly like a senior aviation solicitor with deep expertise in EC261, UK261, the Wallentin-Hermann two-limb test, and all relevant CJEU and UK case law. You cannot afford to miss anything.
+Return ONLY a single valid JSON object. No markdown fences. No preamble.`;
+const PASS2_SYS = `You are DefendAble Pass 2 — the Evidence Intelligence Engine for in-house aviation legal teams defending EC261/UK261 claims.
 
-Return ONLY a single valid JSON object. No markdown fences. No preamble. No explanation outside the JSON. The JSON must follow this exact structure:
+YOUR ROLE: Given an ICC disruption summary and the Pass 1 chain decomposition JSON, identify what evidence is needed, what is missing, what intervention points existed, and the status of Art 8 and Art 9 obligations. Do NOT apply the full legal decision tree or reach a verdict — that is Pass 3.
 
-{
-  "keywords": [
-    {
-      "phrase": "exact phrase from the input that triggered this",
-      "tree": "DT-X: Disruption Type Name",
-      "triggers": [
-        {
-          "system": "SYSTEM NAME",
-          "document": "specific document or data retrieved",
-          "purpose": "legal purpose of this evidence"
-        }
-      ]
-    }
-  ],
-  "universalHighlighted": "the original input text verbatim with each trigger keyword or phrase wrapped in <KW>phrase</KW> tags",
-  "nodes": [
-    {
-      "id": "U-1",
-      "type": "universal",
-      "question": "the legal question this node evaluates",
-      "status": "green",
-      "statusLabel": "CONFIRMED",
-      "conclusion": "what the system concludes written as the system reasoning through it out loud as a solicitor would",
-      "authority": "relevant case law or statutory provision",
-      "dataUsed": "what evidence or data was consulted to reach this conclusion"
-    }
-  ],
-  "evidencePack": [
-    {
-      "status": "collected",
-      "name": "document name",
-      "source": "system it comes from"
-    }
-  ],
-  "reasoningChain": [
-    {
-      "status": "green",
-      "text": "one plain-English sentence summarising this step in the reasoning"
-    }
-  ],
-  "verdict": "DEFEND",
-  "verdictSub": "2-3 sentence plain English explanation of why this verdict was reached and what the solicitor needs to do",
-  "verdictFlags": [
-    {
-      "type": "action",
-      "text": "specific action or flag for the solicitor"
-    }
-  ]
-}
+EVIDENCE SYSTEMS: TOPS (operational delay records, delay codes, flight data, tail line of flying, fleet state, diversion records), AIMS (crew scheduling, FDP records, standby log, rest calculations, sickness records), AMOS (maintenance records, defect log, MEL records, AOG records, inspection reports), DISCO (disruption classification), SafetyNet (safety reporting), HERMES (correspondence, PNR, booking records), MAX-OPS (passenger communications), Ogimet-API (METAR/TAF/SIGMET), SIGMET-feed, NOTAM-feed, Eurocontrol-NM-API (ATFM/CTOT), FlightStats-API, Flightradar24-API, Ground-handler-records (catering, HOTAC, reconciliation), OEM-records, Airport-wildlife-authority, Met-Office, DPM-Notes.
 
-Node types: universal for the 16 universal nodes, disruption for disruption-specific tree nodes, secondary for any secondary disruption analysis.
-Status values: green (confirmed/satisfied), amber (flagged/needs attention), red (risk/defence weakness), info (neutral information).
-Verdict values: DEFEND, SETTLE, CONCEDE, ESCALATE.
-Flag types: action (something the solicitor must do), risk (a legal risk), note (useful information).
+For each causal event in the chain, identify evidence pulls required. Flag items as dynamicTrigger: true when the evidence need was NOT obvious from the ICC summary alone but emerges from chain analysis.
+
+Return ONLY a single valid JSON object matching the Pass 2 schema. No markdown fences. No preamble.
+
+Required top-level keys: evidencePack, dynamicEvidenceRequests, interventionPoints, art9Status, art8Status, keywords, universalHighlighted.
+
+evidencePack items: status (collected|flagged|missing), name, source, priority (CRITICAL|IMPORTANT|SUPPORTING), dynamicTrigger (boolean), linkedEvent (number), purpose.
+
+dynamicEvidenceRequests items: triggeredBy, request, priority, legalReason, linkedEvent.
+
+interventionPoints items: description, outcome (taken|not_taken|unknown|not_possible), couldHavePrevented, linkedEvent, systemsToCheck.
+
+art9Status: triggered (boolean), meals/comms/hotel each compliant|non_compliant|unknown|not_triggered, notes.
+
+art8Status: triggered (boolean), evidenced (boolean), notes.`;
+const PASS3_SYS = `You are DefendAble Pass 3 — the Legal Analysis and Verdict Engine for in-house aviation legal teams defending EC261/UK261 passenger compensation claims. You think and act exactly like a senior aviation solicitor with deep expertise in EC261, UK261, the Wallentin-Hermann two-limb test, and all relevant CJEU and UK case law. You cannot afford to miss anything.
+
+You receive: (1) the ICC disruption summary, (2) Pass 1 chain decomposition JSON, (3) Pass 2 evidence intelligence JSON.
+
+Apply the FULL legal framework to EACH event in the causal chain independently. Multi-cause chains require per-event legal analysis — do not collapse the disruption into a single type. Identify chain breaks, judgment nodes requiring human decision, and produce a verdict reflecting genuine legal complexity.
+
+Return ONLY a single valid JSON object per DEFENDABLE_V2_SCHEMA. No markdown fences. No preamble.
+
+VERDICT values: DEFEND, DEFEND_WITH_CONDITIONS, SETTLE, CONCEDE, JUDGMENT_REQUIRED, ESCALATE.
+
+NODE types: universal, disruption, secondary, judgment, measures, claim.
+NODE status: green, amber, red, info.
+FLAG types: action, risk, judgment, note.
+
+JUDGMENT nodes (type: judgment) MUST include: question, factsFor (array), factsAgainst (array), resolvingEvidence, consequencesIfYes, consequencesIfNo, status: amber, statusLabel: JUDGMENT REQUIRED.
 
 UNIVERSAL NODES — run all relevant ones on every case:
 
@@ -449,210 +319,440 @@ U-15 ADR VS LITIGATION: CAA, CEDR, AviationADR up to 15000 pounds. Small claims 
 
 U-16 SETTLE VS DEFEND: Defend if EC clean, evidence complete, value justifies cost. Settle if evidence gaps, EC weak, or litigation cost exceeds value. Part 36 for claims over 10000 pounds. Concession warning: conceding EC without documenting reason creates precedent CMCs exploit.
 
-DISRUPTION TREES:
+DISRUPTION TREES (apply per chain event):
 
-DT-1 ATC/ATFM: Eurocontrol CTOT = extraordinary circumstances confirmed immediately, both limbs satisfied. TOPS delay code 81-89. Pešková (C-315/15): third-party ATC strike = EC. CRITICAL — CURFEW BREACH: if CTOT pushed flight past airport curfew causing overnight delay with next-day operation, the OND is a direct consequence of the EC event. Delay = scheduled arrival to actual next-day arrival. Art 9 hotel mandatory. Art 8 must have been offered once delay exceeded 5 hours. Pull: Eurocontrol ATFM data, CTOT confirmation, TOPS delay record, NOTAM, FlightStats cross-carrier corroboration.
+DT-01 ATC/ATFM: Eurocontrol CTOT = extraordinary circumstances, both limbs satisfied. TOPS delay code 81-89. Pešková (C-315/15). CURFEW BREACH/OND: delay = scheduled arrival to actual next-day arrival. Art 9 hotel mandatory. Pull: Eurocontrol ATFM, CTOT, TOPS, NOTAM, FlightStats.
 
-DT-2 WEATHER DESTINATION: METAR below ILS minima = EC. SIGMET = strongest corroboration. Mandatory ATC diversion instruction = Limb 2 satisfied. TAF foreseeability at departure = claimant vulnerability — address. Secondary weather blocking standby = independently satisfies Wallentin-Hermann. Pull: Ogimet METAR TAF SIGMET for destination origin and diversion airports, lightning data, Flightradar24 diversion track, TOPS diversion record, SafetyNet if crew weather decision.
+DT-02 WEATHER DESTINATION: METAR below minima = EC. Mandatory ATC diversion = Limb 2. Secondary weather blocking standby independently satisfies EC. Pull: Ogimet METAR/TAF/SIGMET, TOPS diversion, FR24 track.
 
-DT-3 WEATHER ORIGIN OR EN ROUTE: LVP in force at origin = systemic EC. De-icing routine = ordinary. De-icing systemic abnormal = may be EC. SNOWTAM plus authority runway closure = EC. Pull: origin METAR, LVP NOTAM, SNOWTAM, de-icing log.
+DT-03 WEATHER ORIGIN/EN ROUTE: LVP/SNOWTAM = systemic EC. Routine de-icing = ordinary. Pull: origin METAR, LVP NOTAM, SNOWTAM, de-icing log.
 
-DT-4 BIRDSTRIKE: Pešková — per se EC, both limbs automatically satisfied. AMOS mandatory inspection = primary evidence, without it claim unsubstantiated. Engine ingestion = borescope plus possible engine change. SafetyNet mandatory. Pull: AMOS full inspection record, SafetyNet, TOPS, airport wildlife authority.
+DT-04 BIRDSTRIKE: Pešková — per se EC. AMOS inspection mandatory. Pull: AMOS, SafetyNet, wildlife authority.
 
-DT-5 TECHNICAL: Van der Lans (C-257/14) — routine maintenance faults NOT EC. External cause: lightning strike to aircraft, ground damage = EC. Hidden defect: Germanwings (C-257/14) — not detectable despite proper maintenance = potentially EC. MEL dispatch possibility is critical node — if MEL dispatch was possible and carrier chose not to dispatch, voluntary grounding undermines EC argument. Pull: AMOS defect log, MEL record, maintenance compliance, SafetyNet, TOPS, OEM records.
+DT-05 TECHNICAL ROUTINE: Van der Lans — routine maintenance faults NOT EC. MEL dispatch node critical. Pull: AMOS defect log, MEL record, SafetyNet.
 
-DT-6 CREW AND FTL: FTL alone is NOT EC. Root cause mandatory first node. Sickness = ordinary. Prior ATC or weather causing FTL exhaustion: root cause determines EC. Standby crew available and not deployed = reasonable measures failure. Pull: AIMS FDP record, standby log, TOPS line of flying, DISCO.
+DT-06 CREW/FTL ROOT CAUSE: FTL alone NOT EC. Root cause mandatory. Lipton v BA Cityflyer [2024] UKSC 24 — crew illness NOT EC. Standby crew not deployed = reasonable measures failure. Pull: AIMS FDP, standby log, TOPS rotation.
 
-DT-7 INDUSTRIAL ACTION: First node = own staff vs third party. Krüsemann (C-601/17): own staff strike NOT EC — settle. Pešková: genuine third party (ATC authority, airport operator, independent handler) = EC. Pull: DISCO, NOTAM, published union or authority notice, TOPS.
+DT-07 INDUSTRIAL ACTION: Krüsemann (C-601/17): own staff NOT EC. Pešková: third party IS EC. First node: own vs third party. Pull: DISCO, NOTAM, union notice.
 
-DT-8 SECURITY: Externally initiated by authority = EC. Mandatory search or evacuation = externally imposed. Baggage reconciliation after offload = mandatory security regulation. Pull: SafetyNet, TOPS delay code 91-96, police or airport authority records, ground handler security log.
+DT-08 SECURITY: Authority-initiated = EC. Pull: SafetyNet, TOPS codes 91-96, police/airport records.
 
-DT-9 MEDICAL: Not inherent = EC. Carrier legally obliged to respond — mandatory not discretionary. Prior sector medical causing cascade: document causal chain. Delay extended beyond necessary = reasonable measures issue. Pull: SafetyNet, TOPS line of flying, Flightradar24 if diversion, ground handler medical log.
+DT-09 MEDICAL: Mandatory carrier response = EC. Pull: SafetyNet, TOPS, ground handler medical log.
 
-DT-10 DISRUPTIVE PASSENGER: External behaviour = EC. SafetyNet = primary evidence. Police attendance corroborates. Baggage reconciliation after offload mandatory. Pull: SafetyNet, TOPS, ground handler, police attendance record.
+DT-10 DISRUPTIVE PASSENGER: External behaviour = EC. Pull: SafetyNet, TOPS, police record.
 
-DT-11 NATURAL DISASTER: Volcanic ash SIGMET type VA, earthquake, government travel ban = EC. Foreseeability challenge for prolonged events. Pull: NOTAM, SIGMET, government notice, Met Office.
+DT-11 NATURAL DISASTER: Volcanic ash, earthquake, flood = EC. Pull: NOTAM, SIGMET, Met Office.
 
-DT-12 ATM SYSTEM FAILURE: NATS or Eurocontrol system outage = third-party infrastructure = EC. Cross-carrier impact corroborates. Pull: NOTAM, Eurocontrol statement, NATS notice, FlightStats.
+DT-12 ATM SYSTEM FAILURE: NATS/Eurocontrol outage = EC. Pull: NOTAM, Eurocontrol statement, FlightStats.
 
-DT-13 CASCADING ROTATION: Cascade itself NOT EC. Root cause at start of rotation chain determines EC. Pull full tail line of flying from TOPS — most important document. Recovery analysis mandatory. Alternative aircraft: pull TOPS fleet state. Pull: TOPS full rotation, Flightradar24 each sector, DISCO root cause.
+DT-13 CASCADING ROTATION: Cascade NOT EC — root cause at chain start. Pull full tail line of flying from TOPS. Pull: TOPS rotation, DISCO root cause, FR24 each sector.
 
-DT-14 HIDDEN DEFECT: Germanwings plus LE v TAP (C-74/19). Unknown failure mode plus within certified service life plus no prior AD or SB = potentially EC. AMOS maintenance compliance mandatory. Subsequent OEM AD or SB issued after the event = supportive evidence that failure mode was previously unknown. Pull: AMOS full maintenance history, OEM airworthiness directives, service bulletins, technical investigation report.
+DT-14 GOVERNMENT/POLITICAL: Travel ban, airspace closure = EC. Pull: NOTAM, DISCO, HERMES.
 
-EVIDENCE SYSTEMS: TOPS (operational delay records, delay codes, flight data, tail line of flying, fleet state, diversion records), AIMS (crew scheduling, FDP records, standby log, rest calculations), AMOS (maintenance records, defect log, MEL records, AOG records, inspection reports), DISCO (disruption classification), SafetyNet (safety reporting — mandatory for birdstrike, medical, security, disruptive passenger, technical incidents), HERMES (correspondence, PNR, booking records), MAX-OPS (passenger communications), Ogimet-API (METAR and TAF), SIGMET-feed, NOTAM-feed, Eurocontrol-NM-API (ATFM regulations, CTOT data), FlightStats-API (cross-carrier corroboration), Flightradar24-API (flight tracks and diversion confirmation), Lightning-data-Blitzortung-Vaisala, Met-Office, Ground-handler-records (catering, HOTAC, removal, reconciliation), DPM-Notes, ICC-internal-email, Airport-wildlife-authority, OEM-records.
+DT-15 DRONE INCURSION: Authority-mandated closure = EC. Pull: NOTAM, SafetyNet.
 
-KEY AUTHORITIES: Wallentin-Hermann v Alitalia C-549/07, Pešková v Travel Service C-315/15, Germanwings v Henning C-257/14, Van der Lans v KLM C-257/14, Krüsemann v TUIfly C-601/17, Folkerts v Air France C-11/11, Sturgeon v Condor C-402/07, LE v TAP Air Portugal C-74/19, Montreal Convention Arts 19 22 29.
+DT-16 PANDEMIC RESTRICTIONS: Government-imposed = EC if externally imposed. Pull: NOTAM, HERMES, DISCO.
 
-Be comprehensive. Surface every applicable legal issue including limitation, Art 9, Art 8, Art 10, Art 13, Montreal Convention, quantum, ADR routing, and reasonable measures — even when not mentioned in the description. Think like a senior aviation solicitor who cannot afford to miss anything. Return ONLY the JSON object.`;
+DT-17 SABOTAGE/TERRORISM: External threat = EC. Pull: SafetyNet, TOPS, security records.
 
-async function run(){
-  var inp=document.getElementById('inp').value.trim();
-  if(!inp){se('Please enter a disruption description.');return;}
-  var btn=document.getElementById('abtn');
-  btn.disabled=true;
-  he();
-  document.getElementById('res').classList.add('on');
-  document.getElementById('flow').classList.add('on');
-  flowStep(0);
-  colState(false,false,false);
-  ld();
-  var apiKey='';
-  try{apiKey=sessionStorage.getItem('dfa_anthropic_key')||document.getElementById('apiKey').value.trim();}catch(ex){}
-  if(analysisMode==='live'&&!apiKey){
-    btn.disabled=false;
-    hs();
-    document.getElementById('advPanel').classList.add('on');
-    se('Live AI needs an API key — open Advanced options below.');
-    return;
+DT-18 CREW ILLNESS: Lipton v BA Cityflyer [2024] UKSC 24 — NOT extraordinary circumstances. Internal crew shortages within carrier control. Do NOT defend on EC grounds. Pull: AIMS sickness record, roster adequacy.
+
+DT-19 POSITIONING FLIGHT: Operating crew positioning on earlier sector disrupted by prior event. Line-of-flying analysis: is delay on passenger sector caused by positioning chain? Root cause at positioning sector start determines EC. Carrier operational planning for crew positioning is within carrier control unless root cause is genuine EC on positioning sector. Pull: AIMS crew pairing log, TOPS line of flying both sectors, DISCO classification per sector.
+
+DT-20 18-HOUR WAKE RULE: CS FTL.1.225 / ORO.FTL.225 — combination of standby and FDP must not exceed 18 hours awake time. Fatigue-based crew unavailability following long awake period may be JUDGMENT node: was fatigue consequence of prior EC event or inadequate rostering? If crew member could not operate due to 18-hour wake rule after carrier-controlled standby/positioning chain, reasonable measures and rostering adequacy must be assessed. Pull: AIMS FDP record, standby log, rest calculations, wake time audit.
+
+EVIDENCE SYSTEMS: TOPS, AIMS, AMOS, DISCO, SafetyNet, HERMES, MAX-OPS, Ogimet-API, SIGMET-feed, NOTAM-feed, Eurocontrol-NM-API, FlightStats-API, Flightradar24-API, Ground-handler-records, OEM-records, Airport-wildlife-authority, Met-Office, DPM-Notes.
+
+KEY AUTHORITIES: Wallentin-Hermann v Alitalia C-549/07, Pešková v Travel Service C-315/15, Germanwings v Henning C-257/14, Van der Lans v KLM C-257/14, Krüsemann v TUIfly C-601/17, Folkerts v Air France C-11/11, Sturgeon v Condor C-402/07, LE v TAP Air Portugal C-74/19, Lipton v BA Cityflyer [2024] UKSC 24, Matkustaja A v Finnair C-385/23, Montreal Convention Arts 19 22 29.
+
+DEFENDABLE_V2_SCHEMA top-level keys:
+causationStructure, causalChain (enriched with legalECStatus, chainBreakReason), keywords, universalHighlighted, nodes, evidencePack, dynamicEvidenceRequests, interventionPoints, art9Status, art8Status, reasoningChain, verdict, verdictSub, verdictConditions (array, for DEFEND_WITH_CONDITIONS), judgmentNodesOutstanding (array of {id, question}), verdictFlags.
+
+Each node: id, type, question, status, statusLabel, conclusion, authority, dataUsed, chainConsequence, linkedEvent (optional).
+
+Be comprehensive. Surface every applicable legal issue. For multi-cause chains, show how each event's legal outcome affects the next. Use JUDGMENT_REQUIRED verdict when outstanding judgment nodes prevent final determination. Use DEFEND_WITH_CONDITIONS with numbered verdictConditions when defence depends on specific evidence. Return ONLY the JSON object.`;
+
+const EXAMPLES = {
+  atc: "Flight delayed LTN due to Eurocontrol CTOT restriction, network-wide ATFM regulation in force. All carriers affected. Airport curfew breached. Flight OND — completed next day.",
+  weather: "HC 1184 LTN-BCN 14/03/26. Thunderstorms BCN — approach below minima, mandatory ATC diversion Valencia. Standby LTN could not position — thunderstorms BCN. Passengers cared for Valencia, coach transfer arranged.",
+  birdstrike: "G-EZAB birdstrike on approach MAN. Aircraft AOG — engine ingestion confirmed, mandatory EASA inspection required. Replacement aircraft unavailable. Flight cancelled. Passengers rebooked next day.",
+  industrial: "ATC industrial action France — sector capacity reduced 60%. ATFM restrictions imposed Eurocontrol. All flights via French airspace delayed or cancelled. Third-party strike confirmed NOTAM.",
+  cascade: "Late inbound aircraft from BCN delayed due to weather on prior rotation. Crew reached FTL limits on inbound sector. No standby crew available LGW. Flight delayed 4h 20m.",
+  technical: "G-EZTK hydraulic fault identified during pre-flight checks LGW. MEL dispatch not possible — Category A defect. Aircraft AOG. Maintenance believe possible hidden manufacturing defect — no prior AD or service bulletin for this failure mode. No spare aircraft available. Flight cancelled.",
+  medical: "Flight EZY4356 BCN-LTN diverted to OPO due to passenger welfare incident — pax cardiac arrest. Severity of incident and time taken to disembark pax meant crew were out of hours. Standby A/C could not save flight as none could make it in time due to airport curfew at OPO. Flight completed following day.",
+  security: "Flight delayed LGW due to security alert — suspicious item found in hold. Airport security authority mandated full hold search and passenger re-screening. Police attended. Two passengers offloaded. Baggage reconciliation required. Delay 3h 45m.",
+  disruptive: "Flight EZY7821 returned to gate at LGW after departure due to highly disruptive passenger — threatening behaviour toward cabin crew. Police met aircraft. Passenger and baggage offloaded. Baggage reconciliation required. Delay 1h 55m to departure. Arrival delay at destination 2h 10m.",
+  ownStrike: "Pilot union strike — carrier own pilot staff participating. 40% of fleet grounded. 180 flights cancelled across the network. Passengers notified 4 days before disruption.",
+  positioning: "The flight was originally delayed because the operating crew were positioning on an earlier flight disrupted by ATC and weather. That aircraft was AOG (fuel leak), causing further delay and putting the crew out of hours. A replacement crew was sourced, but one crew member could not operate due to fatigue (18 hour wake rule) and there were no SBY crew available."
+};
+
+function sx(k){ document.getElementById('inp').value = EXAMPLES[k] || ''; }
+
+function parseClaudeJSON(rawText) {
+  let clean = (rawText || '').trim();
+  if (clean.startsWith('```')) {
+    clean = clean.replace(/^```json\s*/i, '').replace(/^```\s*/i, '');
+    clean = clean.replace(/\s*```$/, '').trim();
   }
-  try{
-    var netCtx=document.getElementById('net').value.trim();
-    await DefendAbleEngine.analyze(inp,{
-      mode:analysisMode,
-      apiKey:apiKey,
-      networkContext:netCtx,
-      onProgress:function(type,stage,result){
-        if(type==='stage'){
-          flowStep(stage==='parse'?0:stage==='engineA'?1:stage==='engineB'?2:stage==='output'?3:0);
-          if(stage==='parse'){ss('Reading ICC disruption summary…');colState(false,true,true);}
-          if(stage==='engineA'){ss('Engine A — parsing keywords and firing evidence triggers…');colState(true,false,true);}
-          if(stage==='engineB'){ss('Engine B — running universal nodes and legal decision tree…');colState(false,true,false);}
-          if(stage==='output'){ss('Synthesising evidence pack and verdict…');colState(false,false,true);}
-        }
-        if(type==='partial'){
-          if(stage==='A')rA(result,inp);
-          if(stage==='B')rB(result);
-        }
-        if(type==='done'){
-          rA(result,inp);
-          rB(result);
-          rC(result);
-          rLandscape(result);
-          flowStep(4);
-          colState(false,false,false);
-          document.querySelectorAll('.fs').forEach(function(el){el.classList.add('done');el.classList.remove('on');});
-          hs();
-        }
-      }
-    });
-  }catch(err){
-    hs();
-    flowStep(0);
-    colState(false,false,false);
-    se('Analysis failed: '+err.message);
-    var ep='<div class="empty"><div class="empty-i">❌</div><div class="empty-t">Analysis failed</div><div class="empty-s">'+e(err.message)+'</div></div>';
-    document.getElementById('bodyA').innerHTML=ep;
-    document.getElementById('bodyB').innerHTML=ep;
-    document.getElementById('bodyC').innerHTML=ep;
-  }
-  btn.disabled=false;
+  const start = clean.indexOf('{');
+  const end = clean.lastIndexOf('}');
+  if (start !== -1 && end !== -1) clean = clean.substring(start, end + 1);
+  return JSON.parse(clean);
 }
 
-function rA(r,orig){
-  var h='';
-  var hi=(r.universalHighlighted||orig||'').replace(/<KW>(.*?)<\/KW>/g,'<span class="kw">$1</span>');
-  h+='<div class="kwbox">'+hi+'</div>';
-  h+='<div class="sdiv"><div class="sdl">Evidence to pull</div><div class="sline"></div></div>';
-  var seen={};
-  (r.keywords||[]).forEach(function(k){
-    (k.triggers||[]).forEach(function(t){
-      var key=t.system+'|'+t.document;
-      if(seen[key])return;
-      seen[key]=1;
-      h+='<div class="trrow" style="margin-bottom:6px"><span class="trsys">'+e(t.system)+'</span><div><div class="trdoc">'+e(t.document)+'</div></div></div>';
-    });
+function esc(s) {
+  if (!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function setProgress(step) {
+  [1,2,3].forEach(function(n) {
+    const el = document.getElementById('ps' + n);
+    el.classList.remove('on','done');
+    if (n < step) el.classList.add('done');
+    else if (n === step) el.classList.add('on');
   });
-  if(r.pullCount)h+='<div style="font-size:10px;color:var(--t3);margin-top:8px">'+r.pullCount+' pull(s) queued to case file</div>';
-  document.getElementById('bodyA').innerHTML=h;
 }
 
-function rLandscape(r){
-  var ls=r.landscape;
-  if(!ls)return;
-  document.getElementById('lscapeCompact').classList.add('on');
-  document.getElementById('lscapeCompact').textContent=ls.claimsMatched+' of '+ls.claimsTotal+' claim heads · '+ls.defencesMatched+' of '+ls.defencesTotal+' defences · '+ls.legalMatched+' of '+ls.legalTotal+' legal issues screened — click to expand';
-  function tags(items,elId){
-    var h='';
-    for(var i=0;i<items.length;i++){
-      var it=items[i];
-      var cls='ls-tag'+(it.matched?(it.isNegative?' neg':' on'):'');
-      if(it.alwaysScreen&&it.matched)cls='ls-tag all';
-      h+='<span class="'+cls+'" title="'+(it.note||it.authority||'')+'">'+e(it.id)+' '+e(it.name.split('—')[0].trim())+'</span>';
-    }
-    document.getElementById(elId).innerHTML=h;
-  }
-  tags(ls.claims,'lsClaims');
-  tags(ls.defences,'lsDefences');
-  tags(ls.legal,'lsLegal');
+function showErr(msg) {
+  const el = document.getElementById('eb');
+  el.textContent = msg;
+  el.classList.add('on');
 }
 
-function rB(r){
-  var h='';
-  var nodes=r.nodes||[];
-  var measures=nodes.filter(function(n){return n.type==='measures';});
-  var rest=nodes.filter(function(n){return n.type!=='measures'&&n.type!=='claim';});
-  var shown=0;
-  var maxShow=5;
-  if(measures.length){
-    h+='<div class="sdiv"><div class="sdl">Reasonable measures</div><div class="sline"></div></div>';
-    h+=nd(measures[0],true);
-    shown++;
+function hideErr() { document.getElementById('eb').classList.remove('on'); }
+
+async function callClaude(system, userMsg) {
+  const resp = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true'
+    },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 4000,
+      system: system,
+      messages: [{ role: 'user', content: userMsg }]
+    })
+  });
+  if (!resp.ok) {
+    const er = await resp.json().catch(function(){ return {}; });
+    throw new Error((er.error && er.error.message) || 'API error ' + resp.status);
   }
-  for(var i=0;i<rest.length&&shown<maxShow;i++){
-    if(i===0&&measures.length)h+='<div class="sdiv" style="margin-top:12px"><div class="sdl">Key legal points</div><div class="sline"></div></div>';
-    else if(i===0)h+='<div class="sdiv"><div class="sdl">Key legal points</div><div class="sline"></div></div>';
-    h+=nd(rest[i]);
-    shown++;
-  }
-  if(rest.length+measures.length>maxShow){
-    h+='<div style="font-size:10px;color:var(--t3);padding:8px 0">+'+(rest.length+measures.length-maxShow)+' further checks screened</div>';
-  }
-  document.getElementById('bodyB').innerHTML=h||'<div style="color:var(--t3);font-size:11px;padding:8px">No analysis yet.</div>';
+  const data = await resp.json();
+  const raw = ((data.content || []).find(function(b){ return b.type === 'text'; }) || {}).text || '';
+  return parseClaudeJSON(raw);
 }
 
-function nd(n,isMeasures){
-  var ic=n.type==='measures'?'m':n.type==='disruption'?'d':'u';
-  var si=n.status==='green'?'✓':n.status==='amber'?'⚠':n.status==='red'?'✗':'·';
-  var q=n.question||'';
-  if(q.length>90)q=q.slice(0,87)+'…';
-  var c=n.conclusion||'';
-  if(c.length>220)c=c.slice(0,217)+'…';
-  return '<div class="nd'+(isMeasures?' measures':'')+'"><div class="ndh"><span class="ndst '+n.status+'">'+si+'</span><span class="ndq">'+e(q)+'</span></div><div class="ndb"><div class="ndc">'+e(c)+'</div></div></div>';
+async function run() {
+  const inp = document.getElementById('inp').value.trim();
+  if (!inp) { showErr('Please enter a disruption description.'); return; }
+  const btn = document.getElementById('abtn');
+  btn.disabled = true;
+  hideErr();
+  document.getElementById('res').classList.add('on');
+  document.getElementById('pbar').classList.add('on');
+  setProgress(1);
+  document.getElementById('bodyA').innerHTML = '<div class="empty"><div class="spin" style="margin:0 auto 12px;width:22px;height:22px;border-width:2.5px"></div><div class="empty-t">Pass 1 running...</div></div>';
+  document.getElementById('bodyB').innerHTML = '<div class="empty"><div class="empty-t">Awaiting Pass 2...</div></div>';
+  document.getElementById('bodyC').innerHTML = '<div class="empty"><div class="empty-t">Awaiting Pass 3...</div></div>';
+
+  let pass1, pass2, result;
+  try {
+    pass1 = await callClaude(PASS1_SYS,
+      'Analyse this ICC disruption description and return the chain decomposition JSON only:\n\n"' + inp + '"');
+    renderChain(pass1, null, inp);
+    setProgress(2);
+    document.getElementById('bodyB').innerHTML = '<div class="empty"><div class="spin" style="margin:0 auto 12px;width:22px;height:22px;border-width:2.5px"></div><div class="empty-t">Pass 2 running...</div></div>';
+
+    pass2 = await callClaude(PASS2_SYS,
+      'ICC disruption summary:\n"' + inp + '"\n\nPass 1 chain decomposition:\n' + JSON.stringify(pass1) +
+      '\n\nAnalyse the evidence requirements for this chain and return the evidence intelligence JSON only.');
+    setProgress(3);
+    document.getElementById('bodyC').innerHTML = '<div class="empty"><div class="spin" style="margin:0 auto 12px;width:22px;height:22px;border-width:2.5px"></div><div class="empty-t">Pass 3 running...</div></div>';
+
+    result = await callClaude(PASS3_SYS,
+      'ICC disruption summary:\n"' + inp + '"\n\nPass 1 chain decomposition:\n' + JSON.stringify(pass1) +
+      '\n\nPass 2 evidence analysis:\n' + JSON.stringify(pass2) +
+      '\n\nApply the full legal framework and return the complete analysis JSON only.');
+
+    if (!result.evidencePack && pass2.evidencePack) result.evidencePack = pass2.evidencePack;
+    if (!result.dynamicEvidenceRequests && pass2.dynamicEvidenceRequests) result.dynamicEvidenceRequests = pass2.dynamicEvidenceRequests;
+    if (!result.interventionPoints && pass2.interventionPoints) result.interventionPoints = pass2.interventionPoints;
+    if (!result.art9Status && pass2.art9Status) result.art9Status = pass2.art9Status;
+    if (!result.art8Status && pass2.art8Status) result.art8Status = pass2.art8Status;
+    if (!result.keywords && pass2.keywords) result.keywords = pass2.keywords;
+    if (!result.universalHighlighted && pass2.universalHighlighted) result.universalHighlighted = pass2.universalHighlighted;
+    if (!result.causalChain && pass1.causalChain) result.causalChain = pass1.causalChain;
+    if (!result.causationStructure && pass1.causationStructure) result.causationStructure = pass1.causationStructure;
+
+    renderChain(result, pass2, inp);
+    renderLegal(result);
+    renderOutput(result);
+    [1,2,3].forEach(function(n){ document.getElementById('ps'+n).classList.remove('on'); document.getElementById('ps'+n).classList.add('done'); });
+  } catch (err) {
+    const which = !pass1 ? 'Pass 1 (chain decomposition)' : !pass2 ? 'Pass 2 (evidence intelligence)' : 'Pass 3 (legal analysis)';
+    showErr(which + ' failed: ' + err.message + ' — please retry.');
+    const ep = '<div class="empty"><div class="empty-t">Analysis failed at ' + esc(which) + '</div><div style="font-size:11px;margin-top:8px">' + esc(err.message) + '</div></div>';
+    if (!pass1) document.getElementById('bodyA').innerHTML = ep;
+    else if (!pass2) document.getElementById('bodyB').innerHTML = ep;
+    else document.getElementById('bodyC').innerHTML = ep;
+    setProgress(0);
+    document.getElementById('pbar').classList.remove('on');
+  }
+  btn.disabled = false;
 }
 
-function rC(r){
-  var v=r.verdict||'DEFEND';
-  var vc=v==='DEFEND'?'defend':v==='ESCALATE'||v==='CONCEDE'?'concede':v==='INVESTIGATE'?'investigate':'settle';
-  var vbg=v==='DEFEND'?'var(--gnl)':v==='ESCALATE'||v==='CONCEDE'?'var(--rdl)':v==='INVESTIGATE'?'var(--bll)':'var(--aml)';
-  var h='<div class="vbox" style="background:'+vbg+'"><div class="vw '+vc+'">'+e(v)+'</div><div class="vsub">'+e(r.verdictSub||'')+'</div>'+(r.verdictConditional?'<div class="vcond">'+e(r.verdictConditional)+'</div>':'')+'</div>';
-  h+='<div class="out-sub">Next steps</div>';
-  var flags=(r.verdictFlags||[]).slice(0,3);
-  for(var i=0;i<flags.length;i++){
-    var f=flags[i];
-    h+='<div class="vf"><span style="color:var(--or);font-weight:700">▶</span><span>'+e(f.text)+'</span></div>';
-  }
-  var ep=(r.evidencePack||[]).filter(function(x){return x.status==='flagged';}).slice(0,4);
-  if(ep.length){
-    h+='<div class="out-sub">Evidence gaps</div>';
-    for(var j=0;j<ep.length;j++){
-      h+='<div class="ev-i"><span style="flex-shrink:0">⚠️</span><div><div class="ev-n">'+e(ep[j].name)+'</div></div></div>';
-    }
-  }
-  document.getElementById('bodyC').innerHTML=h;
+function ecClass(s) {
+  const v = (s || '').toUpperCase();
+  if (v.includes('NOT')) return 'nec';
+  if (v.includes('JUDGMENT')) return 'jud';
+  if (v.includes('EC') || v.includes('CANDIDATE')) return 'ec';
+  if (v.includes('UNKNOWN')) return 'unk';
+  return 'unk';
 }
 
-function ld(){
-  var s='<div class="empty"><div class="spin" style="margin:0 auto 12px;width:22px;height:22px;border-width:2.5px"></div><div class="empty-t">Running...</div></div>';
-  document.getElementById('bodyA').innerHTML=s;
-  document.getElementById('bodyB').innerHTML=s;
-  document.getElementById('bodyC').innerHTML=s;
+function renderChain(r, pass2, inp) {
+  let h = '';
+  if (r.causationStructure) h += '<div class="cstruct"><strong>Causation structure:</strong> ' + esc(r.causationStructure) + '</div>';
+  const chain = r.causalChain || [];
+  const dynEvents = {};
+  (pass2 && pass2.evidencePack || []).concat(pass2 && pass2.dynamicEvidenceRequests || []).forEach(function(item) {
+    if (item.dynamicTrigger && item.linkedEvent) dynEvents[item.linkedEvent] = true;
+  });
+  chain.forEach(function(ev, idx) {
+    if (idx > 0) h += '<div class="carr">↓</div>';
+    const brk = ev.chainBreak;
+    h += '<div class="cevent' + (brk ? ' brk' : '') + '"><div class="cevh">';
+    h += '<span class="cenum">' + (ev.eventNumber || idx+1) + '</span>';
+    h += '<span class="cedesc">' + esc(ev.description) + '</span>';
+    h += '<div class="cemeta">';
+    h += '<span class="cetag lof">' + esc(ev.lineOfFlying || 'OWN') + '</span>';
+    h += '<span class="cetag ' + ecClass(ev.preliminaryECStatus || ev.legalECStatus) + '">' + esc(ev.preliminaryECStatus || ev.legalECStatus || 'UNKNOWN') + '</span>';
+    if (ev.delayContribution) h += '<span class="cetag unk">Δ ' + esc(ev.delayContribution) + '</span>';
+    if (ev.discoveredFromEvidence || dynEvents[ev.eventNumber]) h += '<span class="cetag disc">🔍 Discovered</span>';
+    h += '</div>';
+    if (brk) h += '<div class="cbrk">⚠ CHAIN BREAK' + (ev.chainBreakReason ? ': ' + esc(ev.chainBreakReason) : '') + '</div>';
+    h += '</div></div>';
+  });
+  const kws = r.keywords || [];
+  if (kws.length) {
+    h += '<div class="sdiv"><div class="sdl">ICC keywords</div><div class="sline"></div></div><div class="kwpills">';
+    kws.forEach(function(k) {
+      h += '<span class="kwpill">' + esc(k.phrase) + (k.eventNumber ? ' → E' + k.eventNumber : '') + '</span>';
+    });
+    h += '</div>';
+  }
+  const hi = (r.universalHighlighted || inp || '');
+  if (hi) h += '<div class="kwbox">' + hi.replace(/<KW>(.*?)<\/KW>/g, '<span class="kw">$1</span>') + '</div>';
+  document.getElementById('bodyA').innerHTML = h || '<div class="empty"><div class="empty-t">No chain data</div></div>';
 }
-function ss(m){document.getElementById('st').textContent=m;document.getElementById('sb').classList.add('on');}
-function hs(){document.getElementById('sb').classList.remove('on');}
-function se(m){var el=document.getElementById('eb');el.textContent=m;el.classList.add('on');}
-function he(){document.getElementById('eb').classList.remove('on');}
-function e(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
-document.getElementById('inp').addEventListener('keydown',function(ev){if((ev.ctrlKey||ev.metaKey)&&ev.key==='Enter')run();});
+
+function renderNode(n) {
+  const ic = n.type === 'judgment' ? 'j' : n.type === 'disruption' ? 'd' : n.type === 'secondary' ? 's' : 'u';
+  const si = n.status === 'green' ? '✓' : n.status === 'amber' ? '⚠' : n.status === 'red' ? '✗' : '·';
+  let h = '<div class="nd"><div class="ndh">';
+  h += '<span class="ndid ' + ic + '">' + esc(n.id || '') + '</span>';
+  h += '<span class="ndst ' + (n.status || 'info') + '">' + si + ' ' + esc(n.statusLabel || '') + '</span>';
+  h += '<span class="ndq">' + esc(n.question) + '</span></div><div class="ndb">';
+  h += '<div class="ndc">' + esc(n.conclusion) + '</div>';
+  if (n.authority) h += '<div class="nda">' + esc(n.authority) + '</div>';
+  if (n.chainConsequence) h += '<div class="ndcc">Chain: ' + esc(n.chainConsequence) + '</div>';
+  h += '</div></div>';
+  return h;
+}
+
+function renderJudgmentBox(n) {
+  let h = '<div class="jbox"><div class="jlbl">⚖ Judgment Required — ' + esc(n.id || '') + '</div>';
+  h += '<div style="font-weight:700;font-size:12px;margin-bottom:8px">' + esc(n.question) + '</div>';
+  h += '<div class="jcols"><div class="jcol"><h4>Facts for</h4><ul>';
+  (n.factsFor || []).forEach(function(f){ h += '<li>' + esc(f) + '</li>'; });
+  h += '</ul></div><div class="jcol"><h4>Facts against</h4><ul>';
+  (n.factsAgainst || []).forEach(function(f){ h += '<li>' + esc(f) + '</li>'; });
+  h += '</ul></div></div>';
+  if (n.resolvingEvidence) h += '<div style="font-size:10px;margin-top:8px;color:var(--text2)"><strong>Resolving evidence:</strong> ' + esc(n.resolvingEvidence) + '</div>';
+  if (n.consequencesIfYes || n.consequencesIfNo) {
+    h += '<div style="font-size:10px;margin-top:6px;color:var(--text2)">';
+    if (n.consequencesIfYes) h += '<div><strong>If yes:</strong> ' + esc(n.consequencesIfYes) + '</div>';
+    if (n.consequencesIfNo) h += '<div><strong>If no:</strong> ' + esc(n.consequencesIfNo) + '</div>';
+    h += '</div>';
+  }
+  h += '</div>';
+  return h;
+}
+
+function renderLegal(r) {
+  const nodes = r.nodes || [];
+  const judgments = nodes.filter(function(n){ return n.type === 'judgment'; });
+  const universal = nodes.filter(function(n){ return n.type === 'universal'; });
+  const disruption = nodes.filter(function(n){ return n.type === 'disruption'; });
+  const secondary = nodes.filter(function(n){ return n.type === 'secondary' || n.type === 'measures'; });
+  let h = '';
+
+  if (judgments.length) {
+    h += '<div class="sdiv"><div class="sdl">Judgment nodes</div><div class="sline"></div></div>';
+    judgments.forEach(function(n){ h += renderJudgmentBox(n); });
+  }
+
+  h += '<div class="collapse-hdr" onclick="toggleSec(\'uni\')">Universal nodes <span id="uni-cnt">(' + universal.length + ')</span> <span id="uni-arr">▼</span></div>';
+  h += '<div class="collapse-body" id="uni-sec">';
+  universal.forEach(function(n){ h += renderNode(n); });
+  h += '</div>';
+
+  h += '<div class="collapse-hdr" onclick="toggleSec(\'dis\')">Disruption-specific nodes <span>(' + disruption.length + ')</span> <span>▼</span></div>';
+  h += '<div class="collapse-body" id="dis-sec">';
+  disruption.forEach(function(n){ h += renderNode(n); });
+  h += '</div>';
+
+  if (secondary.length) {
+    h += '<div class="collapse-hdr" onclick="toggleSec(\'sec\')">Secondary / intervention <span>(' + secondary.length + ')</span> <span>▼</span></div>';
+    h += '<div class="collapse-body" id="sec-sec">';
+    secondary.forEach(function(n){ h += renderNode(n); });
+    h += '</div>';
+  }
+
+  const dyn = r.dynamicEvidenceRequests || [];
+  if (dyn.length) {
+    h += '<div class="sdiv"><div class="sdl">Dynamic evidence requests</div><div class="sline"></div></div>';
+    dyn.forEach(function(d) {
+      h += '<div class="dynreq"><div class="dynlbl">🔍 Dynamically Identified</div>';
+      h += '<div><strong>' + esc(d.request) + '</strong>';
+      if (d.priority) h += '<span class="pri ' + esc(d.priority) + '">' + esc(d.priority) + '</span></div>';
+      h += '<div style="font-size:10px;color:var(--text3);margin-top:4px">Triggered by: ' + esc(d.triggeredBy) + '</div>';
+      h += '<div style="font-size:10px;color:var(--text2);margin-top:2px">' + esc(d.legalReason) + '</div></div>';
+    });
+  }
+  document.getElementById('bodyB').innerHTML = h;
+}
+
+function toggleSec(id) {
+  const el = document.getElementById(id + '-sec');
+  if (el) el.classList.toggle('hide');
+}
+
+function artClass(v) {
+  if (v === 'compliant') return 'ok';
+  if (v === 'non_compliant') return 'bad';
+  return 'unk';
+}
+
+function evIcon(s) {
+  if (s === 'collected') return '✅';
+  if (s === 'missing') return '❌';
+  if (s === 'flagged') return '⚠️';
+  return '🔍';
+}
+
+function flagIcon(t) {
+  if (t === 'action') return '<span style="color:var(--orange);font-weight:700">▶</span>';
+  if (t === 'risk') return '<span style="color:var(--red);font-weight:700">⚠</span>';
+  if (t === 'judgment') return '<span style="color:var(--amber);font-weight:700">⚖</span>';
+  return '<span style="color:var(--text3)">ℹ</span>';
+}
+
+function verdictClass(v) {
+  if (v === 'DEFEND') return 'defend';
+  if (v === 'DEFEND_WITH_CONDITIONS') return 'defend-cond';
+  if (v === 'SETTLE') return 'settle';
+  if (v === 'CONCEDE') return 'concede';
+  if (v === 'JUDGMENT_REQUIRED') return 'judgment';
+  if (v === 'ESCALATE') return 'escalate';
+  return 'settle';
+}
+
+function verdictBg(v) {
+  if (v === 'DEFEND') return 'var(--green-light)';
+  if (v === 'DEFEND_WITH_CONDITIONS' || v === 'JUDGMENT_REQUIRED') return 'var(--amber-light)';
+  if (v === 'SETTLE') return 'var(--amber-light)';
+  if (v === 'CONCEDE' || v === 'ESCALATE') return 'var(--red-light)';
+  return 'var(--blue-light)';
+}
+
+function renderOutput(r) {
+  const v = r.verdict || 'DEFEND';
+  let h = '<div class="vbox" style="background:' + verdictBg(v) + '">';
+  h += '<div class="vw ' + verdictClass(v) + '">' + esc(v.replace(/_/g, ' ')) + '</div>';
+
+  if (v === 'DEFEND_WITH_CONDITIONS' && (r.verdictConditions || []).length) {
+    h += '<div class="vconds"><strong>Conditions:</strong><ol>';
+    r.verdictConditions.forEach(function(c, i){ h += '<li>' + esc(c) + '</li>'; });
+    h += '</ol></div>';
+  }
+
+  const jNodes = r.judgmentNodesOutstanding || (r.nodes || []).filter(function(n){ return n.type === 'judgment'; });
+  if (v === 'JUDGMENT_REQUIRED' && jNodes.length) {
+    h += '<div class="jout"><h4>' + jNodes.length + ' outstanding judgment node(s)</h4><ul style="margin:0;padding-left:16px">';
+    jNodes.forEach(function(j) {
+      const q = j.question || j;
+      h += '<li>' + esc(typeof q === 'string' ? q : q.question) + '</li>';
+    });
+    h += '</ul></div>';
+  }
+
+  h += '<div class="vsub">' + esc(r.verdictSub || '') + '</div></div>';
+
+  (r.verdictFlags || []).forEach(function(f) {
+    h += '<div class="vf">' + flagIcon(f.type) + '<span>' + esc(f.text) + '</span></div>';
+  });
+
+  const a9 = r.art9Status || {};
+  if (a9.triggered) {
+    h += '<div class="out-sub">Art 9 Status</div><div class="artblk">';
+    h += '<div class="artitem ' + artClass(a9.meals) + '">Meals<br><strong>' + esc(a9.meals || 'unknown') + '</strong></div>';
+    h += '<div class="artitem ' + artClass(a9.comms) + '">Comms<br><strong>' + esc(a9.comms || 'unknown') + '</strong></div>';
+    h += '<div class="artitem ' + artClass(a9.hotel) + '">Hotel<br><strong>' + esc(a9.hotel || 'unknown') + '</strong></div>';
+    h += '</div>';
+    if (a9.notes) h += '<div style="font-size:10px;color:var(--text2);margin-bottom:8px">' + esc(a9.notes) + '</div>';
+  }
+
+  const a8 = r.art8Status || {};
+  if (a8.triggered) {
+    h += '<div class="out-sub">Art 8 Status</div>';
+    h += '<div class="artitem ' + (a8.evidenced ? 'ok' : 'bad') + '" style="margin-bottom:10px">';
+    h += (a8.evidenced ? 'Offer evidenced' : '⚠ Art 8 triggered — offer NOT evidenced');
+    if (a8.notes) h += '<div style="font-size:10px;margin-top:4px">' + esc(a8.notes) + '</div>';
+    h += '</div>';
+  }
+
+  h += '<div class="out-sub">Evidence Pack</div>';
+  (r.evidencePack || []).forEach(function(ev) {
+    h += '<div class="ev-i"><span>' + evIcon(ev.status) + '</span><div>';
+    h += '<div class="ev-n">' + esc(ev.name);
+    if (ev.priority) h += '<span class="pri ' + esc(ev.priority) + '">' + esc(ev.priority) + '</span>';
+    if (ev.dynamicTrigger) h += ' <span style="color:var(--purple);font-size:9px">🔍 Dynamic</span>';
+    h += '</div><div class="ev-s">' + esc(ev.source) + (ev.purpose ? ' — ' + esc(ev.purpose) : '') + '</div></div></div>';
+  });
+
+  if ((r.interventionPoints || []).length) {
+    h += '<div class="out-sub">Intervention Points</div>';
+    r.interventionPoints.forEach(function(ip) {
+      h += '<div class="ip-i"><strong>' + esc(ip.description) + '</strong> — ' + esc(ip.outcome || 'unknown');
+      if (ip.couldHavePrevented) h += '<div style="font-size:10px;color:var(--text3);margin-top:2px">' + esc(ip.couldHavePrevented) + '</div>';
+      h += '</div>';
+    });
+  }
+
+  if ((r.reasoningChain || []).length) {
+    h += '<div class="out-sub">Reasoning Chain</div>';
+    r.reasoningChain.forEach(function(step) {
+      h += '<div class="chi"><span class="chd ' + esc(step.status || 'amber') + '"></span><span class="cht">' + esc(step.text) + '</span></div>';
+    });
+  }
+
+  const judgments = (r.nodes || []).filter(function(n){ return n.type === 'judgment'; });
+  if (judgments.length && v !== 'JUDGMENT_REQUIRED') {
+    h += '<div class="out-sub">Judgment nodes</div>';
+    judgments.forEach(function(n){ h += renderJudgmentBox(n); });
+  }
+
+  document.getElementById('bodyC').innerHTML = h;
+}
+
+document.getElementById('inp').addEventListener('keydown', function(ev) {
+  if ((ev.ctrlKey || ev.metaKey) && ev.key === 'Enter') run();
+});
 </script>
 </body>
 </html>
