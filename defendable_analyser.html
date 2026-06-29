@@ -152,6 +152,15 @@ textarea:focus{outline:none;border-color:var(--orange);background:var(--white)}
 .foot{text-align:center;padding:14px;font-size:10px;color:var(--text3);border-top:1px solid var(--border);margin-top:4px}
 .empty{text-align:center;padding:40px 16px;color:var(--text3)}
 .empty-t{font-size:13px;font-weight:700;color:var(--text2);margin-bottom:5px}
+.api-panel{background:var(--blue-light);border:1.5px solid #BFDBFE;border-radius:4px;padding:12px 16px;margin-bottom:16px}
+.api-panel.ok{border-color:#BBF7D0;background:var(--green-light)}
+.api-lbl{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--blue);margin-bottom:6px}
+.api-note{font-size:11px;color:var(--text2);line-height:1.5;margin-bottom:8px}
+.api-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.api-inp{flex:1;min-width:220px;border:1.5px solid #BFDBFE;border-radius:4px;padding:8px 10px;font-size:12px;font-family:Arial;background:var(--white)}
+.api-inp:focus{outline:none;border-color:var(--orange)}
+.api-btn{background:var(--white);border:1px solid #BFDBFE;color:var(--blue);font-size:11px;font-weight:700;padding:7px 12px;border-radius:4px;cursor:pointer}
+.api-btn:hover{background:#EFF6FF}
 @media(max-width:900px){.results.on{grid-template-columns:1fr}.col-body{max-height:none}.jcols,.artblk{grid-template-columns:1fr}}
 </style>
 </head>
@@ -190,6 +199,15 @@ textarea:focus{outline:none;border-color:var(--orange);background:var(--white)}
       <span class="ch" onclick="sx('disruptive')">Disruptive passenger</span>
       <span class="ch" onclick="sx('ownStrike')">Own staff strike</span>
       <span class="ch" onclick="sx('positioning')">Positioning flight complex</span>
+    </div>
+  </div>
+
+  <div class="api-panel" id="apiPanel">
+    <div class="api-lbl">Anthropic API key (required)</div>
+    <div class="api-note">DefendAble runs three Claude API calls from your browser. Your key is stored only in this tab&rsquo;s session memory and sent directly to Anthropic — not through any DefendAble server.</div>
+    <div class="api-row">
+      <input type="password" class="api-inp" id="apiKey" placeholder="sk-ant-…" autocomplete="off" spellcheck="false">
+      <button type="button" class="api-btn" onclick="saveApiKey()">Save key</button>
     </div>
   </div>
 
@@ -611,11 +629,39 @@ function showErr(msg) {
 }
 function hideErr() { document.getElementById('eb').classList.remove('on'); }
 
-async function callClaude(system, userMsg) {
+var API_KEY_STORAGE = 'dfa_anthropic_key_v2';
+
+function getApiKey() {
+  var el = document.getElementById('apiKey');
+  return (el && el.value.trim()) || '';
+}
+
+function saveApiKey() {
+  var k = getApiKey();
+  if (!k) { showErr('Enter your Anthropic API key first.'); return; }
+  try { sessionStorage.setItem(API_KEY_STORAGE, k); } catch (e) {}
+  document.getElementById('apiPanel').classList.add('ok');
+  hideErr();
+  showErr('API key saved for this session.');
+  setTimeout(hideErr, 2500);
+}
+
+(function initApiKey() {
+  try {
+    var k = sessionStorage.getItem(API_KEY_STORAGE);
+    if (k) {
+      document.getElementById('apiKey').value = k;
+      document.getElementById('apiPanel').classList.add('ok');
+    }
+  } catch (e) {}
+})();
+
+async function callClaude(system, userMsg, apiKey) {
   var resp = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      'x-api-key': apiKey,
       'anthropic-version': '2023-06-01',
       'anthropic-dangerous-direct-browser-access': 'true'
     },
@@ -657,6 +703,13 @@ function mergeResult(pass1, pass2, pass3) {
 async function run() {
   var inp = document.getElementById('inp').value.trim();
   if (!inp) { showErr('Please enter a disruption description.'); return; }
+  var apiKey = getApiKey();
+  if (!apiKey) {
+    showErr('An Anthropic API key is required. Enter your key above and click Save key, then Analyse again.');
+    document.getElementById('apiPanel').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+  try { sessionStorage.setItem(API_KEY_STORAGE, apiKey); } catch (e) {}
   var btn = document.getElementById('abtn');
   btn.disabled = true;
   hideErr();
@@ -670,14 +723,14 @@ async function run() {
 
   var pass1, pass2, pass3;
   try {
-    pass1 = await callClaude(PASS1_SYS, 'Analyse this ICC disruption description and return the chain decomposition JSON only:\n\n"' + inp + '"');
+    pass1 = await callClaude(PASS1_SYS, 'Analyse this ICC disruption description and return the chain decomposition JSON only:\n\n"' + inp + '"', apiKey);
     renderChain(pass1, pass2, inp);
     setProgress(2);
     document.getElementById('bodyB').innerHTML = load;
 
     pass2 = await callClaude(PASS2_SYS,
       'ICC disruption summary:\n"' + inp + '"\n\nPass 1 chain decomposition:\n' + JSON.stringify(pass1) +
-      '\n\nAnalyse the evidence requirements for this chain and return the evidence intelligence JSON only.');
+      '\n\nAnalyse the evidence requirements for this chain and return the evidence intelligence JSON only.', apiKey);
     renderEvidencePreview(pass2);
     setProgress(3);
     document.getElementById('bodyC').innerHTML = load;
@@ -685,7 +738,7 @@ async function run() {
     pass3 = await callClaude(PASS3_SYS,
       'ICC disruption summary:\n"' + inp + '"\n\nPass 1 chain decomposition:\n' + JSON.stringify(pass1) +
       '\n\nPass 2 evidence analysis:\n' + JSON.stringify(pass2) +
-      '\n\nApply the full legal framework and return the complete analysis JSON only.');
+      '\n\nApply the full legal framework and return the complete analysis JSON only.', apiKey);
 
     var result = mergeResult(pass1, pass2, pass3);
     renderChain(result, pass2, inp);
