@@ -39,8 +39,6 @@ textarea:focus{outline:none;border-color:var(--orange);background:var(--white)}
 @keyframes sp{to{transform:rotate(360deg)}}
 .ebar{display:none;background:var(--red-light);border:1px solid #FECACA;border-radius:4px;padding:10px 14px;font-size:11px;color:var(--red);margin-bottom:14px}
 .ebar.on{display:block}
-.results{display:none;gap:14px;margin-bottom:16px}
-.results.on{display:grid;grid-template-columns:1fr 1fr 1fr}
 .col{background:var(--white);border-radius:4px;border:1.5px solid var(--border);overflow:hidden;display:flex;flex-direction:column}
 .col-hdr{padding:13px 16px;flex-shrink:0}
 .col-hdr.or{background:var(--orange)}
@@ -168,7 +166,94 @@ textarea:focus{outline:none;border-color:var(--orange);background:var(--white)}
 .mode-opt input{accent-color:var(--orange)}
 .live-panel{display:none;margin-top:12px;padding-top:12px;border-top:1px solid #BFDBFE}
 .live-panel.on{display:block}
-@media(max-width:900px){.results.on{grid-template-columns:1fr}.col-body{max-height:none}.jcols,.artblk{grid-template-columns:1fr}}
+.brief-bar{display:none;background:var(--white);border:2px solid var(--border);border-radius:4px;padding:16px 20px;margin-bottom:14px}
+.brief-bar.on{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-start;justify-content:space-between}
+.brief-verdict{flex:1;min-width:220px}
+.brief-tag{font-size:9px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:4px}
+.brief-title{font-size:22px;font-weight:900;line-height:1.2;margin-bottom:6px}
+.brief-title.defend{color:var(--green)}
+.brief-title.defend-cond,.brief-title.judgment{color:var(--orange)}
+.brief-title.concede,.brief-title.escalate{color:var(--red)}
+.brief-title.settle,.brief-title.investigate{color:var(--text2)}
+.brief-sub{font-size:12px;color:var(--text2);line-height:1.55;max-width:640px}
+.brief-meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.bmeta{font-size:10px;font-weight:700;padding:3px 8px;border-radius:2px;background:var(--grey);color:var(--text2)}
+.bmeta.hi{background:var(--orange-light);color:var(--orange)}
+.brief-counts{display:flex;gap:10px;flex-wrap:wrap}
+.bcount{background:var(--grey);border-radius:4px;padding:10px 14px;text-align:center;min-width:72px}
+.bcount-n{font-size:20px;font-weight:900;color:var(--dark)}
+.bcount-l{font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;margin-top:2px}
+.results-hero{display:none;grid-template-columns:1fr 300px;gap:14px;margin-bottom:14px}
+.results-hero.on{display:grid}
+.thinking-trail{background:var(--white);border:1.5px solid var(--border);border-radius:4px;padding:16px 18px}
+.trail-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:10px}
+.trail-title{font-size:14px;font-weight:800;color:var(--dark)}
+.trail-note{font-size:10px;color:var(--text3)}
+.trail-steps{position:relative;padding-left:4px}
+.trail-step{position:relative;padding:0 0 18px 28px}
+.trail-step:last-child{padding-bottom:0}
+.trail-step::before{content:'';position:absolute;left:9px;top:22px;bottom:0;width:2px;background:var(--border)}
+.trail-step:last-child::before{display:none}
+.trail-dot{position:absolute;left:0;top:4px;width:20px;height:20px;border-radius:50%;border:2px solid var(--border);background:var(--white);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:900;color:var(--text3)}
+.trail-step.ev .trail-dot{border-color:var(--orange);background:var(--orange-light);color:var(--orange)}
+.trail-step.gate .trail-dot{border-color:var(--dark);background:var(--dark);color:var(--white)}
+.trail-step.judgment .trail-dot{border-color:var(--amber);background:var(--amber-light);color:var(--amber)}
+.trail-step.verdict .trail-dot{border-color:var(--green);background:var(--green-light);color:var(--green)}
+.trail-step.input .trail-dot{border-color:var(--blue);background:var(--blue-light);color:var(--blue)}
+.trail-step.brk .trail-dot{border-color:var(--red);background:var(--red-light);color:var(--red)}
+.trail-card{border:1.5px solid var(--border);border-radius:4px;padding:12px 14px;background:#FAFAFA}
+.trail-step.brk .trail-card{border-color:var(--red);background:var(--red-light)}
+.trail-step.judgment .trail-card{border-color:var(--amber);background:var(--amber-light)}
+.trail-step.verdict .trail-card{border-color:var(--green);background:var(--green-light)}
+.trail-ev-id{font-size:9px;font-weight:800;color:var(--orange);letter-spacing:.5px;margin-bottom:4px}
+.trail-ev-desc{font-size:13px;font-weight:700;line-height:1.4;color:var(--dark);margin-bottom:6px}
+.trail-ev-meta{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:6px}
+.trail-link{font-size:10px;color:var(--text3);font-style:italic;margin-bottom:8px;line-height:1.4}
+.trail-nodes{margin-top:8px;display:flex;flex-direction:column;gap:6px}
+.trail-node{border-left:3px solid var(--border);padding:8px 10px;background:var(--white);border-radius:0 4px 4px 0;font-size:11px;line-height:1.45}
+.trail-node.green{border-left-color:var(--green)}
+.trail-node.amber{border-left-color:var(--amber)}
+.trail-node.red{border-left-color:var(--red)}
+.trail-node-hdr{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:4px}
+.trail-node-id{font-size:9px;font-weight:800;padding:2px 6px;border-radius:2px;background:var(--dark);color:var(--white)}
+.trail-node-st{font-size:9px;font-weight:700;padding:2px 6px;border-radius:2px}
+.trail-node-st.green{background:var(--green-light);color:var(--green)}
+.trail-node-st.amber{background:var(--amber-light);color:var(--amber)}
+.trail-node-st.red{background:var(--red-light);color:var(--red)}
+.trail-node-q{font-weight:700;color:var(--dark)}
+.trail-node-c{color:var(--text2);margin-top:3px}
+.trail-node-auth{font-size:10px;color:var(--text3);font-style:italic;margin-top:3px}
+.trail-rejected{margin-top:8px;padding:8px 10px;background:rgba(0,0,0,.03);border-radius:4px;border:1px dashed var(--border)}
+.trail-rej-lbl{font-size:9px;font-weight:800;color:var(--text3);text-transform:uppercase;margin-bottom:4px}
+.trail-rej-item{font-size:10px;color:var(--text3);line-height:1.45;margin-bottom:3px}
+.trail-rej-item:last-child{margin-bottom:0}
+.trail-jud{margin-top:8px;padding:10px;background:var(--white);border:1px solid var(--amber);border-radius:4px}
+.trail-jud-q{font-size:12px;font-weight:700;margin-bottom:6px}
+.trail-jud-cols{display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:10px}
+.trail-jud-col h5{font-size:9px;text-transform:uppercase;color:var(--text3);margin-bottom:3px}
+.trail-evidence{margin-top:6px;font-size:10px;color:var(--blue);font-weight:600}
+.trail-alt{font-size:10px;color:var(--text3);margin-top:6px;padding-top:6px;border-top:1px dashed var(--border)}
+.action-panel{background:var(--white);border:1.5px solid var(--border);border-radius:4px;padding:14px;display:flex;flex-direction:column;max-height:72vh}
+.action-hdr{font-size:12px;font-weight:800;margin-bottom:4px}
+.action-sub{font-size:10px;color:var(--text3);margin-bottom:10px;line-height:1.4}
+.action-list{overflow-y:auto;flex:1}
+.action-item{display:flex;gap:8px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--border);font-size:11px;line-height:1.4}
+.action-item:last-child{border-bottom:none}
+.action-pri{font-size:8px;font-weight:800;padding:2px 5px;border-radius:2px;flex-shrink:0;margin-top:2px}
+.action-pri.critical{background:var(--red-light);color:var(--red)}
+.action-pri.important{background:var(--amber-light);color:var(--amber)}
+.action-pri.supporting{background:var(--grey);color:var(--text3)}
+.action-body{flex:1}
+.action-ref{font-size:9px;color:var(--text3);font-weight:700;margin-top:2px}
+.action-sys{font-size:9px;color:var(--blue);font-weight:600}
+.detail-toggle{font-size:11px;font-weight:700;color:var(--text2);cursor:pointer;padding:10px 14px;background:var(--white);border:1.5px solid var(--border);border-radius:4px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}
+.detail-toggle:hover{background:var(--grey)}
+.detail-sections.hide{display:none}
+.results-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.results{display:none;margin-bottom:16px}
+.results.on{display:block}
+@media(max-width:1100px){.results-hero.on{grid-template-columns:1fr}.action-panel{max-height:none}}
+@media(max-width:900px){.results-grid{grid-template-columns:1fr}.col-body{max-height:none}.jcols,.artblk,.trail-jud-cols{grid-template-columns:1fr}.brief-bar.on{flex-direction:column}}
 </style>
 </head>
 <body>
@@ -210,18 +295,23 @@ textarea:focus{outline:none;border-color:var(--orange);background:var(--white)}
   </div>
 
   <div class="demo-panel" id="demoPanel">
-    <div class="demo-lbl">Demo intelligence — no API key required</div>
-    <div class="api-note">DefendAble runs a full three-pass analysis locally using the decision trees, keyword engine, and curated scenario library. Type ICC text or use an example chip, then click Analyse.</div>
-    <div class="mode-row">
-      <label class="mode-opt"><input type="radio" name="engineMode" value="demo" id="modeDemo" checked onchange="setEngineMode()"> Demo mode (default)</label>
-      <label class="mode-opt"><input type="radio" name="engineMode" value="live" id="modeLive" onchange="setEngineMode()"> Live AI (Claude API — optional)</label>
+    <div class="collapse-hdr" onclick="toggleSec('settings')" style="border:none;margin:0;padding:0">
+      <span class="demo-lbl" style="margin:0">Settings — demo mode &amp; optional Live AI</span>
+      <span>▼</span>
     </div>
-    <div class="live-panel" id="livePanel">
-      <div class="api-lbl" style="color:var(--blue)">Anthropic API key</div>
-      <div class="api-note" style="margin-bottom:8px">Only needed for Live AI. Your key is stored in this tab&rsquo;s session memory and sent directly to Anthropic — not through any DefendAble server.</div>
-      <div class="api-row">
-        <input type="password" class="api-inp" id="apiKey" placeholder="sk-ant-…" autocomplete="off" spellcheck="false">
-        <button type="button" class="api-btn" onclick="saveApiKey()">Save key</button>
+    <div class="collapse-body hide" id="settings-sec" style="margin-top:10px">
+      <div class="api-note">DefendAble runs a full three-pass analysis locally using the decision trees, keyword engine, and curated scenario library.</div>
+      <div class="mode-row">
+        <label class="mode-opt"><input type="radio" name="engineMode" value="demo" id="modeDemo" checked onchange="setEngineMode()"> Demo mode (default)</label>
+        <label class="mode-opt"><input type="radio" name="engineMode" value="live" id="modeLive" onchange="setEngineMode()"> Live AI (Claude API — optional)</label>
+      </div>
+      <div class="live-panel" id="livePanel">
+        <div class="api-lbl" style="color:var(--blue)">Anthropic API key</div>
+        <div class="api-note" style="margin-bottom:8px">Only needed for Live AI. Your key is stored in this tab&rsquo;s session memory and sent directly to Anthropic.</div>
+        <div class="api-row">
+          <input type="password" class="api-inp" id="apiKey" placeholder="sk-ant-…" autocomplete="off" spellcheck="false">
+          <button type="button" class="api-btn" onclick="saveApiKey()">Save key</button>
+        </div>
       </div>
     </div>
   </div>
@@ -237,33 +327,47 @@ textarea:focus{outline:none;border-color:var(--orange);background:var(--white)}
   </div>
 
   <div class="results" id="res">
-    <div class="col">
-      <div class="col-hdr or">
-        <div class="col-eye">Engine A</div>
-        <div class="col-title">Causal Chain &amp; Keywords</div>
-        <div class="col-sub">Multi-cause decomposition</div>
-      </div>
-      <div class="col-body" id="bodyA">
-        <div class="empty"><div class="empty-t">Awaiting analysis</div></div>
-      </div>
-    </div>
-    <div class="col">
-      <div class="col-hdr dk">
-        <div class="col-eye">Engine B</div>
-        <div class="col-title">Legal Analysis</div>
-        <div class="col-sub">Universal · Disruption · Judgment nodes</div>
-      </div>
-      <div class="col-body" id="bodyB">
-        <div class="empty"><div class="empty-t">Awaiting analysis</div></div>
+    <div class="brief-bar" id="briefBar"></div>
+    <div class="results-hero" id="resultsHero">
+      <div class="thinking-trail" id="thinkingTrail"></div>
+      <div class="action-panel" id="actionPanel">
+        <div class="action-hdr">Actions &amp; Evidence</div>
+        <div class="action-sub">Prioritised pulls and conditions — linked to the thinking trail</div>
+        <div class="action-list" id="actionList"></div>
       </div>
     </div>
-    <div class="col">
-      <div class="col-hdr gy">
-        <div class="col-title dk">Case Output</div>
-        <div class="col-sub dk">Pre-staged before the solicitor opens the file</div>
-      </div>
-      <div class="col-body" id="bodyC">
-        <div class="empty"><div class="empty-t">Awaiting analysis</div></div>
+    <div class="detail-toggle" onclick="toggleSec('detail')">Supporting detail — chain, legal nodes, evidence pack <span>▼</span></div>
+    <div class="detail-sections hide" id="detail-sec">
+      <div class="results-grid">
+        <div class="col">
+          <div class="col-hdr or">
+            <div class="col-eye">Facts</div>
+            <div class="col-title">Causal Chain</div>
+            <div class="col-sub">Event decomposition &amp; keywords</div>
+          </div>
+          <div class="col-body" id="bodyA">
+            <div class="empty"><div class="empty-t">Awaiting analysis</div></div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="col-hdr dk">
+            <div class="col-eye">Law</div>
+            <div class="col-title">Legal Analysis</div>
+            <div class="col-sub">Fired nodes &amp; judgment detail</div>
+          </div>
+          <div class="col-body" id="bodyB">
+            <div class="empty"><div class="empty-t">Awaiting analysis</div></div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="col-hdr gy">
+            <div class="col-title dk">Case File</div>
+            <div class="col-sub dk">Art 8/9 · evidence · intervention points</div>
+          </div>
+          <div class="col-body" id="bodyC">
+            <div class="empty"><div class="empty-t">Awaiting analysis</div></div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -615,7 +719,7 @@ const EXAMPLES = {
   positioning: "The flight was originally delayed because the operating crew were positioning on an earlier flight disrupted by ATC and weather. That aircraft was AOG (fuel leak), causing further delay and putting the crew out of hours. A replacement crew was sourced, but one crew member could not operate due to fatigue (18 hour wake rule) and there were no SBY crew available."
 };
 
-function sx(k){ document.getElementById('inp').value = EXAMPLES[k] || ''; }
+function sx(k){ document.getElementById('inp').value = EXAMPLES[k] || ''; run(); }
 
 function parseClaudeJSON(rawText) {
   let clean = rawText.trim();
@@ -729,15 +833,314 @@ function mergeResult(pass1, pass2, pass3) {
 function beginAnalysisUI() {
   document.getElementById('res').classList.add('on');
   document.getElementById('pbar').classList.add('on');
+  document.getElementById('briefBar').classList.remove('on');
+  document.getElementById('briefBar').innerHTML = '';
+  document.getElementById('resultsHero').classList.remove('on');
+  document.getElementById('thinkingTrail').innerHTML = '';
+  document.getElementById('actionList').innerHTML = '';
   setProgress(1);
   var load = '<div class="empty"><div class="spin" style="margin:0 auto 12px;width:22px;height:22px;border-width:2.5px"></div><div class="empty-t">Running...</div></div>';
   document.getElementById('bodyA').innerHTML = load;
-  document.getElementById('bodyB').innerHTML = '<div class="empty"><div class="empty-t">Awaiting Pass 2...</div></div>';
-  document.getElementById('bodyC').innerHTML = '<div class="empty"><div class="empty-t">Awaiting Pass 3...</div></div>';
+  document.getElementById('bodyB').innerHTML = '<div class="empty"><div class="empty-t">Awaiting analysis...</div></div>';
+  document.getElementById('bodyC').innerHTML = '<div class="empty"><div class="empty-t">Awaiting analysis...</div></div>';
 }
 
 function finishAnalysisUI() {
   [1,2,3].forEach(function(n){ var el=document.getElementById('ps'+n); el.classList.remove('on'); el.classList.add('done'); });
+}
+
+function renderAll(result, pass2, inp) {
+  renderBriefBar(result, inp);
+  renderThinkingTrail(result, inp);
+  renderActionPanel(result);
+  document.getElementById('briefBar').classList.add('on');
+  document.getElementById('resultsHero').classList.add('on');
+  renderChain(result, pass2, inp);
+  renderLegal(result);
+  renderOutput(result);
+}
+
+function isMaterialNode(n) {
+  if (!n) return false;
+  if (n.type === 'disruption' || n.type === 'judgment') return true;
+  if (n.status === 'amber' || n.status === 'red') return true;
+  if (n.statusLabel && /VERIFY|JUDGMENT|CONCEDE|NOT EC|RISK|HOLD/i.test(n.statusLabel)) return true;
+  return false;
+}
+  var t = text || '';
+  var flights = t.match(/\b[A-Z]{2,3}\s?\d{3,4}\b/g);
+  var out = { flights: [], ond: false, cancelled: false, structure: '' };
+  if (flights) {
+    var seen = {};
+    flights.forEach(function(f) {
+      var n = f.replace(/\s/g, '');
+      if (!seen[n]) { seen[n] = true; out.flights.push(n); }
+    });
+  }
+  out.ond = /\bond\b|\bovernight\b|\bnext day\b|\bfollowing day\b/i.test(t);
+  out.cancelled = /\bcancel/i.test(t);
+  return out;
+}
+
+function plainVerdict(v) {
+  var map = {
+    DEFEND: { title: 'Defend', sub: 'Extraordinary circumstances established — confirm evidence pack before Letter of Response.' },
+    DEFEND_WITH_CONDITIONS: { title: 'Defend — subject to evidence', sub: 'Strong provisional position. Conditions below must be satisfied before final response.' },
+    JUDGMENT_REQUIRED: { title: 'Hold — judgment outstanding', sub: 'Legal fork unresolved. Do not finalise position until judgment nodes are cleared.' },
+    CONCEDE: { title: 'No EC defence', sub: 'Extraordinary circumstances not available. Assess quantum and Art 8/9 obligations only.' },
+    SETTLE: { title: 'Settle recommended', sub: 'Chain or evidence does not support a full defence.' },
+    INVESTIGATE: { title: 'Investigate further', sub: 'Insufficient certainty — complete evidence pack before triage decision.' },
+    ESCALATE: { title: 'Escalate for review', sub: 'Complex or high-risk matter — senior solicitor review required.' }
+  };
+  return map[v] || { title: (v || '').replace(/_/g, ' '), sub: '' };
+}
+
+function buildActionList(r) {
+  var actions = [];
+  var seen = {};
+  function add(item) {
+    var key = (item.text || '') + '|' + (item.system || '') + '|' + (item.ref || '');
+    if (seen[key]) return;
+    seen[key] = true;
+    actions.push(item);
+  }
+  (r.verdictConditions || []).forEach(function(c) {
+    add({ priority: 'critical', type: 'condition', text: c, ref: 'Verdict condition' });
+  });
+  (r.verdictFlags || []).forEach(function(f) {
+    if (f.type === 'action' || f.type === 'judgment') {
+      add({ priority: f.type === 'judgment' ? 'critical' : 'important', type: f.type, text: f.text, ref: 'Flag' });
+    }
+  });
+  (r.judgmentNodes || []).forEach(function(j) {
+    if (j.additionalEvidenceNeeded) {
+      add({ priority: 'critical', type: 'judgment', text: j.additionalEvidenceNeeded, ref: (j.nodeId || 'J') + (j.chainEventRef ? ' · ' + j.chainEventRef : '') });
+    }
+    if (j.question) {
+      add({ priority: 'important', type: 'judgment', text: 'Resolve: ' + j.question, ref: (j.nodeId || 'J') + (j.chainEventRef ? ' · ' + j.chainEventRef : '') });
+    }
+  });
+  (r.evidencePack || []).forEach(function(e) {
+    var pr = (e.priority || 'important').toLowerCase();
+    add({
+      priority: pr === 'critical' ? 'critical' : (pr === 'supporting' ? 'supporting' : 'important'),
+      type: 'evidence',
+      text: e.name,
+      system: e.source,
+      ref: e.chainEventRef || '',
+      proves: e.whatItProves
+    });
+  });
+  (r.interventionPoints || []).forEach(function(ip) {
+    if (ip.evidenceRequired) {
+      add({ priority: 'important', type: 'intervention', text: ip.evidenceRequired + ' — ' + (ip.description || ip.pointId), ref: ip.chainEventRef || '' });
+    }
+  });
+  var order = { critical: 0, important: 1, supporting: 2 };
+  actions.sort(function(a, b) { return (order[a.priority] || 2) - (order[b.priority] || 2); });
+  return actions;
+}
+
+function indexByRef(items, key) {
+  var m = {};
+  (items || []).forEach(function(it) {
+    var ref = it[key] || it.chainEventRef || 'ALL';
+    if (!m[ref]) m[ref] = [];
+    m[ref].push(it);
+  });
+  return m;
+}
+
+function buildRejectedPaths(ev, nodes, inp) {
+  var rejected = [];
+  (nodes || []).forEach(function(n) {
+    if (n.status === 'red') {
+      rejected.push({ label: n.id || 'Node', text: n.conclusion || n.statusLabel || 'Ruled out' });
+    }
+  });
+  if (ev && ev.preliminaryECCandidate === false && ev.preliminaryECReason) {
+    rejected.push({ label: 'Not EC', text: ev.preliminaryECReason });
+  }
+  if (ev && /\bindustrial|strike|handler/i.test(ev.description || '') && /\bthird.party|handler|baggage/i.test(ev.description || '')) {
+    rejected.push({ label: 'Krüsemann gate', text: 'Own-staff strike ruled out — third-party handler action distinguished.' });
+  }
+  if (ev && /\batc|ctot|atfm/i.test(ev.description || '') && (inp || '').match(/industrial|strike/i)) {
+    if (!/\bown\b.*strike/i.test(inp || '')) {
+      rejected.push({ label: 'Krüsemann gate', text: 'Own-staff industrial action ruled out — ATC/third-party action applies.' });
+    }
+  }
+  return rejected;
+}
+
+function renderTrailNode(n) {
+  var h = '<div class="trail-node ' + esc(n.status || 'info') + '">';
+  h += '<div class="trail-node-hdr">';
+  h += '<span class="trail-node-id">' + esc(n.id || '') + '</span>';
+  h += '<span class="trail-node-st ' + esc(n.status || 'info') + '">' + esc(n.statusLabel || '') + '</span>';
+  h += '</div>';
+  h += '<div class="trail-node-q">' + esc(n.question) + '</div>';
+  h += '<div class="trail-node-c">' + esc(n.conclusion) + '</div>';
+  if (n.authority) h += '<div class="trail-node-auth">' + esc(n.authority) + '</div>';
+  if (n.chainConsequence) h += '<div class="trail-alt"><strong>Consequence:</strong> ' + esc(n.chainConsequence) + '</div>';
+  return h + '</div>';
+}
+
+function renderTrailJudgment(j) {
+  var h = '<div class="trail-jud" id="trail-jud-' + esc(j.nodeId || j.chainEventRef || '') + '">';
+  h += '<div class="trail-jud-q">⚖ ' + esc(j.question) + '</div>';
+  h += '<div class="trail-jud-cols">';
+  h += '<div class="trail-jud-col"><h5>Facts for</h5><div>' + esc(j.factsFor) + '</div></div>';
+  h += '<div class="trail-jud-col"><h5>Facts against</h5><div>' + esc(j.factsAgainst) + '</div></div>';
+  h += '</div>';
+  if (j.additionalEvidenceNeeded) h += '<div class="trail-evidence">Resolving evidence: ' + esc(j.additionalEvidenceNeeded) + '</div>';
+  if (j.consequenceIfChainBreaks) h += '<div class="trail-alt"><strong>If chain breaks:</strong> ' + esc(j.consequenceIfChainBreaks) + '</div>';
+  if (j.consequenceIfChainHolds) h += '<div class="trail-alt"><strong>If chain holds:</strong> ' + esc(j.consequenceIfChainHolds) + '</div>';
+  return h + '</div>';
+}
+
+function renderThinkingTrail(r, inp) {
+  var chain = r.causalChain || [];
+  var nodesByRef = indexByRef(r.nodes, 'chainEventRef');
+  var judgmentsByRef = indexByRef(r.judgmentNodes, 'chainEventRef');
+  var evidenceByRef = indexByRef(r.evidencePack, 'chainEventRef');
+  var ipsByRef = indexByRef(r.interventionPoints, 'chainEventRef');
+  var h = '<div class="trail-hdr"><div><div class="trail-title">Thinking trail</div><div class="trail-note">How DefendAble moved through the chain and decision tree — expand supporting detail below for full records</div></div></div>';
+  h += '<div class="trail-steps">';
+
+  h += '<div class="trail-step input"><div class="trail-dot">ICC</div><div class="trail-card">';
+  h += '<div class="trail-ev-desc">Disruption summary received</div>';
+  h += '<div class="trail-link">' + esc((inp || '').substring(0, 220)) + ((inp || '').length > 220 ? '…' : '') + '</div>';
+  if (r.causationStructure) h += '<div class="trail-ev-meta"><span class="cetag unk">' + esc(r.causationStructure) + ' chain</span></div>';
+  h += '</div></div>';
+
+  chain.forEach(function(ev, idx) {
+    var eid = ev.id || ('E' + (idx + 1));
+    var lof = lofBadge(ev.lineOfFlying);
+    var nodes = (nodesByRef[eid] || []).concat(nodesByRef.ALL || []).filter(function(n, i, arr) {
+      return n.chainEventRef === eid || (n.chainEventRef === 'ALL' && n.type === 'disruption');
+    });
+    var disNodes = (nodesByRef[eid] || []);
+    var judgments = judgmentsByRef[eid] || [];
+    var evidence = evidenceByRef[eid] || [];
+    var ips = ipsByRef[eid] || [];
+    var rejected = buildRejectedPaths(ev, disNodes, inp);
+    var stepCls = 'ev' + (ev.chainBreak ? ' brk' : '') + (judgments.length ? ' judgment' : '');
+
+    if (idx > 0) {
+      h += '<div class="trail-link" style="padding-left:28px;margin:-8px 0 8px">' + esc(ev.chainLinkReason || ev.butForQuestion || 'Causal link to prior event') + '</div>';
+    }
+
+    h += '<div class="trail-step ' + stepCls + '" id="trail-' + esc(eid) + '"><div class="trail-dot">' + esc(eid.replace('E', '')) + '</div><div class="trail-card">';
+    h += '<div class="trail-ev-id">' + esc(eid) + '</div>';
+    h += '<div class="trail-ev-desc">' + esc(ev.description) + '</div>';
+    h += '<div class="trail-ev-meta">';
+    h += '<span class="cetag lof-' + lof.cls + '">' + lof.label + '</span>';
+    if (ev.preliminaryECCandidate != null) h += '<span class="cetag ' + (ev.preliminaryECCandidate ? 'ec-y' : 'ec-n') + '">' + (ev.preliminaryECCandidate ? 'EC candidate' : 'Not EC') + '</span>';
+    if (ev.ecStatus) h += '<span class="cetag ec-st">' + esc(ev.ecStatus) + '</span>';
+    if (ev.chainBreak) h += '<span class="cbrk">CHAIN BREAK</span>';
+    h += '</div>';
+    if (ev.preliminaryECReason) h += '<div class="trail-node-c" style="margin-top:6px">' + esc(ev.preliminaryECReason) + '</div>';
+
+    if (disNodes.length) {
+      h += '<div class="trail-nodes">';
+      disNodes.forEach(function(n) { h += renderTrailNode(n); });
+      h += '</div>';
+    }
+
+    judgments.forEach(function(j) { h += renderTrailJudgment(j); });
+
+    ips.forEach(function(ip) {
+      h += '<div class="trail-jud" style="border-color:var(--purple);background:var(--purple-light)">';
+      h += '<div class="trail-jud-q">Intervention: ' + esc(ip.description || ip.pointId) + '</div>';
+      h += '<div class="trail-node-c">' + esc(ip.legalConsequence || '') + '</div>';
+      if (ip.evidenceRequired) h += '<div class="trail-evidence">Evidence: ' + esc(ip.evidenceRequired) + '</div>';
+      h += '</div>';
+    });
+
+    if (rejected.length) {
+      h += '<div class="trail-rejected"><div class="trail-rej-lbl">Ruled out / rejected paths</div>';
+      rejected.forEach(function(rj) {
+        h += '<div class="trail-rej-item"><strong>' + esc(rj.label) + ':</strong> ' + esc(rj.text) + '</div>';
+      });
+      h += '</div>';
+    }
+
+    if (evidence.length) {
+      h += '<div class="trail-evidence">Evidence linked: ' + evidence.map(function(e) { return esc(e.name) + ' (' + esc(e.source) + ')'; }).join(' · ') + '</div>';
+    }
+
+    h += '</div></div>';
+  });
+
+  var globalNodes = (nodesByRef.ALL || []).filter(function(n) {
+    return n.type === 'universal' && isMaterialNode(n);
+  });
+  if (globalNodes.length) {
+    h += '<div class="trail-step gate"><div class="trail-dot">G</div><div class="trail-card">';
+    h += '<div class="trail-ev-desc">Universal legal gates</div>';
+    h += '<div class="trail-node-c" style="margin-bottom:8px">Screening nodes that apply across the full chain — reasonable measures, limitation, jurisdiction, etc.</div>';
+    h += '<div class="trail-nodes">';
+    globalNodes.forEach(function(n) { h += renderTrailNode(n); });
+    h += '</div></div></div>';
+  }
+
+  var pv = plainVerdict(r.verdict);
+  h += '<div class="trail-step verdict"><div class="trail-dot">✓</div><div class="trail-card">';
+  h += '<div class="trail-ev-desc">' + esc(pv.title) + '</div>';
+  h += '<div class="trail-node-c">' + esc(r.verdictSub || pv.sub) + '</div>';
+  if ((r.verdictConditions || []).length) {
+    h += '<div class="trail-rejected" style="margin-top:8px;background:var(--white)"><div class="trail-rej-lbl">Conditions before final response</div><ol style="margin:4px 0 0 16px;font-size:11px;line-height:1.5">';
+    r.verdictConditions.forEach(function(c) { h += '<li>' + esc(c) + '</li>'; });
+    h += '</ol></div>';
+  }
+  h += '</div></div>';
+
+  h += '</div>';
+  document.getElementById('thinkingTrail').innerHTML = h;
+}
+
+function renderBriefBar(r, inp) {
+  var meta = extractCaseMeta(inp);
+  var pv = plainVerdict(r.verdict);
+  var actions = buildActionList(r);
+  var judgments = (r.judgmentNodes || []).length;
+  var events = (r.causalChain || []).length;
+  var h = '<div class="brief-verdict">';
+  h += '<div class="brief-tag">Provisional position</div>';
+  h += '<div class="brief-title ' + verdictClass(r.verdict) + '">' + esc(pv.title) + '</div>';
+  h += '<div class="brief-sub">' + esc(r.verdictSub || pv.sub) + '</div>';
+  h += '<div class="brief-meta">';
+  if (meta.flights.length) meta.flights.slice(0, 3).forEach(function(f) { h += '<span class="bmeta hi">' + esc(f) + '</span>'; });
+  if (meta.ond) h += '<span class="bmeta">OND</span>';
+  if (meta.cancelled) h += '<span class="bmeta">Cancellation</span>';
+  if (r.causationStructure) h += '<span class="bmeta">' + esc(r.causationStructure) + '</span>';
+  h += '<span class="bmeta">' + events + ' event' + (events === 1 ? '' : 's') + '</span>';
+  h += '</div></div>';
+  h += '<div class="brief-counts">';
+  h += '<div class="bcount"><div class="bcount-n">' + actions.length + '</div><div class="bcount-l">Actions</div></div>';
+  h += '<div class="bcount"><div class="bcount-n">' + judgments + '</div><div class="bcount-l">Judgments</div></div>';
+  h += '<div class="bcount"><div class="bcount-n">' + (r.evidencePack || []).length + '</div><div class="bcount-l">Evidence</div></div>';
+  h += '</div>';
+  document.getElementById('briefBar').innerHTML = h;
+}
+
+function renderActionPanel(r) {
+  var actions = buildActionList(r);
+  if (!actions.length) {
+    document.getElementById('actionList').innerHTML = '<div class="empty" style="padding:20px"><div class="empty-t">No actions identified</div></div>';
+    return;
+  }
+  var h = '';
+  actions.forEach(function(a) {
+    h += '<div class="action-item">';
+    h += '<span class="action-pri ' + esc(a.priority) + '">' + esc(a.priority).toUpperCase().substring(0, 4) + '</span>';
+    h += '<div class="action-body"><div>' + esc(a.text) + '</div>';
+    if (a.system) h += '<div class="action-sys">' + esc(a.system) + '</div>';
+    if (a.proves) h += '<div class="action-ref">' + esc(a.proves) + '</div>';
+    if (a.ref) h += '<div class="action-ref">' + esc(a.ref) + '</div>';
+    h += '</div></div>';
+  });
+  document.getElementById('actionList').innerHTML = h;
 }
 
 async function runDemo(inp) {
@@ -754,12 +1157,11 @@ async function runDemo(inp) {
       renderEvidencePreview(pass2);
       setProgress(3);
       document.getElementById('bodyC').innerHTML = '<div class="empty"><div class="spin" style="margin:0 auto 12px;width:22px;height:22px;border-width:2.5px"></div><div class="empty-t">Applying legal tree...</div></div>';
-    } else if (event === 'done') {
+    }     else if (event === 'done') {
       var result = a;
-      renderChain(result, pass2, inp);
-      renderLegal(result);
-      renderOutput(result);
+      renderAll(result, pass2, inp);
       finishAnalysisUI();
+      document.getElementById('briefBar').scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   });
 }
@@ -785,10 +1187,9 @@ async function runLive(inp, apiKey) {
     '\n\nApply the full legal framework and return the complete analysis JSON only.', apiKey);
 
   var result = mergeResult(pass1, pass2, pass3);
-  renderChain(result, pass2, inp);
-  renderLegal(result);
-  renderOutput(result);
+  renderAll(result, pass2, inp);
   finishAnalysisUI();
+  document.getElementById('briefBar').scrollIntoView({ behavior: 'smooth', block: 'start' });
   return { pass1: pass1, pass2: pass2, pass3: pass3 };
 }
 
@@ -941,25 +1342,27 @@ function toggleSec(id) {
 function renderLegal(r) {
   var nodes = r.nodes || [];
   var judgments = r.judgmentNodes || nodes.filter(function(n){ return n.type === 'judgment' || n.judgmentRequired; });
-  var universal = nodes.filter(function(n){ return n.type === 'universal'; });
+  var universal = nodes.filter(function(n){ return n.type === 'universal' && isMaterialNode(n); });
   var disruption = nodes.filter(function(n){ return n.type === 'disruption'; });
   var secondary = nodes.filter(function(n){ return n.type === 'secondary' || n.type === 'intervention'; });
-  var h = '';
+  var h = '<div style="font-size:11px;color:var(--text2);margin-bottom:10px;line-height:1.5">Showing nodes that fired on this case. Full thinking trail above shows how each gate was applied.</div>';
 
   if (judgments.length) {
     h += '<div class="sdiv"><div class="sdl">Judgment nodes</div><div class="sline"></div></div>';
     judgments.forEach(function(j){ h += renderJudgmentBox(j); });
   }
 
-  h += '<div class="collapse-hdr" onclick="toggleSec(\'uni\')">Universal nodes (' + universal.length + ') <span>▼</span></div>';
-  h += '<div class="collapse-body" id="uni-sec">';
-  universal.forEach(function(n){ h += renderNode(n); });
-  h += '</div>';
+  if (disruption.length) {
+    h += '<div class="sdiv"><div class="sdl">Disruption-specific nodes (' + disruption.length + ')</div><div class="sline"></div></div>';
+    disruption.forEach(function(n){ h += renderNode(n); });
+  }
 
-  h += '<div class="collapse-hdr" onclick="toggleSec(\'dis\')">Disruption-specific nodes (' + disruption.length + ') <span>▼</span></div>';
-  h += '<div class="collapse-body" id="dis-sec">';
-  disruption.forEach(function(n){ h += renderNode(n); });
-  h += '</div>';
+  if (universal.length) {
+    h += '<div class="collapse-hdr" onclick="toggleSec(\'uni\')">Universal gates fired (' + universal.length + ') <span>▼</span></div>';
+    h += '<div class="collapse-body hide" id="uni-sec">';
+    universal.forEach(function(n){ h += renderNode(n); });
+    h += '</div>';
+  }
 
   if (secondary.length) {
     h += '<div class="collapse-hdr" onclick="toggleSec(\'sec\')">Secondary / intervention (' + secondary.length + ') <span>▼</span></div>';
@@ -1029,8 +1432,10 @@ function riskCls(l) {
 
 function renderOutput(r) {
   var v = r.verdict || 'DEFEND';
+  var pv = plainVerdict(v);
   var h = '<div class="vbox" style="background:' + verdictBg(v) + '">';
-  h += '<div class="vw ' + verdictClass(v) + '">' + esc(v.replace(/_/g, ' ')) + '</div>';
+  h += '<div class="vw ' + verdictClass(v) + '" style="font-size:22px">' + esc(pv.title) + '</div>';
+  h += '<div style="font-size:10px;color:var(--text3);margin-bottom:6px">' + esc(v.replace(/_/g, ' ')) + '</div>';
 
   if (v === 'DEFEND_WITH_CONDITIONS' && (r.verdictConditions || []).length) {
     h += '<div class="vconds"><strong>Conditions:</strong><ol>';
@@ -1045,7 +1450,7 @@ function renderOutput(r) {
     h += '</ul></div>';
   }
 
-  h += '<div class="vsub">' + esc(r.verdictSub || '') + '</div></div>';
+  h += '<div class="vsub">' + esc(r.verdictSub || pv.sub) + '</div></div>';
 
   (r.verdictFlags || []).forEach(function(f) {
     h += '<div class="vf">' + flagIcon(f.type) + '<span>' + esc(f.text) + '</span></div>';
