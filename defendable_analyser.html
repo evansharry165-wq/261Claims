@@ -40,9 +40,7 @@ textarea:focus{outline:none;border-color:var(--orange);background:var(--white)}
 .ebar{display:none;background:var(--red-light);border:1px solid #FECACA;border-radius:4px;padding:10px 14px;font-size:11px;color:var(--red);margin-bottom:14px}
 .ebar.on{display:block}
 .results{display:none;gap:14px;margin-bottom:16px}
-.results.on{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.results.on .col-legal{grid-column:1/-1}
-.results.on .col-chain,.results.on .col-keyword,.results.on .col-evidence,.results.on .col-verdict{min-height:280px}
+.results.on{display:grid;grid-template-columns:1fr 1fr 1fr}
 .col{background:var(--white);border-radius:4px;border:1.5px solid var(--border);overflow:hidden;display:flex;flex-direction:column}
 .col-hdr{padding:13px 16px;flex-shrink:0}
 .col-hdr.or{background:var(--orange)}
@@ -206,58 +204,38 @@ textarea:focus{outline:none;border-color:var(--orange);background:var(--white)}
   </div>
 
   <div class="results" id="res">
-    <div class="col col-chain">
+    <div class="col">
       <div class="col-hdr or">
         <div class="col-eye">Engine A</div>
         <div class="col-title">Causal Chain &amp; Keywords</div>
         <div class="col-sub">Multi-cause decomposition</div>
       </div>
-      <div class="col-body" id="bodyChain">
+      <div class="col-body" id="bodyA">
         <div class="empty"><div class="empty-t">Awaiting analysis</div></div>
       </div>
     </div>
-    <div class="col col-keyword">
+    <div class="col">
       <div class="col-hdr dk">
         <div class="col-eye">Engine B</div>
         <div class="col-title">Legal Analysis</div>
         <div class="col-sub">Universal · Disruption · Judgment nodes</div>
       </div>
-      <div class="col-body" id="bodyKeyword">
+      <div class="col-body" id="bodyB">
         <div class="empty"><div class="empty-t">Awaiting analysis</div></div>
       </div>
     </div>
-    <div class="col col-legal">
+    <div class="col">
       <div class="col-hdr gy">
         <div class="col-title dk">Case Output</div>
         <div class="col-sub dk">Pre-staged before the solicitor opens the file</div>
       </div>
-      <div class="col-body" id="bodyLegal">
-        <div class="empty"><div class="empty-t">Awaiting analysis</div></div>
-      </div>
-    </div>
-    <div class="col col-evidence">
-      <div class="col-hdr or">
-        <div class="col-eye">Pass 2</div>
-        <div class="col-title">Evidence Pack</div>
-        <div class="col-sub">Collection status · dynamic requests · Art 8/9</div>
-      </div>
-      <div class="col-body" id="bodyEvidence">
-        <div class="empty"><div class="empty-t">Awaiting analysis</div></div>
-      </div>
-    </div>
-    <div class="col col-verdict">
-      <div class="col-hdr dk">
-        <div class="col-eye">Pass 3</div>
-        <div class="col-title">Verdict</div>
-        <div class="col-sub">Outcome · flags · reasoning chain</div>
-      </div>
-      <div class="col-body" id="bodyVerdict">
+      <div class="col-body" id="bodyC">
         <div class="empty"><div class="empty-t">Awaiting analysis</div></div>
       </div>
     </div>
   </div>
 
-  <div class="foot">DefendAble · EC261/UK261 Intelligence Engine v2 · 5-panel output · 20 disruption types · 16 universal legal nodes · 3-pass chain analysis</div>
+  <div class="foot">DefendAble · EC261/UK261 Intelligence Engine · 20 disruption types · 16 universal legal nodes · 3-pass chain analysis</div>
 </div>
 
 <script>
@@ -601,120 +579,6 @@ const EXAMPLES = {
   ownStrike: "Pilot union strike — carrier own pilot staff participating. 40% of fleet grounded. 180 flights cancelled across the network. Passengers notified 4 days before disruption.",
   positioning: "The flight was originally delayed because the operating crew were positioning on an earlier flight disrupted by ATC and weather. That aircraft was AOG (fuel leak), causing further delay and putting the crew out of hours. A replacement crew was sourced, but one crew member could not operate due to fatigue (18 hour wake rule) and there were no SBY crew available."
 };
-
-const KEYWORD_RULES = [
-  { re: /\bctot\b|\batfm\b|\batc restriction|\bnetwork wide\b|\beurocontrol\b/i, phrase: 'ATC/ATFM restriction', tree: 'DT-1: ATC/ATFM', triggers: [
-    { system: 'Eurocontrol-NM-API', document: 'ATFM regulations & CTOT assignment log', purpose: 'Confirm third-party flow control — both Wallentin-Hermann limbs' },
-    { system: 'TOPS', document: 'Delay record — codes 81–89', purpose: 'Operational corroboration of ATC delay' },
-    { system: 'NOTAM-feed', document: 'Active NOTAMs for sector restrictions', purpose: 'External imposition beyond carrier control' }
-  ]},
-  { re: /\bcurfew\b|\bond\b|\bovernight delay\b|\bnext day\b/i, phrase: 'Airport curfew / overnight (OND)', tree: 'DT-1: ATC/ATFM — Curfew breach', triggers: [
-    { system: 'TOPS', document: 'Full delay timeline — scheduled vs actual next-day arrival', purpose: 'Sturgeon delay measurement for overnight recovery' },
-    { system: 'Ground-handler-records', document: 'HOTAC & catering records', purpose: 'Art 9 duty of care compliance' }
-  ]},
-  { re: /\bthunderstorm|\bweather|\bdiversion|\bbelow minima|\bsigmet|\bmetar|\blvp\b/i, phrase: 'Weather disruption', tree: 'DT-2: Weather — Destination', triggers: [
-    { system: 'Ogimet-API', document: 'METAR/TAF/SIGMET', purpose: 'Objective weather below operating minima' },
-    { system: 'TOPS', document: 'Diversion record & ATC mandatory diversion', purpose: 'Limb 2 — externally imposed diversion' },
-    { system: 'Flightradar24-API', document: 'Diversion track confirmation', purpose: 'Corroborate actual flight path' }
-  ]},
-  { re: /\bbirdstrike|\bbird strike|\bingestion\b/i, phrase: 'Birdstrike', tree: 'DT-4: Birdstrike', triggers: [
-    { system: 'AMOS', document: 'Post-strike inspection record', purpose: 'Primary evidence — Pešková per se EC' },
-    { system: 'SafetyNet', document: 'Birdstrike safety report', purpose: 'Mandatory safety event record' }
-  ]},
-  { re: /\bindustrial action|\bstrike\b|\bunion\b/i, phrase: 'Industrial action', tree: 'DT-7: Industrial Action', triggers: [
-    { system: 'DISCO', document: 'Own staff vs third party classification', purpose: 'Krüsemann: own staff NOT EC' },
-    { system: 'NOTAM-feed', document: 'Published strike notice', purpose: 'Third-party industrial action (Pešková)' }
-  ]},
-  { re: /\bcascade|\brotation|\binbound aircraft|\bftl\b|\bstandby crew\b|\bout of hours|\bduty limit/i, phrase: 'Cascading / crew FTL', tree: 'DT-6: Crew & FTL / DT-13: Cascading', triggers: [
-    { system: 'TOPS', document: 'Full tail line of flying', purpose: 'Root cause at rotation start — cascade NOT EC' },
-    { system: 'AIMS', document: 'FDP record & standby crew log', purpose: 'FTL exhaustion and reasonable measures' }
-  ]},
-  { re: /\bhidden defect|\bmanufacturing defect|\bmel\b|\bhydraulic|\btechnical fault|\baog\b|\bfuel leak/i, phrase: 'Technical / AOG', tree: 'DT-5/DT-14: Technical & Hidden Defect', triggers: [
-    { system: 'AMOS', document: 'Defect log, MEL assessment & maintenance history', purpose: 'Van der Lans — routine vs hidden defect' },
-    { system: 'SafetyNet', document: 'Technical incident report', purpose: 'Mandatory safety record for AOG' }
-  ]},
-  { re: /\bmedical|\bcardiac|\bpassenger welfare/i, phrase: 'Medical emergency', tree: 'DT-9: Medical Emergency', triggers: [
-    { system: 'SafetyNet', document: 'Medical diversion report', purpose: 'Carrier legally obliged to respond' },
-    { system: 'TOPS', document: 'Diversion record', purpose: 'Causal chain documentation' }
-  ]},
-  { re: /\bsecurity alert|\bsuspicious item|\bhold search|\bpolice attended/i, phrase: 'Security alert', tree: 'DT-8: Security', triggers: [
-    { system: 'SafetyNet', document: 'Security event report', purpose: 'Authority-initiated security action' },
-    { system: 'TOPS', document: 'Delay codes 91–96', purpose: 'Security delay classification' }
-  ]},
-  { re: /\bdisruptive passenger|\breturned to gate|\boffloaded/i, phrase: 'Disruptive passenger', tree: 'DT-10: Disruptive Passenger', triggers: [
-    { system: 'SafetyNet', document: 'Disruptive passenger incident report', purpose: 'External behaviour = EC' },
-    { system: 'TOPS', document: 'Return-to-gate & delay record', purpose: 'Operational timeline' }
-  ]},
-  { re: /\bpositioning|\bdeadhead|\bcrew positioning/i, phrase: 'Positioning flight', tree: 'DT-18/DT-19: Positioning', triggers: [
-    { system: 'AIMS', document: 'Crew pairing & positioning log', purpose: 'Line-of-flying analysis' },
-    { system: 'TOPS', document: 'Line of flying both sectors', purpose: 'Root cause at positioning sector' }
-  ]},
-  { re: /\b18.?hour|\bwake rule|\bfatigue\b|\bsby crew|\bstandby\b/i, phrase: '18-hour wake rule / fatigue', tree: 'DT-20: 18-Hour Wake Rule', triggers: [
-    { system: 'AIMS', document: 'FDP record, standby log, rest calculations', purpose: 'JUDGMENT NODE — never resolve automatically' },
-    { system: 'AIMS', document: 'Wake time audit', purpose: 'CS FTL.1.225 / ORO.FTL.225 compliance' }
-  ]},
-  { re: /\batc\b.*\bweather\b|\bweather\b.*\batc\b/i, phrase: 'ATC and weather combined', tree: 'DT-1 + DT-2: Multi-cause', triggers: [
-    { system: 'Eurocontrol-NM-API', document: 'ATFM/CTOT data', purpose: 'ATC component EC analysis' },
-    { system: 'Ogimet-API', document: 'METAR/TAF/SIGMET', purpose: 'Weather component EC analysis' }
-  ]},
-  { re: /\bown staff|\bpilot strike|\bcabin crew strike/i, phrase: 'Own-staff industrial action (NOT EC)', tree: 'DT-7: Krüsemann — Own Staff', triggers: [
-    { system: 'DISCO', document: 'Own vs third party classification', purpose: 'Krüsemann (C-601/17): own staff NOT EC' }
-  ]}
-];
-
-function detectKeywords(text) {
-  const hits = [];
-  const seen = {};
-  KEYWORD_RULES.forEach(function(rule) {
-    if (rule.re.test(text) && !seen[rule.phrase]) {
-      seen[rule.phrase] = true;
-      hits.push({ phrase: rule.phrase, tree: rule.tree, triggers: rule.triggers });
-    }
-  });
-  return hits;
-}
-
-function escapeRe(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
-
-function highlightKeywords(text, keywords) {
-  let out = text;
-  const seen = {};
-  (keywords || []).forEach(function(k) {
-    const p = k.phrase;
-    if (!p || seen[p.toLowerCase()]) return;
-    seen[p.toLowerCase()] = true;
-    const re = new RegExp(escapeRe(p), 'i');
-    if (re.test(out)) out = out.replace(re, '<KW>$&</KW>');
-  });
-  KEYWORD_RULES.forEach(function(rule) {
-    if (seen[rule.phrase.toLowerCase()]) return;
-    if (rule.re.test(text)) {
-      const m = text.match(rule.re);
-      if (m) {
-        const re2 = new RegExp(escapeRe(m[0]), 'i');
-        out = out.replace(re2, '<KW>$&</KW>');
-      }
-    }
-  });
-  return out;
-}
-
-function mergeKeywords(apiKws, text) {
-  const client = detectKeywords(text);
-  const merged = [];
-  const seen = {};
-  function add(kw) {
-    const key = (kw.phrase || '').toLowerCase();
-    if (!key || seen[key]) return;
-    seen[key] = true;
-    merged.push(kw);
-  }
-  (apiKws || []).forEach(function(k) {
-    add({ phrase: k.phrase, tree: k.tree || k.relatedTo || 'Chain event ' + (k.eventNumber || ''), triggers: k.triggers || [], eventNumber: k.eventNumber });
-  });
-  client.forEach(add);
-  return merged;
-}
 
 function sx(k){ document.getElementById('inp').value = EXAMPLES[k] || ''; }
 
@@ -1112,7 +976,7 @@ function renderOutput(r) {
   }
 
   if ((r.reasoningChain || []).length) {
-    h += '<div class="out-sub">Reasoning chain</div>';
+    h += '<div class="out-sub">Reasoning Chain</div>';
     r.reasoningChain.forEach(function(step) {
       h += '<div class="chi"><span class="chd ' + esc(step.status || 'amber') + '"></span><span class="cht">';
       if (step.chainEventRef) h += '<span style="font-size:9px;color:var(--text3);font-weight:700">' + esc(step.chainEventRef) + ' · </span>';
