@@ -148,6 +148,7 @@ function markRequestComplete(id){
         sessionStorage.setItem('dfa_evidence_DEF-2026-EW-0089',JSON.stringify(evState));
       }
       if(typeof syncCaseEvidencePct==='function')syncCaseEvidencePct(req.ref,100,true);
+      if(typeof advanceCaseStage==='function')advanceCaseStage(req.ref,'drafting','Evidence request completed by DIO');
     }catch(e){}
   }
   sessionStorage.removeItem('dfa_active_request');
@@ -187,7 +188,7 @@ function buildEvidenceRequestSection(){
     var badgeText=req.overdue?req.daysAgo+'d overdue':'Pending · '+req.daysAgo+'d';
     var caseHref=isDio
       ?'dio-case.html?ref='+encodeURIComponent(req.caseRef)
-      :'module4-evidence-workspace.html?ref='+encodeURIComponent(req.caseRef);
+      :'case.html?ref='+encodeURIComponent(req.caseRef)+'&tab=evidence';
     var linkLabel=isDio?'File evidence':'Open workspace';
     return '<div class="sol-req-row">'
       +'<div><div class="sol-req-name">'+escapeHtml(req.name)+'</div>'

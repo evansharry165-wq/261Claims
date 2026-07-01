@@ -1,0 +1,24 @@
+name: Health checks
+
+on:
+  push:
+    branches: [main, 'cursor/**']
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: DefendAble v2 legal engine tests
+        run: node defendable_v2_tests.js
+      - name: Repository health checks
+        run: |
+          for f in scripts/*_health_check.js; do
+            echo "=== $f ==="
+            node "$f"
+          done
