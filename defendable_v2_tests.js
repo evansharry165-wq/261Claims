@@ -89,3 +89,71 @@ if (failed) {
   console.log('Failed: ' + failed);
   process.exit(1);
 }
+
+/* Orchestrator + pass2 enrichment tests */
+eval(fs.readFileSync(__dirname + '/defendable_evidence_manager.js', 'utf8'));
+eval(fs.readFileSync(__dirname + '/defendable_confidence_manager.js', 'utf8'));
+eval(fs.readFileSync(__dirname + '/defendable_registry.js', 'utf8'));
+eval(fs.readFileSync(__dirname + '/defendable_pass2.js', 'utf8'));
+eval(fs.readFileSync(__dirname + '/defendable_orchestrator.js', 'utf8'));
+
+var orchPassed = 0;
+var orchFailed = 0;
+
+function orchTest(name, fn) {
+  try {
+    fn();
+    orchPassed++;
+    console.log('OK  orch: ' + name);
+  } catch (e) {
+    orchFailed++;
+    console.log('FAIL orch: ' + name + ' — ' + e.message);
+  }
+}
+
+console.log('\nDefendAble orchestrator tests\n' + '='.repeat(50));
+
+orchTest('registry maps DT-01 to semantic conclusions', function () {
+  var ids = DefendAbleRegistry.getSemanticIdsForNode('DT-01');
+  if (ids.indexOf('DT1_CTOT_CONFIRMED') < 0) throw new Error('missing DT1_CTOT_CONFIRMED');
+});
+
+orchTest('pass2 enrich collects CTOT evidence for ATC scenario', function () {
+  var text = EXAMPLES.atc;
+  var result = DefendAbleDemoV2.analyze(text);
+  var passes = DefendAbleDemoV2.toPasses(result, text);
+  var collected = (passes.pass2.evidencePack || []).filter(function (e) { return (e.status || '').toLowerCase() === 'collected'; });
+  if (!collected.length) throw new Error('no collected evidence in enriched pass2');
+});
+
+orchTest('full pipeline upgrades semantic conclusion after pass3', function () {
+  var text = EXAMPLES.atc;
+  var result = DefendAbleDemoV2.analyze(text);
+  var passes = DefendAbleDemoV2.toPasses(result, text);
+  var orch = DefendAbleOrchestrator.createOrchestrator();
+  orch.afterPass1(passes.pass1);
+  orch.afterPass2(passes.pass2);
+  orch.afterPass3(result);
+  var c = orch.getConfidenceManager().getConclusion('DT1_CTOT_CONFIRMED');
+  if (!c) throw new Error('DT1_CTOT_CONFIRMED not registered');
+  if (c.status !== 'green' && c.status !== 'amber') throw new Error('expected green/amber got ' + c.status);
+});
+
+orchTest('evidence manager receives collected items from pass2', function () {
+  var text = EXAMPLES.cascade;
+  var result = DefendAbleDemoV2.analyze(text);
+  var passes = DefendAbleDemoV2.toPasses(result, text);
+  var orch = DefendAbleOrchestrator.createOrchestrator();
+  orch.afterPass1(passes.pass1);
+  orch.afterPass2(passes.pass2);
+  var pool = orch.getEvidenceManager().getPool();
+  var collected = pool.filter(function (p) { return p.status === 'collected'; });
+  if (!collected.length) throw new Error('no collected evidence in pool');
+});
+
+console.log('\n' + '='.repeat(50));
+console.log('Orchestrator passed: ' + orchPassed + '/4');
+if (orchFailed) {
+  console.log('Orchestrator failed: ' + orchFailed);
+  process.exit(1);
+}

@@ -392,6 +392,9 @@ textarea:focus{outline:none;border-color:var(--orange);background:var(--white)}
 <script src="defendable_demo_v2.js"></script>
 <script src="defendable_evidence_manager.js"></script>
 <script src="defendable_confidence_manager.js"></script>
+<script src="defendable_registry.js"></script>
+<script src="defendable_pass2.js"></script>
+<script src="defendable_orchestrator.js"></script>
 <script>
 
 const PASS1_SYS = `You are DefendAble's chain decomposition engine. You are NOT applying legal tests yet. Your sole job in this pass is to read the ICC disruption summary and decompose it into a precise, ordered timeline of causal events.
@@ -765,286 +768,47 @@ function showErr(msg) {
 }
 function hideErr() { document.getElementById('eb').classList.remove('on'); }
 
-var evidenceManager = null;
-var confidenceManager = null;
+var orchestrator = null;
 
-var EVIDENCE_ID_ALIASES = [
-  [/delay record|tops delay|operational delay records system delay/i, 'TOPS_DELAY_RECORD'],
-  [/full rotation|tail line of flying|inbound\/rotation/i, 'TOPS_FULL_ROTATION'],
-  [/ctot|atfm|eurocontrol/i, 'EUROCONTROL_CTOT'],
-  [/birdstrike.*inspection|birdstrike report|mandatory inspection/i, 'AMOS_BIRDSTRIKE_INSPECTION'],
-  [/standby log|standby crew/i, 'AIMS_STANDBY_LOG'],
-  [/ad\/sb|oem ad|failure mode/i, 'OEM_AD_SB_SEARCH'],
-  [/metar|taf destination|ogimet/i, 'METAR_DESTINATION'],
-  [/hotac|hotel record/i, 'GROUND_HANDLER_HOTAC'],
-  [/art 8|hermes|rerouting offer/i, 'HERMES_ART8_OFFER'],
-  [/dpm notes/i, 'DPM_NOTES'],
-  [/next.?day|ond operation/i, 'TOPS_NEXTDAY_ARRIVAL'],
-  [/fdp record|crew scheduling system fdp/i, 'AIMS_FDP_RECORD'],
-  [/defect log|maintenance history|defect and maintenance/i, 'AMOS_DEFECT_LOG'],
-  [/safety.*report|safetynet|welfare incident/i, 'SAFETYNET_MEDICAL'],
-  [/police|external authority/i, 'POLICE_ATTENDANCE'],
-  [/flightstats|cross.?carrier/i, 'FLIGHTSTATS_CROSSCARRIER'],
-  [/positioning tail|positioning line/i, 'TOPS_POSITIONING_TAIL'],
-  [/rest period|wake rule|18.hour/i, 'AIMS_REST_PERIOD_REPLACEMENT']
-];
-
-function deriveEvidenceId(name, source) {
-  var text = ((name || '') + ' ' + (source || ''));
-  for (var i = 0; i < EVIDENCE_ID_ALIASES.length; i++) {
-    if (EVIDENCE_ID_ALIASES[i][0].test(text)) return EVIDENCE_ID_ALIASES[i][1];
-  }
-  return text.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '').toUpperCase().substring(0, 48) || 'EVIDENCE_UNKNOWN';
+function getEvidenceManager() {
+  return orchestrator ? orchestrator.getEvidenceManager() : null;
 }
 
-function inferFindingsFromEvidence(ev) {
-  var text = ((ev.name || '') + ' ' + (ev.whatItProves || '') + ' ' + (ev.source || '')).toLowerCase();
-  var findings = [];
-  if (/ctot|atfm|eurocontrol|flow control/.test(text)) {
-    findings.push({ type: 'TOPS_CTOT_CONFIRMED', description: ev.whatItProves || 'CTOT/ATFM restriction confirmed' });
-  }
-  if (/delay code|81-89|codes 81/.test(text)) {
-    findings.push({ type: 'TOPS_DELAY_CODE_81_89', description: 'ATC delay codes 81-89 recorded' });
-  }
-  if (/below minima|metar|thunderstorm|weather/.test(text)) {
-    findings.push({ type: 'METAR_BELOW_ILS_MINIMA', description: ev.whatItProves || 'Destination weather below minima' });
-  }
-  if (/sigmet/.test(text)) {
-    findings.push({ type: 'SIGMET_IN_FORCE', description: 'SIGMET corroboration' });
-  }
-  if (/fdp elevated|elevated before/.test(text)) {
-    findings.push({ type: 'AIMS_FDP_ELEVATED_BEFORE_DISRUPTION', description: 'FDP elevated before disruption' });
-  }
-  if (/fdp within|within limits/.test(text)) {
-    findings.push({ type: 'AIMS_FDP_WITHIN_LIMITS_AT_DISRUPTION', description: 'FDP within limits at disruption' });
-  }
-  if (/no prior defect|no prior ad/.test(text)) {
-    findings.push({ type: 'AMOS_NO_PRIOR_DEFECT', description: 'No prior defect on component' });
-  }
-  if (/prior defect|same component/.test(text)) {
-    findings.push({ type: 'AMOS_PRIOR_DEFECT_SAME_COMPONENT', description: 'Prior defect on same component' });
-  }
-  if (/category a|mel category a/.test(text)) {
-    findings.push({ type: 'AMOS_MEL_CATEGORY_A', description: 'MEL Category A — no dispatch' });
-  }
-  if (/police|external authority/.test(text)) {
-    findings.push({ type: 'POLICE_EXTERNAL_AUTHORITY', description: 'External authority involvement' });
-  }
-  if (/cross.?carrier|flightstats|all carriers/.test(text)) {
-    findings.push({ type: 'FLIGHTSTATS_MULTI_CARRIER_IMPACT', description: 'Systemic multi-carrier impact' });
-  }
-  if (/18.hour|wake rule/.test(text)) {
-    findings.push({ type: 'AIMS_18HR_WAKE_AT_RISK', description: '18-hour wake rule at risk' });
-  }
-  if (/positioning/.test(text)) {
-    findings.push({ type: 'TOPS_POSITIONING_FLIGHT', description: 'Positioning flight identified' });
-  }
-  if (/prior sector|rotation|cascade/.test(text)) {
-    findings.push({ type: 'TOPS_PRIOR_SECTOR_DELAY', description: 'Prior sector delay in rotation' });
-  }
-  if (/ond|overnight|next day/.test(text)) {
-    findings.push({ type: 'TOPS_OND', description: 'Overnight/next-day operation' });
-  }
-  if (/diversion/.test(text)) {
-    findings.push({ type: 'TOPS_DIVERSION', description: 'Diversion event' });
-  }
-  if (/birdstrike|bird strike/.test(text)) {
-    findings.push({ type: 'AMOS_BIRDSTRIKE', description: 'Birdstrike event' });
-  }
-  if (/hotac|hotel provided/.test(text)) {
-    findings.push({ type: 'GROUND_HANDLER_HOTAC_PROVIDED', description: 'HOTAC provided' });
-  }
-  if (/no hotac|hotel not/.test(text)) {
-    findings.push({ type: 'GROUND_HANDLER_NO_HOTAC', description: 'HOTAC not provided' });
-  }
-  if (/catering|meals provided/.test(text)) {
-    findings.push({ type: 'GROUND_HANDLER_CATERING_PROVIDED', description: 'Meals provided' });
-  }
-  if (/no catering|meals not/.test(text)) {
-    findings.push({ type: 'GROUND_HANDLER_NO_CATERING', description: 'Meals not provided' });
-  }
-  if (/art 8|rerouting offer/.test(text)) {
-    findings.push({ type: 'HERMES_ART8_OFFER_EVIDENCED', description: 'Art 8 offer evidenced' });
-  }
-  if (!findings.length) {
-    findings.push({ type: 'EVIDENCE_RECEIVED', description: ev.whatItProves || ev.name || 'Evidence collected' });
-  }
-  return findings;
+function getConfidenceManager() {
+  return orchestrator ? orchestrator.getConfidenceManager() : null;
 }
 
-function initManagersAfterPass1(pass1) {
-  evidenceManager = DefendAbleEvidence.createEvidenceManager();
-  confidenceManager = DefendAbleConfidence.createConfidenceManager();
-  populateEvidenceFromPass1(pass1);
-}
-
-function populateEvidenceFromPass1(pass1) {
-  if (!evidenceManager || !pass1) return;
-  var chain = pass1.causalChain || [];
-  if (!evidenceManager.has('TOPS_DELAY_RECORD')) {
-    evidenceManager.addEvidence('TOPS_DELAY_RECORD', 'TOPS Delay Record', 'TOPS', [], []);
-  }
-  chain.forEach(function (ev) {
-    var desc = (ev.description || '').toLowerCase();
-    var deps = ['TOPS_DELAY_RECORD'];
-    if (/ctot|atfm|eurocontrol|\batc\b/.test(desc)) {
-      evidenceManager.addEvidence('EUROCONTROL_CTOT', 'Eurocontrol CTOT Assignment', 'EUROCONTROL', deps, []);
-    }
-    if (/ond|overnight|next day|curfew|following day/.test(desc)) {
-      evidenceManager.addEvidence('TOPS_NEXTDAY_ARRIVAL', 'TOPS Next-Day Arrival', 'TOPS', deps, []);
-      evidenceManager.addEvidence('GROUND_HANDLER_HOTAC', 'Ground Handler HOTAC Records', 'Ground handler', [], []);
-    }
-    if (/birdstrike|bird strike|ingestion/.test(desc)) {
-      evidenceManager.addEvidence('AMOS_BIRDSTRIKE_INSPECTION', 'AMOS Birdstrike Inspection', 'AMOS', [], []);
-    }
-    if (/weather|thunderstorm|below minima|diversion/.test(desc)) {
-      evidenceManager.addEvidence('METAR_DESTINATION', 'METAR Destination', 'Ogimet API', [], []);
-    }
-    if (/ftl|out of hours|crew.*limit|standby crew/.test(desc)) {
-      evidenceManager.addEvidence('AIMS_STANDBY_LOG', 'AIMS Standby Log', 'AIMS', [], []);
-    }
-    if (/hidden defect|manufacturing|hydraulic|category a|\bmel\b/.test(desc)) {
-      evidenceManager.addEvidence('OEM_AD_SB_SEARCH', 'OEM AD/SB Search', 'OEM records', [], []);
-      evidenceManager.addEvidence('AMOS_DEFECT_LOG', 'AMOS Defect Log', 'AMOS', [], []);
-    }
-    if (/positioning/.test(desc)) {
-      evidenceManager.addEvidence('TOPS_POSITIONING_TAIL', 'TOPS Positioning Tail Record', 'TOPS', deps, []);
-    }
-    if (/cascade|late inbound|rotation|prior sector/.test(desc)) {
-      evidenceManager.addEvidence('TOPS_FULL_ROTATION', 'TOPS Full Tail Line of Flying', 'TOPS', deps, []);
-    }
-    if (/18.hour|wake rule|fatigue/.test(desc)) {
-      evidenceManager.addEvidence('AIMS_REST_PERIOD_REPLACEMENT', 'AIMS Rest Period — Replacement Crew', 'AIMS', [], []);
-    }
-    if (/security|police|disruptive|suspicious/.test(desc)) {
-      evidenceManager.addEvidence('POLICE_ATTENDANCE', 'Police Attendance Record', 'External authority', [], []);
-    }
-    if (/staff shortage|handler strike|baggage handler/.test(desc)) {
-      evidenceManager.addEvidence('FLIGHTSTATS_CROSSCARRIER', 'FlightStats Cross-Carrier Data', 'FlightStats API', [], []);
-    }
-    if (/medical|cardiac|welfare/.test(desc)) {
-      evidenceManager.addEvidence('SAFETYNET_MEDICAL', 'SafetyNet Medical Report', 'SafetyNet', [], []);
-    }
-    if (/cancel|5 hour|art 8/.test(desc)) {
-      evidenceManager.addEvidence('HERMES_ART8_OFFER', 'HERMES Art 8 Offer Record', 'HERMES', [], []);
-    }
-  });
-}
-
-function addImpliedEvidenceRequests(requests) {
-  (requests || []).forEach(function (req) {
-    if (!evidenceManager.has(req.evidenceId)) {
-      evidenceManager.addEvidence(req.evidenceId, req.name, req.system, [], []);
-    }
-  });
+function initManagersAfterPass1(pass1, iccText) {
+  orchestrator = DefendAbleOrchestrator.createOrchestrator();
+  orchestrator.setIccText(iccText || '');
+  orchestrator.afterPass1(pass1);
 }
 
 function processPass2Evidence(pass2) {
-  if (!evidenceManager || !confidenceManager || !pass2) return;
-  (pass2.evidencePack || []).forEach(function (ev) {
-    var id = deriveEvidenceId(ev.name, ev.source);
-    if (!evidenceManager.has(id)) {
-      evidenceManager.addEvidence(id, ev.name || id, ev.source || 'Unknown', [], []);
-    }
-    var status = (ev.status || '').toLowerCase();
-    if (status === 'collected') {
-      var findings = ev.findings || inferFindingsFromEvidence(ev);
-      var result = evidenceManager.receiveEvidence(id, findings);
-      addImpliedEvidenceRequests(result.impliedRequests);
-      confidenceManager.retroactivityCheck(id, findings, DefendAbleConfidence.EVIDENCE_CONCLUSION_LINKS);
-    } else if (status === 'missing') {
-      evidenceManager.markMissing(id, ev.absenceConsequence || '');
-    }
-  });
-  (pass2.updatedCausalChain || []).forEach(function (ev) {
-    (ev.evidenceRequired || []).forEach(function (er) {
-      var id = deriveEvidenceId(er.evidenceType || er.document, er.system);
-      if (!evidenceManager.has(id)) {
-        evidenceManager.addEvidence(id, er.evidenceType || er.document || id, er.system || 'Unknown', [], []);
-      }
-      var erStatus = (er.status || '').toLowerCase();
-      if (erStatus === 'collected') {
-        var findings = er.findings || inferFindingsFromEvidence({ name: er.evidenceType, whatItProves: er.whatItProves, source: er.system });
-        var recv = evidenceManager.receiveEvidence(id, findings);
-        addImpliedEvidenceRequests(recv.impliedRequests);
-        confidenceManager.retroactivityCheck(id, findings, DefendAbleConfidence.EVIDENCE_CONCLUSION_LINKS);
-      } else if (erStatus === 'missing') {
-        evidenceManager.markMissing(id, er.whatAbsenceImplies || er.absenceConsequenceForChain || '');
-      }
-    });
-    (ev.unexpectedFindings || []).forEach(function (uf) {
-      var parentId = 'TOPS_DELAY_RECORD';
-      if (evidenceManager.has(parentId) && evidenceManager.getById(parentId).status === 'collected') {
-        var ufFinding = { type: uf.findingType || 'TOPS_AOG_UNDISCLOSED', description: uf.finding || '' };
-        var implied = evidenceManager.getImpliedRequests(parentId);
-        evidenceManager.getById(parentId).findings.push(ufFinding);
-        addImpliedEvidenceRequests(evidenceManager.getImpliedRequests(parentId));
-      }
-    });
-  });
-  (pass2.dynamicEvidenceRequests || []).forEach(function (d) {
-    var id = deriveEvidenceId(d.evidenceRequested, d.system);
-    if (!evidenceManager.has(id)) {
-      evidenceManager.addEvidence(id, d.evidenceRequested, d.system || 'Unknown', [], []);
-    }
-  });
-}
-
-function mapNodeStatusToConfidence(n) {
-  if (n.judgmentRequired || (n.statusLabel && /JUDGMENT/i.test(n.statusLabel))) return 'judgment';
-  var s = (n.status || '').toLowerCase();
-  if (s === 'green' || s === 'amber' || s === 'red' || s === 'grey') return s;
-  if (s === 'info') return 'grey';
-  return 'grey';
+  if (orchestrator) orchestrator.afterPass2(pass2);
 }
 
 function processPass3Conclusions(result) {
-  if (!confidenceManager || !result) return;
-  var judgmentById = {};
-  (result.judgmentNodes || []).forEach(function (j) { judgmentById[j.nodeId] = j; });
-  (result.nodes || []).forEach(function (n) {
-    confidenceManager.addConclusion(n.id, n.question, {
-      authority: n.authority,
-      evidenceBase: [],
-      dependsOn: n.dependsOn || [],
-      downstreamConclusions: n.downstreamConclusions || [],
-      chainEventRef: n.chainEventRef
-    });
-    var cmStatus = mapNodeStatusToConfidence(n);
-    if (cmStatus === 'judgment' || judgmentById[n.id]) {
-      var jn = judgmentById[n.id];
-      if (jn) {
-        confidenceManager.setJudgmentNode(n.id, jn);
-      } else {
-        confidenceManager.updateConclusion(n.id, 'judgment', n.conclusion, 'Judgment required', null);
-        confidenceManager.setJudgmentNode(n.id, {
-          factsFor: n.factsFor || '',
-          factsAgainst: n.factsAgainst || '',
-          additionalEvidenceNeeded: n.dataUsed || ''
-        });
-      }
-    } else {
-      confidenceManager.updateConclusion(n.id, cmStatus, n.conclusion, n.statusLabel || n.conclusion || '', null);
-    }
-  });
-  (result.judgmentNodes || []).forEach(function (j) {
-    if (confidenceManager.getConclusion(j.nodeId)) return;
-    confidenceManager.addConclusion(j.nodeId, j.question, { chainEventRef: j.chainEventRef });
-    confidenceManager.setJudgmentNode(j.nodeId, j);
-  });
-  if (evidenceManager) {
-    evidenceManager.getByStatus('collected').forEach(function (item) {
-      if (item.findings && item.findings.length) {
-        confidenceManager.retroactivityCheck(item.id, item.findings, DefendAbleConfidence.EVIDENCE_CONCLUSION_LINKS);
-      }
-    });
-  }
+  if (orchestrator) orchestrator.afterPass3(result);
 }
 
 function getConfidenceState(nodeId) {
-  if (!confidenceManager) return null;
-  return confidenceManager.getConclusion(nodeId);
+  return orchestrator ? orchestrator.getConfidenceState(nodeId) : null;
 }
+
+function resolveJudgmentNode(conclusionId, decision) {
+  if (!orchestrator) return;
+  try {
+    orchestrator.resolveJudgment(conclusionId, decision, 'Resolved in analyser demo');
+    if (window._lastAnalysisResult) {
+      renderLegal(window._lastAnalysisResult);
+      renderOutput(window._lastAnalysisResult);
+    }
+  } catch (e) {
+    showErr(e.message);
+  }
+}
+
 
 function getLatestConfidenceReason(c) {
   if (!c || !c.statusHistory || !c.statusHistory.length) return '';
@@ -1065,15 +829,17 @@ function confidenceBadgeLabel(c) {
 }
 
 function getVerdictConclusionIds(result) {
+  if (orchestrator) return orchestrator.getVerdictConclusionIds(result, isMaterialNode);
   return (result.nodes || []).filter(function (n) {
     return n.type === 'disruption' || (n.type === 'universal' && isMaterialNode(n));
   }).map(function (n) { return n.id; });
 }
 
 function renderConfidenceSummaryPanel(result) {
-  if (!confidenceManager) return '';
-  var summary = confidenceManager.getConfidenceSummary();
-  var verdictConf = confidenceManager.getVerdictConfidence(getVerdictConclusionIds(result));
+  var cm = getConfidenceManager();
+  if (!cm) return '';
+  var summary = cm.getConfidenceSummary();
+  var verdictConf = cm.getVerdictConfidence(getVerdictConclusionIds(result));
   var h = '<div class="conf-panel"><div class="out-sub" style="margin-top:0">Confidence Summary</div>';
   h += '<div class="conf-row">';
   h += '<span class="conf-chip green">' + summary.green + ' CONFIRMED</span>';
@@ -1091,8 +857,9 @@ function renderConfidenceSummaryPanel(result) {
 }
 
 function renderEvidenceGapsPanel() {
-  if (!evidenceManager) return '';
-  var gaps = evidenceManager.getCriticalGaps();
+  var em = getEvidenceManager();
+  if (!em) return '';
+  var gaps = em.getCriticalGaps();
   if (!gaps.length) return '';
   var h = '<div class="out-sub">Evidence Gaps (actionable)</div>';
   gaps.forEach(function (g) {
@@ -1108,8 +875,9 @@ function renderEvidenceGapsPanel() {
 }
 
 function renderConfidenceJudgmentPanel() {
-  if (!confidenceManager) return '';
-  var nodes = confidenceManager.getJudgmentNodes();
+  var cm = getConfidenceManager();
+  if (!cm) return '';
+  var nodes = cm.getJudgmentNodes();
   if (!nodes.length) return '';
   var h = '<div class="out-sub">Outstanding Judgment Nodes</div>';
   nodes.forEach(function (c) {
@@ -1129,6 +897,10 @@ function renderConfidenceJudgmentPanel() {
         h += '</div>';
       }
     }
+    h += '<div style="margin-top:10px;display:flex;gap:8px">';
+    h += '<button type="button" class="api-btn" onclick="resolveJudgmentNode(\'' + esc(c.id).replace(/'/g, "\\'") + '\',\'for\')">Resolve — for carrier</button>';
+    h += '<button type="button" class="api-btn" onclick="resolveJudgmentNode(\'' + esc(c.id).replace(/'/g, "\\'") + '\',\'against\')">Resolve — against carrier</button>';
+    h += '</div>';
     h += '</div>';
   });
   return h;
@@ -1215,8 +987,8 @@ function mergeResult(pass1, pass2, pass3) {
 }
 
 function beginAnalysisUI() {
-  evidenceManager = null;
-  confidenceManager = null;
+  orchestrator = null;
+  window._lastAnalysisResult = null;
   document.getElementById('res').classList.add('on');
   document.getElementById('pbar').classList.add('on');
   document.getElementById('briefBar').classList.remove('on');
@@ -1236,6 +1008,7 @@ function finishAnalysisUI() {
 }
 
 function renderAll(result, pass2, inp) {
+  window._lastAnalysisResult = result;
   renderBriefBar(result, inp);
   renderThinkingTrail(result, inp);
   renderActionPanel(result);
@@ -1537,7 +1310,7 @@ async function runDemo(inp) {
   await DefendAbleDemoV2.runDemo(inp, function (event, a, b) {
     if (event === 'pass') setProgress(a);
     else if (event === 'pass1') {
-      initManagersAfterPass1(a);
+      initManagersAfterPass1(a, inp);
       renderChain(a, pass2, inp);
       setProgress(2);
       document.getElementById('bodyB').innerHTML = '<div class="empty"><div class="spin" style="margin:0 auto 12px;width:22px;height:22px;border-width:2.5px"></div><div class="empty-t">Mapping evidence...</div></div>';
@@ -1560,7 +1333,7 @@ async function runDemo(inp) {
 async function runLive(inp, apiKey) {
   var pass1, pass2, pass3;
   pass1 = await callClaude(PASS1_SYS, 'Analyse this ICC disruption description and return the chain decomposition JSON only:\n\n"' + inp + '"', apiKey);
-  initManagersAfterPass1(pass1);
+  initManagersAfterPass1(pass1, inp);
   renderChain(pass1, pass2, inp);
   setProgress(2);
   var load = '<div class="empty"><div class="spin" style="margin:0 auto 12px;width:22px;height:22px;border-width:2.5px"></div><div class="empty-t">Running...</div></div>';
@@ -1710,6 +1483,13 @@ function renderJudgmentBox(j) {
     if (j.consequenceIfChainBreaks) h += '<div><strong>If chain breaks:</strong> ' + esc(j.consequenceIfChainBreaks) + '</div>';
     h += '</div>';
   }
+  var jid = j.nodeId || '';
+  if (jid) {
+    h += '<div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">';
+    h += '<button type="button" class="api-btn" onclick="resolveJudgmentNode(\'' + jid.replace(/'/g, "\\'") + '\',\'for\')">Resolve — for carrier</button>';
+    h += '<button type="button" class="api-btn" onclick="resolveJudgmentNode(\'' + jid.replace(/'/g, "\\'") + '\',\'against\')">Resolve — against carrier</button>';
+    h += '</div>';
+  }
   h += '</div>';
   return h;
 }
@@ -1750,7 +1530,7 @@ function renderLegal(r) {
   var disruption = nodes.filter(function(n){ return n.type === 'disruption'; });
   var secondary = nodes.filter(function(n){ return n.type === 'secondary' || n.type === 'intervention'; });
   var h = '';
-  if (confidenceManager) {
+  if (getConfidenceManager()) {
     h += renderConfidenceSummaryPanel(r);
   }
   h += '<div style="font-size:11px;color:var(--text2);margin-bottom:10px;line-height:1.5">Showing nodes that fired on this case. Full thinking trail above shows how each gate was applied.</div>';

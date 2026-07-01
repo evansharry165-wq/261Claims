@@ -893,7 +893,7 @@ var DefendAbleDemoV2 = (function () {
     });
   }
 
-  function toPasses(result) {
+  function toPasses(result, iccText) {
     var pass1 = {
       causationStructure: result.causationStructure,
       causationStructureReason: result.causationStructureReason,
@@ -912,6 +912,9 @@ var DefendAbleDemoV2 = (function () {
       artNineStatus: result.artNineStatus,
       artEightStatus: result.artEightStatus
     };
+    if (typeof DefendAblePass2 !== 'undefined') {
+      pass2 = DefendAblePass2.enrichPass2ForDemo(pass1, pass2, iccText || '');
+    }
     return { pass1: pass1, pass2: pass2, pass3: result };
   }
 
@@ -921,7 +924,7 @@ var DefendAbleDemoV2 = (function () {
       onProgress('pass', 1);
       await delay(700);
       var result = analyze(text);
-      var passes = toPasses(result);
+      var passes = toPasses(result, text);
       onProgress('pass1', passes.pass1);
       await delay(800);
       onProgress('pass', 2);
