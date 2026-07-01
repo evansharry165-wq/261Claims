@@ -231,7 +231,7 @@ Stored in `sessionStorage` key `dfa_demo_dismissed`.
 
 ```
 ┌──────────────┬──────────────────────────────────────────────────────────────┐
-│ NEW CLAIMS   │  [New LOC]  [Add to existing case]              ← tab switch   │
+│ NEW CLCrew scheduling system   │  [New LOC]  [Add to existing case]              ← tab switch   │
 │ (queue)      │                                                              │
 │              │  NEW LOC TAB:                                                │
 │ [+ Upload]   │  ┌─ Drop zone ─────────────────────────────────────────────┐ │
@@ -398,7 +398,7 @@ Stored in `sessionStorage` key `dfa_demo_dismissed`.
 ├─ Key evidence (K tier only, max 5 visible) ─────────────────────────────────┤
 │ ☐ Valencia ground records      [Pull from repository] or [Request]         │
 │ ☐ METAR/SIGMET                 [Pull API]                                    │
-│ ☑ TOPS flight data             ✓ Attached                                  │
+│ ☑ Operational delay records system flight data             ✓ Attached                                  │
 ├─ ▼ Supporting evidence (8)  ▼ Reference (4)  ▼ Disruption details           │
 ├─ Claim points cross-ref (compact table) ──────────────────────────────────────│
 └─────────────────────────────────────────────────────────────────────────────┘
@@ -607,7 +607,7 @@ module5-drafting-workspace.html?ref=X  →  case.html?ref=X&tab=documents
 - Evidence filing: calendar view + folder browser
 - Upload (EH) / Pull (legal) flows
 - SharePoint path display
-- Category tree (TOPS, DISCO, Eurocontrol, Weather, AMOS…)
+- Category tree (Operational delay records system, Disruption data system, Eurocontrol, Weather, Maintenance records system…)
 
 #### RESTRUCTURE
 

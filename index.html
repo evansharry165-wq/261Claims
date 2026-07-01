@@ -427,7 +427,7 @@ function renderKEBanner(alerts, teamNotifs){
 
 function ensureDemoEvidenceRequests(){
   try{
-    var key='dfa_evidence_DEF-2026-EW-0089';
+    var key=typeof evidenceStorageKey==='function'?evidenceStorageKey('DEF-2026-EW-0089'):'dfa_evidence_DEF-2026-EW-0089';
     var st=JSON.parse(sessionStorage.getItem(key)||'null');
     if(st&&st.evidenceRequests&&Object.keys(st.evidenceRequests).length)return;
     var baseMs=Date.now()-8*86400000, baseMs2=Date.now()-2*86400000;
@@ -447,7 +447,7 @@ function buildOutstandingRequests(uid){
   var allRequests=[];
   userCases.forEach(function(c){
     try{
-      var key='dfa_evidence_'+c.ref;
+      var key=typeof evidenceStorageKey==='function'?evidenceStorageKey(c.ref):('dfa_evidence_'+c.ref);
       var st=JSON.parse(sessionStorage.getItem(key)||'null');
       if(!st||!st.evidenceRequests)return;
       Object.values(st.evidenceRequests).forEach(function(req){
@@ -472,7 +472,7 @@ function buildOutstandingRequests(uid){
   var countLabel=overdueCount>0?overdueCount+' overdue':allRequests.length+' open';
   var rows=allRequests.slice(0,6).map(function(req){
     var ageText=req.overdue?req.daysAgo+'d overdue':req.daysAgo+'d';
-    return '<div class="task-row req-task-row" onclick="location.href=\'module4-evidence-workspace.html?ref='+encodeURIComponent(req.caseRef)+'\'">'
+    return '<div class="task-row req-task-row" onclick="openCase(\''+escapeHtml(req.caseRef).replace(/'/g,"\\'")+'\',\'evidence\')">'
       +'<div class="task-dot '+(req.overdue?'urgent':'warn')+'"></div>'
       +'<div><div class="task-action">'+escapeHtml(req.name)+'</div>'
       +'<div class="task-claimant">'+escapeHtml(req.recipient)+' · <span class="task-ref">'+escapeHtml(req.caseRef)+'</span></div></div>'
@@ -572,7 +572,7 @@ function renderDIOWork(u){
     ?allRequests.slice(0,8).map(function(req){
         var ageStyle=req.overdue?'color:var(--alert);font-weight:500':'color:var(--ink3)';
         var ageText=req.overdue?req.daysAgo+'d — overdue':req.daysAgo+'d ago';
-        return '<div class="task-row" onclick="location.href=\'module4-evidence-workspace.html?ref='+encodeURIComponent(req.caseRef)+'\'">'
+        return '<div class="task-row" onclick="openCase(\''+escapeHtml(req.caseRef).replace(/'/g,"\\'")+'\',\'evidence\')">'
           +'<div class="task-dot '+(req.overdue?'urgent':'warn')+'"></div>'
           +'<div style="flex:1;min-width:0">'
           +'<div class="task-action" style="font-size:12px">'+escapeHtml(req.name)+'</div>'
@@ -593,7 +593,7 @@ function renderDIOWork(u){
   var gapRows=gapCases.length
     ?gapCases.slice(0,6).map(function(c){
         var pctCol=c.evidencePct>=75?'var(--confirm)':c.evidencePct>=40?'var(--caution)':'var(--alert)';
-        return '<div class="task-row" onclick="location.href=\'module4-evidence-workspace.html?ref='+encodeURIComponent(c.ref)+'\'">'
+        return '<div class="task-row" onclick="openCase(\''+c.ref+'\',\'evidence\')">'
           +'<div class="task-dot '+(c.cprDaysLeft<=3?'urgent':c.cprDaysLeft<=7?'warn':'ok')+'"></div>'
           +'<div style="flex:1;min-width:0">'
           +'<div class="task-action" style="font-size:12px">'+escapeHtml(c.claimant)+'</div>'

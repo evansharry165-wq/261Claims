@@ -52,12 +52,28 @@ const DISRUPTION_EVENTS=[
 if(typeof window!=='undefined')window.DISRUPTION_EVENTS=DISRUPTION_EVENTS;
 // Helpers
 const CASE_REF_ALIASES={
-  'DEF-2026-EW-0089':'DEF-2026-EW-0089',
-  'DEF-2026-EW-0076':'DEF-2026-EW-0076',
-  'DEF-2026-FR-0009':'DEF-2026-FR-0009',
-  'DEF-2026-ES-0027':'DEF-2026-ES-0027'
+  'AC-2026-0089':'DEF-2026-EW-0089',
+  'AC-2026-0101':'DEF-2026-EW-0101',
+  'AC-2026-0091':'DEF-2026-EW-0091',
+  'AC-2026-0076':'DEF-2026-EW-0076',
+  'AC-2026-0094':'DEF-2026-EW-0094',
+  'AC-2026-0079':'DEF-2026-EW-0079',
+  'FR-2026-0012':'DEF-2026-FR-0012',
+  'FR-2026-0018':'DEF-2026-FR-0018',
+  'FR-2026-0009':'DEF-2026-FR-0009',
+  'FR-2026-0021':'DEF-2026-FR-0021',
+  'ES-2026-0031':'DEF-2026-ES-0031',
+  'ES-2026-0038':'DEF-2026-ES-0038',
+  'ES-2026-0044':'DEF-2026-ES-0044',
+  'ES-2026-0027':'DEF-2026-ES-0027'
 };
-function normaliseCaseRef(ref){return CASE_REF_ALIASES[ref]||ref;}
+function normaliseCaseRef(ref){
+  if(!ref)return ref;
+  return CASE_REF_ALIASES[ref]||ref;
+}
+function evidenceStorageKey(ref){
+  return 'dfa_evidence_'+normaliseCaseRef(ref);
+}
 function getCasesForUser(uid,stage){
   uid=String(uid||'').trim().toUpperCase();
   if(uid==='SB')return ALL_CASES.filter(function(c){return !stage||c.stage===stage;});
