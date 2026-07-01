@@ -72,6 +72,35 @@ var DefendAbleConfidence = (function () {
     ],
     HERMES_NO_ART8_OFFER: [
       { conclusionId: 'U9_ART8_COMPLIED', contribution: 'undermines' }
+    ],
+    AMOS_BIRDSTRIKE: [
+      { conclusionId: 'DT4_BIRDSTRIKE_EC', contribution: 'establishes' },
+      { conclusionId: 'U7_EC_ESTABLISHED', contribution: 'corroborates' }
+    ],
+    TOPS_PRIOR_SECTOR_DELAY: [
+      { conclusionId: 'DT13_CASCADE_ROOT', contribution: 'establishes' },
+      { conclusionId: 'DT6_FTL_ROOT_CAUSE_ANALYSIS', contribution: 'corroborates' }
+    ],
+    INDUSTRIAL_ATFM_RESTRICTION: [
+      { conclusionId: 'DT7_THIRD_PARTY_STRIKE', contribution: 'establishes' },
+      { conclusionId: 'U7_EC_ESTABLISHED', contribution: 'establishes' }
+    ],
+    SAFETYNET_MEDICAL_INCIDENT: [
+      { conclusionId: 'DT9_MEDICAL_EC', contribution: 'establishes' }
+    ],
+    DISRUPTIVE_PASSENGER_EVENT: [
+      { conclusionId: 'DT10_DISRUPTIVE_EC', contribution: 'establishes' }
+    ],
+    DPM_RECOVERY_DOCUMENTED: [
+      { conclusionId: 'U8_RM_SLOT_RECOVERY', contribution: 'establishes' },
+      { conclusionId: 'U8_RM_CREW_RECOVERY', contribution: 'corroborates' }
+    ],
+    MAX_OPS_ART9_NOTICE: [
+      { conclusionId: 'U10_ART9_MEALS_MET', contribution: 'corroborates' },
+      { conclusionId: 'U10_ART9_HOTEL_MET', contribution: 'corroborates' }
+    ],
+    MAX_OPS_COMMS: [
+      { conclusionId: 'U8_RM_SLOT_RECOVERY', contribution: 'corroborates' }
     ]
   };
 

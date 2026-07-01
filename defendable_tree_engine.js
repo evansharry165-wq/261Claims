@@ -92,6 +92,26 @@ var DefendAbleTreeEngine = (function () {
     });
   }
 
+  function applyFindingOutcomes(ctx, gate) {
+    var outcomes = gate.findingOutcomes;
+    if (!outcomes || !ctx.evidenceManager) return null;
+    var em = ctx.evidenceManager;
+    var best = null;
+    Object.keys(outcomes).forEach(function (lk) {
+      var item = getEvidenceItem(em, lk);
+      if (!item || !item.findings) return;
+      item.findings.forEach(function (f) {
+        var map = outcomes[lk] || {};
+        var outcome = map[f.type];
+        if (!outcome) return;
+        if (!best || (outcome.confidence === 'amber' && best.confidence !== 'red')) {
+          best = outcome;
+        }
+      });
+    });
+    return best;
+  }
+
   function evaluateGate(gate, ctx, gateIndex, gates) {
     if (gate.conditional && !gate.conditional(ctx)) {
       return {
@@ -142,20 +162,42 @@ var DefendAbleTreeEngine = (function () {
     var iccHit = iccMatches(ctx, gate.iccPattern) || chainMatches(ctx, gate.iccPattern);
     var evHit = evidenceHit(ctx, gate);
     var answer = 'no';
-    if (gate.type === 'measures') {
+    var confidenceOverride = null;
+    var reasonOverride = null;
+    var chainEvaluated = false;
+
+    if (gate.chainEval) {
+      var chainResult = gate.chainEval(ctx);
+      if (chainResult) {
+        answer = chainResult.answer || answer;
+        confidenceOverride = chainResult.confidence || null;
+        reasonOverride = chainResult.reason || null;
+        if (chainResult.answer) chainEvaluated = true;
+      }
+    }
+
+    if (gate.type === 'measures' && !chainEvaluated) {
       var t = ctx.iccText || '';
       var constrained = /\bno standby\b|\bnot available\b|\bcould not\b/i.test(t);
       answer = constrained ? 'unknown' : 'yes';
-    } else if (iccHit || evHit) {
+    } else if (!chainEvaluated && (iccHit || evHit)) {
       answer = 'yes';
-    } else if (gate.type === 'entry' && gate.allowTopsFallback && hasCollected(ctx.evidenceManager, 'tops')) {
+    } else if (!chainEvaluated && gate.type === 'entry' && gate.allowTopsFallback && hasCollected(ctx.evidenceManager, 'tops')) {
       answer = 'yes';
+    }
+
+    var findingOutcome = applyFindingOutcomes(ctx, gate);
+    if (findingOutcome) {
+      if (findingOutcome.answer) answer = findingOutcome.answer;
+      if (findingOutcome.confidence) confidenceOverride = findingOutcome.confidence;
+      if (findingOutcome.reason) reasonOverride = findingOutcome.reason;
     }
 
     var req = (gate.requiredLibKeys || []).concat(gate.secondaryLibKeys || []);
     var gaps = gateEvidenceGaps(ctx.evidenceManager, req);
     var confidence;
-    if (answer === 'no' && gate.type === 'entry') confidence = 'red';
+    if (confidenceOverride) confidence = confidenceOverride;
+    else if (answer === 'no' && gate.type === 'entry') confidence = 'red';
     else if (answer === 'unknown') confidence = 'amber';
     else confidence = confidenceFromGaps(gaps, answer === 'yes' ? 'yes' : answer);
 
@@ -168,7 +210,7 @@ var DefendAbleTreeEngine = (function () {
       gateId: gate.id,
       answer: answer,
       confidence: confidence,
-      reason: gate['reason' + answer] || gate.reason || (answer === 'yes' ? gate.yesMeans : gate.noMeans) || '',
+      reason: reasonOverride || gate['reason' + answer] || gate.reason || (answer === 'yes' ? gate.yesMeans : gate.noMeans) || '',
       conclusion: answer === 'yes' ? (gate.yesMeans || gate.conclusion) : (answer === 'no' ? gate.noMeans : gate.conclusion),
       gaps: gaps,
       skipTo: skipTo

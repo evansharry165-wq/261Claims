@@ -53,7 +53,7 @@ var DefendAbleEvidencePack = (function () {
       W: ['case_studies', 'weather_briefs', 'eurocontrol_w', 'caa_docs', 'ac_ops', 'airport_info', 'montreal_conv']
     },
     'Airport/Runway Closure': {
-      K: ['tops', 'disco', 'aims', 'safetynet', 'eurocontrol', 'notam'],
+      K: ['tops', 'disco', 'aims', 'safetynet', 'eurocontrol', 'ogimet', 'notam'],
       S: ['connected', 'network_out', 'lido', 'hermes', 'max_ops', 'dpm', 'internal_email', 'flightradar', 'flightstats', 'airport_web', 'ops_review'],
       W: ['case_studies', 'caa_docs', 'ac_ops', 'airport_info', 'flight_plan']
     },
@@ -98,7 +98,7 @@ var DefendAbleEvidencePack = (function () {
       W: ['case_studies', 'policies', 'caa_docs', 'welfare_docs', 'witness_cases']
     },
     'Natural Disaster': {
-      K: ['tops', 'disco', 'aims', 'safetynet', 'eurocontrol', 'notam', 'wildfire'],
+      K: ['tops', 'disco', 'aims', 'safetynet', 'eurocontrol', 'notam', 'met_office', 'wildfire'],
       S: ['connected', 'network_out', 'lido', 'hermes', 'max_ops', 'dpm', 'internal_email', 'flightradar', 'ops_review'],
       W: ['case_studies', 'weather_briefs', 'caa_docs', 'ac_ops', 'airport_info']
     },
@@ -127,30 +127,75 @@ var DefendAbleEvidencePack = (function () {
   /* Map pack libKey → legacy evidence manager id where established */
   var LIBKEY_TO_LEGACY_ID = {
     tops: 'TOPS_DELAY_RECORD',
+    disco: 'EV_DISCO',
+    aims: 'AIMS_FDP_RECORD',
+    safetynet: 'SAFETYNET_MEDICAL',
     eurocontrol: 'EUROCONTROL_CTOT',
+    notam: 'EV_NOTAM',
+    connected: 'EV_CONNECTED',
+    network_out: 'EV_NETWORK_OUT',
+    lido: 'EV_LIDO',
+    hermes: 'HERMES_ART8_OFFER',
+    max_ops: 'EV_MAX_OPS',
+    dpm: 'DPM_NOTES',
+    internal_email: 'EV_INTERNAL_EMAIL',
+    flightradar: 'EV_FLIGHTRADAR',
+    flightstats: 'FLIGHTSTATS_CROSSCARRIER',
+    ops_review: 'EV_OPS_REVIEW',
+    case_studies: 'EV_CASE_STUDIES',
+    eurocontrol_w: 'EV_EUROCONTROL_W',
+    caa_docs: 'EV_CAA_DOCS',
+    ac_ops: 'EV_AC_OPS',
+    airport_info: 'EV_AIRPORT_INFO',
     ogimet: 'METAR_DESTINATION',
     met_office: 'EV_MET_OFFICE',
-    dpm: 'DPM_NOTES',
-    aims: 'AIMS_FDP_RECORD',
+    airport_web: 'EV_AIRPORT_WEB',
+    weather_briefs: 'EV_WEATHER_BRIEFS',
+    montreal_conv: 'EV_MONTREAL_CONV',
+    lightning: 'EV_LIGHTNING',
     amos: 'AMOS_DEFECT_LOG',
-    flightstats: 'FLIGHTSTATS_CROSSCARRIER',
-    hermes: 'HERMES_ART8_OFFER',
-    max_ops: 'EV_MAX_OPS'
+    wildfire: 'EV_WILDFIRE',
+    policies: 'EV_POLICIES',
+    tech_docs: 'EV_TECH_DOCS',
+    witness_cases: 'EV_WITNESS_CASES',
+    welfare_docs: 'EV_WELFARE_DOCS',
+    crew_docs: 'EV_CREW_DOCS',
+    overnight_docs: 'EV_OVERNIGHT_DOCS',
+    flight_plan: 'EV_FLIGHT_PLAN'
   };
 
   var LIBKEY_FINDINGS = {
     tops: [{ type: 'TOPS_DELAY_CODE_81_89', description: 'TOPS delay codes 81-89' }],
     eurocontrol: [{ type: 'TOPS_CTOT_CONFIRMED', description: 'CTOT/ATFM restriction confirmed' }],
     flightstats: [{ type: 'FLIGHTSTATS_MULTI_CARRIER_IMPACT', description: 'Cross-carrier systemic delay' }],
-    disco: [{ type: 'EVIDENCE_RECEIVED', description: 'Disruption record confirms ATC narrative' }],
+    disco: [{ type: 'DPM_RECOVERY_DOCUMENTED', description: 'Disruption record confirms recovery narrative' }],
     aims: [{ type: 'AIMS_FDP_ELEVATED_BEFORE_DISRUPTION', description: 'Crew FDP context' }],
-    notam: [{ type: 'EVIDENCE_RECEIVED', description: 'NOTAM corroborates airspace restriction' }],
-    dpm: [{ type: 'EVIDENCE_RECEIVED', description: 'DPM notes on recovery attempts' }],
-    ogimet: [{ type: 'METAR_BELOW_ILS_MINIMA', description: 'Destination METAR below operating minima' }],
-    met_office: [{ type: 'EVIDENCE_RECEIVED', description: 'Met Office hazard forecast corroboration' }],
-    flightradar: [{ type: 'TOPS_DIVERSION', description: 'Flight track confirms diversion path' }],
-    amos: [{ type: 'AMOS_NO_PRIOR_DEFECT', description: 'Technical event record on file' }],
-    safetynet: [{ type: 'EVIDENCE_RECEIVED', description: 'Safety reporting system event record' }]
+    notam: [
+      { type: 'EVIDENCE_RECEIVED', description: 'NOTAM corroborates airspace restriction' },
+      { type: 'INDUSTRIAL_ATFM_RESTRICTION', description: 'Industrial action NOTAM published' }
+    ],
+    dpm: [{ type: 'DPM_RECOVERY_DOCUMENTED', description: 'DPM notes on recovery attempts' }],
+    ogimet: [
+      { type: 'METAR_BELOW_ILS_MINIMA', description: 'Destination METAR below operating minima' },
+      { type: 'SIGMET_IN_FORCE', description: 'SIGMET corroboration' },
+      { type: 'TAF_CONDITIONS_WITHIN_FORECAST', description: 'TAF within forecast at departure' }
+    ],
+    met_office: [{ type: 'SIGMET_IN_FORCE', description: 'Met Office hazard forecast corroboration' }],
+    flightradar: [{ type: 'ATC_MANDATORY_DIVERSION', description: 'Flight track confirms mandatory diversion' }],
+    amos: [
+      { type: 'AMOS_NO_PRIOR_DEFECT', description: 'Technical event record on file' },
+      { type: 'AMOS_BIRDSTRIKE', description: 'Birdstrike inspection record' },
+      { type: 'AMOS_MEL_CATEGORY_A', description: 'MEL Category A — no dispatch' }
+    ],
+    safetynet: [
+      { type: 'SAFETYNET_MEDICAL_INCIDENT', description: 'Medical/welfare incident record' },
+      { type: 'DISRUPTIVE_PASSENGER_EVENT', description: 'Disruptive passenger incident record' }
+    ],
+    hermes: [{ type: 'HERMES_ART8_OFFER_EVIDENCED', description: 'Art 8 rerouting/reimbursement offer documented' }],
+    max_ops: [
+      { type: 'MAX_OPS_ART9_NOTICE', description: 'Passenger communications on Art 9 care' },
+      { type: 'MAX_OPS_COMMS', description: 'Passenger delay communications on file' }
+    ]
   };
 
   var TIER_ORDER = ['K', 'S', 'W'];
@@ -219,10 +264,10 @@ var DefendAbleEvidencePack = (function () {
   function isWeatherDestination(text) {
     var t = text || '';
     if (/\blvp\b|\bsnowtam|\brunway closure|\bde-ic\b/i.test(t)
-      && !/\bdiversion\b|\bbelow minima\b|\bthunderstorm\b|\barrival destination\b|\bdestination\b/i.test(t)) {
+      && !/\bdiversion\b|\bbelow minima\b|\bthunderstorms?\b|\barrival destination\b|\bdestination\b/i.test(t)) {
       return false;
     }
-    return /\bthunderstorm\b|\bweather\b|\bbelow minima\b|\bdiversion\b|\bsigmet\b|\bmetar\b|\bmandatory atc diversion\b/i.test(t);
+    return /\bthunderstorms?\b|\bweather\b|\bbelow minima\b|\bdiversion\b|\bsigmet\b|\bmetar\b|\bmandatory atc diversion\b/i.test(t);
   }
 
   function isAtcPrimary(text) {

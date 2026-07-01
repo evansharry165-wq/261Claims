@@ -1,4 +1,6 @@
 /* DefendAble Intelligence Engine — client-side demo + optional live AI */
+/* @deprecated Superseded by DefendAble v2 stack (defendable_demo_v2.js, defendable_orchestrator.js).
+   Retained for reference only — not loaded by defendable_analyser.html. */
 var DefendAbleEngine = (function () {
   var KEYWORD_RULES = [
     { re: /\bctot\b|\batfm\b|\batc restriction|\bnetwork wide\b|\beurocontrol\b/i, phrase: 'ATC/ATFM restriction', tree: 'DT-1: ATC/ATFM', triggers: [
