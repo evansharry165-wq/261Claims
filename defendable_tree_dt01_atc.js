@@ -63,7 +63,7 @@ var DefendAbleTreeDT01 = (function () {
 
   function matches(iccText, chainEvents) {
     if (typeof DefendAbleEvidencePack !== 'undefined'
-      && DefendAbleEvidencePack.detectDisruptionType(iccText) === 'Weather') {
+      && DefendAbleEvidencePack.isWeatherDestination(iccText)) {
       return false;
     }
     var t = (iccText || '').toLowerCase();

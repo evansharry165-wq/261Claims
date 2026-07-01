@@ -404,8 +404,10 @@ textarea:focus{outline:none;border-color:var(--orange);background:var(--white)}
 <script src="defendable_confidence_manager.js"></script>
 <script src="defendable_registry.js"></script>
 <script src="defendable_evidence_pack.js"></script>
+<script src="defendable_tree_engine.js"></script>
 <script src="defendable_tree_dt01_atc.js"></script>
 <script src="defendable_tree_dt02_weather.js"></script>
+<script src="defendable_trees.js"></script>
 <script src="defendable_pass2.js"></script>
 <script src="defendable_orchestrator.js"></script>
 <script>
@@ -880,7 +882,25 @@ function renderDecisionTreePanel(treeResult) {
   if (!treeResult || !treeResult.applicable) return '';
   var titles = {
     'DT-01': 'DT-01 ATC/ATFM — slot machine',
-    'DT-02': 'DT-02 Weather destination — slot machine'
+    'DT-02': 'DT-02 Weather destination — slot machine',
+    'DT-03': 'DT-03 Weather origin / LVP — slot machine',
+    'DT-04': 'DT-04 Birdstrike — slot machine',
+    'DT-05': 'DT-05 Technical fault — slot machine',
+    'DT-06': 'DT-06 Crew / FTL — slot machine',
+    'DT-07': 'DT-07 Industrial action — slot machine',
+    'DT-08': 'DT-08 Security alert — slot machine',
+    'DT-09': 'DT-09 Medical emergency — slot machine',
+    'DT-10': 'DT-10 Disruptive passenger — slot machine',
+    'DT-11': 'DT-11 Natural disaster — slot machine',
+    'DT-12': 'DT-12 ATM system failure — slot machine',
+    'DT-13': 'DT-13 Cascading rotation — slot machine',
+    'DT-14': 'DT-14 Hidden manufacturing defect — slot machine',
+    'DT-15': 'DT-15 Denied boarding — slot machine',
+    'DT-16': 'DT-16 Cancellation short notice — slot machine',
+    'DT-17': 'DT-17 Government / political — slot machine',
+    'DT-18': 'DT-18 Positioning flight — slot machine',
+    'DT-19': 'DT-19 Positioning intervening cause — slot machine',
+    'DT-20': 'DT-20 18-hour wake rule — slot machine'
   };
   var h = '<div class="dt-panel">';
   h += '<div class="dt-hdr">' + esc(titles[treeResult.treeId] || treeResult.treeId) + ' (' + esc(treeResult.disruptionType || '') + ')</div>';
@@ -894,7 +914,7 @@ function renderDecisionTreePanel(treeResult) {
     h += '</div>';
   }
   (treeResult.gates || []).forEach(function (g) {
-    if (g.gateId === 'DT1-ROUTE' || g.gateId === 'DT2-ROUTE') return;
+    if (g.gateId === 'DT1-ROUTE' || g.gateId === 'DT2-ROUTE' || /-ROUTE$/.test(g.gateId || '')) return;
     var st = g.confidence || 'grey';
     h += '<div class="dt-gate"><div class="dt-gate-h">';
     h += '<span class="dt-gate-id">' + esc(g.gateId) + '</span>';

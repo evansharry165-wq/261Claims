@@ -17,8 +17,13 @@ var DefendAbleOrchestrator = (function () {
   }
 
   function runDecisionTrees(evidenceManager, confidenceManager, iccText, result) {
-    var treeResults = [];
     var chain = (result && result.causalChain) || [];
+    var ctx = {
+      iccText: iccText,
+      causalChain: chain,
+      evidenceManager: evidenceManager,
+      confidenceManager: confidenceManager
+    };
 
     if (typeof DefendAbleEvidencePack !== 'undefined') {
       var disruptionType = DefendAbleEvidencePack.detectDisruptionType(iccText);
@@ -27,22 +32,16 @@ var DefendAbleOrchestrator = (function () {
       }
     }
 
-    if (typeof DefendAbleTreeDT02 !== 'undefined' && DefendAbleTreeDT02.matches(iccText, chain)) {
-      treeResults.push(DefendAbleTreeDT02.runTree({
-        iccText: iccText,
-        causalChain: chain,
-        evidenceManager: evidenceManager,
-        confidenceManager: confidenceManager
-      }));
-    } else if (typeof DefendAbleTreeDT01 !== 'undefined' && DefendAbleTreeDT01.matches(iccText, chain)) {
-      treeResults.push(DefendAbleTreeDT01.runTree({
-        iccText: iccText,
-        causalChain: chain,
-        evidenceManager: evidenceManager,
-        confidenceManager: confidenceManager
-      }));
+    if (typeof DefendAbleTrees !== 'undefined') {
+      return DefendAbleTrees.runAllApplicable(ctx);
     }
 
+    var treeResults = [];
+    if (typeof DefendAbleTreeDT02 !== 'undefined' && DefendAbleTreeDT02.matches(iccText, chain)) {
+      treeResults.push(DefendAbleTreeDT02.runTree(ctx));
+    } else if (typeof DefendAbleTreeDT01 !== 'undefined' && DefendAbleTreeDT01.matches(iccText, chain)) {
+      treeResults.push(DefendAbleTreeDT01.runTree(ctx));
+    }
     return treeResults;
   }
 

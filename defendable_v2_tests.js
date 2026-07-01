@@ -18,7 +18,10 @@ var EXAMPLES = {
   ownStrike: 'Pilot union strike — carrier own pilot staff participating. 40% of fleet grounded. 180 flights cancelled across the network. Passengers notified 4 days before disruption.',
   positioning: 'The flight was originally delayed because the operating crew were positioning on an earlier flight disrupted by ATC and weather. That aircraft was AOG (fuel leak), causing further delay and putting the crew out of hours. A replacement crew was sourced, but one crew member could not operate due to fatigue (18 hour wake rule) and there were no SBY crew available.',
   weatherCtot: 'EZY3279 delayed due to thunderstorms at arrival destination (ACE). CTOTS as a result of the weather disruption pushing the flight over 3 hours delay',
-  lvp: 'LTN departure delayed 3h — LVP in force, SNOWTAM active, runway closure. All carriers affected.'
+  lvp: 'LTN departure delayed 3h — LVP in force, SNOWTAM active, runway closure. All carriers affected.',
+  volcanic: 'Flight cancelled due to volcanic ash SIGMET. Airspace closure NOTAM in force.',
+  nats: 'Network-wide delays due to NATS system outage. Eurocontrol ATFM restrictions imposed. Flight delayed 4h.',
+  denied: 'Passenger denied boarding due to overbooking. Involuntary offload.'
 };
 
 var TESTS = [
@@ -98,8 +101,10 @@ eval(fs.readFileSync(__dirname + '/defendable_confidence_manager.js', 'utf8'));
 eval(fs.readFileSync(__dirname + '/defendable_registry.js', 'utf8'));
 eval(fs.readFileSync(__dirname + '/defendable_pass2.js', 'utf8'));
 eval(fs.readFileSync(__dirname + '/defendable_evidence_pack.js', 'utf8'));
+eval(fs.readFileSync(__dirname + '/defendable_tree_engine.js', 'utf8'));
 eval(fs.readFileSync(__dirname + '/defendable_tree_dt01_atc.js', 'utf8'));
 eval(fs.readFileSync(__dirname + '/defendable_tree_dt02_weather.js', 'utf8'));
+eval(fs.readFileSync(__dirname + '/defendable_trees.js', 'utf8'));
 eval(fs.readFileSync(__dirname + '/defendable_orchestrator.js', 'utf8'));
 
 var orchPassed = 0;
@@ -342,5 +347,122 @@ console.log('\n' + '='.repeat(50));
 console.log('DT-02 passed: ' + dt2Passed + '/5');
 if (dt2Failed) {
   console.log('DT-02 failed: ' + dt2Failed);
+  process.exit(1);
+}
+
+/* All DT modules smoke tests */
+var allDtPassed = 0;
+var allDtFailed = 0;
+
+function allDtTest(name, fn) {
+  try {
+    fn();
+    allDtPassed++;
+    console.log('OK  all-dt: ' + name);
+  } catch (e) {
+    allDtFailed++;
+    console.log('FAIL all-dt: ' + name + ' — ' + e.message);
+  }
+}
+
+console.log('\nDefendAble all DT modules\n' + '='.repeat(50));
+
+allDtTest('registry defines 20 decision trees', function () {
+  if (DefendAbleTrees.DEFINITIONS.length !== 20) {
+    throw new Error('expected 20 trees, got ' + DefendAbleTrees.DEFINITIONS.length);
+  }
+});
+
+allDtTest('evidence pack has all case-management disruption matrices', function () {
+  var types = [
+    'ATC Restrictions', 'Weather', 'Airport/Runway Closure', 'Airport System Failure',
+    'Industrial Action', 'Technical Issues', 'Birdstrike', 'Medical Emergency',
+    'Disruptive Passenger', 'Natural Disaster', 'Security Alert', 'Political Unrest',
+    'Crew Hours / Overnight Delay'
+  ];
+  types.forEach(function (t) {
+    if (!DefendAbleEvidencePack.getMatrix(t)) throw new Error('missing matrix: ' + t);
+  });
+});
+
+var TREE_SMOKE = [
+  { tree: 'DT-01', text: EXAMPLES.atc },
+  { tree: 'DT-02', text: EXAMPLES.weather },
+  { tree: 'DT-03', text: EXAMPLES.lvp },
+  { tree: 'DT-04', text: EXAMPLES.birdstrike },
+  { tree: 'DT-05', text: 'G-EZTK hydraulic fault during pre-flight. MEL dispatch possible — aircraft delayed 3 hours.' },
+  { tree: 'DT-06', text: 'Crew reached FTL limits — no standby crew available LGW. Delay 4h 20m.' },
+  { tree: 'DT-07', text: EXAMPLES.industrial },
+  { tree: 'DT-08', text: EXAMPLES.security },
+  { tree: 'DT-09', text: EXAMPLES.medical },
+  { tree: 'DT-10', text: EXAMPLES.disruptive },
+  { tree: 'DT-11', text: EXAMPLES.volcanic },
+  { tree: 'DT-12', text: EXAMPLES.nats },
+  { tree: 'DT-13', text: EXAMPLES.cascade },
+  { tree: 'DT-14', text: EXAMPLES.technical },
+  { tree: 'DT-15', text: EXAMPLES.denied },
+  { tree: 'DT-16', text: 'Flight cancelled short notice within 14 days — schedule moved earlier' },
+  { tree: 'DT-17', text: 'Drone incursion closed airspace — government travel ban NOTAM' },
+  { tree: 'DT-18', text: 'Operating crew delayed on positioning flight before claimant sector' },
+  { tree: 'DT-19', text: EXAMPLES.positioning },
+  { tree: 'DT-20', text: 'Captain could not operate due to fatigue — 18 hour wake rule breach on FDP audit' }
+];
+
+TREE_SMOKE.forEach(function (item) {
+  allDtTest(item.tree + ' resolves and runs for scenario', function () {
+    var resolved = DefendAbleTrees.resolvePrimary(item.text, []);
+    if (!resolved || resolved.treeId !== item.tree) {
+      throw new Error('expected ' + item.tree + ', got ' + (resolved && resolved.treeId));
+    }
+    var em = DefendAbleEvidence.createEvidenceManager();
+    var cm = DefendAbleConfidence.createConfidenceManager();
+    var tree = DefendAbleTrees.runTree(item.tree, { iccText: item.text, causalChain: [], evidenceManager: em, confidenceManager: cm });
+    if (!tree.applicable) throw new Error('tree not applicable');
+    if (!tree.gates.length) throw new Error('no gates');
+    if (!tree.exit || !tree.exit.verdict) throw new Error('no exit verdict');
+  });
+});
+
+allDtTest('orchestrator runs primary tree for birdstrike end-to-end', function () {
+  var text = EXAMPLES.birdstrike;
+  var result = DefendAbleDemoV2.analyze(text);
+  var passes = DefendAbleDemoV2.toPasses(result, text);
+  var orch = DefendAbleOrchestrator.createOrchestrator();
+  orch.setIccText(text);
+  orch.afterPass1(passes.pass1);
+  orch.afterPass2(passes.pass2);
+  var out = orch.afterPass3(result);
+  var primary = (out.treeResults || [])[0];
+  if (!primary || primary.treeId !== 'DT-04') throw new Error('expected DT-04 primary');
+});
+
+allDtTest('denied boarding tree exits CONCEDE', function () {
+  var tree = DefendAbleTrees.runTree('DT-15', {
+    iccText: EXAMPLES.denied,
+    causalChain: [],
+    evidenceManager: DefendAbleEvidence.createEvidenceManager()
+  });
+  if (tree.exit.verdict !== 'CONCEDE') throw new Error('expected CONCEDE got ' + tree.exit.verdict);
+});
+
+allDtTest('positioning runs DT-19 with JUDGMENT_REQUIRED overlay', function () {
+  var text = EXAMPLES.positioning;
+  var ctx = {
+    iccText: text,
+    causalChain: [],
+    evidenceManager: DefendAbleEvidence.createEvidenceManager(),
+    confidenceManager: DefendAbleConfidence.createConfidenceManager()
+  };
+  var results = DefendAbleTrees.runAllApplicable(ctx);
+  var ids = results.map(function (r) { return r.treeId; });
+  if (ids.indexOf('DT-19') < 0) throw new Error('expected DT-19 primary, got ' + ids.join(','));
+  var wake = results.find(function (r) { return r.treeId === 'DT-20'; });
+  if (!wake || wake.exit.verdict !== 'JUDGMENT_REQUIRED') throw new Error('expected DT-20 judgment overlay');
+});
+
+console.log('\n' + '='.repeat(50));
+console.log('All DT modules passed: ' + allDtPassed + '/' + (allDtPassed + allDtFailed));
+if (allDtFailed) {
+  console.log('All DT modules failed: ' + allDtFailed);
   process.exit(1);
 }

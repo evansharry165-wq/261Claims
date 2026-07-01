@@ -81,6 +81,12 @@ var DefendAbleRegistry = (function () {
         { id: 'U7_LIMB2_CONTROL', question: 'Limb 2 — circumstance beyond carrier actual control?' }
       ]
     },
+    'DT-03': {
+      conclusions: [
+        { id: 'U7_LIMB1_INHERENCY', question: 'Limb 1 — airport closure not inherent?' },
+        { id: 'U7_LIMB2_CONTROL', question: 'Limb 2 — authority-mandated closure?' }
+      ]
+    },
     'DT-04': {
       conclusions: [
         { id: 'DT4_BIRDSTRIKE_EC', question: 'Birdstrike per se EC established (Pešková)?' },
@@ -122,6 +128,51 @@ var DefendAbleRegistry = (function () {
     'DT-13': {
       conclusions: [
         { id: 'DT13_CASCADE_ROOT', question: 'Cascade root cause identified at rotation start?' }
+      ]
+    },
+    'DT-11': {
+      conclusions: [
+        { id: 'U7_EC_ESTABLISHED', question: 'Natural disaster EC established?' }
+      ]
+    },
+    'DT-12': {
+      conclusions: [
+        { id: 'U7_EC_ESTABLISHED', question: 'ATM infrastructure failure EC?' }
+      ]
+    },
+    'DT-14': {
+      conclusions: [
+        { id: 'DT14_HIDDEN_DEFECT_LIMB1', question: 'Hidden defect Limb 1 — unknown failure mode?' }
+      ]
+    },
+    'DT-15': {
+      conclusions: [
+        { id: 'DT15_NO_EC_DEFENCE', question: 'Denied boarding — EC defence unavailable?' }
+      ]
+    },
+    'DT-16': {
+      conclusions: [
+        { id: 'U7_EC_ESTABLISHED', question: 'Cancellation EC root cause?' }
+      ]
+    },
+    'DT-17': {
+      conclusions: [
+        { id: 'U7_EC_ESTABLISHED', question: 'Government/political restriction EC?' }
+      ]
+    },
+    'DT-18': {
+      conclusions: [
+        { id: 'DT18_POSITIONING_ROOT', question: 'Positioning disruption root cause classified?' }
+      ]
+    },
+    'DT-19': {
+      conclusions: [
+        { id: 'DT19_INTERVENING_CAUSE', question: 'Intervening cause breaks positioning chain?' }
+      ]
+    },
+    'DT-20': {
+      conclusions: [
+        { id: 'DT20_WAKE_RULE_EC_CAUSED', question: '18-hour wake rule breach EC-caused?' }
       ]
     },
     'U-7': {

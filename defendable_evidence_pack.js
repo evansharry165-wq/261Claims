@@ -28,7 +28,17 @@ var DefendAbleEvidencePack = (function () {
     met_office: { name: 'Met Office — Daily Impact Hazard Forecast', system: 'Met Office', tier: 'K' },
     airport_web: { name: 'Airport Statement / Travel Advisory', system: 'Affected airport website', tier: 'S' },
     weather_briefs: { name: 'Weather Briefs & Phenomena Guides', system: 'Reference', tier: 'W' },
-    montreal_conv: { name: 'Montreal Convention — Consequential Loss Evidence', system: 'Internal legal file', tier: 'W' }
+    montreal_conv: { name: 'Montreal Convention — Consequential Loss Evidence', system: 'Internal legal file', tier: 'W' },
+    lightning: { name: 'Lightning Maps — Strike Records', system: 'Lightning Maps', tier: 'K' },
+    amos: { name: 'Maintenance records system — Technical Event Record', system: 'AMOS', tier: 'K' },
+    wildfire: { name: 'EFFIS — Wildfire Map', system: 'Copernicus EFFIS', tier: 'K' },
+    policies: { name: 'Airline Policies & Terms & Conditions', system: 'Reference', tier: 'W' },
+    tech_docs: { name: 'Technical Reference Documents', system: 'Reference', tier: 'W' },
+    witness_cases: { name: 'Witness Cases & Judgements', system: 'Reference', tier: 'W' },
+    welfare_docs: { name: 'Welfare & Passenger Care Documentation', system: 'Reference', tier: 'W' },
+    crew_docs: { name: 'Crew Regulatory Documents', system: 'Reference', tier: 'W' },
+    overnight_docs: { name: 'Overnight Delay Documentation', system: 'Reference', tier: 'W' },
+    flight_plan: { name: 'Flight Planning Documentation', system: 'Reference', tier: 'W' }
   };
 
   var MATRIX = {
@@ -41,6 +51,76 @@ var DefendAbleEvidencePack = (function () {
       K: ['tops', 'disco', 'aims', 'safetynet', 'eurocontrol', 'ogimet', 'met_office', 'notam'],
       S: ['connected', 'network_out', 'lido', 'hermes', 'max_ops', 'dpm', 'internal_email', 'flightradar', 'flightstats', 'ops_review', 'airport_web'],
       W: ['case_studies', 'weather_briefs', 'eurocontrol_w', 'caa_docs', 'ac_ops', 'airport_info', 'montreal_conv']
+    },
+    'Airport/Runway Closure': {
+      K: ['tops', 'disco', 'aims', 'safetynet', 'eurocontrol', 'notam'],
+      S: ['connected', 'network_out', 'lido', 'hermes', 'max_ops', 'dpm', 'internal_email', 'flightradar', 'flightstats', 'airport_web', 'ops_review'],
+      W: ['case_studies', 'caa_docs', 'ac_ops', 'airport_info', 'flight_plan']
+    },
+    'Airport System Failure': {
+      K: ['tops', 'disco', 'aims', 'safetynet', 'eurocontrol'],
+      S: ['connected', 'network_out', 'lido', 'hermes', 'max_ops', 'dpm', 'internal_email', 'flightradar', 'flightstats', 'airport_web', 'ops_review'],
+      W: ['case_studies', 'caa_docs', 'ac_ops', 'airport_info']
+    },
+    'Industrial Action': {
+      K: ['tops', 'disco', 'aims', 'safetynet', 'eurocontrol', 'notam'],
+      S: ['connected', 'network_out', 'lido', 'hermes', 'max_ops', 'dpm', 'internal_email', 'flightradar', 'airport_web', 'ops_review'],
+      W: ['case_studies', 'caa_docs', 'policies', 'eurocontrol_w', 'airport_info']
+    },
+    'Technical Issues': {
+      K: ['tops', 'disco', 'aims', 'safetynet', 'amos'],
+      S: ['connected', 'lido', 'hermes', 'max_ops', 'dpm', 'internal_email', 'ops_review'],
+      W: ['case_studies', 'tech_docs', 'ac_ops', 'caa_docs', 'witness_cases']
+    },
+    'Birdstrike': {
+      K: ['tops', 'disco', 'aims', 'safetynet', 'amos', 'eurocontrol'],
+      S: ['connected', 'lido', 'hermes', 'dpm', 'internal_email', 'flightradar', 'ops_review'],
+      W: ['case_studies', 'tech_docs', 'ac_ops', 'caa_docs']
+    },
+    'Lightning Strike': {
+      K: ['tops', 'disco', 'aims', 'safetynet', 'amos', 'ogimet', 'met_office', 'lightning'],
+      S: ['connected', 'lido', 'hermes', 'max_ops', 'dpm', 'internal_email', 'flightradar', 'ops_review'],
+      W: ['case_studies', 'weather_briefs', 'tech_docs', 'ac_ops', 'caa_docs']
+    },
+    'Ground Damage': {
+      K: ['tops', 'disco', 'aims', 'safetynet', 'amos', 'eurocontrol'],
+      S: ['connected', 'lido', 'hermes', 'max_ops', 'dpm', 'notam', 'internal_email', 'flightradar', 'ops_review'],
+      W: ['case_studies', 'tech_docs', 'ac_ops', 'airport_info', 'caa_docs']
+    },
+    'Medical Emergency': {
+      K: ['tops', 'disco', 'aims', 'safetynet', 'eurocontrol'],
+      S: ['connected', 'lido', 'hermes', 'max_ops', 'dpm', 'internal_email', 'flightradar', 'ops_review'],
+      W: ['case_studies', 'caa_docs', 'ac_ops', 'welfare_docs', 'witness_cases']
+    },
+    'Disruptive Passenger': {
+      K: ['tops', 'disco', 'aims', 'safetynet', 'eurocontrol'],
+      S: ['connected', 'lido', 'hermes', 'max_ops', 'dpm', 'internal_email', 'flightradar', 'ops_review'],
+      W: ['case_studies', 'policies', 'caa_docs', 'welfare_docs', 'witness_cases']
+    },
+    'Natural Disaster': {
+      K: ['tops', 'disco', 'aims', 'safetynet', 'eurocontrol', 'notam', 'wildfire'],
+      S: ['connected', 'network_out', 'lido', 'hermes', 'max_ops', 'dpm', 'internal_email', 'flightradar', 'ops_review'],
+      W: ['case_studies', 'weather_briefs', 'caa_docs', 'ac_ops', 'airport_info']
+    },
+    'Security Alert': {
+      K: ['tops', 'disco', 'aims', 'safetynet', 'eurocontrol', 'notam'],
+      S: ['connected', 'lido', 'hermes', 'max_ops', 'dpm', 'internal_email', 'flightradar', 'ops_review'],
+      W: ['case_studies', 'caa_docs', 'policies', 'ac_ops', 'airport_info']
+    },
+    'Passenger Welfare': {
+      K: ['tops', 'disco', 'aims', 'safetynet', 'eurocontrol'],
+      S: ['connected', 'lido', 'hermes', 'max_ops', 'dpm', 'internal_email', 'ops_review'],
+      W: ['case_studies', 'welfare_docs', 'policies', 'caa_docs', 'witness_cases']
+    },
+    'Political Unrest': {
+      K: ['tops', 'disco', 'aims', 'safetynet', 'eurocontrol', 'notam'],
+      S: ['connected', 'network_out', 'lido', 'hermes', 'max_ops', 'dpm', 'internal_email', 'ops_review'],
+      W: ['case_studies', 'caa_docs', 'policies', 'eurocontrol_w', 'airport_info']
+    },
+    'Crew Hours / Overnight Delay': {
+      K: ['tops', 'disco', 'aims', 'safetynet'],
+      S: ['connected', 'lido', 'hermes', 'max_ops', 'dpm', 'internal_email', 'ops_review'],
+      W: ['overnight_docs', 'crew_docs', 'caa_docs', 'ac_ops', 'case_studies']
     }
   };
 
@@ -52,6 +132,7 @@ var DefendAbleEvidencePack = (function () {
     met_office: 'EV_MET_OFFICE',
     dpm: 'DPM_NOTES',
     aims: 'AIMS_FDP_RECORD',
+    amos: 'AMOS_DEFECT_LOG',
     flightstats: 'FLIGHTSTATS_CROSSCARRIER',
     hermes: 'HERMES_ART8_OFFER',
     max_ops: 'EV_MAX_OPS'
@@ -67,7 +148,9 @@ var DefendAbleEvidencePack = (function () {
     dpm: [{ type: 'EVIDENCE_RECEIVED', description: 'DPM notes on recovery attempts' }],
     ogimet: [{ type: 'METAR_BELOW_ILS_MINIMA', description: 'Destination METAR below operating minima' }],
     met_office: [{ type: 'EVIDENCE_RECEIVED', description: 'Met Office hazard forecast corroboration' }],
-    flightradar: [{ type: 'TOPS_DIVERSION', description: 'Flight track confirms diversion path' }]
+    flightradar: [{ type: 'TOPS_DIVERSION', description: 'Flight track confirms diversion path' }],
+    amos: [{ type: 'AMOS_NO_PRIOR_DEFECT', description: 'Technical event record on file' }],
+    safetynet: [{ type: 'EVIDENCE_RECEIVED', description: 'Safety reporting system event record' }]
   };
 
   var TIER_ORDER = ['K', 'S', 'W'];
@@ -122,7 +205,7 @@ var DefendAbleEvidencePack = (function () {
     var added = [];
     getPackItems(disruptionType).forEach(function (item) {
       var deps = [];
-      if (item.libKey === 'eurocontrol' || item.libKey === 'aims') {
+      if (item.libKey === 'eurocontrol' || item.libKey === 'aims' || item.libKey === 'amos') {
         deps = ['TOPS_DELAY_RECORD'];
       }
       if (!evidenceManager.has(item.evidenceId)) {
@@ -155,6 +238,9 @@ var DefendAbleEvidencePack = (function () {
   }
 
   function detectDisruptionType(text) {
+    if (typeof DefendAbleTrees !== 'undefined') {
+      return DefendAbleTrees.getDisruptionTypeForIcc(text);
+    }
     if (isWeatherDestination(text)) return 'Weather';
     if (isAtcPrimary(text)) return 'ATC Restrictions';
     return null;
