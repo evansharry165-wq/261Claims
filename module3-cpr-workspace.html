@@ -793,7 +793,8 @@ function goToEvidence(){
     sessionStorage.setItem('aeroCaseData',JSON.stringify(d));
   }catch(e){}
   if(typeof shellGo==='function'&&shellGo('evidence','CPR stage complete — proceeding to evidence'))return;
-  window.location.href='module4-evidence-workspace.html?ref='+encodeURIComponent(C.ref);
+  if(typeof advanceCaseStage==='function')advanceCaseStage(C.ref,'evidence','CPR stage complete — proceeding to evidence');
+  window.location.href='case.html?ref='+encodeURIComponent(C.ref)+'&tab=evidence';
 }
 
 /* ── Init ── */

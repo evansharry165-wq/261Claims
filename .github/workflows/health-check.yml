@@ -18,6 +18,7 @@ jobs:
         run: node defendable_v2_tests.js
       - name: Repository health checks
         run: |
+          node scripts/smoke_test.js
           for f in scripts/*_health_check.js; do
             echo "=== $f ==="
             node "$f"
