@@ -32,6 +32,52 @@ var DefendAbleTrees = (function () {
     };
   }
 
+  function measuresFor(treeId, gateId) {
+    var id = gateId || (treeId.replace('DT-', 'DT') + '-RM');
+    var configs = {
+      'DT-06': {
+        id: id,
+        name: 'Crew recovery reasonable measures',
+        type: 'measures',
+        question: 'Were standby crew deployment, FDP extension, and recovery options attempted and documented?',
+        authority: 'Wallentin-Hermann para 40 — FTL consequence does not excuse failed crew recovery',
+        requiredLibKeys: ['dpm', 'aims', 'tops'],
+        secondaryLibKeys: ['internal_email', 'ops_review'],
+        conclusionIds: ['U8_RM_CREW_RECOVERY', 'U8_RM_SLOT_RECOVERY'],
+        yesMeans: 'Crew recovery measures documented.',
+        noMeans: 'Failed crew recovery — ordinary cause may break EC chain.',
+        onYes: 'EXIT', onUnknown: 'EXIT', onNo: 'EXIT'
+      },
+      'DT-12': {
+        id: id,
+        name: 'Network recovery reasonable measures',
+        type: 'measures',
+        question: 'Were slot recovery, network rebooking, and passenger care measures attempted after ATM outage?',
+        authority: 'Wallentin-Hermann para 40 — mandatory after EC confirmed',
+        requiredLibKeys: ['dpm', 'tops', 'disco'],
+        secondaryLibKeys: ['max_ops', 'internal_email', 'ops_review'],
+        conclusionIds: ['U8_RM_SLOT_RECOVERY'],
+        yesMeans: 'Network recovery measures documented.',
+        noMeans: 'Failed network recovery — assess settlement exposure.',
+        onYes: 'EXIT', onUnknown: 'EXIT', onNo: 'EXIT'
+      },
+      'DT-05': {
+        id: id,
+        name: 'Technical recovery reasonable measures',
+        type: 'measures',
+        question: 'Were spare aircraft, engineer dispatch, and parts sourcing attempted and documented?',
+        authority: 'Wallentin-Hermann para 40',
+        requiredLibKeys: ['dpm', 'tops', 'amos'],
+        secondaryLibKeys: ['internal_email', 'ops_review'],
+        conclusionIds: ['U8_RM_DISPATCH_EXHAUSTED', 'U8_RM_SLOT_RECOVERY'],
+        yesMeans: 'Technical recovery measures documented.',
+        noMeans: 'Dispatch options not exhausted — ordinary technical delay risk.',
+        onYes: 'EXIT', onUnknown: 'EXIT', onNo: 'EXIT'
+      }
+    };
+    return configs[treeId] || stdMeasures(id, treeId);
+  }
+
   var DEFINITIONS = [
     wrapCustom('DT-01', 'ATC Restrictions', 'Pešková C-315/15; Wallentin-Hermann C-549/07', 50,
       function (t, c) { return typeof DefendAbleTreeDT01 !== 'undefined' && DefendAbleTreeDT01.matches(t, c); },
@@ -49,7 +95,7 @@ var DefendAbleTrees = (function () {
       matches: function (t, c) {
         if (typeof DefendAbleTreeDT02 !== 'undefined' && DefendAbleTreeDT02.isWeatherOriginOnly(t)) return true;
         return /\blvp\b|\bsnowtam|\brunway closure|\bde-ic|\borigin weather\b/i.test(t || '')
-          && !/\bdiversion\b|\bbelow minima\b|\bthunderstorm\b|\barrival destination\b/i.test(t || '');
+          && !/\bdiversion\b|\bbelow minima\b|\bthunderstorms?\b|\barrival destination\b/i.test(t || '');
       },
       gates: [
         {
@@ -131,6 +177,7 @@ var DefendAbleTrees = (function () {
         {
           id: 'DT5-G1', name: 'Technical fault identified', type: 'entry',
           question: 'Was an aircraft technical fault the stated cause of disruption?',
+          authority: 'van der Lans C-257/14 — ordinary technical fault is not EC',
           iccPattern: /\bhydraulic|\btechnical|\baog\b|\bdefect\b|\bmel\b/i,
           requiredLibKeys: ['amos', 'tops'],
           onYes: 'DT5-G2', onNo: 'ROUTE_AWAY'
@@ -149,18 +196,28 @@ var DefendAbleTrees = (function () {
         {
           id: 'DT5-G2b', name: 'Technical fault scope', type: 'confirm',
           question: 'Is an aircraft technical fault the stated cause of disruption?',
+          authority: 'AMOS defect log required — van der Lans ordinary fault analysis',
           iccPattern: /\bhydraulic|\btechnical|\baog\b|\bdefect\b/i,
           requiredLibKeys: ['amos', 'tops'],
+          findingTypes: { amos: 'AMOS_MEL_CATEGORY_A' },
           onYes: 'DT5-G3', onNo: 'ROUTE_AWAY'
         },
         {
           id: 'DT5-G3', name: 'External technical cause', type: 'confirm',
           question: 'Was fault caused by external event (lightning, ground damage, birdstrike)?',
+          authority: 'External event may satisfy Limb 2 — not inherent in normal operations',
           iccPattern: /\blightning|\bground damage|\bbirdstrike\b/i,
           conclusionIds: ['U7_EC_ESTABLISHED'],
+          chainEval: function (ctx) {
+            var chain = ctx.causalChain || [];
+            if (chain.some(function (ev) { return ev.chainBreak; })) {
+              return { answer: 'no', confidence: 'red', reason: 'Intervening ordinary event breaks technical EC chain.' };
+            }
+            return null;
+          },
           onYes: 'DT5-G4', onNo: 'EXIT'
         },
-        stdMeasures('DT5-G4', 'DT5')
+        measuresFor('DT-05', 'DT5-G4')
       ]
     },
 
@@ -197,12 +254,24 @@ var DefendAbleTrees = (function () {
         {
           id: 'DT6-G3', name: 'EC caused FTL breach', type: 'confirm',
           question: 'Was FTL breach caused by timing of an upstream EC event?',
+          authority: 'FTL is never independent EC — identify upstream Pešková-class event',
           requiredLibKeys: ['aims', 'tops', 'disco'],
           conclusionIds: ['DT6_FTL_CAUSED_BY_EC'],
-          iccPattern: /\batc\b|\bweather\b|\bthunderstorm\b|\bctot\b|\bmedical\b|\bsecurity\b/i,
+          iccPattern: /\batc\b|\bweather\b|\bthunderstorms?\b|\bctot\b|\bmedical\b|\bsecurity\b|\bbirdstrike\b/i,
+          chainEval: function (ctx) {
+            var t = ctx.iccText || '';
+            if (/\bweather\b|\bthunderstorms?\b|\bctot\b|\batc\b|\bbirdstrike\b|\bsecurity\b|\bmedical\b/i.test(t)) {
+              return { answer: 'yes', confidence: 'amber', reason: 'ICC references upstream EC-class event — apply root disruption tree.' };
+            }
+            if (/\bcommercial\b|\bschedule change\b|\bno standby\b/i.test(t) && !/\bweather\b|\batc\b/i.test(t)) {
+              return { answer: 'no', confidence: 'red', reason: 'Ordinary operational cause — FTL exhaustion not EC-caused.' };
+            }
+            return null;
+          },
           yesMeans: 'FTL consequence of EC root — apply upstream disruption tree.',
-          onYes: 'EXIT', onNo: 'EXIT'
-        }
+          onYes: 'DT6-G4', onNo: 'EXIT'
+        },
+        measuresFor('DT-06', 'DT6-G4')
       ]
     },
 
@@ -385,20 +454,32 @@ var DefendAbleTrees = (function () {
         {
           id: 'DT12-G1', name: 'ATM / airport system failure', type: 'entry',
           question: 'Was there NATS, Eurocontrol, or airport system outage?',
-          iccPattern: /\boutage|\batm system|\bnetwork failure|\bsystem failure\b/i,
+          authority: 'Third-party ATM infrastructure failure — Pešková EC candidate',
+          iccPattern: /\boutage|\batm system|\bnetwork failure|\bsystem failure|\bnats\b/i,
           requiredLibKeys: ['eurocontrol', 'tops', 'notam'],
-          conclusionIds: ['U7_EC_ESTABLISHED'],
+          findingTypes: { eurocontrol: 'TOPS_CTOT_CONFIRMED' },
+          conclusionIds: ['U7_EC_ESTABLISHED', 'DT1_CTOT_CONFIRMED'],
           yesMeans: 'Third-party infrastructure failure — EC.',
           onYes: 'DT12-G2', onNo: 'ROUTE_AWAY'
         },
         {
-          id: 'DT12-G2', name: 'Cross-carrier impact', type: 'confirm',
-          question: 'Did outage affect multiple carriers systemically?',
-          requiredLibKeys: ['flightstats', 'tops'],
-          findingTypes: { flightstats: 'FLIGHTSTATS_MULTI_CARRIER_IMPACT' },
+          id: 'DT12-G2', name: 'Official outage notice', type: 'confirm',
+          question: 'Is Eurocontrol/NATS official outage or ATFM notice documented?',
+          authority: 'NOTAM + Eurocontrol notice — Limb 2 beyond carrier control',
+          requiredLibKeys: ['eurocontrol', 'notam'],
+          findingTypes: { eurocontrol: 'TOPS_CTOT_CONFIRMED', notam: 'INDUSTRIAL_ATFM_RESTRICTION' },
           onYes: 'DT12-G3', onNo: 'DT12-G3'
         },
-        stdMeasures('DT12-G3', 'DT12')
+        {
+          id: 'DT12-G3', name: 'Cross-carrier impact', type: 'confirm',
+          question: 'Did outage affect multiple carriers systemically?',
+          authority: 'FlightStats systemic impact — inherency (Limb 1)',
+          requiredLibKeys: ['flightstats', 'tops'],
+          findingTypes: { flightstats: 'FLIGHTSTATS_MULTI_CARRIER_IMPACT' },
+          conclusionIds: ['U7_LIMB1_INHERENCY'],
+          onYes: 'DT12-G4', onNo: 'DT12-G4'
+        },
+        measuresFor('DT-12', 'DT12-G4')
       ]
     },
 
@@ -431,7 +512,7 @@ var DefendAbleTrees = (function () {
         {
           id: 'DT13-G3', name: 'Root cause tree routing', type: 'confirm',
           question: 'Has root cause at rotation start been classified (weather, ATC, technical)?',
-          iccPattern: /\bweather\b|\batc\b|\btechnical\b|\bctot\b|\bthunderstorm\b/i,
+          iccPattern: /\bweather\b|\batc\b|\btechnical\b|\bctot\b|\bthunderstorms?\b/i,
           conclusion: 'Apply appropriate disruption tree to root cause — cascade itself is not EC.',
           onYes: 'EXIT', onNo: 'EXIT'
         }
@@ -650,6 +731,22 @@ var DefendAbleTrees = (function () {
     return null;
   }
 
+  function resolveRootCauseTreeId(iccText, causalChain) {
+    var t = iccText || '';
+    var chain = causalChain || [];
+    if (/\bbirdstrike|\bingestion\b/i.test(t)) return 'DT-04';
+    if (/\bvolcanic|\bash sigmet\b/i.test(t)) return 'DT-11';
+    if (/\bnats\b|\bnetwork-wide.*outage\b/i.test(t)) return 'DT-12';
+    if (/\bdenied boarding|\boverbook/i.test(t)) return 'DT-15';
+    if (/\bhidden defect|\bmanufacturing defect|\bno prior ad\b/i.test(t)) return 'DT-14';
+    if (/\blvp\b|\bsnowtam|\brunway closure\b/i.test(t) && !/\bdiversion\b|\bbelow minima\b/i.test(t)) return 'DT-03';
+    if (typeof DefendAbleTreeDT02 !== 'undefined' && DefendAbleTreeDT02.matches(t, chain)) return 'DT-02';
+    if (/\bindustrial|\bstrike\b/i.test(t) && !/\bown\b|\bpilot union\b/i.test(t)) return 'DT-07';
+    if (typeof DefendAbleTreeDT01 !== 'undefined' && DefendAbleTreeDT01.matches(t, chain)) return 'DT-01';
+    if (/\bhydraulic|\btechnical|\baog\b|\bdefect\b/i.test(t)) return 'DT-14';
+    return null;
+  }
+
   function resolveSecondary(iccText, causalChain, primaryTreeId) {
     var secondary = [];
     var t = iccText || '';
@@ -677,14 +774,34 @@ var DefendAbleTrees = (function () {
 
   function runAllApplicable(ctx) {
     var results = [];
+    var seen = {};
+    function record(res) {
+      if (!res || !res.treeId || seen[res.treeId]) return;
+      if (res.applicable) {
+        seen[res.treeId] = true;
+        results.push(res);
+      }
+    }
+
     var primary = resolvePrimary(ctx.iccText, ctx.causalChain);
-    if (primary) {
-      results.push(runTree(primary.treeId, ctx));
-      var secondary = resolveSecondary(ctx.iccText, ctx.causalChain, primary.treeId);
-      secondary.forEach(function (sid) {
-        var sec = runTree(sid, ctx, true);
-        if (sec.applicable) results.push(sec);
-      });
+    if (!primary) return results;
+
+    record(runTree(primary.treeId, ctx));
+    resolveSecondary(ctx.iccText, ctx.causalChain, primary.treeId).forEach(function (sid) {
+      record(runTree(sid, ctx, true));
+    });
+
+    if (seen['DT-13']) {
+      var rootId = resolveRootCauseTreeId(ctx.iccText, ctx.causalChain);
+      if (rootId && !seen[rootId]) {
+        record(runTree(rootId, ctx, true));
+      }
+    }
+    if (seen['DT-06'] && !seen['DT-13']) {
+      var ftlRoot = resolveRootCauseTreeId(ctx.iccText, ctx.causalChain);
+      if (ftlRoot && !seen[ftlRoot]) {
+        record(runTree(ftlRoot, ctx, true));
+      }
     }
     return results;
   }
@@ -699,6 +816,7 @@ var DefendAbleTrees = (function () {
     getDefinition: getDefinition,
     resolvePrimary: resolvePrimary,
     resolveSecondary: resolveSecondary,
+    resolveRootCauseTreeId: resolveRootCauseTreeId,
     runTree: runTree,
     runAllApplicable: runAllApplicable,
     getDisruptionTypeForIcc: getDisruptionTypeForIcc

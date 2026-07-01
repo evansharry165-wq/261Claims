@@ -89,17 +89,17 @@ var DefendAbleTreeDT02 = (function () {
   function isWeatherOriginOnly(text) {
     var t = text || '';
     return /\blvp\b|\bsnowtam|\brunway closure|\bde-ic\b|\borigin weather\b/i.test(t)
-      && !/\bdiversion\b|\bbelow minima\b|\bthunderstorm\b|\barrival destination\b|\bdestination\b/i.test(t);
+      && !/\bdiversion\b|\bbelow minima\b|\bthunderstorms?\b|\barrival destination\b|\bdestination\b/i.test(t);
   }
 
   function matches(iccText, chainEvents) {
     if (isWeatherOriginOnly(iccText)) return false;
     var t = (iccText || '').toLowerCase();
-    if (/\bthunderstorm\b|\bweather\b|\bbelow minima\b|\bdiversion\b|\bsigmet\b|\bmetar\b|\bmandatory atc diversion\b/i.test(t)) {
+    if (/\bthunderstorms?\b|\bweather\b|\bbelow minima\b|\bdiversion\b|\bsigmet\b|\bmetar\b|\bmandatory atc diversion\b/i.test(t)) {
       return true;
     }
     return (chainEvents || []).some(function (ev) {
-      return /\bweather\b|\bthunderstorm\b|\bbelow minima\b|\bdiversion\b|\bsigmet\b/i.test(ev.description || '');
+      return /\bweather\b|\bthunderstorms?\b|\bbelow minima\b|\bdiversion\b|\bsigmet\b/i.test(ev.description || '');
     });
   }
 
@@ -177,7 +177,7 @@ var DefendAbleTreeDT02 = (function () {
     var gate = GATES[0];
     var t = ctx.iccText || '';
     var em = ctx.evidenceManager;
-    var weatherInIcc = /\bbelow minima\b|\bthunderstorm\b|\bweather\b|\bdiversion\b/i.test(t);
+    var weatherInIcc = /\bbelow minima\b|\bthunderstorms?\b|\bweather\b|\bdiversion\b/i.test(t);
     var metarEvidence = hasCollected(em, 'ogimet') || hasFinding(em, 'ogimet', 'METAR_BELOW_ILS_MINIMA');
     var answer = (weatherInIcc || metarEvidence) ? 'yes' : 'no';
     var gaps = gateEvidenceGaps(em, gate.requiredLibKeys);
@@ -196,7 +196,7 @@ var DefendAbleTreeDT02 = (function () {
     var gate = GATES[1];
     var t = ctx.iccText || '';
     var em = ctx.evidenceManager;
-    var weatherHint = /\bweather\b|\bthunderstorm\b|\bsigmet\b|\bmetar\b/i.test(t);
+    var weatherHint = /\bweather\b|\bthunderstorms?\b|\bsigmet\b|\bmetar\b/i.test(t);
     var topsCollected = hasCollected(em, 'tops');
     var answer = (weatherHint || topsCollected) ? 'yes' : 'no';
     var gaps = gateEvidenceGaps(em, gate.requiredLibKeys);

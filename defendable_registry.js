@@ -39,7 +39,35 @@ var DefendAbleRegistry = (function () {
     EV_SAFETYNET: { name: 'Safety reporting system Reports', system: 'SafetyNet', hardDependencies: [] },
     EV_NOTAM: { name: 'NOTAM Records', system: 'NOTAM', hardDependencies: [] },
     EV_MET_OFFICE: { name: 'Met Office — Daily Impact Hazard Forecast', system: 'Met Office', hardDependencies: [] },
-    EV_AIRPORT_WEB: { name: 'Airport Statement / Travel Advisory', system: 'Affected airport website', hardDependencies: [] }
+    EV_AIRPORT_WEB: { name: 'Airport Statement / Travel Advisory', system: 'Affected airport website', hardDependencies: [] },
+    EV_CONNECTED: { name: 'Connected Portal — Flight Plans & Scratchpads', system: 'Connected Portal', hardDependencies: [] },
+    EV_NETWORK_OUT: { name: 'Network Outlook Brief', system: 'Eurocontrol NOP', hardDependencies: [] },
+    EV_LIDO: { name: 'LIDO — Flight Plans & Fuel Figures', system: 'LIDO', hardDependencies: [] },
+    EV_MAX_OPS: { name: 'MAX OPS — Passenger Communications', system: 'MAX-OPS', hardDependencies: [] },
+    EV_INTERNAL_EMAIL: { name: 'Internal Emails — Operations / Crewing', system: 'Internal mailboxes', hardDependencies: [] },
+    EV_FLIGHTRADAR: { name: 'Flightradar24 — Flight Track', system: 'Flightradar24', hardDependencies: [] },
+    EV_OPS_REVIEW: { name: 'Daily Ops Review', system: 'Operations', hardDependencies: [] },
+    EV_CASE_STUDIES: { name: 'Case Studies', system: 'Reference', hardDependencies: [] },
+    EV_EUROCONTROL_W: { name: 'Eurocontrol Reference Documents', system: 'Reference', hardDependencies: [] },
+    EV_CAA_DOCS: { name: 'CAA Documentation', system: 'Reference', hardDependencies: [] },
+    EV_AC_OPS: { name: 'Aircraft Operations & Procedures', system: 'Reference', hardDependencies: [] },
+    EV_AIRPORT_INFO: { name: 'Airport Information', system: 'Reference', hardDependencies: [] },
+    EV_WEATHER_BRIEFS: { name: 'Weather Briefs & Phenomena Guides', system: 'Reference', hardDependencies: [] },
+    EV_MONTREAL_CONV: { name: 'Montreal Convention — Consequential Loss Evidence', system: 'Internal legal file', hardDependencies: [] },
+    EV_LIGHTNING: { name: 'Lightning Maps — Strike Records', system: 'Lightning Maps', hardDependencies: [] },
+    EV_WILDFIRE: { name: 'EFFIS — Wildfire Map', system: 'Copernicus EFFIS', hardDependencies: [] },
+    EV_POLICIES: { name: 'Airline Policies & Terms & Conditions', system: 'Reference', hardDependencies: [] },
+    EV_TECH_DOCS: { name: 'Technical Reference Documents', system: 'Reference', hardDependencies: [] },
+    EV_WITNESS_CASES: { name: 'Witness Cases & Judgements', system: 'Reference', hardDependencies: [] },
+    EV_WELFARE_DOCS: { name: 'Welfare & Passenger Care Documentation', system: 'Reference', hardDependencies: [] },
+    EV_CREW_DOCS: { name: 'Crew Regulatory Documents', system: 'Reference', hardDependencies: [] },
+    EV_OVERNIGHT_DOCS: { name: 'Overnight Delay Documentation', system: 'Reference', hardDependencies: [] },
+    EV_FLIGHT_PLAN: { name: 'Flight Planning Documentation', system: 'Reference', hardDependencies: [] }
+  };
+
+  var EVIDENCE_ID_CANONICAL = {
+    EV_SAFETYNET: 'SAFETYNET_MEDICAL',
+    AMOS_BIRDSTRIKE_INSPECTION: 'AMOS_DEFECT_LOG'
   };
 
   var EVIDENCE_ID_ALIASES = [
@@ -68,6 +96,7 @@ var DefendAbleRegistry = (function () {
       conclusions: [
         { id: 'DT1_CTOT_CONFIRMED', question: 'CTOT / ATFM restriction confirmed as root cause?' },
         { id: 'DT1_ATC_CAUSE', question: 'ATC delay codes corroborate extraordinary circumstances?' },
+        { id: 'DT1_ATC_SOLE_CAUSE', question: 'ATC/ATFM sole root cause without intervening ordinary event?' },
         { id: 'U7_EC_ESTABLISHED', question: 'Wallentin-Hermann EC gate satisfied at this event?' }
       ],
       dependsOn: [],
@@ -203,7 +232,7 @@ var DefendAbleRegistry = (function () {
   var CHAIN_EVIDENCE_TRIGGERS = [
     { pattern: /ctot|atfm|eurocontrol|\batc\b/, evidenceIds: ['EUROCONTROL_CTOT'] },
     { pattern: /ond|overnight|next day|curfew|following day/, evidenceIds: ['TOPS_NEXTDAY_ARRIVAL', 'GROUND_HANDLER_HOTAC'] },
-    { pattern: /birdstrike|bird strike|ingestion/, evidenceIds: ['AMOS_BIRDSTRIKE_INSPECTION'] },
+    { pattern: /birdstrike|bird strike|ingestion/, evidenceIds: ['AMOS_DEFECT_LOG'] },
     { pattern: /weather|thunderstorm|below minima|diversion/, evidenceIds: ['METAR_DESTINATION'] },
     { pattern: /ftl|out of hours|crew.*limit|standby crew/, evidenceIds: ['AIMS_STANDBY_LOG'] },
     { pattern: /hidden defect|manufacturing|hydraulic|category a|\bmel\b/, evidenceIds: ['OEM_AD_SB_SEARCH', 'AMOS_DEFECT_LOG'] },
@@ -238,7 +267,7 @@ var DefendAbleRegistry = (function () {
       pattern: /birdstrike|bird strike|ingestion/i,
       collected: [
         { id: 'TOPS_DELAY_RECORD', findings: [{ type: 'AMOS_BIRDSTRIKE', description: 'Birdstrike on approach' }] },
-        { id: 'AMOS_BIRDSTRIKE_INSPECTION', findings: [{ type: 'AMOS_NO_PRIOR_DEFECT', description: 'Mandatory inspection completed' }] }
+        { id: 'AMOS_DEFECT_LOG', findings: [{ type: 'AMOS_BIRDSTRIKE', description: 'Mandatory birdstrike inspection completed' }, { type: 'AMOS_NO_PRIOR_DEFECT', description: 'No prior defect on component' }] }
       ],
       missing: []
     },
@@ -300,8 +329,13 @@ var DefendAbleRegistry = (function () {
     return text.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '').toUpperCase().substring(0, 48) || 'EVIDENCE_UNKNOWN';
   }
 
+  function canonicalEvidenceId(id) {
+    return EVIDENCE_ID_CANONICAL[id] || id;
+  }
+
   function getEvidenceMeta(id) {
-    return EVIDENCE_CATALOG[id] || { name: id, system: 'Unknown', hardDependencies: [] };
+    var cid = canonicalEvidenceId(id);
+    return EVIDENCE_CATALOG[cid] || { name: id, system: 'Unknown', hardDependencies: [] };
   }
 
   function getNodeConclusions(nodeId) {
@@ -345,7 +379,9 @@ var DefendAbleRegistry = (function () {
     NODE_CONCLUSIONS: NODE_CONCLUSIONS,
     CHAIN_EVIDENCE_TRIGGERS: CHAIN_EVIDENCE_TRIGGERS,
     DEMO_EVIDENCE_SCENARIOS: DEMO_EVIDENCE_SCENARIOS,
+    EVIDENCE_ID_CANONICAL: EVIDENCE_ID_CANONICAL,
     deriveEvidenceId: deriveEvidenceId,
+    canonicalEvidenceId: canonicalEvidenceId,
     getEvidenceMeta: getEvidenceMeta,
     getNodeConclusions: getNodeConclusions,
     getSemanticIdsForNode: getSemanticIdsForNode,

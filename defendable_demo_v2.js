@@ -913,7 +913,7 @@ var DefendAbleDemoV2 = (function () {
       artEightStatus: result.artEightStatus
     };
     if (typeof DefendAblePass2 !== 'undefined') {
-      pass2 = DefendAblePass2.enrichPass2ForDemo(pass1, pass2, iccText || '');
+      pass2 = DefendAblePass2.enrichPass2ForAnalysis(pass1, pass2, iccText || '');
     }
     return { pass1: pass1, pass2: pass2, pass3: result };
   }
