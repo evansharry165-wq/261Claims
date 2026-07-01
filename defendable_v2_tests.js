@@ -95,6 +95,8 @@ eval(fs.readFileSync(__dirname + '/defendable_evidence_manager.js', 'utf8'));
 eval(fs.readFileSync(__dirname + '/defendable_confidence_manager.js', 'utf8'));
 eval(fs.readFileSync(__dirname + '/defendable_registry.js', 'utf8'));
 eval(fs.readFileSync(__dirname + '/defendable_pass2.js', 'utf8'));
+eval(fs.readFileSync(__dirname + '/defendable_evidence_pack.js', 'utf8'));
+eval(fs.readFileSync(__dirname + '/defendable_tree_dt01_atc.js', 'utf8'));
 eval(fs.readFileSync(__dirname + '/defendable_orchestrator.js', 'utf8'));
 
 var orchPassed = 0;
@@ -155,5 +157,87 @@ console.log('\n' + '='.repeat(50));
 console.log('Orchestrator passed: ' + orchPassed + '/4');
 if (orchFailed) {
   console.log('Orchestrator failed: ' + orchFailed);
+  process.exit(1);
+}
+
+/* DT-01 tree + evidence pack tests */
+var dtPassed = 0;
+var dtFailed = 0;
+
+function dtTest(name, fn) {
+  try {
+    fn();
+    dtPassed++;
+    console.log('OK  dt01: ' + name);
+  } catch (e) {
+    dtFailed++;
+    console.log('FAIL dt01: ' + name + ' — ' + e.message);
+  }
+}
+
+console.log('\nDefendAble DT-01 tests\n' + '='.repeat(50));
+
+dtTest('ATC evidence pack order matches case management MATRIX', function () {
+  var expectedK = ['tops', 'disco', 'aims', 'safetynet', 'eurocontrol', 'notam'];
+  var expectedS = ['connected', 'network_out', 'lido', 'hermes', 'max_ops', 'dpm', 'internal_email', 'flightradar', 'flightstats', 'ops_review'];
+  var expectedW = ['case_studies', 'eurocontrol_w', 'caa_docs', 'ac_ops', 'airport_info'];
+  var matrix = DefendAbleEvidencePack.getMatrix('ATC Restrictions');
+  if (!matrix) throw new Error('missing ATC matrix');
+  expectedK.forEach(function (k, i) {
+    if (matrix.K[i] !== k) throw new Error('K order mismatch at ' + i + ': ' + matrix.K[i] + ' vs ' + k);
+  });
+  expectedS.forEach(function (k, i) {
+    if (matrix.S[i] !== k) throw new Error('S order mismatch at ' + i);
+  });
+  expectedW.forEach(function (k, i) {
+    if (matrix.W[i] !== k) throw new Error('W order mismatch at ' + i);
+  });
+  var ordered = DefendAbleEvidencePack.getPackItems('ATC Restrictions').map(function (p) { return p.libKey; });
+  var flat = expectedK.concat(expectedS).concat(expectedW);
+  if (ordered.join(',') !== flat.join(',')) throw new Error('pack order mismatch');
+});
+
+dtTest('pass2 enrich seeds full ATC pack with K/S/W tiers', function () {
+  var text = EXAMPLES.atc;
+  var result = DefendAbleDemoV2.analyze(text);
+  var passes = DefendAbleDemoV2.toPasses(result, text);
+  var pack = passes.pass2.evidencePack || [];
+  if (pack.length < 21) throw new Error('expected 21 ATC pack items, got ' + pack.length);
+  var kItems = pack.filter(function (e) { return e.tier === 'K'; });
+  if (kItems.length !== 6) throw new Error('expected 6 key items, got ' + kItems.length);
+  if (kItems[0].libKey !== 'tops') throw new Error('first key item should be tops');
+  var collected = pack.filter(function (e) { return (e.status || '').toLowerCase() === 'collected'; });
+  if (!collected.some(function (e) { return e.evidenceId === 'EUROCONTROL_CTOT'; })) {
+    throw new Error('CTOT evidence not collected in demo');
+  }
+});
+
+dtTest('DT-01 tree runs on ATC scenario with gates', function () {
+  var text = EXAMPLES.atc;
+  var result = DefendAbleDemoV2.analyze(text);
+  var passes = DefendAbleDemoV2.toPasses(result, text);
+  var orch = DefendAbleOrchestrator.createOrchestrator();
+  orch.setIccText(text);
+  orch.afterPass1(passes.pass1);
+  orch.afterPass2(passes.pass2);
+  var out = orch.afterPass3(result);
+  var dt01 = (out.treeResults || []).find(function (t) { return t.treeId === 'DT-01'; });
+  if (!dt01 || !dt01.applicable) throw new Error('DT-01 not applicable');
+  if (!dt01.gates || dt01.gates.length < 3) throw new Error('expected gate results');
+  var g1 = dt01.gates.find(function (g) { return g.gateId === 'DT1-G1'; });
+  if (!g1 || g1.answer !== 'yes') throw new Error('G1 should confirm CTOT');
+  if (!dt01.exit || !dt01.exit.verdict) throw new Error('missing tree exit verdict');
+});
+
+dtTest('DT-01 tree not applicable for weather-only case', function () {
+  var text = EXAMPLES.weather;
+  var tree = DefendAbleTreeDT01.runTree({ iccText: text, causalChain: [], evidenceManager: DefendAbleEvidence.createEvidenceManager() });
+  if (tree.applicable) throw new Error('DT-01 should not apply to weather diversion');
+});
+
+console.log('\n' + '='.repeat(50));
+console.log('DT-01 passed: ' + dtPassed + '/4');
+if (dtFailed) {
+  console.log('DT-01 failed: ' + dtFailed);
   process.exit(1);
 }

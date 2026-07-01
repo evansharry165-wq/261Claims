@@ -33,7 +33,11 @@ var DefendAbleRegistry = (function () {
     FLIGHTSTATS_CROSSCARRIER: { name: 'FlightStats Cross-Carrier Data', system: 'FlightStats API', hardDependencies: [] },
     SAFETYNET_MEDICAL: { name: 'SafetyNet Medical Report', system: 'SafetyNet', hardDependencies: [] },
     HERMES_ART8_OFFER: { name: 'HERMES Art 8 Offer Record', system: 'HERMES', hardDependencies: [] },
-    DPM_NOTES: { name: 'DPM Notes', system: 'DPM Notes', hardDependencies: [] }
+    DPM_NOTES: { name: 'DPM Notes', system: 'DPM Notes', hardDependencies: [] },
+    AIMS_FDP_RECORD: { name: 'Crew scheduling system — Crew Route & FDP', system: 'AIMS', hardDependencies: [] },
+    EV_DISCO: { name: 'Disruption data system — Disruption Record', system: 'Disruption data system', hardDependencies: [] },
+    EV_SAFETYNET: { name: 'Safety reporting system Reports', system: 'SafetyNet', hardDependencies: [] },
+    EV_NOTAM: { name: 'NOTAM Records', system: 'NOTAM', hardDependencies: [] }
   };
 
   var EVIDENCE_ID_ALIASES = [
@@ -163,9 +167,10 @@ var DefendAbleRegistry = (function () {
       pattern: /ctot|atfm|eurocontrol|network-wide atfm/i,
       collected: [
         { id: 'TOPS_DELAY_RECORD', findings: [{ type: 'TOPS_DELAY_CODE_81_89', description: 'ATC delay codes 81-89' }] },
-        { id: 'EUROCONTROL_CTOT', findings: [{ type: 'TOPS_CTOT_CONFIRMED', description: 'CTOT restriction confirmed' }] }
+        { id: 'EUROCONTROL_CTOT', findings: [{ type: 'TOPS_CTOT_CONFIRMED', description: 'CTOT restriction confirmed' }] },
+        { id: 'FLIGHTSTATS_CROSSCARRIER', findings: [{ type: 'FLIGHTSTATS_MULTI_CARRIER_IMPACT', description: 'Cross-carrier systemic delay' }] }
       ],
-      missing: []
+      missing: ['DPM_NOTES']
     },
     {
       pattern: /thunderstorm|below minima|diversion|valencia/i,

@@ -52,17 +52,80 @@ var DefendAblePass2 = (function () {
 
   function upsertPackItem(pack, item) {
     var reg = typeof DefendAbleRegistry !== 'undefined' ? DefendAbleRegistry : null;
-    var id = reg ? reg.deriveEvidenceId(item.name, item.source) : item.name;
+    var id = item.evidenceId || (reg ? reg.deriveEvidenceId(item.name, item.source) : item.name);
     var idx = -1;
     for (var i = 0; i < pack.length; i++) {
-      var existingId = reg ? reg.deriveEvidenceId(pack[i].name, pack[i].source) : pack[i].name;
+      if (pack[i].evidenceId && item.evidenceId && pack[i].evidenceId === item.evidenceId) {
+        idx = i;
+        break;
+      }
+      var existingId = pack[i].evidenceId || (reg ? reg.deriveEvidenceId(pack[i].name, pack[i].source) : pack[i].name);
       if (existingId === id) { idx = i; break; }
     }
     if (idx >= 0) {
-      pack[idx] = Object.assign({}, pack[idx], item);
+      pack[idx] = Object.assign({}, pack[idx], item, { evidenceId: id });
     } else {
-      pack.push(item);
+      pack.push(Object.assign({}, item, { evidenceId: id }));
     }
+  }
+
+  function enrichAtcEvidencePack(pass2, iccText, scenario) {
+    if (typeof DefendAbleEvidencePack === 'undefined') return;
+    var disruptionType = DefendAbleEvidencePack.detectDisruptionType(iccText);
+    if (!disruptionType) return;
+
+    var chain = pass2.updatedCausalChain || [];
+    var collectedById = {};
+    var missingById = {};
+    (scenario.collected || []).forEach(function (item) {
+      collectedById[item.id] = item;
+    });
+    (scenario.missing || []).forEach(function (eid) {
+      missingById[eid] = true;
+    });
+
+    var packIds = {};
+    DefendAbleEvidencePack.getPackItems(disruptionType).forEach(function (item) {
+      packIds[item.evidenceId] = true;
+    });
+    var retained = (pass2.evidencePack || []).filter(function (e) {
+      var id = e.evidenceId || (typeof DefendAbleRegistry !== 'undefined'
+        ? DefendAbleRegistry.deriveEvidenceId(e.name, e.source) : e.name);
+      return !packIds[id];
+    });
+    pass2.evidencePack = retained;
+
+    DefendAbleEvidencePack.getPackItems(disruptionType).forEach(function (item) {
+      var status = 'requested';
+      var findings = item.findings;
+      if (collectedById[item.evidenceId]) {
+        status = 'collected';
+        findings = collectedById[item.evidenceId].findings || findings;
+      } else if (missingById[item.evidenceId]) {
+        status = 'missing';
+      }
+
+      var packItem = {
+        status: status,
+        name: item.name,
+        source: item.system,
+        chainEventRef: chain[0] ? chain[0].id : 'E1',
+        tier: item.tier,
+        tierLabel: item.tierLabel,
+        libKey: item.libKey,
+        evidenceId: item.evidenceId,
+        priority: item.tier === 'K' ? 'critical' : item.tier === 'S' ? 'high' : 'medium'
+      };
+      if (status === 'collected') {
+        packItem.whatItProves = (findings[0] && findings[0].description) || item.name;
+        packItem.findings = findings;
+      } else if (status === 'missing') {
+        packItem.absenceConsequence = (typeof DefendAbleEvidence !== 'undefined' && DefendAbleEvidence.ABSENCE_CONSEQUENCES[item.evidenceId])
+          ? DefendAbleEvidence.ABSENCE_CONSEQUENCES[item.evidenceId].consequence
+          : 'Evidence gap — adverse inference risk';
+      }
+      upsertPackItem(pass2.evidencePack, packItem);
+    });
   }
 
   function buildEvidenceRequiredForEvent(ev, iccText) {
@@ -103,6 +166,8 @@ var DefendAblePass2 = (function () {
     var chain = (pass1 && pass1.causalChain) || pass2.updatedCausalChain || [];
     var reg = typeof DefendAbleRegistry !== 'undefined' ? DefendAbleRegistry : null;
     var scenario = reg ? reg.matchDemoEvidenceScenario(iccText || '') : { collected: [], missing: [] };
+
+    enrichAtcEvidencePack(pass2, iccText, scenario);
 
     scenario.collected.forEach(function (item) {
       var meta = reg ? reg.getEvidenceMeta(item.id) : { name: item.id, system: 'TOPS' };
@@ -155,6 +220,7 @@ var DefendAblePass2 = (function () {
 
   return {
     enrichPass2ForDemo: enrichPass2ForDemo,
+    enrichAtcEvidencePack: enrichAtcEvidencePack,
     inferFindingsFromEvidence: inferFindingsFromEvidence,
     buildEvidenceRequiredForEvent: buildEvidenceRequiredForEvent
   };

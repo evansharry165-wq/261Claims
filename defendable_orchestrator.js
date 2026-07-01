@@ -16,10 +16,34 @@ var DefendAbleOrchestrator = (function () {
     return 'grey';
   }
 
+  function runDecisionTrees(evidenceManager, confidenceManager, iccText, result) {
+    var treeResults = [];
+    var chain = (result && result.causalChain) || [];
+
+    if (typeof DefendAbleEvidencePack !== 'undefined') {
+      var disruptionType = DefendAbleEvidencePack.detectDisruptionType(iccText);
+      if (disruptionType) {
+        DefendAbleEvidencePack.seedPackToEvidenceManager(evidenceManager, disruptionType);
+      }
+    }
+
+    if (typeof DefendAbleTreeDT01 !== 'undefined' && DefendAbleTreeDT01.matches(iccText, chain)) {
+      treeResults.push(DefendAbleTreeDT01.runTree({
+        iccText: iccText,
+        causalChain: chain,
+        evidenceManager: evidenceManager,
+        confidenceManager: confidenceManager
+      }));
+    }
+
+    return treeResults;
+  }
+
   function createOrchestrator() {
     var evidenceManager = null;
     var confidenceManager = null;
     var iccText = '';
+    var lastTreeResults = [];
 
     function ensureManagers() {
       if (!evidenceManager) evidenceManager = DefendAbleEvidence.createEvidenceManager();
@@ -67,6 +91,12 @@ var DefendAbleOrchestrator = (function () {
         ensureManagers();
         var ids = DefendAbleRegistry.seedEvidenceIdsFromChain(pass1.causalChain || []);
         ids.forEach(addEvidenceById);
+        if (typeof DefendAbleEvidencePack !== 'undefined') {
+          var disruptionType = DefendAbleEvidencePack.detectDisruptionType(iccText);
+          if (disruptionType) {
+            DefendAbleEvidencePack.seedPackToEvidenceManager(evidenceManager, disruptionType);
+          }
+        }
         return { evidenceManager: evidenceManager, confidenceManager: confidenceManager };
       },
 
@@ -75,7 +105,7 @@ var DefendAbleOrchestrator = (function () {
         if (!pass2) return { evidenceManager: evidenceManager, confidenceManager: confidenceManager };
 
         (pass2.evidencePack || []).forEach(function (ev) {
-          var id = DefendAbleRegistry.deriveEvidenceId(ev.name, ev.source);
+          var id = ev.evidenceId || DefendAbleRegistry.deriveEvidenceId(ev.name, ev.source);
           if (!evidenceManager.has(id)) {
             var meta = DefendAbleRegistry.getEvidenceMeta(id);
             evidenceManager.addEvidence(id, ev.name || meta.name, ev.source || meta.system, meta.hardDependencies || [], []);
@@ -168,7 +198,23 @@ var DefendAbleOrchestrator = (function () {
           }
         });
 
-        return { evidenceManager: evidenceManager, confidenceManager: confidenceManager };
+        lastTreeResults = runDecisionTrees(evidenceManager, confidenceManager, iccText, result);
+
+        return {
+          evidenceManager: evidenceManager,
+          confidenceManager: confidenceManager,
+          treeResults: lastTreeResults
+        };
+      },
+
+      runDecisionTrees: function (result) {
+        ensureManagers();
+        lastTreeResults = runDecisionTrees(evidenceManager, confidenceManager, iccText, result || {});
+        return lastTreeResults;
+      },
+
+      getTreeResults: function () {
+        return lastTreeResults.slice();
       },
 
       resolveJudgment: function (conclusionId, decision, reason) {
