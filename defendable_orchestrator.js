@@ -112,6 +112,12 @@ var DefendAbleOrchestrator = (function () {
 
         (pass2.evidencePack || []).forEach(function (ev) {
           var id = ev.evidenceId || DefendAbleRegistry.deriveEvidenceId(ev.name, ev.source);
+          if (ev.libKey && typeof DefendAbleEvidencePack !== 'undefined') {
+            id = DefendAbleEvidencePack.libKeyToEvidenceId(ev.libKey);
+          }
+          if (DefendAbleRegistry.canonicalEvidenceId) {
+            id = DefendAbleRegistry.canonicalEvidenceId(id);
+          }
           if (!evidenceManager.has(id)) {
             var meta = DefendAbleRegistry.getEvidenceMeta(id);
             evidenceManager.addEvidence(id, ev.name || meta.name, ev.source || meta.system, meta.hardDependencies || [], []);

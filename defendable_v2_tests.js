@@ -485,6 +485,59 @@ allDtTest('resolveRootCauseTreeId picks weather before ATC', function () {
   if (id !== 'DT-02') throw new Error('expected DT-02 for weather+CTOT, got ' + id);
 });
 
+allDtTest('every pack evidenceId resolves in registry catalog', function () {
+  var types = Object.keys(DefendAbleEvidencePack.MATRIX);
+  types.forEach(function (dt) {
+    DefendAbleEvidencePack.getPackItems(dt).forEach(function (item) {
+      var meta = DefendAbleRegistry.getEvidenceMeta(item.evidenceId);
+      if (meta.system === 'Unknown' && !/^EV_/.test(item.evidenceId)) {
+        throw new Error('missing catalog for ' + item.evidenceId + ' (' + dt + ')');
+      }
+      if (meta.name === item.evidenceId) {
+        throw new Error('catalog fallback name for ' + item.evidenceId + ' (' + dt + ')');
+      }
+    });
+  });
+});
+
+allDtTest('DT1_ATC_SOLE_CAUSE registered and linked from FDP finding', function () {
+  var ids = DefendAbleRegistry.getSemanticIdsForNode('DT-01');
+  if (ids.indexOf('DT1_ATC_SOLE_CAUSE') < 0) throw new Error('DT1_ATC_SOLE_CAUSE not in registry');
+  var links = DefendAbleConfidence.EVIDENCE_CONCLUSION_LINKS.AIMS_FDP_ELEVATED_BEFORE_DISRUPTION || [];
+  if (!links.some(function (l) { return l.conclusionId === 'DT1_ATC_SOLE_CAUSE'; })) {
+    throw new Error('FDP finding must link to DT1_ATC_SOLE_CAUSE');
+  }
+});
+
+allDtTest('DT-06 chains to upstream weather root tree', function () {
+  var text = 'Crew reached FTL limits on outbound sector. No standby crew available LGW. Delay 4h 20m due to thunderstorms at departure.';
+  var ctx = {
+    iccText: text,
+    causalChain: [],
+    evidenceManager: DefendAbleEvidence.createEvidenceManager(),
+    confidenceManager: DefendAbleConfidence.createConfidenceManager()
+  };
+  var results = DefendAbleTrees.runAllApplicable(ctx);
+  var ids = results.map(function (r) { return r.treeId; });
+  if (ids.indexOf('DT-06') < 0) throw new Error('expected DT-06, got ' + ids.join(','));
+  if (ids.indexOf('DT-02') < 0) throw new Error('expected DT-02 chained from FTL, got ' + ids.join(','));
+});
+
+allDtTest('DT-12 runs four gates including outage notice', function () {
+  var text = EXAMPLES.nats;
+  var tree = DefendAbleTrees.runTree('DT-12', {
+    iccText: text,
+    causalChain: [],
+    evidenceManager: DefendAbleEvidence.createEvidenceManager()
+  });
+  if (tree.gates.length < 4) throw new Error('expected 4+ gates, got ' + tree.gates.length);
+});
+
+allDtTest('safetynet libKey maps to SAFETYNET_MEDICAL', function () {
+  var id = DefendAbleEvidencePack.libKeyToEvidenceId('safetynet');
+  if (id !== 'SAFETYNET_MEDICAL') throw new Error('expected SAFETYNET_MEDICAL, got ' + id);
+});
+
 console.log('\n' + '='.repeat(50));
 console.log('All DT modules passed: ' + allDtPassed + '/' + (allDtPassed + allDtFailed));
 if (allDtFailed) {

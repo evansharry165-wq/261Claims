@@ -52,7 +52,14 @@ var DefendAblePass2 = (function () {
 
   function upsertPackItem(pack, item) {
     var reg = typeof DefendAbleRegistry !== 'undefined' ? DefendAbleRegistry : null;
-    var id = item.evidenceId || (reg ? reg.deriveEvidenceId(item.name, item.source) : item.name);
+    var id = item.evidenceId;
+    if (!id && item.libKey && typeof DefendAbleEvidencePack !== 'undefined') {
+      id = DefendAbleEvidencePack.libKeyToEvidenceId(item.libKey);
+    }
+    if (!id) {
+      id = reg ? reg.deriveEvidenceId(item.name, item.source) : item.name;
+    }
+    if (reg && reg.canonicalEvidenceId) id = reg.canonicalEvidenceId(id);
     var idx = -1;
     for (var i = 0; i < pack.length; i++) {
       if (pack[i].evidenceId && item.evidenceId && pack[i].evidenceId === item.evidenceId) {
