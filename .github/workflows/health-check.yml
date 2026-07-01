@@ -19,6 +19,7 @@ jobs:
       - name: Repository health checks
         run: |
           node scripts/smoke_test.js
+          node scripts/legal_engine_health_check.js
           for f in scripts/*_health_check.js; do
             echo "=== $f ==="
             node "$f"
