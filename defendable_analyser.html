@@ -455,8 +455,8 @@ OUTPUT SCHEMA FOR PASS 2:
       "description": "Event description — updated if evidence reveals more detail",
       "evidenceRequired": [
         {
-          "evidenceType": "TOPS delay record",
-          "system": "TOPS",
+          "evidenceType": "Operational delay records system delay record",
+          "system": "Operational delay records system",
           "whatItProves": "Confirms delay code, actual departure time, and duration",
           "whatAbsenceImplies": "Cannot independently verify delay duration or cause",
           "absenceConsequenceForChain": "Limb 1 of Wallentin-Hermann unsupported at this event",
@@ -530,19 +530,19 @@ OUTPUT SCHEMA FOR PASS 2:
 
 EVIDENCE READING RULES:
 1. For every piece of evidence provided, extract all data relevant to any event in the causal chain.
-2. TOPS line of flying: read for prior sector delays, AOG statuses, positioning flights, fleet state — these frequently reveal events not in the ICC summary.
-3. AIMS FDP records: extract crew duty start time, current FDP, maximum FDP, time OOH was reached — allows calculation of whether EC timing caused the OOH or whether it was independent.
-4. AMOS records: read for defect category, MEL classification, maintenance history, and whether any prior defect on the same system exists.
+2. Operational delay records system line of flying: read for prior sector delays, AOG statuses, positioning flights, fleet state — these frequently reveal events not in the ICC summary.
+3. Crew scheduling system FDP records: extract crew duty start time, current FDP, maximum FDP, time OOH was reached — allows calculation of whether EC timing caused the OOH or whether it was independent.
+4. Maintenance records system records: read for defect category, MEL classification, maintenance history, and whether any prior defect on the same system exists.
 5. METAR data: extract visibility, cloud ceiling, wind at time of intended approach — compare against aircraft type ILS minima.
 6. Where evidence is inconsistent with the ICC summary, flag this explicitly as a discrepancy.
 
 DYNAMIC TRIGGER RULES — generate a dynamic evidence request when:
-- TOPS shows a prior sector delay not mentioned in the ICC summary
-- TOPS shows the aircraft was positioning from another airport
-- TOPS shows AOG status that was not the stated cause
-- AIMS shows the crew's FDP was already elevated before the disrupting event
-- AMOS shows a defect not mentioned in the ICC summary
-- AIMS standby log shows standby crew were also OOH — why?
+- Operational delay records system shows a prior sector delay not mentioned in the ICC summary
+- Operational delay records system shows the aircraft was positioning from another airport
+- Operational delay records system shows AOG status that was not the stated cause
+- Crew scheduling system shows the crew's FDP was already elevated before the disrupting event
+- Maintenance records system shows a defect not mentioned in the ICC summary
+- Crew scheduling system standby log shows standby crew were also OOH — why?
 - Any evidence document shows timing that contradicts the ICC summary
 - Ground handler records are absent despite an overnight or long delay
 
@@ -646,33 +646,33 @@ U-16 SETTLE VS DEFEND: Defend if EC clean, evidence complete, value justifies co
 
 DISRUPTION-SPECIFIC TREES:
 
-DT-1 ATC/ATFM: Eurocontrol CTOT = EC confirmed immediately — both limbs satisfied. TOPS delay code 81-89. Peskova C-315/15: third-party ATC industrial action = EC. CURFEW BREACH causing OND: the OND and next-day delay are direct consequences of the EC event. Delay under Sturgeon = scheduled arrival to actual next-day arrival. Art 9 hotel mandatory for overnight. Art 8 must be offered once delay exceeded 5 hours. Pull: Eurocontrol ATFM, CTOT confirmation, TOPS delay record, NOTAM, FlightStats.
+DT-1 ATC/ATFM: Eurocontrol CTOT = EC confirmed immediately — both limbs satisfied. Operational delay records system delay code 81-89. Peskova C-315/15: third-party ATC industrial action = EC. CURFEW BREACH causing OND: the OND and next-day delay are direct consequences of the EC event. Delay under Sturgeon = scheduled arrival to actual next-day arrival. Art 9 hotel mandatory for overnight. Art 8 must be offered once delay exceeded 5 hours. Pull: Eurocontrol ATFM, CTOT confirmation, Operational delay records system delay record, NOTAM, FlightStats.
 
-DT-2 WEATHER DESTINATION: METAR below ILS approach minima = EC. SIGMET = strongest corroboration. ATC mandatory diversion instruction = Limb 2 beyond doubt. TAF foreseeability at departure = claimant vulnerability. Standby blocked by same weather = secondary EC independently satisfying Wallentin-Hermann. Pull: Ogimet METAR/TAF/SIGMET, lightning data, Flightradar24 diversion track, TOPS, SafetyNet.
+DT-2 WEATHER DESTINATION: METAR below ILS approach minima = EC. SIGMET = strongest corroboration. ATC mandatory diversion instruction = Limb 2 beyond doubt. TAF foreseeability at departure = claimant vulnerability. Standby blocked by same weather = secondary EC independently satisfying Wallentin-Hermann. Pull: Ogimet METAR/TAF/SIGMET, lightning data, Flightradar24 diversion track, Operational delay records system, Safety reporting system.
 
 DT-3 WEATHER ORIGIN/EN ROUTE: LVP systemic = EC. De-icing routine = ordinary. De-icing systemic abnormal = may be EC. SNOWTAM + airport authority runway closure = EC. Pull: Ogimet origin METAR, LVP NOTAM, SNOWTAM, de-icing log.
 
-DT-4 BIRDSTRIKE: Peskova C-315/15 — per se EC, both limbs automatically satisfied. AMOS mandatory inspection = primary evidence — without it claim is unsubstantiated. Engine ingestion: borescope mandatory, possibly engine change. Pull: AMOS full inspection record, SafetyNet, TOPS, airport wildlife authority.
+DT-4 BIRDSTRIKE: Peskova C-315/15 — per se EC, both limbs automatically satisfied. Maintenance records system mandatory inspection = primary evidence — without it claim is unsubstantiated. Engine ingestion: borescope mandatory, possibly engine change. Pull: Maintenance records system full inspection record, Safety reporting system, Operational delay records system, airport wildlife authority.
 
-DT-5 TECHNICAL: Van der Lans v KLM (C-257/14) — routine maintenance faults NOT EC. External cause (lightning strike to aircraft, ground damage) = EC. Hidden defect: Germanwings (C-257/14) + Matkustaja v Finnair (C-385/23, CJEU June 2024 — cite as current leading authority) — not detectable despite proper maintenance, no prior AD/SB, within certified service life = potentially EC. MEL dispatch possibility critical: if MEL Category A (no dispatch), carrier had no discretion. Pull: AMOS defect log, MEL record, full maintenance history, SafetyNet, TOPS, OEM records.
+DT-5 TECHNICAL: Van der Lans v KLM (C-257/14) — routine maintenance faults NOT EC. External cause (lightning strike to aircraft, ground damage) = EC. Hidden defect: Germanwings (C-257/14) + Matkustaja v Finnair (C-385/23, CJEU June 2024 — cite as current leading authority) — not detectable despite proper maintenance, no prior AD/SB, within certified service life = potentially EC. MEL dispatch possibility critical: if MEL Category A (no dispatch), carrier had no discretion. Pull: Maintenance records system defect log, MEL record, full maintenance history, Safety reporting system, Operational delay records system, OEM records.
 
-DT-6 CREW/FTL: FTL alone is NEVER EC — Lipton v BA Cityflyer [2024] UKSC 24 confirms crew illness not EC; FTL exhaustion is never an independent EC event. Root cause of FTL exhaustion is ALWAYS the first question. If root cause is ATC → DT-1. If root cause is weather → DT-2/DT-3. If root cause is crew sickness → ORDINARY — CONCEDE on this point. If root cause is prior disruption → DT-13. Pull: AIMS FDP record, AIMS standby log, TOPS line of flying.
+DT-6 CREW/FTL: FTL alone is NEVER EC — Lipton v BA Cityflyer [2024] UKSC 24 confirms crew illness not EC; FTL exhaustion is never an independent EC event. Root cause of FTL exhaustion is ALWAYS the first question. If root cause is ATC → DT-1. If root cause is weather → DT-2/DT-3. If root cause is crew sickness → ORDINARY — CONCEDE on this point. If root cause is prior disruption → DT-13. Pull: Crew scheduling system FDP record, Crew scheduling system standby log, Operational delay records system line of flying.
 
-DT-7 INDUSTRIAL ACTION: FIRST NODE — own staff vs third party determines the entire case. Krüsemann v TUIfly (C-601/17): own-staff strike NOT EC — concede immediately. Peskova C-315/15: genuine third party (ATC authority, airport operator, independent handler) = EC. Pull: DISCO, NOTAM, published union/authority notice, TOPS.
+DT-7 INDUSTRIAL ACTION: FIRST NODE — own staff vs third party determines the entire case. Krüsemann v TUIfly (C-601/17): own-staff strike NOT EC — concede immediately. Peskova C-315/15: genuine third party (ATC authority, airport operator, independent handler) = EC. Pull: Disruption data system, NOTAM, published union/authority notice, Operational delay records system.
 
-DT-8 SECURITY: Externally initiated by police, airport security, or government = EC. Mandatory search = externally imposed. Baggage reconciliation after offload = mandatory security regulation. Pull: SafetyNet, TOPS delay code 91-96, police/airport authority records, ground handler security log.
+DT-8 SECURITY: Externally initiated by police, airport security, or government = EC. Mandatory search = externally imposed. Baggage reconciliation after offload = mandatory security regulation. Pull: Safety reporting system, Operational delay records system delay code 91-96, police/airport authority records, ground handler security log.
 
-DT-9 MEDICAL: Not inherent in normal operations = EC. Carrier legally obligated to respond — mandatory not discretionary. Prior sector medical causing cascade: pull TOPS line of flying + SafetyNet + document causal chain. Pull: SafetyNet, TOPS, Flightradar24 if diversion, ground handler medical log.
+DT-9 MEDICAL: Not inherent in normal operations = EC. Carrier legally obligated to respond — mandatory not discretionary. Prior sector medical causing cascade: pull Operational delay records system line of flying + Safety reporting system + document causal chain. Pull: Safety reporting system, Operational delay records system, Flightradar24 if diversion, ground handler medical log.
 
-DT-10 DISRUPTIVE PASSENGER: External behaviour = EC. SafetyNet = primary evidence. Police attendance corroborates. Baggage reconciliation mandatory. Pull: SafetyNet, TOPS, ground handler removal and reconciliation, police attendance.
+DT-10 DISRUPTIVE PASSENGER: External behaviour = EC. Safety reporting system = primary evidence. Police attendance corroborates. Baggage reconciliation mandatory. Pull: Safety reporting system, Operational delay records system, ground handler removal and reconciliation, police attendance.
 
 DT-11 NATURAL DISASTER: Volcanic ash (SIGMET type VA), earthquake, flood, hurricane, government travel ban = EC. Foreseeability challenge for prolonged events. Pull: NOTAM, SIGMET, government notice, Met Office.
 
-DT-12 ATM SYSTEM FAILURE: NATS/Eurocontrol outage = third-party infrastructure = EC. Cross-carrier impact corroborates. Pull: NOTAM, official Eurocontrol/NATS statement, FlightStats, TOPS.
+DT-12 ATM SYSTEM FAILURE: NATS/Eurocontrol outage = third-party infrastructure = EC. Cross-carrier impact corroborates. Pull: NOTAM, official Eurocontrol/NATS statement, FlightStats, Operational delay records system.
 
-DT-13 CASCADING ROTATION: Cascade itself is NOT EC. Root cause at start of rotation chain determines EC status. TOPS full tail line of flying is the single most critical document. Root cause identified → apply appropriate disruption tree to it. Recovery analysis mandatory at every turnaround. Pull: TOPS full rotation, Flightradar24, DISCO.
+DT-13 CASCADING ROTATION: Cascade itself is NOT EC. Root cause at start of rotation chain determines EC status. Operational delay records system full tail line of flying is the single most critical document. Root cause identified → apply appropriate disruption tree to it. Recovery analysis mandatory at every turnaround. Pull: Operational delay records system full rotation, Flightradar24, Disruption data system.
 
-DT-14 HIDDEN MANUFACTURING DEFECT: Germanwings (C-257/14) + LE v TAP Air Portugal (C-74/19) + Matkustaja v Finnair (C-385/23, CJEU June 2024 — CURRENT LEADING AUTHORITY). Three conditions: (1) failure mode unknown to manufacturer at time of failure; (2) component within certified service life and inspection interval; (3) all scheduled maintenance carried out. Absence of prior AD/SB evidences condition 1. Subsequent OEM AD/SB after the event = paradoxically supportive. Pull: AMOS full maintenance history, OEM AD/SB search, OEM technical investigation report.
+DT-14 HIDDEN MANUFACTURING DEFECT: Germanwings (C-257/14) + LE v TAP Air Portugal (C-74/19) + Matkustaja v Finnair (C-385/23, CJEU June 2024 — CURRENT LEADING AUTHORITY). Three conditions: (1) failure mode unknown to manufacturer at time of failure; (2) component within certified service life and inspection interval; (3) all scheduled maintenance carried out. Absence of prior AD/SB evidences condition 1. Subsequent OEM AD/SB after the event = paradoxically supportive. Pull: Maintenance records system full maintenance history, OEM AD/SB search, OEM technical investigation report.
 
 DT-15 DENIED BOARDING: Art 4 — NO EC DEFENCE AVAILABLE. Carrier always liable for involuntary denied boarding. Art 7, Art 8, Art 9 all apply immediately. Do not attempt EC defence.
 

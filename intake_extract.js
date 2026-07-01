@@ -14,7 +14,7 @@ var INTAKE_KNOWN_PROFILES = {
       notes: 'Montreal Convention consequential loss (£38,250) flagged. Weather diversion to Valencia. Senior review required before triage.'
     },
     points: [
-      { n: 1, claim: 'Delay / diversion — Art 7(1)(a) UK261', evidenceStatus: 'amber', evidenceDoc: 'Flight HC 1184 diverted LTN→BCN to Valencia (VLC). Confirm ATD/ATA and diversion reason via TOPS.' },
+      { n: 1, claim: 'Delay / diversion — Art 7(1)(a) UK261', evidenceStatus: 'amber', evidenceDoc: 'Flight HC 1184 diverted LTN→BCN to Valencia (VLC). Confirm ATD/ATA and diversion reason via Operational delay records system.' },
       { n: 2, claim: 'Extraordinary circumstances — weather', evidenceStatus: 'amber', evidenceDoc: 'METAR/SIGMET for LTN and VLC required. Diversion may support EC261 defence if conditions confirmed.' },
       { n: 3, claim: 'Article 9 — duty of care at Valencia', evidenceStatus: 'red', evidenceDoc: 'Ground handling and passenger care records at VLC outstanding — claimant alleges inadequate assistance.' },
       { n: 4, claim: 'Consequential loss — £38,250 (Montreal Convention)', evidenceStatus: 'red', evidenceDoc: 'Business contract loss claimed. Challenge causation, foreseeability and mitigation. Montreal Convention does not cover speculative commercial losses.' },
@@ -37,7 +37,7 @@ var INTAKE_KNOWN_PROFILES = {
       notes: 'Cancellation with less than 14 days notice alleged. ATC strikes reported on date — investigate extraordinary circumstances.'
     },
     points: [
-      { n: 1, claim: 'Cancellation — insufficient notice (Art 5)', evidenceStatus: 'red', evidenceDoc: 'LOC alleges cancellation with less than 14 days notice. Awaiting TOPS cancellation record and notice timeline.' },
+      { n: 1, claim: 'Cancellation — insufficient notice (Art 5)', evidenceStatus: 'red', evidenceDoc: 'LOC alleges cancellation with less than 14 days notice. Awaiting Operational delay records system cancellation record and notice timeline.' },
       { n: 2, claim: 'Compensation under UK261 — £350', evidenceStatus: 'red', evidenceDoc: 'Cat B route. ATC disruption probable cause — Eurocontrol CRCO reference required before classification.' },
       { n: 3, claim: 'Re-routing costs — £180', evidenceStatus: 'red', evidenceDoc: 'Claimant self-rerouted. Verify carrier offered rerouting under Art 8 — duty of care if not provided.' }
     ],
@@ -154,8 +154,8 @@ function buildIntakePointsFromRow(row, caseObj) {
       : 'Delay / disruption — Art 7(1)(a)',
     evidenceStatus: flightOk ? 'amber' : 'red',
     evidenceDoc: flightOk
-      ? 'Flight ' + row.flightNum + (row.flightDate ? ' on ' + row.flightDate : '') + ' — confirm operational record (TOPS) for ATD/ATA and disruption cause.'
-      : 'Flight details incomplete in LOC — obtain TOPS record before triage classification.'
+      ? 'Flight ' + row.flightNum + (row.flightDate ? ' on ' + row.flightDate : '') + ' — confirm operational record (Operational delay records system) for ATD/ATA and disruption cause.'
+      : 'Flight details incomplete in LOC — obtain Operational delay records system record before triage classification.'
   });
 
   points.push({
@@ -243,8 +243,8 @@ function buildIntakeInsights(caseObj, row) {
   var triageReason = caseObj.triageNote || row.notes || '';
   if (!triageReason) {
     if (classification === 'ESCALATE') triageReason = 'High-value or Montreal Convention exposure identified. Route to senior solicitor before triage completion.';
-    else if (classification === 'DEFEND') triageReason = 'Extraordinary circumstances likely on stated facts. Standard DEFEND track once TOPS and disruption evidence obtained.';
-    else triageReason = 'Operational data required before classification. Obtain TOPS record and confirm disruption cause in triage.';
+    else if (classification === 'DEFEND') triageReason = 'Extraordinary circumstances likely on stated facts. Standard DEFEND track once Operational delay records system and disruption evidence obtained.';
+    else triageReason = 'Operational data required before classification. Obtain Operational delay records system record and confirm disruption cause in triage.';
   }
 
   var cprDays = caseObj.cprDaysLeft != null ? caseObj.cprDaysLeft : computeCprDaysLeft(row.dateReceived || caseObj.locDate, caseObj.jurisdiction);

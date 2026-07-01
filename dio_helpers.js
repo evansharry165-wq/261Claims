@@ -174,8 +174,8 @@
     if (t.indexOf('metar') >= 0 || t.indexOf('sigmet') >= 0 || t.indexOf('notam') >= 0 || t.indexOf('aemet') >= 0)
       return 'Met office / NOTAM archive';
     if (t.indexOf('eurocontrol') >= 0 || t.indexOf('atfm') >= 0 || t.indexOf('atc') >= 0) return 'Eurocontrol / Ops ATFM desk';
-    if (t.indexOf('tops') >= 0 || t.indexOf('operational') >= 0) return 'Ops team — TOPS / movement records';
-    if (t.indexOf('crew') >= 0 || t.indexOf('roster') >= 0 || t.indexOf('aims') >= 0) return 'Crew scheduling / AIMS';
+    if (t.indexOf('ords') >= 0 || t.indexOf('operational') >= 0) return 'Ops team — Operational delay records system / movement records';
+    if (t.indexOf('crew') >= 0 || t.indexOf('roster') >= 0 || t.indexOf('css') >= 0) return 'Crew scheduling / Crew scheduling system';
     if (t.indexOf('ground') >= 0 || t.indexOf('valencia') >= 0) return 'Ground handling / station records';
     return 'Ops team / repository search';
   }
@@ -231,8 +231,8 @@
         name.indexOf('metar') >= 0 && doc.indexOf('metar') >= 0 ||
         name.indexOf('eurocontrol') >= 0 && doc.indexOf('eurocontrol') >= 0 ||
         name.indexOf('crew') >= 0 && doc.indexOf('crew') >= 0 ||
-        name.indexOf('aims') >= 0 && doc.indexOf('crew') >= 0 ||
-        name.indexOf('tops') >= 0 && doc.indexOf('tops') >= 0
+        name.indexOf('css') >= 0 && doc.indexOf('crew') >= 0 ||
+        name.indexOf('ords') >= 0 && doc.indexOf('ords') >= 0
       ) {
         return req;
       }

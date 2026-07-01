@@ -434,7 +434,7 @@ function ensureDemoEvidenceRequests(){
     st=st||{};
     st.evidenceRequests={
       eurocontrol:{id:'eurocontrol',name:'Eurocontrol CRCO reference',recipient:'Ops team',recipientEmail:'ops-legal@[client].com',requestedBy:'S. Booth',requestedAt:'4 Jun 2026 10:00',requestedAtMs:baseMs,slaDays:5,status:'pending',caseRef:'DEF-2026-EW-0089',cprDaysLeft:3},
-      aims:{id:'aims',name:'Crew roster records (AIMS)',recipient:'Crew scheduling',recipientEmail:'crew-scheduling@[client].com',requestedBy:'S. Booth',requestedAt:'10 Jun 2026 14:30',requestedAtMs:baseMs2,slaDays:5,status:'pending',caseRef:'DEF-2026-EW-0089',cprDaysLeft:3}
+      aims:{id:'css',name:'Crew roster records (Crew scheduling system)',recipient:'Crew scheduling',recipientEmail:'crew-scheduling@[client].com',requestedBy:'S. Booth',requestedAt:'10 Jun 2026 14:30',requestedAtMs:baseMs2,slaDays:5,status:'pending',caseRef:'DEF-2026-EW-0089',cprDaysLeft:3}
     };
     sessionStorage.setItem(key,JSON.stringify(st));
   }catch(e){}

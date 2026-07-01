@@ -87,10 +87,10 @@ var DefendAbleDemoV2 = (function () {
   var KEYWORD_RULES = [
     { re: /\bctots?\b|\batfm\b|\batc restriction|\bnetwork wide\b|\beurocontrol\b/i, phrase: 'ATC/ATFM', tree: 'DT-01: ATC/ATFM', eventMatch: /ctot|atfm|atc|flow control/i, triggers: [
       { system: 'EUROCONTROL-NM-API', document: 'CTOT/ATFM assignment log', purpose: 'Confirm third-party flow control' },
-      { system: 'TOPS', document: 'Delay codes 81-89', purpose: 'Operational corroboration' }
+      { system: 'Operational delay records system', document: 'Delay codes 81-89', purpose: 'Operational corroboration' }
     ]},
     { re: /\bcurfew\b|\bond\b|\bovernight delay\b|\bnext day\b/i, phrase: 'OND/curfew', tree: 'DT-01: OND', eventMatch: /ond|overnight|next day|curfew/i, triggers: [
-      { system: 'TOPS', document: 'Next-day operation record', purpose: 'Sturgeon delay measurement' },
+      { system: 'Operational delay records system', document: 'Next-day operation record', purpose: 'Sturgeon delay measurement' },
       { system: 'Ground-handler-records', document: 'HOTAC records', purpose: 'Art 9 compliance' }
     ]},
     { re: /\bthunderstorm|\bweather|\bdiversion|\bbelow minima|\bsigmet/i, phrase: 'weather destination', tree: 'DT-02: Weather destination', eventMatch: /weather|thunderstorm|below minima|diversion/i, triggers: [
@@ -101,30 +101,30 @@ var DefendAbleDemoV2 = (function () {
       { system: 'NOTAM-feed', document: 'LVP/SNOWTAM NOTAM', purpose: 'External runway conditions' }
     ]},
     { re: /\bbirdstrike|\bbird strike|\bingestion\b/i, phrase: 'birdstrike', tree: 'DT-04: Birdstrike', eventMatch: /birdstrike|ingestion/i, triggers: [
-      { system: 'AMOS', document: 'Birdstrike report', purpose: 'Mandatory inspection record' }
+      { system: 'Maintenance records system', document: 'Birdstrike report', purpose: 'Mandatory inspection record' }
     ]},
     { re: /\bhidden defect|\bmanufacturing defect|\bno prior ad\b|\bcategory a|\bmel dispatch not/i, phrase: 'hidden defect', tree: 'DT-05/14: Technical', eventMatch: /hidden|manufacturing|hydraulic|defect|category a/i, triggers: [
-      { system: 'AMOS', document: 'Defect and maintenance history', purpose: 'Matkustaja / van der Lans gate' },
+      { system: 'Maintenance records system', document: 'Defect and maintenance history', purpose: 'Matkustaja / van der Lans gate' },
       { system: 'OEM-records', document: 'AD/SB and failure mode', purpose: 'Unknown failure mode' }
     ]},
     { re: /\bftl\b|\bcrew.*(limit|hours|duty)|\bstandby crew|\bout of hours/i, phrase: 'crew FTL', tree: 'DT-06: Crew FTL', eventMatch: /ftl|out of hours|crew.*limit|crew hours/i, triggers: [
-      { system: 'AIMS', document: 'FDP record', purpose: 'Crew limits — not independent EC' }
+      { system: 'Crew scheduling system', document: 'FDP record', purpose: 'Crew limits — not independent EC' }
     ]},
     { re: /\bindustrial action|\bstrike\b/i, phrase: 'industrial action', tree: 'DT-07: Industrial action', eventMatch: /industrial|strike/i, triggers: [
-      { system: 'DISCO', document: 'Own vs third-party classification', purpose: 'Krüsemann gate' },
+      { system: 'Disruption data system', document: 'Own vs third-party classification', purpose: 'Krüsemann gate' },
       { system: 'NOTAM-feed', document: 'Strike notice', purpose: 'Third-party corroboration' }
     ]},
     { re: /\bhandler|\bbaggage handler|\bground handler/i, phrase: 'handler strike', tree: 'DT-07: Third-party handler', eventMatch: /handler|baggage/i, triggers: [
-      { system: 'DISCO', document: 'Handler classification', purpose: 'Confirm third-party not Krüsemann own-staff' }
+      { system: 'Disruption data system', document: 'Handler classification', purpose: 'Confirm third-party not Krüsemann own-staff' }
     ]},
     { re: /\bsecurity alert|\bsuspicious|\bhold search|\bre-screen/i, phrase: 'security alert', tree: 'DT-08: Security', eventMatch: /security|suspicious|hold search/i, triggers: [
-      { system: 'SafetyNet', document: 'Security incident report', purpose: 'Authority-mandated action' }
+      { system: 'Safety reporting system', document: 'Security incident report', purpose: 'Authority-mandated action' }
     ]},
     { re: /\bmedical|\bcardiac|\bpassenger welfare|\bwelfare incident/i, phrase: 'medical emergency', tree: 'DT-09: Medical', eventMatch: /medical|cardiac|welfare/i, triggers: [
-      { system: 'SafetyNet', document: 'Medical/welfare incident report', purpose: 'Mandatory carrier response' }
+      { system: 'Safety reporting system', document: 'Medical/welfare incident report', purpose: 'Mandatory carrier response' }
     ]},
     { re: /\bdisruptive|\bunruly|\breturned to gate|\bthreatening behaviour/i, phrase: 'disruptive passenger', tree: 'DT-10: Disruptive passenger', eventMatch: /disruptive|unruly|threatening/i, triggers: [
-      { system: 'SafetyNet', document: 'Disruptive passenger report', purpose: 'External behaviour EC' }
+      { system: 'Safety reporting system', document: 'Disruptive passenger report', purpose: 'External behaviour EC' }
     ]},
     { re: /\bvolcanic|\bash\b|\bearthquake|\bflood|\bhurricane|\bnatural disaster/i, phrase: 'natural disaster', tree: 'DT-11: Natural disaster', eventMatch: /volcanic|earthquake|flood|hurricane|natural disaster/i, triggers: [
       { system: 'NOTAM-feed', document: 'Disaster NOTAM', purpose: 'Government/meteorological event' }
@@ -133,19 +133,19 @@ var DefendAbleDemoV2 = (function () {
       { system: 'NOTAM-feed', document: 'ATM outage notice', purpose: 'Third-party infrastructure' }
     ]},
     { re: /\bcascade|\brotation|\blate inbound|\binbound aircraft/i, phrase: 'cascade', tree: 'DT-13: Cascade', eventMatch: /cascade|late inbound|rotation/i, triggers: [
-      { system: 'TOPS', document: 'Inbound/rotation record', purpose: 'Root cause at chain start' }
+      { system: 'Operational delay records system', document: 'Inbound/rotation record', purpose: 'Root cause at chain start' }
     ]},
     { re: /\bpositioning\b/i, phrase: 'positioning', tree: 'DT-18: Positioning', eventMatch: /positioning/i, triggers: [
-      { system: 'TOPS', document: 'Positioning line of flying', purpose: 'Separate causal event' }
+      { system: 'Operational delay records system', document: 'Positioning line of flying', purpose: 'Separate causal event' }
     ]},
     { re: /\b18\s*hour|\bwake rule/i, phrase: '18 hour wake rule', tree: 'DT-20: Wake rule', eventMatch: /18.hour|wake rule|fatigue/i, triggers: [
-      { system: 'AIMS', document: 'FDP and rest audit', purpose: 'DT-20 judgment node' }
+      { system: 'Crew scheduling system', document: 'FDP and rest audit', purpose: 'DT-20 judgment node' }
     ]},
     { re: /\bno standby|\bno spare|\bcould not be rescued/i, phrase: 'no standby aircraft', tree: 'U-8: Reasonable measures', eventMatch: /standby|spare|rescued/i, triggers: [
-      { system: 'TOPS', document: 'Fleet state and recovery log', purpose: 'Reasonable measures gate' }
+      { system: 'Operational delay records system', document: 'Fleet state and recovery log', purpose: 'Reasonable measures gate' }
     ]},
     { re: /\bcrew illness|\bpilot sick|\bcrew sick/i, phrase: 'crew illness', tree: 'UL-02: Lipton — NOT EC', eventMatch: /illness|sick/i, triggers: [
-      { system: 'AIMS', document: 'Sickness record', purpose: 'Lipton UKSC 24 — not EC' }
+      { system: 'Crew scheduling system', document: 'Sickness record', purpose: 'Lipton UKSC 24 — not EC' }
     ]}
   ];
 
@@ -242,23 +242,23 @@ var DefendAbleDemoV2 = (function () {
           ev('E2', 'Positioning aircraft AOG — fuel leak', { lof: 'POSITIONING', ecCandidate: false, ecReason: 'Technical AOG on positioning — potential chain break unless external cause (van der Lans).', delay: 'unknown', butFor: 'But for the fuel leak, would the positioning crew have been available?', linkReason: 'AOG extended positioning delay beyond ATC/weather alone.', chainBreak: true, chainBreakReason: 'Ordinary technical event may intervene between EC root and crew OOH — judgment required.' }),
           ev('E3', 'Operating crew out of hours on claimant flight', { lof: 'OWN_OPERATION', ecCandidate: false, ecReason: 'FTL/OOH is never independently EC — Lipton UKSC 24 for illness; FTL follows root cause.', delay: 'caused cancellation/delay', butFor: 'But for prior events, would crew have been in limits?', linkReason: 'Consequence of positioning chain.' }),
           ev('E4', 'Replacement crew sourced — one member failed 18-hour wake rule', { lof: 'OWN_OPERATION', ecCandidate: false, ecReason: 'Wake rule failure is a judgment node — EC timing vs carrier delay in sourcing crew.', delay: 'unknown', link: 'DISPUTED', linkReason: 'Whether wake failure is attributable to EC root cause timing or operational decisions.' }),
-          ev('E5', 'No standby crew available', { lof: 'OWN_OPERATION', ecCandidate: false, ecReason: 'Reasonable measures — AIMS standby log required.', delay: 'none — recovery failure', link: 'FINAL_EVENT', linkReason: 'Final operational outcome.' })
+          ev('E5', 'No standby crew available', { lof: 'OWN_OPERATION', ecCandidate: false, ecReason: 'Reasonable measures — Crew scheduling system standby log required.', delay: 'none — recovery failure', link: 'FINAL_EVENT', linkReason: 'Final operational outcome.' })
         ],
         keywords: [
-          { phrase: 'positioning', tree: 'DT-18: Positioning flight', chainEventRef: 'E1', triggers: [{ system: 'TOPS', document: 'Line of flying — positioning sector', purpose: 'Confirm positioning tail and delay' }] },
-          { phrase: 'fuel leak', tree: 'DT-5: Technical', chainEventRef: 'E2', triggers: [{ system: 'AMOS', document: 'Fuel leak AOG record', purpose: 'Category and MEL assessment' }] },
-          { phrase: '18 hour wake rule', tree: 'DT-20: 18-hour wake rule', chainEventRef: 'E4', triggers: [{ system: 'AIMS', document: 'FDP and rest audit', purpose: 'When 18-hour window started' }] }
+          { phrase: 'positioning', tree: 'DT-18: Positioning flight', chainEventRef: 'E1', triggers: [{ system: 'Operational delay records system', document: 'Line of flying — positioning sector', purpose: 'Confirm positioning tail and delay' }] },
+          { phrase: 'fuel leak', tree: 'DT-5: Technical', chainEventRef: 'E2', triggers: [{ system: 'Maintenance records system', document: 'Fuel leak AOG record', purpose: 'Category and MEL assessment' }] },
+          { phrase: '18 hour wake rule', tree: 'DT-20: 18-hour wake rule', chainEventRef: 'E4', triggers: [{ system: 'Crew scheduling system', document: 'FDP and rest audit', purpose: 'When 18-hour window started' }] }
         ],
         judgmentNodes: [
-          { nodeId: 'J1', chainEventRef: 'E2', question: 'Does the fuel leak (E2) break the EC chain from ATC/weather (E1)?', factsFor: 'If fuel leak was unforeseeable external damage, chain may hold.', factsAgainst: 'Van der Lans — routine/hidden defect on carrier aircraft may be ordinary cause intervening.', additionalEvidenceNeeded: 'AMOS fuel leak record, maintenance history, DISCO root cause', consequenceIfChainHolds: 'EC at root may still defend if but-for test satisfied.', consequenceIfChainBreaks: 'EC defence fails at E2 — SETTLE on ordinary technical cause.' },
-          { nodeId: 'J2', chainEventRef: 'E4', question: 'Was 18-hour wake rule failure caused by EC timing or delay sourcing replacement crew?', factsFor: 'AIMS shows wake exhaustion solely from EC-delayed chain.', factsAgainst: 'Carrier delayed crew recovery after OOH was foreseeable — reasonable measures failure.', additionalEvidenceNeeded: 'AIMS FDP record, time replacement crew sourced vs time OOH reached', consequenceIfChainHolds: 'Chain holds through wake rule node.', consequenceIfChainBreaks: 'Reasonable measures defeat at crew recovery intervention point.' }
+          { nodeId: 'J1', chainEventRef: 'E2', question: 'Does the fuel leak (E2) break the EC chain from ATC/weather (E1)?', factsFor: 'If fuel leak was unforeseeable external damage, chain may hold.', factsAgainst: 'Van der Lans — routine/hidden defect on carrier aircraft may be ordinary cause intervening.', additionalEvidenceNeeded: 'Maintenance records system fuel leak record, maintenance history, Disruption data system root cause', consequenceIfChainHolds: 'EC at root may still defend if but-for test satisfied.', consequenceIfChainBreaks: 'EC defence fails at E2 — SETTLE on ordinary technical cause.' },
+          { nodeId: 'J2', chainEventRef: 'E4', question: 'Was 18-hour wake rule failure caused by EC timing or delay sourcing replacement crew?', factsFor: 'Crew scheduling system shows wake exhaustion solely from EC-delayed chain.', factsAgainst: 'Carrier delayed crew recovery after OOH was foreseeable — reasonable measures failure.', additionalEvidenceNeeded: 'Crew scheduling system FDP record, time replacement crew sourced vs time OOH reached', consequenceIfChainHolds: 'Chain holds through wake rule node.', consequenceIfChainBreaks: 'Reasonable measures defeat at crew recovery intervention point.' }
         ],
         verdict: 'JUDGMENT_REQUIRED',
-        verdictSub: 'Multi-cause positioning chain with intervening AOG and mandatory DT-20 wake rule judgment. Do not DEFEND until AMOS, TOPS positioning line, and AIMS FDP/standby logs resolve J1 and J2.',
+        verdictSub: 'Multi-cause positioning chain with intervening AOG and mandatory DT-20 wake rule judgment. Do not DEFEND until Maintenance records system, Operational delay records system positioning line, and Crew scheduling system FDP/standby logs resolve J1 and J2.',
         verdictFlags: [
-          { type: 'judgment', text: 'J1: Fuel leak chain break — AMOS required before EC conclusion' },
-          { type: 'judgment', text: 'J2: 18-hour wake rule — AIMS FDP audit mandatory (DT-20)' },
-          { type: 'action', text: 'Pull TOPS line of flying for positioning aircraft tail' }
+          { type: 'judgment', text: 'J1: Fuel leak chain break — Maintenance records system required before EC conclusion' },
+          { type: 'judgment', text: 'J2: 18-hour wake rule — Crew scheduling system FDP audit mandatory (DT-20)' },
+          { type: 'action', text: 'Pull Operational delay records system line of flying for positioning aircraft tail' }
         ]
       });
     },
@@ -271,9 +271,9 @@ var DefendAbleDemoV2 = (function () {
           ev('E1', 'Eurocontrol CTOT / network-wide ATFM restriction', { lof: 'THIRD_PARTY', lofReason: 'Third-party flow control', ecCandidate: true, ecReason: 'ATC/ATFM is classic third-party EC candidate.', delay: 'unknown', linkReason: 'CTOT imposed delay on departure.' }),
           ev('E2', 'Airport curfew breached — flight OND', { lof: 'OWN_OPERATION', ecCandidate: true, ecReason: 'OND direct consequence of CTOT-driven delay.', delay: 'overnight — next day arrival', link: 'FINAL_EVENT', linkReason: 'Sturgeon delay measured to next-day arrival.' })
         ],
-        keywords: [{ phrase: 'CTOT', tree: 'DT-01: ATC/ATFM', chainEventRef: 'E1', triggers: [{ system: 'EUROCONTROL-NM-API', document: 'CTOT assignment log', purpose: 'Confirm third-party ATFM' }, { system: 'TOPS', document: 'Delay codes 81-89', purpose: 'Operational corroboration' }] }],
+        keywords: [{ phrase: 'CTOT', tree: 'DT-01: ATC/ATFM', chainEventRef: 'E1', triggers: [{ system: 'EUROCONTROL-NM-API', document: 'CTOT assignment log', purpose: 'Confirm third-party ATFM' }, { system: 'Operational delay records system', document: 'Delay codes 81-89', purpose: 'Operational corroboration' }] }],
         nodes: [
-          { id: 'DT-01', type: 'disruption', chainEventRef: 'E1', question: 'ATC/ATFM — extraordinary circumstances?', status: 'green', statusLabel: 'EC CONFIRMED', conclusion: 'Third-party ATC flow control satisfies both Wallentin-Hermann limbs. Pešková C-315/15.', authority: 'Pešková; Wallentin-Hermann', dataUsed: 'Eurocontrol ATFM; TOPS', chainConsequence: 'EC established at root — chain unbroken if reasonable measures met.' }
+          { id: 'DT-01', type: 'disruption', chainEventRef: 'E1', question: 'ATC/ATFM — extraordinary circumstances?', status: 'green', statusLabel: 'EC CONFIRMED', conclusion: 'Third-party ATC flow control satisfies both Wallentin-Hermann limbs. Pešková C-315/15.', authority: 'Pešková; Wallentin-Hermann', dataUsed: 'Eurocontrol ATFM; Operational delay records system', chainConsequence: 'EC established at root — chain unbroken if reasonable measures met.' }
         ],
         verdict: 'DEFEND_WITH_CONDITIONS',
         verdictConditions: ['HOTAC and catering records on file for overnight OND (Art 9)', 'Art 8 rerouting/reimbursement offer evidenced in MAX-OPS once delay exceeded 5 hours'],
@@ -287,9 +287,9 @@ var DefendAbleDemoV2 = (function () {
         causationStructure: 'SEQUENTIAL',
         causationStructureReason: 'Own-staff industrial action directly caused cancellation.',
         chain: [ev('E1', 'Own pilot/cabin crew industrial action', { lof: 'OWN_OPERATION', ecCandidate: false, ecReason: 'Krüsemann — own staff strike is NOT EC.', delay: 'caused cancellation', link: 'FINAL_EVENT' })],
-        keywords: [{ phrase: 'own staff strike', tree: 'DT-07: Industrial action — own staff', chainEventRef: 'E1', triggers: [{ system: 'DISCO', document: 'Disruption classification', purpose: 'Confirm own vs third party' }] }],
+        keywords: [{ phrase: 'own staff strike', tree: 'DT-07: Industrial action — own staff', chainEventRef: 'E1', triggers: [{ system: 'Disruption data system', document: 'Disruption classification', purpose: 'Confirm own vs third party' }] }],
         nodes: [
-          { id: 'DT-7.1', type: 'disruption', chainEventRef: 'E1', question: 'Industrial action — own staff or third party?', status: 'red', statusLabel: 'CONCEDE', conclusion: 'Own-staff strike confirmed. Krüsemann v TUIfly C-601/17 — NOT extraordinary circumstances. Do not run EC defence.', authority: 'Krüsemann C-601/17', dataUsed: 'DISCO; union notice', chainConsequence: 'EC defence unavailable — assess quantum and Art 8/9 only.' }
+          { id: 'DT-7.1', type: 'disruption', chainEventRef: 'E1', question: 'Industrial action — own staff or third party?', status: 'red', statusLabel: 'CONCEDE', conclusion: 'Own-staff strike confirmed. Krüsemann v TUIfly C-601/17 — NOT extraordinary circumstances. Do not run EC defence.', authority: 'Krüsemann C-601/17', dataUsed: 'Disruption data system; union notice', chainConsequence: 'EC defence unavailable — assess quantum and Art 8/9 only.' }
         ],
         verdict: 'CONCEDE',
         verdictSub: 'Own-staff industrial action is not EC under Krüsemann. Concede on EC grounds; review Art 8 rerouting and Art 7 quantum only.',
@@ -304,9 +304,9 @@ var DefendAbleDemoV2 = (function () {
         chain: [
           ev('E1', 'Captain/crew illness — unable to operate', { lof: 'OWN_OPERATION', ecCandidate: false, ecReason: 'Lipton [2024] UKSC 24 — crew illness is NOT extraordinary circumstances.', delay: 'caused delay/cancellation', link: 'FINAL_EVENT' })
         ],
-        keywords: [{ phrase: 'crew illness', tree: 'UL-02: Lipton — NOT EC', chainEventRef: 'E1', triggers: [{ system: 'AIMS', document: 'Sickness and roster record', purpose: 'Confirm illness-based unavailability' }] }],
+        keywords: [{ phrase: 'crew illness', tree: 'UL-02: Lipton — NOT EC', chainEventRef: 'E1', triggers: [{ system: 'Crew scheduling system', document: 'Sickness and roster record', purpose: 'Confirm illness-based unavailability' }] }],
         nodes: [
-          { id: 'DT-18', type: 'disruption', chainEventRef: 'E1', question: 'Crew illness — extraordinary circumstances?', status: 'red', statusLabel: 'NOT EC — LIPTON', conclusion: 'Crew illness is within carrier control under Lipton v BA Cityflyer [2024] UKSC 24. Do not run EC defence.', authority: 'Lipton [2024] UKSC 24', dataUsed: 'AIMS sickness record', chainConsequence: 'EC defence unavailable — assess quantum and Art 8/9 only.' }
+          { id: 'DT-18', type: 'disruption', chainEventRef: 'E1', question: 'Crew illness — extraordinary circumstances?', status: 'red', statusLabel: 'NOT EC — LIPTON', conclusion: 'Crew illness is within carrier control under Lipton v BA Cityflyer [2024] UKSC 24. Do not run EC defence.', authority: 'Lipton [2024] UKSC 24', dataUsed: 'Crew scheduling system sickness record', chainConsequence: 'EC defence unavailable — assess quantum and Art 8/9 only.' }
         ],
         verdict: 'CONCEDE',
         verdictSub: 'Crew illness is not EC under Lipton. Concede on EC grounds; review Art 8 rerouting and Art 7 quantum only.',
@@ -327,21 +327,21 @@ var DefendAbleDemoV2 = (function () {
         ],
         keywords: [
           { phrase: 'ATC', tree: 'DT-01: ATC/ATFM', chainEventRef: 'E1', triggers: [{ system: 'EUROCONTROL-NM-API', document: 'ATFM data', purpose: 'CTOT confirmation' }] },
-          { phrase: 'baggage handler industrial action', tree: 'DT-07: Third-party industrial action', chainEventRef: 'E2', triggers: [{ system: 'DISCO', document: 'Handler vs own-staff classification', purpose: 'Krüsemann gate' }, { system: 'NOTAM-feed', document: 'Handler strike notice', purpose: 'Third-party corroboration' }] },
-          { phrase: 'OND', tree: 'DT-01: Curfew/OND', chainEventRef: 'E5', triggers: [{ system: 'TOPS', document: 'Next-day operation record', purpose: 'Sturgeon delay measurement' }] }
+          { phrase: 'baggage handler industrial action', tree: 'DT-07: Third-party industrial action', chainEventRef: 'E2', triggers: [{ system: 'Disruption data system', document: 'Handler vs own-staff classification', purpose: 'Krüsemann gate' }, { system: 'NOTAM-feed', document: 'Handler strike notice', purpose: 'Third-party corroboration' }] },
+          { phrase: 'OND', tree: 'DT-01: Curfew/OND', chainEventRef: 'E5', triggers: [{ system: 'Operational delay records system', document: 'Next-day operation record', purpose: 'Sturgeon delay measurement' }] }
         ],
         judgmentNodes: [
-          { nodeId: 'J1', chainEventRef: 'E3', question: 'Could a standby aircraft have recovered the flight before the 3-hour threshold?', factsFor: 'ICC states no spare within network — end of day fleet state.', factsAgainst: 'TOPS fleet state may show aircraft available but not deployed — reasonable measures failure.', additionalEvidenceNeeded: 'TOPS fleet state and recovery log for date', consequenceIfChainHolds: 'DEFEND_WITH_CONDITIONS if EC chain clean.', consequenceIfChainBreaks: 'SETTLE if spare aircraft not deployed when available.' }
+          { nodeId: 'J1', chainEventRef: 'E3', question: 'Could a standby aircraft have recovered the flight before the 3-hour threshold?', factsFor: 'ICC states no spare within network — end of day fleet state.', factsAgainst: 'Operational delay records system fleet state may show aircraft available but not deployed — reasonable measures failure.', additionalEvidenceNeeded: 'Operational delay records system fleet state and recovery log for date', consequenceIfChainHolds: 'DEFEND_WITH_CONDITIONS if EC chain clean.', consequenceIfChainBreaks: 'SETTLE if spare aircraft not deployed when available.' }
         ],
         interventionPoints: [
-          { pointId: 'IP1', chainEventRef: 'E3', description: 'Alternative aircraft deployment before 3-hour threshold', evidenceRequired: 'TOPS fleet state', evidenceStatus: 'UNKNOWN', outcome: 'UNKNOWN', legalConsequence: 'Failure to deploy spare aircraft defeats EC even if root cause is EC', riskLevel: 'amber' }
+          { pointId: 'IP1', chainEventRef: 'E3', description: 'Alternative aircraft deployment before 3-hour threshold', evidenceRequired: 'Operational delay records system fleet state', evidenceStatus: 'UNKNOWN', outcome: 'UNKNOWN', legalConsequence: 'Failure to deploy spare aircraft defeats EC even if root cause is EC', riskLevel: 'amber' }
         ],
         verdict: 'DEFEND_WITH_CONDITIONS',
-        verdictConditions: ['DISCO confirms CDG handler action is third-party (not own staff)', 'TOPS confirms no recoverable spare aircraft was available (not merely und deployed)', 'Art 9 HOTAC evidenced for OND', 'Art 8 offer evidenced in MAX-OPS'],
+        verdictConditions: ['Disruption data system confirms CDG handler action is third-party (not own staff)', 'Operational delay records system confirms no recoverable spare aircraft was available (not merely und deployed)', 'Art 9 HOTAC evidenced for OND', 'Art 8 offer evidenced in MAX-OPS'],
         verdictSub: 'Strong EC candidates at E1 (ATC) and E2 (third-party handler strike). Network recovery and crew FTL are downstream. Confirm handler is third-party not Krüsemann own-staff, and reasonable measures on spare aircraft before final DEFEND.',
         verdictFlags: [
-          { type: 'action', text: 'DISCO classification — handler strike must be third-party' },
-          { type: 'judgment', text: 'Verify TOPS fleet state — standby aircraft reasonable measures' },
+          { type: 'action', text: 'Disruption data system classification — handler strike must be third-party' },
+          { type: 'judgment', text: 'Verify Operational delay records system fleet state — standby aircraft reasonable measures' },
           { type: 'action', text: 'Art 9 hotel for OND — pull ground handler HOTAC' }
         ]
       });
@@ -359,13 +359,13 @@ var DefendAbleDemoV2 = (function () {
         ],
         keywords: [
           { phrase: 'thunderstorms', tree: 'DT-02: Weather', chainEventRef: 'E1', triggers: [{ system: 'METAR-feed', document: 'METAR/TAF BCN', purpose: 'Confirm below-minima weather' }] },
-          { phrase: 'diversion', tree: 'DT-02: Weather diversion', chainEventRef: 'E2', triggers: [{ system: 'TOPS', document: 'Diversion record', purpose: 'Confirm alternate and delay' }] }
+          { phrase: 'diversion', tree: 'DT-02: Weather diversion', chainEventRef: 'E2', triggers: [{ system: 'Operational delay records system', document: 'Diversion record', purpose: 'Confirm alternate and delay' }] }
         ],
         nodes: [
           { id: 'DT-02', type: 'disruption', chainEventRef: 'E1', question: 'Weather below minima — extraordinary circumstances?', status: 'green', statusLabel: 'EC CONFIRMED', conclusion: 'Meteorological conditions beyond carrier control satisfy Wallentin-Hermann limbs.', authority: 'Pešková; established weather EC', dataUsed: 'METAR/TAF', chainConsequence: 'EC at root — verify reasonable measures on recovery.' }
         ],
         verdict: 'DEFEND_WITH_CONDITIONS',
-        verdictConditions: ['METAR/TAF confirms below-minima at destination', 'TOPS confirms standby positioning failure was weather-driven not undeployed spare', 'Art 9 care records at alternate airport on file'],
+        verdictConditions: ['METAR/TAF confirms below-minima at destination', 'Operational delay records system confirms standby positioning failure was weather-driven not undeployed spare', 'Art 9 care records at alternate airport on file'],
         verdictSub: 'Weather diversion is strong EC. Confirm METAR evidence and that no spare aircraft was available but undeployed before final DEFEND.',
         verdictFlags: [{ type: 'action', text: 'Pull METAR/TAF for destination at ETA' }, { type: 'action', text: 'Confirm Art 9 care at Valencia' }]
       });
@@ -383,19 +383,19 @@ var DefendAbleDemoV2 = (function () {
         ],
         keywords: [
           { phrase: 'thunderstorms', tree: 'DT-02: Weather', chainEventRef: 'E1', triggers: [{ system: 'METAR-feed', document: 'METAR/TAF ' + apt, purpose: 'Confirm weather at destination at ETA' }] },
-          { phrase: 'CTOT', tree: 'DT-01: ATC/ATFM', chainEventRef: 'E2', triggers: [{ system: 'EUROCONTROL-NM-API', document: 'CTOT/ATFM assignment log', purpose: 'Confirm weather-related flow restrictions' }, { system: 'TOPS', document: 'Delay codes 81-89', purpose: 'Operational corroboration' }] }
+          { phrase: 'CTOT', tree: 'DT-01: ATC/ATFM', chainEventRef: 'E2', triggers: [{ system: 'EUROCONTROL-NM-API', document: 'CTOT/ATFM assignment log', purpose: 'Confirm weather-related flow restrictions' }, { system: 'Operational delay records system', document: 'Delay codes 81-89', purpose: 'Operational corroboration' }] }
         ],
         nodes: [
           { id: 'DT-02', type: 'disruption', chainEventRef: 'E1', question: 'Weather at arrival — extraordinary circumstances?', status: 'green', statusLabel: 'EC CANDIDATE', conclusion: 'Thunderstorms at arrival destination are beyond carrier control. Confirm METAR/TAF at ETA.', authority: 'Pešková; established weather EC', dataUsed: 'METAR/TAF ' + apt, chainConsequence: 'EC at root if both Wallentin-Hermann limbs satisfied.' },
-          { id: 'DT-01', type: 'disruption', chainEventRef: 'E2', question: 'ATFM/CTOT — extraordinary circumstances?', status: 'green', statusLabel: 'EC CANDIDATE', conclusion: 'Weather-driven ATFM restrictions are third-party flow control — EC candidate if evidenced.', authority: 'Pešková; Wallentin-Hermann', dataUsed: 'Eurocontrol ATFM; TOPS', chainConsequence: 'Compounding EC at ATFM layer if linked to weather root.' }
+          { id: 'DT-01', type: 'disruption', chainEventRef: 'E2', question: 'ATFM/CTOT — extraordinary circumstances?', status: 'green', statusLabel: 'EC CANDIDATE', conclusion: 'Weather-driven ATFM restrictions are third-party flow control — EC candidate if evidenced.', authority: 'Pešková; Wallentin-Hermann', dataUsed: 'Eurocontrol ATFM; Operational delay records system', chainConsequence: 'Compounding EC at ATFM layer if linked to weather root.' }
         ],
         verdict: 'DEFEND_WITH_CONDITIONS',
-        verdictConditions: ['METAR/TAF confirms thunderstorms at ' + apt + ' at ETA', 'Eurocontrol ATFM/CTOT log confirms weather-related flow restrictions', 'TOPS delay record confirms 3+ hour arrival delay and delay codes'],
-        verdictSub: 'Weather at arrival (' + apt + ') with CTOT/ATFM consequence and 3+ hour delay. No diversion in chain. Confirm METAR, Eurocontrol ATFM data, and TOPS delay measurement before Letter of Response.',
+        verdictConditions: ['METAR/TAF confirms thunderstorms at ' + apt + ' at ETA', 'Eurocontrol ATFM/CTOT log confirms weather-related flow restrictions', 'Operational delay records system delay record confirms 3+ hour arrival delay and delay codes'],
+        verdictSub: 'Weather at arrival (' + apt + ') with CTOT/ATFM consequence and 3+ hour delay. No diversion in chain. Confirm METAR, Eurocontrol ATFM data, and Operational delay records system delay measurement before Letter of Response.',
         verdictFlags: [
           { type: 'action', text: 'Pull METAR/TAF for ' + apt + ' at ETA' },
           { type: 'action', text: 'Eurocontrol ATFM/CTOT log for weather-related restrictions' },
-          { type: 'action', text: 'TOPS delay record — confirm 3+ hours at arrival' }
+          { type: 'action', text: 'Operational delay records system delay record — confirm 3+ hours at arrival' }
         ]
       });
     },
@@ -409,17 +409,17 @@ var DefendAbleDemoV2 = (function () {
           ev('E2', 'Aircraft AOG — mandatory EASA inspection', { lof: 'OWN_OPERATION', ecCandidate: true, ecReason: 'Direct regulatory consequence of birdstrike.', delay: 'unknown', linkReason: 'Safety inspection required.' }),
           ev('E3', 'Replacement aircraft unavailable — flight cancelled', { lof: 'OWN_OPERATION', ecCandidate: false, ecReason: 'Reasonable measures — spare tail deployment.', delay: 'cancellation', link: 'FINAL_EVENT', linkReason: 'Final passenger outcome.' })
         ],
-        keywords: [{ phrase: 'birdstrike', tree: 'DT-04: Birdstrike', chainEventRef: 'E1', triggers: [{ system: 'AMOS', document: 'Birdstrike report', purpose: 'Confirm ingestion and inspection' }, { system: 'TOPS', document: 'Cancellation record', purpose: 'Delay measurement' }] }],
+        keywords: [{ phrase: 'birdstrike', tree: 'DT-04: Birdstrike', chainEventRef: 'E1', triggers: [{ system: 'Maintenance records system', document: 'Birdstrike report', purpose: 'Confirm ingestion and inspection' }, { system: 'Operational delay records system', document: 'Cancellation record', purpose: 'Delay measurement' }] }],
         nodes: [
-          { id: 'DT-04', type: 'disruption', chainEventRef: 'E1', question: 'Birdstrike — extraordinary circumstances?', status: 'green', statusLabel: 'EC CONFIRMED', conclusion: 'Birdstrike is per se extraordinary circumstances under Pešková.', authority: 'Pešková C-315/15', dataUsed: 'AMOS birdstrike report', chainConsequence: 'EC established — verify reasonable measures on spare aircraft.' }
+          { id: 'DT-04', type: 'disruption', chainEventRef: 'E1', question: 'Birdstrike — extraordinary circumstances?', status: 'green', statusLabel: 'EC CONFIRMED', conclusion: 'Birdstrike is per se extraordinary circumstances under Pešková.', authority: 'Pešková C-315/15', dataUsed: 'Maintenance records system birdstrike report', chainConsequence: 'EC established — verify reasonable measures on spare aircraft.' }
         ],
         judgmentNodes: [
-          { nodeId: 'J1', chainEventRef: 'E3', question: 'Could a replacement aircraft have been deployed before the 3-hour threshold?', factsFor: 'ICC states no replacement available.', factsAgainst: 'TOPS fleet state may show undeployed spare.', additionalEvidenceNeeded: 'TOPS fleet state and recovery log', consequenceIfChainHolds: 'DEFEND if EC chain clean.', consequenceIfChainBreaks: 'SETTLE if spare not deployed.' }
+          { nodeId: 'J1', chainEventRef: 'E3', question: 'Could a replacement aircraft have been deployed before the 3-hour threshold?', factsFor: 'ICC states no replacement available.', factsAgainst: 'Operational delay records system fleet state may show undeployed spare.', additionalEvidenceNeeded: 'Operational delay records system fleet state and recovery log', consequenceIfChainHolds: 'DEFEND if EC chain clean.', consequenceIfChainBreaks: 'SETTLE if spare not deployed.' }
         ],
         verdict: 'DEFEND_WITH_CONDITIONS',
-        verdictConditions: ['AMOS birdstrike report on file', 'TOPS confirms no recoverable spare aircraft was available'],
-        verdictSub: 'Birdstrike is per se EC. Confirm AMOS report and reasonable measures on replacement aircraft before response.',
-        verdictFlags: [{ type: 'action', text: 'Pull AMOS birdstrike / ingestion record' }]
+        verdictConditions: ['Maintenance records system birdstrike report on file', 'Operational delay records system confirms no recoverable spare aircraft was available'],
+        verdictSub: 'Birdstrike is per se EC. Confirm Maintenance records system report and reasonable measures on replacement aircraft before response.',
+        verdictFlags: [{ type: 'action', text: 'Pull Maintenance records system birdstrike / ingestion record' }]
       });
     },
 
@@ -433,7 +433,7 @@ var DefendAbleDemoV2 = (function () {
         ],
         keywords: [{ phrase: 'ATC industrial action', tree: 'DT-07: Third-party industrial action', chainEventRef: 'E1', triggers: [{ system: 'NOTAM-feed', document: 'Strike NOTAM', purpose: 'Third-party corroboration' }, { system: 'EUROCONTROL-NM-API', document: 'ATFM regulation log', purpose: 'Network-wide restriction' }] }],
         nodes: [
-          { id: 'DT-7.2', type: 'disruption', chainEventRef: 'E1', question: 'Industrial action — third-party ATC?', status: 'green', statusLabel: 'EC CANDIDATE', conclusion: 'Third-party ATC industrial action is NOT Krüsemann own-staff strike. Strong EC candidate.', authority: 'Pešková; Krüsemann distinguished', dataUsed: 'NOTAM; DISCO', chainConsequence: 'EC at root if both limbs satisfied.' }
+          { id: 'DT-7.2', type: 'disruption', chainEventRef: 'E1', question: 'Industrial action — third-party ATC?', status: 'green', statusLabel: 'EC CANDIDATE', conclusion: 'Third-party ATC industrial action is NOT Krüsemann own-staff strike. Strong EC candidate.', authority: 'Pešková; Krüsemann distinguished', dataUsed: 'NOTAM; Disruption data system', chainConsequence: 'EC at root if both limbs satisfied.' }
         ],
         verdict: 'DEFEND',
         verdictSub: 'Third-party ATC industrial action with network-wide ATFM. Pull NOTAM and Eurocontrol ATFM data before Letter of Response.',
@@ -448,20 +448,20 @@ var DefendAbleDemoV2 = (function () {
         chain: [
           ev('E1', 'Late inbound aircraft from prior rotation — weather on inbound sector', { lof: 'OWN_OPERATION', ecCandidate: false, ecReason: 'Cascade delay — root cause at chain start must be identified.', delay: 'unknown', linkReason: 'Prior sector impact on rotation.' }),
           ev('E2', 'Crew reached FTL limits on inbound sector', { lof: 'OWN_OPERATION', ecCandidate: false, ecReason: 'FTL never independently EC.', delay: 'unknown', linkReason: 'Consequence of late inbound.' }),
-          ev('E3', 'No standby crew available', { lof: 'OWN_OPERATION', ecCandidate: false, ecReason: 'Reasonable measures — AIMS standby log.', delay: '4h 20m total delay', link: 'FINAL_EVENT', linkReason: 'Final delay at destination.' })
+          ev('E3', 'No standby crew available', { lof: 'OWN_OPERATION', ecCandidate: false, ecReason: 'Reasonable measures — Crew scheduling system standby log.', delay: '4h 20m total delay', link: 'FINAL_EVENT', linkReason: 'Final delay at destination.' })
         ],
         keywords: [
-          { phrase: 'late inbound', tree: 'DT-16: Cascading delay', chainEventRef: 'E1', triggers: [{ system: 'TOPS', document: 'Inbound delay record', purpose: 'Root cause at chain start' }] },
-          { phrase: 'FTL', tree: 'DT-19: Crew FTL', chainEventRef: 'E2', triggers: [{ system: 'AIMS', document: 'FDP record', purpose: 'Crew limits breach time' }] }
+          { phrase: 'late inbound', tree: 'DT-16: Cascading delay', chainEventRef: 'E1', triggers: [{ system: 'Operational delay records system', document: 'Inbound delay record', purpose: 'Root cause at chain start' }] },
+          { phrase: 'FTL', tree: 'DT-19: Crew FTL', chainEventRef: 'E2', triggers: [{ system: 'Crew scheduling system', document: 'FDP record', purpose: 'Crew limits breach time' }] }
         ],
         judgmentNodes: [
-          { nodeId: 'J1', chainEventRef: 'E1', question: 'What was the root cause of the late inbound — and is THAT event EC?', factsFor: 'Weather on inbound sector may be EC at root.', factsAgainst: 'If root is ordinary operational delay, cascade does not create EC.', additionalEvidenceNeeded: 'TOPS delay codes for inbound sector; DISCO root cause', consequenceIfChainHolds: 'EC at root may defend entire cascade.', consequenceIfChainBreaks: 'SETTLE — cascade from ordinary cause.' }
+          { nodeId: 'J1', chainEventRef: 'E1', question: 'What was the root cause of the late inbound — and is THAT event EC?', factsFor: 'Weather on inbound sector may be EC at root.', factsAgainst: 'If root is ordinary operational delay, cascade does not create EC.', additionalEvidenceNeeded: 'Operational delay records system delay codes for inbound sector; Disruption data system root cause', consequenceIfChainHolds: 'EC at root may defend entire cascade.', consequenceIfChainBreaks: 'SETTLE — cascade from ordinary cause.' }
         ],
         verdict: 'JUDGMENT_REQUIRED',
         verdictSub: 'Cascading delay — must establish EC at chain root (E1 weather). Crew FTL and standby crew are downstream. Do not DEFEND until inbound root cause evidenced.',
         verdictFlags: [
           { type: 'judgment', text: 'Establish root cause of late inbound before EC conclusion' },
-          { type: 'action', text: 'AIMS standby crew log required' }
+          { type: 'action', text: 'Crew scheduling system standby crew log required' }
         ]
       });
     },
@@ -476,18 +476,18 @@ var DefendAbleDemoV2 = (function () {
           ev('E3', 'No spare aircraft available — flight cancelled', { lof: 'OWN_OPERATION', ecCandidate: false, ecReason: 'Reasonable measures — U-8.', delay: 'cancellation', link: 'FINAL_EVENT', linkReason: 'Final outcome.' })
         ],
         keywords: [
-          { phrase: 'hidden manufacturing defect', tree: 'DT-14: Hidden defect', chainEventRef: 'E2', triggers: [{ system: 'AMOS', document: 'Defect report and maintenance history', purpose: 'Matkustaja limb 1' }, { system: 'OEM-portal', document: 'OEM failure mode confirmation', purpose: 'Unknown failure mode' }] },
-          { phrase: 'Category A', tree: 'DT-05: Technical', chainEventRef: 'E1', triggers: [{ system: 'AMOS', document: 'MEL assessment', purpose: 'Dispatch impossibility' }] }
+          { phrase: 'hidden manufacturing defect', tree: 'DT-14: Hidden defect', chainEventRef: 'E2', triggers: [{ system: 'Maintenance records system', document: 'Defect report and maintenance history', purpose: 'Matkustaja limb 1' }, { system: 'OEM-portal', document: 'OEM failure mode confirmation', purpose: 'Unknown failure mode' }] },
+          { phrase: 'Category A', tree: 'DT-05: Technical', chainEventRef: 'E1', triggers: [{ system: 'Maintenance records system', document: 'MEL assessment', purpose: 'Dispatch impossibility' }] }
         ],
         judgmentNodes: [
-          { nodeId: 'J1', chainEventRef: 'E2', question: 'Is this a hidden manufacturing defect unknown to the carrier at dispatch (Matkustaja)?', factsFor: 'No prior AD, SB, or maintenance history for this failure mode.', factsAgainst: 'Routine wear or foreseeable maintenance issue — van der Lans.', additionalEvidenceNeeded: 'Full AMOS history; OEM technical confirmation', consequenceIfChainHolds: 'DEFEND_WITH_CONDITIONS on hidden defect.', consequenceIfChainBreaks: 'CONCEDE on ordinary technical.' }
+          { nodeId: 'J1', chainEventRef: 'E2', question: 'Is this a hidden manufacturing defect unknown to the carrier at dispatch (Matkustaja)?', factsFor: 'No prior AD, SB, or maintenance history for this failure mode.', factsAgainst: 'Routine wear or foreseeable maintenance issue — van der Lans.', additionalEvidenceNeeded: 'Full Maintenance records system history; OEM technical confirmation', consequenceIfChainHolds: 'DEFEND_WITH_CONDITIONS on hidden defect.', consequenceIfChainBreaks: 'CONCEDE on ordinary technical.' }
         ],
         verdict: 'DEFEND_WITH_CONDITIONS',
-        verdictConditions: ['OEM confirms failure mode was unknown at dispatch', 'Full AMOS maintenance history on file with no prior indication', 'TOPS confirms no undeployed spare aircraft'],
-        verdictSub: 'Hidden defect candidate under Matkustaja. OEM confirmation and AMOS history mandatory before DEFEND. Category A alone is not EC.',
+        verdictConditions: ['OEM confirms failure mode was unknown at dispatch', 'Full Maintenance records system maintenance history on file with no prior indication', 'Operational delay records system confirms no undeployed spare aircraft'],
+        verdictSub: 'Hidden defect candidate under Matkustaja. OEM confirmation and Maintenance records system history mandatory before DEFEND. Category A alone is not EC.',
         verdictFlags: [
           { type: 'judgment', text: 'Matkustaja hidden defect — OEM confirmation required' },
-          { type: 'action', text: 'Pull full AMOS maintenance history' }
+          { type: 'action', text: 'Pull full Maintenance records system maintenance history' }
         ]
       });
     },
@@ -503,11 +503,11 @@ var DefendAbleDemoV2 = (function () {
           ev('E4', 'Flight completed following day — OND', { lof: 'OWN_OPERATION', ecCandidate: true, ecReason: 'OND consequence of medical chain.', delay: 'overnight', link: 'FINAL_EVENT', linkReason: 'Sturgeon delay to next-day arrival.' })
         ],
         keywords: [
-          { phrase: 'cardiac arrest', tree: 'DT-11: Medical emergency', chainEventRef: 'E1', triggers: [{ system: 'TOPS', document: 'Diversion record', purpose: 'Confirm medical diversion' }, { system: 'Cabin-log', document: 'Welfare incident report', purpose: 'Severity and handling time' }] },
-          { phrase: 'OND', tree: 'DT-01: OND', chainEventRef: 'E4', triggers: [{ system: 'TOPS', document: 'Next-day operation', purpose: 'Delay measurement' }] }
+          { phrase: 'cardiac arrest', tree: 'DT-11: Medical emergency', chainEventRef: 'E1', triggers: [{ system: 'Operational delay records system', document: 'Diversion record', purpose: 'Confirm medical diversion' }, { system: 'Cabin-log', document: 'Welfare incident report', purpose: 'Severity and handling time' }] },
+          { phrase: 'OND', tree: 'DT-01: OND', chainEventRef: 'E4', triggers: [{ system: 'Operational delay records system', document: 'Next-day operation', purpose: 'Delay measurement' }] }
         ],
         verdict: 'DEFEND_WITH_CONDITIONS',
-        verdictConditions: ['Medical diversion log and cabin welfare report on file', 'Art 9 HOTAC evidenced for OND', 'TOPS confirms standby recovery was genuinely impossible before curfew'],
+        verdictConditions: ['Medical diversion log and cabin welfare report on file', 'Art 9 HOTAC evidenced for OND', 'Operational delay records system confirms standby recovery was genuinely impossible before curfew'],
         verdictSub: 'Medical diversion is strong EC at root. Crew OOH and OND are downstream. Confirm welfare records and Art 9 before response.',
         verdictFlags: [{ type: 'action', text: 'Pull cabin welfare / medical incident report' }, { type: 'action', text: 'Art 9 HOTAC for overnight OND' }]
       });
@@ -565,7 +565,7 @@ var DefendAbleDemoV2 = (function () {
       causalChain: chain,
       timingGaps: cfg.timingGaps || ['Exact CTOT assignment times not stated in ICC summary', 'Crew FDP start time not stated'],
       ambiguities: cfg.ambiguities || [],
-      additionalInformationNeeded: cfg.additionalInformationNeeded || ['TOPS delay record', 'DISCO root cause classification'],
+      additionalInformationNeeded: cfg.additionalInformationNeeded || ['Operational delay records system delay record', 'Disruption data system root cause classification'],
       multiCauseFlag: chain.length > 1,
       numberOfDistinctCausalEvents: chain.length,
       keywords: cfg.keywords || [],
@@ -597,22 +597,22 @@ var DefendAbleDemoV2 = (function () {
       });
     });
     chain.forEach(function (e) {
-      if (e.id === 'E1' && !seen['TOPSdelay']) {
-        pack.push(packItem('TOPS delay record', 'TOPS', e.id, { proves: 'Delay duration and codes', priority: 'critical' }));
-        seen['TOPSdelay'] = true;
+      if (e.id === 'E1' && !seen['Operational delay records systemdelay']) {
+        pack.push(packItem('Operational delay records system delay record', 'Operational delay records system', e.id, { proves: 'Delay duration and codes', priority: 'critical' }));
+        seen['Operational delay records systemdelay'] = true;
       }
     });
-    if (!pack.length) pack.push(packItem('TOPS operational delay record', 'TOPS', 'E1', { priority: 'critical' }));
+    if (!pack.length) pack.push(packItem('Operational delay records system operational delay record', 'Operational delay records system', 'E1', { priority: 'critical' }));
     return pack;
   }
 
   function buildInterventions(text, chain) {
     var ips = [];
     if (has(text, /\bno standby|\bno spare|\bcould not be rescued|\bnot available/i)) {
-      ips.push({ pointId: 'IP1', chainEventRef: 'E' + chain.length, description: 'Standby aircraft / spare tail deployment', evidenceRequired: 'TOPS fleet state', evidenceStatus: 'UNKNOWN', outcome: 'UNKNOWN', legalConsequence: 'U-8 reasonable measures — failure defeats EC', riskLevel: 'amber' });
+      ips.push({ pointId: 'IP1', chainEventRef: 'E' + chain.length, description: 'Standby aircraft / spare tail deployment', evidenceRequired: 'Operational delay records system fleet state', evidenceStatus: 'UNKNOWN', outcome: 'UNKNOWN', legalConsequence: 'U-8 reasonable measures — failure defeats EC', riskLevel: 'amber' });
     }
     if (has(text, /\bstandby crew|\bsby crew|\bno standby crew/i)) {
-      ips.push({ pointId: 'IP2', chainEventRef: 'E' + chain.length, description: 'Standby crew deployment', evidenceRequired: 'AIMS standby log', evidenceStatus: 'UNKNOWN', outcome: 'UNKNOWN', legalConsequence: 'Reasonable measures on crew recovery', riskLevel: 'amber' });
+      ips.push({ pointId: 'IP2', chainEventRef: 'E' + chain.length, description: 'Standby crew deployment', evidenceRequired: 'Crew scheduling system standby log', evidenceStatus: 'UNKNOWN', outcome: 'UNKNOWN', legalConsequence: 'Reasonable measures on crew recovery', riskLevel: 'amber' });
     }
     return ips;
   }
@@ -665,7 +665,7 @@ var DefendAbleDemoV2 = (function () {
     } else {
       nodes.push({ id: 'U-7', type: 'universal', chainEventRef: 'ALL', question: 'Wallentin-Hermann two-limb EC gate', status: 'amber', statusLabel: 'SCREENED', conclusion: 'Both limbs required per event in chain.', authority: 'Wallentin-Hermann C-549/07', dataUsed: 'Disruption trees', chainConsequence: 'Applied per causal event.' });
     }
-    nodes.push({ id: 'U-8', type: 'universal', chainEventRef: 'ALL', question: 'Reasonable measures at intervention points?', status: has(text, /\bno standby|\bnot available/i) ? 'amber' : 'green', statusLabel: has(text, /\bno standby/i) ? 'VERIFY' : 'CONFIRM', conclusion: 'Standby aircraft, crew, slot recovery — each intervention point must be evidenced.', authority: 'Wallentin-Hermann para 40', dataUsed: 'AIMS; TOPS', chainConsequence: 'Failed intervention defeats EC even when root is EC.' });
+    nodes.push({ id: 'U-8', type: 'universal', chainEventRef: 'ALL', question: 'Reasonable measures at intervention points?', status: has(text, /\bno standby|\bnot available/i) ? 'amber' : 'green', statusLabel: has(text, /\bno standby/i) ? 'VERIFY' : 'CONFIRM', conclusion: 'Standby aircraft, crew, slot recovery — each intervention point must be evidenced.', authority: 'Wallentin-Hermann para 40', dataUsed: 'Crew scheduling system; Operational delay records system', chainConsequence: 'Failed intervention defeats EC even when root is EC.' });
     return nodes;
   }
 
@@ -764,7 +764,7 @@ var DefendAbleDemoV2 = (function () {
       add('No standby aircraft / network recovery not possible', { lof: 'OWN_OPERATION', ecCandidate: false, ecReason: 'Reasonable measures — U-8.', linkReason: 'Recovery failure.' });
     }
     if (has(text, /\bno standby crew|\bno sby crew/i)) {
-      add('No standby crew available', { lof: 'OWN_OPERATION', ecCandidate: false, ecReason: 'Reasonable measures — AIMS standby log.', linkReason: 'Crew recovery failure.' });
+      add('No standby crew available', { lof: 'OWN_OPERATION', ecCandidate: false, ecReason: 'Reasonable measures — Crew scheduling system standby log.', linkReason: 'Crew recovery failure.' });
     }
     if (has(text, /\b3\s*\+?\s*hours?\b|\bover\s+3\s+hour|\b3h\b|\b4h\s*\d+m\b|\bdelay.{0,30}3\s+hour/i)) {
       add('Arrival delay exceeded 3 hours', { lof: 'OWN_OPERATION', ecCandidate: true, ecReason: 'Delay at arrival — measure against EC root cause chain.', delay: '3+ hours', linkReason: 'Passenger delay at destination.' });
@@ -777,7 +777,7 @@ var DefendAbleDemoV2 = (function () {
     }
 
     if (!events.length) {
-      add('Operational disruption — type not fully specified in ICC summary', { lof: 'UNKNOWN', ecCandidate: false, ecReason: 'Insufficient detail — pull TOPS and DISCO.', link: 'FINAL_EVENT' });
+      add('Operational disruption — type not fully specified in ICC summary', { lof: 'UNKNOWN', ecCandidate: false, ecReason: 'Insufficient detail — pull Operational delay records system and Disruption data system.', link: 'FINAL_EVENT' });
     }
 
     var structure = 'SEQUENTIAL';
@@ -824,12 +824,12 @@ var DefendAbleDemoV2 = (function () {
     if (isPositioningComplex(text)) return { v: 'JUDGMENT_REQUIRED', sub: 'Positioning complex chain — judgment nodes outstanding before DEFEND.', conditions: [] };
     if (isWeatherArrivalDelayCase(text) && hasAtcFlow(text)) {
       var apt = extractAirport(text) || 'destination';
-      return { v: 'DEFEND_WITH_CONDITIONS', sub: 'Weather at arrival with ATFM/CTOT consequence. Confirm METAR and Eurocontrol data — no diversion in ICC.', conditions: ['METAR/TAF confirms weather at ' + apt + ' at ETA', 'Eurocontrol ATFM/CTOT log on file', 'TOPS confirms arrival delay duration'] };
+      return { v: 'DEFEND_WITH_CONDITIONS', sub: 'Weather at arrival with ATFM/CTOT consequence. Confirm METAR and Eurocontrol data — no diversion in ICC.', conditions: ['METAR/TAF confirms weather at ' + apt + ' at ETA', 'Eurocontrol ATFM/CTOT log on file', 'Operational delay records system confirms arrival delay duration'] };
     }
-    if (isAtcHandlerCompound(text)) return { v: 'DEFEND_WITH_CONDITIONS', sub: 'ATC plus third-party handler strike — strong EC candidates. Confirm DISCO third-party classification and reasonable measures.', conditions: ['DISCO confirms handler strike is third-party', 'TOPS fleet state confirms no undeployed spare aircraft', 'Art 9 HOTAC for OND if applicable'] };
+    if (isAtcHandlerCompound(text)) return { v: 'DEFEND_WITH_CONDITIONS', sub: 'ATC plus third-party handler strike — strong EC candidates. Confirm Disruption data system third-party classification and reasonable measures.', conditions: ['Disruption data system confirms handler strike is third-party', 'Operational delay records system fleet state confirms no undeployed spare aircraft', 'Art 9 HOTAC for OND if applicable'] };
     if (isAtcOndCase(text)) return { v: 'DEFEND_WITH_CONDITIONS', sub: 'ATC/ATFM EC with OND — confirm Art 9 and Art 8.', conditions: ['HOTAC records on file', 'Art 8 offer evidenced'] };
-    if (isBirdstrikeCase(text)) return { v: 'DEFEND_WITH_CONDITIONS', sub: 'Birdstrike per se EC under Pešková. Confirm AMOS report and reasonable measures.', conditions: ['AMOS birdstrike report on file'] };
-    if (isHiddenDefectCase(text)) return { v: 'DEFEND_WITH_CONDITIONS', sub: 'Hidden defect candidate — Matkustaja C-385/23. OEM and AMOS compliance required.', conditions: ['OEM confirms unknown failure mode', 'Full AMOS maintenance history on file'] };
+    if (isBirdstrikeCase(text)) return { v: 'DEFEND_WITH_CONDITIONS', sub: 'Birdstrike per se EC under Pešková. Confirm Maintenance records system report and reasonable measures.', conditions: ['Maintenance records system birdstrike report on file'] };
+    if (isHiddenDefectCase(text)) return { v: 'DEFEND_WITH_CONDITIONS', sub: 'Hidden defect candidate — Matkustaja C-385/23. OEM and Maintenance records system compliance required.', conditions: ['OEM confirms unknown failure mode', 'Full Maintenance records system maintenance history on file'] };
     if (isWeatherDiversionCase(text) && has(text, /\bthunderstorm|\bweather\b/i)) return { v: 'DEFEND_WITH_CONDITIONS', sub: 'Weather diversion — confirm METAR/TAF and reasonable measures on recovery.', conditions: ['METAR/TAF below minima evidenced', 'Art 9 care at alternate if applicable'] };
     if (isThirdPartyAtcIndustrial(text)) return { v: 'DEFEND', sub: 'Third-party ATC industrial action. Pull NOTAM and Eurocontrol ATFM data.', conditions: [] };
     if (isMedicalCase(text)) return { v: 'DEFEND_WITH_CONDITIONS', sub: 'Medical/welfare event — strong EC candidate. Confirm incident records.', conditions: ['Medical/welfare incident report on file'] };
@@ -841,7 +841,7 @@ var DefendAbleDemoV2 = (function () {
     if (has(text, /\bnats\b.*\boutage|\beurocontrol.*\boutage|\batm system/i)) return { v: 'DEFEND_WITH_CONDITIONS', sub: 'ATM infrastructure failure. Confirm outage notice.', conditions: ['NOTAM/official outage confirmation'] };
     if (judgmentNodes && judgmentNodes.length) return { v: 'JUDGMENT_REQUIRED', sub: judgmentNodes.length + ' judgment node(s) require human decision or further evidence.', conditions: [] };
     if (chain.some(function (e) { return e.chainBreak; })) return { v: 'JUDGMENT_REQUIRED', sub: 'Chain break candidate identified — do not DEFEND until resolved.', conditions: [] };
-    if (hasAtcFlow(text)) return { v: 'DEFEND_WITH_CONDITIONS', sub: 'ATC/ATFM EC candidate. Pull Eurocontrol and TOPS before response.', conditions: ['Eurocontrol ATFM/CTOT log', 'TOPS delay record'] };
+    if (hasAtcFlow(text)) return { v: 'DEFEND_WITH_CONDITIONS', sub: 'ATC/ATFM EC candidate. Pull Eurocontrol and Operational delay records system before response.', conditions: ['Eurocontrol ATFM/CTOT log', 'Operational delay records system delay record'] };
     return { v: 'INVESTIGATE', sub: 'Keywords and chain identified. Pull evidence pack and complete legal review before triage.', conditions: [] };
   }
 
@@ -875,10 +875,10 @@ var DefendAbleDemoV2 = (function () {
     var keywords = buildKeywords(text, chain);
     var judgmentNodes = [];
     if (has(text, /\b18\s*hour|\bwake rule/i)) {
-      judgmentNodes.push({ nodeId: 'J1', chainEventRef: chain[chain.length - 1].id, question: 'Was 18-hour wake rule failure caused by EC root timing or carrier operational delay?', factsFor: 'AIMS shows exhaustion solely from external EC delays.', factsAgainst: 'Replacement crew sourcing delayed beyond reasonable window.', additionalEvidenceNeeded: 'AIMS FDP and rest audit', consequenceIfChainHolds: 'Chain may hold through DT-20.', consequenceIfChainBreaks: 'Reasonable measures failure at crew recovery.' });
+      judgmentNodes.push({ nodeId: 'J1', chainEventRef: chain[chain.length - 1].id, question: 'Was 18-hour wake rule failure caused by EC root timing or carrier operational delay?', factsFor: 'Crew scheduling system shows exhaustion solely from external EC delays.', factsAgainst: 'Replacement crew sourcing delayed beyond reasonable window.', additionalEvidenceNeeded: 'Crew scheduling system FDP and rest audit', consequenceIfChainHolds: 'Chain may hold through DT-20.', consequenceIfChainBreaks: 'Reasonable measures failure at crew recovery.' });
     }
     if (chain.some(function (e) { return e.chainBreak; })) {
-      judgmentNodes.push({ nodeId: 'J2', chainEventRef: chain.find(function (e) { return e.chainBreak; }).id, question: 'Does the intervening ordinary event break the EC chain from the root cause?', factsFor: 'But-for test may still connect root EC to final delay.', factsAgainst: 'Ordinary technical/operational event intervenes — van der Lans.', additionalEvidenceNeeded: 'AMOS/TOPS/DISCO root cause records', consequenceIfChainHolds: 'EC defence may survive.', consequenceIfChainBreaks: 'SETTLE on ordinary cause.' });
+      judgmentNodes.push({ nodeId: 'J2', chainEventRef: chain.find(function (e) { return e.chainBreak; }).id, question: 'Does the intervening ordinary event break the EC chain from the root cause?', factsFor: 'But-for test may still connect root EC to final delay.', factsAgainst: 'Ordinary technical/operational event intervenes — van der Lans.', additionalEvidenceNeeded: 'Maintenance records system/Operational delay records system/Disruption data system root cause records', consequenceIfChainHolds: 'EC defence may survive.', consequenceIfChainBreaks: 'SETTLE on ordinary cause.' });
     }
     var vd = resolveVerdict(text, chain, judgmentNodes);
     return fullResult(text, {

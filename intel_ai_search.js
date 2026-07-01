@@ -229,7 +229,7 @@ var IntelAISearch = (function () {
     detail += escalate ? escalate + ' flagged ESCALATE. ' : '';
     detail += 'Combined claim exposure is about **' + formatMoney(exposure, 'GBP') + '**.';
     if (parsed.airports.indexOf('LGW') >= 0 && parsed.disruptionTypes.indexOf('Cancellation') >= 0) {
-      detail += ' Gatwick cancellation cohort often clusters around ATC industrial action — worth pulling Eurocontrol and TOPS before responding.';
+      detail += ' Gatwick cancellation cohort often clusters around ATC industrial action — worth pulling Eurocontrol and Operational delay records system before responding.';
     }
 
     return {
