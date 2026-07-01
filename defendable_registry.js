@@ -37,7 +37,9 @@ var DefendAbleRegistry = (function () {
     AIMS_FDP_RECORD: { name: 'Crew scheduling system — Crew Route & FDP', system: 'AIMS', hardDependencies: [] },
     EV_DISCO: { name: 'Disruption data system — Disruption Record', system: 'Disruption data system', hardDependencies: [] },
     EV_SAFETYNET: { name: 'Safety reporting system Reports', system: 'SafetyNet', hardDependencies: [] },
-    EV_NOTAM: { name: 'NOTAM Records', system: 'NOTAM', hardDependencies: [] }
+    EV_NOTAM: { name: 'NOTAM Records', system: 'NOTAM', hardDependencies: [] },
+    EV_MET_OFFICE: { name: 'Met Office — Daily Impact Hazard Forecast', system: 'Met Office', hardDependencies: [] },
+    EV_AIRPORT_WEB: { name: 'Airport Statement / Travel Advisory', system: 'Affected airport website', hardDependencies: [] }
   };
 
   var EVIDENCE_ID_ALIASES = [
@@ -74,6 +76,7 @@ var DefendAbleRegistry = (function () {
     'DT-02': {
       conclusions: [
         { id: 'DT2_METAR_BELOW_MINIMA', question: 'Destination weather below operating minima?' },
+        { id: 'DT2_FORESEEABILITY_RISK', question: 'TAF foreseeability risk at departure?' },
         { id: 'U7_LIMB1_INHERENCY', question: 'Limb 1 — circumstance not inherent in normal operations?' },
         { id: 'U7_LIMB2_CONTROL', question: 'Limb 2 — circumstance beyond carrier actual control?' }
       ]

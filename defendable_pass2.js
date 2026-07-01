@@ -69,7 +69,7 @@ var DefendAblePass2 = (function () {
     }
   }
 
-  function enrichAtcEvidencePack(pass2, iccText, scenario) {
+  function enrichMatrixEvidencePack(pass2, iccText, scenario) {
     if (typeof DefendAbleEvidencePack === 'undefined') return;
     var disruptionType = DefendAbleEvidencePack.detectDisruptionType(iccText);
     if (!disruptionType) return;
@@ -167,7 +167,7 @@ var DefendAblePass2 = (function () {
     var reg = typeof DefendAbleRegistry !== 'undefined' ? DefendAbleRegistry : null;
     var scenario = reg ? reg.matchDemoEvidenceScenario(iccText || '') : { collected: [], missing: [] };
 
-    enrichAtcEvidencePack(pass2, iccText, scenario);
+    enrichMatrixEvidencePack(pass2, iccText, scenario);
 
     scenario.collected.forEach(function (item) {
       var meta = reg ? reg.getEvidenceMeta(item.id) : { name: item.id, system: 'TOPS' };
@@ -220,7 +220,8 @@ var DefendAblePass2 = (function () {
 
   return {
     enrichPass2ForDemo: enrichPass2ForDemo,
-    enrichAtcEvidencePack: enrichAtcEvidencePack,
+    enrichMatrixEvidencePack: enrichMatrixEvidencePack,
+    enrichAtcEvidencePack: enrichMatrixEvidencePack,
     inferFindingsFromEvidence: inferFindingsFromEvidence,
     buildEvidenceRequiredForEvent: buildEvidenceRequiredForEvent
   };

@@ -16,7 +16,9 @@ var EXAMPLES = {
   security: 'Flight delayed LGW due to security alert — suspicious item found in hold. Airport security authority mandated full hold search and passenger re-screening. Police attended. Two passengers offloaded. Baggage reconciliation required. Delay 3h 45m.',
   disruptive: 'Flight EZY7821 returned to gate at LGW after departure due to highly disruptive passenger — threatening behaviour toward cabin crew. Police met aircraft. Passenger and baggage offloaded. Baggage reconciliation required. Delay 1h 55m to departure. Arrival delay at destination 2h 10m.',
   ownStrike: 'Pilot union strike — carrier own pilot staff participating. 40% of fleet grounded. 180 flights cancelled across the network. Passengers notified 4 days before disruption.',
-  positioning: 'The flight was originally delayed because the operating crew were positioning on an earlier flight disrupted by ATC and weather. That aircraft was AOG (fuel leak), causing further delay and putting the crew out of hours. A replacement crew was sourced, but one crew member could not operate due to fatigue (18 hour wake rule) and there were no SBY crew available.'
+  positioning: 'The flight was originally delayed because the operating crew were positioning on an earlier flight disrupted by ATC and weather. That aircraft was AOG (fuel leak), causing further delay and putting the crew out of hours. A replacement crew was sourced, but one crew member could not operate due to fatigue (18 hour wake rule) and there were no SBY crew available.',
+  weatherCtot: 'EZY3279 delayed due to thunderstorms at arrival destination (ACE). CTOTS as a result of the weather disruption pushing the flight over 3 hours delay',
+  lvp: 'LTN departure delayed 3h — LVP in force, SNOWTAM active, runway closure. All carriers affected.'
 };
 
 var TESTS = [
@@ -97,6 +99,7 @@ eval(fs.readFileSync(__dirname + '/defendable_registry.js', 'utf8'));
 eval(fs.readFileSync(__dirname + '/defendable_pass2.js', 'utf8'));
 eval(fs.readFileSync(__dirname + '/defendable_evidence_pack.js', 'utf8'));
 eval(fs.readFileSync(__dirname + '/defendable_tree_dt01_atc.js', 'utf8'));
+eval(fs.readFileSync(__dirname + '/defendable_tree_dt02_weather.js', 'utf8'));
 eval(fs.readFileSync(__dirname + '/defendable_orchestrator.js', 'utf8'));
 
 var orchPassed = 0;
@@ -239,5 +242,105 @@ console.log('\n' + '='.repeat(50));
 console.log('DT-01 passed: ' + dtPassed + '/4');
 if (dtFailed) {
   console.log('DT-01 failed: ' + dtFailed);
+  process.exit(1);
+}
+
+/* DT-02 tree + evidence pack tests */
+var dt2Passed = 0;
+var dt2Failed = 0;
+
+function dt2Test(name, fn) {
+  try {
+    fn();
+    dt2Passed++;
+    console.log('OK  dt02: ' + name);
+  } catch (e) {
+    dt2Failed++;
+    console.log('FAIL dt02: ' + name + ' — ' + e.message);
+  }
+}
+
+console.log('\nDefendAble DT-02 tests\n' + '='.repeat(50));
+
+dt2Test('Weather evidence pack order matches case management MATRIX', function () {
+  var expectedK = ['tops', 'disco', 'aims', 'safetynet', 'eurocontrol', 'ogimet', 'met_office', 'notam'];
+  var expectedS = ['connected', 'network_out', 'lido', 'hermes', 'max_ops', 'dpm', 'internal_email', 'flightradar', 'flightstats', 'ops_review', 'airport_web'];
+  var expectedW = ['case_studies', 'weather_briefs', 'eurocontrol_w', 'caa_docs', 'ac_ops', 'airport_info', 'montreal_conv'];
+  var matrix = DefendAbleEvidencePack.getMatrix('Weather');
+  if (!matrix) throw new Error('missing Weather matrix');
+  expectedK.forEach(function (k, i) {
+    if (matrix.K[i] !== k) throw new Error('K order mismatch at ' + i);
+  });
+  expectedS.forEach(function (k, i) {
+    if (matrix.S[i] !== k) throw new Error('S order mismatch at ' + i);
+  });
+  expectedW.forEach(function (k, i) {
+    if (matrix.W[i] !== k) throw new Error('W order mismatch at ' + i);
+  });
+  var ordered = DefendAbleEvidencePack.getPackItems('Weather').map(function (p) { return p.libKey; });
+  var flat = expectedK.concat(expectedS).concat(expectedW);
+  if (ordered.join(',') !== flat.join(',')) throw new Error('pack order mismatch');
+});
+
+dt2Test('pass2 enrich seeds full Weather pack with K/S/W tiers', function () {
+  var text = EXAMPLES.weather;
+  var result = DefendAbleDemoV2.analyze(text);
+  var passes = DefendAbleDemoV2.toPasses(result, text);
+  var pack = passes.pass2.evidencePack || [];
+  if (pack.length < 26) throw new Error('expected 26 Weather pack items, got ' + pack.length);
+  var kItems = pack.filter(function (e) { return e.tier === 'K'; });
+  if (kItems.length !== 8) throw new Error('expected 8 key items, got ' + kItems.length);
+  if (kItems[0].libKey !== 'tops') throw new Error('first key item should be tops');
+  if (kItems[5].libKey !== 'ogimet') throw new Error('ogimet should be 6th key item');
+  var collected = pack.filter(function (e) { return (e.status || '').toLowerCase() === 'collected'; });
+  if (!collected.some(function (e) { return e.evidenceId === 'METAR_DESTINATION'; })) {
+    throw new Error('METAR evidence not collected in demo');
+  }
+});
+
+dt2Test('DT-02 tree runs on weather diversion with gates', function () {
+  var text = EXAMPLES.weather;
+  var result = DefendAbleDemoV2.analyze(text);
+  var passes = DefendAbleDemoV2.toPasses(result, text);
+  var orch = DefendAbleOrchestrator.createOrchestrator();
+  orch.setIccText(text);
+  orch.afterPass1(passes.pass1);
+  orch.afterPass2(passes.pass2);
+  var out = orch.afterPass3(result);
+  var dt02 = (out.treeResults || []).find(function (t) { return t.treeId === 'DT-02'; });
+  if (!dt02 || !dt02.applicable) throw new Error('DT-02 not applicable');
+  var dt01 = (out.treeResults || []).find(function (t) { return t.treeId === 'DT-01'; });
+  if (dt01 && dt01.applicable) throw new Error('DT-01 should not run on weather diversion');
+  var g1 = dt02.gates.find(function (g) { return g.gateId === 'DT2-G1'; });
+  if (!g1 || g1.answer !== 'yes') throw new Error('G1 should confirm weather');
+  if (!dt02.exit || !dt02.exit.verdict) throw new Error('missing tree exit verdict');
+});
+
+dt2Test('weather+CTOT routes to DT-02 not DT-01', function () {
+  var text = EXAMPLES.weatherCtot || 'EZY3279 delayed due to thunderstorms at arrival destination (ACE). CTOTS as a result of the weather disruption pushing the flight over 3 hours delay';
+  if (!DefendAbleEvidencePack.detectDisruptionType(text)) throw new Error('should detect Weather disruption type');
+  var result = DefendAbleDemoV2.analyze(text);
+  var passes = DefendAbleDemoV2.toPasses(result, text);
+  var orch = DefendAbleOrchestrator.createOrchestrator();
+  orch.setIccText(text);
+  orch.afterPass1(passes.pass1);
+  orch.afterPass2(passes.pass2);
+  var out = orch.afterPass3(result);
+  var dt02 = (out.treeResults || []).find(function (t) { return t.treeId === 'DT-02'; });
+  if (!dt02 || !dt02.applicable) throw new Error('DT-02 should apply for weather+CTOT');
+  var dt01 = (out.treeResults || []).find(function (t) { return t.treeId === 'DT-01'; });
+  if (dt01 && dt01.applicable) throw new Error('DT-01 should not apply when weather is primary');
+});
+
+dt2Test('DT-02 not applicable for origin LVP-only case', function () {
+  var text = EXAMPLES.lvp || 'LTN departure delayed 3h — LVP in force, SNOWTAM active, runway closure. All carriers affected.';
+  var tree = DefendAbleTreeDT02.runTree({ iccText: text, causalChain: [], evidenceManager: DefendAbleEvidence.createEvidenceManager() });
+  if (tree.applicable) throw new Error('DT-02 should not apply to origin LVP (DT-03 territory)');
+});
+
+console.log('\n' + '='.repeat(50));
+console.log('DT-02 passed: ' + dt2Passed + '/5');
+if (dt2Failed) {
+  console.log('DT-02 failed: ' + dt2Failed);
   process.exit(1);
 }

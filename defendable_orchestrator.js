@@ -27,7 +27,14 @@ var DefendAbleOrchestrator = (function () {
       }
     }
 
-    if (typeof DefendAbleTreeDT01 !== 'undefined' && DefendAbleTreeDT01.matches(iccText, chain)) {
+    if (typeof DefendAbleTreeDT02 !== 'undefined' && DefendAbleTreeDT02.matches(iccText, chain)) {
+      treeResults.push(DefendAbleTreeDT02.runTree({
+        iccText: iccText,
+        causalChain: chain,
+        evidenceManager: evidenceManager,
+        confidenceManager: confidenceManager
+      }));
+    } else if (typeof DefendAbleTreeDT01 !== 'undefined' && DefendAbleTreeDT01.matches(iccText, chain)) {
       treeResults.push(DefendAbleTreeDT01.runTree({
         iccText: iccText,
         causalChain: chain,

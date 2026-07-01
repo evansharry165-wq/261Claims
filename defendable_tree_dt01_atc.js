@@ -62,6 +62,10 @@ var DefendAbleTreeDT01 = (function () {
   ];
 
   function matches(iccText, chainEvents) {
+    if (typeof DefendAbleEvidencePack !== 'undefined'
+      && DefendAbleEvidencePack.detectDisruptionType(iccText) === 'Weather') {
+      return false;
+    }
     var t = (iccText || '').toLowerCase();
     if (/\bctot\b|\batfm\b|\beurocontrol\b|\batc restriction|\batc delay|\bnetwork.wide atfm\b|\ball carriers affected\b/i.test(t)) {
       return true;

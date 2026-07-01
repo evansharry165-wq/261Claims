@@ -23,7 +23,12 @@ var DefendAbleEvidencePack = (function () {
     eurocontrol_w: { name: 'Eurocontrol Reference Documents', system: 'Reference', tier: 'W' },
     caa_docs: { name: 'CAA Documentation', system: 'Reference', tier: 'W' },
     ac_ops: { name: 'Aircraft Operations & Procedures', system: 'Reference', tier: 'W' },
-    airport_info: { name: 'Airport Information', system: 'Reference', tier: 'W' }
+    airport_info: { name: 'Airport Information', system: 'Reference', tier: 'W' },
+    ogimet: { name: 'Ogimet — METAR & TAF Reports', system: 'Ogimet', tier: 'K' },
+    met_office: { name: 'Met Office — Daily Impact Hazard Forecast', system: 'Met Office', tier: 'K' },
+    airport_web: { name: 'Airport Statement / Travel Advisory', system: 'Affected airport website', tier: 'S' },
+    weather_briefs: { name: 'Weather Briefs & Phenomena Guides', system: 'Reference', tier: 'W' },
+    montreal_conv: { name: 'Montreal Convention — Consequential Loss Evidence', system: 'Internal legal file', tier: 'W' }
   };
 
   var MATRIX = {
@@ -31,6 +36,11 @@ var DefendAbleEvidencePack = (function () {
       K: ['tops', 'disco', 'aims', 'safetynet', 'eurocontrol', 'notam'],
       S: ['connected', 'network_out', 'lido', 'hermes', 'max_ops', 'dpm', 'internal_email', 'flightradar', 'flightstats', 'ops_review'],
       W: ['case_studies', 'eurocontrol_w', 'caa_docs', 'ac_ops', 'airport_info']
+    },
+    'Weather': {
+      K: ['tops', 'disco', 'aims', 'safetynet', 'eurocontrol', 'ogimet', 'met_office', 'notam'],
+      S: ['connected', 'network_out', 'lido', 'hermes', 'max_ops', 'dpm', 'internal_email', 'flightradar', 'flightstats', 'ops_review', 'airport_web'],
+      W: ['case_studies', 'weather_briefs', 'eurocontrol_w', 'caa_docs', 'ac_ops', 'airport_info', 'montreal_conv']
     }
   };
 
@@ -38,6 +48,8 @@ var DefendAbleEvidencePack = (function () {
   var LIBKEY_TO_LEGACY_ID = {
     tops: 'TOPS_DELAY_RECORD',
     eurocontrol: 'EUROCONTROL_CTOT',
+    ogimet: 'METAR_DESTINATION',
+    met_office: 'EV_MET_OFFICE',
     dpm: 'DPM_NOTES',
     aims: 'AIMS_FDP_RECORD',
     flightstats: 'FLIGHTSTATS_CROSSCARRIER',
@@ -52,7 +64,10 @@ var DefendAbleEvidencePack = (function () {
     disco: [{ type: 'EVIDENCE_RECEIVED', description: 'Disruption record confirms ATC narrative' }],
     aims: [{ type: 'AIMS_FDP_ELEVATED_BEFORE_DISRUPTION', description: 'Crew FDP context' }],
     notam: [{ type: 'EVIDENCE_RECEIVED', description: 'NOTAM corroborates airspace restriction' }],
-    dpm: [{ type: 'EVIDENCE_RECEIVED', description: 'DPM notes on recovery attempts' }]
+    dpm: [{ type: 'EVIDENCE_RECEIVED', description: 'DPM notes on recovery attempts' }],
+    ogimet: [{ type: 'METAR_BELOW_ILS_MINIMA', description: 'Destination METAR below operating minima' }],
+    met_office: [{ type: 'EVIDENCE_RECEIVED', description: 'Met Office hazard forecast corroboration' }],
+    flightradar: [{ type: 'TOPS_DIVERSION', description: 'Flight track confirms diversion path' }]
   };
 
   var TIER_ORDER = ['K', 'S', 'W'];
@@ -118,15 +133,30 @@ var DefendAbleEvidencePack = (function () {
     return added;
   }
 
+  function isWeatherDestination(text) {
+    var t = text || '';
+    if (/\blvp\b|\bsnowtam|\brunway closure|\bde-ic\b/i.test(t)
+      && !/\bdiversion\b|\bbelow minima\b|\bthunderstorm\b|\barrival destination\b|\bdestination\b/i.test(t)) {
+      return false;
+    }
+    return /\bthunderstorm\b|\bweather\b|\bbelow minima\b|\bdiversion\b|\bsigmet\b|\bmetar\b|\bmandatory atc diversion\b/i.test(t);
+  }
+
+  function isAtcPrimary(text) {
+    return /\bctot\b|\batfm\b|\beurocontrol\b|\batc restriction|\batc delay|\bnetwork.wide\b|\ball carriers\b/i.test(text || '');
+  }
+
   function isApplicableDisruptionType(text, type) {
+    if (type === 'Weather') return isWeatherDestination(text);
     if (type === 'ATC Restrictions') {
-      return /\bctot\b|\batfm\b|\beurocontrol\b|\batc restriction|\batc delay|\bnetwork.wide\b|\ball carriers\b/i.test(text || '');
+      return isAtcPrimary(text) && !isWeatherDestination(text);
     }
     return false;
   }
 
   function detectDisruptionType(text) {
-    if (isApplicableDisruptionType(text, 'ATC Restrictions')) return 'ATC Restrictions';
+    if (isWeatherDestination(text)) return 'Weather';
+    if (isAtcPrimary(text)) return 'ATC Restrictions';
     return null;
   }
 
@@ -142,7 +172,9 @@ var DefendAbleEvidencePack = (function () {
     getPackItems: getPackItems,
     seedPackToEvidenceManager: seedPackToEvidenceManager,
     detectDisruptionType: detectDisruptionType,
-    isApplicableDisruptionType: isApplicableDisruptionType
+    isApplicableDisruptionType: isApplicableDisruptionType,
+    isWeatherDestination: isWeatherDestination,
+    isAtcPrimary: isAtcPrimary
   };
 })();
 
