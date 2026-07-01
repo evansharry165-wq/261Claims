@@ -166,6 +166,9 @@ var DefendAblePass2 = (function () {
     var chain = (pass1 && pass1.causalChain) || pass2.updatedCausalChain || [];
     var reg = typeof DefendAbleRegistry !== 'undefined' ? DefendAbleRegistry : null;
     var scenario = reg ? reg.matchDemoEvidenceScenario(iccText || '') : { collected: [], missing: [] };
+    if (typeof DefendAbleCaseBridge !== 'undefined') {
+      scenario = DefendAbleCaseBridge.mergeScenarioWithCase(scenario, iccText);
+    }
 
     enrichMatrixEvidencePack(pass2, iccText, scenario);
 
