@@ -228,8 +228,19 @@ var DefendAblePass2 = (function () {
     return pass2;
   }
 
+  /** Shared Pass 2 post-processor for demo and live Claude paths. */
+  function enrichPass2ForAnalysis(pass1, pass2, iccText) {
+    pass2 = pass2 ? Object.assign({}, pass2) : {};
+    if (!pass2.updatedCausalChain || !pass2.updatedCausalChain.length) {
+      pass2.updatedCausalChain = (pass1 && pass1.causalChain) || [];
+    }
+    if (!pass2.dynamicEvidenceRequests) pass2.dynamicEvidenceRequests = [];
+    return enrichPass2ForDemo(pass1, pass2, iccText);
+  }
+
   return {
     enrichPass2ForDemo: enrichPass2ForDemo,
+    enrichPass2ForAnalysis: enrichPass2ForAnalysis,
     enrichMatrixEvidencePack: enrichMatrixEvidencePack,
     enrichAtcEvidencePack: enrichMatrixEvidencePack,
     inferFindingsFromEvidence: inferFindingsFromEvidence,

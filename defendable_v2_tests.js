@@ -137,6 +137,27 @@ orchTest('pass2 enrich collects CTOT evidence for ATC scenario', function () {
   if (!collected.length) throw new Error('no collected evidence in enriched pass2');
 });
 
+orchTest('live-shaped pass2 enriches with MATRIX pack via enrichPass2ForAnalysis', function () {
+  var text = EXAMPLES.atc;
+  var pass1 = {
+    causalChain: [{ id: 'E1', description: 'Eurocontrol CTOT restriction imposed' }]
+  };
+  var pass2 = {
+    evidencePack: [{ status: 'requested', name: 'Claude evidence item', source: 'TOPS' }],
+    updatedCausalChain: pass1.causalChain
+  };
+  var enriched = DefendAblePass2.enrichPass2ForAnalysis(pass1, pass2, text);
+  var tops = (enriched.evidencePack || []).find(function (e) {
+    return e.evidenceId === 'TOPS_DELAY_RECORD' || (e.name || '').toLowerCase().indexOf('delay') >= 0;
+  });
+  if (!tops) throw new Error('MATRIX pack missing TOPS item after live enrichment');
+  var collected = (enriched.evidencePack || []).filter(function (e) { return (e.status || '').toLowerCase() === 'collected'; });
+  if (!collected.length) throw new Error('expected demo/case collected items in enriched live pass2');
+  if (!enriched.updatedCausalChain || !enriched.updatedCausalChain[0].evidenceRequired) {
+    throw new Error('expected evidenceRequired on enriched causal chain');
+  }
+});
+
 orchTest('full pipeline upgrades semantic conclusion after pass3', function () {
   var text = EXAMPLES.atc;
   var result = DefendAbleDemoV2.analyze(text);
