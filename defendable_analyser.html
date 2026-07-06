@@ -653,13 +653,13 @@ U-3 STANDING: Confirmed reservation required (Art 2(a)). Post-PACCAR: CMC assign
 
 U-4 CHECK-IN COMPLIANCE: Art 3(2)(a) — presented at check-in at time indicated, or if not indicated at least 45 minutes before scheduled departure. If late, Regulation does not apply.
 
-U-5 DELAY THRESHOLD: Sturgeon v Condor (C-402/07) — delay measured at ARRIVAL (doors open). 3+ hours at final destination. For OND with next-day operation: delay = scheduled arrival to actual next-day arrival. Connecting flights: Folkerts v Air France (C-11/11) — delay at final destination on through booking.
+U-5 DELAY THRESHOLD: Sturgeon v Condor (C-402/07) — delay measured at ARRIVAL (doors open). 3+ hours at final destination. For OND with next-day operation: delay = scheduled arrival to actual next-day arrival. Connecting flights: Folkerts v Air France (C-11/11) — delay at final destination on through booking. CAUSAL OFFSET (Pešková v Travel Service, C-315/15): the causal link required by Art 5(3) is not satisfied merely by an EC event appearing somewhere in the chain. Where the total delay results from BOTH an EC event AND a subsequent or concurrent ordinary event, isolate the delay actually and reasonably attributable to the EC event, and OFFSET it against the total. Then separately test whether the remaining ordinary-caused delay alone reaches or exceeds the 3-hour threshold at final arrival. If it does, compensation remains payable for that ordinary-caused portion notwithstanding the EC at root — this is not a clean DEFEND, it is DEFEND_WITH_CONDITIONS at best, quantified against the ordinary-caused remainder. Do this arithmetic explicitly per event in the causal chain, not just once for the whole case.
 
 U-6 ART 7 COMPENSATION BAND: Great circle distance to final destination. Up to 1,500km: €250. Intra-EU over 1,500km and all 1,500-3,500km: €400. Non-intra-EU over 3,500km: €600. 50% reductions apply. Flag CMC overclaims — wrong band is extremely common.
 
 U-7 EXTRAORDINARY CIRCUMSTANCES GATE: Wallentin-Hermann v Alitalia (C-549/07). BOTH limbs required. Limb 1: circumstance NOT inherent in the normal exercise of the carrier's activity. Limb 2: circumstance beyond the carrier's ACTUAL control. Applied INDEPENDENTLY to each event in the causal chain.
 
-U-8 REASONABLE MEASURES: Mandatory even after EC is confirmed — Wallentin-Hermann para 40. Evaluated at EVERY intervention point identified in Pass 2. A failed intervention point = RED risk = defence fails even if EC is established. Standby aircraft, standby crew, slot recovery, rerouting, early notification — each is a separate intervention point.
+U-8 REASONABLE MEASURES: Mandatory even after EC is confirmed — Wallentin-Hermann para 40. Evaluated at EVERY intervention point identified in Pass 2. A failed intervention point = RED risk = defence fails even if EC is established. Standby aircraft, standby crew, slot recovery, rerouting, early notification — each is a separate intervention point. RESERVE TIME (Eglītis and Ratnieks v Air Baltic, C-294/10): as part of reasonable measures, a carrier must show it planned a reasonable schedule/reserve time to recover from foreseeable EC risk so the flight could still operate as close to schedule as possible once the EC ended. This obligation is bounded — it does not require intolerable sacrifice relative to the carrier's capacities at the time (same qualifier as Wallentin-Hermann). Where recovery took materially longer than a reasonable reserve would explain, flag as a failed intervention point under U-8, not just under U-5's causal offset — the two tests are related but distinct: U-5 asks how much of the delay counts; U-8/Eglītis-Ratnieks asks whether the carrier's own scheduling was itself reasonable.
 
 U-9 ART 8: Rerouting or reimbursement must be offered for all cancellations and delays expected to be 5+ hours. Three options: full reimbursement (+ return flight), rerouting at earliest opportunity, rerouting at later date. Failure to offer = standalone head of claim independent of EC.
 
@@ -679,25 +679,25 @@ U-16 SETTLE VS DEFEND: Defend if EC clean, evidence complete, value justifies co
 
 DISRUPTION-SPECIFIC TREES:
 
-DT-1 ATC/ATFM: Eurocontrol CTOT = EC confirmed immediately — both limbs satisfied. Operational delay records system delay code 81-89. Peskova C-315/15: third-party ATC industrial action = EC. CURFEW BREACH causing OND: the OND and next-day delay are direct consequences of the EC event. Delay under Sturgeon = scheduled arrival to actual next-day arrival. Art 9 hotel mandatory for overnight. Art 8 must be offered once delay exceeded 5 hours. Pull: Eurocontrol ATFM, CTOT confirmation, Operational delay records system delay record, NOTAM, FlightStats.
+DT-1 ATC/ATFM: Eurocontrol CTOT = EC confirmed immediately — both limbs satisfied. Operational delay records system delay code 81-89. Peskova C-315/15: third-party ATC industrial action = EC AND governs the causal-offset test at U-5 — if ordinary operational handling after the ATC restriction clears added its own delay on top, offset the ATC-attributable portion and test the remainder against 3 hours separately. CURFEW BREACH causing OND: the OND and next-day delay are direct consequences of the EC event ONLY if the recovery timing itself was reasonable (U-8/Eglītis-Ratnieks) — if recovery took longer than a reasonable reserve would explain, that excess is not covered by the EC. Delay under Sturgeon = scheduled arrival to actual next-day arrival. Art 9 hotel mandatory for overnight. Art 8 must be offered once delay exceeded 5 hours. Pull: Eurocontrol ATFM, CTOT confirmation, Operational delay records system delay record, NOTAM, FlightStats.
 
 DT-2 WEATHER DESTINATION: METAR below ILS approach minima = EC. SIGMET = strongest corroboration. ATC mandatory diversion instruction = Limb 2 beyond doubt. TAF foreseeability at departure = claimant vulnerability. Standby blocked by same weather = secondary EC independently satisfying Wallentin-Hermann. Pull: Ogimet METAR/TAF/SIGMET, lightning data, Flightradar24 diversion track, Operational delay records system, Safety reporting system.
 
 DT-3 WEATHER ORIGIN/EN ROUTE: LVP systemic = EC. De-icing routine = ordinary. De-icing systemic abnormal = may be EC. SNOWTAM + airport authority runway closure = EC. Pull: Ogimet origin METAR, LVP NOTAM, SNOWTAM, de-icing log.
 
-DT-4 BIRDSTRIKE: Peskova C-315/15 — per se EC, both limbs automatically satisfied. Maintenance records system mandatory inspection = primary evidence — without it claim is unsubstantiated. Engine ingestion: borescope mandatory, possibly engine change. Pull: Maintenance records system full inspection record, Safety reporting system, Operational delay records system, airport wildlife authority.
+DT-4 BIRDSTRIKE: Peskova C-315/15 — per se EC, both limbs automatically satisfied; irrelevant whether the strike actually damaged the aircraft, since mandatory post-strike safety inspection follows regardless. This is Pešková's own fact pattern for the U-5 causal-offset test: the inspection time itself is EC-attributable, but ANY further delay caused by ordinary follow-on handling (e.g. crew rostering consequences, ordinary turnaround delay layered on top of the inspection) must be offset out and tested separately against the 3-hour threshold — do not treat the whole delay as covered just because the strike itself is EC. Maintenance records system mandatory inspection = primary evidence — without it claim is unsubstantiated, and the inspection record is also what establishes exactly how long the EC-attributable portion actually took. Engine ingestion: borescope mandatory, possibly engine change. Pull: Maintenance records system full inspection record, Safety reporting system, Operational delay records system, airport wildlife authority.
 
-DT-5 TECHNICAL: Van der Lans v KLM (C-257/14) — routine maintenance faults NOT EC. External cause (lightning strike to aircraft, ground damage) = EC. Hidden defect: Germanwings (C-257/14) + Matkustaja v Finnair (C-385/23, CJEU June 2024 — cite as current leading authority) — not detectable despite proper maintenance, no prior AD/SB, within certified service life = potentially EC. MEL dispatch possibility critical: if MEL Category A (no dispatch), carrier had no discretion. Pull: Maintenance records system defect log, MEL record, full maintenance history, Safety reporting system, Operational delay records system, OEM records.
+DT-5 TECHNICAL: Van der Lans v KLM (C-257/14) — routine maintenance faults NOT EC. External cause (lightning strike to aircraft, ground damage, foreign object on runway — Germanwings v Pauels C-501/17) = EC. Hidden defect: Matkustaja v Finnair (C-385/23, CJEU June 2024 — cite as current leading authority) — not detectable despite proper maintenance, no prior AD/SB, within certified service life = potentially EC. MEL dispatch possibility critical: if MEL Category A (no dispatch), carrier had no discretion. Pull: Maintenance records system defect log, MEL record, full maintenance history, Safety reporting system, Operational delay records system, OEM records.
 
 DT-6 CREW/FTL: FTL alone is NEVER EC — Lipton v BA Cityflyer [2024] UKSC 24 confirms crew illness not EC; FTL exhaustion is never an independent EC event. Root cause of FTL exhaustion is ALWAYS the first question. If root cause is ATC → DT-1. If root cause is weather → DT-2/DT-3. If root cause is crew sickness → ORDINARY — CONCEDE on this point. If root cause is prior disruption → DT-13. Pull: Crew scheduling system FDP record, Crew scheduling system standby log, Operational delay records system line of flying.
 
-DT-7 INDUSTRIAL ACTION: FIRST NODE — own staff vs third party determines the entire case. Krüsemann v TUIfly (C-601/17): own-staff strike NOT EC — concede immediately. Peskova C-315/15: genuine third party (ATC authority, airport operator, independent handler) = EC. Pull: Disruption data system, NOTAM, published union/authority notice, Operational delay records system.
+DT-7 INDUSTRIAL ACTION: FIRST NODE — own staff vs third party determines the entire case. Krüsemann v TUIfly (C-195/17): own-staff strike NOT EC — concede immediately. Peskova C-315/15: genuine third party (ATC authority, airport operator, independent handler) = EC, subject to the same U-5 causal-offset test — offset the strike-attributable delay and separately check whether any ordinary-caused remainder (e.g. recovery/rebooking delay beyond a reasonable reserve) independently crosses 3 hours. Pull: Disruption data system, NOTAM, published union/authority notice, Operational delay records system.
 
 DT-8 SECURITY: Externally initiated by police, airport security, or government = EC. Mandatory search = externally imposed. Baggage reconciliation after offload = mandatory security regulation. Pull: Safety reporting system, Operational delay records system delay code 91-96, police/airport authority records, ground handler security log.
 
-DT-9 MEDICAL: Not inherent in normal operations = EC. Carrier legally obligated to respond — mandatory not discretionary. Prior sector medical causing cascade: pull Operational delay records system line of flying + Safety reporting system + document causal chain. Pull: Safety reporting system, Operational delay records system, Flightradar24 if diversion, ground handler medical log.
+DT-9 MEDICAL: Passenger illness/medical diversion is NOT EC by default — persuasive England authority (DDJ Linwood, 2020, first-instance) holds passenger illness is inherent in carrying passengers, same reasoning as Lipton for crew illness. CONCEDE unless the facts show a genuine flight-safety or security dimension distinct from ordinary passenger welfare (e.g. contagion risk, security-flagged incident, risk to aircraft/crew) — that narrow case is a JUDGMENT NODE, never an automatic EC. Prior sector medical causing cascade: pull Operational delay records system line of flying + Safety reporting system + document causal chain regardless of EC outcome. Pull: Safety reporting system, Operational delay records system, Flightradar24 if diversion, ground handler medical log.
 
-DT-10 DISRUPTIVE PASSENGER: External behaviour = EC. Safety reporting system = primary evidence. Police attendance corroborates. Baggage reconciliation mandatory. Pull: Safety reporting system, Operational delay records system, ground handler removal and reconciliation, police attendance.
+DT-10 DISRUPTIVE PASSENGER: LE v TAP Air Portugal (C-74/19) is the controlling authority — draws a hard line. Behaviour known/apparent BEFORE boarding, with the passenger let on anyway, is NOT EC (within carrier's control — concede immediately). Sudden in-flight escalation grave enough to justify the pilot diverting or returning to gate IS EC. LE v TAP also confirms a carrier may rely on an EC established on an earlier rotation of the same aircraft to excuse delay on a later flight. Safety reporting system = primary evidence for which category applies. Police attendance corroborates the in-flight-escalation branch. Baggage reconciliation mandatory after offload. Pull: Safety reporting system, Operational delay records system, ground handler removal and reconciliation, police attendance.
 
 DT-11 NATURAL DISASTER: Volcanic ash (SIGMET type VA), earthquake, flood, hurricane, government travel ban = EC. Foreseeability challenge for prolonged events. Pull: NOTAM, SIGMET, government notice, Met Office.
 
@@ -705,7 +705,7 @@ DT-12 ATM SYSTEM FAILURE: NATS/Eurocontrol outage = third-party infrastructure =
 
 DT-13 CASCADING ROTATION: Cascade itself is NOT EC. Root cause at start of rotation chain determines EC status. Operational delay records system full tail line of flying is the single most critical document. Root cause identified → apply appropriate disruption tree to it. Recovery analysis mandatory at every turnaround. Pull: Operational delay records system full rotation, Flightradar24, Disruption data system.
 
-DT-14 HIDDEN MANUFACTURING DEFECT: Germanwings (C-257/14) + LE v TAP Air Portugal (C-74/19) + Matkustaja v Finnair (C-385/23, CJEU June 2024 — CURRENT LEADING AUTHORITY). Three conditions: (1) failure mode unknown to manufacturer at time of failure; (2) component within certified service life and inspection interval; (3) all scheduled maintenance carried out. Absence of prior AD/SB evidences condition 1. Subsequent OEM AD/SB after the event = paradoxically supportive. Pull: Maintenance records system full maintenance history, OEM AD/SB search, OEM technical investigation report.
+DT-14 HIDDEN MANUFACTURING DEFECT: Germanwings v Pauels (C-501/17) + Matkustaja v Finnair (C-385/23, CJEU June 2024 — CURRENT LEADING AUTHORITY). Three conditions: (1) failure mode unknown to manufacturer at time of failure; (2) component within certified service life and inspection interval; (3) all scheduled maintenance carried out. Absence of prior AD/SB evidences condition 1. Subsequent OEM AD/SB after the event = paradoxically supportive. Pull: Maintenance records system full maintenance history, OEM AD/SB search, OEM technical investigation report.
 
 DT-15 DENIED BOARDING: Art 4 — NO EC DEFENCE AVAILABLE. Carrier always liable for involuntary denied boarding. Art 7, Art 8, Art 9 all apply immediately. Do not attempt EC defence.
 
@@ -726,13 +726,14 @@ MULTI-CAUSE CHAIN RULES:
 4. Concurrent cause: determine if either event alone would cause 3+ hours. Neither alone but combined → JUDGMENT_REQUIRED.
 5. Dominant cause: calculate or estimate delay contribution of each event.
 6. Never assume chain holds through an ambiguous node. Flag as JUDGMENT_REQUIRED.
-7. DEFEND requires: (a) EC at root; (b) unbroken chain; (c) all intervention points evidenced; (d) no critical evidence gaps.
+7. DEFEND requires: (a) EC at root; (b) unbroken chain; (c) all intervention points evidenced; (d) no critical evidence gaps; (e) the Pešková causal-offset test at U-5 run explicitly wherever the chain mixes EC and ordinary events — if the ordinary-caused remainder alone reaches 3+ hours, this is DEFEND_WITH_CONDITIONS, not DEFEND, regardless of (a)-(d).
+8. Run the offset test (U-5) and the reserve-time test (U-8/Eglītis-Ratnieks) on every case where EC is established at root but the chain contains more than one event — do not skip this because EC was found; EC at root answers Limb 1/2, not the causal-link/quantum question.
 
 VERDICT RULES:
 DEFEND: All four conditions met. Clean case, complete evidence, no judgment nodes outstanding.
 DEFEND_WITH_CONDITIONS: EC established and chain holds but specific conditions must be met first. State conditions precisely.
 SETTLE: EC cannot be established, chain broken by ordinary cause, or reasonable measures failed critically.
-CONCEDE: Own-staff strike (Krüsemann), crew illness (Lipton 2024 UKSC 24), routine technical fault (van der Lans) — clear defeat. State the authority.
+CONCEDE: Own-staff strike (Krüsemann), crew illness (Lipton 2024 UKSC 24), routine technical fault (van der Lans), ordinary passenger illness (DDJ Linwood 2020), disruptive passenger known before boarding (LE v TAP C-74/19) — clear defeat. State the authority.
 JUDGMENT_REQUIRED: One or more nodes cannot be resolved without human judgment or additional evidence. List all outstanding judgment nodes.
 ESCALATE: Montreal consequential loss above SDR cap, novel legal point, high-value group action.
 
@@ -1077,6 +1078,62 @@ async function callClaude(system, userMsg, apiKey) {
   var data = await resp.json();
   var raw = ((data.content || []).find(function(b){ return b.type === 'text'; }) || {}).text || '';
   return parseClaudeJSON(raw);
+}
+
+function parseDelayMinutes(raw) {
+  if (!raw || typeof raw !== 'string') return null;
+  var s = raw.replace(/_/g, ' ').toLowerCase();
+  if (/\bunknown\b/.test(s) && !/\d/.test(s)) return null;
+  var m = s.match(/(\d+(?:\.\d+)?)\s*h(?:ours?)?\s*(?:(\d+)\s*m(?:in(?:ute)?s?)?)?/);
+  if (m) return parseFloat(m[1]) * 60 + (m[2] ? parseInt(m[2], 10) : 0);
+  m = s.match(/(\d+)\s*m(?:in(?:ute)?s?)?\b/);
+  if (m) return parseInt(m[1], 10);
+  return null;
+}
+
+// Pešková v Travel Service, C-315/15: the causal link required by Art 5(3) is not satisfied
+// by an EC event appearing anywhere in the chain — the EC-attributable delay must be offset
+// against the total, and any remaining ordinary-caused delay checked separately against the
+// 3-hour Sturgeon threshold. This recomputes that arithmetic deterministically from the
+// structured causal chain rather than trusting the model's own arithmetic, since PASS3_SYS's
+// legal reasoning is natural-language and not guaranteed to apply the test reliably every time.
+function applyCausalOffsetCheck(result) {
+  if (!result) return result;
+  var chain = result.causalChain || [];
+  if (chain.length < 2) return result;
+
+  var ecMinutes = 0, ordinaryMinutes = 0, unparsed = 0, hasEC = false, hasOrdinary = false;
+  chain.forEach(function (ev) {
+    var ec = ev.ecStatus === 'ESTABLISHED' || ev.preliminaryECCandidate === true || ev.ecCandidate === true;
+    var ordinary = ev.ecStatus === 'ORDINARY' || ev.preliminaryECCandidate === false || ev.ecCandidate === false;
+    if (ec) hasEC = true;
+    if (ordinary) hasOrdinary = true;
+    if (!ec && !ordinary) return;
+    var mins = parseDelayMinutes(ev.delayContribution || ev.delay || ev.timingData || '');
+    if (mins == null) { unparsed++; return; }
+    if (ec) ecMinutes += mins; else ordinaryMinutes += mins;
+  });
+
+  if (!hasEC || !hasOrdinary) return result;
+
+  result.verdictFlags = result.verdictFlags || [];
+
+  if (unparsed > 0 && ordinaryMinutes === 0) {
+    result.verdictFlags.push({ type: 'note', text: 'Peškova C-315/15 causal-offset check could not run automatically — insufficient structured per-event timing data. Confirm manually whether ordinary-caused delay, isolated from the EC-attributable portion, independently reaches 3 hours.' });
+    return result;
+  }
+
+  if (ordinaryMinutes >= 180 && (result.verdict === 'DEFEND' || result.verdict === 'DEFEND_WITH_CONDITIONS')) {
+    result.verdict = 'DEFEND_WITH_CONDITIONS';
+    result.verdictConditions = (result.verdictConditions || []).concat([
+      'Pešková C-315/15 causal offset: ordinary-caused delay in this chain totals approximately ' + Math.round(ordinaryMinutes) + ' minutes on its own once the EC-attributable portion is offset out — this independently reaches the 3-hour Sturgeon threshold. Compensation risk remains for this portion even though EC is established at root.'
+    ]);
+    result.verdictFlags.push({ type: 'risk', text: 'Causal-offset test (Pešková C-315/15) — ordinary-caused delay alone ≈ ' + Math.round(ordinaryMinutes) + ' min, crosses the 3h threshold independent of the EC at root.' });
+  }
+  if (ordinaryMinutes > 0) {
+    result.verdictFlags.push({ type: 'note', text: 'Eglītis and Ratnieks C-294/10 — confirm the carrier\'s recovery/reserve time after the EC event was reasonable; ordinary-caused delay layered on top (~' + Math.round(ordinaryMinutes) + ' min) should be checked against what a reasonable schedule buffer would have absorbed.' });
+  }
+  return result;
 }
 
 function mergeResult(pass1, pass2, pass3) {
@@ -1435,6 +1492,7 @@ async function runDemo(inp) {
       document.getElementById('bodyC').innerHTML = '<div class="empty"><div class="spin" style="margin:0 auto 12px;width:22px;height:22px;border-width:2.5px"></div><div class="empty-t">Applying legal tree...</div></div>';
     } else if (event === 'done') {
       var result = a;
+      applyCausalOffsetCheck(result);
       processPass3Conclusions(result);
       renderAll(result, pass2, inp);
       finishAnalysisUI();
@@ -1466,6 +1524,7 @@ async function runLive(inp, apiKey) {
     '\n\nApply the full legal framework and return the complete analysis JSON only.', apiKey);
 
   var result = mergeResult(pass1, pass2, pass3);
+  applyCausalOffsetCheck(result);
   processPass3Conclusions(result);
   renderAll(result, pass2, inp);
   finishAnalysisUI();

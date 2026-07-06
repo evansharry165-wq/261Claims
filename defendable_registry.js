@@ -117,12 +117,14 @@ var DefendAbleRegistry = (function () {
     },
     'DT-09': {
       conclusions: [
-        { id: 'DT9_MEDICAL_EC', question: 'Medical emergency — mandatory carrier response?' }
+        { id: 'DT9_MEDICAL_ORDINARY_CONCEDE', question: 'Ordinary passenger illness — concede EC (DDJ Linwood 2020)?' },
+        { id: 'DT9_MEDICAL_SAFETY_JUDGMENT', question: 'Genuine flight-safety/security dimension beyond ordinary welfare?' }
       ]
     },
     'DT-10': {
       conclusions: [
-        { id: 'DT10_DISRUPTIVE_EC', question: 'Disruptive passenger — external behaviour EC?' }
+        { id: 'DT10_KNOWN_BEFORE_BOARDING_CONCEDE', question: 'Behaviour known before boarding — concede EC (LE v TAP C-74/19)?' },
+        { id: 'DT10_DISRUPTIVE_EC', question: 'Sudden in-flight escalation grave enough to force diversion — EC?' }
       ]
     },
     'DT-13': {
@@ -186,7 +188,9 @@ var DefendAbleRegistry = (function () {
       conclusions: [
         { id: 'U8_RM_SLOT_RECOVERY', question: 'Reasonable measures — slot/aircraft/crew recovery?' },
         { id: 'U8_RM_CREW_RECOVERY', question: 'Reasonable measures — crew recovery timing?' },
-        { id: 'U8_RM_DISPATCH_EXHAUSTED', question: 'Reasonable measures — dispatch options exhausted?' }
+        { id: 'U8_RM_DISPATCH_EXHAUSTED', question: 'Reasonable measures — dispatch options exhausted?' },
+        { id: 'U8_CAUSAL_OFFSET', question: 'Pešková C-315/15 — does the ordinary-caused delay remainder, once the EC-attributable portion is offset, independently reach 3 hours?' },
+        { id: 'U8_RESERVE_TIME_REASONABLE', question: 'Eglītis and Ratnieks C-294/10 — was the carrier\'s schedule/recovery reserve time reasonable, not exceeded to the point of undermining the EC defence?' }
       ]
     },
     'U-9': {
@@ -276,6 +280,13 @@ var DefendAbleRegistry = (function () {
       pattern: /disruptive passenger|threatening behaviour/i,
       collected: [
         { id: 'POLICE_ATTENDANCE', findings: [{ type: 'POLICE_EXTERNAL_AUTHORITY', description: 'Police met aircraft' }] }
+      ],
+      missing: []
+    },
+    {
+      pattern: /medical|cardiac|welfare incident|passenger welfare|medical emergency/i,
+      collected: [
+        { id: 'SAFETYNET_MEDICAL', findings: [{ type: 'SAFETYNET_MEDICAL_REPORT', description: 'Medical/welfare incident report on file' }] }
       ],
       missing: []
     },

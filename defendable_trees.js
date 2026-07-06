@@ -209,7 +209,7 @@ var DefendAbleTrees = (function () {
     {
       treeId: 'DT-07',
       disruptionType: 'Industrial Action',
-      authority: 'Krüsemann C-601/17; Pešková C-315/15',
+      authority: 'Krüsemann C-195/17; Pešková C-315/15',
       priority: 15,
       ecGateId: 'DT7-G2',
       matches: function (t) {
@@ -282,62 +282,91 @@ var DefendAbleTrees = (function () {
     {
       treeId: 'DT-09',
       disruptionType: 'Medical Emergency',
-      authority: 'Mandatory medical response = EC',
+      authority: 'Passenger illness/medical diversion is NOT EC (persuasive: DDJ Linwood, England, 2020) — narrow judgment-node exception only for a genuine flight-safety/security dimension',
       priority: 8,
-      ecGateId: 'DT9-G1',
       matches: function (t) {
         return /\bmedical|\bcardiac|\bwelfare incident|\bpassenger welfare|\bmedical emergency\b/i.test(t || '');
       },
       gates: [
         {
-          id: 'DT9-G1', name: 'Medical emergency', type: 'entry',
-          question: 'Did a passenger medical emergency require mandatory carrier response?',
+          id: 'DT9-G1', name: 'Medical/welfare event identified', type: 'entry',
+          question: 'Did a passenger medical or welfare event occur requiring carrier response?',
           iccPattern: /\bmedical|\bcardiac|\bwelfare\b/i,
           requiredLibKeys: ['safetynet', 'tops'],
-          conclusionIds: ['DT9_MEDICAL_EC', 'U7_EC_ESTABLISHED'],
-          yesMeans: 'Medical emergency EC — mandatory not discretionary.',
           onYes: 'DT9-G2', onNo: 'ROUTE_AWAY'
         },
         {
-          id: 'DT9-G2', name: 'Diversion / disembark', type: 'confirm',
-          question: 'Was diversion or extended on-ground handling required?',
-          conditional: function (ctx) { return /\bdiversion\b|\bdisembark\b|\bopo\b/i.test(ctx.iccText || ''); },
-          requiredLibKeys: ['tops', 'flightradar'],
-          findingTypes: { tops: 'TOPS_DIVERSION' },
-          onYes: 'DT9-G3', onNo: 'DT9-G3', onSkip: 'DT9-G3'
+          id: 'DT9-G2', name: 'Beyond ordinary passenger welfare', type: 'confirm',
+          question: 'Does the event go beyond ordinary passenger illness into a genuine flight-safety or security dimension (risk to aircraft/crew, contagion risk, security-flagged incident)?',
+          iccPattern: /\bsecurity risk|\bcontagious|\binfectious|\bbiohazard|\bcrew safety|\baircraft safety|\bpublic health\b/i,
+          onYes: 'DT9-G3', onNo: 'DT9-G4'
         },
-        stdMeasures('DT9-G3', 'DT9')
+        {
+          id: 'DT9-G3', name: 'Flight-safety/security judgment', type: 'judgment',
+          question: 'Does the flight-safety/security dimension of this medical event support an EC defence, distinct from ordinary passenger illness?',
+          authority: 'No settled authority extends ordinary-passenger-illness reasoning to a genuinely distinct safety/security-driven response — requires case-specific judgment.',
+          reason: 'Facts go beyond ordinary passenger welfare — resolve before asserting EC.',
+          conditions: ['Confirm the precise safety/security trigger and whether it is genuinely distinct from ordinary passenger illness before running this as an EC defence.']
+        },
+        {
+          id: 'DT9-G4', name: 'Ordinary passenger illness — concede', type: 'concede',
+          authority: 'Persuasive: DDJ Linwood, England, 2020 (first-instance, unreported) — passenger illness is inherent in carrying passengers, same reasoning as Lipton v BA Cityflyer [2024] UKSC 24 for crew illness',
+          reason: 'Ordinary passenger illness/medical diversion is not extraordinary circumstances.',
+          conclusion: 'Passenger medical emergency/diversion is NOT extraordinary circumstances — concede EC; passenger illness is inherent in carrying passengers.',
+          conditions: ['Concede EC on passenger medical emergency — assess quantum, Art 8 rerouting, and Art 9 care only.']
+        }
       ]
     },
 
     {
       treeId: 'DT-10',
       disruptionType: 'Disruptive Passenger',
-      authority: 'External passenger behaviour = EC',
+      authority: 'LE v TAP Air Portugal C-74/19 — sudden in-flight behaviour grave enough to force diversion is EC; behaviour known before boarding and allowed aboard anyway is not (within carrier control)',
       priority: 16,
-      ecGateId: 'DT10-G1',
+      ecGateId: 'DT10-G4',
       matches: function (t) {
         return /\bdisruptive|\bunruly|\breturned to gate|\bthreatening behaviour\b/i.test(t || '');
       },
       gates: [
         {
-          id: 'DT10-G1', name: 'Disruptive passenger', type: 'entry',
-          question: 'Did disruptive passenger behaviour cause the delay?',
+          id: 'DT10-G1', name: 'Disruptive passenger identified', type: 'entry',
+          question: 'Did disruptive/unruly passenger behaviour cause the delay?',
           iccPattern: /\bdisruptive|\bunruly|\bthreatening behaviour\b/i,
           requiredLibKeys: ['safetynet', 'tops'],
-          conclusionIds: ['DT10_DISRUPTIVE_EC', 'U7_EC_ESTABLISHED'],
-          yesMeans: 'Disruptive passenger EC established.',
           onYes: 'DT10-G2', onNo: 'ROUTE_AWAY'
         },
         {
-          id: 'DT10-G2', name: 'Police / offload', type: 'confirm',
+          id: 'DT10-G2', name: 'Known before boarding', type: 'confirm',
+          question: 'Was the disruptive behaviour apparent before boarding, with the carrier allowing the passenger aboard regardless?',
+          authority: 'LE v TAP Air Portugal C-74/19 — behaviour within the carrier\'s knowledge before boarding is not EC',
+          iccPattern: /\bknown before boarding|\bapparent at check.?in|\bboarded (despite|regardless)|\balready (intoxicated|aggressive) at (the )?gate\b/i,
+          onYes: 'DT10-G3', onNo: 'DT10-G4'
+        },
+        {
+          id: 'DT10-G3', name: 'Known-risk boarding — concede', type: 'concede',
+          authority: 'LE v TAP Air Portugal C-74/19',
+          reason: 'Behaviour known/apparent before boarding and passenger let on anyway — within carrier\'s control.',
+          conclusion: 'Disruptive behaviour known before boarding is NOT extraordinary circumstances — concede EC.',
+          conditions: ['Concede EC — carrier had the opportunity to prevent this by refusing boarding. Assess quantum, Art 8, Art 9 only.']
+        },
+        {
+          id: 'DT10-G4', name: 'Sudden in-flight escalation', type: 'confirm',
+          question: 'Was the behaviour sudden, in-flight, and grave enough to justify the pilot diverting or returning to gate?',
+          authority: 'LE v TAP Air Portugal C-74/19',
+          iccPattern: /\bthreatening behaviour|\bassault|\bviolent|\breturned to gate|\bdiverted\b/i,
+          conclusionIds: ['DT10_DISRUPTIVE_EC', 'U7_EC_ESTABLISHED'],
+          yesMeans: 'Sudden in-flight escalation grave enough to justify diversion — EC established.',
+          onYes: 'DT10-G5', onNo: 'ROUTE_AWAY'
+        },
+        {
+          id: 'DT10-G5', name: 'Police / offload', type: 'confirm',
           question: 'Was police attendance and passenger/baggage offload documented?',
           requiredLibKeys: ['tops', 'safetynet'],
           findingTypes: { tops: 'POLICE_EXTERNAL_AUTHORITY' },
           iccPattern: /\bpolice|\boffload|\breconciliation\b/i,
-          onYes: 'DT10-G3', onNo: 'DT10-G3'
+          onYes: 'DT10-G6', onNo: 'DT10-G6'
         },
-        stdMeasures('DT10-G3', 'DT10')
+        stdMeasures('DT10-G6', 'DT10')
       ]
     },
 
@@ -441,7 +470,7 @@ var DefendAbleTrees = (function () {
     {
       treeId: 'DT-14',
       disruptionType: 'Technical Issues',
-      authority: 'Matkustaja v Finnair C-385/23; Germanwings C-257/14',
+      authority: 'Matkustaja v Finnair C-385/23; Germanwings v Pauels C-501/17',
       priority: 11,
       ecGateId: 'DT14-G2',
       matches: function (t) {

@@ -31,7 +31,7 @@ var TESTS = [
   { name: 'EXAMPLE industrial 3rd party ATC', text: EXAMPLES.industrial, verdict: 'DEFEND', mustChain: /industrial|atfm/i, mustNotChain: /own.staff|krüsemann/i },
   { name: 'EXAMPLE cascade', text: EXAMPLES.cascade, verdict: 'JUDGMENT_REQUIRED', mustChain: /late inbound|ftl/i, mustNotChain: /valencia/i },
   { name: 'EXAMPLE hidden defect', text: EXAMPLES.technical, verdict: 'DEFEND_WITH_CONDITIONS', mustChain: /hidden|hydraulic|category a/i, mustNotChain: /valencia/i },
-  { name: 'EXAMPLE medical', text: EXAMPLES.medical, verdict: 'DEFEND_WITH_CONDITIONS', mustChain: /medical|cardiac|welfare/i, mustNotChain: /valencia/i },
+  { name: 'EXAMPLE medical', text: EXAMPLES.medical, verdict: 'CONCEDE', mustChain: /medical|cardiac|welfare/i, mustNotChain: /valencia/i },
   { name: 'EXAMPLE security', text: EXAMPLES.security, verdict: 'DEFEND', mustChain: /security|suspicious/i, mustNotChain: /disruptive passenger/i },
   { name: 'EXAMPLE disruptive', text: EXAMPLES.disruptive, verdict: 'DEFEND', mustChain: /disruptive|threatening/i, mustNotChain: /suspicious item/i },
   { name: 'EXAMPLE own strike', text: EXAMPLES.ownStrike, verdict: 'CONCEDE', mustChain: /own|pilot union/i, mustNotChain: /third.party handler/i },

@@ -494,22 +494,24 @@ var DefendAbleDemoV2 = (function () {
 
     medical: function (text) {
       return fullResult(text, {
-        causationStructure: 'COMPLEX',
-        causationStructureReason: 'Medical diversion caused crew OOH and OND — multi-stage chain with reasonable measures at recovery.',
+        causationStructure: 'SEQUENTIAL',
+        causationStructureReason: 'Passenger medical diversion is not EC (DDJ Linwood 2020) — the whole downstream chain (crew OOH, curfew recovery, OND) follows from an ordinary-cause root.',
         chain: [
-          ev('E1', 'Passenger welfare incident — cardiac arrest, diversion to OPO', { lof: 'OWN_OPERATION', ecCandidate: true, ecReason: 'Mandatory medical diversion — carrier had no choice.', delay: 'unknown', linkReason: 'Medical emergency event.' }),
-          ev('E2', 'Crew out of hours after disembarkation and welfare handling', { lof: 'OWN_OPERATION', ecCandidate: false, ecReason: 'FTL follows root cause — not independently EC.', delay: 'unknown', linkReason: 'Consequence of medical diversion duration.' }),
-          ev('E3', 'Standby aircraft could not recover — airport curfew at OPO', { lof: 'OWN_OPERATION', ecCandidate: false, ecReason: 'Reasonable measures — curfew constraint.', delay: 'unknown', linkReason: 'Recovery intervention point.' }),
-          ev('E4', 'Flight completed following day — OND', { lof: 'OWN_OPERATION', ecCandidate: true, ecReason: 'OND consequence of medical chain.', delay: 'overnight', link: 'FINAL_EVENT', linkReason: 'Sturgeon delay to next-day arrival.' })
+          ev('E1', 'Passenger welfare incident — cardiac arrest, diversion to OPO', { lof: 'OWN_OPERATION', ecCandidate: false, ecReason: 'Passenger illness is inherent in carrying passengers — not EC (persuasive: DDJ Linwood, England, 2020, applying the same reasoning as Lipton for crew illness).', delay: 'unknown', linkReason: 'Medical emergency event.' }),
+          ev('E2', 'Crew out of hours after disembarkation and welfare handling', { lof: 'OWN_OPERATION', ecCandidate: false, ecReason: 'Consequence of an ordinary-cause root — not independently EC.', delay: 'unknown', linkReason: 'Consequence of medical diversion duration.' }),
+          ev('E3', 'Standby aircraft could not recover — airport curfew at OPO', { lof: 'OWN_OPERATION', ecCandidate: false, ecReason: 'Recovery constraint on an ordinary-cause chain — no EC to attach to.', delay: 'unknown', linkReason: 'Recovery intervention point.' }),
+          ev('E4', 'Flight completed following day — OND', { lof: 'OWN_OPERATION', ecCandidate: false, ecReason: 'OND is a consequence of the ordinary-cause chain — EC defence unavailable; Art 9 obligations still apply regardless.', delay: 'overnight', link: 'FINAL_EVENT', linkReason: 'Sturgeon delay to next-day arrival.' })
         ],
         keywords: [
-          { phrase: 'cardiac arrest', tree: 'DT-11: Medical emergency', chainEventRef: 'E1', triggers: [{ system: 'Operational delay records system', document: 'Diversion record', purpose: 'Confirm medical diversion' }, { system: 'Cabin-log', document: 'Welfare incident report', purpose: 'Severity and handling time' }] },
+          { phrase: 'cardiac arrest', tree: 'DT-09: Medical emergency — NOT EC', chainEventRef: 'E1', triggers: [{ system: 'Operational delay records system', document: 'Diversion record', purpose: 'Confirm medical diversion' }, { system: 'Cabin-log', document: 'Welfare incident report', purpose: 'Severity and handling time' }] },
           { phrase: 'OND', tree: 'DT-01: OND', chainEventRef: 'E4', triggers: [{ system: 'Operational delay records system', document: 'Next-day operation', purpose: 'Delay measurement' }] }
         ],
-        verdict: 'DEFEND_WITH_CONDITIONS',
-        verdictConditions: ['Medical diversion log and cabin welfare report on file', 'Art 9 HOTAC evidenced for OND', 'Operational delay records system confirms standby recovery was genuinely impossible before curfew'],
-        verdictSub: 'Medical diversion is strong EC at root. Crew OOH and OND are downstream. Confirm welfare records and Art 9 before response.',
-        verdictFlags: [{ type: 'action', text: 'Pull cabin welfare / medical incident report' }, { type: 'action', text: 'Art 9 HOTAC for overnight OND' }]
+        nodes: [
+          { id: 'DT-09', type: 'disruption', chainEventRef: 'E1', question: 'Passenger medical emergency — extraordinary circumstances?', status: 'red', statusLabel: 'NOT EC', conclusion: 'Passenger illness is inherent in carrying passengers — not extraordinary circumstances (persuasive: DDJ Linwood, England, 2020). Do not run EC defence on this chain.', authority: 'DDJ Linwood, England, 2020 (persuasive, first-instance)', dataUsed: 'Cabin welfare / medical incident report', chainConsequence: 'EC defence unavailable for the whole downstream chain — assess quantum, Art 8, and Art 9 only.' }
+        ],
+        verdict: 'CONCEDE',
+        verdictSub: 'Passenger medical emergency is not EC under persuasive English authority (DDJ Linwood 2020), applying the same reasoning as Lipton for crew illness. Concede on EC grounds; confirm Art 9 HOTAC for the overnight and review Art 8/Art 7 quantum only.',
+        verdictFlags: [{ type: 'note', text: 'Document DDJ Linwood 2020 authority in response' }, { type: 'action', text: 'Art 9 HOTAC for overnight OND — applies regardless of EC outcome' }]
       });
     },
 
