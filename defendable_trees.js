@@ -679,6 +679,22 @@ var DefendAbleTrees = (function () {
     return null;
   }
 
+  function resolveRootCauseTreeId(iccText, causalChain) {
+    var t = iccText || '';
+    var chain = causalChain || [];
+    if (/\bbirdstrike|\bingestion\b/i.test(t)) return 'DT-04';
+    if (/\bvolcanic|\bash sigmet\b/i.test(t)) return 'DT-11';
+    if (/\bnats\b|\bnetwork-wide.*outage\b/i.test(t)) return 'DT-12';
+    if (/\bdenied boarding|\boverbook/i.test(t)) return 'DT-15';
+    if (/\bhidden defect|\bmanufacturing defect|\bno prior ad\b/i.test(t)) return 'DT-14';
+    if (/\blvp\b|\bsnowtam|\brunway closure\b/i.test(t) && !/\bdiversion\b|\bbelow minima\b/i.test(t)) return 'DT-03';
+    if (typeof DefendAbleTreeDT02 !== 'undefined' && DefendAbleTreeDT02.matches(t, chain)) return 'DT-02';
+    if (/\bindustrial|\bstrike\b/i.test(t) && !/\bown\b|\bpilot union\b/i.test(t)) return 'DT-07';
+    if (typeof DefendAbleTreeDT01 !== 'undefined' && DefendAbleTreeDT01.matches(t, chain)) return 'DT-01';
+    if (/\bhydraulic|\btechnical|\baog\b|\bdefect\b/i.test(t)) return 'DT-14';
+    return null;
+  }
+
   function resolveSecondary(iccText, causalChain, primaryTreeId) {
     var secondary = [];
     var t = iccText || '';
@@ -706,14 +722,28 @@ var DefendAbleTrees = (function () {
 
   function runAllApplicable(ctx) {
     var results = [];
+    var seen = {};
+    function record(res) {
+      if (!res || !res.treeId || seen[res.treeId]) return;
+      if (res.applicable) {
+        seen[res.treeId] = true;
+        results.push(res);
+      }
+    }
+
     var primary = resolvePrimary(ctx.iccText, ctx.causalChain);
-    if (primary) {
-      results.push(runTree(primary.treeId, ctx));
-      var secondary = resolveSecondary(ctx.iccText, ctx.causalChain, primary.treeId);
-      secondary.forEach(function (sid) {
-        var sec = runTree(sid, ctx, true);
-        if (sec.applicable) results.push(sec);
-      });
+    if (!primary) return results;
+
+    record(runTree(primary.treeId, ctx));
+    resolveSecondary(ctx.iccText, ctx.causalChain, primary.treeId).forEach(function (sid) {
+      record(runTree(sid, ctx, true));
+    });
+
+    if (seen['DT-13']) {
+      var rootId = resolveRootCauseTreeId(ctx.iccText, ctx.causalChain);
+      if (rootId && !seen[rootId]) {
+        record(runTree(rootId, ctx, true));
+      }
     }
     return results;
   }
@@ -728,6 +758,7 @@ var DefendAbleTrees = (function () {
     getDefinition: getDefinition,
     resolvePrimary: resolvePrimary,
     resolveSecondary: resolveSecondary,
+    resolveRootCauseTreeId: resolveRootCauseTreeId,
     runTree: runTree,
     runAllApplicable: runAllApplicable,
     getDisruptionTypeForIcc: getDisruptionTypeForIcc

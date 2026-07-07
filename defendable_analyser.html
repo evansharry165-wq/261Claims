@@ -23,7 +23,9 @@ textarea:focus{outline:none;border-color:var(--orange);background:var(--white)}
 .abtn{background:var(--orange);color:var(--white);border:none;border-radius:4px;padding:0 20px;min-height:90px;font-size:13px;font-weight:700;cursor:pointer;min-width:130px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
 .abtn:hover{background:#E05500}
 .abtn:disabled{background:#ccc;color:#999;cursor:not-allowed}
-.chips{margin-top:10px;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.case-bridge{display:none;background:var(--blue-light);border:1px solid #BFDBFE;border-radius:4px;padding:10px 14px;margin-bottom:12px;font-size:11px;line-height:1.5}
+.case-bridge strong{color:var(--blue)}
+.case-bridge-meta{color:var(--text2);margin-top:4px}
 .chl{font-size:10px;color:var(--text3);font-weight:600}
 .ch{background:var(--orange-light);border:1px solid var(--orange-mid);color:var(--orange);font-size:10px;padding:3px 8px;border-radius:2px;cursor:pointer;font-weight:600}
 .ch:hover{background:var(--orange-mid)}
@@ -292,6 +294,7 @@ textarea:focus{outline:none;border-color:var(--orange);background:var(--white)}
 <div class="wrap">
   <div class="icard">
     <div class="ey">Disruption Analysis</div>
+    <div id="caseBridgeBanner" class="case-bridge"></div>
     <div class="it">Enter a disruption description</div>
     <div class="is">Type exactly as ICC or Network Control would write it. DefendAble decomposes the causal chain, maps evidence requirements, and applies the full legal decision tree — showing its reasoning at every step.</div>
     <div class="irow">
@@ -314,6 +317,11 @@ textarea:focus{outline:none;border-color:var(--orange);background:var(--white)}
       <span class="ch" onclick="sx('disruptive')">Disruptive passenger</span>
       <span class="ch" onclick="sx('ownStrike')">Own staff strike</span>
       <span class="ch" onclick="sx('positioning')">Positioning flight complex</span>
+      <span class="ch" onclick="sx('weatherCtot')">Weather + CTOT (EZY3279)</span>
+      <span class="ch" onclick="sx('lvp')">LVP origin closure</span>
+      <span class="ch" onclick="sx('nats')">NATS outage</span>
+      <span class="ch" onclick="sx('denied')">Denied boarding</span>
+      <span class="ch" onclick="sx('compound')">Compound LVP + technical</span>
     </div>
   </div>
 
@@ -398,6 +406,7 @@ textarea:focus{outline:none;border-color:var(--orange);background:var(--white)}
   <div class="foot">DefendAble · EC261/UK261 Intelligence Engine · 20 disruption types · 16 universal legal nodes · 3-pass chain analysis</div>
 </div>
 
+<script src="shared_data.js"></script>
 <script src="defendable_framework.js"></script>
 <script src="defendable_demo_v2.js"></script>
 <script src="defendable_evidence_manager.js"></script>
@@ -408,6 +417,7 @@ textarea:focus{outline:none;border-color:var(--orange);background:var(--white)}
 <script src="defendable_tree_dt01_atc.js"></script>
 <script src="defendable_tree_dt02_weather.js"></script>
 <script src="defendable_trees.js"></script>
+<script src="defendable_case_bridge.js"></script>
 <script src="defendable_pass2.js"></script>
 <script src="defendable_orchestrator.js"></script>
 <script>
@@ -750,8 +760,39 @@ const EXAMPLES = {
   security: "Flight delayed LGW due to security alert — suspicious item found in hold. Airport security authority mandated full hold search and passenger re-screening. Police attended. Two passengers offloaded. Baggage reconciliation required. Delay 3h 45m.",
   disruptive: "Flight EZY7821 returned to gate at LGW after departure due to highly disruptive passenger — threatening behaviour toward cabin crew. Police met aircraft. Passenger and baggage offloaded. Baggage reconciliation required. Delay 1h 55m to departure. Arrival delay at destination 2h 10m.",
   ownStrike: "Pilot union strike — carrier own pilot staff participating. 40% of fleet grounded. 180 flights cancelled across the network. Passengers notified 4 days before disruption.",
-  positioning: "The flight was originally delayed because the operating crew were positioning on an earlier flight disrupted by ATC and weather. That aircraft was AOG (fuel leak), causing further delay and putting the crew out of hours. A replacement crew was sourced, but one crew member could not operate due to fatigue (18 hour wake rule) and there were no SBY crew available."
+  positioning: "The flight was originally delayed because the operating crew were positioning on an earlier flight disrupted by ATC and weather. That aircraft was AOG (fuel leak), causing further delay and putting the crew out of hours. A replacement crew was sourced, but one crew member could not operate due to fatigue (18 hour wake rule) and there were no SBY crew available.",
+  weatherCtot: "EZY3279 delayed due to thunderstorms at arrival destination (ACE). CTOTS as a result of the weather disruption pushing the flight over 3 hours delay",
+  lvp: "LTN departure delayed 3h — LVP in force, SNOWTAM active, runway closure. All carriers affected.",
+  volcanic: "Flight cancelled due to volcanic ash SIGMET. Airspace closure NOTAM in force.",
+  nats: "Network-wide delays due to NATS system outage. Eurocontrol ATFM restrictions imposed. Flight delayed 4h.",
+  denied: "Passenger denied boarding due to overbooking. Involuntary offload.",
+  compound: "Simultaneous LVP at origin and hydraulic fault on aircraft — neither alone caused 3 hour delay alone"
 };
+
+function initCaseFromUrl() {
+  var params = new URLSearchParams(window.location.search);
+  var ref = params.get('ref');
+  if (!ref || typeof DefendAbleCaseBridge === 'undefined') return;
+  window._defendableCaseRef = ref;
+  var ctx = DefendAbleCaseBridge.loadCaseForAnalyser(ref);
+  var banner = document.getElementById('caseBridgeBanner');
+  if (!banner) return;
+  if (!ctx.caseRecord && !ctx.evidenceScenario) return;
+  banner.style.display = 'block';
+  var c = ctx.caseRecord || {};
+  var collected = ctx.evidenceScenario ? (ctx.evidenceScenario.collected || []).length : 0;
+  var missing = ctx.evidenceScenario ? (ctx.evidenceScenario.missing || []).length : 0;
+  banner.innerHTML = '<strong>Case workspace linked — ' + esc(ref) + '</strong>'
+    + (c.claimant ? ' · ' + esc(c.claimant) : '')
+    + (c.flight ? ' · ' + esc(c.flight) : '')
+    + '<div class="case-bridge-meta">'
+    + (ctx.disruptionType ? 'Disruption: ' + esc(ctx.disruptionType) + '. ' : '')
+    + (ctx.evidenceScenario ? 'Evidence on file: ' + collected + ' collected, ' + missing + ' critical gaps from workspace pull state.' : 'No workspace evidence state in session — demo scenario only.')
+    + '</div>';
+  if (ctx.iccText && !document.getElementById('inp').value.trim()) {
+    document.getElementById('inp').value = ctx.iccText;
+  }
+}
 
 function sx(k){ document.getElementById('inp').value = EXAMPLES[k] || ''; run(); }
 
@@ -1900,6 +1941,8 @@ function renderOutput(r) {
 document.getElementById('inp').addEventListener('keydown', function(ev) {
   if ((ev.ctrlKey || ev.metaKey) && ev.key === 'Enter') run();
 });
+
+initCaseFromUrl();
 
 </script>
 </body>
