@@ -1,0 +1,1270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DefendAble — Intelligence Engine v3</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Spectral:ital,wght@0,300;0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    /* ============================================================
+       DESIGN SYSTEM — DefendAble v3
+    ============================================================ */
+    :root {
+      /* Surfaces */
+      --surface-page:   #F4F3EF;
+      --surface-doc:    #FEFEFE;
+      --surface-ui:     #EEECEA;
+      --surface-raised: #FFFFFF;
+
+      /* Ink */
+      --ink-primary:   #0F0F0E;
+      --ink-secondary: #3D3C39;
+      --ink-tertiary:  #6B6A67;
+      --ink-faint:     #A8A7A4;
+      --ink-rule:      #D8D6D0;
+      --ink-rule2:     #ECEAE6;
+
+      /* Verdict palette */
+      --defend:        #1B4A32;
+      --defend-bg:     #EBF5EE;
+      --defend-mid:    #2D7A52;
+      --defend-border: #B5D8C2;
+
+      --conditions:        #7A4400;
+      --conditions-bg:     #FEF3E2;
+      --conditions-mid:    #C47A20;
+      --conditions-border: #F0D4A0;
+
+      --settle:        #7A1A1A;
+      --settle-bg:     #FBF0F0;
+      --settle-mid:    #C43A3A;
+      --settle-border: #F0BABA;
+
+      --judgment:        #1A3A7A;
+      --judgment-bg:     #EEF2FB;
+      --judgment-mid:    #3A5AB5;
+      --judgment-border: #B0C4EC;
+
+      /* Type */
+      --font-serif:   'Libre Baskerville', Georgia, 'Times New Roman', serif;
+      --font-spectral:'Spectral', Georgia, serif;
+      --font-sans:    'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono:    'JetBrains Mono', 'Courier New', monospace;
+
+      /* Spacing */
+      --sp-xs:  4px;
+      --sp-sm:  8px;
+      --sp-md:  16px;
+      --sp-lg:  24px;
+      --sp-xl:  40px;
+      --sp-2xl: 64px;
+
+      /* Shape */
+      --r:    2px;
+      --r-md: 4px;
+      --r-lg: 6px;
+
+      /* Layout */
+      --doc-w: 920px;
+    }
+
+    /* ---- Reset ---- */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      background: var(--surface-page);
+      color: var(--ink-primary);
+      font-family: var(--font-sans);
+      font-size: 14px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* ============================================================
+       GLOBAL NAV
+    ============================================================ */
+    .g-nav {
+      position: sticky;
+      top: 0;
+      z-index: 200;
+      background: var(--ink-primary);
+      height: 52px;
+      display: flex;
+      align-items: center;
+      padding: 0 var(--sp-xl);
+      gap: var(--sp-xl);
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+    }
+
+    .g-nav__brand {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      text-decoration: none;
+      flex-shrink: 0;
+    }
+
+    .g-nav__name {
+      font-family: var(--font-serif);
+      font-size: 15px;
+      font-weight: 700;
+      color: #FEFEFE;
+      letter-spacing: -0.01em;
+    }
+
+    .g-nav__sub {
+      font-size: 10px;
+      font-weight: 400;
+      color: rgba(255,255,255,0.30);
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+    }
+
+    .g-nav__divider {
+      width: 1px;
+      height: 18px;
+      background: rgba(255,255,255,0.10);
+      flex-shrink: 0;
+    }
+
+    .g-nav__links {
+      display: flex;
+      gap: var(--sp-lg);
+      list-style: none;
+    }
+
+    .g-nav__links a {
+      font-size: 11px;
+      font-weight: 500;
+      color: rgba(255,255,255,0.38);
+      text-decoration: none;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      transition: color 0.15s;
+    }
+
+    .g-nav__links a:hover { color: rgba(255,255,255,0.75); }
+    .g-nav__links a.active { color: rgba(255,255,255,0.92); }
+
+    .g-nav__badge {
+      margin-left: auto;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: rgba(255,255,255,0.18);
+      letter-spacing: 0.04em;
+    }
+
+    /* ============================================================
+       PAGE BODY
+    ============================================================ */
+    .page-body {
+      max-width: var(--doc-w);
+      margin: 0 auto;
+      padding: var(--sp-xl) var(--sp-xl) var(--sp-2xl);
+    }
+
+    /* ============================================================
+       PAGE HEADER
+    ============================================================ */
+    .page-header {
+      padding: var(--sp-xl) 0 var(--sp-lg);
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--ink-rule);
+      margin-bottom: var(--sp-xl);
+    }
+
+    .page-header__eyebrow {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      margin-bottom: 6px;
+    }
+
+    .page-header__title {
+      font-family: var(--font-serif);
+      font-size: 28px;
+      font-weight: 400;
+      color: var(--ink-primary);
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+    }
+
+    .page-header__title em {
+      font-style: italic;
+      color: var(--ink-tertiary);
+    }
+
+    .page-header__meta {
+      text-align: right;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--ink-faint);
+      line-height: 1.8;
+    }
+
+    /* ============================================================
+       INPUT CARD
+    ============================================================ */
+    .input-card {
+      background: var(--surface-raised);
+      border: 1px solid var(--ink-rule);
+      border-radius: var(--r-lg);
+      overflow: hidden;
+      box-shadow:
+        0 1px 2px rgba(0,0,0,0.04),
+        0 4px 16px rgba(0,0,0,0.03);
+    }
+
+    /* Mode Tabs */
+    .mode-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--ink-rule2);
+      background: var(--surface-ui);
+    }
+
+    .mode-tab {
+      padding: 14px var(--sp-lg);
+      font-size: 11px;
+      font-weight: 600;
+      font-family: var(--font-sans);
+      color: var(--ink-faint);
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      cursor: pointer;
+      border: none;
+      background: none;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      transition: color 0.15s, border-color 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .mode-tab:hover { color: var(--ink-secondary); }
+
+    .mode-tab.active {
+      color: var(--ink-primary);
+      border-bottom-color: var(--ink-primary);
+      background: var(--surface-raised);
+    }
+
+    .mode-tab__dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: currentColor;
+      opacity: 0.5;
+    }
+
+    .mode-tab.active .mode-tab__dot { opacity: 1; }
+
+    /* Mode Panels */
+    .mode-panel { display: none; padding: var(--sp-xl); }
+    .mode-panel.active { display: block; }
+
+    /* ---- Mode 1: ICC Text ---- */
+    .field-label {
+      display: block;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      color: var(--ink-tertiary);
+      margin-bottom: var(--sp-sm);
+    }
+
+    .icc-textarea {
+      width: 100%;
+      min-height: 148px;
+      padding: 14px var(--sp-md);
+      font-family: var(--font-spectral);
+      font-size: 15px;
+      line-height: 1.75;
+      color: var(--ink-primary);
+      background: var(--surface-page);
+      border: 1px solid var(--ink-rule);
+      border-radius: var(--r-md);
+      resize: vertical;
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+
+    .icc-textarea:focus {
+      border-color: var(--ink-secondary);
+      box-shadow: 0 0 0 3px rgba(15,15,14,0.07);
+    }
+
+    .icc-textarea::placeholder {
+      color: var(--ink-faint);
+      font-style: italic;
+    }
+
+    .chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--sp-xs);
+      margin-top: var(--sp-sm);
+    }
+
+    .chip {
+      padding: 3px 10px;
+      font-size: 11px;
+      font-family: var(--font-sans);
+      font-weight: 500;
+      color: var(--ink-tertiary);
+      background: var(--surface-ui);
+      border: 1px solid var(--ink-rule);
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.12s;
+      white-space: nowrap;
+    }
+
+    .chip:hover {
+      background: var(--ink-rule);
+      color: var(--ink-secondary);
+    }
+
+    /* ---- Mode 2: Flight Lookup ---- */
+    .lookup-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--sp-lg);
+    }
+
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .field-input {
+      padding: 10px 14px;
+      font-family: var(--font-mono);
+      font-size: 14px;
+      color: var(--ink-primary);
+      background: var(--surface-page);
+      border: 1px solid var(--ink-rule);
+      border-radius: var(--r-md);
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      letter-spacing: 0.04em;
+    }
+
+    .field-input:focus {
+      border-color: var(--ink-secondary);
+      box-shadow: 0 0 0 3px rgba(15,15,14,0.07);
+    }
+
+    .field-input::placeholder {
+      color: var(--ink-faint);
+      font-style: normal;
+      letter-spacing: 0;
+    }
+
+    .field-hint {
+      font-size: 11px;
+      color: var(--ink-faint);
+    }
+
+    /* Data sources panel */
+    .data-sources {
+      grid-column: 1 / -1;
+      border: 1px solid var(--ink-rule2);
+      border-radius: var(--r-md);
+      overflow: hidden;
+    }
+
+    .data-sources__head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      background: var(--surface-ui);
+      border-bottom: 1px solid var(--ink-rule2);
+    }
+
+    .data-sources__title {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      color: var(--ink-tertiary);
+    }
+
+    .data-sources__legend {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-md);
+      font-size: 10px;
+      color: var(--ink-faint);
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .legend-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+    }
+
+    .legend-dot.live  { background: var(--defend-mid); }
+    .legend-dot.integ { background: var(--conditions-mid); }
+
+    .source-row {
+      display: grid;
+      grid-template-columns: 180px 1fr auto;
+      align-items: start;
+      gap: var(--sp-md);
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--ink-rule2);
+      font-size: 12px;
+    }
+
+    .source-row:last-child { border-bottom: none; }
+
+    .source-row__name {
+      font-weight: 600;
+      color: var(--ink-secondary);
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .source-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .source-dot.live  { background: var(--defend-mid); }
+    .source-dot.integ { background: var(--conditions-mid); }
+    .source-dot.none  { background: var(--ink-rule); }
+
+    .source-row__desc {
+      color: var(--ink-tertiary);
+      line-height: 1.5;
+    }
+
+    .source-row__spec {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--ink-faint);
+      white-space: nowrap;
+      text-align: right;
+    }
+
+    /* ============================================================
+       ACTION BAR
+    ============================================================ */
+    .action-bar {
+      padding: var(--sp-md) var(--sp-xl);
+      border-top: 1px solid var(--ink-rule2);
+      background: var(--surface-ui);
+      display: flex;
+      align-items: center;
+      gap: var(--sp-md);
+    }
+
+    .btn-analyse {
+      padding: 9px var(--sp-xl);
+      font-family: var(--font-sans);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: #FEFEFE;
+      background: var(--ink-primary);
+      border: 1px solid var(--ink-primary);
+      border-radius: var(--r-md);
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .btn-analyse:hover { background: var(--ink-secondary); border-color: var(--ink-secondary); }
+    .btn-analyse:active { transform: translateY(1px); }
+
+    .action-bar__status {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--ink-faint);
+      letter-spacing: 0.04em;
+    }
+
+    /* Live AI toggle */
+    .ai-toggle-wrap {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .ai-toggle-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ink-tertiary);
+    }
+
+    .toggle-track {
+      position: relative;
+      width: 32px;
+      height: 18px;
+      background: var(--ink-rule);
+      border-radius: 9px;
+      transition: background 0.2s;
+    }
+
+    .toggle-track.on { background: var(--ink-primary); }
+
+    .toggle-thumb {
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 14px;
+      height: 14px;
+      background: white;
+      border-radius: 50%;
+      transition: left 0.2s;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+
+    .toggle-track.on .toggle-thumb { left: 16px; }
+
+    /* API key row */
+    .api-key-row {
+      display: none;
+      padding: 10px var(--sp-xl);
+      border-top: 1px solid var(--ink-rule2);
+      background: var(--surface-page);
+      align-items: center;
+      gap: var(--sp-md);
+    }
+
+    .api-key-row.open { display: flex; }
+
+    .api-key-input {
+      flex: 1;
+      padding: 7px 12px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--ink-primary);
+      background: var(--surface-raised);
+      border: 1px solid var(--ink-rule);
+      border-radius: var(--r);
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    .api-key-input:focus { border-color: var(--ink-secondary); }
+
+    .btn-sm {
+      padding: 6px 14px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--ink-secondary);
+      background: var(--surface-raised);
+      border: 1px solid var(--ink-rule);
+      border-radius: var(--r);
+      cursor: pointer;
+      transition: border-color 0.12s, color 0.12s;
+    }
+
+    .btn-sm:hover { border-color: var(--ink-secondary); color: var(--ink-primary); }
+
+    .api-key-note {
+      font-size: 10px;
+      color: var(--ink-faint);
+    }
+
+    /* ============================================================
+       ANALYSIS PROGRESS
+    ============================================================ */
+    .analysis-progress {
+      display: none;
+      margin-top: var(--sp-xl);
+    }
+
+    .analysis-progress.active { display: block; }
+
+    .progress-title {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      margin-bottom: var(--sp-md);
+    }
+
+    .pass-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .pass-row {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-md);
+      padding: 12px var(--sp-md);
+      background: var(--surface-raised);
+      border: 1px solid var(--ink-rule2);
+      border-radius: var(--r-md);
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .pass-row.running {
+      border-color: var(--ink-secondary);
+      background: var(--surface-doc);
+    }
+
+    .pass-row.done {
+      border-color: var(--defend-border);
+      background: var(--defend-bg);
+    }
+
+    .pass-num {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      color: var(--ink-faint);
+      min-width: 52px;
+    }
+
+    .pass-row.running .pass-num,
+    .pass-row.done .pass-num { color: var(--ink-tertiary); }
+
+    .pass-name {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--ink-tertiary);
+      flex: 1;
+    }
+
+    .pass-row.running .pass-name,
+    .pass-row.done .pass-name { color: var(--ink-primary); }
+
+    .pass-state {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--ink-faint);
+      letter-spacing: 0.04em;
+    }
+
+    .pass-row.running .pass-state { color: var(--ink-secondary); }
+    .pass-row.done .pass-state { color: var(--defend-mid); }
+
+    /* Spinner */
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .spinner {
+      width: 14px;
+      height: 14px;
+      border: 2px solid var(--ink-rule);
+      border-top-color: var(--ink-secondary);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      flex-shrink: 0;
+      display: none;
+    }
+
+    .pass-row.running .spinner { display: block; }
+
+    .pass-check {
+      width: 14px;
+      height: 14px;
+      color: var(--defend-mid);
+      font-size: 13px;
+      display: none;
+      flex-shrink: 0;
+    }
+
+    .pass-row.done .pass-check { display: block; }
+
+    .pass-dot {
+      width: 14px;
+      height: 14px;
+      border: 1.5px solid var(--ink-rule);
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .pass-row.running .pass-dot,
+    .pass-row.done .pass-dot { display: none; }
+
+    /* ============================================================
+       BRIEF OUTPUT AREA (populated by MODE 3 & 4)
+    ============================================================ */
+    .brief-area {
+      display: none;
+      margin-top: var(--sp-xl);
+    }
+
+    .brief-area.active { display: block; }
+
+    /* ============================================================
+       EMPTY STATE
+    ============================================================ */
+    .empty-state {
+      margin-top: var(--sp-xl);
+      padding: var(--sp-2xl) var(--sp-xl);
+      border: 1px dashed var(--ink-rule);
+      border-radius: var(--r-lg);
+      text-align: center;
+    }
+
+    .empty-state__glyph {
+      font-family: var(--font-serif);
+      font-size: 36px;
+      color: var(--ink-rule);
+      line-height: 1;
+      margin-bottom: var(--sp-lg);
+    }
+
+    .empty-state__title {
+      font-family: var(--font-serif);
+      font-size: 20px;
+      font-weight: 400;
+      color: var(--ink-tertiary);
+      letter-spacing: -0.01em;
+      margin-bottom: var(--sp-sm);
+    }
+
+    .empty-state__desc {
+      font-family: var(--font-spectral);
+      font-size: 14px;
+      color: var(--ink-faint);
+      max-width: 460px;
+      margin: 0 auto;
+      line-height: 1.75;
+    }
+
+    .empty-state__nodes {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: var(--sp-sm);
+      margin-top: var(--sp-xl);
+    }
+
+    .node-badge {
+      padding: 3px 9px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 500;
+      color: var(--ink-faint);
+      border: 1px solid var(--ink-rule2);
+      border-radius: var(--r);
+      letter-spacing: 0.04em;
+    }
+
+    /* ============================================================
+       PAGE FOOTER
+    ============================================================ */
+    .page-footer {
+      margin-top: var(--sp-2xl);
+      padding-top: var(--sp-lg);
+      border-top: 1px solid var(--ink-rule2);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .page-footer__copy {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--ink-faint);
+      letter-spacing: 0.04em;
+    }
+
+    .page-footer__nodes {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--ink-faint);
+      letter-spacing: 0.04em;
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- ============================================================
+       GLOBAL NAV
+  ============================================================ -->
+  <nav class="g-nav">
+    <a href="#" class="g-nav__brand">
+      <span class="g-nav__name">DefendAble</span>
+      <span class="g-nav__sub">EC261 · UK261</span>
+    </a>
+    <div class="g-nav__divider"></div>
+    <ul class="g-nav__links">
+      <li><a href="#" class="active">Analyse</a></li>
+      <li><a href="#">Platform</a></li>
+      <li><a href="#">Law Updates</a></li>
+      <li><a href="#">Case Register</a></li>
+    </ul>
+    <span class="g-nav__badge">Intelligence Engine · v3.0</span>
+  </nav>
+
+  <!-- ============================================================
+       PAGE BODY
+  ============================================================ -->
+  <main class="page-body">
+
+    <!-- Page Header -->
+    <header class="page-header">
+      <div>
+        <div class="page-header__eyebrow">Disruption Analysis</div>
+        <h1 class="page-header__title">Legal <em>Intelligence</em> Engine</h1>
+      </div>
+      <div class="page-header__meta">
+        20 disruption types<br>
+        16 universal legal nodes<br>
+        3-pass chain analysis
+      </div>
+    </header>
+
+    <!-- ============================================================
+         INPUT CARD
+    ============================================================ -->
+    <div class="input-card">
+
+      <!-- Mode Tabs -->
+      <div class="mode-tabs">
+        <button class="mode-tab active" id="tab-icc" onclick="switchMode('icc')">
+          <span class="mode-tab__dot"></span>
+          Analyse Disruption
+        </button>
+        <button class="mode-tab" id="tab-flight" onclick="switchMode('flight')">
+          <span class="mode-tab__dot"></span>
+          Flight Lookup
+        </button>
+      </div>
+
+      <!-- Mode 1: ICC Text -->
+      <div class="mode-panel active" id="panel-icc">
+        <label class="field-label" for="iccText">Disruption Summary — ICC / Network Control Format</label>
+        <textarea
+          class="icc-textarea"
+          id="iccText"
+          placeholder="e.g. HC 1184 LTN-BCN 14/03/26. Thunderstorms BCN, approach below minima, mandatory ATC diversion Valencia. Standby LTN could not position, thunderstorms BCN. Passengers cared for Valencia, coach transfer arranged."
+        ></textarea>
+        <div class="chip-row">
+          <span class="chip" onclick="loadExample('atc')">ATC / CTOT overnight</span>
+          <span class="chip" onclick="loadExample('weather')">Weather diversion</span>
+          <span class="chip" onclick="loadExample('birdstrike')">Birdstrike</span>
+          <span class="chip" onclick="loadExample('ia')">Industrial action</span>
+          <span class="chip" onclick="loadExample('cascade')">Cascading delay</span>
+          <span class="chip" onclick="loadExample('defect')">Hidden defect</span>
+          <span class="chip" onclick="loadExample('medical')">Medical emergency</span>
+          <span class="chip" onclick="loadExample('security')">Security alert</span>
+          <span class="chip" onclick="loadExample('disruption')">Disruptive passenger</span>
+          <span class="chip" onclick="loadExample('ownstrike')">Own staff strike</span>
+          <span class="chip" onclick="loadExample('positioning')">Positioning complex</span>
+        </div>
+      </div>
+
+      <!-- Mode 2: Flight Lookup -->
+      <div class="mode-panel" id="panel-flight">
+        <div class="lookup-grid">
+
+          <div class="field-group">
+            <label class="field-label" for="flightNum">Flight Number</label>
+            <input type="text" class="field-input" id="flightNum" placeholder="e.g. EZY1234" autocomplete="off" spellcheck="false">
+            <span class="field-hint">IATA or ICAO flight designator</span>
+          </div>
+
+          <div class="field-group">
+            <label class="field-label" for="flightDate">Date of Operation</label>
+            <input type="date" class="field-input" id="flightDate">
+            <span class="field-hint">Scheduled departure date (local)</span>
+          </div>
+
+          <!-- Data Sources -->
+          <div class="data-sources">
+            <div class="data-sources__head">
+              <span class="data-sources__title">Data Sources Retrieved on Analysis</span>
+              <div class="data-sources__legend">
+                <div class="legend-item"><span class="legend-dot live"></span>Live / public API</div>
+                <div class="legend-item"><span class="legend-dot integ"></span>Integration required</div>
+              </div>
+            </div>
+
+            <div class="source-row">
+              <div class="source-row__name">
+                <span class="source-dot live"></span>
+                OpenSky Network
+              </div>
+              <div class="source-row__desc">
+                Actual departure &amp; arrival times, trajectory, diversion detection — free historical API, no auth required
+              </div>
+              <div class="source-row__spec">opensky-network.org</div>
+            </div>
+
+            <div class="source-row">
+              <div class="source-row__name">
+                <span class="source-dot live"></span>
+                aviationweather.gov
+              </div>
+              <div class="source-row__desc">
+                METAR · TAF · SIGMET for departure, destination &amp; alternate airports — ICAO code + time window ±2h of ATD/ATA
+              </div>
+              <div class="source-row__spec">aviationweather.gov/api</div>
+            </div>
+
+            <div class="source-row">
+              <div class="source-row__name">
+                <span class="source-dot live"></span>
+                Ogimet
+              </div>
+              <div class="source-row__desc">
+                Historical synoptic data — e.g. MAN 14:00–15:00Z, METAR and TAF per ICAO code. Specific field: wind speed/direction, visibility, cloud base, QNH, precipitation
+              </div>
+              <div class="source-row__spec">ogimet.com/metars</div>
+            </div>
+
+            <div class="source-row">
+              <div class="source-row__name">
+                <span class="source-dot integ"></span>
+                Eurocontrol NM / ATFM
+              </div>
+              <div class="source-row__desc">
+                CTOT issuance, ATFM regulations, network-wide restrictions — requires NM B2B portal access or Eurocontrol API agreement
+              </div>
+              <div class="source-row__spec">nm.eurocontrol.int</div>
+            </div>
+
+            <div class="source-row">
+              <div class="source-row__name">
+                <span class="source-dot integ"></span>
+                Airline ODS
+              </div>
+              <div class="source-row__desc">
+                Delay codes, rotation records, line-of-flying — requires direct data integration (Databricks or equivalent pipeline)
+              </div>
+              <div class="source-row__spec">Data integration required</div>
+            </div>
+
+            <div class="source-row">
+              <div class="source-row__name">
+                <span class="source-dot integ"></span>
+                Crew Scheduling System
+              </div>
+              <div class="source-row__desc">
+                FDP records, standby logs, OOH status — crew scheduling export (typically Excel / CSV) for the date of operation
+              </div>
+              <div class="source-row__spec">Data integration required</div>
+            </div>
+
+          </div>
+          <!-- / data-sources -->
+
+        </div>
+      </div>
+      <!-- / panel-flight -->
+
+      <!-- Action Bar -->
+      <div class="action-bar">
+        <button class="btn-analyse" id="analyseBtn" onclick="runAnalysis()">
+          ⚡ Run Analysis
+        </button>
+        <span class="action-bar__status" id="modeStatus">Mode 1 — ICC Text · Demo mode</span>
+        <div class="ai-toggle-wrap" onclick="toggleLiveAi()">
+          <span class="ai-toggle-label">Live AI</span>
+          <div class="toggle-track" id="aiTrack">
+            <div class="toggle-thumb"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- API Key Row -->
+      <div class="api-key-row" id="apiKeyRow">
+        <span class="field-label" style="margin:0;white-space:nowrap">Anthropic API Key</span>
+        <input type="password" class="api-key-input" id="apiKeyInput" placeholder="sk-ant-…">
+        <button class="btn-sm" onclick="saveApiKey()">Save Key</button>
+        <span class="api-key-note">Stored in session memory only. Sent directly to Anthropic — never logged here.</span>
+      </div>
+
+    </div>
+    <!-- / input-card -->
+
+    <!-- ============================================================
+         ANALYSIS PROGRESS
+    ============================================================ -->
+    <div class="analysis-progress" id="analysisProgress">
+      <div class="progress-title">Analysis in progress</div>
+      <div class="pass-list">
+
+        <div class="pass-row" id="p1">
+          <span class="pass-dot"></span>
+          <div class="spinner"></div>
+          <span class="pass-check">✓</span>
+          <span class="pass-num">PASS I</span>
+          <span class="pass-name">Causal Chain Decomposition</span>
+          <span class="pass-state" id="p1-state">Pending</span>
+        </div>
+
+        <div class="pass-row" id="p2">
+          <span class="pass-dot"></span>
+          <div class="spinner"></div>
+          <span class="pass-check">✓</span>
+          <span class="pass-num">PASS II</span>
+          <span class="pass-name">Evidence Intelligence &amp; Specification</span>
+          <span class="pass-state" id="p2-state">Pending</span>
+        </div>
+
+        <div class="pass-row" id="p3">
+          <span class="pass-dot"></span>
+          <div class="spinner"></div>
+          <span class="pass-check">✓</span>
+          <span class="pass-num">PASS III</span>
+          <span class="pass-name">Legal Decision Engine</span>
+          <span class="pass-state" id="p3-state">Pending</span>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ============================================================
+         BRIEF AREA (rendered by MODE 3 & 4)
+    ============================================================ -->
+    <div class="brief-area" id="briefArea">
+      <!-- Populated by later build modes -->
+    </div>
+
+    <!-- ============================================================
+         EMPTY STATE
+    ============================================================ -->
+    <div class="empty-state" id="emptyState">
+      <div class="empty-state__glyph">⚖</div>
+      <div class="empty-state__title">Ready to analyse</div>
+      <div class="empty-state__desc">
+        Enter a disruption summary above, or look up a flight by number and date.
+        DefendAble will decompose the causal chain, specify the evidence required, and
+        apply the full EC261 / UK261 legal framework — issuing a reasoned verdict
+        with a signed brief for legal review.
+      </div>
+      <div class="empty-state__nodes">
+        <span class="node-badge">U-1 Jurisdiction</span>
+        <span class="node-badge">U-2 Limitation</span>
+        <span class="node-badge">U-3 Standing</span>
+        <span class="node-badge">U-4 Check-in</span>
+        <span class="node-badge">U-5 Delay threshold</span>
+        <span class="node-badge">U-6 Compensation band</span>
+        <span class="node-badge">U-7 Extraordinary circumstances</span>
+        <span class="node-badge">U-8 Reasonable measures</span>
+        <span class="node-badge">U-9 Art 8</span>
+        <span class="node-badge">U-10 Art 9</span>
+        <span class="node-badge">U-11 Montreal</span>
+        <span class="node-badge">U-12 Downgrading</span>
+        <span class="node-badge">U-13 Folkerts</span>
+        <span class="node-badge">U-14 Recourse</span>
+        <span class="node-badge">U-15 ADR / Litigation</span>
+        <span class="node-badge">U-16 Settle vs Defend</span>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ============================================================
+       FOOTER
+  ============================================================ -->
+  <footer class="page-body page-footer">
+    <span class="page-footer__copy">DefendAble · Intelligence Engine · v3.0</span>
+    <span class="page-footer__nodes">EC261 · UK261 · 20 disruption types · 16 universal legal nodes · 3-pass chain analysis</span>
+  </footer>
+
+  <!-- ============================================================
+       SCRIPT — MODE 0: Foundation
+  ============================================================ -->
+  <script>
+
+    /* ----------------------------------------------------------
+       STATE
+    ---------------------------------------------------------- */
+    let currentMode   = 'icc';
+    let liveAiOn      = false;
+    let savedApiKey   = null;
+
+    /* ----------------------------------------------------------
+       EXAMPLES (Mode 1 chips)
+    ---------------------------------------------------------- */
+    const EXAMPLES = {
+      atc:
+        'HC 2291 MAN-ALC 22/06/26. Eurocontrol issued ATFM regulation across Northern European FIR from 0400–1800Z, CTOT 0712Z assigned. All carriers affected, 47-minute ground delay. OND — crew timed out following CTOT, flight completed next day.',
+      weather:
+        'HC 1184 LTN-BCN 14/03/26. Thunderstorms BCN, approach below minima, mandatory ATC diversion Valencia. Standby LTN could not position, thunderstorms BCN. Passengers cared for Valencia, coach transfer arranged.',
+      birdstrike:
+        'EZY456 LGW-MAD 08/05/26. Birdstrike on take-off roll, engine ingestion confirmed. Mandatory post-strike inspection per maintenance manual. 4h 30m delay. Replacement aircraft positioned from BRS.',
+      ia:
+        'FR7823 STN-FCO 15/04/26. French ATC industrial action, DGAC published restriction 0600–2000Z. CTOT 1340Z issued by Eurocontrol. All carriers affected. 3h 20m delay.',
+      cascade:
+        'BA426 LHR-CDG 19/03/26. Inbound aircraft delayed 5h 10m from GVA due to Eurocontrol ATFM regulation. Rotation delay cascaded to LHR-CDG sector. Crew not timed out at outbound.',
+      defect:
+        'EJ1122 BRS-DUB 03/06/26. Previously unknown hydraulic actuator failure discovered during pre-flight checks. No prior fault history. OEM investigation initiated. 6h delay awaiting replacement part from MAN.',
+      medical:
+        'LS303 LBA-PMI 12/07/26. Passenger medical emergency 35 minutes after departure, diversion to BOH. Airport medical team boarded. 3h 50m delay to final destination PMI.',
+      security:
+        'TOM881 MAN-TFS 21/05/26. Security alert — suspicious item in hold reported by ground handler post-boarding. Police attended, manifest reconciliation required, item cleared. 2h 15m delay.',
+      disruption:
+        'WT542 LGW-DXB 30/04/26. Disruptive passenger removed at gate following aggressive behaviour reported by ground handler prior to boarding. Police attended. 1h 40m delay.',
+      ownstrike:
+        'EZY9923 LTN-BCN 18/03/26. Own ground handling staff walkout 0600Z, baggage handling suspended. Company announced strike action 10 days prior. Services recovering 1600Z. 8h delay.',
+      positioning:
+        'FR1847 DUB-LTN-MAD 06/06/26. Crew positioning flight LTN delayed 3h due to Eurocontrol CTOT. Crew subsequently OOH on arrival LTN, mandatory rest 11h. Outbound LTN-MAD delayed 14h. Incoming crew from STN repositioned.'
+    };
+
+    function loadExample(key) {
+      const text = EXAMPLES[key];
+      if (!text) return;
+      document.getElementById('iccText').value = text;
+      switchMode('icc');
+    }
+
+    /* ----------------------------------------------------------
+       MODE SWITCHING
+    ---------------------------------------------------------- */
+    function switchMode(mode) {
+      currentMode = mode;
+      document.querySelectorAll('.mode-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.mode-panel').forEach(p => p.classList.remove('active'));
+      document.getElementById('tab-' + mode).classList.add('active');
+      document.getElementById('panel-' + mode).classList.add('active');
+      updateStatus();
+    }
+
+    function updateStatus() {
+      const aiLabel = liveAiOn && savedApiKey ? 'Live AI active' : 'Demo mode';
+      const modeLabel = currentMode === 'icc' ? 'Mode 1 — ICC Text' : 'Mode 2 — Flight Lookup';
+      document.getElementById('modeStatus').textContent = modeLabel + ' · ' + aiLabel;
+    }
+
+    /* ----------------------------------------------------------
+       LIVE AI TOGGLE
+    ---------------------------------------------------------- */
+    function toggleLiveAi() {
+      liveAiOn = !liveAiOn;
+      document.getElementById('aiTrack').classList.toggle('on', liveAiOn);
+      document.getElementById('apiKeyRow').classList.toggle('open', liveAiOn);
+      updateStatus();
+    }
+
+    function saveApiKey() {
+      const val = document.getElementById('apiKeyInput').value.trim();
+      if (val.startsWith('sk-ant-')) {
+        savedApiKey = val;
+        document.getElementById('apiKeyRow').classList.remove('open');
+        updateStatus();
+      } else {
+        alert('Key should begin with sk-ant-');
+      }
+    }
+
+    /* ----------------------------------------------------------
+       ANALYSIS STUB
+       Full 3-pass logic added in MODE 3.
+       This provides the pass-animation scaffolding only.
+    ---------------------------------------------------------- */
+    function runAnalysis() {
+      // Hide empty state, reset brief
+      document.getElementById('emptyState').style.display = 'none';
+      document.getElementById('briefArea').classList.remove('active');
+      document.getElementById('briefArea').innerHTML = '';
+
+      // Show progress
+      const progress = document.getElementById('analysisProgress');
+      progress.classList.add('active');
+
+      // Reset all pass rows
+      ['p1','p2','p3'].forEach(id => {
+        const el = document.getElementById(id);
+        el.classList.remove('running','done');
+      });
+      ['p1-state','p2-state','p3-state'].forEach(id => {
+        document.getElementById(id).textContent = 'Pending';
+      });
+
+      // Animate: Pass I
+      setPassRunning('p1');
+      setTimeout(() => {
+        setPassDone('p1');
+        setPassRunning('p2');
+      }, 1400);
+
+      setTimeout(() => {
+        setPassDone('p2');
+        setPassRunning('p3');
+      }, 2800);
+
+      setTimeout(() => {
+        setPassDone('p3');
+        setTimeout(() => {
+          progress.classList.remove('active');
+          showBriefPlaceholder();
+        }, 500);
+      }, 4200);
+    }
+
+    function setPassRunning(id) {
+      const el = document.getElementById(id);
+      el.classList.add('running');
+      document.getElementById(id + '-state').textContent = 'Running…';
+    }
+
+    function setPassDone(id) {
+      const el = document.getElementById(id);
+      el.classList.remove('running');
+      el.classList.add('done');
+      document.getElementById(id + '-state').textContent = 'Complete';
+    }
+
+    /* Temporary placeholder — replaced by full brief render in MODE 4 */
+    function showBriefPlaceholder() {
+      const area = document.getElementById('briefArea');
+      area.classList.add('active');
+      area.innerHTML = `
+        <div style="
+          padding: var(--sp-2xl);
+          border: 1px dashed var(--ink-rule);
+          border-radius: var(--r-lg);
+          text-align: center;
+          font-family: var(--font-spectral);
+          font-size: 15px;
+          color: var(--ink-faint);
+          line-height: 1.8;
+        ">
+          <div style="font-family:var(--font-serif);font-size:22px;color:var(--ink-tertiary);margin-bottom:var(--sp-md)">Analysis Complete</div>
+          Legal brief rendering will be built in MODE 4.<br>
+          Foundation layer verified — design system, input modes, and pass animation all functioning.
+        </div>
+      `;
+    }
+
+  </script>
+
+</body>
+</html>
