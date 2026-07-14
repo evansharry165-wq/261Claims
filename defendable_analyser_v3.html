@@ -808,6 +808,240 @@
       letter-spacing: 0.04em;
     }
 
+    /* ============================================================
+       MODE 2 — FLIGHT LOOKUP RETRIEVAL UI
+    ============================================================ */
+
+    /* Retrieve row — sits below the airport fields */
+    .retrieve-row {
+      grid-column: 1 / -1;
+      display: flex;
+      align-items: center;
+      gap: var(--sp-md);
+      padding-top: var(--sp-xs);
+    }
+
+    .btn-retrieve {
+      flex-shrink: 0;
+      padding: 9px 22px;
+      font-family: var(--font-sans);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ink-primary);
+      background: var(--surface-raised);
+      border: 1.5px solid var(--ink-secondary);
+      border-radius: var(--r-md);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .btn-retrieve:hover {
+      background: var(--ink-primary);
+      color: #FEFEFE;
+      border-color: var(--ink-primary);
+    }
+
+    .btn-retrieve:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    /* Inline retrieval progress */
+    .retrieve-steps {
+      display: none;
+      align-items: center;
+      gap: 6px;
+      flex: 1;
+    }
+
+    .retrieve-steps.active { display: flex; }
+
+    .rstep {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      color: var(--ink-faint);
+      font-family: var(--font-sans);
+    }
+
+    .rstep.running { color: var(--ink-secondary); }
+    .rstep.done    { color: var(--defend-mid); }
+
+    .rstep-dot {
+      width: 6px;
+      height: 6px;
+      border: 1.5px solid var(--ink-rule);
+      border-radius: 50%;
+    }
+
+    .rstep.running .rstep-dot,
+    .rstep.done .rstep-dot { display: none; }
+
+    .rstep-spin {
+      width: 10px;
+      height: 10px;
+      border: 1.5px solid var(--ink-rule);
+      border-top-color: var(--ink-secondary);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      display: none;
+    }
+
+    .rstep.running .rstep-spin { display: block; }
+
+    .rstep-check {
+      font-size: 10px;
+      color: var(--defend-mid);
+      display: none;
+    }
+
+    .rstep.done .rstep-check { display: inline; }
+
+    .rstep-sep {
+      color: var(--ink-rule);
+      font-size: 11px;
+      margin: 0 2px;
+    }
+
+    /* Retrieved data card */
+    .data-card {
+      grid-column: 1 / -1;
+      border: 1px solid var(--ink-rule);
+      border-radius: var(--r-md);
+      overflow: hidden;
+      background: var(--surface-raised);
+    }
+
+    .dc-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 11px var(--sp-md);
+      background: var(--surface-ui);
+      border-bottom: 1px solid var(--ink-rule2);
+    }
+
+    .dc-flight {
+      font-family: var(--font-mono);
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--ink-primary);
+      letter-spacing: 0.06em;
+    }
+
+    .dc-date {
+      font-size: 12px;
+      color: var(--ink-tertiary);
+      margin-left: 14px;
+    }
+
+    .dc-source-badge {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      color: var(--ink-faint);
+      padding: 2px 7px;
+      border: 1px solid var(--ink-rule2);
+      border-radius: var(--r);
+      letter-spacing: 0.04em;
+    }
+
+    .dc-section {
+      padding: 11px var(--sp-md);
+      border-bottom: 1px solid var(--ink-rule2);
+    }
+
+    .dc-section:last-child { border-bottom: none; }
+
+    .dc-section-title {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      margin-bottom: 8px;
+    }
+
+    .dc-items {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .dc-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 9px;
+      font-size: 12px;
+    }
+
+    .dc-badge {
+      flex-shrink: 0;
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      padding: 2px 6px;
+      border-radius: var(--r);
+      white-space: nowrap;
+      margin-top: 1px;
+    }
+
+    .dc-badge.live    { background: var(--defend-bg);     color: var(--defend);     border: 1px solid var(--defend-border); }
+    .dc-badge.demo    { background: var(--judgment-bg);   color: var(--judgment);   border: 1px solid var(--judgment-border); }
+    .dc-badge.pending { background: var(--conditions-bg); color: var(--conditions); border: 1px solid var(--conditions-border); }
+    .dc-badge.unavail { background: var(--surface-ui);    color: var(--ink-faint);  border: 1px solid var(--ink-rule2); }
+
+    .dc-content {
+      flex: 1;
+      color: var(--ink-secondary);
+      line-height: 1.55;
+    }
+
+    .dc-content strong { color: var(--ink-primary); font-weight: 600; }
+
+    .dc-metar {
+      margin-top: 4px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--ink-tertiary);
+      background: var(--surface-page);
+      padding: 5px 8px;
+      border-radius: var(--r);
+      white-space: pre-wrap;
+      word-break: break-all;
+      line-height: 1.6;
+    }
+
+    /* Supplementary context (auto-generated, editable) */
+    .supplementary-wrap {
+      grid-column: 1 / -1;
+      display: none;
+    }
+
+    .supplementary-wrap.active { display: block; }
+
+    .supplementary-header {
+      display: flex;
+      align-items: baseline;
+      gap: var(--sp-sm);
+      margin-bottom: var(--sp-sm);
+    }
+
+    .supplementary-title {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      color: var(--ink-tertiary);
+    }
+
+    .supplementary-hint {
+      font-size: 11px;
+      color: var(--ink-faint);
+    }
+
   </style>
 </head>
 <body>
@@ -892,96 +1126,85 @@
       <div class="mode-panel" id="panel-flight">
         <div class="lookup-grid">
 
+          <!-- Row 1: Flight number + date -->
           <div class="field-group">
             <label class="field-label" for="flightNum">Flight Number</label>
-            <input type="text" class="field-input" id="flightNum" placeholder="e.g. EZY1234" autocomplete="off" spellcheck="false">
-            <span class="field-hint">IATA or ICAO flight designator</span>
+            <input type="text" class="field-input" id="flightNum"
+                   placeholder="e.g. LS303" autocomplete="off" spellcheck="false"
+                   oninput="resetRetrieval()" style="text-transform:uppercase">
+            <span class="field-hint">IATA designator — carrier code + number</span>
           </div>
 
           <div class="field-group">
             <label class="field-label" for="flightDate">Date of Operation</label>
-            <input type="date" class="field-input" id="flightDate">
-            <span class="field-hint">Scheduled departure date (local)</span>
+            <input type="date" class="field-input" id="flightDate" oninput="resetRetrieval()">
+            <span class="field-hint">Scheduled departure date</span>
           </div>
 
-          <!-- Data Sources -->
-          <div class="data-sources">
-            <div class="data-sources__head">
-              <span class="data-sources__title">Data Sources Retrieved on Analysis</span>
-              <div class="data-sources__legend">
-                <div class="legend-item"><span class="legend-dot live"></span>Live / public API</div>
-                <div class="legend-item"><span class="legend-dot integ"></span>Integration required</div>
-              </div>
-            </div>
-
-            <div class="source-row">
-              <div class="source-row__name">
-                <span class="source-dot live"></span>
-                OpenSky Network
-              </div>
-              <div class="source-row__desc">
-                Actual departure &amp; arrival times, trajectory, diversion detection — free historical API, no auth required
-              </div>
-              <div class="source-row__spec">opensky-network.org</div>
-            </div>
-
-            <div class="source-row">
-              <div class="source-row__name">
-                <span class="source-dot live"></span>
-                aviationweather.gov
-              </div>
-              <div class="source-row__desc">
-                METAR · TAF · SIGMET for departure, destination &amp; alternate airports — ICAO code + time window ±2h of ATD/ATA
-              </div>
-              <div class="source-row__spec">aviationweather.gov/api</div>
-            </div>
-
-            <div class="source-row">
-              <div class="source-row__name">
-                <span class="source-dot live"></span>
-                Ogimet
-              </div>
-              <div class="source-row__desc">
-                Historical synoptic data — e.g. MAN 14:00–15:00Z, METAR and TAF per ICAO code. Specific field: wind speed/direction, visibility, cloud base, QNH, precipitation
-              </div>
-              <div class="source-row__spec">ogimet.com/metars</div>
-            </div>
-
-            <div class="source-row">
-              <div class="source-row__name">
-                <span class="source-dot integ"></span>
-                Eurocontrol NM / ATFM
-              </div>
-              <div class="source-row__desc">
-                CTOT issuance, ATFM regulations, network-wide restrictions — requires NM B2B portal access or Eurocontrol API agreement
-              </div>
-              <div class="source-row__spec">nm.eurocontrol.int</div>
-            </div>
-
-            <div class="source-row">
-              <div class="source-row__name">
-                <span class="source-dot integ"></span>
-                Airline ODS
-              </div>
-              <div class="source-row__desc">
-                Delay codes, rotation records, line-of-flying — requires direct data integration (Databricks or equivalent pipeline)
-              </div>
-              <div class="source-row__spec">Data integration required</div>
-            </div>
-
-            <div class="source-row">
-              <div class="source-row__name">
-                <span class="source-dot integ"></span>
-                Crew Scheduling System
-              </div>
-              <div class="source-row__desc">
-                FDP records, standby logs, OOH status — crew scheduling export (typically Excel / CSV) for the date of operation
-              </div>
-              <div class="source-row__spec">Data integration required</div>
-            </div>
-
+          <!-- Row 2: Departure + arrival airports -->
+          <div class="field-group">
+            <label class="field-label" for="depIata">
+              Departure Airport
+              <span style="font-weight:400;font-family:var(--font-sans);color:var(--ink-faint);text-transform:none;letter-spacing:0;font-size:10px"> — optional</span>
+            </label>
+            <input type="text" class="field-input" id="depIata"
+                   placeholder="e.g. LBA" autocomplete="off" spellcheck="false" maxlength="4"
+                   oninput="this.value=this.value.toUpperCase();resetRetrieval()">
+            <span class="field-hint">IATA code — improves weather retrieval accuracy</span>
           </div>
-          <!-- / data-sources -->
+
+          <div class="field-group">
+            <label class="field-label" for="arrIata">
+              Arrival Airport
+              <span style="font-weight:400;font-family:var(--font-sans);color:var(--ink-faint);text-transform:none;letter-spacing:0;font-size:10px"> — optional</span>
+            </label>
+            <input type="text" class="field-input" id="arrIata"
+                   placeholder="e.g. PMI" autocomplete="off" spellcheck="false" maxlength="4"
+                   oninput="this.value=this.value.toUpperCase();resetRetrieval()">
+            <span class="field-hint">IATA code — improves weather retrieval accuracy</span>
+          </div>
+
+          <!-- Retrieve row -->
+          <div class="retrieve-row">
+            <button class="btn-retrieve" id="retrieveBtn" onclick="retrieveFlightData()">
+              Retrieve Flight Data
+            </button>
+            <div class="retrieve-steps" id="retrieveSteps">
+              <div class="rstep" id="rstep1">
+                <span class="rstep-dot"></span>
+                <div class="rstep-spin"></div>
+                <span class="rstep-check">✓</span>
+                <span class="rstep-label">Flight records</span>
+              </div>
+              <span class="rstep-sep">·</span>
+              <div class="rstep" id="rstep2">
+                <span class="rstep-dot"></span>
+                <div class="rstep-spin"></div>
+                <span class="rstep-check">✓</span>
+                <span class="rstep-label">Weather data</span>
+              </div>
+              <span class="rstep-sep">·</span>
+              <div class="rstep" id="rstep3">
+                <span class="rstep-dot"></span>
+                <div class="rstep-spin"></div>
+                <span class="rstep-check">✓</span>
+                <span class="rstep-label">Compiling context</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Data Card — populated after retrieval -->
+          <div class="data-card" id="dataCard" style="display:none"></div>
+
+          <!-- Supplementary context — auto-generated, editable -->
+          <div class="supplementary-wrap" id="supplementaryWrap">
+            <div class="supplementary-header">
+              <span class="supplementary-title">Disruption Context</span>
+              <span class="supplementary-hint">Auto-generated from retrieved data — edit or extend before running analysis</span>
+            </div>
+            <textarea class="icc-textarea" id="supplementaryText" style="min-height:96px"
+                      placeholder="Additional context from operations team, ICC log, or on-board crew report…"></textarea>
+          </div>
 
         </div>
       </div>
@@ -1158,9 +1381,26 @@
     }
 
     function updateStatus() {
-      const aiLabel = liveAiOn && savedApiKey ? 'Live AI active' : 'Demo mode';
-      const modeLabel = currentMode === 'icc' ? 'Mode 1 — ICC Text' : 'Mode 2 — Flight Lookup';
+      const aiLabel   = liveAiOn && savedApiKey ? 'Live AI active' : 'Demo mode';
+      let modeLabel;
+      if (currentMode === 'icc') {
+        modeLabel = 'Mode 1 — ICC Text';
+      } else if (retrievedFlightData) {
+        modeLabel = 'Mode 2 — Flight retrieved · ready to analyse';
+      } else {
+        modeLabel = 'Mode 2 — Flight Lookup · retrieve data first';
+      }
       document.getElementById('modeStatus').textContent = modeLabel + ' · ' + aiLabel;
+
+      /* Enable/disable analyse button in flight mode */
+      const btn = document.getElementById('analyseBtn');
+      if (currentMode === 'flight') {
+        btn.style.opacity = retrievedFlightData ? '1' : '0.4';
+        btn.title = retrievedFlightData ? '' : 'Retrieve flight data before running analysis';
+      } else {
+        btn.style.opacity = '1';
+        btn.title = '';
+      }
     }
 
     /* ----------------------------------------------------------
@@ -1184,12 +1424,452 @@
       }
     }
 
+    /* ==========================================================
+       MODE 1 — FLIGHT LOOKUP ENGINE
+       Airport tables, retrieval functions, data card render
+    ========================================================== */
+
+    /* IATA airport code → ICAO */
+    const IATA_ICAO = {
+      // UK & Ireland
+      MAN:'EGCC', LGW:'EGKK', LHR:'EGLL', LTN:'EGGW', STN:'EGSS',
+      EDI:'EGPH', BHX:'EGBB', BRS:'EGGD', NCL:'EGNT', LBA:'EGNM',
+      BOH:'EGHH', SOU:'EGHI', EXT:'EGTE', ABZ:'EGPD', GLA:'EGPF',
+      BFS:'EGAA', BHD:'EGAC', CWL:'EGFF', MME:'EGNV', HUY:'EGNJ',
+      DSA:'EGCN', BLK:'EGNH', SEN:'EGMC', MSE:'EGMH',
+      DUB:'EIDW', SNN:'EINN', ORK:'EICK', NOC:'EIKN',
+      // Spain, Canaries, Balearics
+      BCN:'LEBL', MAD:'LEMD', ALC:'LEAL', AGP:'LEMG', PMI:'LEPA',
+      TFS:'GCTS', LPA:'GCLP', ACE:'GCRR', FUE:'GCFV', TFN:'GCXO',
+      IBZ:'LEIB', MAH:'LEMH', VLC:'LEVC', SVQ:'LEZL', REU:'LERS',
+      // Portugal
+      LIS:'LPPT', OPO:'LPPR', FAO:'LPFR', FNC:'LPMA',
+      // France
+      CDG:'LFPG', ORY:'LFPO', NCE:'LFMN', LYS:'LFLL', MRS:'LFML',
+      BOD:'LFBD', NTE:'LFRS', TLS:'LFBO', BIQ:'LFBZ',
+      // Italy
+      FCO:'LIRF', MXP:'LIMC', LIN:'LIML', VCE:'LIPZ', NAP:'LIRN',
+      PMO:'LICJ', CTA:'LICC', BRI:'LIBD', PSA:'LIRP', BGY:'LIME',
+      // Greece, Cyprus
+      ATH:'LGAV', CFU:'LGKR', RHO:'LGRP', HER:'LGIR', KGS:'LGKO',
+      SKG:'LGTS', JTR:'LGSR', CHQ:'LGLE', ZTH:'LGZA',
+      LCA:'LCLK', PFO:'LCPH',
+      // Turkey
+      AYT:'LTAI', SAW:'LTFJ', IST:'LTFM', DLM:'LTBS', BJV:'LTFE',
+      // Egypt, Tunisia, Morocco
+      HRG:'HEGN', SSH:'HESH', CAI:'HECA',
+      TUN:'DTTA', MIR:'DTMB', DJE:'DTTJ', NBE:'DTNH',
+      RAK:'GMMX', CMN:'GMMN',
+      // Netherlands, Belgium, Germany, Austria, Switzerland
+      AMS:'EHAM', BRU:'EBBR', FRA:'EDDF', MUC:'EDDM', DUS:'EDDL',
+      BER:'EDDB', CGN:'EDDK', STR:'EDDS', HAM:'EDDH',
+      VIE:'LOWW', ZRH:'LSZH', GVA:'LSGG', BSL:'LFSB',
+      // Scandinavia
+      ARN:'ESSA', CPH:'EKCH', OSL:'ENGM', HEL:'EFHK', BGO:'ENBR',
+      GOT:'ESGG',
+      // Eastern Europe
+      PRG:'LKPR', BUD:'LHBP', WAW:'EPWA', KRK:'EPKK', WRO:'EPWR',
+      GDN:'EPGD', POZ:'EPPO', RIX:'EVRA', TLL:'EETN', VNO:'EYVI',
+      SOF:'LBSF', OTP:'LROP', CLJ:'LRCL', TIA:'LATI',
+      DBV:'LDDU', SPU:'LDSP', ZAG:'LDZA', SKP:'LWSK',
+      BOJ:'LBBG', VAR:'LBWN',
+      // Gulf / Middle East
+      DXB:'OMDB', AUH:'OMAA', DOH:'OTHH', KWI:'OKBK', AMM:'OJAI',
+      // Malta, Iceland
+      MLA:'LMML', KEF:'BIKF',
+      // Albania
+      TIA:'LATI',
+      // US (completeness)
+      JFK:'KJFK', LAX:'KLAX', ORD:'KORD', ATL:'KATL', MIA:'KMIA', EWR:'KEWR',
+    };
+
+    /* Airline IATA → common UK/IE departure airports (ICAO) */
+    const AIRLINE_BASES = {
+      LS: ['EGNM','EGCC','EGPH','EGNX','EGCN','EGNH','EGGD','EGNT','EGKK'], // Jet2
+      EZY:['EGKK','EGGW','EGCC','EGPH','EGNX','EGGD','EGNT','EGBB'],         // easyJet
+      U2: ['EGKK','EGGW','EGCC','EGPH','EGNX','EGGD','EGNT','EGBB'],         // easyJet alt
+      FR: ['EGSS','EGGW','EGKK','EGPH','EGCC','EGBB','EGNX','EGGD'],         // Ryanair
+      TOM:['EGKK','EGCC','EGNM','EGPH','EGBB','EGNX','EGNT','EGGD'],         // TUI
+      BY: ['EGKK','EGCC','EGNM','EGPH','EGBB','EGNX','EGNT','EGGD'],         // TUI alt IATA
+      BA: ['EGLL','EGKK'],                                                     // British Airways
+      BE: ['EGHI','EGHH','EGCC','EGNM','EGPH','EGTE'],                        // FlyBe
+      WT: ['EGNM','EGCC','EGPH','EGKK'],                                      // West Atlantic
+      RYR:['EGSS','EGGW'],                                                     // Ryanair callsign
+    };
+
+    /* Airport display names */
+    const AIRPORT_NAMES = {
+      LBA:'Leeds Bradford', MAN:'Manchester', LGW:'London Gatwick',
+      LHR:'London Heathrow', LTN:'London Luton', STN:'London Stansted',
+      EDI:'Edinburgh', BHX:'Birmingham', BRS:'Bristol', NCL:'Newcastle',
+      BOH:'Bournemouth', SOU:'Southampton', EXT:'Exeter', ABZ:'Aberdeen',
+      GLA:'Glasgow', BFS:'Belfast International', DSA:'Doncaster Sheffield',
+      MME:'Teesside', BLK:'Blackpool',
+      PMI:'Palma de Mallorca', BCN:'Barcelona El Prat', MAD:'Madrid Barajas',
+      ALC:'Alicante–Elche', AGP:'Málaga–Costa del Sol',
+      TFS:'Tenerife South (Reina Sofía)', LPA:'Gran Canaria', ACE:'Lanzarote',
+      FUE:'Fuerteventura', TFN:'Tenerife North', IBZ:'Ibiza', MAH:'Menorca',
+      FAO:'Faro', LIS:'Lisbon', OPO:'Porto', FNC:'Funchal',
+      ATH:'Athens Eleftherios Venizelos', HER:'Heraklion',
+      RHO:'Rhodes Diagoras', CFU:'Corfu', KGS:'Kos', SKG:'Thessaloniki',
+      LCA:'Larnaca', PFO:'Paphos',
+      AYT:'Antalya', DLM:'Dalaman', SAW:'Istanbul Sabiha Gökçen',
+      IST:'Istanbul (New)', HRG:'Hurghada', SSH:'Sharm el-Sheikh',
+      DXB:'Dubai International', AUH:'Abu Dhabi', DOH:'Doha Hamad',
+      CDG:'Paris Charles de Gaulle', NCE:'Nice Côte d\'Azur', LYS:'Lyon',
+      FCO:'Rome Fiumicino', VCE:'Venice Marco Polo', NAP:'Naples',
+      DUB:'Dublin', AMS:'Amsterdam Schiphol', BRU:'Brussels',
+      FRA:'Frankfurt', MUC:'Munich', VIE:'Vienna', ZRH:'Zürich', GVA:'Geneva',
+      ARN:'Stockholm Arlanda', CPH:'Copenhagen Kastrup', OSL:'Oslo Gardermoen',
+      PRG:'Prague', BUD:'Budapest Liszt Ferenc', WAW:'Warsaw Chopin',
+      MLA:'Malta', KEF:'Reykjavik Keflavík',
+    };
+
+    /* ---- STATE ---- */
+    let retrievedFlightData = null;
+
+    /* ---- Reset retrieval (called when inputs change) ---- */
+    function resetRetrieval() {
+      retrievedFlightData = null;
+      const card = document.getElementById('dataCard');
+      if (card) card.style.display = 'none';
+      const sw = document.getElementById('supplementaryWrap');
+      if (sw) sw.classList.remove('active');
+      const rs = document.getElementById('retrieveSteps');
+      if (rs) rs.classList.remove('active');
+      updateStatus();
+    }
+
+    /* ---- Retrieve button handler ---- */
+    async function retrieveFlightData() {
+      const flightNum = document.getElementById('flightNum').value.trim().toUpperCase();
+      const dateStr   = document.getElementById('flightDate').value;
+      const depIata   = document.getElementById('depIata').value.trim().toUpperCase();
+      const arrIata   = document.getElementById('arrIata').value.trim().toUpperCase();
+
+      if (!flightNum) { alert('Please enter a flight number.'); return; }
+      if (!dateStr)   { alert('Please enter the date of operation.'); return; }
+
+      /* Parse airline code + number */
+      const m = flightNum.match(/^([A-Z]{1,3})(\d+)/);
+      if (!m) { alert('Flight number format not recognised — expected e.g. LS303 or EZY1234.'); return; }
+      const airlineCode = m[1];
+
+      /* Resolve ICAO codes */
+      const depIcao = depIata ? (IATA_ICAO[depIata] || depIata) :
+                      (AIRLINE_BASES[airlineCode] ? AIRLINE_BASES[airlineCode][0] : null);
+      const arrIcao = arrIata ? (IATA_ICAO[arrIata] || arrIata) : null;
+
+      /* Show progress */
+      const stepsEl = document.getElementById('retrieveSteps');
+      stepsEl.classList.add('active');
+      document.getElementById('retrieveBtn').disabled = true;
+      setRStep(1,'running'); setRStep(2,''); setRStep(3,'');
+
+      /* ---- Step 1: Flight Records ---- */
+      let flightInfo = null;
+      if (depIcao) {
+        try { flightInfo = await fetchOpenSkyFlight(flightNum, dateStr, depIcao); } catch(e) {}
+      }
+      if (!flightInfo) {
+        flightInfo = buildDemoFlightData(flightNum, airlineCode, dateStr, depIata, arrIata, depIcao, arrIcao);
+      }
+      setRStep(1,'done'); setRStep(2,'running');
+
+      /* ---- Step 2: Weather ---- */
+      const airports = [depIcao, arrIcao].filter(Boolean);
+      let weatherData = {};
+      if (airports.length) {
+        try { weatherData = await fetchWeatherForAirports(airports); } catch(e) {}
+      }
+      setRStep(2,'done'); setRStep(3,'running');
+
+      /* ---- Step 3: Compile ---- */
+      await delay(380);
+      setRStep(3,'done');
+
+      retrievedFlightData = { flightInfo, weatherData, airlineCode, flightNum, depIcao, arrIcao, depIata, arrIata };
+
+      await delay(180);
+      renderDataCard(retrievedFlightData);
+      document.getElementById('supplementaryText').value =
+        buildNarrative(retrievedFlightData);
+      document.getElementById('supplementaryWrap').classList.add('active');
+      document.getElementById('retrieveBtn').disabled = false;
+      updateStatus();
+    }
+
+    function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+    function setRStep(n, state) {
+      const el = document.getElementById('rstep' + n);
+      if (!el) return;
+      el.classList.remove('running','done');
+      if (state) el.classList.add(state);
+    }
+
+    /* ---- OpenSky Network: try departure endpoint ---- */
+    async function fetchOpenSkyFlight(callsign, dateStr, depIcao) {
+      const d = new Date(dateStr + 'T00:00:00Z');
+      const begin = Math.floor(d.getTime() / 1000);
+      const end   = begin + 86400;
+      const url   = `https://opensky-network.org/api/flights/departure?airport=${depIcao}&begin=${begin}&end=${end}`;
+      const resp  = await fetch(url, { signal: AbortSignal.timeout(7000) });
+      if (!resp.ok) return null;
+      const data = await resp.json();
+      if (!Array.isArray(data) || !data.length) return null;
+      const target = callsign.replace(/\s/g,'');
+      const match  = data.find(f => f.callsign && f.callsign.replace(/\s/g,'').toUpperCase() === target);
+      if (!match) return null;
+      return {
+        _source: 'live',
+        callsign: match.callsign?.trim(),
+        depIcao: match.estDepartureAirport || depIcao,
+        arrIcao: match.estArrivalAirport,
+        depActualUnix: match.firstSeen,
+        arrActualUnix: match.lastSeen,
+        icao24: match.icao24,
+        schedDep: null, schedArr: null,
+      };
+    }
+
+    /* ---- aviationweather.gov: METAR for given ICAO list ---- */
+    async function fetchWeatherForAirports(icaoCodes) {
+      const ids  = icaoCodes.join(',');
+      const url  = `https://aviationweather.gov/api/data/metar?ids=${ids}&hours=30&format=json`;
+      const resp = await fetch(url, { signal: AbortSignal.timeout(8000) });
+      if (!resp.ok) return {};
+      const data = await resp.json();
+      if (!Array.isArray(data)) return {};
+      const byStation = {};
+      for (const obs of data) {
+        const id = obs.stationId || obs.station_id || obs.icaoId || '';
+        if (!id) continue;
+        if (!byStation[id]) byStation[id] = [];
+        byStation[id].push(obs);
+      }
+      return byStation;
+    }
+
+    /* ---- Demo flight data (fallback when OpenSky fails/CORS) ---- */
+    function buildDemoFlightData(flightNum, airlineCode, dateStr, depIata, arrIata, depIcao, arrIcao) {
+      const depName = AIRPORT_NAMES[depIata] || (AIRLINE_BASES[airlineCode] ? 'Departure Airport (inferred)' : 'Unknown — enter IATA code above');
+      const arrName = AIRPORT_NAMES[arrIata] || (arrIata ? arrIata : 'Unknown — enter IATA code above');
+      return {
+        _source: 'demo',
+        callsign: flightNum,
+        depIata, arrIata, depIcao, arrIcao,
+        depAirportName: depName,
+        arrAirportName: arrName,
+        schedDep: null, schedArr: null,
+        actDep: null, actArr: null,
+      };
+    }
+
+    /* ---- Render the data card ---- */
+    function renderDataCard(rd) {
+      const { flightInfo, weatherData, flightNum, depIcao, arrIcao, depIata, arrIata } = rd;
+      const isDemo = flightInfo._source === 'demo';
+
+      const dateInput = document.getElementById('flightDate').value;
+      const dateFmt   = dateInput
+        ? new Date(dateInput + 'T00:00:00Z').toLocaleDateString('en-GB',
+            { day:'2-digit', month:'long', year:'numeric' })
+        : '';
+
+      const depName = AIRPORT_NAMES[depIata] || flightInfo.depAirportName || depIcao || '—';
+      const arrName = AIRPORT_NAMES[arrIata] || flightInfo.arrAirportName || arrIcao || '—';
+
+      /* Format Unix → HH:MMZ */
+      function fmtUnix(ts) {
+        if (!ts) return '—';
+        const d = new Date(ts * 1000);
+        return d.toISOString().slice(11,16) + 'Z';
+      }
+
+      const depActual = fmtUnix(flightInfo.depActualUnix);
+      const arrActual = fmtUnix(flightInfo.arrActualUnix);
+
+      /* Delay calc */
+      let delayStr = '';
+      if (flightInfo.depActualUnix && flightInfo.arrActualUnix && flightInfo.schedArrUnix) {
+        const mins = Math.round((flightInfo.arrActualUnix - flightInfo.schedArrUnix) / 60);
+        delayStr = mins >= 0 ? `+${mins} min delay at arrival` : 'Early';
+      }
+
+      /* Flight badge */
+      const flightBadge = isDemo
+        ? `<span class="dc-badge demo">Demo</span>`
+        : `<span class="dc-badge live">⚡ OpenSky</span>`;
+
+      /* Weather section builder */
+      function weatherSection(icao, iata, label) {
+        if (!icao) return '';
+        const metars = weatherData[icao] || [];
+        if (metars.length) {
+          const rows = metars.slice(0,3).map(m => {
+            const raw = m.rawOb || m.rawMETAR || m.raw_text || JSON.stringify(m).slice(0,120);
+            return `<div class="dc-metar">${raw}</div>`;
+          }).join('');
+          return `
+          <div class="dc-item">
+            <span class="dc-badge live">⚡ Live</span>
+            <div class="dc-content">
+              <strong>${iata || icao}</strong> — ${label}
+              · METAR via aviationweather.gov
+              ${rows}
+            </div>
+          </div>`;
+        } else {
+          return `
+          <div class="dc-item">
+            <span class="dc-badge pending">⚠ Archive</span>
+            <div class="dc-content">
+              <strong>${iata || icao}</strong> — ${label}
+              · Historical METAR (&gt;30h) not in aviationweather.gov live feed
+              <div class="dc-metar">Retrieve from Ogimet: ogimet.com/metars → Station: <strong>${icao}</strong> · Window: ±2h of operation
+Alternatively: NOAA ISD archive at ncei.noaa.gov</div>
+            </div>
+          </div>`;
+        }
+      }
+
+      const card = document.getElementById('dataCard');
+      card.innerHTML = `
+        <div class="dc-header">
+          <div>
+            <span class="dc-flight">${flightNum}</span>
+            <span class="dc-date">${dateFmt}</span>
+          </div>
+          ${isDemo
+            ? `<span class="dc-source-badge">Demo data · live flight actuals require OpenSky integration</span>`
+            : `<span class="dc-source-badge">Live · OpenSky Network</span>`}
+        </div>
+
+        <div class="dc-section">
+          <div class="dc-section-title">Flight Actuals</div>
+          <div class="dc-items">
+            <div class="dc-item">
+              ${flightBadge}
+              <div class="dc-content">
+                <strong>DEP</strong>&nbsp; ${depName}&nbsp;
+                ${depIcao ? `<span style="font-family:var(--font-mono);font-size:10px;color:var(--ink-faint)">${depIcao}</span>` : ''}
+                &nbsp;·&nbsp; Sched ${flightInfo.schedDep || '—'}
+                &nbsp;·&nbsp; Actual <strong>${depActual}</strong>
+              </div>
+            </div>
+            <div class="dc-item">
+              ${flightBadge}
+              <div class="dc-content">
+                <strong>ARR</strong>&nbsp; ${arrName}&nbsp;
+                ${arrIcao ? `<span style="font-family:var(--font-mono);font-size:10px;color:var(--ink-faint)">${arrIcao}</span>` : ''}
+                &nbsp;·&nbsp; Sched ${flightInfo.schedArr || '—'}
+                &nbsp;·&nbsp; Actual <strong>${arrActual}</strong>
+                ${delayStr ? `&nbsp;·&nbsp; <strong>${delayStr}</strong>` : ''}
+              </div>
+            </div>
+            ${isDemo ? `
+            <div class="dc-item">
+              <span class="dc-badge unavail">—</span>
+              <div class="dc-content" style="color:var(--ink-faint);font-size:11px">
+                Actual times not retrieved — requires OpenSky live access or airline ODS feed.
+                Enter departure airport above and retry, or add actuals manually to the context field below.
+              </div>
+            </div>` : ''}
+          </div>
+        </div>
+
+        <div class="dc-section">
+          <div class="dc-section-title">Meteorological Data</div>
+          <div class="dc-items">
+            ${weatherSection(depIcao, depIata, 'Departure')}
+            ${weatherSection(arrIcao, arrIata, 'Arrival')}
+            ${(!depIcao && !arrIcao) ? `
+            <div class="dc-item">
+              <span class="dc-badge pending">⚠</span>
+              <div class="dc-content">Enter departure and/or arrival airport codes above to enable METAR retrieval</div>
+            </div>` : ''}
+          </div>
+        </div>
+
+        <div class="dc-section">
+          <div class="dc-section-title">Integration-Required Sources</div>
+          <div class="dc-items">
+            <div class="dc-item">
+              <span class="dc-badge pending">⚠ Pending</span>
+              <div class="dc-content">
+                <strong>Eurocontrol NM / ATFM</strong>
+                — CTOT issuance, network regulation details, FIR restrictions
+                <div class="dc-metar">Retrieve via: nm.eurocontrol.int → NM B2B portal · Query: regulation for ${depIcao || 'DEP_ICAO'} / ${arrIcao || 'ARR_ICAO'} ±4h of ATD</div>
+              </div>
+            </div>
+            <div class="dc-item">
+              <span class="dc-badge pending">⚠ Pending</span>
+              <div class="dc-content">
+                <strong>Airline ODS / Delay Codes</strong>
+                — AHM delay codes, rotation history, line-of-flying
+                <div class="dc-metar">Retrieve from: Airline Operations Data Store · Flight: ${flightNum} · Date: ${dateFmt || dateInput}</div>
+              </div>
+            </div>
+            <div class="dc-item">
+              <span class="dc-badge pending">⚠ Pending</span>
+              <div class="dc-content">
+                <strong>Crew Scheduling System</strong>
+                — FDP records, standby logs, OOH authorisation, positioning history
+                <div class="dc-metar">Retrieve from: Crew scheduling export (Excel/CSV) · Date: ${dateFmt || dateInput} · Crew operating ${flightNum}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      card.style.display = 'block';
+    }
+
+    /* ---- Auto-generate disruption narrative ---- */
+    function buildNarrative(rd) {
+      const { flightNum, depIata, arrIata, flightInfo } = rd;
+      const dateInput = document.getElementById('flightDate').value;
+      const dateFmt   = dateInput
+        ? new Date(dateInput + 'T00:00:00Z').toLocaleDateString('en-GB',
+            { day:'2-digit', month:'2-digit', year:'2-digit' })
+        : '';
+
+      const dep  = depIata  || (flightInfo.depIata  || '[DEP]');
+      const arr  = arrIata  || (flightInfo.arrIata  || '[ARR]');
+      const dAct = flightInfo.depActualUnix ? new Date(flightInfo.depActualUnix*1000).toISOString().slice(11,16)+'Z' : '[dep time]';
+      const aAct = flightInfo.arrActualUnix ? new Date(flightInfo.arrActualUnix*1000).toISOString().slice(11,16)+'Z' : '[arr time]';
+
+      return `${flightNum} ${dep}-${arr} ${dateFmt}. [Disruption cause — enter from ops/ICC log.] Actual departure ${dAct}, arrival ${aAct}. [Add: ATC instructions issued, crew FDP status, standby availability, passenger care arrangements.]`;
+    }
+
     /* ----------------------------------------------------------
        ANALYSIS STUB
        Full 3-pass logic added in MODE 3.
        This provides the pass-animation scaffolding only.
     ---------------------------------------------------------- */
     function runAnalysis() {
+      /* In flight mode, require retrieval first */
+      if (currentMode === 'flight' && !retrievedFlightData) {
+        alert('Please retrieve flight data before running analysis.');
+        return;
+      }
+
+      /* Gather input text */
+      let inputText = '';
+      if (currentMode === 'icc') {
+        inputText = (document.getElementById('iccText').value || '').trim();
+        if (!inputText) { alert('Please enter a disruption summary.'); return; }
+      } else {
+        /* Build context from retrieved data + supplementary text */
+        const rd   = retrievedFlightData;
+        const supp = (document.getElementById('supplementaryText').value || '').trim();
+        const depName = AIRPORT_NAMES[rd.depIata] || rd.depIcao || rd.depIata || '';
+        const arrName = AIRPORT_NAMES[rd.arrIata] || rd.arrIcao || rd.arrIata || '';
+        inputText = `Flight ${rd.flightNum} ${rd.depIata || ''}–${rd.arrIata || ''} ${document.getElementById('flightDate').value}.\n`;
+        inputText += `Departure: ${depName} (${rd.depIcao || '?'}). Arrival: ${arrName} (${rd.arrIcao || '?'}).\n`;
+        if (supp) inputText += supp;
+      }
+
       // Hide empty state, reset brief
       document.getElementById('emptyState').style.display = 'none';
       document.getElementById('briefArea').classList.remove('active');
