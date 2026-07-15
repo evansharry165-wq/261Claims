@@ -1042,6 +1042,480 @@
       color: var(--ink-faint);
     }
 
+    /* ============================================================
+       BRIEF DOCUMENT WRAPPER
+    ============================================================ */
+    .brief-doc {
+      background: var(--surface-raised);
+      border: 1px solid var(--ink-rule);
+      border-radius: var(--r-lg);
+      overflow: hidden;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.03);
+    }
+
+    .brief-section {
+      padding: var(--sp-lg) var(--sp-xl);
+      border-bottom: 1px solid var(--ink-rule2);
+    }
+
+    .brief-section:last-child { border-bottom: none; }
+
+    .brief-section-label {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      margin-bottom: var(--sp-sm);
+    }
+
+    .brief-dt-row {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-md);
+      margin-bottom: var(--sp-sm);
+      flex-wrap: wrap;
+    }
+
+    .dt-badge {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      padding: 3px 9px;
+      border-radius: var(--r);
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+    }
+
+    .dt-badge.extraordinary { background: var(--defend-bg);     color: var(--defend);     border: 1px solid var(--defend-border); }
+    .dt-badge.contested     { background: var(--conditions-bg); color: var(--conditions); border: 1px solid var(--conditions-border); }
+    .dt-badge.unlikely      { background: var(--settle-bg);     color: var(--settle);     border: 1px solid var(--settle-border); }
+
+    .brief-dt-name {
+      font-family: var(--font-serif);
+      font-size: 17px;
+      font-weight: 400;
+      color: var(--ink-primary);
+      letter-spacing: -0.01em;
+    }
+
+    .brief-limb1 {
+      font-family: var(--font-spectral);
+      font-size: 14px;
+      color: var(--ink-secondary);
+      line-height: 1.75;
+    }
+
+    /* ============================================================
+       RM CHALLENGE CARDS
+    ============================================================ */
+    .rm-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: var(--sp-md);
+      gap: var(--sp-md);
+    }
+
+    .rm-title {
+      font-family: var(--font-spectral);
+      font-size: 14px;
+      color: var(--ink-tertiary);
+      font-style: italic;
+    }
+
+    .rm-tally {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--ink-faint);
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .rm-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .rm-card {
+      border: 1px solid var(--ink-rule);
+      border-radius: var(--r-md);
+      overflow: hidden;
+      background: var(--surface-raised);
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .rm-card.confirmed { border-color: var(--defend-border);     background: var(--defend-bg); }
+    .rm-card.partial   { border-color: var(--conditions-border); background: var(--conditions-bg); }
+    .rm-card.gap       { border-color: var(--settle-border);     background: var(--settle-bg); }
+
+    .rm-card-body {
+      padding: 13px var(--sp-md);
+      display: flex;
+      align-items: flex-start;
+      gap: var(--sp-md);
+    }
+
+    .rm-card-num {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--ink-faint);
+      min-width: 22px;
+      padding-top: 2px;
+      flex-shrink: 0;
+    }
+
+    .rm-card.confirmed .rm-card-num { color: var(--defend-mid); }
+    .rm-card.partial   .rm-card-num { color: var(--conditions-mid); }
+    .rm-card.gap       .rm-card-num { color: var(--settle-mid); }
+
+    .rm-card-content { flex: 1; min-width: 0; }
+
+    .rm-challenge {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--ink-primary);
+      line-height: 1.6;
+      margin-bottom: 7px;
+    }
+
+    .rm-evidence {
+      font-size: 11px;
+      color: var(--ink-tertiary);
+      line-height: 1.55;
+    }
+
+    .rm-evidence strong {
+      color: var(--ink-secondary);
+      font-weight: 600;
+    }
+
+    .rm-note {
+      margin-top: 6px;
+      font-size: 11px;
+      color: var(--conditions);
+      font-style: italic;
+      line-height: 1.5;
+    }
+
+    .rm-card.gap .rm-note { color: var(--settle); }
+
+    .rm-btns {
+      display: flex;
+      gap: 6px;
+      padding: 9px var(--sp-md);
+      border-top: 1px solid var(--ink-rule2);
+      background: var(--surface-ui);
+    }
+
+    .rm-card.confirmed .rm-btns { background: rgba(27,74,50,0.05);  border-top-color: var(--defend-border); }
+    .rm-card.partial   .rm-btns { background: rgba(122,68,0,0.05);  border-top-color: var(--conditions-border); }
+    .rm-card.gap       .rm-btns { background: rgba(122,26,26,0.05); border-top-color: var(--settle-border); }
+
+    .rm-btn {
+      padding: 5px 13px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      border-radius: var(--r);
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.14s;
+      font-family: var(--font-sans);
+      background: var(--surface-raised);
+    }
+
+    .rm-btn-confirm { color: var(--defend);     border-color: var(--defend-border); }
+    .rm-btn-partial { color: var(--conditions); border-color: var(--conditions-border); }
+    .rm-btn-gap     { color: var(--settle);     border-color: var(--settle-border); }
+
+    .rm-btn-confirm:hover, .rm-btn-confirm.active { background: var(--defend);     color: #fff; border-color: var(--defend); }
+    .rm-btn-partial:hover, .rm-btn-partial.active { background: var(--conditions); color: #fff; border-color: var(--conditions); }
+    .rm-btn-gap:hover,     .rm-btn-gap.active     { background: var(--settle);     color: #fff; border-color: var(--settle); }
+
+    /* RM Strength Meter */
+    .rm-meter-wrap {
+      margin-top: var(--sp-lg);
+      padding: var(--sp-md) var(--sp-lg);
+      border: 1px solid var(--ink-rule2);
+      border-radius: var(--r-md);
+      background: var(--surface-page);
+    }
+
+    .rm-meter-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ink-tertiary);
+      margin-bottom: 9px;
+    }
+
+    .rm-meter-track {
+      height: 5px;
+      background: var(--ink-rule2);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .rm-meter-fill {
+      height: 100%;
+      border-radius: 3px;
+      background: var(--defend-mid);
+      transition: width 0.45s ease, background 0.45s;
+      width: 0%;
+    }
+
+    /* RM Position Banner */
+    .rm-position-banner {
+      padding: var(--sp-md) var(--sp-lg);
+      border-radius: var(--r-md);
+      border: 1px solid var(--ink-rule2);
+      background: var(--surface-page);
+      color: var(--ink-tertiary);
+      font-family: var(--font-spectral);
+      font-size: 14px;
+      font-style: italic;
+      transition: all 0.3s;
+    }
+
+    .rm-position-banner.strong      { background: var(--defend-bg);     border-color: var(--defend-border);     color: var(--defend); }
+    .rm-position-banner.conditional { background: var(--conditions-bg); border-color: var(--conditions-border); color: var(--conditions); }
+    .rm-position-banner.exposed     { background: var(--settle-bg);     border-color: var(--settle-border);     color: var(--settle); }
+
+    .rm-position-title {
+      font-family: var(--font-serif);
+      font-size: 16px;
+      font-style: normal;
+      font-weight: 400;
+      margin-bottom: 4px;
+    }
+
+    .rm-position-sub {
+      font-family: var(--font-sans);
+      font-size: 11px;
+      font-style: normal;
+      opacity: 0.75;
+    }
+
+    /* ============================================================
+       VERDICT BANNER — Pass III
+    ============================================================ */
+    .verdict-banner {
+      padding: var(--sp-lg) var(--sp-xl);
+      border-radius: var(--r-md);
+      border: 1px solid;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--sp-lg);
+      margin-bottom: var(--sp-lg);
+    }
+
+    .verdict-banner.defend     { background: var(--defend-bg);     border-color: var(--defend-border); }
+    .verdict-banner.conditions { background: var(--conditions-bg); border-color: var(--conditions-border); }
+    .verdict-banner.settle     { background: var(--settle-bg);     border-color: var(--settle-border); }
+
+    .verdict-word {
+      font-family: var(--font-serif);
+      font-size: 22px;
+      font-weight: 400;
+      letter-spacing: -0.01em;
+      line-height: 1.1;
+      margin-bottom: 4px;
+    }
+    .verdict-banner.defend     .verdict-word { color: var(--defend); }
+    .verdict-banner.conditions .verdict-word { color: var(--conditions); }
+    .verdict-banner.settle     .verdict-word { color: var(--settle); }
+
+    .verdict-sub {
+      font-size: 11px;
+      font-family: var(--font-sans);
+    }
+    .verdict-banner.defend     .verdict-sub { color: var(--defend-mid); }
+    .verdict-banner.conditions .verdict-sub { color: var(--conditions-mid); }
+    .verdict-banner.settle     .verdict-sub { color: var(--settle-mid); }
+
+    .verdict-ref {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      padding: 3px 9px;
+      border-radius: var(--r);
+      border: 1px solid;
+      white-space: nowrap;
+      flex-shrink: 0;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+    }
+    .verdict-banner.defend     .verdict-ref { color: var(--defend);     border-color: var(--defend-border);     background: rgba(27,74,50,0.08); }
+    .verdict-banner.conditions .verdict-ref { color: var(--conditions); border-color: var(--conditions-border); background: rgba(122,68,0,0.08); }
+    .verdict-banner.settle     .verdict-ref { color: var(--settle);     border-color: var(--settle-border);     background: rgba(122,26,26,0.08); }
+
+    /* ============================================================
+       STRENGTHS & WEAKNESSES GRID
+    ============================================================ */
+    .sw-panel {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--sp-md);
+      margin-bottom: var(--sp-lg);
+    }
+
+    .sw-col-header {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding-bottom: 7px;
+      border-bottom: 1.5px solid;
+      margin-bottom: 6px;
+    }
+    .sw-col.strengths .sw-col-header { color: var(--defend);  border-color: var(--defend-border); }
+    .sw-col.weaknesses .sw-col-header { color: var(--settle); border-color: var(--settle-border); }
+
+    .sw-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--ink-secondary);
+      line-height: 1.5;
+      padding: 5px 0;
+      border-bottom: 1px solid var(--ink-rule2);
+    }
+    .sw-item:last-child { border-bottom: none; }
+
+    .sw-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      margin-top: 5px;
+      flex-shrink: 0;
+    }
+    .sw-col.strengths  .sw-dot { background: var(--defend-mid); }
+    .sw-col.weaknesses .sw-dot { background: var(--settle-mid); }
+
+    /* ============================================================
+       QUANTUM & LIMITATION PANELS
+    ============================================================ */
+    .quantum-panel,
+    .limitation-panel {
+      border: 1px solid var(--ink-rule2);
+      border-radius: var(--r-md);
+      overflow: hidden;
+      margin-bottom: var(--sp-md);
+    }
+
+    .qp-head {
+      padding: 9px var(--sp-md);
+      background: var(--surface-ui);
+      border-bottom: 1px solid var(--ink-rule2);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .qp-head-label {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-tertiary);
+    }
+
+    .qp-row {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-md);
+      padding: 8px var(--sp-md);
+      border-bottom: 1px solid var(--ink-rule2);
+      font-size: 12px;
+      flex-wrap: wrap;
+    }
+    .qp-row:last-child { border-bottom: none; }
+    .qp-row.total-row { background: var(--surface-page); }
+
+    .qp-label {
+      color: var(--ink-tertiary);
+      min-width: 190px;
+      flex-shrink: 0;
+      font-size: 11px;
+    }
+
+    .qp-value { color: var(--ink-primary); flex: 1; font-weight: 500; }
+    .qp-value.mono { font-family: var(--font-mono); font-size: 12px; }
+
+    .qp-total {
+      font-family: var(--font-mono);
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--settle);
+    }
+
+    .brief-input {
+      padding: 4px 9px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      color: var(--ink-primary);
+      background: var(--surface-raised);
+      border: 1px solid var(--ink-rule);
+      border-radius: var(--r);
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .brief-input:focus { border-color: var(--ink-secondary); }
+
+    .lp-status {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      padding: 2px 7px;
+      border-radius: var(--r);
+      font-weight: 600;
+      letter-spacing: 0.04em;
+    }
+    .lp-status.ok     { background: var(--defend-bg);     color: var(--defend);     border: 1px solid var(--defend-border); }
+    .lp-status.warn   { background: var(--conditions-bg); color: var(--conditions); border: 1px solid var(--conditions-border); }
+    .lp-status.urgent { background: var(--settle-bg);     color: var(--settle);     border: 1px solid var(--settle-border); }
+
+    /* Legal authority notes */
+    .legal-notes { display: flex; flex-direction: column; gap: 8px; margin-top: var(--sp-md); }
+
+    .legal-note {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px var(--sp-md);
+      border: 1px solid var(--ink-rule2);
+      border-radius: var(--r-md);
+      background: var(--surface-raised);
+    }
+
+    .legal-case-ref {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      color: var(--judgment);
+      background: var(--judgment-bg);
+      border: 1px solid var(--judgment-border);
+      padding: 2px 7px;
+      border-radius: var(--r);
+      white-space: nowrap;
+      flex-shrink: 0;
+      margin-top: 2px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+    }
+
+    .legal-text {
+      font-family: var(--font-spectral);
+      font-size: 13px;
+      color: var(--ink-secondary);
+      line-height: 1.65;
+    }
+
   </style>
 </head>
 <body>
@@ -1108,6 +1582,7 @@
           placeholder="e.g. HC 1184 LTN-BCN 14/03/26. Thunderstorms BCN, approach below minima, mandatory ATC diversion Valencia. Standby LTN could not position, thunderstorms BCN. Passengers cared for Valencia, coach transfer arranged."
         ></textarea>
         <div class="chip-row">
+          <span class="chip" onclick="loadExample('demo')" style="background:var(--judgment-bg);color:var(--judgment);border-color:var(--judgment-border);font-weight:700">⚡ Full case demo</span>
           <span class="chip" onclick="loadExample('atc')">ATC / CTOT overnight</span>
           <span class="chip" onclick="loadExample('weather')">Weather diversion</span>
           <span class="chip" onclick="loadExample('birdstrike')">Birdstrike</span>
@@ -1329,9 +1804,17 @@
     /* ----------------------------------------------------------
        STATE
     ---------------------------------------------------------- */
-    let currentMode   = 'icc';
-    let liveAiOn      = false;
-    let savedApiKey   = null;
+    let currentMode       = 'icc';
+    let liveAiOn          = false;
+    let savedApiKey       = null;
+    let currentInputText  = '';
+    let currentDT         = null;
+    let rmResponses       = {};
+    let currentDepIata    = '';
+    let currentArrIata    = '';
+    let currentFlightDate = '';
+    let currentDelayMins  = 0;
+    let claimants         = 1;
 
     /* ----------------------------------------------------------
        EXAMPLES (Mode 1 chips)
@@ -1358,7 +1841,9 @@
       ownstrike:
         'EZY9923 LTN-BCN 18/03/26. Own ground handling staff walkout 0600Z, baggage handling suspended. Company announced strike action 10 days prior. Services recovering 1600Z. 8h delay.',
       positioning:
-        'FR1847 DUB-LTN-MAD 06/06/26. Crew positioning flight LTN delayed 3h due to Eurocontrol CTOT. Crew subsequently OOH on arrival LTN, mandatory rest 11h. Outbound LTN-MAD delayed 14h. Incoming crew from STN repositioned.'
+        'FR1847 DUB-LTN-MAD 06/06/26. Crew positioning flight LTN delayed 3h due to Eurocontrol CTOT. Crew subsequently OOH on arrival LTN, mandatory rest 11h. Outbound LTN-MAD delayed 14h. Incoming crew from STN repositioned.',
+      demo:
+        'EZY7253 PMI-BHX 16/06/24. Adverse windshear and crosswind at BHX on approach, conditions below aircraft certified operating limits. Commander diverted to BOH under Air Navigation Order commander authority — approach mandatory discontinued. Inbound rotation delayed: prior sector GVA-PMI disrupted by Eurocontrol ATFM regulation, cascading 5h 10min delay to PMI departure. Replacement aircraft repositioned; original crew FDP exhausted following rotation cascade — standby crew deployed from BHX. Passengers cared for BOH, coach transfer arranged to BHX. Total delay at arrival BHX: 8h 20min.'
     };
 
     function loadExample(key) {
@@ -1366,6 +1851,13 @@
       if (!text) return;
       document.getElementById('iccText').value = text;
       switchMode('icc');
+      // Pre-set metadata for demo case
+      if (key === 'demo') {
+        currentDepIata    = 'PMI';
+        currentArrIata    = 'BHX';
+        currentFlightDate = '2024-06-16';
+        currentDelayMins  = 500; // 8h 20min
+      }
     }
 
     /* ----------------------------------------------------------
@@ -1525,6 +2017,12 @@
       MLA:'Malta', KEF:'Reykjavik Keflavík',
     };
 
+    /* ---- PROXY ---- */
+    /* All external API calls route through /.netlify/functions/proxy to avoid CORS.
+       On GitHub Pages the proxy returns 404 — functions catch it and fall back to demo.
+       On Netlify (production) the proxy is live and returns real data. */
+    const PROXY = '/.netlify/functions/proxy';
+
     /* ---- STATE ---- */
     let retrievedFlightData = null;
 
@@ -1580,7 +2078,7 @@
       const airports = [depIcao, arrIcao].filter(Boolean);
       let weatherData = {};
       if (airports.length) {
-        try { weatherData = await fetchWeatherForAirports(airports); } catch(e) {}
+        try { weatherData = await fetchWeatherForAirports(airports, dateStr); } catch(e) {}
       }
       setRStep(2,'done'); setRStep(3,'running');
 
@@ -1608,38 +2106,42 @@
       if (state) el.classList.add(state);
     }
 
-    /* ---- OpenSky Network: try departure endpoint ---- */
+    /* ---- OpenSky Network via Netlify proxy ---- */
     async function fetchOpenSkyFlight(callsign, dateStr, depIcao) {
-      const d = new Date(dateStr + 'T00:00:00Z');
+      if (!depIcao) return null;
+      const d     = new Date(dateStr + 'T00:00:00Z');
       const begin = Math.floor(d.getTime() / 1000);
       const end   = begin + 86400;
-      const url   = `https://opensky-network.org/api/flights/departure?airport=${depIcao}&begin=${begin}&end=${end}`;
-      const resp  = await fetch(url, { signal: AbortSignal.timeout(7000) });
+      /* Route through proxy — falls back gracefully (null) when proxy is unavailable */
+      const url  = `${PROXY}?source=opensky&path=flights%2Fdeparture&airport=${depIcao}&begin=${begin}&end=${end}`;
+      const resp = await fetch(url, { signal: AbortSignal.timeout(10000) });
       if (!resp.ok) return null;
-      const data = await resp.json();
+      let data;
+      try { data = await resp.json(); } catch { return null; }
       if (!Array.isArray(data) || !data.length) return null;
       const target = callsign.replace(/\s/g,'');
       const match  = data.find(f => f.callsign && f.callsign.replace(/\s/g,'').toUpperCase() === target);
       if (!match) return null;
       return {
-        _source: 'live',
-        callsign: match.callsign?.trim(),
-        depIcao: match.estDepartureAirport || depIcao,
-        arrIcao: match.estArrivalAirport,
+        _source:       'live',
+        callsign:      match.callsign?.trim(),
+        depIcao:       match.estDepartureAirport || depIcao,
+        arrIcao:       match.estArrivalAirport,
         depActualUnix: match.firstSeen,
         arrActualUnix: match.lastSeen,
-        icao24: match.icao24,
+        icao24:        match.icao24,
         schedDep: null, schedArr: null,
       };
     }
 
-    /* ---- aviationweather.gov: METAR for given ICAO list ---- */
-    async function fetchWeatherForAirports(icaoCodes) {
+    /* ---- aviationweather.gov: recent METAR (<30h, browser-direct) ---- */
+    async function fetchAvwxMetar(icaoCodes) {
       const ids  = icaoCodes.join(',');
       const url  = `https://aviationweather.gov/api/data/metar?ids=${ids}&hours=30&format=json`;
       const resp = await fetch(url, { signal: AbortSignal.timeout(8000) });
       if (!resp.ok) return {};
-      const data = await resp.json();
+      let data;
+      try { data = await resp.json(); } catch { return {}; }
       if (!Array.isArray(data)) return {};
       const byStation = {};
       for (const obs of data) {
@@ -1647,6 +2149,49 @@
         if (!id) continue;
         if (!byStation[id]) byStation[id] = [];
         byStation[id].push(obs);
+      }
+      return byStation;
+    }
+
+    /* ---- Ogimet: historical METAR via proxy (any date) ---- */
+    async function fetchOgimetMetar(icao, dateStr) {
+      const base  = dateStr.replace(/-/g,'');
+      const begin = base + '0000';
+      const end   = base + '2359';
+      const url   = `${PROXY}?source=ogimet&icao=${icao}&begin=${begin}&end=${end}`;
+      const resp  = await fetch(url, { signal: AbortSignal.timeout(14000) });
+      if (!resp.ok) return [];
+      const text = await resp.text();
+      return parseOgimetText(text);
+    }
+
+    function parseOgimetText(text) {
+      if (!text || text.includes('"error"') || text.length < 10) return [];
+      const metars = [];
+      for (const line of text.split('\n')) {
+        const t = line.trim();
+        /* Lines like: "202607141020 METAR EGCC 141020Z ..." */
+        if (/^\d{12}\s+METAR\s+/i.test(t)) {
+          metars.push({ rawOb: t.replace(/^\d{12}\s+/,'').trim(), _source:'ogimet' });
+        } else if (/^METAR\s+/i.test(t)) {
+          metars.push({ rawOb: t, _source:'ogimet' });
+        }
+      }
+      return metars;
+    }
+
+    /* ---- Weather router: recent → aviationweather.gov, historical → Ogimet ---- */
+    async function fetchWeatherForAirports(icaoCodes, dateStr) {
+      const ageHours = (Date.now() - new Date(dateStr + 'T00:00:00Z').getTime()) / 3600000;
+      if (ageHours <= 30) {
+        /* Recent flight — aviationweather.gov works directly from browser */
+        return await fetchAvwxMetar(icaoCodes);
+      }
+      /* Historical — Ogimet via proxy */
+      const byStation = {};
+      for (const icao of icaoCodes) {
+        const metars = await fetchOgimetMetar(icao, dateStr);
+        if (metars.length) byStation[icao] = metars;
       }
       return byStation;
     }
@@ -1707,28 +2252,42 @@
         if (!icao) return '';
         const metars = weatherData[icao] || [];
         if (metars.length) {
+          const isOgimet = metars[0]._source === 'ogimet';
+          const source   = isOgimet
+            ? 'Historical METAR via Ogimet'
+            : 'Live METAR via aviationweather.gov';
+          const badge    = isOgimet
+            ? `<span class="dc-badge live">⚡ Ogimet</span>`
+            : `<span class="dc-badge live">⚡ Live</span>`;
           const rows = metars.slice(0,3).map(m => {
-            const raw = m.rawOb || m.rawMETAR || m.raw_text || JSON.stringify(m).slice(0,120);
+            const raw = m.rawOb || m.rawMETAR || m.raw_text || JSON.stringify(m).slice(0,160);
             return `<div class="dc-metar">${raw}</div>`;
           }).join('');
           return `
           <div class="dc-item">
-            <span class="dc-badge live">⚡ Live</span>
+            ${badge}
             <div class="dc-content">
-              <strong>${iata || icao}</strong> — ${label}
-              · METAR via aviationweather.gov
+              <strong>${iata || icao}</strong> — ${label} · ${source}
               ${rows}
             </div>
           </div>`;
         } else {
+          /* No data retrieved — explain why and give exact Ogimet query */
+          const dateInput  = document.getElementById('flightDate').value;
+          const ageHours   = dateInput
+            ? (Date.now() - new Date(dateInput+'T00:00:00Z').getTime()) / 3600000
+            : 999;
+          const reason = ageHours <= 30
+            ? 'METAR not returned by aviationweather.gov for this station'
+            : 'Proxy not available — historical METAR via Ogimet requires Netlify deployment';
+          const ogimetBase = dateInput ? dateInput.replace(/-/g,'') : 'YYYYMMDD';
           return `
           <div class="dc-item">
-            <span class="dc-badge pending">⚠ Archive</span>
+            <span class="dc-badge pending">⚠ No data</span>
             <div class="dc-content">
-              <strong>${iata || icao}</strong> — ${label}
-              · Historical METAR (&gt;30h) not in aviationweather.gov live feed
-              <div class="dc-metar">Retrieve from Ogimet: ogimet.com/metars → Station: <strong>${icao}</strong> · Window: ±2h of operation
-Alternatively: NOAA ISD archive at ncei.noaa.gov</div>
+              <strong>${iata || icao}</strong> — ${label} · ${reason}
+              <div class="dc-metar">Manual: ogimet.com/metars → Station: <strong>${icao}</strong>
+Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
             </div>
           </div>`;
         }
@@ -1870,6 +2429,34 @@ Alternatively: NOAA ISD archive at ncei.noaa.gov</div>
         if (supp) inputText += supp;
       }
 
+      currentInputText = inputText;
+
+      // Extract route, date, delay for quantum & limitation
+      if (currentMode === 'flight' && retrievedFlightData) {
+        currentDepIata    = retrievedFlightData.depIata || currentDepIata;
+        currentArrIata    = retrievedFlightData.arrIata || currentArrIata;
+        currentFlightDate = document.getElementById('flightDate').value || currentFlightDate;
+      } else {
+        // Parse IATA pair from text e.g. "PMI-BHX"
+        const routeM = inputText.match(/\b([A-Z]{3})[–\-]([A-Z]{3})\b/);
+        if (routeM) { currentDepIata = routeM[1]; currentArrIata = routeM[2]; }
+        // Parse date e.g. "16/06/24" or "16/06/2024"
+        const dateM = inputText.match(/(\d{2})\/(\d{2})\/(\d{2,4})/);
+        if (dateM) {
+          const yr = dateM[3].length === 2 ? '20' + dateM[3] : dateM[3];
+          if (!currentFlightDate) currentFlightDate = `${yr}-${dateM[2]}-${dateM[1]}`;
+        }
+      }
+      // Parse delay e.g. "8h 20min", "8h", "500 min"
+      if (!currentDelayMins) {
+        const dHM = inputText.match(/(\d+)\s*h(?:ours?)?\s*(\d+)\s*m(?:in)?/i);
+        const dH  = inputText.match(/(\d+)\s*h(?:ours?)?(?:\s+delay|\s+late)?/i);
+        const dM  = inputText.match(/(\d+)\s*min(?:ute)?s?\s+delay/i);
+        if (dHM) currentDelayMins = parseInt(dHM[1]) * 60 + parseInt(dHM[2]);
+        else if (dH) currentDelayMins = parseInt(dH[1]) * 60;
+        else if (dM) currentDelayMins = parseInt(dM[1]);
+      }
+
       // Hide empty state, reset brief
       document.getElementById('emptyState').style.display = 'none';
       document.getElementById('briefArea').classList.remove('active');
@@ -1904,7 +2491,7 @@ Alternatively: NOAA ISD archive at ncei.noaa.gov</div>
         setPassDone('p3');
         setTimeout(() => {
           progress.classList.remove('active');
-          showBriefPlaceholder();
+          renderAnalysisOutput(currentInputText);
         }, 500);
       }, 4200);
     }
@@ -1922,26 +2509,719 @@ Alternatively: NOAA ISD archive at ncei.noaa.gov</div>
       document.getElementById(id + '-state').textContent = 'Complete';
     }
 
-    /* Temporary placeholder — replaced by full brief render in MODE 4 */
-    function showBriefPlaceholder() {
+    /* ==========================================================
+       RM KNOWLEDGE BASE
+       Generic disruption types with challenge questions and
+       applicable evidence types. No carrier-specific system names.
+    ========================================================== */
+    const RM_DB = [
+      {
+        id: 'weather',
+        label: 'Weather Disruption',
+        keywords: ['weather','storm','thunderstorm','wind','snow','ice','fog','visibility','crosswind','diversion','minima','sigmet','windshear','precipitation','hail','turbulence','icing','lightning'],
+        limb1Status: 'extraordinary',
+        limb1: 'Adverse meteorological conditions — inherently beyond operational control. Consistent with Art 5(3) EC261/UK261 where conditions reached or exceeded certified operating limits. Limb 1 likely satisfied subject to evidence of actual conditions at the relevant time and place.',
+        caselaw: [
+          { ref: 'Wallentin-Hermann C-549/07', text: 'Reasonable measures must be technically and economically viable; excessive sacrifice not required. Applied to weather: standby deployment is a reasonable measure but its absence does not automatically preclude the defence.' },
+          { ref: 'Eglitis C-294/10', text: 'Airline must use all resources available at the relevant time. Failure to deploy available standby may undermine the Limb 2 position even where Limb 1 is established.' }
+        ],
+        challenges: [
+          { question: 'Did conditions at the relevant aerodrome reach or exceed the aircraft\'s certified operating limits at the time of the approach or operation?', evidence: 'METAR at the relevant time, certified operating limits for the aircraft type (Aircraft Flight Manual / Ops Specs), approach briefing records', note: null },
+          { question: 'Was the disruption decision (diversion, cancellation or significant delay) mandatory under regulatory requirements or the aircraft commander\'s operational authority — not a discretionary commercial decision?', evidence: 'Air safety / occurrence report filed by the commander, applicable Air Navigation Order provisions on commander authority', note: null },
+          { question: 'Did meteorological forecasts indicate no realistic prospect of conditions improving within a timeframe compatible with preserving affected passengers\' onward travel arrangements?', evidence: 'Terminal Aerodrome Forecast (TAF) for the destination, SIGMET advisory, METAR trend data', note: null },
+          { question: 'Was standby aircraft available at the departure station, and if so, could it have been positioned and operated in time to materially reduce the disruption?', evidence: 'Standby aircraft availability log for the departure station, operational timeline records', note: null },
+          { question: 'Were all re-routing and recovery options assessed and offered to affected passengers under Art 8, including alternative carriers and surface transport where applicable?', evidence: 'Disruption management records, passenger communications log', note: null }
+        ]
+      },
+      {
+        id: 'atfm',
+        label: 'ATC / ATFM Restriction',
+        keywords: ['atfm','ctot','slot','atc','air traffic','regulation','eurocontrol','fir','network manager','flow management','ground delay','calculated take-off'],
+        limb1Status: 'extraordinary',
+        limb1: 'Air traffic flow management restriction imposed by Eurocontrol or a national ANSP — a decision of a third-party authority inherently beyond the airline\'s control. Limb 1 generally satisfied where the regulation is formally issued and applies to all carriers.',
+        caselaw: [
+          { ref: 'Wallentin-Hermann C-549/07', text: 'Measures must be technically and economically viable. Compliance with a mandatory ATFM slot is itself a reasonable measure, not a failure to act.' },
+          { ref: 'Eglitis C-294/10', text: 'Operator must use all available resources. If crew FDP expired during the ATFM delay, standby crew deployment must be evidenced.' }
+        ],
+        challenges: [
+          { question: 'Was the ATFM regulation formally issued by Eurocontrol or the relevant national ANSP, with a regulation ID capable of corroboration?', evidence: 'Network manager records confirming regulation reference, ATFM daily operations brief', note: null },
+          { question: 'Did the restriction apply to all carriers on the affected route or FIR — confirming it was a network-wide event, not specific to this operator?', evidence: 'Network manager records showing multiple carriers affected, flight tracking data for the period', note: null },
+          { question: 'Was the CTOT assigned before the aircraft could have pushed back — i.e., was compliance with the slot mandatory from the outset, not a consequence of airline delay?', evidence: 'Flight operations system records: CTOT issuance time vs scheduled push-back time vs actual push-back time', note: null },
+          { question: 'Did any prior rotation delay on this aircraft\'s line-of-flying contribute to or compound the impact — and if so, what caused that prior delay?', evidence: 'Flight operations system rotation history — inbound sector delays and block times going back to the originating disruption', note: 'If a prior own-delay cascaded into the CTOT impact, the extraordinary circumstances argument for that element is weakened. Trace back to the true root cause.' },
+          { question: 'Was crew FDP adequate to operate the flight within the CTOT window, or did the delay cause a separate FDP exhaustion that required standby crew deployment?', evidence: 'Crew scheduling / FDP records for the crew operating the flight, standby crew availability log', note: null }
+        ]
+      },
+      {
+        id: 'third-party-ia',
+        label: 'Third-Party Industrial Action',
+        keywords: ['industrial action','strike','atc strike','atc industrial','dgac','enac','third party strike','air traffic control strike','ground handler strike','airport strike','french atc','italian atc','ansp strike'],
+        limb1Status: 'extraordinary',
+        limb1: 'Industrial action by a third-party authority (ATC, airport authority, third-party ground handler) — beyond the airline\'s reasonable control. Limb 1 likely satisfied provided the action is confirmed as third-party and formally notified. Own staff action is distinguished — see separate disruption type.',
+        caselaw: [
+          { ref: 'Krüsemann C-195/17', text: 'CJEU held own-staff wildcat strikes are NOT extraordinary circumstances. Third-party authority strikes are distinguished and may qualify — but confirmation of the identity of the striking body is essential.' },
+          { ref: 'Wallentin-Hermann C-549/07', text: 'Reasonable measures assessed against what was technically and economically viable given the third-party restriction and any advance notice available.' }
+        ],
+        challenges: [
+          { question: 'Is the industrial action confirmed as being by a third party (ATC authority, airport authority, third-party ground handler) and not by the airline\'s own employees?', evidence: 'Official strike notice identifying the striking body, authority publication confirming third-party status', note: 'CRITICAL under Krüsemann C-195/17: own staff action is generally NOT extraordinary circumstances. Confirm the identity of the striking body before advancing this argument.' },
+          { question: 'Was the action formally notified to the industry with insufficient advance notice for the airline to have rearranged services without disproportionate cost or sacrifice?', evidence: 'Date of official strike notification vs date of operation; assessment of what rearrangement would have cost', note: null },
+          { question: 'Was there a formal restriction or directive issued by the relevant competent authority confirming operational impact?', evidence: 'Official authority restriction notice (e.g. DGAC, ENAC, aerodrome authority), network manager records, NOTAM', note: null },
+          { question: 'Were minimum service obligations applicable under national law, and did the airline benefit from or comply with those provisions?', evidence: 'Applicable national minimum service regulations, authority communication on minimum service levels', note: null },
+          { question: 'Did the airline take advance measures once the strike was known — including schedule adjustments, pre-positioning or proactive passenger rebooking?', evidence: 'Disruption management records, pre-strike planning documentation, passenger communication records', note: null }
+        ]
+      },
+      {
+        id: 'own-ia',
+        label: 'Own Staff Industrial Action',
+        keywords: ['own staff','own crew','own ground handling','staff walkout','cabin crew strike','pilot strike','own staff walkout','own staff industrial'],
+        limb1Status: 'contested',
+        limb1: 'CONTESTED — Krüsemann (C-195/17) held that spontaneous wildcat strikes by own cabin crew are NOT extraordinary circumstances. Pre-announced own-staff strikes are harder still to defend. Limb 1 very unlikely to be satisfied. Advice: consider settle vs defend analysis carefully.',
+        caselaw: [
+          { ref: 'Krüsemann C-195/17', text: 'Spontaneous wildcat strike by own cabin crew held NOT to be extraordinary circumstances. Own-staff strikes are generally inherent in the management of airline operations.' }
+        ],
+        challenges: [
+          { question: 'Is the industrial action by the airline\'s own employees (crew, ground staff employed or directly contracted by the airline)?', evidence: 'Identification of the striking body and employment / contracting relationship', note: 'CRITICAL: Krüsemann C-195/17 — own staff strikes are generally NOT extraordinary circumstances. Legal position on Limb 1 is very weak. Consider early advice on settlement.' },
+          { question: 'Was the action a spontaneous wildcat strike with no advance notice, as opposed to a pre-announced formal strike?', evidence: 'Timeline of any union notice vs commencement of action; HR and union communications', note: 'Even a wildcat strike failed in Krüsemann. A pre-announced strike with formal notice is even harder to defend as extraordinary.' },
+          { question: 'What advance measures did the airline take once the action was anticipated or notified — and is there evidence those measures were taken as early as reasonably possible?', evidence: 'Management / HR communications, scheduling contingency planning, proactive customer re-accommodation records', note: null },
+          { question: 'Were passengers offered re-routing, refund and Art 9 care proactively and in compliance with Art 8?', evidence: 'Passenger communications, re-booking and refund records', note: null }
+        ]
+      },
+      {
+        id: 'birdstrike',
+        label: 'Wildlife Strike',
+        keywords: ['birdstrike','bird strike','bird ingestion','wildlife','avian','bird hit','wildlife strike'],
+        limb1Status: 'extraordinary',
+        limb1: 'Wildlife strike — inherently unpredictable and beyond the airline\'s control. Confirmed as extraordinary by the CJEU in Pešková (C-315/15). Limb 1 generally satisfied provided the strike is properly documented and damage is confirmed by maintenance inspection.',
+        caselaw: [
+          { ref: 'Pešková C-315/15', text: 'Collision with a bird confirmed as not inherent in the normal exercise of the airline\'s activity — extraordinary circumstances potentially available subject to Limb 2 reasonable measures.' },
+          { ref: 'Wallentin-Hermann C-549/07', text: 'Grounding for mandatory post-strike inspection is itself a reasonable measure. Standby aircraft deployment must still be evidenced.' }
+        ],
+        challenges: [
+          { question: 'Is there documentary evidence from the flight crew and maintenance that a wildlife strike occurred?', evidence: 'Air safety / occurrence report filed by the commander, maintenance inspection record confirming strike evidence (feathers, blood, damage consistent with bird ingestion)', note: null },
+          { question: 'Did the strike cause damage or contamination requiring mandatory inspection or grounding under the approved maintenance programme?', evidence: 'Maintenance event log, airworthiness engineering assessment, maintenance manual reference confirming the applicable inspection requirement', note: null },
+          { question: 'Was the grounding duration limited to the minimum required by the maintenance programme — i.e., was the inspection completed as expeditiously as possible?', evidence: 'Maintenance event log with timestamps, engineering sign-off records showing prompt completion', note: null },
+          { question: 'Was standby aircraft available at the relevant station, and could it have been positioned and operated in time to materially reduce the delay?', evidence: 'Standby aircraft availability log for the departure or affected station', note: null },
+          { question: 'Were wildlife hazard management procedures at the aerodrome current and appropriate — and is this documented in case the claimant alleges inadequate airport procedure?', evidence: 'Note: aerodrome wildlife management is the aerodrome authority\'s responsibility, not the airline\'s. Aerodrome wildlife management plan may be relevant but is third-party evidence.', note: null }
+        ]
+      },
+      {
+        id: 'technical',
+        label: 'Technical Defect',
+        keywords: ['technical','defect','fault','hydraulic','engine failure','mechanical','aog','maintenance','snag','mel','unserviceable','engineering hold','hidden defect','repetitive defect','component failure'],
+        limb1Status: 'contested',
+        limb1: 'CONTESTED — Ordinary technical defects inherent in aircraft operation are NOT extraordinary circumstances (Wallentin-Hermann C-549/07). Hidden defects not discoverable by reasonably diligent maintenance may qualify (Van der Lans C-257/14), but the threshold is high. MEL defects and repetitive faults are very difficult to defend.',
+        caselaw: [
+          { ref: 'Wallentin-Hermann C-549/07', text: 'Technical problems are inherent in airline operations and generally do NOT constitute extraordinary circumstances. The defect must be outside normal operational risk.' },
+          { ref: 'Van der Lans C-257/14', text: 'Unexpected technical defect not attributable to inadequate maintenance may qualify — but only where the defect could not have been discovered by reasonably diligent inspection.' }
+        ],
+        challenges: [
+          { question: 'Is there evidence that the defect was not discoverable by reasonably diligent maintenance inspection prior to the flight — i.e., no prior fault history exists for this component?', evidence: 'Maintenance records showing no prior occurrences of this fault, OEM technical guidance, engineering assessment of defect root cause', note: 'CRITICAL: If the defect had prior occurrences (repetitive defect) or was already on the MEL as a known condition, the extraordinary circumstances argument is very unlikely to succeed.' },
+          { question: 'Was the aircraft\'s approved maintenance schedule fully complied with up to the date of operation, including all applicable airworthiness directives and service bulletins?', evidence: 'Maintenance records, airworthiness documentation, AD and SB compliance schedule', note: null },
+          { question: 'Was the defect listed on the Minimum Equipment List as a known, manageable unserviceability permitting continued operation?', evidence: 'MEL for the aircraft type, maintenance log entry', note: 'If the defect was on the MEL: it was foreseeable and within normal operations — extraordinary circumstances argument very unlikely to succeed.' },
+          { question: 'Was the repair or AOG resolution carried out as expeditiously as reasonably possible — and is there evidence of prompt efforts to source parts or alternative engineering resource?', evidence: 'Maintenance event log with timestamps, parts sourcing records, engineering resource deployment evidence', note: null },
+          { question: 'Was standby aircraft available and deployed — or, if substitution was not feasible, is there documented evidence of why substitution was not operationally possible?', evidence: 'Standby aircraft availability log, fleet positioning records', note: null }
+        ]
+      },
+      {
+        id: 'medical',
+        label: 'Medical Emergency',
+        keywords: ['medical','medical emergency','ill passenger','passenger unwell','diversion medical','cardiac','health emergency','medical diversion','passenger ill'],
+        limb1Status: 'extraordinary',
+        limb1: 'In-flight medical emergency requiring diversion — the aircraft commander\'s mandatory duty of care under applicable aviation regulations and international conventions. Diversion to provide urgent medical treatment is a regulatory requirement, not a discretionary commercial act. Limb 1 generally well-established.',
+        caselaw: [
+          { ref: 'Wallentin-Hermann C-549/07', text: 'Measures taken must be technically and economically viable — diversion for mandatory medical care satisfies this standard.' },
+          { ref: 'Eglitis C-294/10', text: 'All available resources must be used; delay in resuming service beyond what is medically necessary may undermine Limb 2.' }
+        ],
+        challenges: [
+          { question: 'Is there documentary evidence of the medical emergency and the commander\'s decision to divert, including the timing and nature of the medical event?', evidence: 'Air safety / occurrence report filed by commander, any available onboard medical assessment record', note: null },
+          { question: 'Was the diversion clinically necessary — i.e., did the passenger\'s condition require immediate medical intervention unavailable on board — as opposed to a precautionary decision?', evidence: 'Commander\'s report detailing the clinical assessment, any record of consultation with medical professional (ground medical advice or onboard doctor)', note: null },
+          { question: 'Was the nearest aerodrome with appropriate medical facilities used for the diversion?', evidence: 'Flight tracking data showing diversion routing, ATC records confirming diversion clearance', note: null },
+          { question: 'Was the delay in resuming service to the destination limited to the minimum required to address the medical situation?', evidence: 'Flight operations system records: arrival at divert aerodrome, medical handover completion time, departure time for continuation', note: null }
+        ]
+      },
+      {
+        id: 'security',
+        label: 'Security Alert',
+        keywords: ['security','security alert','suspicious','bomb','threat','item in hold','security hold','screening','manifest','security search','police security'],
+        limb1Status: 'extraordinary',
+        limb1: 'Security directive or response mandated by a competent authority (police, airport security authority, state security agency) — beyond the airline\'s control. Mandatory compliance with security authority directions constitutes extraordinary circumstances.',
+        caselaw: [
+          { ref: 'Wallentin-Hermann C-549/07', text: 'Safety and security measures imposed or directed by competent authorities are beyond the airline\'s reasonable control and may constitute extraordinary circumstances.' }
+        ],
+        challenges: [
+          { question: 'Was the security response notified and directed by a competent authority — police, airport security authority or equivalent state body?', evidence: 'Police incident record or airport security authority communication directing the security response', note: null },
+          { question: 'Was the airline\'s response proportionate to and directed by the relevant authority — not a voluntary or precautionary decision taken without authority direction?', evidence: 'Authority direction records, internal security communication log showing airline acted on authority instruction', note: null },
+          { question: 'Were all required security procedures completed before service could legally resume, and is there documentation of each step?', evidence: 'Manifest reconciliation records, security clearance documentation, authority sign-off for return to service', note: null },
+          { question: 'Could the delay have been shortened by any action within the airline\'s reasonable control, without compromising the integrity of the security response?', evidence: 'Ground handling timeline records, authority communication timeline showing authority-imposed vs airline-imposed delay', note: null }
+        ]
+      },
+      {
+        id: 'disruptive-pax',
+        label: 'Disruptive Passenger',
+        keywords: ['disruptive passenger','unruly','aggressive','threatening','passenger removal','alcohol','behaviour','disruptive pax','passenger behaviour','abusive'],
+        limb1Status: 'extraordinary',
+        limb1: 'Unforeseeable passenger behaviour requiring commander intervention — an event not inherent in the normal exercise of the airline\'s activity and beyond effective control once the passenger is on board or at the gate. Limb 1 generally established provided the behaviour was not foreseeable from pre-boarding conduct.',
+        caselaw: [
+          { ref: 'Wallentin-Hermann C-549/07', text: 'Events not inherent in the normal exercise of airline activity and beyond the operator\'s effective control may constitute extraordinary circumstances.' }
+        ],
+        challenges: [
+          { question: 'Was the disruptive behaviour first manifested during or after boarding — or was there pre-boarding conduct that should have prompted earlier removal and prevented the delay?', evidence: 'Ground handling report, air safety / occurrence report. Timing of first notification is critical to the chronology.', note: null },
+          { question: 'Were conflict de-escalation and management procedures applied by crew before the decision to remove or divert?', evidence: 'Crew report or disruption management record evidencing de-escalation steps taken prior to removal decision', note: null },
+          { question: 'Was police or authority attendance required, and if so, is the delay attributable to authority response time rather than airline action or inaction?', evidence: 'Police attendance record, timeline comparing authority request time with authority arrival time', note: null },
+          { question: 'Was the overall delay limited to the minimum necessary to address the safety situation and comply with authority requirements?', evidence: 'Flight operations system timeline, air safety report', note: null }
+        ]
+      },
+      {
+        id: 'ground-damage',
+        label: 'Third-Party Ground Damage',
+        keywords: ['ground damage','ground incident','tug','pushback incident','ramp','airside','ground handling damage','third party damage','ramp damage'],
+        limb1Status: 'extraordinary',
+        limb1: 'Physical damage to the aircraft by a third-party ground handling operator or airside vehicle — beyond the airline\'s operational control, provided the airline\'s own contracted ground handling staff were not responsible for the incident.',
+        caselaw: [
+          { ref: 'Wallentin-Hermann C-549/07', text: 'Third-party actions causing aircraft damage may constitute extraordinary circumstances. Grounding for mandatory airworthiness inspection is itself a reasonable measure.' }
+        ],
+        challenges: [
+          { question: 'Is there a formal incident report identifying the responsible party as a third party (airport ground handler, airport authority, other airside operator) rather than the airline\'s own staff?', evidence: 'Ground damage incident report identifying the responsible party, circumstances and time of incident', note: 'If the damage was caused by the airline\'s own ground handling staff, the extraordinary circumstances argument is significantly weakened.' },
+          { question: 'Was an airworthiness engineering assessment completed confirming the damage required the aircraft to be grounded before further flight?', evidence: 'Maintenance / engineering assessment record, airworthiness determination with authority sign-off', note: null },
+          { question: 'Was the repair completed as expeditiously as reasonably possible given the nature and extent of the damage?', evidence: 'Maintenance event log with timestamps, repair resource deployment records', note: null },
+          { question: 'Was standby aircraft deployed, or was substitution considered and documented as not feasible within a timeframe that would have materially reduced the delay?', evidence: 'Standby aircraft availability log, fleet positioning records', note: null },
+          { question: 'Has the responsible third party been formally identified for potential recourse — relevant to whether the airline can recover its costs?', evidence: 'Incident report, any liability correspondence or insurance notification', note: 'Relevant to recourse analysis — third-party liability may exist alongside the passenger claim.' }
+        ]
+      },
+      {
+        id: 'airport-closure',
+        label: 'Airport / Runway Closure',
+        keywords: ['runway closed','airport closed','rwy closed','aerodrome closure','emergency closure','runway inspection','notam closure','aerodrome closed'],
+        limb1Status: 'extraordinary',
+        limb1: 'Formal aerodrome or runway closure by the aerodrome authority — a regulatory decision by a third party inherently beyond the airline\'s control. Limb 1 generally satisfied where closure is confirmed by NOTAM or ATC directive and applies to all operators.',
+        caselaw: [
+          { ref: 'Wallentin-Hermann C-549/07', text: 'Third-party authority decisions imposing operational restrictions on aerodrome use are generally beyond the airline\'s reasonable control.' }
+        ],
+        challenges: [
+          { question: 'Was the closure formally declared by the aerodrome authority, confirmed by NOTAM or ATC / ATIS directive?', evidence: 'NOTAM confirming closure, ATC communication or ATIS record, aerodrome authority statement', note: null },
+          { question: 'Did the closure affect all operators at the aerodrome — confirming it was a third-party authority decision, not an airline-specific restriction?', evidence: 'Flight tracking data showing all departures and arrivals suspended during the closure period', note: null },
+          { question: 'Was the duration of the closure beyond what any reasonable operational response by the airline could have mitigated?', evidence: 'NOTAM showing closure commencement and re-opening times', note: null },
+          { question: 'Was diversion to a suitable alternate aerodrome considered and, where it would have materially helped, arranged?', evidence: 'Disruption management records, ATC divert instructions if applicable', note: null }
+        ]
+      },
+      {
+        id: 'natural-disaster',
+        label: 'Natural Disaster',
+        keywords: ['volcanic','volcano','ash','earthquake','tsunami','wildfire','hurricane','flood','vaac','natural disaster','volcanic ash'],
+        limb1Status: 'extraordinary',
+        limb1: 'Natural disaster — force majeure event entirely beyond all operational control. Limb 1 very likely satisfied. Analysis focuses primarily on Limb 2: whether all reasonable recovery measures were taken as rapidly as possible once the situation became clear.',
+        caselaw: [
+          { ref: 'Wallentin-Hermann C-549/07', text: 'Events of a magnitude entirely outside normal operations satisfy extraordinary circumstances. Analysis focuses on whether all reasonable measures were taken as quickly as possible.' }
+        ],
+        challenges: [
+          { question: 'Was there a formal restriction or directive issued by the relevant authority — NOTAM, Volcanic Ash Advisory Centre bulletin, government aviation authority directive or official emergency declaration?', evidence: 'NOTAM, VAAC bulletin, government directive, ICAO advisory', note: null },
+          { question: 'Did the restriction specifically cover the airspace or aerodrome relevant to this flight, not just an adjacent area?', evidence: 'Geographic scope of the restriction mapped against the planned flight route and airports', note: null },
+          { question: 'Did the airline monitor the evolving situation and update its response progressively as conditions changed or improved?', evidence: 'Disruption management records showing monitoring activity and progressive response decisions', note: null }
+        ]
+      },
+      {
+        id: 'political-unrest',
+        label: 'Political / Civil Unrest',
+        keywords: ['political unrest','civil unrest','riots','political instability','travel advisory','curfew','government warning','conflict','civil disorder','fcdo'],
+        limb1Status: 'extraordinary',
+        limb1: 'Government or authority-directed operational restriction arising from civil or political instability — beyond airline control. Limb 1 generally satisfied where there is a formal government travel advisory or authority airspace/aerodrome closure.',
+        caselaw: [
+          { ref: 'Wallentin-Hermann C-549/07', text: 'Authority restrictions arising from exceptional political circumstances are beyond the airline\'s reasonable control.' }
+        ],
+        challenges: [
+          { question: 'Was there an official government travel advisory or authority directive restricting or prohibiting operations at the relevant time?', evidence: 'Government foreign travel advisory, authority airspace or aerodrome closure order, government official communication', note: null },
+          { question: 'Was the airline\'s decision to suspend or modify operations proportionate and required by safety protocols, insurance conditions or regulatory obligation — not a purely commercial decision?', evidence: 'Internal safety assessment, government advisory in effect, operational decision records', note: null },
+          { question: 'Were alternative routing, re-timing and re-booking options assessed and offered to passengers as early as reasonably possible?', evidence: 'Disruption management records, passenger communications log showing proactive rebooking efforts', note: null }
+        ]
+      },
+      {
+        id: 'crew-fdp',
+        label: 'Crew FDP / Rest Constraint',
+        keywords: ['crew','fdp','flight duty period','timed out','rest','out of hours','standby crew','crew unavailable','crew rest','ftl','cap 1615','oro.ftl','duty limit'],
+        limb1Status: 'contested',
+        limb1: 'CONTESTED — FDP exhaustion alone is NOT extraordinary circumstances. The root cause of the FDP exhaustion must independently qualify. If a third-party extraordinary event (ATFM, weather, birdstrike) caused the rotation delay that exhausted crew duty, the cascading FDP impact may fall within Art 5(3) — but the causal chain must be clearly traced and evidenced.',
+        caselaw: [
+          { ref: 'Wallentin-Hermann C-549/07', text: 'Causal link required: the extraordinary circumstance must be the actual cause of the cancellation or delay, not merely a contributing factor. The chain from root cause to disruption must be unbroken.' },
+          { ref: 'Eglitis C-294/10', text: 'All available resources — including standby crew — must be deployed before extraordinary circumstances can be relied upon. Absence of standby without explanation is a serious vulnerability.' }
+        ],
+        challenges: [
+          { question: 'Was the root cause of the FDP exhaustion itself an extraordinary circumstance — and is that root cause separately evidenced and established?', evidence: 'Flight operations system rotation history tracing the delay cascade back to the originating cause event', note: 'CRITICAL: FDP exhaustion is a consequence, not a cause. The originating event must independently qualify as extraordinary. Analyse the root cause disruption type separately.' },
+          { question: 'Is the FDP calculation correctly documented under applicable regulations, accounting for all sectors operated and any authorised extensions?', evidence: 'Crew scheduling / FDP records with sector-by-sector calculation, applicable regulatory limit reference', note: null },
+          { question: 'Was any available FDP extension exercised under the commander\'s authority where appropriate and safe to do so?', evidence: 'FDP extension provisions under applicable regulations, crew scheduling records showing whether extension was considered', note: null },
+          { question: 'Was standby crew available at the relevant station — and if so, why could it not be deployed in time to avoid or materially reduce the delay?', evidence: 'Standby crew availability log for the relevant station on the date of operation', note: 'Under Eglitis, failure to deploy available standby is a significant vulnerability. If standby was available, the reason for non-deployment must be clearly documented.' },
+          { question: 'Could crew have been positioned from an adjacent base within a timeframe that would have materially reduced the delay — and was this option assessed?', evidence: 'Crew scheduling records showing positioning options considered, operational timeline for positioning feasibility', note: null }
+        ]
+      }
+    ];
+
+    /* ----------------------------------------------------------
+       DISRUPTION TYPE DETECTION
+       Keyword scoring against RM_DB. Returns best match.
+    ---------------------------------------------------------- */
+    function detectDisruptionType(text) {
+      const lower = text.toLowerCase();
+      let best = null, bestScore = 0;
+      for (const dt of RM_DB) {
+        const score = dt.keywords.reduce((acc, kw) => acc + (lower.includes(kw) ? 1 : 0), 0);
+        if (score > bestScore) { bestScore = score; best = dt; }
+      }
+      return best || RM_DB[0]; // default to weather if no match
+    }
+
+    /* ----------------------------------------------------------
+       RENDER ANALYSIS OUTPUT (replaces showBriefPlaceholder)
+    ---------------------------------------------------------- */
+    function renderAnalysisOutput(inputText) {
       const area = document.getElementById('briefArea');
       area.classList.add('active');
+
+      const dt = detectDisruptionType(inputText);
+      currentDT = dt;
+      rmResponses = {};
+
+      const limb1Labels = {
+        extraordinary: 'Extraordinary Circumstances — Limb 1',
+        contested:     'Contested — Further Analysis Required',
+        unlikely:      'Unlikely — Limb 1 at Risk'
+      };
+      const limb1Label = limb1Labels[dt.limb1Status] || 'Under Review';
+
+      // Build challenge cards
+      const cardsHtml = dt.challenges.map((c, i) => `
+        <div class="rm-card" id="rm-card-${i}">
+          <div class="rm-card-body">
+            <span class="rm-card-num">Q${i + 1}</span>
+            <div class="rm-card-content">
+              <div class="rm-challenge">${c.question}</div>
+              <div class="rm-evidence"><strong>Evidence:</strong> ${c.evidence}</div>
+              ${c.note ? `<div class="rm-note">⚠ ${c.note}</div>` : ''}
+            </div>
+          </div>
+          <div class="rm-btns">
+            <button class="rm-btn rm-btn-confirm" onclick="setRMResponse(${i},'confirmed')">✓ Confirmed</button>
+            <button class="rm-btn rm-btn-partial" onclick="setRMResponse(${i},'partial')">⚠ Partial</button>
+            <button class="rm-btn rm-btn-gap" onclick="setRMResponse(${i},'gap')">✗ Gap</button>
+          </div>
+        </div>
+      `).join('');
+
+      // Build case law
+      const caselawHtml = dt.caselaw.map(cl => `
+        <div class="legal-note">
+          <span class="legal-case-ref">${cl.ref}</span>
+          <span class="legal-text">${cl.text}</span>
+        </div>
+      `).join('');
+
       area.innerHTML = `
-        <div style="
-          padding: var(--sp-2xl);
-          border: 1px dashed var(--ink-rule);
-          border-radius: var(--r-lg);
-          text-align: center;
-          font-family: var(--font-spectral);
-          font-size: 15px;
-          color: var(--ink-faint);
-          line-height: 1.8;
-        ">
-          <div style="font-family:var(--font-serif);font-size:22px;color:var(--ink-tertiary);margin-bottom:var(--sp-md)">Analysis Complete</div>
-          Legal brief rendering will be built in MODE 4.<br>
-          Foundation layer verified — design system, input modes, and pass animation all functioning.
+        <div class="brief-doc">
+
+          <!-- PASS I: Causal Classification -->
+          <div class="brief-section">
+            <div class="brief-section-label">Pass I — Causal Chain &amp; Classification</div>
+            <div class="brief-dt-row">
+              <span class="dt-badge ${dt.limb1Status}">${limb1Label}</span>
+              <span class="brief-dt-name">${dt.label}</span>
+            </div>
+            <div class="brief-limb1">${dt.limb1}</div>
+          </div>
+
+          <!-- PASS II: RM Lawyer Loop -->
+          <div class="brief-section">
+            <div class="brief-section-label">Pass II — Reasonable Measures Review</div>
+            <div class="rm-header">
+              <span class="rm-title">Work through each challenge point — confirm the evidence position for each</span>
+              <span class="rm-tally" id="rm-tally">0 / ${dt.challenges.length} reviewed</span>
+            </div>
+            <div class="rm-cards" id="rm-cards">
+              ${cardsHtml}
+            </div>
+            <div class="rm-meter-wrap">
+              <div class="rm-meter-row">
+                <span>RM Strength</span>
+                <span id="rm-position-label">Awaiting review</span>
+              </div>
+              <div class="rm-meter-track">
+                <div class="rm-meter-fill" id="rm-meter-fill"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- PASS III: Legal Position -->
+          <div class="brief-section">
+            <div class="brief-section-label">Pass III — Legal Position &amp; Applicable Authority</div>
+            <div id="pass3-content" style="margin-bottom:var(--sp-md)">
+              <div class="rm-position-banner" id="rm-position-banner">
+                Complete the RM review above — verdict, quantum and limitation analysis update automatically.
+              </div>
+            </div>
+            <div class="legal-notes" id="pass3-caselaw">
+              ${caselawHtml}
+            </div>
+          </div>
+
         </div>
       `;
+    }
+
+    /* ----------------------------------------------------------
+       RM RESPONSE HANDLER
+    ---------------------------------------------------------- */
+    function setRMResponse(idx, response) {
+      rmResponses[idx] = response;
+
+      const card = document.getElementById('rm-card-' + idx);
+      if (!card) return;
+      card.classList.remove('confirmed','partial','gap');
+      card.classList.add(response);
+
+      card.querySelectorAll('.rm-btn').forEach(btn => btn.classList.remove('active'));
+      const selector = { confirmed:'.rm-btn-confirm', partial:'.rm-btn-partial', gap:'.rm-btn-gap' }[response];
+      if (selector) { const b = card.querySelector(selector); if (b) b.classList.add('active'); }
+
+      updateRMStrength();
+    }
+
+    /* ----------------------------------------------------------
+       RM STRENGTH METER + LEGAL POSITION BANNER
+    ---------------------------------------------------------- */
+    function updateRMStrength() {
+      if (!currentDT) return;
+      const total     = currentDT.challenges.length;
+      const confirmed = Object.values(rmResponses).filter(r => r === 'confirmed').length;
+      const partial   = Object.values(rmResponses).filter(r => r === 'partial').length;
+      const gaps      = Object.values(rmResponses).filter(r => r === 'gap').length;
+      const reviewed  = confirmed + partial + gaps;
+
+      const tally = document.getElementById('rm-tally');
+      if (tally) {
+        const parts = [];
+        if (confirmed) parts.push(`${confirmed} confirmed`);
+        if (partial)   parts.push(`${partial} partial`);
+        if (gaps)      parts.push(`${gaps} gap${gaps > 1 ? 's' : ''}`);
+        tally.textContent = (parts.length ? parts.join(' · ') : '0 reviewed') + ` — ${reviewed}/${total}`;
+      }
+
+      if (!reviewed) return;
+
+      // Score: confirmed=1.0, partial=0.5, gap=0
+      const score = (confirmed + partial * 0.5) / total;
+      const pct   = Math.round(score * 100);
+
+      const fill   = document.getElementById('rm-meter-fill');
+      const label  = document.getElementById('rm-position-label');
+      const banner = document.getElementById('rm-position-banner');
+
+      let meterColor, posLabel;
+      if (gaps === 0 && score >= 0.8) {
+        meterColor = 'var(--defend-mid)';     posLabel = 'Strong — RM position well-evidenced';
+      } else if (gaps <= 1 && score >= 0.55) {
+        meterColor = 'var(--conditions-mid)'; posLabel = 'Conditional — address gap items';
+      } else {
+        meterColor = 'var(--settle-mid)';     posLabel = 'Exposed — significant RM gaps';
+      }
+
+      if (fill)  { fill.style.width = pct + '%'; fill.style.background = meterColor; }
+      if (label) label.textContent = posLabel;
+
+      renderPass3Extended();
+    }
+
+    /* ==========================================================
+       AIRPORT COORDINATES — for great-circle distance
+    ========================================================== */
+    const AIRPORT_LL = {
+      LBA:[53.87,-1.66],MAN:[53.35,-2.27],LGW:[51.16,-0.19],LHR:[51.48,-0.45],
+      LTN:[51.87,-0.37],STN:[51.88,0.24],EDI:[55.95,-3.37],BHX:[52.45,-1.73],
+      BRS:[51.38,-2.72],NCL:[55.03,-1.69],BOH:[50.78,-1.84],SOU:[50.95,-1.36],
+      EXT:[50.73,-3.41],ABZ:[57.20,-2.20],GLA:[55.87,-4.43],BFS:[54.66,-6.22],
+      BHD:[54.62,-5.87],CWL:[51.40,-3.34],DSA:[53.47,-1.01],MME:[54.51,-1.42],
+      DUB:[53.42,-6.27],SNN:[52.70,-8.92],ORK:[51.84,-8.49],
+      BCN:[41.30,2.08],MAD:[40.47,-3.57],ALC:[38.28,-0.56],AGP:[36.67,-4.50],
+      PMI:[39.55,2.74],TFS:[28.04,-16.57],LPA:[27.93,-15.39],ACE:[28.95,-13.61],
+      FUE:[28.45,-13.86],TFN:[28.48,-16.34],IBZ:[38.87,1.37],MAH:[39.86,4.22],
+      VLC:[39.49,-0.48],SVQ:[37.42,-5.89],REU:[41.15,1.17],
+      LIS:[38.77,-9.13],OPO:[41.24,-8.68],FAO:[37.02,-7.97],FNC:[32.70,-16.78],
+      CDG:[49.01,2.55],ORY:[48.72,2.36],NCE:[43.66,7.21],LYS:[45.72,5.08],
+      MRS:[43.44,5.22],BOD:[44.83,-0.71],NTE:[47.16,-1.61],TLS:[43.63,1.37],
+      BIQ:[43.47,-1.52],
+      FCO:[41.80,12.23],MXP:[45.63,8.73],LIN:[45.45,9.28],VCE:[45.50,12.35],
+      NAP:[40.89,14.29],PMO:[38.18,13.10],CTA:[37.47,15.07],BRI:[41.14,16.76],
+      BGY:[45.67,9.70],PSA:[43.68,10.39],
+      ATH:[37.94,23.94],CFU:[39.60,19.91],RHO:[36.41,28.09],HER:[35.34,25.18],
+      KGS:[36.79,27.09],SKG:[40.52,22.97],JTR:[36.40,25.48],CHQ:[35.53,24.15],
+      ZTH:[37.75,20.88],LCA:[34.88,33.62],PFO:[34.72,32.49],
+      AYT:[36.90,30.80],SAW:[40.90,29.31],IST:[41.26,28.74],DLM:[36.71,28.79],
+      BJV:[37.25,27.66],
+      HRG:[27.18,33.80],SSH:[27.98,34.39],CAI:[30.12,31.40],
+      TUN:[36.85,10.23],MIR:[35.76,10.75],DJE:[33.87,10.78],NBE:[36.07,10.44],
+      RAK:[31.61,-8.04],CMN:[33.37,-7.59],
+      AMS:[52.31,4.77],BRU:[50.90,4.48],FRA:[50.03,8.57],MUC:[48.35,11.79],
+      DUS:[51.29,6.77],BER:[52.37,13.52],CGN:[50.87,7.14],STR:[48.69,9.22],
+      HAM:[53.63,9.99],VIE:[48.11,16.57],ZRH:[47.46,8.55],GVA:[46.24,6.11],
+      BSL:[47.59,7.53],
+      ARN:[59.65,17.92],CPH:[55.62,12.65],OSL:[60.20,11.08],HEL:[60.32,24.96],
+      BGO:[60.29,5.22],GOT:[57.67,12.29],
+      PRG:[50.10,14.26],BUD:[47.44,19.26],WAW:[52.17,20.97],KRK:[50.08,19.79],
+      WRO:[51.10,16.89],GDN:[54.38,18.47],POZ:[52.42,16.83],
+      RIX:[56.92,23.97],TLL:[59.41,24.83],VNO:[54.63,25.29],
+      SOF:[42.69,23.41],OTP:[44.57,26.09],CLJ:[46.79,23.69],TIA:[41.42,19.72],
+      DBV:[42.56,18.27],SPU:[43.54,16.30],ZAG:[45.74,16.07],SKP:[41.96,21.62],
+      BOJ:[42.57,27.52],VAR:[43.23,27.83],
+      DXB:[25.25,55.36],AUH:[24.43,54.65],DOH:[25.27,51.61],KWI:[29.23,47.97],
+      AMM:[31.72,35.99],
+      MLA:[35.86,14.48],KEF:[63.99,-22.61],
+      JFK:[40.64,-73.78],LAX:[33.94,-118.41],ORD:[41.98,-87.91],
+      ATL:[33.64,-84.43],MIA:[25.80,-80.29],EWR:[40.69,-74.17],
+    };
+
+    function haversineKm(lat1,lon1,lat2,lon2) {
+      const R=6371, dLat=(lat2-lat1)*Math.PI/180, dLon=(lon2-lon1)*Math.PI/180;
+      const a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
+      return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+    }
+
+    function getRouteDistanceKm(iata1,iata2) {
+      const a=AIRPORT_LL[iata1], b=AIRPORT_LL[iata2];
+      if(!a||!b) return null;
+      return Math.round(haversineKm(a[0],a[1],b[0],b[1]));
+    }
+
+    function getQuantumBand(distKm) {
+      if(!distKm) return null;
+      if(distKm<=1500) return {eur:250,gbp:220,band:'≤ 1,500 km',article:'Art 7(1)(a) EC261'};
+      if(distKm<=3500) return {eur:400,gbp:350,band:'1,500 – 3,500 km',article:'Art 7(1)(b) EC261'};
+      return {eur:600,gbp:520,band:'> 3,500 km',article:'Art 7(1)(c) EC261'};
+    }
+
+    function calcLimitationDate(dateStr) {
+      if(!dateStr) return null;
+      const d=new Date(dateStr+'T00:00:00Z');
+      const expiry=new Date(d); expiry.setFullYear(expiry.getFullYear()+6);
+      const daysLeft=Math.ceil((expiry-Date.now())/86400000);
+      return {expiry,daysLeft};
+    }
+
+    function getVerdict(limb1Status,score,gaps) {
+      if(limb1Status==='unlikely') return 'settle';
+      if(limb1Status==='extraordinary') {
+        if(score>=0.8&&gaps===0) return 'defend';
+        if(score>=0.5) return 'conditions';
+        return 'settle';
+      }
+      // contested
+      if(score>=0.8&&gaps===0) return 'conditions';
+      return 'settle';
+    }
+
+    function buildSWPoints() {
+      if(!currentDT) return {strengths:[],weaknesses:[]};
+      const strengths=[],weaknesses=[];
+      for(const [idx,resp] of Object.entries(rmResponses)) {
+        const c=currentDT.challenges[+idx];
+        if(!c) continue;
+        const q=c.question.length>90?c.question.slice(0,87)+'…':c.question;
+        if(resp==='confirmed') strengths.push(q);
+        else if(resp==='gap')  weaknesses.push(q);
+        else weaknesses.push('Partial — '+q);
+      }
+      return {strengths,weaknesses};
+    }
+
+    /* ----------------------------------------------------------
+       PASS III — Full legal output
+    ---------------------------------------------------------- */
+    function renderPass3Extended() {
+      const p3=document.getElementById('pass3-content');
+      if(!p3||!currentDT) return;
+
+      const reviewed=Object.keys(rmResponses).length;
+      if(!reviewed) return;
+
+      const total    =currentDT.challenges.length;
+      const confirmed=Object.values(rmResponses).filter(r=>r==='confirmed').length;
+      const partial  =Object.values(rmResponses).filter(r=>r==='partial').length;
+      const gaps     =Object.values(rmResponses).filter(r=>r==='gap').length;
+      const score    =(confirmed+partial*0.5)/total;
+      const verdict  =getVerdict(currentDT.limb1Status,score,gaps);
+
+      const vLabels={defend:'Defend',conditions:'Conditional Defence',settle:'Settle — Consider Early Resolution'};
+      const vSubs={
+        defend:`RM position well-evidenced — ${confirmed}/${total} challenge points confirmed`,
+        conditions:`${confirmed} confirmed · ${partial} partial · ${gaps} gap${gaps!==1?'s':''} — address before hearing`,
+        settle:`Significant exposure — Limb 1 or RM position weak · ${gaps} gap${gaps!==1?'s':''} identified`
+      };
+      const vRefs={defend:'Art 5(3) EC261 / UK261',conditions:'Art 5(3) — evidence gaps',settle:'Wallentin-Hermann risk'};
+
+      const {strengths,weaknesses}=buildSWPoints();
+
+      // Strengths & weaknesses HTML
+      const swHtml=`
+        <div class="sw-panel">
+          <div class="sw-col strengths">
+            <div class="sw-col-header">Confirmed — Strengths</div>
+            ${strengths.length
+              ? strengths.map(s=>`<div class="sw-item"><span class="sw-dot"></span><span>${s}</span></div>`).join('')
+              : '<div class="sw-item" style="color:var(--ink-faint);font-style:italic">No confirmed points yet</div>'}
+          </div>
+          <div class="sw-col weaknesses">
+            <div class="sw-col-header">Gaps / Weaknesses</div>
+            ${weaknesses.length
+              ? weaknesses.map(w=>`<div class="sw-item"><span class="sw-dot"></span><span>${w}</span></div>`).join('')
+              : '<div class="sw-item" style="color:var(--defend-mid);font-style:italic">No gaps identified ✓</div>'}
+          </div>
+        </div>`;
+
+      // Quantum
+      const distKm=getRouteDistanceKm(currentDepIata,currentArrIata);
+      const band  =distKm?getQuantumBand(distKm):null;
+      let quantumHtml='';
+      if(band) {
+        const n   =claimants||1;
+        const totE=band.eur*n, totG=band.gbp*n;
+        const thresholdMet=currentDelayMins>=180;
+        const delayDisp=currentDelayMins
+          ? `${Math.floor(currentDelayMins/60)}h${currentDelayMins%60?' '+(currentDelayMins%60)+'min':''}`
+          : '—';
+        quantumHtml=`
+          <div class="quantum-panel">
+            <div class="qp-head">
+              <span class="qp-head-label">Quantum Analysis</span>
+              <span style="font-family:var(--font-mono);font-size:10px;color:var(--ink-faint)">${band.article}</span>
+            </div>
+            <div class="qp-row">
+              <span class="qp-label">Route</span>
+              <span class="qp-value">${currentDepIata||'—'} → ${currentArrIata||'—'} · <strong>${distKm.toLocaleString()} km</strong> · ${band.band}</span>
+            </div>
+            <div class="qp-row">
+              <span class="qp-label">Art 7 compensation</span>
+              <span class="qp-value mono"><strong>€${band.eur}</strong> / £${band.gbp} per passenger</span>
+            </div>
+            <div class="qp-row">
+              <span class="qp-label">Delay at arrival</span>
+              <span class="qp-value">
+                <input class="brief-input" id="q-delay" type="number" value="${currentDelayMins||''}"
+                       placeholder="mins" oninput="updateQuantum()" style="width:78px"> min
+                &nbsp;<span style="font-size:10px;font-weight:600;${thresholdMet?'color:var(--defend-mid)':'color:var(--settle-mid)'}">${thresholdMet?'≥ 3h threshold met ✓':'< 3h — below threshold'}</span>
+              </span>
+            </div>
+            <div class="qp-row">
+              <span class="qp-label">Number of claimants</span>
+              <span class="qp-value">
+                <input class="brief-input" id="q-claimants" type="number" value="${n}"
+                       min="1" oninput="updateQuantum()" style="width:78px">
+              </span>
+            </div>
+            <div class="qp-row">
+              <span class="qp-label">Claimed amount (if known)</span>
+              <span class="qp-value">
+                £/€ <input class="brief-input" id="q-claimed" type="number"
+                       placeholder="optional" oninput="updateQuantum()" style="width:110px">
+                <span id="q-claimed-note" style="font-size:10px;color:var(--ink-faint);margin-left:6px"></span>
+              </span>
+            </div>
+            <div class="qp-row total-row">
+              <span class="qp-label" style="font-weight:600;color:var(--ink-secondary)">Max Art 7 exposure</span>
+              <span class="qp-value">
+                <span class="qp-total" id="q-total">€${totE} / £${totG}</span>
+                ${n>1?`<span style="font-size:11px;color:var(--ink-faint);margin-left:8px">(€${band.eur} × ${n} claimants)</span>`:''}
+              </span>
+            </div>
+          </div>`;
+      } else {
+        quantumHtml=`
+          <div class="quantum-panel">
+            <div class="qp-head"><span class="qp-head-label">Quantum Analysis</span></div>
+            <div class="qp-row">
+              <span class="qp-label">Route airports</span>
+              <span class="qp-value">
+                <input class="brief-input" id="q-dep" type="text" placeholder="DEP" value="${currentDepIata||''}"
+                       style="width:60px;text-transform:uppercase" oninput="this.value=this.value.toUpperCase();updateQuantumFromRoute()">
+                <span style="margin:0 6px;color:var(--ink-tertiary)">→</span>
+                <input class="brief-input" id="q-arr" type="text" placeholder="ARR" value="${currentArrIata||''}"
+                       style="width:60px;text-transform:uppercase" oninput="this.value=this.value.toUpperCase();updateQuantumFromRoute()">
+                <span style="font-size:11px;color:var(--ink-faint);margin-left:8px">Enter IATA codes to calculate distance and band</span>
+              </span>
+            </div>
+          </div>`;
+      }
+
+      // Limitation
+      let limitHtml='';
+      const lim=calcLimitationDate(currentFlightDate);
+      if(lim) {
+        const exFmt=lim.expiry.toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'});
+        const d=lim.daysLeft, yrs=Math.floor(d/365), rem=d%365;
+        const limClass=d>365?'ok':d>90?'warn':'urgent';
+        const limStatus=d>365?'Comfortable':d>90?'Approaching':d>0?'Urgent':'Expired';
+        const fltFmt=new Date(currentFlightDate+'T00:00:00Z').toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'});
+        limitHtml=`
+          <div class="limitation-panel">
+            <div class="qp-head">
+              <span class="qp-head-label">Limitation Period — England &amp; Wales (6 years)</span>
+              <span class="lp-status ${limClass}">${limStatus}</span>
+            </div>
+            <div class="qp-row">
+              <span class="qp-label">Flight date</span>
+              <span class="qp-value">${fltFmt}</span>
+            </div>
+            <div class="qp-row">
+              <span class="qp-label">6-year expiry</span>
+              <span class="qp-value"><strong>${exFmt}</strong></span>
+            </div>
+            <div class="qp-row">
+              <span class="qp-label">Time remaining</span>
+              <span class="qp-value">${d>0?`${yrs>0?yrs+' year'+(yrs!==1?'s':'')+' ':''} ${rem} day${rem!==1?'s':''}`:'<strong style="color:var(--settle)">EXPIRED</strong>'}</span>
+            </div>
+          </div>`;
+      }
+
+      p3.innerHTML=`
+        <div class="verdict-banner ${verdict}" style="margin-bottom:var(--sp-lg)">
+          <div>
+            <div class="verdict-word">${vLabels[verdict]}</div>
+            <div class="verdict-sub">${vSubs[verdict]}</div>
+          </div>
+          <div class="verdict-ref">${vRefs[verdict]}</div>
+        </div>
+        ${swHtml}
+        ${quantumHtml}
+        ${limitHtml}
+      `;
+    }
+
+    /* ----------------------------------------------------------
+       QUANTUM INPUT HANDLERS
+    ---------------------------------------------------------- */
+    function updateQuantum() {
+      const dEl=document.getElementById('q-delay');
+      const cEl=document.getElementById('q-claimants');
+      const clEl=document.getElementById('q-claimed');
+      if(dEl) currentDelayMins=parseInt(dEl.value)||0;
+      if(cEl) claimants=parseInt(cEl.value)||1;
+
+      const distKm=getRouteDistanceKm(currentDepIata,currentArrIata);
+      const band  =distKm?getQuantumBand(distKm):null;
+      if(!band) return;
+
+      const n=claimants||1;
+      const tEl=document.getElementById('q-total');
+      if(tEl) tEl.textContent=`€${band.eur*n} / £${band.gbp*n}`;
+
+      const claimed=clEl?parseFloat(clEl.value)||0:0;
+      const noteEl=document.getElementById('q-claimed-note');
+      if(noteEl&&claimed>0) {
+        const diff=claimed-(band.eur*n);
+        noteEl.textContent=diff<0?`£${Math.abs(Math.round(diff))} below max Art 7 liability`
+                                  :`£${Math.round(diff)} above Art 7 statutory cap — check additional heads`;
+      }
+    }
+
+    function updateQuantumFromRoute() {
+      const dEl=document.getElementById('q-dep'), aEl=document.getElementById('q-arr');
+      if(dEl) currentDepIata=dEl.value.toUpperCase();
+      if(aEl) currentArrIata=aEl.value.toUpperCase();
+      // Re-render Pass III with new route
+      renderPass3Extended();
     }
 
   </script>
