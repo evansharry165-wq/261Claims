@@ -1516,6 +1516,106 @@
       line-height: 1.65;
     }
 
+    /* ── Case Law Bundle ─────────────────────────────────── */
+    .caselaw-bundle { margin-top: var(--sp-lg); }
+    .pass3-section-header {
+      font-family: var(--font-serif);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--ink-tertiary);
+      padding-bottom: var(--sp-sm);
+      margin-bottom: var(--sp-md);
+      border-bottom: 1.5px solid var(--ink-rule);
+    }
+    .caselaw-group-header {
+      font-family: var(--font-serif);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      padding: var(--sp-sm) 0;
+      margin: var(--sp-md) 0 var(--sp-sm);
+      border-bottom: 1px solid var(--ink-rule2);
+    }
+    .caselaw-group-defence { color: var(--defend); border-color: var(--defend-border); }
+    .caselaw-group-claimant { color: var(--settle); border-color: var(--settle-border); }
+
+    .caselaw-card {
+      border: 1px solid var(--ink-rule);
+      border-radius: var(--r-md);
+      padding: var(--sp-md);
+      margin-bottom: var(--sp-sm);
+      background: var(--paper, var(--surface-raised));
+    }
+    .caselaw-card.favours-airline { border-left: 3px solid var(--defend); }
+    .caselaw-card.favours-claimant { border-left: 3px solid var(--settle); }
+
+    .caselaw-card-header {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-sm);
+      flex-wrap: wrap;
+      margin-bottom: var(--sp-sm);
+    }
+    .caselaw-citation {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      background: var(--ink-faint);
+      padding: 2px 6px;
+      border-radius: var(--r);
+      color: var(--ink-secondary);
+    }
+    .caselaw-parties {
+      font-family: var(--font-spectral, var(--font-serif));
+      font-size: 13px;
+      font-style: italic;
+      color: var(--ink-primary);
+      font-weight: 600;
+    }
+    .caselaw-year {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--ink-mid, var(--ink-faint));
+    }
+    .caselaw-badge {
+      margin-left: auto;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+      padding: 2px 8px;
+      border-radius: 99px;
+    }
+    .badge-defence { background: var(--defend-bg); color: var(--defend); border: 1px solid var(--defend-border); }
+    .badge-claimant { background: var(--settle-bg); color: var(--settle); border: 1px solid var(--settle-border); }
+
+    .caselaw-ratio {
+      font-family: var(--font-spectral, var(--font-serif));
+      font-size: 13px;
+      line-height: 1.6;
+      color: var(--ink-primary);
+      margin-bottom: var(--sp-sm);
+    }
+    .caselaw-propositions {
+      margin: 0 0 var(--sp-sm) var(--sp-md);
+      padding: 0;
+      font-size: 12px;
+      line-height: 1.6;
+      color: var(--ink-secondary);
+    }
+    .caselaw-propositions li { margin-bottom: 2px; }
+    .caselaw-quote {
+      font-family: var(--font-spectral, var(--font-serif));
+      font-size: 12px;
+      font-style: italic;
+      color: var(--ink-mid, var(--ink-tertiary));
+      border-left: 2px solid var(--ink-rule2);
+      margin: var(--sp-sm) 0 0;
+      padding: var(--sp-xs) var(--sp-sm);
+    }
+
   </style>
 </head>
 <body>
@@ -2514,6 +2614,373 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
        Generic disruption types with challenge questions and
        applicable evidence types. No carrier-specific system names.
     ========================================================== */
+    /* ----------------------------------------------------------
+       CASELAW_DB — Verified EC261 / UK261 Legal Authorities
+       Sources: EUR-Lex, CURIA, BAILII
+    ---------------------------------------------------------- */
+    const CASELAW_DB = [
+      {
+        id: 'wallentin-hermann',
+        ref: 'Wallentin-Hermann v Alitalia',
+        citation: 'C-549/07',
+        court: 'CJEU',
+        date: '2008-12-22',
+        year: 2008,
+        verified: true,
+        eurlexUrl: 'https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A62007CJ0549',
+        ratio: 'A technical fault in an aircraft cannot constitute an extraordinary circumstance unless it stems from events not inherent in the normal exercise of airline activity and beyond the carrier\'s actual control. A malfunction discovered during pre-flight checks or routine maintenance does not qualify merely because it is unexpected.',
+        propositions: [
+          'A technical defect is not extraordinary merely because it is statistically rare.',
+          'Events inherent in the normal exercise of airline activity — including unexpected technical failures — are not extraordinary circumstances.',
+          'The airline must take all measures reasonably available, exhausting human, material and financial resources, even where the situation was not caused by the airline.'
+        ],
+        dtIds: ['technical'],
+        nodes: ['U-7', 'U-8'],
+        favoursAirline: false,
+        keyQuote: 'A technical problem in an aircraft cannot be covered by the concept of \'extraordinary circumstances\' unless it stems from events which, by their nature or origin, are not inherent in the normal exercise of the activity of the air carrier concerned and are beyond its actual control.'
+      },
+      {
+        id: 'eglitis',
+        ref: 'Eglitis and Mäkinen v Latvijas Republikas Ekonomikas ministrija',
+        citation: 'C-294/10',
+        court: 'CJEU',
+        date: '2011-05-12',
+        year: 2011,
+        verified: true,
+        eurlexUrl: 'https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A62010CJ0294',
+        ratio: 'An air carrier must take all measures available, including planning adequate time buffers into scheduling, to avoid delays or cancellations caused by foreseeable extraordinary circumstances. The carrier does not have to make intolerable sacrifices in terms of capacity but must deploy all available resources at the time of the disruption.',
+        propositions: [
+          'The reasonable measures obligation requires the airline to plan adequate time reserves for foreseeable extraordinary circumstances.',
+          'All human, material and financial resources available at the time must be mobilised before Art 5(3) can be relied upon.',
+          'Failure to deploy available standby crew or aircraft without adequate explanation significantly weakens the Limb 2 position.'
+        ],
+        dtIds: ['atfm', 'weather'],
+        nodes: ['U-8'],
+        favoursAirline: false,
+        keyQuote: 'The air carrier is required to take all measures available — including planning adequate time buffers — when faced with an extraordinary circumstance, unless such measures represent an unacceptable sacrifice in terms of the capacity of its undertaking.'
+      },
+      {
+        id: 'pesekova',
+        ref: 'Pešková and Peška v Travel Service',
+        citation: 'C-315/15',
+        court: 'CJEU',
+        date: '2017-05-04',
+        year: 2017,
+        verified: true,
+        eurlexUrl: 'https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A62015CJ0315',
+        ratio: 'A collision between an aircraft and a bird constitutes an event not inherent in the normal exercise of the activity of the air carrier and beyond its actual control, and may therefore constitute an extraordinary circumstance within Art 5(3) EC261. The mandatory nature of a post-strike inspection under the aircraft maintenance programme means grounding for that purpose is itself a reasonable measure.',
+        propositions: [
+          'A wildlife strike is not inherent in the normal exercise of airline activity and is outside the carrier\'s effective control.',
+          'Extraordinary circumstances extend to situations where the carrier could not have avoided the event even if all reasonable measures had been taken.',
+          'Post-strike inspection is a mandated airworthiness requirement; its duration does not negate the extraordinary circumstances defence.'
+        ],
+        dtIds: ['birdstrike', 'weather'],
+        nodes: ['U-7', 'U-8'],
+        favoursAirline: true,
+        keyQuote: 'A collision between an aircraft and a bird is an event which, by its nature or origin, is not inherent in the normal exercise of the activity of the air carrier concerned and is outside its actual control.'
+      },
+      {
+        id: 'van-der-lans',
+        ref: 'Van der Lans v KLM',
+        citation: 'C-257/14',
+        court: 'CJEU',
+        date: '2015-09-17',
+        year: 2015,
+        verified: true,
+        eurlexUrl: 'https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A62014CJ0257',
+        ratio: 'Technical problems caused by premature failure of aircraft components are inherent in the normal exercise of airline operations and do not constitute extraordinary circumstances under Art 5(3), even where the failure was unexpected and not attributable to inadequate maintenance. Airlines must be taken to assume the normal operational risks of their activity.',
+        propositions: [
+          'Unexpected technical failures are not extraordinary circumstances simply because they were not anticipated or are statistically unusual.',
+          'Technical defects are inherent in the operational risks airlines accept as part of normal activity, regardless of whether maintenance was adequate.',
+          'The distinction from extraordinary circumstances is the nature and origin of the event, not the airline\'s subjective expectation.'
+        ],
+        dtIds: ['technical'],
+        nodes: ['U-7', 'U-8'],
+        favoursAirline: false,
+        keyQuote: 'Such technical problems are inherent in the normal exercise of the activity of the air carrier...Since the replacement of a defective component is part of normal maintenance of an aircraft, such a technical problem cannot constitute an "extraordinary circumstance".'
+      },
+      {
+        id: 'kruesemann',
+        ref: 'Krüsemann and Others v TUIfly',
+        citation: 'C-195/17',
+        court: 'CJEU',
+        date: '2018-04-17',
+        year: 2018,
+        verified: true,
+        eurlexUrl: 'https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A62017CJ0195',
+        ratio: 'A spontaneous strike (wildcat strike) by an airline\'s own cabin crew in reaction to restructuring plans does not constitute an extraordinary circumstance within Art 5(3) EC261. Labour disputes and industrial action by the carrier\'s own employees are inherent in the normal management of the airline undertaking.',
+        propositions: [
+          'Own-staff industrial action is inherent in the management of airline operations and does not qualify as extraordinary circumstances.',
+          'The wildcat nature of a strike (lacking advance notice) does not, in itself, convert an inherent operational event into an extraordinary circumstance.',
+          'Third-party strikes remain a separate category and may qualify, but the identity of the striking body must be confirmed.'
+        ],
+        dtIds: ['own-ia'],
+        nodes: ['U-7', 'U-8'],
+        favoursAirline: false,
+        keyQuote: 'A \'wildcat strike\' by cabin crew of an air carrier, which spontaneously began...does not fall within the concept of \'extraordinary circumstances\'...since it is part of the normal exercise of the activity of the air carrier concerned.'
+      },
+      {
+        id: 'sturgeon',
+        ref: 'Sturgeon v Condor Flugdienst and Böck v Air France',
+        citation: 'C-402/07 and C-432/07',
+        court: 'CJEU',
+        date: '2009-11-19',
+        year: 2009,
+        verified: true,
+        eurlexUrl: 'https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A62007CJ0402',
+        ratio: 'Passengers whose flight is delayed by three or more hours at their final destination are in a situation comparable to that of passengers whose flight is cancelled, and are entitled to compensation under Art 7 EC261. The right to compensation arises at the point of arrival being three or more hours late, not merely at the time of departure delay.',
+        propositions: [
+          'A delay of 3 hours or more at the final destination triggers Art 7 compensation rights equivalent to those for cancellation.',
+          'The 3-hour threshold is calculated by reference to actual vs scheduled arrival time at the final destination.',
+          'Art 7 compensation applies regardless of whether the airline classifies the disruption as a delay or cancellation.'
+        ],
+        dtIds: ['weather', 'atfm', 'third-party-ia', 'own-ia', 'birdstrike', 'technical', 'medical', 'security', 'disruptive-pax', 'ground-damage', 'airport-closure', 'natural-disaster', 'political-unrest', 'crew-fdp'],
+        nodes: ['U-5', 'U-6'],
+        favoursAirline: false,
+        keyQuote: 'Passengers whose flights are delayed...may rely on the right to compensation laid down in Article 7 of the Regulation when they suffer, because of a delay, a loss of time equal to or in excess of three hours.'
+      },
+      {
+        id: 'nelson',
+        ref: 'Nelson v Deutsche Lufthansa and TUI Travel and Others',
+        citation: 'C-581/10 and C-629/10',
+        court: 'CJEU',
+        date: '2012-10-23',
+        year: 2012,
+        verified: true,
+        eurlexUrl: 'https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A62010CJ0581',
+        ratio: 'Confirms the Sturgeon principle: passengers experiencing delays of 3 or more hours at their final destination are entitled to Art 7 compensation. The right to standardised compensation for long delay is valid and proportionate, and does not require the delay to have occurred at the last minute.',
+        propositions: [
+          'The Sturgeon principle is affirmed: delay of 3 or more hours at the final destination triggers Art 7 compensation.',
+          'EC261\'s standardised compensation scheme for delay does not conflict with the Montreal Convention\'s individual damage remedy.',
+          'The compensation right applies irrespective of the cause of the delay, subject to the Art 5(3) extraordinary circumstances defence.'
+        ],
+        dtIds: ['weather', 'atfm', 'third-party-ia', 'own-ia', 'birdstrike', 'technical', 'medical', 'security', 'disruptive-pax', 'ground-damage', 'airport-closure', 'natural-disaster', 'political-unrest', 'crew-fdp'],
+        nodes: ['U-5', 'U-6'],
+        favoursAirline: false,
+        keyQuote: 'The standardised and immediate nature of the right to compensation under Regulation 261/2004 makes it possible for passengers to rely on the right in the event of a delay of three hours or more.'
+      },
+      {
+        id: 'mcdonagh',
+        ref: 'McDonagh v Ryanair',
+        citation: 'C-12/11',
+        court: 'CJEU',
+        date: '2013-01-31',
+        year: 2013,
+        verified: true,
+        eurlexUrl: 'https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A62011CJ0012',
+        ratio: 'Even where a flight is cancelled due to extraordinary circumstances such as volcanic ash cloud, the carrier remains obliged to provide care and assistance under Art 9 EC261 (refreshments, meals, accommodation and communication). Extraordinary circumstances do not suspend the Art 9 care obligation; it only ceases if the passenger has been offered a full refund under Art 8.',
+        propositions: [
+          'Art 9 care obligations (meals, accommodation, communication) survive even during extraordinary circumstances — they are not disapplied by Art 5(3).',
+          'Art 5(3) only exempts airlines from Art 7 compensation, not from Art 9 care or Art 8 re-routing obligations.',
+          'If care obligations cannot be met without excessive cost to the airline, this does not extinguish them — the passenger\'s entitlement remains.'
+        ],
+        dtIds: ['weather', 'natural-disaster', 'airport-closure'],
+        nodes: ['U-9', 'U-10'],
+        favoursAirline: false,
+        keyQuote: 'The obligation to provide care for stranded passengers under Article 9...applies even in cases of \'extraordinary circumstances\' — the existence of such circumstances does not extinguish that obligation.'
+      },
+      {
+        id: 'sousa-rodriguez',
+        ref: 'Sousa Rodríguez and Others v Air France',
+        citation: 'C-83/10',
+        court: 'CJEU',
+        date: '2011-10-13',
+        year: 2011,
+        verified: true,
+        eurlexUrl: 'https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A62010CJ0083',
+        ratio: 'A flight that takes off but is forced to return to the departure airport before reaching its destination constitutes a cancellation within the meaning of EC261. Compensation under Art 12 for further damage includes non-material damage (distress, inconvenience) in addition to material financial loss.',
+        propositions: [
+          'A return to the departure airport before reaching the scheduled destination is a cancellation, not merely a delay, under EC261.',
+          'Art 12 further compensation encompasses non-material damage — the Montreal Convention\'s limitation to material damage does not apply to this EC261 head.',
+          'Passenger rights under EC261 apply from the point of cancellation, which may be mid-flight.'
+        ],
+        dtIds: ['weather'],
+        nodes: ['U-7', 'U-9'],
+        favoursAirline: false,
+        keyQuote: 'A flight which takes off as planned but which is then forced to return to the airport of departure...and in which the passengers are then transferred to other flights must be categorised as a \'cancellation\'.'
+      },
+      {
+        id: 'folkerts',
+        ref: 'Folkerts v Air France',
+        citation: 'C-11/11',
+        court: 'CJEU',
+        date: '2013-02-26',
+        year: 2013,
+        verified: true,
+        eurlexUrl: 'https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A62011CJ0011',
+        ratio: 'Where a passenger on a connecting flight journey arrives at their final destination 3 or more hours late, compensation is due under Art 7 EC261 regardless of whether any individual flight leg was itself delayed by that margin. The 3-hour threshold is assessed at the final destination, not at each intermediate stop.',
+        propositions: [
+          'The 3-hour threshold for Art 7 compensation is calculated against scheduled vs actual arrival time at the final destination.',
+          'A delay of less than 3 hours on individual legs can still trigger compensation if the cumulative effect causes 3+ hours\' delay at final destination.',
+          'Art 7 compensation is due based on total journey delay to the final destination specified in the passenger\'s booking.'
+        ],
+        dtIds: ['weather', 'atfm', 'third-party-ia', 'own-ia', 'birdstrike', 'technical', 'medical', 'security', 'disruptive-pax', 'ground-damage', 'airport-closure', 'natural-disaster', 'political-unrest', 'crew-fdp'],
+        nodes: ['U-5', 'U-6', 'U-13'],
+        favoursAirline: false,
+        keyQuote: 'The compensation owed...is calculated by reference to the scheduled arrival time of the final flight...not by reference to the arrival time of any connecting flight on which the passenger was carried to a stopping point.'
+      },
+      {
+        id: 'iata-elfaa',
+        ref: 'IATA and ELFAA v Department for Transport',
+        citation: 'C-344/04',
+        court: 'CJEU',
+        date: '2006-01-10',
+        year: 2006,
+        verified: true,
+        eurlexUrl: 'https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A62004CJ0344',
+        ratio: 'Regulation EC No 261/2004 is valid. The standardised and immediate assistance measures it establishes for passengers in the event of denied boarding, cancellation or long delay are proportionate and do not conflict with the Montreal Convention, which governs individual claims for compensatory damages on different legal bases.',
+        propositions: [
+          'EC261 is a valid EU legislative instrument whose provisions are binding on all carriers operating from EU airports.',
+          'Standardised compensation under EC261 is distinct from individual damages under the Montreal Convention; the two regimes are not in conflict.',
+          'The principle of proportionality is satisfied by EC261\'s compensation framework.'
+        ],
+        dtIds: [],
+        nodes: [],
+        favoursAirline: false,
+        keyQuote: 'The measures...introduced by Regulation No 261/2004 are standardised and immediate...distinct from compensation of an individual nature for which a request...can be made pursuant to the Montreal Convention.'
+      },
+      {
+        id: 'finnair-lassooy',
+        ref: 'Finnair v Lassooy',
+        citation: 'C-22/11',
+        court: 'CJEU',
+        date: '2012-10-04',
+        year: 2012,
+        verified: true,
+        eurlexUrl: 'https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A62011CJ0022',
+        ratio: 'Where an airline fails to carry a passenger who holds a valid reservation and has presented at the boarding gate in time, this constitutes denied boarding within Art 4 EC261, regardless of the reason for the airline\'s decision. The airline cannot rely on a schedule disruption to cancel a passenger\'s reservation and then argue there was no denied boarding.',
+        propositions: [
+          'Denied boarding arises whenever a passenger with a valid reservation and complying with check-in requirements is not carried on a flight.',
+          'Airlines cannot unilaterally cancel a passenger\'s reservation due to disruption and then argue that the passenger was not denied boarding.',
+          'Art 4 compensation rights are triggered by the fact of non-carriage, not by the airline\'s characterisation of its own decision.'
+        ],
+        dtIds: ['own-ia'],
+        nodes: ['U-7'],
+        favoursAirline: false,
+        keyQuote: 'A passenger who...has a reservation on that flight and has presented for boarding...must be regarded as having been denied boarding...regardless of the reason for which the air carrier decided not to carry that passenger.'
+      },
+      {
+        id: 'rodriguez-cachafeiro',
+        ref: 'Rodríguez Cachafeiro and Martínez-Reboredo v Iberia',
+        citation: 'C-321/11',
+        court: 'CJEU',
+        date: '2012-10-04',
+        year: 2012,
+        verified: true,
+        eurlexUrl: 'https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A62011CJ0321',
+        ratio: 'Where a passenger misses a connecting flight because of an airline-caused delay on the first leg, and the airline cancels the passenger\'s reservation on the subsequent leg on the ground of the missed connection, this constitutes denied boarding on the subsequent flight. The airline cannot use its own delay to justify cancelling onward reservations.',
+        propositions: [
+          'An airline that cancels a passenger\'s onward reservation due to a delay caused by the airline itself commits denied boarding on the cancelled leg.',
+          'Passengers retain their rights on connecting flights forming part of a single booking even if they miss an intermediate connection due to airline-caused delay.',
+          'The denied boarding rules apply where the non-carriage is the direct result of the airline\'s own operational decision, not solely the passenger\'s failure to appear.'
+        ],
+        dtIds: [],
+        nodes: ['U-7'],
+        favoursAirline: false,
+        keyQuote: 'If a passenger misses a connecting flight because of a delay in an earlier flight...and the air carrier cancels that passenger\'s reservation for the...flight...that situation constitutes denied boarding.'
+      },
+      {
+        id: 'emirates-schenkel',
+        ref: 'Emirates Airlines v Schenkel',
+        citation: 'C-173/07',
+        court: 'CJEU',
+        date: '2008-07-10',
+        year: 2008,
+        verified: true,
+        eurlexUrl: 'https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A62007CJ0173',
+        ratio: 'EC261 applies only to flights departing from airports in EU member states. A journey from a third country to another third country with a connection at an EU airport is not covered by EC261 for the purpose of that through journey. The regulation\'s territorial application is determined by the point of departure of each individual flight, not by intermediate stops.',
+        propositions: [
+          'EC261 scope is limited to flights departing from EU airports — it does not apply to inbound flights from third countries.',
+          'A single booking covering a non-EU departure is not within EC261 scope merely because it includes a connection at an EU airport.',
+          'Territorial scope is the first jurisdictional question in any EC261 claim — confirm the flight departed from within the EU.'
+        ],
+        dtIds: [],
+        nodes: ['U-1'],
+        favoursAirline: true,
+        keyQuote: 'Regulation No 261/2004 must be interpreted as meaning that it is not applicable to the situation of an air passenger who has purchased a single ticket covering a connecting flight from a non-member country to another non-member country.'
+      },
+      {
+        id: 'air-baltic',
+        ref: 'Air Baltic Corporation v Lietuvos Respublikos specialiųjų tyrimų tarnyba',
+        citation: 'C-429/14',
+        court: 'CJEU',
+        date: '2016-02-17',
+        year: 2016,
+        verified: true,
+        eurlexUrl: 'https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A62014CJ0429',
+        ratio: 'The liability limits contained in Article 22 of the Montreal Convention do not apply to the care and assistance obligations imposed on air carriers by Art 9 EC261. Airlines cannot rely on Montreal Convention caps to limit or extinguish their obligations to provide meals, accommodation and communication to stranded passengers under EC261.',
+        propositions: [
+          'Art 9 EC261 care obligations (meals, accommodation, communication) are not subject to Montreal Convention liability caps.',
+          'The Montreal Convention and EC261 operate as parallel but distinct regimes; Montreal limits do not curtail EC261 Art 9 entitlements.',
+          'Airlines must discharge Art 9 care obligations in full regardless of the amount already spent or any Montreal Convention liability position.'
+        ],
+        dtIds: [],
+        nodes: ['U-9', 'U-10'],
+        favoursAirline: false,
+        keyQuote: 'Article 22(1) of the Montreal Convention...cannot limit the obligation...on air carriers to provide the care and assistance laid down in Article 9 of Regulation No 261/2004.'
+      },
+      {
+        id: 'jet2-huzar',
+        ref: 'Jet2.com Ltd v Huzar',
+        citation: '[2014] EWCA Civ 791',
+        court: 'EWCA',
+        date: '2014-06-27',
+        year: 2014,
+        verified: true,
+        eurlexUrl: 'https://www.bailii.org/ew/cases/EWCA/Civ/2014/791.html',
+        ratio: 'UK Court of Appeal confirmed, following Wallentin-Hermann, that a technical defect in an aircraft is not an extraordinary circumstance under EC261. A fuel pipe defect causing significant delay did not qualify. UK courts apply the same test as the CJEU: the defect must not be inherent in normal airline operations.',
+        propositions: [
+          'Technical defects in aircraft are not extraordinary circumstances under EC261/UK261, regardless of the specific nature of the defect.',
+          'UK courts apply the Wallentin-Hermann test without modification: the defect must not be inherent in normal airline operations.',
+          'The carrier bears the burden of establishing both that extraordinary circumstances existed and that all reasonable measures were taken.'
+        ],
+        dtIds: ['technical'],
+        nodes: ['U-7', 'U-8'],
+        favoursAirline: false,
+        keyQuote: 'A technical problem which is inherent in the normal exercise of the activity of the air carrier, such as an unexpected fault occurring, is not an extraordinary circumstance within the meaning of Article 5(3) of the Regulation.'
+      },
+      {
+        id: 'dawson-thomson',
+        ref: 'Dawson v Thomson Airways Ltd',
+        citation: '[2014] EWCA Civ 845',
+        court: 'EWCA',
+        date: '2014-07-11',
+        year: 2014,
+        verified: true,
+        eurlexUrl: 'https://www.bailii.org/ew/cases/EWCA/Civ/2014/845.html',
+        ratio: 'EC261 claims in England and Wales are subject to the 6-year limitation period under s.2 Limitation Act 1980, not the 2-year period under Article 35 of the Montreal Convention. EC261 creates a separate statutory right of action, and the Montreal limitation period does not apply to it.',
+        propositions: [
+          'The applicable limitation period for EC261 claims in England and Wales is 6 years under the Limitation Act 1980.',
+          'The Montreal Convention 2-year limitation period does not apply to EC261 claims, which are a distinct statutory remedy.',
+          'Airlines must assess limitation on a case-by-case basis using the 6-year period from the date of the scheduled flight.'
+        ],
+        dtIds: [],
+        nodes: ['U-2'],
+        favoursAirline: false,
+        keyQuote: 'The claim under the Regulation is not a claim pursuant to the Montreal Convention; it is a claim under EC Regulation 261/2004...The applicable limitation period is...six years under the Limitation Act 1980.'
+      },
+      {
+        id: 'lipton-cityflyer',
+        ref: 'Lipton and another v BA CityFlyer Ltd',
+        citation: '[2021] EWCA Civ 454',
+        court: 'EWCA',
+        date: '2021-03-30',
+        year: 2021,
+        verified: true,
+        eurlexUrl: 'https://www.bailii.org/ew/cases/EWCA/Civ/2021/454.html',
+        ratio: 'Post-Brexit, the Court of Appeal confirmed that retained EU law equivalent of EC261 (UK261) applies the Wallentin-Hermann test unchanged. A technical defect caused by a faulty aircraft component was not an extraordinary circumstance. The frequency of similar defects in the carrier\'s fleet is not a relevant factor — the test is whether the event was inherent in normal operations.',
+        propositions: [
+          'Post-Brexit, UK courts apply the Wallentin-Hermann test to extraordinary circumstances claims under UK261.',
+          'The frequency of similar technical failures in the carrier\'s fleet is irrelevant to whether a particular defect qualifies as extraordinary.',
+          'Technical defects remain inherent in normal airline operations and do not become extraordinary circumstances merely because they are rare or severe.'
+        ],
+        dtIds: ['technical'],
+        nodes: ['U-7', 'U-8'],
+        favoursAirline: false,
+        keyQuote: 'The frequency of technical problems experienced by an air carrier is not in itself a factor from which the presence or absence of extraordinary circumstances within the meaning of article 5(3) can be concluded.'
+      }
+    ];
+
     const RM_DB = [
       {
         id: 'weather',
@@ -2525,6 +2992,7 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
           { ref: 'Wallentin-Hermann C-549/07', text: 'Reasonable measures must be technically and economically viable; excessive sacrifice not required. Applied to weather: standby deployment is a reasonable measure but its absence does not automatically preclude the defence.' },
           { ref: 'Eglitis C-294/10', text: 'Airline must use all resources available at the relevant time. Failure to deploy available standby may undermine the Limb 2 position even where Limb 1 is established.' }
         ],
+        caselawIds: ['eglitis', 'pesekova', 'mcdonagh', 'sturgeon', 'nelson'],
         challenges: [
           { question: 'Did conditions at the relevant aerodrome reach or exceed the aircraft\'s certified operating limits at the time of the approach or operation?', evidence: 'METAR at the relevant time, certified operating limits for the aircraft type (Aircraft Flight Manual / Ops Specs), approach briefing records', note: null },
           { question: 'Was the disruption decision (diversion, cancellation or significant delay) mandatory under regulatory requirements or the aircraft commander\'s operational authority — not a discretionary commercial decision?', evidence: 'Air safety / occurrence report filed by the commander, applicable Air Navigation Order provisions on commander authority', note: null },
@@ -2543,6 +3011,7 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
           { ref: 'Wallentin-Hermann C-549/07', text: 'Measures must be technically and economically viable. Compliance with a mandatory ATFM slot is itself a reasonable measure, not a failure to act.' },
           { ref: 'Eglitis C-294/10', text: 'Operator must use all available resources. If crew FDP expired during the ATFM delay, standby crew deployment must be evidenced.' }
         ],
+        caselawIds: ['eglitis', 'sturgeon', 'nelson'],
         challenges: [
           { question: 'Was the ATFM regulation formally issued by Eurocontrol or the relevant national ANSP, with a regulation ID capable of corroboration?', evidence: 'Network manager records confirming regulation reference, ATFM daily operations brief', note: null },
           { question: 'Did the restriction apply to all carriers on the affected route or FIR — confirming it was a network-wide event, not specific to this operator?', evidence: 'Network manager records showing multiple carriers affected, flight tracking data for the period', note: null },
@@ -2561,6 +3030,7 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
           { ref: 'Krüsemann C-195/17', text: 'CJEU held own-staff wildcat strikes are NOT extraordinary circumstances. Third-party authority strikes are distinguished and may qualify — but confirmation of the identity of the striking body is essential.' },
           { ref: 'Wallentin-Hermann C-549/07', text: 'Reasonable measures assessed against what was technically and economically viable given the third-party restriction and any advance notice available.' }
         ],
+        caselawIds: ['wallentin-hermann', 'sturgeon', 'nelson'],
         challenges: [
           { question: 'Is the industrial action confirmed as being by a third party (ATC authority, airport authority, third-party ground handler) and not by the airline\'s own employees?', evidence: 'Official strike notice identifying the striking body, authority publication confirming third-party status', note: 'CRITICAL under Krüsemann C-195/17: own staff action is generally NOT extraordinary circumstances. Confirm the identity of the striking body before advancing this argument.' },
           { question: 'Was the action formally notified to the industry with insufficient advance notice for the airline to have rearranged services without disproportionate cost or sacrifice?', evidence: 'Date of official strike notification vs date of operation; assessment of what rearrangement would have cost', note: null },
@@ -2578,6 +3048,7 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
         caselaw: [
           { ref: 'Krüsemann C-195/17', text: 'Spontaneous wildcat strike by own cabin crew held NOT to be extraordinary circumstances. Own-staff strikes are generally inherent in the management of airline operations.' }
         ],
+        caselawIds: ['kruesemann', 'sturgeon', 'nelson'],
         challenges: [
           { question: 'Is the industrial action by the airline\'s own employees (crew, ground staff employed or directly contracted by the airline)?', evidence: 'Identification of the striking body and employment / contracting relationship', note: 'CRITICAL: Krüsemann C-195/17 — own staff strikes are generally NOT extraordinary circumstances. Legal position on Limb 1 is very weak. Consider early advice on settlement.' },
           { question: 'Was the action a spontaneous wildcat strike with no advance notice, as opposed to a pre-announced formal strike?', evidence: 'Timeline of any union notice vs commencement of action; HR and union communications', note: 'Even a wildcat strike failed in Krüsemann. A pre-announced strike with formal notice is even harder to defend as extraordinary.' },
@@ -2595,6 +3066,7 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
           { ref: 'Pešková C-315/15', text: 'Collision with a bird confirmed as not inherent in the normal exercise of the airline\'s activity — extraordinary circumstances potentially available subject to Limb 2 reasonable measures.' },
           { ref: 'Wallentin-Hermann C-549/07', text: 'Grounding for mandatory post-strike inspection is itself a reasonable measure. Standby aircraft deployment must still be evidenced.' }
         ],
+        caselawIds: ['pesekova', 'sturgeon', 'nelson'],
         challenges: [
           { question: 'Is there documentary evidence from the flight crew and maintenance that a wildlife strike occurred?', evidence: 'Air safety / occurrence report filed by the commander, maintenance inspection record confirming strike evidence (feathers, blood, damage consistent with bird ingestion)', note: null },
           { question: 'Did the strike cause damage or contamination requiring mandatory inspection or grounding under the approved maintenance programme?', evidence: 'Maintenance event log, airworthiness engineering assessment, maintenance manual reference confirming the applicable inspection requirement', note: null },
@@ -2613,6 +3085,7 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
           { ref: 'Wallentin-Hermann C-549/07', text: 'Technical problems are inherent in airline operations and generally do NOT constitute extraordinary circumstances. The defect must be outside normal operational risk.' },
           { ref: 'Van der Lans C-257/14', text: 'Unexpected technical defect not attributable to inadequate maintenance may qualify — but only where the defect could not have been discovered by reasonably diligent inspection.' }
         ],
+        caselawIds: ['wallentin-hermann', 'van-der-lans', 'jet2-huzar', 'lipton-cityflyer', 'sturgeon', 'nelson'],
         challenges: [
           { question: 'Is there evidence that the defect was not discoverable by reasonably diligent maintenance inspection prior to the flight — i.e., no prior fault history exists for this component?', evidence: 'Maintenance records showing no prior occurrences of this fault, OEM technical guidance, engineering assessment of defect root cause', note: 'CRITICAL: If the defect had prior occurrences (repetitive defect) or was already on the MEL as a known condition, the extraordinary circumstances argument is very unlikely to succeed.' },
           { question: 'Was the aircraft\'s approved maintenance schedule fully complied with up to the date of operation, including all applicable airworthiness directives and service bulletins?', evidence: 'Maintenance records, airworthiness documentation, AD and SB compliance schedule', note: null },
@@ -2631,6 +3104,7 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
           { ref: 'Wallentin-Hermann C-549/07', text: 'Measures taken must be technically and economically viable — diversion for mandatory medical care satisfies this standard.' },
           { ref: 'Eglitis C-294/10', text: 'All available resources must be used; delay in resuming service beyond what is medically necessary may undermine Limb 2.' }
         ],
+        caselawIds: ['sturgeon', 'nelson'],
         challenges: [
           { question: 'Is there documentary evidence of the medical emergency and the commander\'s decision to divert, including the timing and nature of the medical event?', evidence: 'Air safety / occurrence report filed by commander, any available onboard medical assessment record', note: null },
           { question: 'Was the diversion clinically necessary — i.e., did the passenger\'s condition require immediate medical intervention unavailable on board — as opposed to a precautionary decision?', evidence: 'Commander\'s report detailing the clinical assessment, any record of consultation with medical professional (ground medical advice or onboard doctor)', note: null },
@@ -2647,6 +3121,7 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
         caselaw: [
           { ref: 'Wallentin-Hermann C-549/07', text: 'Safety and security measures imposed or directed by competent authorities are beyond the airline\'s reasonable control and may constitute extraordinary circumstances.' }
         ],
+        caselawIds: ['sturgeon', 'nelson'],
         challenges: [
           { question: 'Was the security response notified and directed by a competent authority — police, airport security authority or equivalent state body?', evidence: 'Police incident record or airport security authority communication directing the security response', note: null },
           { question: 'Was the airline\'s response proportionate to and directed by the relevant authority — not a voluntary or precautionary decision taken without authority direction?', evidence: 'Authority direction records, internal security communication log showing airline acted on authority instruction', note: null },
@@ -2663,6 +3138,7 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
         caselaw: [
           { ref: 'Wallentin-Hermann C-549/07', text: 'Events not inherent in the normal exercise of airline activity and beyond the operator\'s effective control may constitute extraordinary circumstances.' }
         ],
+        caselawIds: ['sturgeon', 'nelson'],
         challenges: [
           { question: 'Was the disruptive behaviour first manifested during or after boarding — or was there pre-boarding conduct that should have prompted earlier removal and prevented the delay?', evidence: 'Ground handling report, air safety / occurrence report. Timing of first notification is critical to the chronology.', note: null },
           { question: 'Were conflict de-escalation and management procedures applied by crew before the decision to remove or divert?', evidence: 'Crew report or disruption management record evidencing de-escalation steps taken prior to removal decision', note: null },
@@ -2679,6 +3155,7 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
         caselaw: [
           { ref: 'Wallentin-Hermann C-549/07', text: 'Third-party actions causing aircraft damage may constitute extraordinary circumstances. Grounding for mandatory airworthiness inspection is itself a reasonable measure.' }
         ],
+        caselawIds: ['wallentin-hermann', 'sturgeon', 'nelson'],
         challenges: [
           { question: 'Is there a formal incident report identifying the responsible party as a third party (airport ground handler, airport authority, other airside operator) rather than the airline\'s own staff?', evidence: 'Ground damage incident report identifying the responsible party, circumstances and time of incident', note: 'If the damage was caused by the airline\'s own ground handling staff, the extraordinary circumstances argument is significantly weakened.' },
           { question: 'Was an airworthiness engineering assessment completed confirming the damage required the aircraft to be grounded before further flight?', evidence: 'Maintenance / engineering assessment record, airworthiness determination with authority sign-off', note: null },
@@ -2696,6 +3173,7 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
         caselaw: [
           { ref: 'Wallentin-Hermann C-549/07', text: 'Third-party authority decisions imposing operational restrictions on aerodrome use are generally beyond the airline\'s reasonable control.' }
         ],
+        caselawIds: ['mcdonagh', 'sturgeon', 'nelson'],
         challenges: [
           { question: 'Was the closure formally declared by the aerodrome authority, confirmed by NOTAM or ATC / ATIS directive?', evidence: 'NOTAM confirming closure, ATC communication or ATIS record, aerodrome authority statement', note: null },
           { question: 'Did the closure affect all operators at the aerodrome — confirming it was a third-party authority decision, not an airline-specific restriction?', evidence: 'Flight tracking data showing all departures and arrivals suspended during the closure period', note: null },
@@ -2712,6 +3190,7 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
         caselaw: [
           { ref: 'Wallentin-Hermann C-549/07', text: 'Events of a magnitude entirely outside normal operations satisfy extraordinary circumstances. Analysis focuses on whether all reasonable measures were taken as quickly as possible.' }
         ],
+        caselawIds: ['mcdonagh', 'sturgeon', 'nelson'],
         challenges: [
           { question: 'Was there a formal restriction or directive issued by the relevant authority — NOTAM, Volcanic Ash Advisory Centre bulletin, government aviation authority directive or official emergency declaration?', evidence: 'NOTAM, VAAC bulletin, government directive, ICAO advisory', note: null },
           { question: 'Did the restriction specifically cover the airspace or aerodrome relevant to this flight, not just an adjacent area?', evidence: 'Geographic scope of the restriction mapped against the planned flight route and airports', note: null },
@@ -2727,6 +3206,7 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
         caselaw: [
           { ref: 'Wallentin-Hermann C-549/07', text: 'Authority restrictions arising from exceptional political circumstances are beyond the airline\'s reasonable control.' }
         ],
+        caselawIds: ['mcdonagh', 'sturgeon', 'nelson'],
         challenges: [
           { question: 'Was there an official government travel advisory or authority directive restricting or prohibiting operations at the relevant time?', evidence: 'Government foreign travel advisory, authority airspace or aerodrome closure order, government official communication', note: null },
           { question: 'Was the airline\'s decision to suspend or modify operations proportionate and required by safety protocols, insurance conditions or regulatory obligation — not a purely commercial decision?', evidence: 'Internal safety assessment, government advisory in effect, operational decision records', note: null },
@@ -2743,6 +3223,7 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
           { ref: 'Wallentin-Hermann C-549/07', text: 'Causal link required: the extraordinary circumstance must be the actual cause of the cancellation or delay, not merely a contributing factor. The chain from root cause to disruption must be unbroken.' },
           { ref: 'Eglitis C-294/10', text: 'All available resources — including standby crew — must be deployed before extraordinary circumstances can be relied upon. Absence of standby without explanation is a serious vulnerability.' }
         ],
+        caselawIds: ['eglitis', 'sturgeon', 'nelson'],
         challenges: [
           { question: 'Was the root cause of the FDP exhaustion itself an extraordinary circumstance — and is that root cause separately evidenced and established?', evidence: 'Flight operations system rotation history tracing the delay cascade back to the originating cause event', note: 'CRITICAL: FDP exhaustion is a consequence, not a cause. The originating event must independently qualify as extraordinary. Analyse the root cause disruption type separately.' },
           { question: 'Is the FDP calculation correctly documented under applicable regulations, accounting for all sectors operated and any authorised extensions?', evidence: 'Crew scheduling / FDP records with sector-by-sector calculation, applicable regulatory limit reference', note: null },
@@ -2854,8 +3335,8 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
                 Complete the RM review above — verdict, quantum and limitation analysis update automatically.
               </div>
             </div>
-            <div class="legal-notes" id="pass3-caselaw">
-              ${caselawHtml}
+            <div id="pass3-caselaw">
+              ${renderCaselawBundle(dt)}
             </div>
           </div>
 
@@ -3186,7 +3667,49 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
         ${swHtml}
         ${quantumHtml}
         ${limitHtml}
+        ${renderCaselawBundle(currentDT)}
       `;
+    }
+
+    /* ----------------------------------------------------------
+       CASELAW BUNDLE RENDERER
+    ---------------------------------------------------------- */
+    function renderCaselawBundle(dt) {
+      if (!dt || !dt.caselawIds || dt.caselawIds.length === 0) return '';
+      const relevantCases = CASELAW_DB.filter(c => dt.caselawIds.includes(c.id));
+      if (relevantCases.length === 0) return '';
+
+      const defence  = relevantCases.filter(c => c.favoursAirline);
+      const claimant = relevantCases.filter(c => !c.favoursAirline);
+
+      const renderCase = (c) => `
+        <div class="caselaw-card ${c.favoursAirline ? 'favours-airline' : 'favours-claimant'}">
+          <div class="caselaw-card-header">
+            <span class="caselaw-citation">${c.citation || c.court}</span>
+            <span class="caselaw-parties">${c.ref}</span>
+            <span class="caselaw-year">${c.year}</span>
+            <span class="caselaw-badge ${c.favoursAirline ? 'badge-defence' : 'badge-claimant'}">${c.favoursAirline ? 'Supports Defence' : 'Claimant May Cite'}</span>
+          </div>
+          <div class="caselaw-ratio">${c.ratio}</div>
+          ${c.propositions && c.propositions.length > 0 ? `<ul class="caselaw-propositions">${c.propositions.map(p => `<li>${p}</li>`).join('')}</ul>` : ''}
+          ${c.keyQuote ? `<blockquote class="caselaw-quote">&ldquo;${c.keyQuote}&rdquo;</blockquote>` : ''}
+        </div>
+      `;
+
+      let html = `<div class="caselaw-bundle">
+        <div class="pass3-section-header">Legal Authorities</div>`;
+
+      if (defence.length > 0) {
+        html += `<div class="caselaw-group-header caselaw-group-defence">Supporting the Defence</div>`;
+        html += defence.map(renderCase).join('');
+      }
+      if (claimant.length > 0) {
+        html += `<div class="caselaw-group-header caselaw-group-claimant">Cases Claimant May Cite</div>`;
+        html += claimant.map(renderCase).join('');
+      }
+
+      html += `</div>`;
+      return html;
     }
 
     /* ----------------------------------------------------------
