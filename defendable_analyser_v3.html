@@ -1616,6 +1616,97 @@
       padding: var(--sp-xs) var(--sp-sm);
     }
 
+    /* ── Causal Chain Timeline ─────────────────────────────── */
+    .cc-wrap { margin: var(--sp-md) 0; }
+    .cc-header {
+      font-family: var(--font-serif);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--ink-secondary);
+      margin-bottom: var(--sp-sm);
+    }
+    .cc-chain {
+      display: flex;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 0;
+      overflow-x: auto;
+      padding-bottom: var(--sp-xs);
+    }
+    .cc-node-wrap {
+      display: flex;
+      align-items: center;
+    }
+    .cc-arrow {
+      font-size: 18px;
+      color: var(--ink-rule2);
+      padding: 0 4px;
+      margin-top: -12px;
+      flex-shrink: 0;
+    }
+    .cc-node {
+      border: 1px solid;
+      border-radius: var(--r-md);
+      padding: var(--sp-sm) var(--sp-md);
+      min-width: 110px;
+      max-width: 160px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+    .cc-icon { font-size: 20px; margin-bottom: 4px; }
+    .cc-label {
+      font-family: var(--font-serif);
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1.3;
+      margin-bottom: 2px;
+    }
+    .cc-sub {
+      font-size: 10px;
+      color: var(--ink-faint);
+      line-height: 1.3;
+    }
+    .cc-legend {
+      display: flex;
+      gap: var(--sp-md);
+      margin-top: var(--sp-sm);
+      flex-wrap: wrap;
+    }
+    .cc-leg-item {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 10px;
+      color: var(--ink-faint);
+    }
+    .cc-leg-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    /* ── Generate Brief Button ───────────────────────────────── */
+    .btn-gen-brief {
+      font-family: var(--font-sans);
+      font-size: 13px;
+      font-weight: 600;
+      padding: 10px 28px;
+      background: var(--ink-primary);
+      color: var(--paper, #FEFEFE);
+      border: 1px solid var(--ink-primary);
+      border-radius: var(--r-md);
+      cursor: pointer;
+      letter-spacing: .02em;
+      transition: background .15s, border-color .15s;
+    }
+    .btn-gen-brief:hover {
+      background: var(--ink-secondary);
+      border-color: var(--ink-secondary);
+    }
+
   </style>
 </head>
 <body>
@@ -3258,6 +3349,7 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
       const dt = detectDisruptionType(inputText);
       currentDT = dt;
       rmResponses = {};
+      const causalNodes = parseCausalChain(inputText, dt);
 
       const limb1Labels = {
         extraordinary: 'Extraordinary Circumstances — Limb 1',
@@ -3304,6 +3396,7 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
               <span class="brief-dt-name">${dt.label}</span>
             </div>
             <div class="brief-limb1">${dt.limb1}</div>
+            ${renderCausalChain(causalNodes)}
           </div>
 
           <!-- PASS II: RM Lawyer Loop -->
@@ -3324,6 +3417,10 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
               <div class="rm-meter-track">
                 <div class="rm-meter-fill" id="rm-meter-fill"></div>
               </div>
+            </div>
+            <div id="gen-brief-wrap" style="display:none;margin-top:var(--sp-lg);text-align:center">
+              <button class="btn-gen-brief" onclick="generateBrief()">⚖ Generate Defence Brief</button>
+              <div style="font-size:11px;color:var(--ink-faint);margin-top:6px">All challenge points reviewed — brief ready to compile</div>
             </div>
           </div>
 
@@ -3403,6 +3500,9 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
 
       if (fill)  { fill.style.width = pct + '%'; fill.style.background = meterColor; }
       if (label) label.textContent = posLabel;
+
+      const briefWrap = document.getElementById('gen-brief-wrap');
+      if (briefWrap) briefWrap.style.display = (reviewed === total) ? 'block' : 'none';
 
       renderPass3Extended();
     }
@@ -3745,6 +3845,282 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
       if(aEl) currentArrIata=aEl.value.toUpperCase();
       // Re-render Pass III with new route
       renderPass3Extended();
+    }
+
+    /* ----------------------------------------------------------
+       CAUSAL CHAIN — Feature 1
+    ---------------------------------------------------------- */
+    function extractWeatherDetail(t) {
+      if (/windshear/.test(t)) return 'Windshear / crosswind';
+      if (/thunderstorm|storm/.test(t)) return 'Thunderstorm activity';
+      if (/fog|vis/.test(t)) return 'Low visibility / fog';
+      if (/snow|ice/.test(t)) return 'Snow / ice on ground';
+      return 'Meteorological conditions';
+    }
+
+    function parseCausalChain(text, dt) {
+      const nodes = [];
+      const t = text.toLowerCase();
+
+      // Root cause
+      if (dt.id === 'weather' || /weather|storm|wind|fog|snow|ice|vis|metar|sigmet|crosswind|windshear/.test(t)) {
+        nodes.push({ type:'root', label:'Adverse Weather', sub: extractWeatherDetail(t), icon:'🌩' });
+      } else if (dt.id === 'atfm' || /atfm|eurocontrol|ctot|flow|regulation|slot/.test(t)) {
+        nodes.push({ type:'root', label:'ATFM Regulation', sub: 'Eurocontrol / National ANSP', icon:'🗼' });
+      } else if (dt.id === 'birdstrike' || /bird/.test(t)) {
+        nodes.push({ type:'root', label:'Birdstrike', sub: 'Third-party collision event', icon:'🐦' });
+      } else if (dt.id === 'technical' || /tech|defect|snag|aog|maint/.test(t)) {
+        nodes.push({ type:'root', label:'Technical Defect', sub: 'Aircraft unserviceable', icon:'🔧' });
+      } else if (dt.id === 'medical' || /medic|passenger ill|pax ill|emergency med/.test(t)) {
+        nodes.push({ type:'root', label:'Medical Emergency', sub: 'Passenger / crew medical', icon:'🏥' });
+      } else if (dt.id === 'security' || /security|threat|bomb|suspicious/.test(t)) {
+        nodes.push({ type:'root', label:'Security Event', sub: 'Security authority directive', icon:'🛡' });
+      } else {
+        nodes.push({ type:'root', label: dt.label, sub: 'Primary disruption event', icon:'⚡' });
+      }
+
+      // Cascade events
+      if (/atfm|eurocontrol|ctot|flow|slot/.test(t) && nodes[0].type === 'root' && nodes[0].label !== 'ATFM Regulation') {
+        nodes.push({ type:'cascade', label:'ATFM Cascade', sub:'Eurocontrol regulation imposed', icon:'📡' });
+      }
+      if (/divert|diversion/.test(t)) {
+        const dest = t.match(/divert(?:ed)?\s+(?:to\s+)?([a-z]{3})/)?.[1]?.toUpperCase();
+        nodes.push({ type:'cascade', label:'Aircraft Diversion', sub: dest ? `Diverted to ${dest}` : 'Commander decision', icon:'✈' });
+      }
+      if (/inbound|rotation|incoming|prior sector/.test(t)) {
+        nodes.push({ type:'cascade', label:'Inbound Delay', sub:'Rotation affected by prior sector', icon:'🔄' });
+      }
+      if (/replacement aircraft|spare aircraft|sub aircraft/.test(t)) {
+        nodes.push({ type:'operational', label:'Replacement Aircraft', sub:'Substitute airframe deployed', icon:'🛫' });
+      }
+      if (/crew|fdp|duty|standby|rest|fatigue/.test(t)) {
+        const crewType = /standby/.test(t) ? 'Standby Crew Deployed' : 'Crew FDP Limit';
+        const crewSub  = /standby/.test(t) ? 'Reserve crew called in' : 'Flight time regulations exceeded';
+        nodes.push({ type:'operational', label: crewType, sub: crewSub, icon:'👨‍✈️' });
+      }
+      if (/coach|bus|transfer|transport|hotel|accommodation/.test(t)) {
+        nodes.push({ type:'operational', label:'Passenger Care', sub:'Art 9 obligations enacted', icon:'🏨' });
+      }
+
+      // Outcome — always last
+      const delayMatch = t.match(/(\d+)h\s*(\d+)?\s*min|\d+\s*hour/);
+      const delayStr = delayMatch ? delayMatch[0].replace(/\s+/g,'') : 'delay';
+      nodes.push({ type:'outcome', label:'Arrival Delay', sub: delayStr + ' at destination', icon:'⏱' });
+
+      return nodes;
+    }
+
+    function renderCausalChain(nodes) {
+      if (!nodes || nodes.length < 2) return '';
+
+      const colourMap = {
+        root:        { bg:'var(--settle-bg)',      border:'var(--settle-border)',      text:'var(--settle)' },
+        cascade:     { bg:'var(--conditions-bg)',  border:'var(--conditions-border)',  text:'var(--conditions)' },
+        operational: { bg:'var(--judgment-bg)',    border:'var(--judgment-border)',    text:'var(--judgment)' },
+        outcome:     { bg:'var(--ink-faint)',      border:'var(--ink-rule)',           text:'var(--ink-secondary)' }
+      };
+
+      const nodeHtml = nodes.map((n, i) => {
+        const c = colourMap[n.type] || colourMap.outcome;
+        return `
+          <div class="cc-node-wrap">
+            ${i > 0 ? '<div class="cc-arrow">→</div>' : ''}
+            <div class="cc-node" style="background:${c.bg};border-color:${c.border}">
+              <div class="cc-icon">${n.icon}</div>
+              <div class="cc-label" style="color:${c.text}">${n.label}</div>
+              <div class="cc-sub">${n.sub}</div>
+            </div>
+          </div>`;
+      }).join('');
+
+      return `
+        <div class="cc-wrap">
+          <div class="cc-header">Causal Chain</div>
+          <div class="cc-chain">${nodeHtml}</div>
+          <div class="cc-legend">
+            <span class="cc-leg-item"><span class="cc-leg-dot" style="background:var(--settle)"></span>Root cause</span>
+            <span class="cc-leg-item"><span class="cc-leg-dot" style="background:var(--conditions)"></span>Cascade</span>
+            <span class="cc-leg-item"><span class="cc-leg-dot" style="background:var(--judgment)"></span>Operational response</span>
+            <span class="cc-leg-item"><span class="cc-leg-dot" style="background:var(--ink-rule)"></span>Outcome</span>
+          </div>
+        </div>`;
+    }
+
+    /* ----------------------------------------------------------
+       DEFENCE BRIEF GENERATOR — Feature 2 (Mode 4)
+    ---------------------------------------------------------- */
+    function generateBrief() {
+      if (!currentDT) return;
+
+      const total = currentDT.challenges.length;
+      const confirmed = Object.values(rmResponses).filter(r => r === 'confirmed').length;
+      const partial   = Object.values(rmResponses).filter(r => r === 'partial').length;
+      const gaps      = Object.values(rmResponses).filter(r => r === 'gap').length;
+      const score     = (confirmed + partial * 0.5) / total;
+      const verdict   = getVerdict(currentDT.limb1Status, score, gaps);
+      const { strengths, weaknesses } = buildSWPoints();
+
+      const distKm = getRouteDistanceKm(currentDepIata, currentArrIata);
+      const band   = distKm ? getQuantumBand(distKm) : null;
+      const lim    = calcLimitationDate(currentFlightDate);
+
+      const vLabels = { defend:'DEFEND', conditions:'CONDITIONAL DEFENCE', settle:'SETTLE / CONSIDER EARLY RESOLUTION' };
+
+      const now = new Date();
+      const dateStr = now.toLocaleDateString('en-GB', { day:'2-digit', month:'long', year:'numeric' });
+      const timeStr = now.toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' });
+
+      // RM response table rows
+      const rmRows = currentDT.challenges.map((c, i) => {
+        const resp = rmResponses[i] || 'not-reviewed';
+        const respLabel = { confirmed:'Confirmed', partial:'Partial', gap:'Gap', 'not-reviewed':'Not reviewed' }[resp];
+        return `<tr>
+          <td style="padding:8px 12px;font-size:12px;font-family:var(--font-spectral,serif);border-bottom:1px solid var(--ink-rule2);color:var(--ink-secondary);vertical-align:top;width:60%">${c.question}</td>
+          <td style="padding:8px 12px;font-size:12px;font-family:var(--font-mono);border-bottom:1px solid var(--ink-rule2);text-align:center;white-space:nowrap;
+            color:${resp==='confirmed'?'var(--defend)':resp==='partial'?'var(--conditions)':resp==='gap'?'var(--settle)':'var(--ink-faint)'}">${respLabel}</td>
+        </tr>`;
+      }).join('');
+
+      // Key authorities
+      const relevantCases = (typeof CASELAW_DB !== 'undefined')
+        ? CASELAW_DB.filter(c => (currentDT.caselawIds || []).includes(c.id)).slice(0, 5)
+        : [];
+      const authHtml = relevantCases.map(c =>
+        `<div style="margin-bottom:8px">
+          <span style="font-family:var(--font-mono);font-size:10px;background:var(--ink-faint);padding:1px 5px;border-radius:2px;margin-right:6px">${c.citation}</span>
+          <em style="font-family:var(--font-spectral,serif);font-size:12px">${c.ref}</em>
+          <span style="font-size:11px;color:var(--ink-faint);margin-left:4px">(${c.year})</span>
+          <div style="font-size:11px;color:var(--ink-secondary);margin-top:2px;padding-left:4px;border-left:2px solid var(--ink-rule2);font-family:var(--font-spectral,serif)">${c.ratio}</div>
+        </div>`
+      ).join('');
+
+      const limHtml = lim
+        ? `${lim.expiry.toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'})} · ${lim.daysLeft} days remaining`
+        : 'Date not provided';
+
+      const briefHtml = `
+        <div id="brief-modal-backdrop" onclick="closeBrief()" style="position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:9000;display:flex;align-items:flex-start;justify-content:center;padding:40px 20px;overflow-y:auto">
+          <div onclick="event.stopPropagation()" style="background:var(--surface-raised,#FEFEFE);max-width:780px;width:100%;border-radius:var(--r-lg);box-shadow:0 8px 40px rgba(0,0,0,0.25);position:relative">
+
+            <!-- Brief header -->
+            <div style="padding:32px 40px 24px;border-bottom:2px solid var(--ink-primary)">
+              <div style="font-family:var(--font-mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:8px">Defence Brief — Privileged &amp; Confidential</div>
+              <div style="font-family:var(--font-serif);font-size:24px;font-weight:400;color:var(--ink-primary);margin-bottom:4px">EC261 / UK261 Defence Analysis</div>
+              <div style="font-family:var(--font-spectral,serif);font-size:14px;color:var(--ink-secondary)">
+                ${currentDepIata && currentArrIata ? currentDepIata + ' → ' + currentArrIata : 'Route not specified'}
+                ${currentFlightDate ? ' · ' + new Date(currentFlightDate+'T00:00:00Z').toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'}) : ''}
+              </div>
+              <div style="font-family:var(--font-mono);font-size:10px;color:var(--ink-faint);margin-top:8px">Generated: ${dateStr} at ${timeStr} · DefendAble engine</div>
+            </div>
+
+            <!-- Verdict banner -->
+            <div style="padding:20px 40px;background:${verdict==='defend'?'var(--defend-bg)':verdict==='conditions'?'var(--conditions-bg)':'var(--settle-bg)'};border-bottom:1px solid ${verdict==='defend'?'var(--defend-border)':verdict==='conditions'?'var(--conditions-border)':'var(--settle-border)'}">
+              <div style="font-family:var(--font-mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:4px">Recommended Position</div>
+              <div style="font-family:var(--font-serif);font-size:20px;color:${verdict==='defend'?'var(--defend)':verdict==='conditions'?'var(--conditions)':'var(--settle)'}">${vLabels[verdict]}</div>
+              <div style="font-size:12px;color:var(--ink-secondary);margin-top:4px">${confirmed}/${total} RM challenge points confirmed · ${gaps} gap${gaps!==1?'s':''} identified</div>
+            </div>
+
+            <!-- Brief body -->
+            <div style="padding:32px 40px">
+
+              <!-- Section 1: Classification -->
+              <div style="margin-bottom:28px">
+                <div style="font-family:var(--font-serif);font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-secondary);border-bottom:1px solid var(--ink-rule2);padding-bottom:6px;margin-bottom:12px">1. Disruption Classification</div>
+                <div style="font-family:var(--font-spectral,serif);font-size:13px;color:var(--ink-primary);line-height:1.6">
+                  <strong>${currentDT.label}</strong> — ${currentDT.limb1}
+                </div>
+              </div>
+
+              <!-- Section 2: RM Review -->
+              <div style="margin-bottom:28px">
+                <div style="font-family:var(--font-serif);font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-secondary);border-bottom:1px solid var(--ink-rule2);padding-bottom:6px;margin-bottom:12px">2. Reasonable Measures Review</div>
+                <table style="width:100%;border-collapse:collapse;border:1px solid var(--ink-rule2);border-radius:var(--r-md);overflow:hidden">
+                  <thead>
+                    <tr style="background:var(--surface-ui,#EEECEA)">
+                      <th style="padding:8px 12px;font-size:11px;font-weight:700;text-align:left;color:var(--ink-secondary);font-family:var(--font-sans)">Challenge Point</th>
+                      <th style="padding:8px 12px;font-size:11px;font-weight:700;text-align:center;color:var(--ink-secondary);font-family:var(--font-sans);white-space:nowrap">Evidence Position</th>
+                    </tr>
+                  </thead>
+                  <tbody>${rmRows}</tbody>
+                </table>
+              </div>
+
+              <!-- Section 3: Strengths & Weaknesses -->
+              <div style="margin-bottom:28px">
+                <div style="font-family:var(--font-serif);font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-secondary);border-bottom:1px solid var(--ink-rule2);padding-bottom:6px;margin-bottom:12px">3. Defence Position Summary</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+                  <div style="border:1px solid var(--defend-border);border-radius:var(--r-md);padding:12px;background:var(--defend-bg)">
+                    <div style="font-size:11px;font-weight:700;color:var(--defend);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Confirmed Strengths</div>
+                    ${strengths.length
+                      ? strengths.map(s=>`<div style="font-size:12px;font-family:var(--font-spectral,serif);color:var(--ink-primary);margin-bottom:4px;padding-left:10px;border-left:2px solid var(--defend-border)">• ${s}</div>`).join('')
+                      : '<div style="font-size:11px;color:var(--ink-faint);font-style:italic">None confirmed</div>'}
+                  </div>
+                  <div style="border:1px solid var(--settle-border);border-radius:var(--r-md);padding:12px;background:var(--settle-bg)">
+                    <div style="font-size:11px;font-weight:700;color:var(--settle);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Gaps / Weaknesses</div>
+                    ${weaknesses.length
+                      ? weaknesses.map(w=>`<div style="font-size:12px;font-family:var(--font-spectral,serif);color:var(--ink-primary);margin-bottom:4px;padding-left:10px;border-left:2px solid var(--settle-border)">• ${w}</div>`).join('')
+                      : '<div style="font-size:11px;color:var(--defend-mid);font-style:italic">No gaps identified</div>'}
+                  </div>
+                </div>
+              </div>
+
+              <!-- Section 4: Quantum -->
+              ${band ? `
+              <div style="margin-bottom:28px">
+                <div style="font-family:var(--font-serif);font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-secondary);border-bottom:1px solid var(--ink-rule2);padding-bottom:6px;margin-bottom:12px">4. Quantum &amp; Exposure</div>
+                <div style="font-family:var(--font-spectral,serif);font-size:13px;color:var(--ink-primary);line-height:1.8">
+                  Route distance: <strong>${distKm.toLocaleString()} km</strong> · Band: ${band.band} (${band.article})<br>
+                  Statutory compensation per passenger: <strong>€${band.eur} / £${band.gbp}</strong><br>
+                  ${claimants > 1 ? `Total exposure (${claimants} claimants): <strong style="color:var(--settle)">€${band.eur*claimants} / £${band.gbp*claimants}</strong><br>` : ''}
+                  Limitation expiry: ${limHtml}
+                </div>
+              </div>` : ''}
+
+              <!-- Section 5: Legal Authorities -->
+              ${relevantCases.length ? `
+              <div style="margin-bottom:28px">
+                <div style="font-family:var(--font-serif);font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-secondary);border-bottom:1px solid var(--ink-rule2);padding-bottom:6px;margin-bottom:12px">5. Key Legal Authorities</div>
+                ${authHtml}
+              </div>` : ''}
+
+              <!-- Signature block -->
+              <div style="border-top:1px solid var(--ink-rule2);padding-top:20px;margin-top:8px">
+                <div style="font-size:11px;color:var(--ink-faint);font-family:var(--font-spectral,serif);margin-bottom:16px">This brief has been generated by the DefendAble engine for review by qualified legal counsel. It does not constitute legal advice and must be reviewed before use in proceedings.</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
+                  <div>
+                    <div style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-faint);margin-bottom:4px">Reviewed by</div>
+                    <div style="border-bottom:1px solid var(--ink-rule);height:32px"></div>
+                    <div style="font-size:10px;color:var(--ink-faint);margin-top:4px">Name / Signature</div>
+                  </div>
+                  <div>
+                    <div style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-faint);margin-bottom:4px">Date</div>
+                    <div style="border-bottom:1px solid var(--ink-rule);height:32px"></div>
+                    <div style="font-size:10px;color:var(--ink-faint);margin-top:4px">${dateStr}</div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Brief footer actions -->
+            <div style="padding:16px 40px;border-top:1px solid var(--ink-rule2);display:flex;gap:12px;align-items:center;background:var(--surface-ui,#EEECEA)">
+              <button onclick="window.print()" style="font-family:var(--font-sans);font-size:12px;font-weight:600;padding:8px 20px;border:1px solid var(--ink-rule);border-radius:var(--r-md);background:var(--surface-raised,#FEFEFE);cursor:pointer;color:var(--ink-primary)">Print / Export PDF</button>
+              <button onclick="closeBrief()" style="font-family:var(--font-sans);font-size:12px;font-weight:600;padding:8px 20px;border:1px solid var(--ink-rule);border-radius:var(--r-md);background:transparent;cursor:pointer;color:var(--ink-secondary)">Close</button>
+              <span style="font-size:11px;color:var(--ink-faint);margin-left:auto">Privileged — EC261 Defence · DefendAble</span>
+            </div>
+
+          </div>
+        </div>`;
+
+      // Mount modal
+      const existing = document.getElementById('brief-modal-backdrop');
+      if (existing) existing.remove();
+      document.body.insertAdjacentHTML('beforeend', briefHtml);
+    }
+
+    function closeBrief() {
+      const el = document.getElementById('brief-modal-backdrop');
+      if (el) el.remove();
     }
 
   </script>
