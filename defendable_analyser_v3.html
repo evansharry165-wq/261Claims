@@ -1707,6 +1707,237 @@
       border-color: var(--ink-secondary);
     }
 
+
+    /* ── Pass II: Annotated Event Nodes ─────────────────────── */
+    .ev-section-intro {
+      font-family: var(--font-spectral, serif);
+      font-size: 13px;
+      color: var(--ink-secondary);
+      line-height: 1.6;
+      margin-bottom: var(--sp-lg);
+      padding: var(--sp-md);
+      background: var(--ink-faint);
+      border-radius: var(--r-md);
+      border-left: 3px solid var(--ink-rule2);
+    }
+
+    .ev-nodes { display: flex; flex-direction: column; gap: var(--sp-sm); }
+
+    .ev-node {
+      border: 1px solid var(--ink-rule);
+      border-radius: var(--r-md);
+      overflow: hidden;
+      transition: border-color .15s;
+    }
+    .ev-node.status-red   { border-left: 3px solid var(--settle); }
+    .ev-node.status-amber { border-left: 3px solid var(--conditions); }
+    .ev-node.status-green { border-left: 3px solid var(--defend); }
+
+    .ev-node-header {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-sm);
+      padding: var(--sp-sm) var(--sp-md);
+      cursor: pointer;
+      background: var(--paper, var(--surface-raised));
+      user-select: none;
+    }
+    .ev-node-header:hover { background: var(--surface-ui, #EEECEA); }
+
+    .ev-status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      background: var(--settle);
+      transition: background .2s;
+    }
+    .status-amber .ev-status-dot { background: var(--conditions); }
+    .status-green .ev-status-dot { background: var(--defend); }
+
+    .ev-node-icon { font-size: 18px; flex-shrink: 0; }
+    .ev-node-labels { flex: 1; }
+    .ev-node-label {
+      font-family: var(--font-serif);
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--ink-primary);
+    }
+    .ev-node-sub {
+      font-size: 11px;
+      color: var(--ink-faint);
+      margin-top: 1px;
+    }
+    .ev-node-expand {
+      font-size: 11px;
+      color: var(--ink-faint);
+      flex-shrink: 0;
+      transition: transform .2s;
+    }
+    .ev-node.expanded .ev-node-expand { transform: rotate(180deg); }
+
+    .ev-node-body {
+      display: none;
+      border-top: 1px solid var(--ink-rule2);
+    }
+    .ev-node.expanded .ev-node-body { display: grid; grid-template-columns: 1fr 1fr; }
+
+    @media (max-width: 680px) {
+      .ev-node.expanded .ev-node-body { grid-template-columns: 1fr; }
+    }
+
+    /* Evidence panel */
+    .ev-evidence-panel {
+      padding: var(--sp-md);
+      border-right: 1px solid var(--ink-rule2);
+    }
+    .ev-evidence-header {
+      font-family: var(--font-serif);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--ink-secondary);
+      margin-bottom: var(--sp-sm);
+    }
+    .ev-evidence-group-label {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      margin: var(--sp-sm) 0 4px;
+    }
+    .ev-item {
+      padding: var(--sp-sm) 0;
+      border-bottom: 1px solid var(--ink-rule2);
+    }
+    .ev-item:last-child { border-bottom: none; }
+    .ev-item-name {
+      font-family: var(--font-spectral, serif);
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--ink-primary);
+      margin-bottom: 2px;
+    }
+    .ev-item-source {
+      font-size: 10px;
+      color: var(--ink-faint);
+      margin-bottom: 4px;
+    }
+    .ev-item-proves {
+      font-size: 11px;
+      color: var(--ink-secondary);
+      font-style: italic;
+      margin-bottom: 6px;
+      line-height: 1.4;
+    }
+    .ev-item-btns {
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+    }
+    .ev-status-btn {
+      font-family: var(--font-sans);
+      font-size: 10px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 99px;
+      border: 1px solid var(--ink-rule);
+      background: transparent;
+      color: var(--ink-faint);
+      cursor: pointer;
+      transition: all .1s;
+    }
+    .ev-status-btn:hover { border-color: var(--ink-rule2); color: var(--ink-secondary); }
+    .ev-status-btn.active-available { background: var(--defend-bg); color: var(--defend); border-color: var(--defend-border); }
+    .ev-status-btn.active-requested { background: var(--conditions-bg); color: var(--conditions); border-color: var(--conditions-border); }
+    .ev-status-btn.active-missing   { background: var(--settle-bg); color: var(--settle); border-color: var(--settle-border); }
+
+    /* Legal + annotation panel */
+    .ev-legal-panel {
+      padding: var(--sp-md);
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-md);
+    }
+    .ev-legal-header {
+      font-family: var(--font-serif);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--ink-secondary);
+      margin-bottom: 6px;
+    }
+    .ev-legal-char {
+      font-family: var(--font-spectral, serif);
+      font-size: 12px;
+      color: var(--ink-secondary);
+      line-height: 1.6;
+      padding: var(--sp-sm);
+      background: var(--surface-ui, #EEECEA);
+      border-radius: var(--r);
+      border-left: 2px solid var(--ink-rule2);
+    }
+    .ev-ann-label {
+      font-family: var(--font-serif);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--ink-secondary);
+      margin-bottom: 4px;
+    }
+    .ev-ann-field {
+      width: 100%;
+      min-height: 80px;
+      font-family: var(--font-spectral, serif);
+      font-size: 12px;
+      color: var(--ink-primary);
+      line-height: 1.6;
+      border: 1px solid var(--ink-rule);
+      border-radius: var(--r-md);
+      padding: var(--sp-sm);
+      resize: vertical;
+      box-sizing: border-box;
+      background: var(--surface-raised, #FEFEFE);
+      transition: border-color .15s;
+    }
+    .ev-ann-field:focus {
+      outline: none;
+      border-color: var(--ink-secondary);
+    }
+    .ev-ann-field::placeholder { color: var(--ink-faint); font-style: italic; }
+
+    .ev-rm-surface {
+      display: none;
+      background: var(--conditions-bg);
+      border: 1px solid var(--conditions-border);
+      border-radius: var(--r-md);
+      padding: var(--sp-sm) var(--sp-md);
+    }
+    .ev-rm-surface.visible { display: block; }
+    .ev-rm-header {
+      font-family: var(--font-serif);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .07em;
+      text-transform: uppercase;
+      color: var(--conditions);
+      margin-bottom: 6px;
+    }
+    .ev-rm-item {
+      font-size: 11px;
+      color: var(--ink-primary);
+      line-height: 1.5;
+      padding: 3px 0;
+      padding-left: 10px;
+      border-left: 2px solid var(--conditions-border);
+      margin-bottom: 4px;
+      font-family: var(--font-spectral, serif);
+    }
+
   </style>
 </head>
 <body>
@@ -2001,6 +2232,8 @@
     let currentInputText  = '';
     let currentDT         = null;
     let rmResponses       = {};
+    let nodeAnnotations   = {};   // { nodeIdx: { text, evidenceStatuses: { evidenceId: 'available'|'requested'|'missing' } } }
+    let causalNodesCount  = 0;
     let currentDepIata    = '';
     let currentArrIata    = '';
     let currentFlightDate = '';
@@ -3072,6 +3305,253 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
       }
     ];
 
+    /* ----------------------------------------------------------
+       EVIDENCE DATABASE — per disruption type
+    ---------------------------------------------------------- */
+    const EVIDENCE_DB = {
+      weather: [
+        { id:'metar', name:'METAR / TAF — Historical Weather Records', source:'National meteorological service / Ogimet', proves:'Actual aerodrome conditions at time of disruption', priority:'primary' },
+        { id:'afm', name:'Aircraft Flight Manual — Certified Operating Limits', source:'Aircraft manufacturer / type certificate', proves:'Conditions exceeded certified crosswind, visibility or precipitation limits', priority:'primary' },
+        { id:'atc-rec', name:'ATC Records / Airport Authority Statement', source:'Air traffic control authority', proves:'ATC-mandated decision — diversion, hold, or ground stop', priority:'primary' },
+        { id:'safety-report', name:'Air Safety / Occurrence Report', source:'Internal safety management system', proves:"Commander's contemporaneous account of conditions and decisions made", priority:'primary' },
+        { id:'sigmet', name:'SIGMET / Meteorological Warning', source:'National aviation weather service', proves:'Significant meteorological hazard formally notified', priority:'supporting' },
+        { id:'hazard-fcst', name:'Meteorological Hazard Forecast', source:'Meteorological authority', proves:'Pre-flight weather assessment identified risk', priority:'supporting' },
+        { id:'third-party-track', name:'Third-party Flight Tracking Data', source:'Public flight tracking service', proves:'Other operators also unable to land / diverted — conditions affected all carriers', priority:'supporting' },
+        { id:'notam', name:'NOTAM', source:'National AIS', proves:'Formal aerodrome / airspace notice issued regarding conditions', priority:'supporting' },
+        { id:'eurocontrol', name:'Eurocontrol Network Records', source:'Eurocontrol NOP / NMOC', proves:'Network-wide impact; ATFM regulations or ground programmes imposed', priority:'supporting' },
+        { id:'ops-log', name:'Operations Control Disruption Log', source:'Internal flight operations system', proves:'Real-time disruption management decisions and timeline', priority:'supporting' },
+      ],
+      atfm: [
+        { id:'ctot', name:'Eurocontrol CTOT / ATFM Regulation Notice', source:'Eurocontrol Network Manager', proves:'Specific slot regulation imposed on the flight', priority:'primary' },
+        { id:'eurocontrol-nop', name:'Eurocontrol Network Operations Portal Records', source:'Eurocontrol NMOC', proves:'Regulation timeline, affected flights, network-wide scope', priority:'primary' },
+        { id:'flight-plan', name:'Flight Plan Records', source:'Internal flight operations system', proves:'CTOT applied to the specific flight; slot compliance demonstrated', priority:'primary' },
+        { id:'atfm-brief', name:'Eurocontrol ATFM Daily Brief / Post Ops Brief', source:'Eurocontrol', proves:'Pre-notified airspace capacity constraints', priority:'supporting' },
+        { id:'oplog', name:'Eurocontrol Operations Log (Oplog)', source:'Eurocontrol', proves:'Real-time record of ATFM events, regulations, and slot updates', priority:'supporting' },
+        { id:'third-party-track', name:'Third-party Flight Tracking Data', source:'Public flight tracking service', proves:'Regulation imposed on all carriers on the route, not carrier-specific delay', priority:'supporting' },
+        { id:'ops-log', name:'Operations Control Disruption Log', source:'Internal flight operations system', proves:'Timeline of ATFM impact on the rotation', priority:'supporting' },
+      ],
+      birdstrike: [
+        { id:'safety-report', name:'Air Safety / Occurrence Report (MOR)', source:'Internal safety management system / national aviation authority', proves:'Mandatory occurrence report — primary contemporaneous record of the strike', priority:'primary' },
+        { id:'maint-log', name:'Aircraft Maintenance Event Log', source:'Internal maintenance management system', proves:'Damage assessment; airworthiness determination; unserviceability record', priority:'primary' },
+        { id:'commander-report', name:"Commander's Report", source:'Flight crew / internal', proves:'Contemporaneous account of the strike, impact, and subsequent decision', priority:'primary' },
+        { id:'atc-rec', name:'ATC Records', source:'Air traffic control', proves:'ATC notified; runway inspection called; airport wildlife response', priority:'supporting' },
+        { id:'wildlife-record', name:'Airport Wildlife Strike / Hazard Record', source:'Airport authority', proves:"Airport's bird hazard management; confirms bird activity at the aerodrome", priority:'supporting' },
+        { id:'eurocontrol', name:'Eurocontrol Records', source:'Eurocontrol NMOC', proves:'Any ATFM regulation arising from resulting runway closure or inspection', priority:'supporting' },
+      ],
+      technical: [
+        { id:'maint-log', name:'Aircraft Maintenance Event Log', source:'Internal maintenance management system', proves:'Primary record of the defect — nature, discovery, rectification or deferral', priority:'primary' },
+        { id:'tech-log', name:'Aircraft Technical Log / Journey Log', source:'Aircraft document set', proves:'Pilot-reported defect; ground engineer certification of serviceability or deferral', priority:'primary' },
+        { id:'safety-report', name:'Air Safety / Occurrence Report', source:'Internal safety management system', proves:'Contemporaneous occurrence record; mandatory if reportable', priority:'primary' },
+        { id:'eng-auth', name:'Engineering Authorisation / MEL Release', source:'Internal maintenance / CAMO', proves:'Defect could not be deferred under MEL; aircraft grounded on airworthiness grounds', priority:'supporting' },
+        { id:'part-trace', name:'Part Traceability / Maintenance Release', source:'Maintenance organisation / supplier', proves:'Component history and origin — relevant if hidden defect argument', priority:'supporting' },
+        { id:'commander-report', name:"Commander's Report", source:'Flight crew / internal', proves:"Pilot's account of defect symptoms and decision", priority:'supporting' },
+      ],
+      'third-party-ia': [
+        { id:'official-notice', name:'Official Industrial Action Notice', source:'Employer / trade union / government', proves:'Formal notification of strike action — primary document', priority:'primary' },
+        { id:'nat-caa', name:'National Civil Aviation Authority Records', source:'Relevant national CAA (e.g. DGAC, ENAC, CAA)', proves:'Regulatory authority confirmation of ATC/ANSP strike and aviation impact', priority:'primary' },
+        { id:'eurocontrol', name:'Eurocontrol Network Records', source:'Eurocontrol NMOC', proves:'Network-wide impact; sector capacity reductions imposed', priority:'primary' },
+        { id:'nat-ia-record', name:'National Industrial Action Register', source:'National IA commission / government body', proves:'Legally registered action; scope and duration confirmed', priority:'supporting' },
+        { id:'notam', name:'NOTAM', source:'National AIS', proves:'Airspace / aerodrome notice issued in connection with the action', priority:'supporting' },
+        { id:'news', name:'News Articles / Official Media Coverage', source:'Established news sources', proves:"Public record of the action; confirms it was not carrier-specific", priority:'supporting' },
+        { id:'third-party-track', name:'Third-party Flight Tracking Data', source:'Public flight tracking service', proves:'All carriers affected — network-wide impact', priority:'supporting' },
+      ],
+      'own-ia': [
+        { id:'official-notice', name:'Official Industrial Action Notice', source:'Trade union / employer', proves:'Formal notification — note: own-staff IA is a contested extraordinary circumstance', priority:'primary' },
+        { id:'hr-records', name:'Internal HR / Employment Records', source:'Internal HR', proves:'Scale of absence; which staff groups affected; contingency deployed', priority:'primary' },
+        { id:'union-correspondence', name:'Union Correspondence / Collective Agreement', source:'Internal / legal', proves:"Nature of dispute; carrier's attempts to resolve through negotiation", priority:'supporting' },
+        { id:'absence-records', name:'Staff Absence Records', source:'Internal HR system', proves:'Operational impact — which flights affected, scale of disruption', priority:'supporting' },
+        { id:'ops-log', name:'Operations Control Disruption Log', source:'Internal flight operations system', proves:"Carrier's contingency measures and their scope", priority:'supporting' },
+      ],
+      medical: [
+        { id:'safety-report', name:'Air Safety / Occurrence Report', source:'Internal safety management system', proves:"Contemporaneous record of the medical emergency and commander's diversion decision", priority:'primary' },
+        { id:'commander-report', name:"Commander's Report", source:'Flight crew / internal', proves:'Primary account of the emergency, options considered, and diversion decision', priority:'primary' },
+        { id:'medical-records', name:'Medical Authority Records', source:'Airport medical team / ATLS / local hospital', proves:"Confirms the medical emergency; validates the commander's decision", priority:'primary' },
+        { id:'crew-report', name:'Crew Report / In-flight Record', source:'Cabin / flight crew', proves:'Contemporaneous crew account of emergency and actions taken', priority:'supporting' },
+        { id:'eurocontrol', name:'Eurocontrol Records', source:'Eurocontrol NMOC', proves:'Any ATFM impact from the diversion on the subsequent rotation', priority:'supporting' },
+      ],
+      security: [
+        { id:'authority-statement', name:'Police / Security Authority Statement', source:'Law enforcement / airport security authority', proves:'Primary external authority document — response was mandated, not carrier discretion', priority:'primary' },
+        { id:'safety-report', name:'Air Safety / Occurrence Report', source:'Internal safety management system', proves:'Contemporaneous occurrence record', priority:'primary' },
+        { id:'commander-report', name:"Commander's Report", source:'Flight crew / internal', proves:'Account of security event and decision made', priority:'primary' },
+        { id:'airport-statement', name:'Airport Authority Statement', source:'Airport authority', proves:"Airport-level security response; confirms event was not carrier-specific", priority:'supporting' },
+        { id:'ops-log', name:'Operations Control Disruption Log', source:'Internal flight operations system', proves:"Carrier's response and management of the event", priority:'supporting' },
+      ],
+      'disruptive-pax': [
+        { id:'safety-report', name:'Air Safety / Occurrence Report', source:'Internal safety management system', proves:'Contemporaneous record of the disruption — primary document', priority:'primary' },
+        { id:'commander-report', name:"Commander's Report", source:'Flight crew / internal', proves:"Commander's account of the behaviour and decision to divert / offload", priority:'primary' },
+        { id:'crew-witness', name:'Crew Witness Statements', source:'Cabin / flight crew', proves:'Contemporaneous accounts from crew members who witnessed the behaviour', priority:'primary' },
+        { id:'police-records', name:'Police / Authority Records', source:'Law enforcement', proves:'Confirms passenger was offloaded / arrested — establishes severity', priority:'supporting' },
+        { id:'handler-records', name:'Ground Handler / CCTV Records', source:'Ground handling agent / airport', proves:'Independent evidence of the incident', priority:'supporting' },
+      ],
+      'ground-damage': [
+        { id:'handler-report', name:'Ground Handler Incident Report', source:'Ground handling agent', proves:'Third-party damage — primary document establishing the third-party cause', priority:'primary' },
+        { id:'safety-report', name:'Air Safety / Occurrence Report', source:'Internal safety management system', proves:'Contemporaneous occurrence record', priority:'primary' },
+        { id:'maint-log', name:'Aircraft Maintenance Event Log', source:'Internal maintenance management system', proves:'Damage extent; airworthiness determination; repair requirement', priority:'primary' },
+        { id:'airport-statement', name:'Airport Authority Statement', source:'Airport authority', proves:'Stand / apron records; confirms handler responsibility', priority:'supporting' },
+        { id:'commander-report', name:"Commander's Report", source:'Flight crew / internal', proves:'Account of damage discovery and decision', priority:'supporting' },
+      ],
+      'airport-closure': [
+        { id:'notam', name:'NOTAM', source:'National AIS', proves:'Official aerodrome / runway closure notice — primary document', priority:'primary' },
+        { id:'airport-statement', name:'Airport Authority Statement', source:'Airport authority', proves:"Confirms closure and cause; establishes it was beyond any carrier's control", priority:'primary' },
+        { id:'eurocontrol', name:'Eurocontrol Records', source:'Eurocontrol NMOC', proves:'Network impact; ATFM regulations or ground stops from closure', priority:'supporting' },
+        { id:'atc-rec', name:'ATC Records', source:'Air traffic control', proves:'ATC confirmation of closure and instructions issued', priority:'supporting' },
+        { id:'third-party-track', name:'Third-party Flight Tracking Data', source:'Public flight tracking service', proves:'All operators affected — confirms airport-level event', priority:'supporting' },
+      ],
+      'natural-disaster': [
+        { id:'govt-declaration', name:'Government / Emergency Authority Declaration', source:'National / regional government', proves:'Official declaration of the natural disaster — primary document', priority:'primary' },
+        { id:'eurocontrol', name:'Eurocontrol Records', source:'Eurocontrol NMOC', proves:'Airspace / network impact; regulations imposed', priority:'primary' },
+        { id:'notam', name:'NOTAM', source:'National AIS', proves:'Airspace / aerodrome closure notice', priority:'primary' },
+        { id:'news', name:'News Articles / Official Media Coverage', source:'Established news sources', proves:"Public record; confirms scale and aviation impact", priority:'supporting' },
+        { id:'disaster-monitoring', name:'Disaster / Emergency Monitoring Records', source:'Copernicus EMS / national emergency monitoring', proves:'Objective data on extent and timeline of the natural event', priority:'supporting' },
+        { id:'third-party-track', name:'Third-party Flight Tracking Data', source:'Public flight tracking service', proves:"All operators affected — beyond any single carrier's control", priority:'supporting' },
+      ],
+      'political-unrest': [
+        { id:'govt-advisory', name:'Foreign Office / Government Travel Advisory', source:'FCO / national government', proves:'Official government advice against travel — primary document', priority:'primary' },
+        { id:'authority-statement', name:'Official Authority Statement', source:'National authority / embassy', proves:'Confirms the unrest and its impact on aviation operations', priority:'primary' },
+        { id:'news', name:'News Articles / Official Media Coverage', source:'Established news sources', proves:"Public record; scale and nature of the unrest", priority:'supporting' },
+        { id:'notam', name:'NOTAM', source:'National AIS', proves:'Airspace / aerodrome notices issued', priority:'supporting' },
+        { id:'eurocontrol', name:'Eurocontrol Records', source:'Eurocontrol NMOC', proves:'Network impact; airspace restrictions imposed', priority:'supporting' },
+      ],
+      'crew-fdp': [
+        { id:'crew-duty', name:'Crew Duty Records — Flight & Duty Time Log', source:'Internal crew scheduling / FTL system', proves:'Actual flight and duty times recorded — demonstrates FDP limit was reached', priority:'primary' },
+        { id:'roster', name:'Crew Roster / Scheduling Records', source:'Internal crew scheduling system', proves:'Planned and actual duty patterns; confirms crew could not lawfully operate', priority:'primary' },
+        { id:'standby-deployment', name:'Standby Crew Availability / Deployment Record', source:'Internal crew scheduling system', proves:'What standby options were available; whether exhausted or deployed', priority:'primary' },
+        { id:'fdp-exceedance', name:'FDP Exceedance Documentation', source:'Internal safety / crew management', proves:'Formal record if limits were approached under regulatory authority', priority:'supporting' },
+        { id:'rest-records', name:'Rest Period Records', source:'Internal crew scheduling / FTL system', proves:'Pre-flight rest period; crew were legally rostered', priority:'supporting' },
+        { id:'ops-manual', name:'Operations Manual — FDP Rules / FRMS Authority', source:'Internal / regulatory', proves:'Applicable FTL rules; FRMS extensions used or considered', priority:'supporting' },
+      ],
+    };
+
+    /* ----------------------------------------------------------
+       RM SURFACE — per disruption type (surfaces when lawyer annotates)
+    ---------------------------------------------------------- */
+    const RM_SURFACE = {
+      weather: [
+        'Prove conditions exceeded certified operating limits — AFM crosswind/visibility minima are the legal benchmark, not subjective assessment.',
+        'Demonstrate conditions persisted for the full period of delay — a brief shower does not establish extraordinary circumstances.',
+        'ATC documentation is the strongest corroboration — if ATC mandated the diversion or approach discontinuation, that closes Limb 2.',
+        'Did other operators land at the same aerodrome during the same window? If yes, this significantly weakens the defence. (Third-party tracking data is key.)',
+        'Was a standby aircraft or crew held in case conditions improved? Failure to do so weakens Limb 2.',
+        'Were Art 9 care obligations (meals, accommodation, transport) enacted immediately on diversion or delay exceeding 2/3 hours?',
+      ],
+      atfm: [
+        'Establish the specific Eurocontrol regulation reference and CTOT assigned to this flight — not just general network disruption.',
+        'Confirm the regulation was imposed on all carriers on the route, not selectively. Network-wide scope is essential.',
+        'Eglitis (C-294/10): the carrier must have taken all reasonable measures within the ATFM system, including securing the earliest available slot.',
+        "Was the CTOT accepted without unnecessary delay on the carrier's part? Any airline-side delay in slot acceptance weakens RM.",
+        'Does the ATFM delay on this sector fully explain the total delay to passengers, or was there additional airline-side time? Account for every minute.',
+        'Was there an alternative routing or departure airport that would have avoided the regulation?',
+      ],
+      birdstrike: [
+        'Pešková (C-315/15): birdstrikes CAN be extraordinary — but the extraordinary circumstance is the collision event, not the resulting damage.',
+        'The Mandatory Occurrence Report (MOR) must be contemporaneous — filed immediately after the event.',
+        'Was the aircraft inspected and grounded on engineer authority? The engineering decision must be clearly documented.',
+        "Airport wildlife hazard management records: was the aerodrome's bird hazard programme in place and adequate?",
+        'Was replacement aircraft sought and deployed without unnecessary delay? What was the spare aircraft availability position?',
+      ],
+      technical: [
+        'CRITICAL: Wallentin-Hermann (C-549/07) — technical defects are NOT extraordinary unless the fault stems from an event outside normal airline activity.',
+        'Van der Lans (C-257/14): even unexpected technical failures are inherent to airline operations. The bar for extraordinary is extremely high.',
+        'Jet2 v Huzar [2014] EWCA: UK courts apply Wallentin-Hermann strictly — statistical rarity alone does not make a defect extraordinary.',
+        'What is the precise origin of the defect? Hidden manufacturing defect or age-related catastrophic failure may have the strongest argument.',
+        'Was the defect deferrable under MEL? If deferrable but not deferred, the decision needs clear justification.',
+        'Was a replacement aircraft sought immediately? What was the spare aircraft availability? Any delay in sourcing a replacement weakens RM.',
+      ],
+      'third-party-ia': [
+        'Third-party industrial action by ATC / ANSP / ground handlers is generally extraordinary — outside airline control.',
+        'Establish the formal notice of action — government records, union/ANSP publications, national CAA notifications.',
+        'For French DGAC strikes: carrier must have filed its schedule with DGAC within required timelines — confirm this was done.',
+        'Did the carrier operate any services during the action? If yes, selection criteria for which flights operated needs to be transparent.',
+        'Art 9 care obligations remain in full force regardless of the extraordinary circumstance — document all passenger care provided.',
+      ],
+      'own-ia': [
+        'CONTESTED POSITION: own-staff industrial action as extraordinary is heavily scrutinised.',
+        'Krüsemann (C-195/17): wildcat / spontaneous action is treated more favourably than planned announced action.',
+        'For planned action: did the carrier take all reasonable steps to negotiate, prevent, or mitigate the action? This is the RM battleground.',
+        'What contingency crew and aircraft were deployed? The scale and speed of the contingency response is critical.',
+        'Union correspondence and negotiation history will be closely examined by claimant\'s counsel — ensure it is complete.',
+        'Strongly consider whether a settle or conditions position is appropriate for own-staff IA cases.',
+      ],
+      medical: [
+        'Medical diversions are well-established extraordinary circumstances — commander\'s duty to divert is absolute.',
+        'The commander\'s report must clearly state the nature of the emergency and why diversion was the only option.',
+        'Was in-flight medical radio advice obtained? If yes, document the consultation and advice received.',
+        'Medical authority records from the diversion aerodrome are the strongest independent corroboration.',
+        'The cascade delay after the diversion still needs RM — replacement crew and aircraft must have been sourced without delay.',
+        'Art 9 obligations run from the moment of diversion — document all care provided at the diversion aerodrome.',
+      ],
+      security: [
+        'The authority statement is the critical document — establish that the security response was mandated by an external authority, not discretionary carrier action.',
+        'Distinguish clearly between the security threat (extraordinary) and the operational response (which must still be reasonable).',
+        'Was the aircraft held or passengers offloaded on authority instruction, or was it a carrier decision? This distinction matters legally.',
+        'Document all security authority communications contemporaneously — times, names, instructions given.',
+        'Art 9 obligations run regardless of the security event — document all passenger care provided.',
+      ],
+      'disruptive-pax': [
+        "Disruption by a passenger's behaviour is generally extraordinary — a third-party event outside the carrier's reasonable anticipation.",
+        'The proportionality of the response will be examined: was diversion/offloading the only reasonable option given the behaviour?',
+        'Were there warning signs before boarding that were not acted on? If yes, this is a significant risk point.',
+        'Crew witness statements must be contemporaneous — taken immediately after landing, not days later.',
+        'Art 9 obligations run for all other passengers from the point of delay — document all care provided.',
+      ],
+      'ground-damage': [
+        'Ground damage by a third-party handler is extraordinary — the carrier did not cause the damage.',
+        "Obtain the ground handler's incident report immediately and preserve it — this is the primary document.",
+        'If the handler disputes liability: airport CCTV and apron records become critical. Request preservation immediately.',
+        'Was replacement aircraft or repair obtained as fast as reasonably possible? Timeline from damage discovery to aircraft release matters.',
+        "Consider whether the handler's insurance position affects the quantum separately — this is a CM platform issue, not engine issue.",
+      ],
+      'airport-closure': [
+        'Airport / runway closure by aerodrome authority is extraordinary — the NOTAM is the primary proof.',
+        'Was the closure pre-notified (NOTAM in advance) or sudden? Pre-notified closures raise questions about proactive RM (could the carrier have operated before the closure?).',
+        'What diversions / cancellations were operated and in what order? Selection criteria needs to be transparent.',
+        'Art 9 obligations run from the moment delay thresholds were exceeded — document all care provided.',
+        'Third-party tracking showing all carriers affected is valuable corroboration that the closure was genuine and complete.',
+      ],
+      'natural-disaster': [
+        'Natural disasters are generally extraordinary — the RM battleground is Limb 2, not Limb 1.',
+        'McDonagh (C-12/11): Art 9 care obligations (meals, accommodation, transport) apply without financial limit even when compensation is not due.',
+        'Was the disaster pre-notified (e.g. forecast eruption, storm warning)? Pre-notification raises Limb 2 questions — did the carrier proactively cancel before it was forced to?',
+        'Distinguish between the extraordinary event period and the period after conditions improved — once conditions cleared, the RM clock restarts.',
+        'Recovery plan: was the fastest reasonably available replacement routing offered to affected passengers?',
+      ],
+      'political-unrest': [
+        'The formality of the restriction matters: official airspace closure (NOTAM) is a stronger position than discretionary carrier suspension.',
+        'Was the unrest foreseeable? Known tensions in advance raise questions about whether proactive contingency was in place.',
+        'Foreign Office travel advisory is the strongest document — it is an official government position, not carrier assessment.',
+        'Distinguish between unrest affecting the route vs. the specific airport — scope of the restriction is critical.',
+        'Art 9 obligations run regardless — document all passenger care provisions made.',
+      ],
+      'crew-fdp': [
+        'Crew FDP limits are statutory — they cannot be operated beyond them. This is a well-established legitimate ground.',
+        'Eglitis (C-294/10): the carrier must have taken all reasonable measures including ensuring standby crew availability.',
+        'CRITICAL QUESTION: is the FDP issue the result of an extraordinary upstream event (weather, ATFM) cascading? If yes, document the chain clearly — Limb 1 is established by the root event.',
+        'If FDP was reached through purely operational delay (not upstream extraordinary event), Limb 1 is significantly weakened.',
+        'Standby crew position: was standby available? If not, was that because standby was exhausted by earlier extraordinary events?',
+        'FRMS extension: was commander discretion available? If available and not used, the decision not to use it needs clear justification.',
+      ],
+    };
+
+    /* ----------------------------------------------------------
+       LEGAL CHARACTERISATION — per disruption type
+    ---------------------------------------------------------- */
+    const LEGAL_CHAR = {
+      weather: "Adverse meteorological conditions may constitute extraordinary circumstances under Art 5(3) EC261 / UK261 where they exceed the aircraft's certified operating limits and are outside the carrier's control. The Wallentin-Hermann two-limb test applies: Limb 1 (the circumstance is extraordinary — inherent to aviation but beyond the carrier's actual control) and Limb 2 (all reasonable measures were taken to avoid the delay). ATC authority documentation substantially closes both limbs where the diversion was mandated.",
+      atfm: "ATFM regulations imposed by Eurocontrol or a national ANSP constitute extraordinary circumstances where they represent a genuine external constraint on the carrier. Limb 1 is generally satisfied by the Eurocontrol regulation record. Limb 2 (Eglitis C-294/10) requires the carrier to have taken all measures to minimise delay within the ATFM system — including securing the earliest available slot and having contingency positioning in place. The regulation must have applied to this specific flight, not merely the wider network.",
+      birdstrike: "Birdstrikes may constitute extraordinary circumstances (Pešková C-315/15) where the strike itself was the triggering event. However, the extraordinary circumstance is the collision, not the resulting aircraft damage. Damage-based grounding is subject to the same technical defect analysis as any unserviceability. The MOR and engineering unserviceability record together establish both that a collision occurred and that grounding was on airworthiness grounds — which is the correct legal framing.",
+      technical: "Technical defects are presumptively NOT extraordinary circumstances (Wallentin-Hermann C-549/07, Van der Lans C-257/14, Jet2 v Huzar [2014] EWCA Civ 791). The defect must stem from an event that is not inherent in the normal exercise of airline activity and beyond the carrier's actual control. This is an extremely high bar. Hidden manufacturing defects not discoverable by standard maintenance, and rare catastrophic failures from external causes, are the most viable candidates. The carrier bears the burden of proof.",
+      'third-party-ia': "Industrial action by third-party workers (ATC, ANSP, airport authority, ground handlers) is generally extraordinary — it is neither inherent to the airline's own activity nor within its control. The proximate cause between the industrial action and the specific delay must be established. The carrier must also demonstrate it took all reasonable measures within the available operational window (Limb 2) — including proactive communication, alternative routing assessment, and Art 9 compliance.",
+      'own-ia': "Own-staff industrial action is a contested extraordinary circumstance. Planned / announced action (where the carrier had advance notice and opportunity to negotiate) is difficult to characterise as extraordinary — it is arguably inherent to the employment relationship. Wildcat / spontaneous action (Krüsemann C-195/17) is treated more favourably by the courts. The carrier must demonstrate it took all reasonable steps to prevent the action and minimise its impact. A careful assessment of the settle vs. defend position is advisable.",
+      medical: "Medical diversions are well-established extraordinary circumstances — a passenger medical emergency is an unforeseeable third-party event outside the carrier's control and not inherent to its normal activity. The commander's duty to divert is absolute under the Air Navigation Order / ICAO standards. The legal focus shifts to Limb 2: the care and efficiency of the diversion, the speed of the onward journey arrangement, and Art 9 compliance throughout.",
+      security: "Security events mandated by an external authority (police, national security) are extraordinary circumstances. The critical distinction is between the security threat (extraordinary) and the security response (which must still constitute reasonable measures). The authority mandate must be documented clearly to establish that the carrier's operational response was not discretionary but directed. Art 9 obligations run regardless of the extraordinary circumstance.",
+      'disruptive-pax': "Disruption caused by a passenger's behaviour is generally extraordinary — it is a third-party event not inherent to the carrier's normal activity and not within its reasonable anticipation. The carrier's Limb 2 position depends on the proportionality of its response and the quality of contemporaneous documentation. Art 9 obligations run for all other passengers from the point that delay thresholds are exceeded.",
+      'ground-damage': "Ground damage caused by a third-party handler constitutes an extraordinary circumstance — the carrier did not cause the damage and the handler's negligence is not inherent to the airline's own operations. This is one of the cleaner extraordinary circumstance arguments available. The legal focus is on: (1) clear attribution of the damage to the third party, and (2) the speed and reasonableness of the carrier's replacement or repair response.",
+      'airport-closure': "Airport or runway closure by the aerodrome authority is extraordinary — it is beyond any carrier's control. The NOTAM is the primary legal evidence. The RM analysis focuses on: the speed of the diversion arrangement, the onward routing offered to passengers, and Art 9 compliance. Pre-notified closures raise additional RM questions — whether a proactive response before the closure would have been possible.",
+      'natural-disaster': "Natural disasters are extraordinary circumstances (confirmed by McDonagh C-12/11 for volcanic ash). McDonagh also confirmed that Art 9 care obligations (meals, accommodation, transport) apply without financial cap even where compensation is not payable. The RM analysis examines whether: (1) the carrier had adequate contingency for a foreseeable natural event, (2) operations resumed as quickly as conditions allowed, and (3) Art 9 was complied with throughout — including during extended delays.",
+      'political-unrest': "Political unrest resulting in airspace or aerodrome restrictions is extraordinary — it is a state action outside any carrier's control. The strength of the position correlates with the formality of the restriction. An official Foreign Office advisory and NOTAM-based airspace closure are the strongest positions. Foreseeability is relevant to Limb 2: if social or political tensions were known in advance, the adequacy of the carrier's contingency response will be examined.",
+      'crew-fdp': "Crew reaching statutory Flight Duty Period limits is a legitimate operational constraint grounded in regulatory compliance. Carriers cannot operate crew beyond FDP limits (EU FTL regulations / UK FTL). The Limb 1 analysis depends on WHY the FDP limit was reached. If it resulted from an extraordinary upstream event (weather, ATFM, medical diversion), Limb 1 is established by the root event and the FDP constraint is part of the cascade. If FDP was reached through purely operational delay, Limb 1 is not established. Eglitis (C-294/10) requires the carrier to have had adequate standby cover in place.",
+    };
+
     const RM_DB = [
       {
         id: 'weather',
@@ -3349,7 +3829,9 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
       const dt = detectDisruptionType(inputText);
       currentDT = dt;
       rmResponses = {};
+      nodeAnnotations = {};
       const causalNodes = parseCausalChain(inputText, dt);
+      causalNodesCount = causalNodes ? causalNodes.length : 1;
 
       const limb1Labels = {
         extraordinary: 'Extraordinary Circumstances — Limb 1',
@@ -3358,24 +3840,67 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
       };
       const limb1Label = limb1Labels[dt.limb1Status] || 'Under Review';
 
-      // Build challenge cards
-      const cardsHtml = dt.challenges.map((c, i) => `
-        <div class="rm-card" id="rm-card-${i}">
-          <div class="rm-card-body">
-            <span class="rm-card-num">Q${i + 1}</span>
-            <div class="rm-card-content">
-              <div class="rm-challenge">${c.question}</div>
-              <div class="rm-evidence"><strong>Evidence:</strong> ${c.evidence}</div>
-              ${c.note ? `<div class="rm-note">⚠ ${c.note}</div>` : ''}
+      // Build annotated event nodes for Pass II
+      const evNodesHtml = (causalNodes && causalNodes.length > 0 ? causalNodes : [{type:'root', label:dt.label, sub:dt.limb1Status, icon:'⚡'}]).map((node, idx) => {
+        const dtKey = idx === 0 ? dt.id : (node.type === 'outcome' ? null : dt.id);
+        const evidenceItems = (dtKey && EVIDENCE_DB[dtKey]) ? EVIDENCE_DB[dtKey] : [];
+        const primaryEvidence = evidenceItems.filter(e => e.priority === 'primary');
+        const supportingEvidence = evidenceItems.filter(e => e.priority === 'supporting');
+        const legalChar = LEGAL_CHAR[dtKey] || 'Review the ICC summary and apply the appropriate EC261 / UK261 legal test to this event.';
+        const rmPoints = (dtKey && RM_SURFACE[dtKey]) ? RM_SURFACE[dtKey] : [];
+
+        const renderEvidenceItem = (item) => `
+          <div class="ev-item">
+            <div class="ev-item-name">${item.name}</div>
+            <div class="ev-item-source">${item.source}</div>
+            <div class="ev-item-proves">${item.proves}</div>
+            <div class="ev-item-btns">
+              <button class="ev-status-btn" onclick="setEvidenceStatus(${idx},'${item.id}','available',this)">Available</button>
+              <button class="ev-status-btn" onclick="setEvidenceStatus(${idx},'${item.id}','requested',this)">Requested</button>
+              <button class="ev-status-btn" onclick="setEvidenceStatus(${idx},'${item.id}','missing',this)">Missing</button>
             </div>
-          </div>
-          <div class="rm-btns">
-            <button class="rm-btn rm-btn-confirm" onclick="setRMResponse(${i},'confirmed')">✓ Confirmed</button>
-            <button class="rm-btn rm-btn-partial" onclick="setRMResponse(${i},'partial')">⚠ Partial</button>
-            <button class="rm-btn rm-btn-gap" onclick="setRMResponse(${i},'gap')">✗ Gap</button>
-          </div>
-        </div>
-      `).join('');
+          </div>`;
+
+        const rmHtml = rmPoints.length > 0 ? `
+          <div class="ev-rm-surface" id="ev-rm-${idx}">
+            <div class="ev-rm-header">RM Considerations</div>
+            ${rmPoints.map(p => `<div class="ev-rm-item">${p}</div>`).join('')}
+          </div>` : '';
+
+        return `
+          <div class="ev-node status-red" id="ev-node-${idx}" onclick="toggleNode(${idx})">
+            <div class="ev-node-header">
+              <div class="ev-status-dot"></div>
+              <div class="ev-node-icon">${node.icon || '⚡'}</div>
+              <div class="ev-node-labels">
+                <div class="ev-node-label">${node.label}</div>
+                <div class="ev-node-sub">${node.sub || ''}</div>
+              </div>
+              <div class="ev-node-expand">▼</div>
+            </div>
+            <div class="ev-node-body" onclick="event.stopPropagation()">
+              <div class="ev-evidence-panel">
+                <div class="ev-evidence-header">Evidence Required</div>
+                ${primaryEvidence.length > 0 ? `<div class="ev-evidence-group-label">Primary — these make or break the point</div>${primaryEvidence.map(renderEvidenceItem).join('')}` : ''}
+                ${supportingEvidence.length > 0 ? `<div class="ev-evidence-group-label">Supporting</div>${supportingEvidence.map(renderEvidenceItem).join('')}` : ''}
+                ${evidenceItems.length === 0 ? '<div style="font-size:12px;color:var(--ink-faint);font-style:italic">Mark evidence status as you gather it</div>' : ''}
+              </div>
+              <div class="ev-legal-panel">
+                <div>
+                  <div class="ev-legal-header">Legal Context</div>
+                  <div class="ev-legal-char">${legalChar}</div>
+                </div>
+                <div>
+                  <div class="ev-ann-label">Your Notes</div>
+                  <textarea class="ev-ann-field" id="ev-ann-${idx}"
+                    placeholder="Add what you know about this event — what happened, what evidence you have, any issues…"
+                    oninput="onAnnotationInput(${idx}, this)"></textarea>
+                  ${rmHtml}
+                </div>
+              </div>
+            </div>
+          </div>`;
+      }).join('');
 
       // Build case law
       const caselawHtml = dt.caselaw.map(cl => `
@@ -3399,28 +3924,28 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
             ${renderCausalChain(causalNodes)}
           </div>
 
-          <!-- PASS II: RM Lawyer Loop -->
+          <!-- PASS II: Annotated Event Review -->
           <div class="brief-section">
-            <div class="brief-section-label">Pass II — Reasonable Measures Review</div>
-            <div class="rm-header">
-              <span class="rm-title">Work through each challenge point — confirm the evidence position for each</span>
-              <span class="rm-tally" id="rm-tally">0 / ${dt.challenges.length} reviewed</span>
+            <div class="brief-section-label">Pass II — Evidence &amp; Legal Review</div>
+            <div class="ev-section-intro">
+              Each event in the disruption timeline is listed below. Click any event to open the evidence panel and add your notes. The system surfaces the relevant legal context and RM considerations as you engage with each event.
             </div>
-            <div class="rm-cards" id="rm-cards">
-              ${cardsHtml}
+            <div class="ev-nodes" id="ev-nodes">
+              ${evNodesHtml}
             </div>
-            <div class="rm-meter-wrap">
+            <div class="rm-meter-wrap" style="margin-top:var(--sp-lg)">
               <div class="rm-meter-row">
-                <span>RM Strength</span>
-                <span id="rm-position-label">Awaiting review</span>
+                <span>Case Position</span>
+                <span id="rm-position-label">Begin reviewing events above</span>
               </div>
               <div class="rm-meter-track">
                 <div class="rm-meter-fill" id="rm-meter-fill"></div>
               </div>
+              <div style="font-size:11px;color:var(--ink-faint);margin-top:4px" id="rm-tally">0 confirmed · 0 partial</div>
             </div>
             <div id="gen-brief-wrap" style="display:none;margin-top:var(--sp-lg);text-align:center">
               <button class="btn-gen-brief" onclick="generateBrief()">⚖ Generate Defence Brief</button>
-              <div style="font-size:11px;color:var(--ink-faint);margin-top:6px">All challenge points reviewed — brief ready to compile</div>
+              <div style="font-size:11px;color:var(--ink-faint);margin-top:6px">Ready to compile — generate a formal defence brief from your review</div>
             </div>
           </div>
 
@@ -3813,6 +4338,99 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
     }
 
     /* ----------------------------------------------------------
+       PASS II — ANNOTATED EVENT NODE FUNCTIONS
+    ---------------------------------------------------------- */
+
+    function toggleNode(idx) {
+      const node = document.getElementById('ev-node-' + idx);
+      if (!node) return;
+      node.classList.toggle('expanded');
+    }
+
+    function setEvidenceStatus(nodeIdx, evidenceId, status, btn) {
+      if (!nodeAnnotations[nodeIdx]) nodeAnnotations[nodeIdx] = { text:'', evidenceStatuses:{} };
+      const prev = nodeAnnotations[nodeIdx].evidenceStatuses[evidenceId];
+      // Toggle off if same status clicked again
+      if (prev === status) {
+        nodeAnnotations[nodeIdx].evidenceStatuses[evidenceId] = null;
+      } else {
+        nodeAnnotations[nodeIdx].evidenceStatuses[evidenceId] = status;
+      }
+      // Update button active states
+      const wrap = btn.closest('.ev-item-btns');
+      if (wrap) {
+        wrap.querySelectorAll('.ev-status-btn').forEach(b => {
+          b.classList.remove('active-available','active-requested','active-missing');
+        });
+        const cur = nodeAnnotations[nodeIdx].evidenceStatuses[evidenceId];
+        if (cur) btn.classList.add('active-' + cur);
+      }
+      updateNodeStatus(nodeIdx);
+      renderPass3FromNodes();
+    }
+
+    function onAnnotationInput(nodeIdx, el) {
+      if (!nodeAnnotations[nodeIdx]) nodeAnnotations[nodeIdx] = { text:'', evidenceStatuses:{} };
+      nodeAnnotations[nodeIdx].text = el.value;
+      // Show RM surface if text entered
+      const rmEl = document.getElementById('ev-rm-' + nodeIdx);
+      if (rmEl) rmEl.classList.toggle('visible', el.value.trim().length > 0);
+      updateNodeStatus(nodeIdx);
+      renderPass3FromNodes();
+    }
+
+    function updateNodeStatus(nodeIdx) {
+      const node = document.getElementById('ev-node-' + nodeIdx);
+      if (!node) return;
+      const ann = nodeAnnotations[nodeIdx];
+      if (!ann) { node.classList.remove('status-red','status-amber','status-green'); node.classList.add('status-red'); return; }
+      const hasText = ann.text && ann.text.trim().length > 0;
+      const statuses = Object.values(ann.evidenceStatuses || {}).filter(Boolean);
+      const hasAvailable = statuses.some(s => s === 'available');
+      const hasAny = statuses.length > 0;
+      node.classList.remove('status-red','status-amber','status-green');
+      if (hasText && hasAvailable) {
+        node.classList.add('status-green');
+      } else if (hasText || hasAny) {
+        node.classList.add('status-amber');
+      } else {
+        node.classList.add('status-red');
+      }
+    }
+
+    function renderPass3FromNodes() {
+      // Trigger Pass III update based on node annotation state
+      if (!currentDT) return;
+      const total = causalNodesCount || 1;
+      const green = Object.keys(nodeAnnotations).filter(idx => {
+        const ann = nodeAnnotations[idx];
+        if (!ann) return false;
+        const hasText = ann.text && ann.text.trim().length > 0;
+        const hasAvailable = Object.values(ann.evidenceStatuses||{}).some(s => s === 'available');
+        return hasText && hasAvailable;
+      }).length;
+      const amber = Object.keys(nodeAnnotations).filter(idx => {
+        const ann = nodeAnnotations[idx];
+        if (!ann) return false;
+        const hasText = ann.text && ann.text.trim().length > 0;
+        const hasAny = Object.values(ann.evidenceStatuses||{}).some(Boolean);
+        const hasAvailable = Object.values(ann.evidenceStatuses||{}).some(s => s === 'available');
+        return (hasText || hasAny) && !(hasText && hasAvailable);
+      }).length;
+      // Update RM meter based on node statuses
+      const score = (green + amber * 0.5) / Math.max(total, 1);
+      const mFill = document.getElementById('rm-meter-fill');
+      const mLabel = document.getElementById('rm-position-label');
+      const mTally = document.getElementById('rm-tally');
+      if (mFill) mFill.style.width = Math.round(score * 100) + '%';
+      if (mLabel) mLabel.textContent = green > 0 ? (score >= 0.8 ? 'Strong RM position' : 'Building — address gaps') : 'Begin reviewing events';
+      if (mTally) mTally.textContent = `${green} confirmed · ${amber} partial`;
+      // Show brief button when most nodes engaged
+      const briefWrap = document.getElementById('gen-brief-wrap');
+      if (briefWrap) briefWrap.style.display = (green + amber >= Math.ceil(total * 0.5)) ? 'block' : 'none';
+    }
+
+    /* ----------------------------------------------------------
        QUANTUM INPUT HANDLERS
     ---------------------------------------------------------- */
     function updateQuantum() {
@@ -3952,11 +4570,23 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
     function generateBrief() {
       if (!currentDT) return;
 
-      const total = currentDT.challenges.length;
-      const confirmed = Object.values(rmResponses).filter(r => r === 'confirmed').length;
-      const partial   = Object.values(rmResponses).filter(r => r === 'partial').length;
-      const gaps      = Object.values(rmResponses).filter(r => r === 'gap').length;
-      const score     = (confirmed + partial * 0.5) / total;
+      // Derive score from nodeAnnotations (new Pass II system)
+      const total = causalNodesCount || 1;
+      const confirmed = Object.keys(nodeAnnotations).filter(idx => {
+        const ann = nodeAnnotations[idx];
+        if (!ann) return false;
+        return ann.text && ann.text.trim().length > 0 && Object.values(ann.evidenceStatuses||{}).some(s => s === 'available');
+      }).length;
+      const partial = Object.keys(nodeAnnotations).filter(idx => {
+        const ann = nodeAnnotations[idx];
+        if (!ann) return false;
+        const hasText = ann.text && ann.text.trim().length > 0;
+        const hasAny = Object.values(ann.evidenceStatuses||{}).some(Boolean);
+        const hasAvailable = Object.values(ann.evidenceStatuses||{}).some(s => s === 'available');
+        return (hasText || hasAny) && !(hasText && hasAvailable);
+      }).length;
+      const gaps = total - confirmed - partial;
+      const score     = (confirmed + partial * 0.5) / Math.max(total, 1);
       const verdict   = getVerdict(currentDT.limb1Status, score, gaps);
       const { strengths, weaknesses } = buildSWPoints();
 
@@ -3970,16 +4600,30 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
       const dateStr = now.toLocaleDateString('en-GB', { day:'2-digit', month:'long', year:'numeric' });
       const timeStr = now.toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' });
 
-      // RM response table rows
-      const rmRows = currentDT.challenges.map((c, i) => {
-        const resp = rmResponses[i] || 'not-reviewed';
-        const respLabel = { confirmed:'Confirmed', partial:'Partial', gap:'Gap', 'not-reviewed':'Not reviewed' }[resp];
-        return `<tr>
-          <td style="padding:8px 12px;font-size:12px;font-family:var(--font-spectral,serif);border-bottom:1px solid var(--ink-rule2);color:var(--ink-secondary);vertical-align:top;width:60%">${c.question}</td>
-          <td style="padding:8px 12px;font-size:12px;font-family:var(--font-mono);border-bottom:1px solid var(--ink-rule2);text-align:center;white-space:nowrap;
-            color:${resp==='confirmed'?'var(--defend)':resp==='partial'?'var(--conditions)':resp==='gap'?'var(--settle)':'var(--ink-faint)'}">${respLabel}</td>
-        </tr>`;
-      }).join('');
+      // Build evidence summary from node annotations
+      const _causalNodes = typeof causalNodes !== 'undefined' ? causalNodes : [];
+      const evidenceSummary = Object.entries(nodeAnnotations).map(([idx, ann]) => {
+        const node = (_causalNodes && _causalNodes[parseInt(idx)]) || { label: 'Event ' + idx, icon: '⚡' };
+        const statuses = ann.evidenceStatuses || {};
+        const available = Object.entries(statuses).filter(([,v]) => v === 'available').map(([k]) => k);
+        const missing = Object.entries(statuses).filter(([,v]) => v === 'missing').map(([k]) => k);
+        return { node, annotation: ann.text, available, missing };
+      }).filter(e => e.annotation || e.available.length > 0 || e.missing.length > 0);
+
+      const rmRows = evidenceSummary.length > 0
+        ? evidenceSummary.map(e => `<tr>
+            <td style="padding:8px 12px;font-size:12px;font-family:var(--font-spectral,serif);border-bottom:1px solid var(--ink-rule2);color:var(--ink-secondary);vertical-align:top;width:35%">
+              ${e.node.icon || ''} ${e.node.label}
+            </td>
+            <td style="padding:8px 12px;font-size:12px;font-family:var(--font-spectral,serif);border-bottom:1px solid var(--ink-rule2);color:var(--ink-primary);vertical-align:top;width:40%">
+              ${e.annotation || '<span style="color:var(--ink-faint);font-style:italic">No notes</span>'}
+            </td>
+            <td style="padding:8px 12px;font-size:11px;font-family:var(--font-mono);border-bottom:1px solid var(--ink-rule2);vertical-align:top">
+              ${e.available.length > 0 ? `<span style="color:var(--defend)">${e.available.length} available</span>` : ''}
+              ${e.missing.length > 0 ? `<br><span style="color:var(--settle)">${e.missing.length} missing</span>` : ''}
+            </td>
+          </tr>`).join('')
+        : `<tr><td colspan="3" style="padding:12px;text-align:center;color:var(--ink-faint);font-style:italic;font-size:12px">Complete the event review in Pass II to populate this section</td></tr>`;
 
       // Key authorities
       const relevantCases = (typeof CASELAW_DB !== 'undefined')
@@ -4037,8 +4681,9 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
                 <table style="width:100%;border-collapse:collapse;border:1px solid var(--ink-rule2);border-radius:var(--r-md);overflow:hidden">
                   <thead>
                     <tr style="background:var(--surface-ui,#EEECEA)">
-                      <th style="padding:8px 12px;font-size:11px;font-weight:700;text-align:left;color:var(--ink-secondary);font-family:var(--font-sans)">Challenge Point</th>
-                      <th style="padding:8px 12px;font-size:11px;font-weight:700;text-align:center;color:var(--ink-secondary);font-family:var(--font-sans);white-space:nowrap">Evidence Position</th>
+                      <th style="padding:8px 12px;font-size:11px;font-weight:700;text-align:left;color:var(--ink-secondary);font-family:var(--font-sans)">Event</th>
+                      <th style="padding:8px 12px;font-size:11px;font-weight:700;text-align:left;color:var(--ink-secondary);font-family:var(--font-sans)">Notes</th>
+                      <th style="padding:8px 12px;font-size:11px;font-weight:700;text-align:left;color:var(--ink-secondary);font-family:var(--font-sans);white-space:nowrap">Evidence</th>
                     </tr>
                   </thead>
                   <tbody>${rmRows}</tbody>
