@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DefendAble — Legal Reference: EC261/UK261 Authorities</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Spectral:ital,wght@0,300;0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --surface-page:   #F4F3EF;
+      --surface-doc:    #FEFEFE;
+      --surface-ui:     #EEECEA;
+      --ink-primary:    #0F0F0E;
+      --ink-secondary:  #3D3C39;
+      --ink-tertiary:   #6B6A67;
+      --ink-faint:      #A8A7A4;
+      --ink-rule:       #D8D6D0;
+      --ink-rule2:      #ECEAE6;
+      --defend:         #1B4A32;
+      --defend-bg:      #EBF5EE;
+      --defend-border:  #B5D8C2;
+      --settle:         #7A1A1A;
+      --settle-bg:      #FBF0F0;
+      --settle-border:  #F0BABA;
+      --judgment:       #1A3A7A;
+      --judgment-bg:    #EEF2FB;
+      --judgment-border:#B0C4EC;
+      --font-serif:     'Libre Baskerville', Georgia, 'Times New Roman', serif;
+      --font-spectral:  'Spectral', Georgia, serif;
+      --font-sans:      'Inter', -apple-system, sans-serif;
+      --font-mono:      'JetBrains Mono', 'Courier New', monospace;
+      --doc-w:          860px;
+      --sp-xs: 4px; --sp-sm: 8px; --sp-md: 16px; --sp-lg: 24px; --sp-xl: 40px;
+      --r: 2px; --r-md: 4px; --r-lg: 6px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      background: var(--surface-page);
+      color: var(--ink-primary);
+      font-family: var(--font-sans);
+      font-size: 14px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Nav ── */
+    .g-nav {
+      background: var(--ink-primary);
+      height: 52px;
+      display: flex;
+      align-items: center;
+      padding: 0 40px;
+      gap: 32px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .g-nav-brand {
+      font-family: var(--font-serif);
+      font-size: 15px;
+      color: #fff;
+      letter-spacing: .02em;
+    }
+    .g-nav-sub {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: rgba(255,255,255,.45);
+      letter-spacing: .06em;
+    }
+    .g-nav-back {
+      margin-left: auto;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: rgba(255,255,255,.5);
+      text-decoration: none;
+      letter-spacing: .04em;
+    }
+    .g-nav-back:hover { color: rgba(255,255,255,.8); }
+
+    /* ── Page ── */
+    .page-wrap {
+      max-width: var(--doc-w);
+      margin: 0 auto;
+      padding: 48px 40px 80px;
+    }
+
+    /* ── Title block ── */
+    .ref-masthead {
+      border-bottom: 2px solid var(--ink-primary);
+      padding-bottom: var(--sp-lg);
+      margin-bottom: var(--sp-xl);
+    }
+    .ref-eyebrow {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      margin-bottom: var(--sp-sm);
+    }
+    .ref-title {
+      font-family: var(--font-serif);
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--ink-primary);
+      line-height: 1.2;
+      margin-bottom: var(--sp-sm);
+    }
+    .ref-subtitle {
+      font-family: var(--font-spectral);
+      font-size: 15px;
+      color: var(--ink-secondary);
+      line-height: 1.6;
+      max-width: 600px;
+    }
+    .ref-meta {
+      margin-top: var(--sp-md);
+      display: flex;
+      gap: var(--sp-lg);
+      flex-wrap: wrap;
+    }
+    .ref-meta-item {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--ink-faint);
+      letter-spacing: .06em;
+    }
+
+    /* ── Disclaimer ── */
+    .ref-disclaimer {
+      background: var(--judgment-bg);
+      border: 1px solid var(--judgment-border);
+      border-radius: var(--r-md);
+      padding: var(--sp-md);
+      margin-bottom: var(--sp-xl);
+      font-family: var(--font-spectral);
+      font-size: 12px;
+      color: var(--judgment);
+      line-height: 1.6;
+    }
+
+    /* ── Section divider ── */
+    .ref-section-header {
+      font-family: var(--font-serif);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--ink-secondary);
+      border-top: 2px solid var(--ink-primary);
+      padding-top: var(--sp-sm);
+      margin-top: var(--sp-xl);
+      margin-bottom: var(--sp-lg);
+    }
+    .ref-group-label {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      margin-bottom: var(--sp-md);
+      margin-top: var(--sp-lg);
+    }
+
+    /* ── Case entry ── */
+    .ref-case {
+      border: 1px solid var(--ink-rule);
+      border-radius: var(--r-md);
+      background: var(--surface-doc);
+      margin-bottom: var(--sp-md);
+      overflow: hidden;
+    }
+    .ref-case-header {
+      padding: var(--sp-md) var(--sp-lg);
+      border-bottom: 1px solid var(--ink-rule2);
+      display: flex;
+      align-items: flex-start;
+      gap: var(--sp-md);
+      flex-wrap: wrap;
+    }
+    .ref-case-meta { flex: 1; min-width: 200px; }
+    .ref-case-citation {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--ink-faint);
+      letter-spacing: .04em;
+      margin-bottom: 3px;
+    }
+    .ref-case-ref {
+      font-family: var(--font-serif);
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--ink-primary);
+      line-height: 1.3;
+    }
+    .ref-case-court-date {
+      font-size: 11px;
+      color: var(--ink-tertiary);
+      margin-top: 3px;
+      font-family: var(--font-sans);
+    }
+    .ref-case-badge {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      border-radius: var(--r);
+      white-space: nowrap;
+      align-self: flex-start;
+    }
+    .badge-defence { background: var(--defend-bg); color: var(--defend); border: 1px solid var(--defend-border); }
+    .badge-claimant { background: var(--settle-bg); color: var(--settle); border: 1px solid var(--settle-border); }
+    .ref-case-body { padding: var(--sp-md) var(--sp-lg); }
+    .ref-case-section-label {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      margin-bottom: 6px;
+      margin-top: var(--sp-md);
+    }
+    .ref-case-section-label:first-child { margin-top: 0; }
+    .ref-case-ratio {
+      font-family: var(--font-spectral);
+      font-size: 13px;
+      color: var(--ink-primary);
+      line-height: 1.75;
+    }
+    .ref-case-props {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    .ref-case-props li {
+      font-family: var(--font-spectral);
+      font-size: 12px;
+      line-height: 1.65;
+      color: var(--ink-secondary);
+      padding: 5px 0 5px var(--sp-md);
+      border-left: 2px solid var(--ink-rule2);
+      margin-bottom: 5px;
+    }
+    .ref-case-quote {
+      font-family: var(--font-spectral);
+      font-size: 12px;
+      font-style: italic;
+      color: var(--ink-secondary);
+      line-height: 1.7;
+      padding: var(--sp-sm) var(--sp-md);
+      background: var(--surface-ui);
+      border-radius: var(--r-md);
+    }
+    .ref-case-keypara {
+      font-family: var(--font-spectral);
+      font-size: 12px;
+      color: var(--judgment);
+      line-height: 1.6;
+      padding: var(--sp-sm) var(--sp-md);
+      background: var(--judgment-bg);
+      border: 1px solid var(--judgment-border);
+      border-radius: var(--r-md);
+    }
+    .ref-case-footer {
+      padding: var(--sp-sm) var(--sp-lg);
+      border-top: 1px solid var(--ink-rule2);
+      background: var(--surface-ui);
+      display: flex;
+      align-items: center;
+      gap: var(--sp-md);
+      flex-wrap: wrap;
+    }
+    .ref-source-link {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--ink-secondary);
+      text-decoration: none;
+      letter-spacing: .03em;
+    }
+    .ref-source-link:hover { color: var(--ink-primary); text-decoration: underline; }
+    .ref-source-name {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--ink-faint);
+    }
+
+    /* ── Print ── */
+    @media print {
+      .g-nav { display: none; }
+      .page-wrap { padding: 20px; }
+      .ref-case { page-break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="g-nav">
+    <div>
+      <div class="g-nav-brand">DefendAble</div>
+      <div class="g-nav-sub">LEGAL REFERENCE</div>
+    </div>
+    <a class="g-nav-back" href="defendable_analyser_v3.html">← Back to Engine</a>
+  </nav>
+
+  <div class="page-wrap">
+
+    <div class="ref-masthead">
+      <div class="ref-eyebrow">DefendAble Intelligence Engine · Legal Knowledge Base</div>
+      <div class="ref-title">EC261 / UK261 Legal Authorities</div>
+      <div class="ref-subtitle">A verified compendium of judicial decisions governing aviation passenger rights claims and airline defences under EU Regulation 261/2004 and the retained UK equivalent. Every legal proposition surfaced by the DefendAble engine is traceable to a source judgment listed here.</div>
+      <div class="ref-meta">
+        <div class="ref-meta-item">22 VERIFIED AUTHORITIES</div>
+        <div class="ref-meta-item">CJEU · UKSC · EWCA · EU GENERAL COURT</div>
+        <div class="ref-meta-item">UPDATED JULY 2026</div>
+      </div>
+    </div>
+
+    <div class="ref-disclaimer">
+      <strong>Note on legal authority:</strong> EUR-Lex (CURIA) and BAILII are the primary sources for all citations. Paragraph references indicate the key sections of each judgment containing the ratio applied by DefendAble. For UK261 cases decided post-IP Completion Day (31 December 2020), CJEU decisions are persuasive but not binding. Lawyers should verify all propositions against the source judgments before reliance.
+    </div>
+
+    <!-- ═══ EXTRAORDINARY CIRCUMSTANCES ═══ -->
+    <div class="ref-section-header">I. Extraordinary Circumstances — The Two-Limb Test</div>
+
+    <div class="ref-group-label">Foundation</div>
+
+    <!-- wallentin-hermann -->
+    <div class="ref-case">
+      <div class="ref-case-header">
+        <div class="ref-case-meta">
+          <div class="ref-case-citation">C-549/07 · CJEU · 22 December 2008</div>
+          <div class="ref-case-ref">Wallentin-Hermann v Alitalia</div>
+          <div class="ref-case-court-date">Court of Justice of the European Union</div>
+        </div>
+        <span class="ref-case-badge badge-claimant">Claimant May Cite</span>
+      </div>
+      <div class="ref-case-body">
+        <div class="ref-case-section-label">Ratio</div>
+        <div class="ref-case-ratio">A technical fault in an aircraft cannot constitute an extraordinary circumstance unless it stems from events not inherent in the normal exercise of airline activity and beyond the carrier's actual control. A malfunction discovered during pre-flight checks or routine maintenance does not qualify merely because it is unexpected.</div>
+        <div class="ref-case-section-label" style="margin-top:12px">Key Propositions</div>
+        <ul class="ref-case-props">
+          <li>A technical defect is not extraordinary merely because it is statistically rare.</li>
+          <li>Events inherent in the normal exercise of airline activity — including unexpected technical failures — are not extraordinary circumstances.</li>
+          <li>The airline must take all measures reasonably available, exhausting human, material and financial resources, even where the situation was not caused by the airline.</li>
+        </ul>
+        <div class="ref-case-section-label" style="margin-top:12px">Key Passage</div>
+        <div class="ref-case-quote">&ldquo;A technical problem in an aircraft cannot be covered by the concept of 'extraordinary circumstances' unless it stems from events which, by their nature or origin, are not inherent in the normal exercise of the activity of the air carrier concerned and are beyond its actual control.&rdquo;</div>
+        <div class="ref-case-section-label" style="margin-top:12px">Key Paragraphs</div>
+        <div class="ref-case-keypara">Para. 23 — the foundational two-limb test: extraordinary circumstances must not be inherent in the normal exercise of airline activity, and must be beyond the carrier's actual control</div>
+      </div>
+      <div class="ref-case-footer">
+        <a class="ref-source-link" href="https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:62007CJ0549" target="_blank" rel="noopener">Open full judgment on EUR-Lex ↗</a>
+        <span class="ref-source-name">CELEX: 62007CJ0549</span>
+      </div>
+    </div>
+
+    <!-- iata-elfaa -->
+    <div class="ref-case">
+      <div class="ref-case-header">
+        <div class="ref-case-meta">
+          <div class="ref-case-citation">C-344/04 · CJEU · 10 January 2006</div>
+          <div class="ref-case-ref">IATA and ELFAA v Department for Transport</div>
+          <div class="ref-case-court-date">Court of Justice of the European Union</div>
+        </div>
+        <span class="ref-case-badge badge-claimant">Claimant May Cite</span>
+      </div>
+      <div class="ref-case-body">
+        <div class="ref-case-section-label">Ratio</div>
+        <div class="ref-case-ratio">Regulation EC No 261/2004 is valid. The standardised and immediate assistance measures it establishes for passengers in the event of denied boarding, cancellation or long delay are proportionate and do not conflict with the Montreal Convention, which governs individual claims for compensatory damages on different legal bases.</div>
+        <div class="ref-case-section-label" style="margin-top:12px">Key Passage</div>
+        <div class="ref-case-quote">&ldquo;The measures introduced by Regulation No 261/2004 are standardised and immediate, distinct from compensation of an individual nature for which a request can be made pursuant to the Montreal Convention.&rdquo;</div>
+        <div class="ref-case-section-label" style="margin-top:12px">Key Paragraphs</div>
+        <div class="ref-case-keypara">Paras. 36–49 — EC261 validity upheld; standardised compensation regime is proportionate and operates on a distinct legal basis from the individual damage remedy under the Montreal Convention</div>
+      </div>
+      <div class="ref-case-footer">
+        <a class="ref-source-link" href="https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:62004CJ0344" target="_blank" rel="noopener">Open full judgment on EUR-Lex ↗</a>
+        <span class="ref-source-name">CELEX: 62004CJ0344</span>
+      </div>
+    </div>
+
+    <!-- ═══ TECHNICAL DEFECTS ═══ -->
+    <div class="ref-section-header">II. Technical Defects</div>
+
+    <!-- van-der-lans -->
+    <div class="ref-case">
+      <div class="ref-case-header">
+        <div class="ref-case-meta">
+          <div class="ref-case-citation">C-257/14 · CJEU · 17 September 2015</div>
+          <div class="ref-case-ref">Van der Lans v KLM</div>
+          <div class="ref-case-court-date">Court of Justice of the European Union</div>
+        </div>
+        <span class="ref-case-badge badge-claimant">Claimant May Cite</span>
+      </div>
+      <div class="ref-case-body">
+        <div class="ref-case-section-label">Ratio</div>
+        <div class="ref-case-ratio">Technical problems caused by premature failure of aircraft components are inherent in the normal exercise of airline operations and do not constitute extraordinary circumstances under Art 5(3), even where the failure was unexpected and not attributable to inadequate maintenance. Airlines must be taken to assume the normal operational risks of their activity.</div>
+        <div class="ref-case-section-label" style="margin-top:12px">Key Propositions</div>
+        <ul class="ref-case-props">
+          <li>Unexpected technical failures are not extraordinary circumstances simply because they were not anticipated or are statistically unusual.</li>
+          <li>Technical defects are inherent in the operational risks airlines accept as part of normal activity, regardless of whether maintenance was adequate.</li>
+          <li>The distinction from extraordinary circumstances is the nature and origin of the event, not the airline's subjective expectation.</li>
+        </ul>
+        <div class="ref-case-section-label" style="margin-top:12px">Key Passage</div>
+        <div class="ref-case-quote">&ldquo;Such technical problems are inherent in the normal exercise of the activity of the air carrier. Since the replacement of a defective component is part of normal maintenance of an aircraft, such a technical problem cannot constitute an 'extraordinary circumstance'.&rdquo;</div>
+        <div class="ref-case-section-label" style="margin-top:12px">Key Paragraphs</div>
+        <div class="ref-case-keypara">Paras. 36–42 — premature failure of aircraft components is inherent in the normal operational risks of airline activity, even where failure was unexpected and maintenance was adequate</div>
+      </div>
+      <div class="ref-case-footer">
+        <a class="ref-source-link" href="https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:62014CJ0257" target="_blank" rel="noopener">Open full judgment on EUR-Lex ↗</a>
+        <span class="ref-source-name">CELEX: 62014CJ0257</span>
+      </div>
+    </div>
+
+    <!-- jet2-huzar -->
+    <div class="ref-case">
+      <div class="ref-case-header">
+        <div class="ref-case-meta">
+          <div class="ref-case-citation">[2014] EWCA Civ 791 · 27 June 2014</div>
+          <div class="ref-case-ref">Jet2.com Ltd v Huzar</div>
+          <div class="ref-case-court-date">England and Wales Court of Appeal (Civil Division)</div>
+        </div>
+        <span class="ref-case-badge badge-claimant">Claimant May Cite</span>
+      </div>
+      <div class="ref-case-body">
+        <div class="ref-case-section-label">Ratio</div>
+        <div class="ref-case-ratio">UK Court of Appeal confirmed, following Wallentin-Hermann, that a technical defect in an aircraft is not an extraordinary circumstance under EC261. A fuel pipe defect causing significant delay did not qualify. UK courts apply the same test as the CJEU: the defect must not be inherent in normal airline operations.</div>
+        <div class="ref-case-section-label" style="margin-top:12px">Key Passage</div>
+        <div class="ref-case-quote">&ldquo;A technical problem which is inherent in the normal exercise of the activity of the air carrier, such as an unexpected fault occurring, is not an extraordinary circumstance within the meaning of Article 5(3) of the Regulation.&rdquo;</div>
+        <div class="ref-case-section-label" style="margin-top:12px">Key Paragraphs</div>
+        <div class="ref-case-keypara">Paras. 22–40 — UK Court of Appeal applies Wallentin-Hermann without modification: technical defects are not extraordinary circumstances regardless of their unexpectedness or the carrier's maintenance record</div>
+      </div>
+      <div class="ref-case-footer">
+        <a class="ref-source-link" href="https://www.bailii.org/ew/cases/EWCA/Civ/2014/791.html" target="_blank" rel="noopener">Open full judgment on BAILII ↗</a>
+        <span class="ref-source-name">BAILII: [2014] EWCA Civ 791</span>
+      </div>
+    </div>
+
+    <!-- matkustaja-finnair -->
+    <div class="ref-case">
+      <div class="ref-case-header">
+        <div class="ref-case-meta">
+          <div class="ref-case-citation">C-385/23 · CJEU · 13 June 2024</div>
+          <div class="ref-case-ref">Matkustaja A v Finnair Oyj</div>
+          <div class="ref-case-court-date">Court of Justice of the European Union</div>
+        </div>
+        <span class="ref-case-badge badge-defence">Supports Defence</span>
+      </div>
+      <div class="ref-case-body">
+        <div class="ref-case-section-label">Ratio</div>
+        <div class="ref-case-ratio">A latent design defect in a new aircraft model, where the defect was the first worldwide occurrence on an aircraft in service for only five months, constitutes extraordinary circumstances where the aircraft manufacturer confirms the failure resulted from a hidden design defect affecting all aircraft of the same type, the failure impinges on flight safety, and the carrier had no power to identify or remedy the defect. The timing of the manufacturer's recognition of the defect is irrelevant.</div>
+        <div class="ref-case-section-label" style="margin-top:12px">Key Propositions — Four-Part Test</div>
+        <ul class="ref-case-props">
+          <li><strong>Limb 1:</strong> The aircraft manufacturer confirms the failure resulted from a hidden design defect.</li>
+          <li><strong>Limb 2:</strong> The failure was the first worldwide occurrence on aircraft of that type.</li>
+          <li><strong>Limb 3:</strong> The defect affects all aircraft of the same type (not isolated to one airframe).</li>
+          <li><strong>Limb 4:</strong> The defect impinges on flight safety and the carrier had no power to identify or remedy it.</li>
+        </ul>
+        <div class="ref-case-section-label" style="margin-top:12px">Key Passage</div>
+        <div class="ref-case-quote">&ldquo;The carrier has no power to identify and remedy a latent defect in design; it cannot be considered to exercise control in this scenario. The classification of a hidden design defect as extraordinary is not subject to the condition that the manufacturer must have revealed its existence before the failure occurred.&rdquo;</div>
+        <div class="ref-case-section-label" style="margin-top:12px">Key Paragraphs</div>
+        <div class="ref-case-keypara">Paras. 23–47 — four-part test for a latent design defect to constitute extraordinary circumstances; it is irrelevant that the manufacturer only recognised and confirmed the defect after the cancellation occurred</div>
+      </div>
+      <div class="ref-case-footer">
+        <a class="ref-source-link" href="https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:62023CJ0385" target="_blank" rel="noopener">Open full judgment on EUR-Lex ↗</a>
+        <span class="ref-source-name">CELEX: 62023CJ0385</span>
+      </div>
+    </div>
+
+    <!-- dsa-psa -->
+    <div class="ref-case">
+      <div class="ref-case-header">
+        <div class="ref-case-meta">
+          <div class="ref-case-citation">C-411/23 · CJEU · 13 June 2024</div>
+          <div class="ref-case-ref">D. S.A. v P. S.A.</div>
+          <div class="ref-case-court-date">Court of Justice of the European Union</div>
+        </div>
+        <span class="ref-case-badge badge-defence">Supports Defence</span>
+      </div>
+      <div class="ref-case-body">
+        <div class="ref-case-section-label">Ratio</div>
+        <div class="ref-case-ratio">The extraordinary circumstances defence for a hidden design defect is available even where the aircraft manufacturer had informed the carrier of the defect's existence several months before the flight concerned, provided the carrier still had no power to remedy the defect at the time of the disruption. Carriers are also NOT required to maintain a back-up fleet of aircraft and crew on standby.</div>
+        <div class="ref-case-section-label" style="margin-top:12px">Key Propositions</div>
+        <ul class="ref-case-props">
+          <li>Prior knowledge of a hidden design defect does not disqualify the extraordinary circumstances defence if the carrier still could not remedy the defect.</li>
+          <li>The test is whether the carrier had the power to identify AND remedy the defect before the disruption — awareness alone does not establish control.</li>
+          <li>Carriers are not required to maintain a back-up fleet on standby as part of reasonable measures under Art 5(3) — this would be an unacceptable sacrifice.</li>
+        </ul>
+        <div class="ref-case-section-label" style="margin-top:12px">Key Passage</div>
+        <div class="ref-case-quote">&ldquo;Article 5(3) does not require air carriers, in a general and indiscriminate manner, to adopt a given preventive measure, such as having a back-up fleet of aircraft and the corresponding crew on standby.&rdquo;</div>
+        <div class="ref-case-section-label" style="margin-top:12px">Key Paragraphs</div>
+        <div class="ref-case-keypara">Paras. 25–45 — prior knowledge of a hidden design defect does not defeat the Art 5(3) defence if the carrier still had no power to remedy it; carriers are not required to maintain a back-up fleet as a general reasonable measure</div>
+      </div>
+      <div class="ref-case-footer">
+        <a class="ref-source-link" href="https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:62023CJ0411" target="_blank" rel="noopener">Open full judgment on EUR-Lex ↗</a>
+        <span class="ref-source-name">CELEX: 62023CJ0411</span>
+      </div>
+    </div>
+
+    <!-- ═══ OWN-STAFF AND CREW ═══ -->
+    <div class="ref-section-header">III. Own-Staff Industrial Action and Crew Issues</div>
+
+    <!-- kruesemann -->
+    <div class="ref-case">
+      <div class="ref-case-header">
+        <div class="ref-case-meta">
+          <div class="ref-case-citation">C-195/17 · CJEU · 17 April 2018</div>
+          <div class="ref-case-ref">Krüsemann and Others v TUIfly</div>
+          <div class="ref-case-court-date">Court of Justice of the European Union</div>
+        </div>
+        <span class="ref-case-badge badge-claimant">Claimant May Cite</span>
+      </div>
+      <div class="ref-case-body">
+        <div class="ref-case-section-label">Ratio</div>
+        <div class="ref-case-ratio">A spontaneous strike (wildcat strike) by an airline's own cabin crew in reaction to restructuring plans does not constitute an extraordinary circumstance within Art 5(3) EC261. Labour disputes and industrial action by the carrier's own employees are inherent in the normal management of the airline undertaking.</div>
+        <div class="ref-case-section-label" style="margin-top:12px">Key Passage</div>
+        <div class="ref-case-quote">&ldquo;A 'wildcat strike' by cabin crew of an air carrier, which spontaneously began, does not fall within the concept of 'extraordinary circumstances' since it is part of the normal exercise of the activity of the air carrier concerned.&rdquo;</div>
+        <div class="ref-case-section-label" style="margin-top:12px">Key Paragraphs</div>
+        <div class="ref-case-keypara">Paras. 34–46 — own-staff wildcat strike is part of the normal exercise of airline activity; labour disputes involving the carrier's own employees do not constitute extraordinary circumstances</div>
+      </div>
+      <div class="ref-case-footer">
+        <a class="ref-source-link" href="https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:62017CJ0195" target="_blank" rel="noopener">Open full judgment on EUR-Lex ↗</a>
+        <span class="ref-source-name">CELEX: 62017CJ0195</span>
+      </div>
+    </div>
+
+    <!-- lipton-cityflyer -->
+    <div class="ref-case">
+      <div class="ref-case-header">
+        <div class="ref-case-meta">
+          <div class="ref-case-citation">[2024] UKSC 24 · 10 July 2024</div>
+          <div class="ref-case-ref">Lipton and another v BA CityFlyer Ltd</div>
+          <div class="ref-case-court-date">UK Supreme Court — First ruling on extraordinary circumstances</div>
+        </div>
+        <span class="ref-case-badge badge-claimant">Claimant May Cite</span>
+      </div>
+      <div class="ref-case-body">
+        <div class="ref-case-section-label">Ratio</div>
+        <div class="ref-case-ratio">The UK Supreme Court unanimously held that a pilot unexpectedly falling ill does not constitute an extraordinary circumstance under EC261. Crew illness is inherent in the normal exercise of the activity of an air carrier, just as the wear of mechanical components is inherent. It is irrelevant that the pilot fell ill while off duty: a pilot's attendance or non-attendance for work is an inherent part of the carrier's operating system.</div>
+        <div class="ref-case-section-label" style="margin-top:12px">Key Propositions</div>
+        <ul class="ref-case-props">
+          <li>Pilot and crew illness is NEVER an extraordinary circumstance — it is inherent in the normal exercise of airline activity.</li>
+          <li>It makes no difference whether the crew member fell ill on duty or off duty, or from an unusual illness.</li>
+          <li>The purpose of EC261 is standardised, immediate compensation: excessive granular fact-finding as to the cause of illness is inconsistent with this purpose.</li>
+          <li>Pre-IP Completion Day (31 Dec 2020) flights departing EU airports are governed by EC261, not UK261.</li>
+        </ul>
+        <div class="ref-case-section-label" style="margin-top:12px">Key Passage</div>
+        <div class="ref-case-quote">&ldquo;A pilot, because of his role, is 'as much part of the operating system' as the mechanical components of the aircraft. Their attendance or non-attendance for work is an inherent part of the carrier's operating system.&rdquo;</div>
+        <div class="ref-case-section-label" style="margin-top:12px">Key Paragraphs</div>
+        <div class="ref-case-keypara">Paras. 42–66 — crew illness is inherent in the normal exercise of airline operations regardless of whether it occurred on or off duty; the purpose of EC261 is standardised, immediate compensation inconsistent with granular fact-finding as to the cause of illness</div>
+      </div>
+      <div class="ref-case-footer">
+        <a class="ref-source-link" href="https://www.bailii.org/uk/cases/UKSC/2024/24.html" target="_blank" rel="noopener">Open full judgment on BAILII ↗</a>
+        <span class="ref-source-name">BAILII / UKSC · [2024] UKSC 24</span>
+      </div>
+    </div>
+
+    <!-- tap-flightright -->
+    <div class="ref-case">
+      <div class="ref-case-header">
+        <div class="ref-case-meta">
+          <div class="ref-case-citation">C-156/22 to C-158/22 · CJEU · 13 July 2023</div>
+          <div class="ref-case-ref">TAP Portugal v Flightright GmbH (Joined Cases)</div>
+          <div class="ref-case-court-date">Court of Justice of the European Union</div>
+        </div>
+        <span class="ref-case-badge badge-claimant">Claimant May Cite</span>
+      </div>
+      <div class="ref-case-body">
+        <div class="ref-case-section-label">Ratio</div>
+        <div class="ref-case-ratio">The tragic and unexpected death of a co-pilot shortly before a flight's departure, which left the remaining crew too shaken to operate the flight, does not constitute extraordinary circumstances under Art 5(3) EC261. Staff absence — even from a wholly unpredictable and extreme cause — is inherent in the normal exercise of an air carrier's activity.</div>
+        <div class="ref-case-section-label" style="margin-top:12px">Key Passage</div>
+        <div class="ref-case-quote">&ldquo;Even the unexpected and tragic death of a crew member constitutes an event inherent in the normal exercise of the activity of an air carrier — staff absence cannot be extraordinary circumstances.&rdquo;</div>
+        <div class="ref-case-section-label" style="margin-top:12px">Key Paragraphs</div>
+        <div class="ref-case-keypara">Paras. 28–48 — even a co-pilot's death is an event inherent in airline operations; crew absence is never an extraordinary circumstance</div>
+      </div>
+      <div class="ref-case-footer">
+        <a class="ref-source-link" href="https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:62022CJ0156" target="_blank" rel="noopener">Open full judgment on EUR-Lex ↗</a>
+        <span class="ref-source-name">CELEX: 62022CJ0156</span>
+      </div>
+    </div>
+
+    <!-- ═══ WEATHER / ATFM / CAUSAL CHAIN ═══ -->
+    <div class="ref-section-header">IV. Weather, ATFM, and Causal Chain Integrity</div>
+
+    <!-- eglitis -->
+    <div class="ref-case">
+      <div class="ref-case-header">
+        <div class="ref-case-meta">
+          <div class="ref-case-citation">C-294/10 · CJEU · 12 May 2011</div>
+          <div class="ref-case-ref">Eglitis and Mäkinen v Latvijas Republikas Ekonomikas ministrija</div>
+          <div class="ref-case-court-date">Court of Justice of the European Union</div>
+        </div>
+        <span class="ref-case-badge badge-claimant">Claimant May Cite</span>
+      </div>
+      <div class="ref-case-body">
+        <div class="ref-case-section-label">Ratio</div>
+        <div class="ref-case-ratio">An air carrier must take all measures available, including planning adequate time buffers into scheduling, to avoid delays or cancellations caused by foreseeable extraordinary circumstances. The carrier does not have to make intolerable sacrifices in terms of capacity but must deploy all available resources at the time of the disruption.</div>
+        <div class="ref-case-section-label" style="margin-top:12px">Key Passage</div>
+        <div class="ref-case-quote">&ldquo;The air carrier is required to take all measures available — including planning adequate time buffers — when faced with an extraordinary circumstance, unless such measures represent an unacceptable sacrifice in terms of the capacity of its undertaking.&rdquo;</div>
+        <div class="ref-case-section-label" style="margin-top:12px">Key Paragraphs</div>
+        <div class="ref-case-keypara">Paras. 25–30 — all reasonable measures test: the carrier must use all human, material and financial resources available, including planning adequate time buffers for foreseeable extraordinary circumstances</div>
+      </div>
+      <div class="ref-case-footer">
+        <a class="ref-source-link" href="https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:62010CJ0294" target="_blank" rel="noopener">Open full judgment on EUR-Lex ↗</a>
+        <span class="ref-source-name">CELEX: 62010CJ0294</span>
+      </div>
+    </div>
+
+    <!-- ni-hz-charter -->
+    <div class="ref-case">
+      <div class="ref-case-header">
+        <div class="ref-case-meta">
+          <div class="ref-case-citation">T-656/24 · EU General Court · 4 March 2026</div>
+          <div class="ref-case-ref">NI, HZ v European Air Charter AG</div>
+          <div class="ref-case-court-date">General Court of the European Union</div>
+        </div>
+        <span class="ref-case-badge badge-claimant">Claimant May Cite</span>
+      </div>
+      <div class="ref-case-body">
+        <div class="ref-case-section-label">Ratio</div>
+        <div class="ref-case-ratio">Where an extraordinary circumstance affects an earlier flight rotation, a carrier may only rely on that circumstance for a subsequent delayed flight if there is a sufficiently direct causal link between the extraordinary event and the later delay. A voluntary operational decision by the carrier — such as choosing to wait for delayed passengers from an earlier rotation — can break that causal link if the decision, and not the original extraordinary event, becomes the determining cause of the later delay.</div>
+        <div class="ref-case-section-label" style="margin-top:12px">Key Propositions</div>
+        <ul class="ref-case-props">
+          <li>An extraordinary circumstance on one rotation can only support an Art 5(3) defence for a later rotation if a sufficiently direct causal link exists between the two.</li>
+          <li>A voluntary carrier decision (e.g. waiting for delayed passengers) can break the causal chain if that decision becomes the determining cause of the subsequent flight's delay.</li>
+          <li>The causal chain analysis is strict: the but-for test is insufficient — the extraordinary event must be the determining, proximate cause of the delay.</li>
+          <li>Airlines must assess whether their operational response choices will break the causal chain — even reasonable, passenger-friendly choices can do so.</li>
+        </ul>
+        <div class="ref-case-section-label" style="margin-top:12px">Key Passage</div>
+        <div class="ref-case-quote">&ldquo;A decision taken by the air carrier to wait for passengers of the first flight arose between the extraordinary circumstance and the delay of the flight at issue. That decision is capable of breaking the direct causal link if it constitutes the determining cause for that delay and the carrier was not obliged to take it.&rdquo;</div>
+        <div class="ref-case-section-label" style="margin-top:12px">Key Paragraphs</div>
+        <div class="ref-case-keypara">Key ratio — a voluntary operational decision by the carrier (such as waiting for delayed passengers from an earlier rotation) can break the direct causal link between an extraordinary circumstance and a subsequent flight's delay if that decision becomes the determining cause of the later delay</div>
+      </div>
+      <div class="ref-case-footer">
+        <a class="ref-source-link" href="https://curia.europa.eu/juris/liste.jsf?num=T-656/24" target="_blank" rel="noopener">Open case on CURIA ↗</a>
+        <span class="ref-source-name">CURIA · T-656/24</span>
+      </div>
+    </div>
+
+    <!-- ═══ BIRDSTRIKE ═══ -->
+    <div class="ref-section-header">V. Wildlife Strike</div>
+
+    <!-- pesekova -->
+    <div class="ref-case">
+      <div class="ref-case-header">
+        <div class="ref-case-meta">
+          <div class="ref-case-citation">C-315/15 · CJEU · 4 May 2017</div>
+          <div class="ref-case-ref">Pešková and Peška v Travel Service</div>
+          <div class="ref-case-court-date">Court of Justice of the European Union</div>
+        </div>
+        <span class="ref-case-badge badge-defence">Supports Defence</span>
+      </div>
+      <div class="ref-case-body">
+        <div class="ref-case-section-label">Ratio</div>
+        <div class="ref-case-ratio">A collision between an aircraft and a bird constitutes an event not inherent in the normal exercise of the activity of the air carrier and beyond its actual control, and may therefore constitute an extraordinary circumstance within Art 5(3) EC261. The mandatory nature of a post-strike inspection under the aircraft maintenance programme means grounding for that purpose is itself a reasonable measure.</div>
+        <div class="ref-case-section-label" style="margin-top:12px">Key Passage</div>
+        <div class="ref-case-quote">&ldquo;A collision between an aircraft and a bird is an event which, by its nature or origin, is not inherent in the normal exercise of the activity of the air carrier concerned and is outside its actual control.&rdquo;</div>
+        <div class="ref-case-section-label" style="margin-top:12px">Key Paragraphs</div>
+        <div class="ref-case-keypara">Paras. 20–26 — birdstrike is not inherent in the normal exercise of airline activity; post-strike inspection is a mandatory airworthiness requirement whose duration does not negate the Art 5(3) defence</div>
+      </div>
+      <div class="ref-case-footer">
+        <a class="ref-source-link" href="https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:62015CJ0315" target="_blank" rel="noopener">Open full judgment on EUR-Lex ↗</a>
+        <span class="ref-source-name">CELEX: 62015CJ0315</span>
+      </div>
+    </div>
+
+    <!-- ═══ COMPENSATION AND QUANTUM ═══ -->
+    <div class="ref-section-header">VI. Compensation Entitlement — Sturgeon Principle</div>
+
+    <!-- sturgeon -->
+    <div class="ref-case">
+      <div class="ref-case-header">
+        <div class="ref-case-meta">
+          <div class="ref-case-citation">C-402/07 and C-432/07 · CJEU · 19 November 2009</div>
+          <div class="ref-case-ref">Sturgeon v Condor Flugdienst and Böck v Air France</div>
+          <div class="ref-case-court-date">Court of Justice of the European Union</div>
+        </div>
+        <span class="ref-case-badge badge-claimant">Claimant May Cite</span>
+      </div>
+      <div class="ref-case-body">
+        <div class="ref-case-section-label">Ratio</div>
+        <div class="ref-case-ratio">Passengers whose flight is delayed by three or more hours at their final destination are in a situation comparable to that of passengers whose flight is cancelled, and are entitled to compensation under Art 7 EC261. The right to compensation arises at the point of arrival being three or more hours late, not merely at the time of departure delay.</div>
+        <div class="ref-case-section-label" style="margin-top:12px">Key Passage</div>
+        <div class="ref-case-quote">&ldquo;Passengers whose flights are delayed may rely on the right to compensation laid down in Article 7 of the Regulation when they suffer, because of a delay, a loss of time equal to or in excess of three hours.&rdquo;</div>
+        <div class="ref-case-section-label" style="margin-top:12px">Key Paragraphs</div>
+        <div class="ref-case-keypara">Para. 61 — passengers delayed 3 or more hours at their final destination are in a situation comparable to passengers whose flights are cancelled and are entitled to Art 7 compensation</div>
+      </div>
+      <div class="ref-case-footer">
+        <a class="ref-source-link" href="https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:62007CJ0402" target="_blank" rel="noopener">Open full judgment on EUR-Lex ↗</a>
+        <span class="ref-source-name">CELEX: 62007CJ0402</span>
+      </div>
+    </div>
+
+    <!-- nelson -->
+    <div class="ref-case">
+      <div class="ref-case-header">
+        <div class="ref-case-meta">
+          <div class="ref-case-citation">C-581/10 and C-629/10 · CJEU · 23 October 2012</div>
+          <div class="ref-case-ref">Nelson v Deutsche Lufthansa and TUI Travel and Others</div>
+          <div class="ref-case-court-date">Court of Justice of the European Union</div>
+        </div>
+        <span class="ref-case-badge badge-claimant">Claimant May Cite</span>
+      </div>
+      <div class="ref-case-body">
+        <div class="ref-case-section-label">Ratio</div>
+        <div class="ref-case-ratio">Confirms the Sturgeon principle: passengers experiencing delays of 3 or more hours at their final destination are entitled to Art 7 compensation. The right to standardised compensation for long delay is valid and proportionate, and does not require the delay to have occurred at the last minute.</div>
+        <div class="ref-case-section-label" style="margin-top:12px">Key Passage</div>
+        <div class="ref-case-quote">&ldquo;The standardised and immediate nature of the right to compensation under Regulation 261/2004 makes it possible for passengers to rely on the right in the event of a delay of three hours or more.&rdquo;</div>
+        <div class="ref-case-section-label" style="margin-top:12px">Key Paragraphs</div>
+        <div class="ref-case-keypara">Paras. 33–40 — Sturgeon principle affirmed; standardised and immediate compensation for delay is compatible with the Montreal Convention, which operates on a distinct legal basis</div>
+      </div>
+      <div class="ref-case-footer">
+        <a class="ref-source-link" href="https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:62010CJ0581" target="_blank" rel="noopener">Open full judgment on EUR-Lex ↗</a>
+        <span class="ref-source-name">CELEX: 62010CJ0581</span>
+      </div>
+    </div>
+
+    <!-- folkerts -->
+    <div class="ref-case">
+      <div class="ref-case-header">
+        <div class="ref-case-meta">
+          <div class="ref-case-citation">C-11/11 · CJEU · 26 February 2013</div>
+          <div class="ref-case-ref">Folkerts v Air France</div>
+          <div class="ref-case-court-date">Court of Justice of the European Union</div>
+        </div>
+        <span class="ref-case-badge badge-claimant">Claimant May Cite</span>
+      </div>
+      <div class="ref-case-body">
+        <div class="ref-case-section-label">Ratio</div>
+        <div class="ref-case-ratio">Where a passenger on a connecting flight journey arrives at their final destination 3 or more hours late, compensation is due under Art 7 EC261 regardless of whether any individual flight leg was itself delayed by that margin. The 3-hour threshold is assessed at the final destination, not at each intermediate stop.</div>
+        <div class="ref-case-section-label" style="margin-top:12px">Key Passage</div>
+        <div class="ref-case-quote">&ldquo;The compensation owed is calculated by reference to the scheduled arrival time of the final flight, not by reference to the arrival time of any connecting flight on which the passenger was carried to a stopping point.&rdquo;</div>
+        <div class="ref-case-section-label" style="margin-top:12px">Key Paragraphs</div>
+        <div class="ref-case-keypara">Para. 32 — the 3-hour compensation threshold is assessed against scheduled vs actual arrival time at the final destination specified in the passenger's booking, not at intermediate stops</div>
+      </div>
+      <div class="ref-case-footer">
+        <a class="ref-source-link" href="https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:62011CJ0011" target="_blank" rel="noopener">Open full judgment on EUR-Lex ↗</a>
+        <span class="ref-source-name">CELEX: 62011CJ0011</span>
+      </div>
+    </div>
+
+    <!-- ═══ CARE OBLIGATIONS ═══ -->
+    <div class="ref-section-header">VII. Art 9 Care Obligations and Art 12 Further Compensation</div>
+
+    <!-- mcdonagh -->
+    <div class="ref-case">
+      <div class="ref-case-header">
+        <div class="ref-case-meta">
+          <div class="ref-case-citation">C-12/11 · CJEU · 31 January 2013</div>
+          <div class="ref-case-ref">McDonagh v Ryanair</div>
+          <div class="ref-case-court-date">Court of Justice of the European Union</div>
+        </div>
+        <span class="ref-case-badge badge-claimant">Claimant May Cite</span>
+      </div>
+      <div class="ref-case-body">
+        <div class="ref-case-section-label">Ratio</div>
+        <div class="ref-case-ratio">Even where a flight is cancelled due to extraordinary circumstances such as volcanic ash cloud, the carrier remains obliged to provide care and assistance under Art 9 EC261 (refreshments, meals, accommodation and communication). Extraordinary circumstances do not suspend the Art 9 care obligation; it only ceases if the passenger has been offered a full refund under Art 8.</div>
+        <div class="ref-case-section-label" style="margin-top:12px">Key Propositions</div>
+        <ul class="ref-case-props">
+          <li>Art 9 care obligations (meals, accommodation, communication) survive even during extraordinary circumstances — they are not disapplied by Art 5(3).</li>
+          <li>Art 5(3) only exempts airlines from Art 7 compensation, not from Art 9 care or Art 8 re-routing obligations.</li>
+        </ul>
+        <div class="ref-case-section-label" style="margin-top:12px">Key Passage</div>
+        <div class="ref-case-quote">&ldquo;The obligation to provide care for stranded passengers under Article 9 applies even in cases of 'extraordinary circumstances' — the existence of such circumstances does not extinguish that obligation.&rdquo;</div>
+        <div class="ref-case-section-label" style="margin-top:12px">Key Paragraphs</div>
+        <div class="ref-case-keypara">Paras. 29–44 — Art 9 care obligations (meals, accommodation, communication) apply even in extraordinary circumstances; Art 5(3) only exempts from Art 7 monetary compensation</div>
+      </div>
+      <div class="ref-case-footer">
+        <a class="ref-source-link" href="https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:62011CJ0012" target="_blank" rel="noopener">Open full judgment on EUR-Lex ↗</a>
+        <span class="ref-source-name">CELEX: 62011CJ0012</span>
+      </div>
+    </div>
+
+    <!-- ═══ JURISDICTION AND LIMITATION ═══ -->
+    <div class="ref-section-header">VIII. Jurisdiction, Scope and Limitation</div>
+
+    <!-- dawson-thomson -->
+    <div class="ref-case">
+      <div class="ref-case-header">
+        <div class="ref-case-meta">
+          <div class="ref-case-citation">[2014] EWCA Civ 845 · 11 July 2014</div>
+          <div class="ref-case-ref">Dawson v Thomson Airways Ltd</div>
+          <div class="ref-case-court-date">England and Wales Court of Appeal (Civil Division)</div>
+        </div>
+        <span class="ref-case-badge badge-claimant">Claimant May Cite</span>
+      </div>
+      <div class="ref-case-body">
+        <div class="ref-case-section-label">Ratio</div>
+        <div class="ref-case-ratio">EC261 claims in England and Wales are subject to the 6-year limitation period under s.2 Limitation Act 1980, not the 2-year period under Article 35 of the Montreal Convention. EC261 creates a separate statutory right of action, and the Montreal limitation period does not apply to it.</div>
+        <div class="ref-case-section-label" style="margin-top:12px">Key Passage</div>
+        <div class="ref-case-quote">&ldquo;The claim under the Regulation is not a claim pursuant to the Montreal Convention; it is a claim under EC Regulation 261/2004. The applicable limitation period is six years under the Limitation Act 1980.&rdquo;</div>
+        <div class="ref-case-section-label" style="margin-top:12px">Key Paragraphs</div>
+        <div class="ref-case-keypara">Paras. 23–35 — EC261 claims in England and Wales are subject to the 6-year limitation period under s.2 Limitation Act 1980, not the 2-year Montreal Convention period; the two are distinct remedies</div>
+      </div>
+      <div class="ref-case-footer">
+        <a class="ref-source-link" href="https://www.bailii.org/ew/cases/EWCA/Civ/2014/845.html" target="_blank" rel="noopener">Open full judgment on BAILII ↗</a>
+        <span class="ref-source-name">BAILII: [2014] EWCA Civ 845</span>
+      </div>
+    </div>
+
+    <!-- emirates-schenkel -->
+    <div class="ref-case">
+      <div class="ref-case-header">
+        <div class="ref-case-meta">
+          <div class="ref-case-citation">C-173/07 · CJEU · 10 July 2008</div>
+          <div class="ref-case-ref">Emirates Airlines v Schenkel</div>
+          <div class="ref-case-court-date">Court of Justice of the European Union</div>
+        </div>
+        <span class="ref-case-badge badge-defence">Supports Defence</span>
+      </div>
+      <div class="ref-case-body">
+        <div class="ref-case-section-label">Ratio</div>
+        <div class="ref-case-ratio">EC261 applies only to flights departing from airports in EU member states. A journey from a third country to another third country with a connection at an EU airport is not covered by EC261 for the purpose of that through journey. The regulation's territorial application is determined by the point of departure of each individual flight, not by intermediate stops.</div>
+        <div class="ref-case-section-label" style="margin-top:12px">Key Paragraphs</div>
+        <div class="ref-case-keypara">Paras. 23–36 — EC261 scope is limited to flights departing from EU airports; territorial jurisdiction is determined by the point of departure of each individual flight</div>
+      </div>
+      <div class="ref-case-footer">
+        <a class="ref-source-link" href="https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:62007CJ0173" target="_blank" rel="noopener">Open full judgment on EUR-Lex ↗</a>
+        <span class="ref-source-name">CELEX: 62007CJ0173</span>
+      </div>
+    </div>
+
+    <!-- ═══ FOOTER ═══ -->
+    <div style="margin-top:60px;padding-top:var(--sp-lg);border-top:1px solid var(--ink-rule);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:var(--sp-md)">
+      <div>
+        <div style="font-family:var(--font-serif);font-size:13px;color:var(--ink-secondary);font-weight:700">DefendAble Intelligence Engine</div>
+        <div style="font-family:var(--font-mono);font-size:10px;color:var(--ink-faint);margin-top:4px;letter-spacing:.06em">LEGAL REFERENCE · EC261 / UK261 · JULY 2026</div>
+      </div>
+      <div style="font-family:var(--font-spectral);font-size:12px;color:var(--ink-faint);font-style:italic;max-width:420px;text-align:right;line-height:1.5">
+        This document is a structured legal reference compiled for use by airline legal teams and is not a substitute for independent legal advice. All propositions should be verified against the source judgments before reliance.
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>
