@@ -3983,11 +3983,15 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
                     placeholder="Add what you know about this event — what happened, what evidence you have, any issues…"
                     oninput="onAnnotationInput(${idx}, this)"></textarea>
                   ${rmHtml}
+                  <div id="ev-chain-signal-${idx}"></div>
                 </div>
               </div>
             </div>
           </div>`;
       }).join('');
+
+      const juris = getJurisdiction();
+      const jurisFlag = juris ? `<div style="font-family:var(--font-mono);font-size:10px;color:var(--ink-faint);margin-top:var(--sp-sm);letter-spacing:.03em">${juris.regime} &nbsp;·&nbsp; CJEU authority: ${juris.cjeuAuth} &nbsp;·&nbsp; ${juris.note}</div>` : '';
 
       area.innerHTML = `
         <div class="brief-doc">
@@ -4006,7 +4010,8 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
                 <div style="font-size:11px;color:var(--ink-secondary);margin-top:2px;font-family:var(--font-spectral,serif)">${dir.recSub}</div>
               </div>
             </div>
-            <div class="brief-limb1">${dt.limb1}</div>
+            ${jurisFlag}
+            <div class="brief-limb1" style="margin-top:var(--sp-md)">${dt.limb1}</div>
             ${renderCausalChain(causalNodes)}
           </div>
 
@@ -4016,12 +4021,13 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
             <div class="ev-section-intro">
               Each event in the disruption timeline is listed below. Click any event to open the evidence panel and add your notes. The system surfaces the relevant legal context and RM considerations as you engage with each event.
             </div>
+            <div id="ev-but-for-banner"></div>
             <div class="ev-nodes" id="ev-nodes">
               ${evNodesHtml}
             </div>
             <div class="rm-meter-wrap" style="margin-top:var(--sp-lg)">
               <div class="rm-meter-row">
-                <span>Case Position</span>
+                <span>Chain Integrity</span>
                 <span id="rm-position-label">Begin reviewing events above</span>
               </div>
               <div class="rm-meter-track">
@@ -4191,6 +4197,41 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
       const expiry=new Date(d); expiry.setFullYear(expiry.getFullYear()+6);
       const daysLeft=Math.ceil((expiry-Date.now())/86400000);
       return {expiry,daysLeft};
+    }
+
+    /* ----------------------------------------------------------
+       JURISDICTION — EC261 vs UK261
+       IP Completion Day: 31 Dec 2020 (flights on/after 1 Jan 2021 from UK = UK261)
+       Pre-IPCD all flights from UK or EU airports = EC261
+    ---------------------------------------------------------- */
+    const UK_AIRPORTS = new Set([
+      'LHR','LGW','LCY','STN','LTN',                          // London
+      'MAN','BHX','BRS','NCL','LBA','LPL','EMA',              // English regional
+      'SOU','BOH','NWI','HUY','MME','DSA','ESH','BQH','PLH',  // South/Humber/NE
+      'EDI','GLA','ABZ','PIK','INV','DND','LSI','WIC','BEB',  // Scotland
+      'CWL','SWS',                                            // Wales
+      'BHD','BFS','LDY'                                       // Northern Ireland
+    ]);
+
+    function getJurisdiction() {
+      const IPCD = new Date('2021-01-01T00:00:00Z');
+      const fltDate = currentFlightDate ? new Date(currentFlightDate + 'T00:00:00Z') : null;
+      const dep = (currentDepIata || '').toUpperCase();
+      if (!fltDate || isNaN(fltDate)) return null;
+
+      const preIPCD = fltDate < IPCD;
+      const ukDep   = UK_AIRPORTS.has(dep);
+
+      if (preIPCD) {
+        // All flights pre-IPCD: EC261 applies regardless of dep airport
+        return { regime:'EC261', cjeuAuth:'binding', note:'Pre-IP Completion Day flight — EC261 applies per Lipton [2024] UKSC 24' };
+      } else if (ukDep) {
+        // Post-IPCD from UK airport: UK261
+        return { regime:'UK261', cjeuAuth:'persuasive', note:'UK261 applies — post-Brexit CJEU decisions are persuasive, not binding' };
+      } else {
+        // Post-IPCD from EU or non-UK airport: EC261
+        return { regime:'EC261', cjeuAuth:'binding', note:'EC261 applies — EU departure post-IPCD' };
+      }
     }
 
     function getVerdict(limb1Status,score,gaps) {
@@ -4475,6 +4516,7 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
       }
       updateNodeStatus(nodeIdx);
       renderPass3FromNodes();
+      runCrossNodeIntelligence();
     }
 
     const ANNOTATION_CLASSIFIER = {
@@ -5018,6 +5060,7 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
 
       updateNodeStatus(nodeIdx);
       renderPass3FromNodes();
+      runCrossNodeIntelligence();
     }
 
     function updateNodeStatus(nodeIdx) {
@@ -5058,14 +5101,38 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
         const hasAvailable = Object.values(ann.evidenceStatuses||{}).some(s => s === 'available');
         return (hasText || hasAny) && !(hasText && hasAvailable);
       }).length;
-      // Update RM meter based on node statuses
+      // Update chain integrity meter
       const score = (green + amber * 0.5) / Math.max(total, 1);
       const mFill = document.getElementById('rm-meter-fill');
       const mLabel = document.getElementById('rm-position-label');
       const mTally = document.getElementById('rm-tally');
-      if (mFill) mFill.style.width = Math.round(score * 100) + '%';
-      if (mLabel) mLabel.textContent = green > 0 ? (score >= 0.8 ? 'Strong RM position' : 'Building — address gaps') : 'Begin reviewing events';
-      if (mTally) mTally.textContent = `${green} confirmed · ${amber} partial`;
+
+      // Compute chain integrity from node statuses
+      const rootStatus = computeNodeStatus(0);
+      const signals = computeChainSignals();
+      const hasBreak = Object.values(signals).some(s => s && s.state === 'alert');
+      const hasWarning = Object.values(signals).some(s => s && s.state === 'warning');
+      let chainIntegrity, chainColour;
+      if (rootStatus === 'unworked') {
+        chainIntegrity = 'Unstarted'; chainColour = 'var(--ink-rule)';
+      } else if (hasBreak || rootStatus === 'weak') {
+        chainIntegrity = 'Broken'; chainColour = 'var(--settle)';
+      } else if (hasWarning || rootStatus === 'contested') {
+        chainIntegrity = 'Fragile'; chainColour = 'var(--conditions)';
+      } else {
+        chainIntegrity = 'Solid'; chainColour = 'var(--defend)';
+      }
+
+      if (mFill) {
+        mFill.style.width = Math.round(score * 100) + '%';
+        mFill.style.background = chainColour;
+      }
+      if (mLabel) {
+        mLabel.textContent = chainIntegrity;
+        mLabel.style.color = chainColour;
+        mLabel.style.fontWeight = '600';
+      }
+      if (mTally) mTally.textContent = `${green} confirmed · ${amber} partial · ${chainIntegrity.toLowerCase()} chain`;
       // Show brief button when most nodes engaged
       const briefWrap = document.getElementById('gen-brief-wrap');
       if (briefWrap) briefWrap.style.display = (green + amber >= Math.ceil(total * 0.5)) ? 'block' : 'none';
@@ -5121,32 +5188,64 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
       const nodes = [];
       const t = text.toLowerCase();
 
-      // Root cause
+      // ── Prior-day / prior-sector detection ──────────────────────────
+      // Look for references that place the root event on a different day
+      // or a different sector before the claimed flight.
+      const hasPriorDay = /prior day|previous day|day before|night before|earlier that day|the previous|inbound from|arrived from|came from|[\d]{1,2}\s+(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*.{0,10}(?:previous|prior|before|earlier)/.test(t)
+        || /prior rotation|earlier rotation|prior sector|previous sector|inbound rotation/.test(t);
+
+      // Extract aircraft registration if present (e.g. OE-IJJ, G-EZBT)
+      const regMatch = text.match(/\b([A-Z]{1,2}-[A-Z]{2,4})\b/);
+      const acReg = regMatch ? regMatch[1] : null;
+
+      // ── Root cause node ─────────────────────────────────────────────
+      let rootNode;
       if (dt.id === 'weather' || /weather|storm|wind|fog|snow|ice|vis|metar|sigmet|crosswind|windshear/.test(t)) {
-        nodes.push({ type:'root', label:'Adverse Weather', sub: extractWeatherDetail(t), icon:'🌩' });
+        const weatherDetail = extractWeatherDetail(t);
+        // Try to extract airport
+        const airportMatch = text.match(/\b([A-Z]{3})\b/);
+        const airportNote = airportMatch ? ` at ${airportMatch[1]}` : '';
+        rootNode = { type:'root', label:'Adverse Weather', sub: weatherDetail + airportNote, icon:'🌩' };
       } else if (dt.id === 'atfm' || /atfm|eurocontrol|ctot|flow|regulation|slot/.test(t)) {
-        nodes.push({ type:'root', label:'ATFM Regulation', sub: 'Eurocontrol / National ANSP', icon:'🗼' });
+        rootNode = { type:'root', label:'ATFM Regulation', sub: 'Eurocontrol / National ANSP', icon:'🗼' };
       } else if (dt.id === 'birdstrike' || /bird/.test(t)) {
-        nodes.push({ type:'root', label:'Birdstrike', sub: 'Third-party collision event', icon:'🐦' });
+        rootNode = { type:'root', label:'Birdstrike', sub: 'Third-party collision event', icon:'🐦' };
       } else if (dt.id === 'technical' || /tech|defect|snag|aog|maint/.test(t)) {
-        nodes.push({ type:'root', label:'Technical Defect', sub: 'Aircraft unserviceable', icon:'🔧' });
+        rootNode = { type:'root', label:'Technical Defect', sub: 'Aircraft unserviceable', icon:'🔧' };
       } else if (dt.id === 'medical' || /medic|passenger ill|pax ill|emergency med/.test(t)) {
-        nodes.push({ type:'root', label:'Medical Emergency', sub: 'Passenger / crew medical', icon:'🏥' });
+        rootNode = { type:'root', label:'Medical Emergency', sub: 'Passenger / crew medical', icon:'🏥' };
       } else if (dt.id === 'security' || /security|threat|bomb|suspicious/.test(t)) {
-        nodes.push({ type:'root', label:'Security Event', sub: 'Security authority directive', icon:'🛡' });
+        rootNode = { type:'root', label:'Security Event', sub: 'Security authority directive', icon:'🛡' };
       } else {
-        nodes.push({ type:'root', label: dt.label, sub: 'Primary disruption event', icon:'⚡' });
+        rootNode = { type:'root', label: dt.label, sub: 'Primary disruption event', icon:'⚡' };
       }
 
-      // Cascade events
-      if (/atfm|eurocontrol|ctot|flow|slot/.test(t) && nodes[0].type === 'root' && nodes[0].label !== 'ATFM Regulation') {
+      // If root event was on a prior day / prior sector, flag it clearly
+      if (hasPriorDay) {
+        rootNode.sub = (rootNode.sub || '') + ' · Prior sector / prior day';
+        rootNode.priorDay = true;
+        // Insert a line-of-flying prefix node to show the aircraft's journey to this point
+        nodes.push({
+          type: 'root',
+          priorDay: true,
+          label: acReg ? `Aircraft Line of Flying${acReg ? ' (' + acReg + ')' : ''}` : 'Aircraft Line of Flying',
+          sub: 'Root event occurred on a prior sector or calendar day — chain spans multiple sectors',
+          icon: '✈'
+        });
+      }
+
+      nodes.push(rootNode);
+
+      // ── Cascade events ───────────────────────────────────────────────
+      if (/atfm|eurocontrol|ctot|flow|slot/.test(t) && rootNode.label !== 'ATFM Regulation') {
         nodes.push({ type:'cascade', label:'ATFM Cascade', sub:'Eurocontrol regulation imposed', icon:'📡' });
       }
       if (/divert|diversion/.test(t)) {
         const dest = t.match(/divert(?:ed)?\s+(?:to\s+)?([a-z]{3})/)?.[1]?.toUpperCase();
         nodes.push({ type:'cascade', label:'Aircraft Diversion', sub: dest ? `Diverted to ${dest}` : 'Commander decision', icon:'✈' });
       }
-      if (/inbound|rotation|incoming|prior sector/.test(t)) {
+      if (/inbound|rotation|incoming|prior sector/.test(t) && !hasPriorDay) {
+        // Only add as a cascade node if we haven't already captured this as prior-day root
         nodes.push({ type:'cascade', label:'Inbound Delay', sub:'Rotation affected by prior sector', icon:'🔄' });
       }
       if (/replacement aircraft|spare aircraft|sub aircraft/.test(t)) {
@@ -5161,7 +5260,7 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
         nodes.push({ type:'operational', label:'Passenger Care', sub:'Art 9 obligations enacted', icon:'🏨' });
       }
 
-      // Outcome — always last
+      // ── Outcome — always last ────────────────────────────────────────
       const delayMatch = t.match(/(\d+)h\s*(\d+)?\s*min|\d+\s*hour/);
       const delayStr = delayMatch ? delayMatch[0].replace(/\s+/g,'') : 'delay';
       nodes.push({ type:'outcome', label:'Arrival Delay', sub: delayStr + ' at destination', icon:'⏱' });
@@ -5203,6 +5302,210 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
             <span class="cc-leg-item"><span class="cc-leg-dot" style="background:var(--ink-rule)"></span>Outcome</span>
           </div>
         </div>`;
+    }
+
+    /* ----------------------------------------------------------
+       CROSS-NODE INTELLIGENCE
+    ---------------------------------------------------------- */
+
+    /**
+     * computeNodeStatus(nodeIdx)
+     * Returns a semantic status for a node based on evidence and annotation flags.
+     * 'strong'    — annotation present + primary evidence Available + no high-priority weakness
+     * 'contested' — partial engagement OR evidence available but weakness flag present
+     * 'weak'      — annotation or evidence attempt made, but primary evidence Missing with nothing Available
+     * 'unworked'  — no annotation and no evidence status set
+     */
+    function computeNodeStatus(nodeIdx) {
+      const ann = nodeAnnotations[nodeIdx];
+      if (!ann) return 'unworked';
+      const hasText = ann.text && ann.text.trim().length > 0;
+      const statuses = Object.values(ann.evidenceStatuses || {}).filter(Boolean);
+      const hasAvailable = statuses.some(s => s === 'available');
+      const hasMissing   = statuses.some(s => s === 'missing');
+      const hasAny       = statuses.length > 0;
+      if (!hasText && !hasAny) return 'unworked';
+
+      // Check classifier flags on annotation
+      const flags = hasText ? classifyAnnotation(ann.text, currentDT ? currentDT.id : null) : [];
+      const hasHighWeakness = flags.some(f => f.type === 'weakness' && f.priority === 'high');
+
+      if (hasText && hasAvailable && !hasHighWeakness) return 'strong';
+      if (hasText && hasAvailable && hasHighWeakness)  return 'contested';
+      if (hasMissing && !hasAvailable)                 return 'weak';
+      return 'contested'; // text or evidence attempted but incomplete
+    }
+
+    /**
+     * computeChainSignals()
+     * Reads all node statuses in chain order.
+     * Returns { nodeIdx: { state: 'solid'|'warning'|'alert', message: '' } }
+     * Root node always returns null (no upstream).
+     */
+    function computeChainSignals() {
+      const nodes = causalNodes || [];
+      const signals = {};
+      let chainState = 'solid';
+      let chainBreakAt = null;
+
+      nodes.forEach((node, idx) => {
+        const status = computeNodeStatus(idx);
+        const ann = nodeAnnotations[idx];
+
+        // Detect chain break keyword in this node's annotation
+        let hasBreakFlag = false;
+        if (ann && ann.text) {
+          const flags = classifyAnnotation(ann.text, currentDT ? currentDT.id : null);
+          hasBreakFlag = flags.some(f => f.type === 'weakness' && /causal chain/i.test(f.message));
+        }
+
+        if (idx === 0) {
+          // Root node — sets chain state for downstream; no upstream signal
+          signals[idx] = null;
+          if (hasBreakFlag) { chainState = 'broken'; chainBreakAt = idx; }
+          else if (status === 'weak' || status === 'unworked') chainState = 'broken';
+          else if (status === 'contested') chainState = 'fragile';
+          // strong → chainState stays 'solid'
+        } else {
+          // Build signal from current chain state
+          if (chainBreakAt !== null) {
+            signals[idx] = {
+              state: 'alert',
+              message: `Causal chain break risk detected at "${nodes[chainBreakAt].label}" — if a voluntary carrier decision broke the link, Art 5(3) protection may not extend to this event (NI, HZ v European Air Charter T-656/24).`
+            };
+          } else if (chainState === 'broken') {
+            signals[idx] = {
+              state: 'alert',
+              message: `Root event ("${nodes[0].label}") is not yet established as an extraordinary circumstance — this cascade event's Art 5(3) position is contingent. Resolve node 1 first.`
+            };
+          } else if (chainState === 'fragile') {
+            signals[idx] = {
+              state: 'warning',
+              message: `Upstream chain contested at "${nodes[0].label}" — address the evidence gap or weakness there before building the cascade argument here.`
+            };
+          } else {
+            // solid upstream
+            if (node.type === 'outcome') {
+              signals[idx] = null; // outcome node: no signal needed
+            } else {
+              signals[idx] = {
+                state: 'solid',
+                message: `Upstream established ("${nodes[0].label}" confirmed) — ensure your notes explicitly link this event back to the root cause to complete the but-for chain.`
+              };
+            }
+          }
+
+          // Update chain state based on this node (non-outcome nodes only)
+          if (node.type !== 'outcome') {
+            if (hasBreakFlag && chainBreakAt === null) { chainState = 'broken'; chainBreakAt = idx; }
+            else if ((status === 'weak') && chainState === 'solid') chainState = 'fragile';
+          }
+        }
+      });
+
+      return signals;
+    }
+
+    /**
+     * updateChainSignalDisplay(signals)
+     * Injects upstream signal banners into each node's chain-signal container.
+     */
+    function updateChainSignalDisplay(signals) {
+      Object.entries(signals).forEach(([idx, signal]) => {
+        const el = document.getElementById('ev-chain-signal-' + idx);
+        if (!el) return;
+        if (!signal) { el.innerHTML = ''; return; }
+
+        const cm = {
+          solid:   { border: 'var(--defend-border)',     bg: 'var(--defend-bg)',     label: 'var(--defend)',     tag: '↑ Chain Established' },
+          warning: { border: 'var(--conditions-border)', bg: 'var(--conditions-bg)', label: 'var(--conditions)', tag: '↑ Chain Warning' },
+          alert:   { border: 'var(--settle-border)',     bg: 'var(--settle-bg)',      label: 'var(--settle)',     tag: '↑ Chain Risk' }
+        };
+        const c = cm[signal.state] || cm.warning;
+
+        el.innerHTML = `<div style="margin-top:var(--sp-sm);padding:var(--sp-sm) var(--sp-md);border:1px solid ${c.border};background:${c.bg};border-radius:var(--r-md)">
+          <div style="font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:${c.label};margin-bottom:3px">${c.tag}</div>
+          <div style="font-size:12px;font-family:var(--font-spectral,serif);color:var(--ink-primary);line-height:1.5">${signal.message}</div>
+        </div>`;
+      });
+    }
+
+    /**
+     * buildButForStatement()
+     * Derives a clean 2-4 sentence but-for causation statement from confirmed node links.
+     * Gap markers for unresolved nodes. Returns HTML string.
+     */
+    function buildButForStatement() {
+      const nodes = causalNodes || [];
+      if (nodes.length < 2) return '';
+
+      const rootNode   = nodes[0];
+      const rootStatus = computeNodeStatus(0);
+
+      if (rootStatus === 'unworked') {
+        return `<span style="color:var(--ink-faint);font-style:italic">But-for analysis will appear here as you complete the event review. Begin with the root event.</span>`;
+      }
+
+      const cascadeNodes = nodes.filter((n, i) => i > 0 && n.type !== 'outcome');
+      const confirmedLinks = cascadeNodes.filter((n, i) => {
+        const realIdx = nodes.indexOf(n);
+        const s = computeNodeStatus(realIdx);
+        return s === 'strong' || s === 'contested';
+      });
+      const unresolvedLinks = cascadeNodes.filter((n, i) => {
+        const realIdx = nodes.indexOf(n);
+        return computeNodeStatus(realIdx) === 'unworked';
+      });
+
+      let stmt = '';
+
+      if (rootStatus === 'strong') {
+        stmt += `But for the <strong>${rootNode.label}</strong>`;
+        if (confirmedLinks.length > 0) {
+          const labels = confirmedLinks.map(n => n.label).join(', ');
+          stmt += `, which caused or contributed to <strong>${labels}</strong>,`;
+        }
+        stmt += ` the passengers' delay would not have resulted.`;
+      } else if (rootStatus === 'contested') {
+        stmt += `The carrier's position is that but for the <strong>${rootNode.label}</strong>`;
+        if (confirmedLinks.length > 0) {
+          stmt += ` and consequent <strong>${confirmedLinks.map(n => n.label).join(', ')}</strong>`;
+        }
+        stmt += ` the delay would not have resulted — <em>however, the root event is currently contested and requires further evidence to establish the chain.</em>`;
+      } else {
+        stmt += `<span style="color:var(--settle)">Root event (<strong>${rootNode.label}</strong>) is not yet established.</span> The but-for chain cannot be constructed until Limb 1 evidence is confirmed.`;
+      }
+
+      if (unresolvedLinks.length > 0) {
+        stmt += ` <span style="color:var(--conditions)">[Unresolved: ${unresolvedLinks.map(n => n.label).join(', ')} — review required]</span>`;
+      }
+
+      return stmt;
+    }
+
+    /**
+     * renderButForBanner()
+     * Updates the but-for banner at the top of the Pass II node list.
+     */
+    function renderButForBanner() {
+      const el = document.getElementById('ev-but-for-banner');
+      if (!el) return;
+      const stmt = buildButForStatement();
+      if (!stmt) { el.innerHTML = ''; return; }
+      el.innerHTML = `<div style="font-family:var(--font-spectral,serif);font-size:13px;line-height:1.7;padding:var(--sp-md);background:var(--surface-ui);border-radius:var(--r-md);border-left:3px solid var(--ink-rule);margin-bottom:var(--sp-md)">
+        <div style="font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:6px">But-For Causation</div>
+        ${stmt}
+      </div>`;
+    }
+
+    /**
+     * runCrossNodeIntelligence()
+     * Master call — runs after every lawyer action (annotation or evidence click).
+     */
+    function runCrossNodeIntelligence() {
+      const signals = computeChainSignals();
+      updateChainSignalDisplay(signals);
+      renderButForBanner();
     }
 
     /* ----------------------------------------------------------
