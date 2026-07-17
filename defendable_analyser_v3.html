@@ -335,6 +335,113 @@
       color: var(--ink-secondary);
     }
 
+    /* ── Scenario Browser ─────────────────────────────────────── */
+    .scenario-browser {
+      margin-top: 14px;
+      border: 1px solid var(--ink-rule);
+      border-radius: var(--r-lg);
+      overflow: hidden;
+      background: var(--surface-doc);
+    }
+    .scenario-browser-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 14px;
+      background: var(--ink-primary);
+      cursor: pointer;
+      user-select: none;
+    }
+    .scenario-browser-title {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.7);
+    }
+    .scenario-browser-hint {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: rgba(255,255,255,.35);
+      letter-spacing: .04em;
+    }
+    .sc-type-row {
+      display: flex;
+      overflow-x: auto;
+      border-bottom: 1px solid var(--ink-rule2);
+      background: var(--surface-ui);
+      scrollbar-width: none;
+    }
+    .sc-type-row::-webkit-scrollbar { display: none; }
+    .sc-type-btn {
+      padding: 8px 16px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      background: transparent;
+      color: var(--ink-faint);
+      border: none;
+      border-bottom: 2px solid transparent;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all .12s;
+      flex-shrink: 0;
+    }
+    .sc-type-btn:hover { color: var(--ink-secondary); }
+    .sc-type-btn.active {
+      color: var(--ink-primary);
+      font-weight: 700;
+      border-bottom-color: var(--ink-primary);
+      background: var(--surface-doc);
+    }
+    .sc-cards-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+    .sc-card {
+      padding: 14px 16px;
+      cursor: pointer;
+      border-right: 1px solid var(--ink-rule2);
+      transition: background .12s;
+    }
+    .sc-card:last-child { border-right: none; }
+    .sc-card:hover { background: var(--surface-ui); }
+    .sc-verdict {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      padding: 2px 9px;
+      border-radius: 2px;
+      display: inline-block;
+      margin-bottom: 8px;
+    }
+    .sc-verdict-win  { background: var(--defend-bg);  color: var(--defend);  border: 1px solid var(--defend-border); }
+    .sc-verdict-loss { background: var(--settle-bg);  color: var(--settle);  border: 1px solid var(--settle-border); }
+    .sc-verdict-contested { background: #FFF8EC; color: #7A5500; border: 1px solid #E8C878; }
+    .sc-flight {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--ink-secondary);
+      margin-bottom: 5px;
+    }
+    .sc-desc {
+      font-family: var(--font-spectral);
+      font-size: 12px;
+      color: var(--ink-primary);
+      line-height: 1.5;
+      margin-bottom: 7px;
+    }
+    .sc-law {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--ink-faint);
+      letter-spacing: .02em;
+    }
+
     /* ---- Mode 2: Flight Lookup ---- */
     .lookup-grid {
       display: grid;
@@ -2184,19 +2291,20 @@
           id="iccText"
           placeholder="e.g. HC 1184 LTN-BCN 14/03/26. Thunderstorms BCN, approach below minima, mandatory ATC diversion Valencia. Standby LTN could not position, thunderstorms BCN. Passengers cared for Valencia, coach transfer arranged."
         ></textarea>
-        <div class="chip-row">
-          <span class="chip" onclick="loadExample('demo')" style="background:var(--judgment-bg);color:var(--judgment);border-color:var(--judgment-border);font-weight:700">⚡ Full case demo</span>
-          <span class="chip" onclick="loadExample('atc')">ATC / CTOT overnight</span>
-          <span class="chip" onclick="loadExample('weather')">Weather diversion</span>
-          <span class="chip" onclick="loadExample('birdstrike')">Birdstrike</span>
-          <span class="chip" onclick="loadExample('ia')">Industrial action</span>
-          <span class="chip" onclick="loadExample('cascade')">Cascading delay</span>
-          <span class="chip" onclick="loadExample('defect')">Hidden defect</span>
-          <span class="chip" onclick="loadExample('medical')">Medical emergency</span>
-          <span class="chip" onclick="loadExample('security')">Security alert</span>
-          <span class="chip" onclick="loadExample('disruption')">Disruptive passenger</span>
-          <span class="chip" onclick="loadExample('ownstrike')">Own staff strike</span>
-          <span class="chip" onclick="loadExample('positioning')">Positioning complex</span>
+        <!-- Scenario Browser -->
+        <div class="scenario-browser">
+          <div class="scenario-browser-header" onclick="toggleScenarioBrowser()">
+            <span class="scenario-browser-title">⚡ Demo Scenarios — 16 Cases Across 8 Disruption Types</span>
+            <span class="scenario-browser-hint" id="scBrowserHint">Click to expand</span>
+          </div>
+          <div id="scBrowserBody" style="display:none">
+            <div class="sc-type-row" id="scTypeRow"></div>
+            <div class="sc-cards-row" id="scCardsRow"></div>
+          </div>
+        </div>
+        <!-- Quick chips for flagship demo -->
+        <div class="chip-row" style="margin-top:10px">
+          <span class="chip" onclick="loadExample('demo')" style="background:var(--judgment-bg);color:var(--judgment);border-color:var(--judgment-border);font-weight:700">⚡ Flagship demo — EZY7253 PMI–BHX</span>
         </div>
       </div>
 
@@ -2449,20 +2557,260 @@
       positioning:
         'FR1847 DUB-LTN-MAD 06/06/26. Crew positioning flight LTN delayed 3h due to Eurocontrol CTOT. Crew subsequently OOH on arrival LTN, mandatory rest 11h. Outbound LTN-MAD delayed 14h. Incoming crew from STN repositioned.',
       demo:
-        'EZY7253 PMI-BHX 16/06/24. Adverse windshear and crosswind at BHX on approach, conditions below aircraft certified operating limits. Commander diverted to BOH under Air Navigation Order commander authority — approach mandatory discontinued. Inbound rotation delayed: prior sector GVA-PMI disrupted by Eurocontrol ATFM regulation, cascading 5h 10min delay to PMI departure. Replacement aircraft repositioned; original crew FDP exhausted following rotation cascade — standby crew deployed from BHX. Passengers cared for BOH, coach transfer arranged to BHX. Total delay at arrival BHX: 8h 20min.'
+        'EZY7253 PMI-BHX 16/06/24. Adverse windshear and crosswind at BHX on approach, conditions below aircraft certified operating limits. Commander diverted to BOH under Air Navigation Order commander authority — approach mandatory discontinued. Inbound rotation delayed: prior sector GVA-PMI disrupted by Eurocontrol ATFM regulation, cascading 5h 10min delay to PMI departure. Replacement aircraft repositioned; original crew FDP exhausted following rotation cascade — standby crew deployed from BHX. Passengers cared for BOH, coach transfer arranged to BHX. Total delay at arrival BHX: 8h 20min.',
+
+      /* ── WEATHER ── */
+      weather_win:
+        'EZY4321 LGW-MAD 12/08/24. Severe CB activity over MAD on approach — METAR 1550Z confirmed BKN012CB, TSRA, LVP in force, RVR below approach minima. Commander discontinued approach under ANO authority and diverted to VLC. CFMU confirms no ATFM alternative routing available to MAD. Replacement crew LGW could not position due to FDP limitations. All passengers accommodated VLC overnight, coach transfer MAD completed 0430Z. Delay 4h 15m at arrival MAD.',
+      weather_contested:
+        'BA2156 LHR-BCN 03/03/25. TAF BCN 0600Z issued TEMPO BKN003 0600-1800Z, BCFG, vis 400m. LVP in force at BCN from 0730Z. BA crew briefed TAF at 0700Z crew briefing — standard slot secured, no schedule buffer inserted. Departure LHR 0925Z, arrival BCN 1310Z, delay 3h 20m. BCN LVP lifted 1030Z. TAF fog forecast issued 6 hours prior to planned departure and was known at time of crew briefing.',
+
+      /* ── TECHNICAL ── */
+      technical_win:
+        'U24953 AMS-BHX 08/01/25. Aircraft A220-300 Reg PH-NXC. During pre-departure power-up, fault code 347 generated — Fuel Flow Control Unit (FFCU) Engine 2 exceedance. Engineers and OEM technical desk consulted. Airbus confirmed fault code 347 on FFCU is result of a previously unidentified firmware defect affecting all A220-300 aircraft with FFCU Part No. 4054-001 series. First recorded occurrence worldwide in commercial service — OEM Service Bulletin not yet issued. Aircraft AOG. Flight cancelled, passengers rebooked next available BHX service.',
+      technical_loss:
+        'RYR442 STN-FCO 22/04/25. Aircraft Reg EI-DPH. During push-back Engine 2 oil chip detector illuminated. Engineers inspected: metal swarf found in oil system. Engine removed to hangar for borescope inspection per AMM 79-00-00. No spare engine available at STN. Engine cleared after inspection — no damage confirmed but oil system flushed and refilled. Delay 5h 40m to FCO. No prior maintenance warnings on oil system recorded.',
+
+      /* ── CREW / MEDICAL ── */
+      crew_loss:
+        'BA436 LHR-JFK 14/02/25. Designated Captain reported sick T-45 minutes prior to scheduled departure — acute gastroenteritis. No standby command-qualified captain available LHR at time of rostered departure (0845Z). Cabin crew and First Officer available. Relief captain positioned from GLA, arrived LHR 1445Z, 6 hours post-scheduled departure. Crew rest obligation meant earliest permissible departure 0200Z next day. Flight cancelled, 246 passengers rebooked onto next available JFK services.',
+      crew_contested:
+        'EZY8812 GVA-MAN 07/11/24. Eurocontrol issued ATFM regulation French FIR, 1400-2200Z — all carriers restricted. CTOT 1845Z assigned to EZY8812 (originally 1420Z dep). Revised ETA MAN 2115Z. At 1740Z, OCC identified crew would reach EASA Part-ORO FDP limit on landing MAN at 2115Z. No standby crew positioned at MAN. Crew confirmed FDP exceeded on arrival — outstop required. Outbound rotation MAN cancelled. No action taken by OCC between 1740Z identification and 2115Z landing to position alternate crew.',
+
+      /* ── OWN-IA ── */
+      ownia_loss:
+        'BE1821 LCY-DUB 03/06/25. Cabin crew staged spontaneous walkout at LCY from 0545Z — rostering dispute following changes to bidding system announced previous week. No strike notice served by any trade union. Attendance confirmed by crew planning previous evening. Three aircraft unable to crew — all LCY morning departures cancelled. Services partially recovered from 1600Z following management intervention. Passengers cancelled with no proactive hotel arrangement until 0930Z.',
+      ownia_win:
+        'VY1234 BCN-MAN 18/03/25. SITCPLA (Spanish cabin crew union — independent trade union) served formal strike notice 15/03/25 per Spanish RDL 17/1977 requirements — 5-day advance notice, minimum services designation applied by Ministry of Transport (50% of flights). VY1234 cancelled as outside minimum service roster. Union action conducted in full conformity with applicable Spanish labour law. Carrier offered alternative routing via MAD on 19/03/25. Passengers notified by SMS and app 72hrs prior.',
+
+      /* ── THIRD-PARTY IA ── */
+      thirdparty_win:
+        'AF1680 CDG-LHR 13/01/25. French ATC wildcat strike commenced 0600Z without advance notice — DSNA controllers absent from posts. DGAC issued NOTAM A0034/25 restricting French FIR capacity 70%. Eurocontrol issued ATFM regulation 0715Z. CTOT 1340Z assigned, all carriers affected equally. CFMU documentation ref CTOT 1340Z retained. AF1680 departed 1348Z, arrived LHR 1509Z, delay 4h 30m. Carrier filed CFMU slot documentation and DGAC restriction notice as evidence. One connection passenger rebooked LHR-JFK.',
+      thirdparty_contested:
+        'RYR2234 DUB-FCO 25/09/24. Groundforce Italia (handling agent at FCO) announced 24hr strike action 23/09/24, 48hrs advance notice. RYR OCC attempted to engage Swissport FCO as alternate handler 24/09/24 — FCO Airport Authority confirmed no apron slot allocation for secondary handler possible at short notice. Flight cancelled. All passengers notified T-44hrs. Alternative routing offered via NAP same day. Note: 48hr advance notice received — question whether earlier alternate handler engagement should have been initiated.',
+
+      /* ── BIRDSTRIKE ── */
+      birdstrike_win:
+        'EZY3301 EDI-ALC 29/07/24. Aircraft G-EZTF. Birdstrike confirmed on take-off roll EDI — seagull ingestion into Engine 1. Aircraft stopped on runway, returned to stand. Mandatory post-strike borescope inspection per AMM task 71-00-00-200-001 initiated. Inspection confirmed FOD damage to Engine 1 fan blades — aircraft AOG, airworthiness release not possible. No spare aircraft available EDI same day. Replacement aircraft G-EZWU repositioned from LGW, arriving EDI 1930Z. Flight cancelled, passengers rebooked onto next available ALC services.',
+      birdstrike_contested:
+        'RYR558 STN-PMI 14/08/24. Aircraft Reg EI-DPH. First birdstrike event recorded 0830Z on EI-DPH during approach STN — engine visual inspection completed 1015Z, no damage confirmed, engineers signed aircraft serviceable. Aircraft returned to service. Second birdstrike event 1235Z during take-off roll EI-DPH on STN-PMI departure. Aircraft AOG for second borescope, 6h delay to PMI. Question: was correct airworthiness procedure followed after first birdstrike? Should aircraft have been grounded pending full fleet technical review?',
+
+      /* ── LINE OF FLYING ── */
+      lof_win:
+        'EZY2847 GLA-LPA 08/12/24. Aircraft G-EZFM inbound prior rotation GVA-GLA. Encountered confirmed clear air turbulence (CAT) event over Bay of Biscay — SIGMET WSPR31 active, severe turbulence at FL350 for 12 minutes. On landing GLA, mandatory engineering precautionary inspection per post-CAT-event procedures. Loose panel fairing discovered and rectified, aircraft released +3h 15m. Outbound GLA-LPA departed 3h 40m late, arrived LPA 4h 40m delayed. All Art 9 care provided at GLA.',
+      lof_contested:
+        'BE437 BHX-ABZ 09/01/25. Aircraft G-LGNJ. Avionics fault recorded on inbound LCY-BHX sector previous evening — EFIS MFD fault, MEL Category C dispatch (10-day limitation). Aircraft released under MEL, engineers reviewed fault overnight but rectification not attempted (part on order, ETA +7 days). Next morning BHX-ABZ delayed 6h 30m pending engineering clearance for MEL dispatch. Passengers not notified until T-90 minutes. Art 14 notice not provided at check-in.',
+
+      /* ── ATFM ── */
+      atfm_win:
+        'EZY6612 LGW-SPU 22/07/24. Eurocontrol issued ATFM regulation Croatian FIR ref measure LDZOZRZ21 — capacity reduction due to military exercise, restricted airspace NOTAM active. CFMU slot CTOT 1445Z allocated (original departure 1100Z). All carriers operating Croatian routes affected equally. Delay 3h 45m. No CTOT improvement available. CFMU documentation available as contemporaneous evidence. Passengers provided meal vouchers and status updates at LGW.',
+      atfm_contested:
+        'RYR1122 STN-MAD 25/09/24. Eurocontrol ATFM regulation Spanish FIR, 1200-2200Z — thunderstorm complex over Madrid sector. CTOT 1815Z issued (original dep 1320Z). Revised ETA MAD 2130Z. Crew check-in 1120Z STN, FDP limit under EASA Part-ORO reached at 2200Z. OCC identified at 1400Z that FDP would be compromised if CTOT held. No standby crew positioned at STN or arranged from MAD outstation. Flight cancelled at 1700Z when CTOT unchanged. Three-hour window between FDP risk identification (1400Z) and cancellation (1700Z).'
     };
+
+    /* ----------------------------------------------------------
+       SCENARIO METADATA — display info for scenario browser
+    ---------------------------------------------------------- */
+    const SCENARIO_META = {
+      weather_win: {
+        type:'weather', verdict:'win',
+        flight:'EZY4321 LGW–MAD · 12 Aug 2024',
+        desc:'Severe CB at MAD — approach below minima, mandatory diversion VLC, Art 9 care documented',
+        law:'Wallentin-Hermann Limb 1 · Eglitis RM · weather extraordinary',
+        dep:'LGW', arr:'MAD', date:'2024-08-12', delayMins:255
+      },
+      weather_contested: {
+        type:'weather', verdict:'contested',
+        flight:'BA2156 LHR–BCN · 3 Mar 2025',
+        desc:'Forecast fog at BCN — TAF issued 6hrs before departure, no schedule buffer inserted by carrier',
+        law:'Eglitis — foreseeable extraordinary circumstance requires time buffer planning',
+        dep:'LHR', arr:'BCN', date:'2025-03-03', delayMins:200
+      },
+      technical_win: {
+        type:'technical', verdict:'win',
+        flight:'U24953 AMS–BHX · 8 Jan 2025',
+        desc:'A220-300 hidden FFCU firmware defect — first worldwide occurrence, OEM confirms latent design fault',
+        law:'Matkustaja / Finnair (C-385/23) — four-part hidden design defect test met',
+        dep:'AMS', arr:'BHX', date:'2025-01-08', delayMins:0
+      },
+      technical_loss: {
+        type:'technical', verdict:'loss',
+        flight:'RYR442 STN–FCO · 22 Apr 2025',
+        desc:'Engine oil chip detector illuminated on push-back — metal swarf, borescope, 5h 40m delay',
+        law:'Van der Lans (C-257/14) — component failure inherent in normal airline operations',
+        dep:'STN', arr:'FCO', date:'2025-04-22', delayMins:340
+      },
+      crew_loss: {
+        type:'crew', verdict:'loss',
+        flight:'BA436 LHR–JFK · 14 Feb 2025',
+        desc:'Captain incapacitated T-45min — acute gastroenteritis, no standby available, cancellation',
+        law:'Lipton v BA CityFlyer [2024] UKSC 24 — crew illness never extraordinary',
+        dep:'LHR', arr:'JFK', date:'2025-02-14', delayMins:0
+      },
+      crew_contested: {
+        type:'crew', verdict:'contested',
+        flight:'EZY8812 GVA–MAN · 7 Nov 2024',
+        desc:'ATFM slot delay causes crew FDP breach — OCC identified risk 3hrs early but took no action',
+        law:'ATFM is extraordinary (Limb 1 clear) · RM failure: standby crew not positioned at outstation',
+        dep:'GVA', arr:'MAN', date:'2024-11-07', delayMins:0
+      },
+      ownia_loss: {
+        type:'ownia', verdict:'loss',
+        flight:'BE1821 LCY–DUB · 3 Jun 2025',
+        desc:'Cabin crew spontaneous walkout over rostering — no trade union, no notice, wildcat action',
+        law:'Krüsemann (C-195/17) — own-staff wildcat strike is not extraordinary circumstances',
+        dep:'LCY', arr:'DUB', date:'2025-06-03', delayMins:0
+      },
+      ownia_win: {
+        type:'ownia', verdict:'win',
+        flight:'VY1234 BCN–MAN · 18 Mar 2025',
+        desc:'Formally notified SITCPLA trade union strike — 72hr notice, compliant with Spanish labour law',
+        law:'Airhelp v Swiss International (C-28/20) — lawfully-called trade union strike is extraordinary',
+        dep:'BCN', arr:'MAN', date:'2025-03-18', delayMins:0
+      },
+      thirdparty_win: {
+        type:'thirdparty', verdict:'win',
+        flight:'AF1680 CDG–LHR · 13 Jan 2025',
+        desc:'French ATC wildcat strike — DGAC NOTAM restricts FIR 70%, CFMU CTOT documentation retained',
+        law:'Third-party IA beyond carrier control · CFMU evidence strong · all RM documented',
+        dep:'CDG', arr:'LHR', date:'2025-01-13', delayMins:270
+      },
+      thirdparty_contested: {
+        type:'thirdparty', verdict:'contested',
+        flight:'RYR2234 DUB–FCO · 25 Sep 2024',
+        desc:'Ground handler strike at FCO — 48hr advance notice received, alternate handler not secured in time',
+        law:'Third-party IA extraordinary · RM question: was 48hr notice sufficient to secure alternate handler?',
+        dep:'DUB', arr:'FCO', date:'2024-09-25', delayMins:0
+      },
+      birdstrike_win: {
+        type:'birdstrike', verdict:'win',
+        flight:'EZY3301 EDI–ALC · 29 Jul 2024',
+        desc:'Seagull ingestion on take-off roll — mandatory post-strike borescope, FOD damage confirmed, AOG',
+        law:'Pešková (C-315/15) — birdstrike extraordinary; mandatory airworthiness inspection = RM',
+        dep:'EDI', arr:'ALC', date:'2024-07-29', delayMins:0
+      },
+      birdstrike_contested: {
+        type:'birdstrike', verdict:'contested',
+        flight:'RYR558 STN–PMI · 14 Aug 2024',
+        desc:'Second birdstrike same aircraft within 4hrs — first strike cleared; was return to service correct?',
+        law:'Pešková applies · chain integrity question: adequacy of post-first-strike airworthiness procedure',
+        dep:'STN', arr:'PMI', date:'2024-08-14', delayMins:360
+      },
+      lof_win: {
+        type:'lof', verdict:'win',
+        flight:'EZY2847 GLA–LPA · 8 Dec 2024',
+        desc:'Inbound rotation hit confirmed CAT turbulence — SIGMET active, mandatory post-event inspection',
+        law:'Root cause extraordinary (CAT/weather) · direct causal chain maintained · RM evidenced at GLA',
+        dep:'GLA', arr:'LPA', date:'2024-12-08', delayMins:280
+      },
+      lof_contested: {
+        type:'lof', verdict:'contested',
+        flight:'BE437 BHX–ABZ · 9 Jan 2025',
+        desc:'Known MEL Category C snag carried overnight — rectification not attempted, Art 14 notice missing',
+        law:'MEL Category C = known defect, foreseeable; Art 14 independent breach regardless of Art 5(3) outcome',
+        dep:'BHX', arr:'ABZ', date:'2025-01-09', delayMins:390
+      },
+      atfm_win: {
+        type:'atfm', verdict:'win',
+        flight:'EZY6612 LGW–SPU · 22 Jul 2024',
+        desc:'Croatian FIR ATFM restriction from military exercise — CFMU CTOT documented, all carriers affected',
+        law:'Third-party ATFM restriction beyond carrier control · CFMU documentation = strong contemporaneous evidence',
+        dep:'LGW', arr:'SPU', date:'2024-07-22', delayMins:225
+      },
+      atfm_contested: {
+        type:'atfm', verdict:'contested',
+        flight:'RYR1122 STN–MAD · 25 Sep 2024',
+        desc:'ATFM slot pushes crew to FDP limit — OCC identified risk 3hrs early, no standby crew action taken',
+        law:'ATFM extraordinary (Limb 1) · RM failure: 3hr window to position standby crew not acted upon',
+        dep:'STN', arr:'MAD', date:'2024-09-25', delayMins:0
+      }
+    };
+
+    /* ----------------------------------------------------------
+       SCENARIO BROWSER FUNCTIONS
+    ---------------------------------------------------------- */
+    const SC_TYPES = [
+      { key:'weather',     label:'Weather'         },
+      { key:'technical',   label:'Technical'       },
+      { key:'crew',        label:'Crew & Medical'  },
+      { key:'ownia',       label:'Own-Staff IA'    },
+      { key:'thirdparty',  label:'Third-Party IA'  },
+      { key:'birdstrike',  label:'Birdstrike'      },
+      { key:'lof',         label:'Line of Flying'  },
+      { key:'atfm',        label:'ATFM'            }
+    ];
+
+    let scBrowserOpen = false;
+    let scCurrentType = 'weather';
+
+    function toggleScenarioBrowser() {
+      scBrowserOpen = !scBrowserOpen;
+      document.getElementById('scBrowserBody').style.display = scBrowserOpen ? 'block' : 'none';
+      document.getElementById('scBrowserHint').textContent   = scBrowserOpen ? 'Click to collapse' : 'Click to expand';
+      if (scBrowserOpen && !document.getElementById('scTypeRow').children.length) {
+        renderScenarioTypeRow();
+        renderScenarioCards(scCurrentType);
+      }
+    }
+
+    function renderScenarioTypeRow() {
+      const row = document.getElementById('scTypeRow');
+      row.innerHTML = SC_TYPES.map(t =>
+        `<button class="sc-type-btn${t.key === scCurrentType ? ' active' : ''}" data-type="${t.key}" onclick="selectScenarioType('${t.key}')">${t.label}</button>`
+      ).join('');
+    }
+
+    function selectScenarioType(type) {
+      scCurrentType = type;
+      document.querySelectorAll('.sc-type-btn').forEach(b =>
+        b.classList.toggle('active', b.dataset.type === type)
+      );
+      renderScenarioCards(type);
+    }
+
+    function renderScenarioCards(type) {
+      const matches = Object.entries(SCENARIO_META).filter(([, v]) => v.type === type);
+      const verdictLabel = { win:'Defence Win', loss:'Defence Loss', contested:'Contested' };
+      document.getElementById('scCardsRow').innerHTML = matches.map(([key, s]) => `
+        <div class="sc-card" onclick="loadScenario('${key}')">
+          <span class="sc-verdict sc-verdict-${s.verdict}">${verdictLabel[s.verdict]}</span>
+          <div class="sc-flight">${s.flight}</div>
+          <div class="sc-desc">${s.desc}</div>
+          <div class="sc-law">${s.law}</div>
+        </div>`
+      ).join('');
+    }
+
+    function loadScenario(key) {
+      const text = EXAMPLES[key];
+      const meta = SCENARIO_META[key];
+      if (!text) return;
+      document.getElementById('iccText').value = text;
+      switchMode('icc');
+      if (meta) {
+        currentDepIata    = meta.dep    || currentDepIata;
+        currentArrIata    = meta.arr    || currentArrIata;
+        currentFlightDate = meta.date   || currentFlightDate;
+        currentDelayMins  = meta.delayMins || currentDelayMins;
+      }
+      // Collapse the browser after selection
+      scBrowserOpen = false;
+      document.getElementById('scBrowserBody').style.display = 'none';
+      document.getElementById('scBrowserHint').textContent   = 'Click to expand';
+      // Scroll to analyse button
+      document.getElementById('analyseBtn').scrollIntoView({ behavior:'smooth', block:'center' });
+    }
 
     function loadExample(key) {
       const text = EXAMPLES[key];
       if (!text) return;
       document.getElementById('iccText').value = text;
       switchMode('icc');
-      // Pre-set metadata for demo case
       if (key === 'demo') {
         currentDepIata    = 'PMI';
         currentArrIata    = 'BHX';
         currentFlightDate = '2024-06-16';
-        currentDelayMins  = 500; // 8h 20min
+        currentDelayMins  = 500;
       }
     }
 
