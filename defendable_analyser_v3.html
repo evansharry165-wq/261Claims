@@ -2233,6 +2233,7 @@
     let currentDT         = null;
     let rmResponses       = {};
     let nodeAnnotations   = {};   // { nodeIdx: { text, evidenceStatuses: { evidenceId: 'available'|'requested'|'missing' } } }
+    let causalNodes       = [];
     let causalNodesCount  = 0;
     let currentDepIata    = '';
     let currentArrIata    = '';
@@ -2998,7 +2999,7 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
           'Extraordinary circumstances extend to situations where the carrier could not have avoided the event even if all reasonable measures had been taken.',
           'Post-strike inspection is a mandated airworthiness requirement; its duration does not negate the extraordinary circumstances defence.'
         ],
-        dtIds: ['birdstrike', 'weather'],
+        dtIds: ['birdstrike'],
         nodes: ['U-7', 'U-8'],
         favoursAirline: true,
         keyQuote: 'A collision between an aircraft and a bird is an event which, by its nature or origin, is not inherent in the normal exercise of the activity of the air carrier concerned and is outside its actual control.'
@@ -3286,22 +3287,106 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
       {
         id: 'lipton-cityflyer',
         ref: 'Lipton and another v BA CityFlyer Ltd',
-        citation: '[2021] EWCA Civ 454',
-        court: 'EWCA',
-        date: '2021-03-30',
-        year: 2021,
+        citation: '[2024] UKSC 24',
+        court: 'UKSC',
+        date: '2024-07-10',
+        year: 2024,
         verified: true,
-        eurlexUrl: 'https://www.bailii.org/ew/cases/EWCA/Civ/2021/454.html',
-        ratio: 'Post-Brexit, the Court of Appeal confirmed that retained EU law equivalent of EC261 (UK261) applies the Wallentin-Hermann test unchanged. A technical defect caused by a faulty aircraft component was not an extraordinary circumstance. The frequency of similar defects in the carrier\'s fleet is not a relevant factor — the test is whether the event was inherent in normal operations.',
+        eurlexUrl: 'https://www.supremecourt.uk/cases/uksc-2021-0098',
+        ratio: 'The UK Supreme Court unanimously held that a pilot unexpectedly falling ill does not constitute an extraordinary circumstance under EC261. Crew illness is inherent in the normal exercise of the activity of an air carrier, just as the wear of mechanical components is inherent. It is irrelevant that the pilot fell ill while off duty: a pilot\'s attendance or non-attendance for work is an inherent part of the carrier\'s operating system. This was the first Supreme Court ruling on the meaning of extraordinary circumstances. The Court also confirmed that pre-IP Completion Day flights departing from EU airports are governed by EC261 (not UK261).',
         propositions: [
-          'Post-Brexit, UK courts apply the Wallentin-Hermann test to extraordinary circumstances claims under UK261.',
-          'The frequency of similar technical failures in the carrier\'s fleet is irrelevant to whether a particular defect qualifies as extraordinary.',
-          'Technical defects remain inherent in normal airline operations and do not become extraordinary circumstances merely because they are rare or severe.'
+          'Pilot (and crew) illness is NEVER an extraordinary circumstance — it is inherent in the normal exercise of airline activity.',
+          'It makes no difference whether the crew member fell ill on duty or off duty, or from an unusual illness: attendance for work is an inherent operational matter.',
+          'The purpose of the Regulation is standardised, immediate compensation: excessive granular fact-finding as to the cause of illness is inconsistent with this purpose.',
+          'Pre-IP Completion Day (31 Dec 2020) flights departing EU airports are governed by EC261, not UK261.'
+        ],
+        dtIds: ['own-ia', 'medical'],
+        nodes: ['U-7', 'U-8'],
+        favoursAirline: false,
+        keyQuote: 'A pilot, because of his role, is "as much part of the operating system" as the mechanical components of the aircraft. Their attendance or non-attendance for work is an inherent part of the carrier\'s operating system.'
+      },
+      {
+        id: 'tap-flightright',
+        ref: 'TAP Portugal v Flightright GmbH (Joined Cases)',
+        citation: 'C-156/22 to C-158/22',
+        court: 'CJEU',
+        date: '2023-07-13',
+        year: 2023,
+        verified: true,
+        eurlexUrl: 'https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A62022CJ0156',
+        ratio: 'The tragic and unexpected death of a co-pilot shortly before a flight\'s departure, which left the remaining crew too shaken to operate the flight, does not constitute extraordinary circumstances under Art 5(3) EC261. Staff absence — even from a wholly unpredictable and extreme cause — is inherent in the normal exercise of an air carrier\'s activity. Confirmed by the UKSC in Lipton [2024] UKSC 24 as consistent with UK law.',
+        propositions: [
+          'Even a co-pilot\'s unexpected death immediately before departure is not an extraordinary circumstance — crew absence is inherent in airline operations.',
+          'The extreme unpredictability of a cause of crew absence does not convert an inherent operational matter into an extraordinary circumstance.',
+          'This confirms the principle applied in Lipton [2024] UKSC 24: crew attendance is an operating system matter, not an extraordinary external event.'
+        ],
+        dtIds: ['own-ia', 'medical'],
+        nodes: ['U-7', 'U-8'],
+        favoursAirline: false,
+        keyQuote: 'Even the unexpected and tragic death of a crew member constitutes an event inherent in the normal exercise of the activity of an air carrier — staff absence cannot be extraordinary circumstances.'
+      },
+      {
+        id: 'matkustaja-finnair',
+        ref: 'Matkustaja A v Finnair Oyj',
+        citation: 'C-385/23',
+        court: 'CJEU',
+        date: '2024-06-13',
+        year: 2024,
+        verified: true,
+        eurlexUrl: 'https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A62023CJ0385',
+        ratio: 'A latent design defect in a new aircraft model, where the defect was the first worldwide occurrence on an aircraft that had been in service for only five months, constitutes extraordinary circumstances where: (1) the aircraft manufacturer confirms the failure resulted from a hidden design defect affecting all aircraft of the same type; (2) the failure impinges on flight safety; and (3) the carrier had no power to identify or remedy the defect. The timing of the manufacturer\'s recognition of the defect is irrelevant — what matters is that the defect existed at the time of the cancellation and was genuinely beyond the carrier\'s control.',
+        propositions: [
+          'A hidden design defect confirmed by the aircraft manufacturer as unprecedented and affecting all aircraft of its type CAN constitute extraordinary circumstances.',
+          'The four-part test: (1) manufacturer confirmation; (2) first worldwide occurrence; (3) affects all aircraft of that type; (4) impinges on flight safety — all four limbs must be met.',
+          'It does not matter that the manufacturer only recognised and confirmed the defect after the cancellation — the defect existed and was beyond the carrier\'s control at the time.',
+          'The carrier must still satisfy Limb 2: all reasonable measures to avoid the delay. A backup fleet on standby is NOT required as a reasonable measure (confirmed in C-411/23).'
         ],
         dtIds: ['technical'],
         nodes: ['U-7', 'U-8'],
+        favoursAirline: true,
+        keyQuote: 'The carrier has no power to identify and remedy a latent defect in design; it cannot be considered to exercise control in this scenario. The classification of a hidden design defect as extraordinary is not subject to the condition that the manufacturer must have revealed its existence before the failure occurred.'
+      },
+      {
+        id: 'dsa-psa',
+        ref: 'D. S.A. v P. S.A.',
+        citation: 'C-411/23',
+        court: 'CJEU',
+        date: '2024-06-13',
+        year: 2024,
+        verified: true,
+        eurlexUrl: 'https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A62023CJ0411',
+        ratio: 'The extraordinary circumstances defence for a hidden design defect is available even where the aircraft manufacturer had informed the carrier of the defect\'s existence several months before the flight concerned, provided the carrier still had no power to remedy the defect at the time of the disruption. The timing of the carrier\'s awareness of the defect is irrelevant: what matters is whether the carrier could have identified and remedied the defect prior to the flight. Carriers are also NOT required, as a general reasonable measure, to maintain a back-up fleet of aircraft and crew on standby.',
+        propositions: [
+          'Prior knowledge of a hidden design defect does not disqualify the extraordinary circumstances defence if the carrier still could not remedy the defect.',
+          'The test is whether the carrier had the power to identify AND remedy the defect before the disruption — awareness alone does not establish control.',
+          'Carriers are not required to maintain a back-up fleet on standby as part of reasonable measures under Art 5(3) — this would be an unacceptable sacrifice.',
+          'National courts should take account of commercial realities of airline operations in assessing what measures were reasonable in the circumstances.'
+        ],
+        dtIds: ['technical'],
+        nodes: ['U-7', 'U-8'],
+        favoursAirline: true,
+        keyQuote: 'Article 5(3) does not require air carriers, in a general and indiscriminate manner, to adopt a given preventive measure, such as having a back-up fleet of aircraft and the corresponding crew on standby.'
+      },
+      {
+        id: 'ni-hz-charter',
+        ref: 'NI, HZ v European Air Charter AG',
+        citation: 'T-656/24',
+        court: 'General Court (EU)',
+        date: '2026-03-04',
+        year: 2026,
+        verified: true,
+        eurlexUrl: 'https://curia.europa.eu/juris/liste.jsf?num=T-656/24',
+        ratio: 'Where an extraordinary circumstance affects an earlier flight rotation, a carrier may only rely on that circumstance for a subsequent delayed flight if there is a sufficiently direct causal link between the extraordinary event and the later delay. A voluntary operational decision by the carrier — such as choosing to wait for delayed passengers from an earlier rotation — can break that causal link if the decision, and not the original extraordinary event, becomes the determining cause of the later delay. Carriers must exercise caution: well-intentioned operational decisions may expose them to claim liability on subsequent rotations by breaking the Art 5(3) causal chain.',
+        propositions: [
+          'An extraordinary circumstance on one rotation can only support an Art 5(3) defence for a later rotation if a sufficiently direct causal link exists between the two.',
+          'A voluntary carrier decision (e.g. waiting for delayed passengers) can break the causal chain if that decision becomes the determining cause of the subsequent flight\'s delay.',
+          'The causal chain analysis is strict: the sine qua non (but-for) test is insufficient — the extraordinary event must be the determining, proximate cause of the delay.',
+          'Airlines facing rotation disruptions must assess whether their operational response choices will break the causal chain — even reasonable, passenger-friendly choices can do so.'
+        ],
+        dtIds: ['weather', 'atfm', 'third-party-ia', 'airport-closure', 'crew-fdp'],
+        nodes: ['U-7', 'U-8'],
         favoursAirline: false,
-        keyQuote: 'The frequency of technical problems experienced by an air carrier is not in itself a factor from which the presence or absence of extraordinary circumstances within the meaning of article 5(3) can be concluded.'
+        keyQuote: 'A decision taken by the air carrier to wait for passengers of the first flight arose between the extraordinary circumstance and the delay of the flight at issue. That decision is capable of breaking the direct causal link if it constitutes the determining cause for that delay and the carrier was not obliged to take it.'
       }
     ];
 
@@ -3450,12 +3535,13 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
         'Was replacement aircraft sought and deployed without unnecessary delay? What was the spare aircraft availability position?',
       ],
       technical: [
-        'CRITICAL: Wallentin-Hermann (C-549/07) — technical defects are NOT extraordinary unless the fault stems from an event outside normal airline activity.',
-        'Van der Lans (C-257/14): even unexpected technical failures are inherent to airline operations. The bar for extraordinary is extremely high.',
-        'Jet2 v Huzar [2014] EWCA: UK courts apply Wallentin-Hermann strictly — statistical rarity alone does not make a defect extraordinary.',
-        'What is the precise origin of the defect? Hidden manufacturing defect or age-related catastrophic failure may have the strongest argument.',
-        'Was the defect deferrable under MEL? If deferrable but not deferred, the decision needs clear justification.',
-        'Was a replacement aircraft sought immediately? What was the spare aircraft availability? Any delay in sourcing a replacement weakens RM.',
+        'CRITICAL: Wallentin-Hermann (C-549/07) — technical defects are NOT extraordinary unless the fault stems from an event outside normal airline activity and beyond the carrier\'s control.',
+        'Van der Lans (C-257/14): even unexpected technical failures are inherent to airline operations. Statistical rarity alone does not make a defect extraordinary.',
+        'LATENT DESIGN DEFECT EXCEPTION (Matkustaja Finnair C-385/23 / D.S.A. v P.S.A. C-411/23): if the fault was caused by a hidden manufacturing or design defect, all four conditions must be met — (1) manufacturer confirms the defect; (2) it was unprecedented worldwide; (3) it affects all aircraft of the same type; (4) the carrier had no power to identify or remedy it. Obtain manufacturer confirmation immediately if asserting this.',
+        'D.S.A. (C-411/23): prior knowledge of a defect does not automatically defeat the defence — it still applies if the carrier could not remedy it before the flight.',
+        'D.S.A. (C-411/23): airlines are NOT required to maintain a back-up fleet on standby — but they must still show they took all reasonable available measures within their actual resources.',
+        'Was the defect deferrable under MEL? If deferrable but not deferred, the decision needs clear justification. MEL or repetitive defects are very difficult to defend.',
+        'Was a replacement aircraft sought without unnecessary delay? Document the timeline from discovery to sourcing attempt to outcome.',
       ],
       'third-party-ia': [
         'Third-party industrial action by ATC / ANSP / ground handlers is generally extraordinary — outside airline control.',
@@ -3465,12 +3551,12 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
         'Art 9 care obligations remain in full force regardless of the extraordinary circumstance — document all passenger care provided.',
       ],
       'own-ia': [
-        'CONTESTED POSITION: own-staff industrial action as extraordinary is heavily scrutinised.',
-        'Krüsemann (C-195/17): wildcat / spontaneous action is treated more favourably than planned announced action.',
-        'For planned action: did the carrier take all reasonable steps to negotiate, prevent, or mitigate the action? This is the RM battleground.',
-        'What contingency crew and aircraft were deployed? The scale and speed of the contingency response is critical.',
-        'Union correspondence and negotiation history will be closely examined by claimant\'s counsel — ensure it is complete.',
-        'Strongly consider whether a settle or conditions position is appropriate for own-staff IA cases.',
+        'CRITICAL — SETTLED LAW (SETTLE POSITION STRONGLY ADVISED): Krüsemann (C-195/17), Lipton v BA CityFlyer [2024] UKSC 24, TAP v Flightright (C-156/22-158/22) — own-staff absence is virtually never extraordinary circumstances.',
+        'Lipton UKSC 24: crew illness is NOT extraordinary even if wholly unforeseeable and off-duty. A pilot is "as much part of the operating system as the aircraft\'s mechanical components."',
+        'TAP Flightright CJEU 2023: even a co-pilot\'s unexpected death immediately before departure is not extraordinary.',
+        'The only theoretical gap in the case law: crew absence caused by an identifiable external third-party act (e.g. deliberate interference) — not yet decided. This is narrow and requires specific facts.',
+        'If asserting own-IA as extraordinary: document every negotiation step, every contingency deployed, every alternative explored. The burden is entirely on the carrier and the hill is very steep.',
+        'Strongly advise settle or conditions assessment before committing resource to this defence.',
       ],
       medical: [
         'Medical diversions are well-established extraordinary circumstances — commander\'s duty to divert is absolute.',
@@ -3539,9 +3625,9 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
       weather: "Adverse meteorological conditions may constitute extraordinary circumstances under Art 5(3) EC261 / UK261 where they exceed the aircraft's certified operating limits and are outside the carrier's control. The Wallentin-Hermann two-limb test applies: Limb 1 (the circumstance is extraordinary — inherent to aviation but beyond the carrier's actual control) and Limb 2 (all reasonable measures were taken to avoid the delay). ATC authority documentation substantially closes both limbs where the diversion was mandated.",
       atfm: "ATFM regulations imposed by Eurocontrol or a national ANSP constitute extraordinary circumstances where they represent a genuine external constraint on the carrier. Limb 1 is generally satisfied by the Eurocontrol regulation record. Limb 2 (Eglitis C-294/10) requires the carrier to have taken all measures to minimise delay within the ATFM system — including securing the earliest available slot and having contingency positioning in place. The regulation must have applied to this specific flight, not merely the wider network.",
       birdstrike: "Birdstrikes may constitute extraordinary circumstances (Pešková C-315/15) where the strike itself was the triggering event. However, the extraordinary circumstance is the collision, not the resulting aircraft damage. Damage-based grounding is subject to the same technical defect analysis as any unserviceability. The MOR and engineering unserviceability record together establish both that a collision occurred and that grounding was on airworthiness grounds — which is the correct legal framing.",
-      technical: "Technical defects are presumptively NOT extraordinary circumstances (Wallentin-Hermann C-549/07, Van der Lans C-257/14, Jet2 v Huzar [2014] EWCA Civ 791). The defect must stem from an event that is not inherent in the normal exercise of airline activity and beyond the carrier's actual control. This is an extremely high bar. Hidden manufacturing defects not discoverable by standard maintenance, and rare catastrophic failures from external causes, are the most viable candidates. The carrier bears the burden of proof.",
+      technical: "Technical defects are presumptively NOT extraordinary circumstances (Wallentin-Hermann C-549/07, Van der Lans C-257/14, Jet2 v Huzar [2014]). A narrow exception exists for latent hidden design defects: the CJEU in Matkustaja A v Finnair (C-385/23) and D. S.A. v P. S.A. (C-411/23) confirmed that a hidden design defect CAN be extraordinary where all four conditions are met — (1) the aircraft manufacturer confirms the failure was caused by a hidden design defect; (2) it was unprecedented (first worldwide occurrence of its kind); (3) it affects all aircraft of the same type; and (4) the carrier had no power to identify or remedy the defect. Even prior knowledge of the defect does not preclude this defence if the carrier was still unable to remedy it (C-411/23). Crucially, carriers are NOT required to maintain a back-up fleet on standby as a reasonable measure. The carrier bears the full burden of proof and must obtain manufacturer confirmation to rely on this exception.",
       'third-party-ia': "Industrial action by third-party workers (ATC, ANSP, airport authority, ground handlers) is generally extraordinary — it is neither inherent to the airline's own activity nor within its control. The proximate cause between the industrial action and the specific delay must be established. The carrier must also demonstrate it took all reasonable measures within the available operational window (Limb 2) — including proactive communication, alternative routing assessment, and Art 9 compliance.",
-      'own-ia': "Own-staff industrial action is a contested extraordinary circumstance. Planned / announced action (where the carrier had advance notice and opportunity to negotiate) is difficult to characterise as extraordinary — it is arguably inherent to the employment relationship. Wildcat / spontaneous action (Krüsemann C-195/17) is treated more favourably by the courts. The carrier must demonstrate it took all reasonable steps to prevent the action and minimise its impact. A careful assessment of the settle vs. defend position is advisable.",
+      'own-ia': "Own-staff industrial action is VERY UNLIKELY to constitute extraordinary circumstances. Krüsemann (C-195/17) held spontaneous wildcat strikes by own cabin crew are NOT extraordinary. Lipton v BA CityFlyer [2024] UKSC 24 extended this logic to crew illness — the Supreme Court held that a pilot's attendance for work is as much part of the carrier's operating system as its aircraft components. TAP Portugal v Flightright (C-156/22–158/22) confirmed even a co-pilot's unexpected death is not extraordinary. The trajectory of the law is firmly against own-staff absence as extraordinary. Any case in this category should be assessed for early settlement. The only possible distinction is own-staff absence directly caused by an identifiable third-party external act (e.g. deliberate food poisoning by a third party), which has not yet been decided.",
       medical: "Medical diversions are well-established extraordinary circumstances — a passenger medical emergency is an unforeseeable third-party event outside the carrier's control and not inherent to its normal activity. The commander's duty to divert is absolute under the Air Navigation Order / ICAO standards. The legal focus shifts to Limb 2: the care and efficiency of the diversion, the speed of the onward journey arrangement, and Art 9 compliance throughout.",
       security: "Security events mandated by an external authority (police, national security) are extraordinary circumstances. The critical distinction is between the security threat (extraordinary) and the security response (which must still constitute reasonable measures). The authority mandate must be documented clearly to establish that the carrier's operational response was not discretionary but directed. Art 9 obligations run regardless of the extraordinary circumstance.",
       'disruptive-pax': "Disruption caused by a passenger's behaviour is generally extraordinary — it is a third-party event not inherent to the carrier's normal activity and not within its reasonable anticipation. The carrier's Limb 2 position depends on the proportionality of its response and the quality of contemporaneous documentation. Art 9 obligations run for all other passengers from the point that delay thresholds are exceeded.",
@@ -3563,7 +3649,7 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
           { ref: 'Wallentin-Hermann C-549/07', text: 'Reasonable measures must be technically and economically viable; excessive sacrifice not required. Applied to weather: standby deployment is a reasonable measure but its absence does not automatically preclude the defence.' },
           { ref: 'Eglitis C-294/10', text: 'Airline must use all resources available at the relevant time. Failure to deploy available standby may undermine the Limb 2 position even where Limb 1 is established.' }
         ],
-        caselawIds: ['eglitis', 'pesekova', 'mcdonagh', 'sturgeon', 'nelson'],
+        caselawIds: ['eglitis', 'mcdonagh', 'ni-hz-charter', 'sturgeon', 'nelson'],
         challenges: [
           { question: 'Did conditions at the relevant aerodrome reach or exceed the aircraft\'s certified operating limits at the time of the approach or operation?', evidence: 'METAR at the relevant time, certified operating limits for the aircraft type (Aircraft Flight Manual / Ops Specs), approach briefing records', note: null },
           { question: 'Was the disruption decision (diversion, cancellation or significant delay) mandatory under regulatory requirements or the aircraft commander\'s operational authority — not a discretionary commercial decision?', evidence: 'Air safety / occurrence report filed by the commander, applicable Air Navigation Order provisions on commander authority', note: null },
@@ -3582,7 +3668,7 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
           { ref: 'Wallentin-Hermann C-549/07', text: 'Measures must be technically and economically viable. Compliance with a mandatory ATFM slot is itself a reasonable measure, not a failure to act.' },
           { ref: 'Eglitis C-294/10', text: 'Operator must use all available resources. If crew FDP expired during the ATFM delay, standby crew deployment must be evidenced.' }
         ],
-        caselawIds: ['eglitis', 'sturgeon', 'nelson'],
+        caselawIds: ['eglitis', 'ni-hz-charter', 'sturgeon', 'nelson'],
         challenges: [
           { question: 'Was the ATFM regulation formally issued by Eurocontrol or the relevant national ANSP, with a regulation ID capable of corroboration?', evidence: 'Network manager records confirming regulation reference, ATFM daily operations brief', note: null },
           { question: 'Did the restriction apply to all carriers on the affected route or FIR — confirming it was a network-wide event, not specific to this operator?', evidence: 'Network manager records showing multiple carriers affected, flight tracking data for the period', note: null },
@@ -3619,7 +3705,7 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
         caselaw: [
           { ref: 'Krüsemann C-195/17', text: 'Spontaneous wildcat strike by own cabin crew held NOT to be extraordinary circumstances. Own-staff strikes are generally inherent in the management of airline operations.' }
         ],
-        caselawIds: ['kruesemann', 'sturgeon', 'nelson'],
+        caselawIds: ['kruesemann', 'lipton-cityflyer', 'tap-flightright', 'sturgeon', 'nelson'],
         challenges: [
           { question: 'Is the industrial action by the airline\'s own employees (crew, ground staff employed or directly contracted by the airline)?', evidence: 'Identification of the striking body and employment / contracting relationship', note: 'CRITICAL: Krüsemann C-195/17 — own staff strikes are generally NOT extraordinary circumstances. Legal position on Limb 1 is very weak. Consider early advice on settlement.' },
           { question: 'Was the action a spontaneous wildcat strike with no advance notice, as opposed to a pre-announced formal strike?', evidence: 'Timeline of any union notice vs commencement of action; HR and union communications', note: 'Even a wildcat strike failed in Krüsemann. A pre-announced strike with formal notice is even harder to defend as extraordinary.' },
@@ -3656,7 +3742,7 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
           { ref: 'Wallentin-Hermann C-549/07', text: 'Technical problems are inherent in airline operations and generally do NOT constitute extraordinary circumstances. The defect must be outside normal operational risk.' },
           { ref: 'Van der Lans C-257/14', text: 'Unexpected technical defect not attributable to inadequate maintenance may qualify — but only where the defect could not have been discovered by reasonably diligent inspection.' }
         ],
-        caselawIds: ['wallentin-hermann', 'van-der-lans', 'jet2-huzar', 'lipton-cityflyer', 'sturgeon', 'nelson'],
+        caselawIds: ['wallentin-hermann', 'van-der-lans', 'jet2-huzar', 'matkustaja-finnair', 'dsa-psa', 'sturgeon', 'nelson'],
         challenges: [
           { question: 'Is there evidence that the defect was not discoverable by reasonably diligent maintenance inspection prior to the flight — i.e., no prior fault history exists for this component?', evidence: 'Maintenance records showing no prior occurrences of this fault, OEM technical guidance, engineering assessment of defect root cause', note: 'CRITICAL: If the defect had prior occurrences (repetitive defect) or was already on the MEL as a known condition, the extraordinary circumstances argument is very unlikely to succeed.' },
           { question: 'Was the aircraft\'s approved maintenance schedule fully complied with up to the date of operation, including all applicable airworthiness directives and service bulletins?', evidence: 'Maintenance records, airworthiness documentation, AD and SB compliance schedule', note: null },
@@ -3794,7 +3880,7 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
           { ref: 'Wallentin-Hermann C-549/07', text: 'Causal link required: the extraordinary circumstance must be the actual cause of the cancellation or delay, not merely a contributing factor. The chain from root cause to disruption must be unbroken.' },
           { ref: 'Eglitis C-294/10', text: 'All available resources — including standby crew — must be deployed before extraordinary circumstances can be relied upon. Absence of standby without explanation is a serious vulnerability.' }
         ],
-        caselawIds: ['eglitis', 'sturgeon', 'nelson'],
+        caselawIds: ['eglitis', 'ni-hz-charter', 'sturgeon', 'nelson'],
         challenges: [
           { question: 'Was the root cause of the FDP exhaustion itself an extraordinary circumstance — and is that root cause separately evidenced and established?', evidence: 'Flight operations system rotation history tracing the delay cascade back to the originating cause event', note: 'CRITICAL: FDP exhaustion is a consequence, not a cause. The originating event must independently qualify as extraordinary. Analyse the root cause disruption type separately.' },
           { question: 'Is the FDP calculation correctly documented under applicable regulations, accounting for all sectors operated and any authorised extensions?', evidence: 'Crew scheduling / FDP records with sector-by-sector calculation, applicable regulatory limit reference', note: null },
@@ -3830,15 +3916,16 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
       currentDT = dt;
       rmResponses = {};
       nodeAnnotations = {};
-      const causalNodes = parseCausalChain(inputText, dt);
+      causalNodes = parseCausalChain(inputText, dt);
       causalNodesCount = causalNodes ? causalNodes.length : 1;
 
-      const limb1Labels = {
-        extraordinary: 'Extraordinary Circumstances — Limb 1',
-        contested:     'Contested — Further Analysis Required',
-        unlikely:      'Unlikely — Limb 1 at Risk'
+      // Directive recommendation from limb1Status
+      const directives = {
+        extraordinary: { label:'Extraordinary', rec:'Position: Defend', recClass:'defend', recSub:'Limb 1 established — build Limb 2 evidence' },
+        contested:     { label:'Requires Investigation', rec:'Position: Investigate', recClass:'conditions', recSub:'Limb 1 uncertain — gather evidence before committing' },
+        unlikely:      { label:'Non-Extraordinary', rec:'Position: Consider Settling', recClass:'settle', recSub:'Limb 1 weak — assess exposure before proceeding' }
       };
-      const limb1Label = limb1Labels[dt.limb1Status] || 'Under Review';
+      const dir = directives[dt.limb1Status] || directives.contested;
 
       // Build annotated event nodes for Pass II
       const evNodesHtml = (causalNodes && causalNodes.length > 0 ? causalNodes : [{type:'root', label:dt.label, sub:dt.limb1Status, icon:'⚡'}]).map((node, idx) => {
@@ -3902,23 +3989,22 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
           </div>`;
       }).join('');
 
-      // Build case law
-      const caselawHtml = dt.caselaw.map(cl => `
-        <div class="legal-note">
-          <span class="legal-case-ref">${cl.ref}</span>
-          <span class="legal-text">${cl.text}</span>
-        </div>
-      `).join('');
-
       area.innerHTML = `
         <div class="brief-doc">
 
           <!-- PASS I: Causal Classification -->
           <div class="brief-section">
             <div class="brief-section-label">Pass I — Causal Chain &amp; Classification</div>
-            <div class="brief-dt-row">
-              <span class="dt-badge ${dt.limb1Status}">${limb1Label}</span>
-              <span class="brief-dt-name">${dt.label}</span>
+            <div style="display:flex;align-items:flex-start;gap:var(--sp-md);flex-wrap:wrap;margin-bottom:var(--sp-md)">
+              <div style="flex:1;min-width:200px">
+                <div style="font-family:var(--font-mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:4px">Disruption Type</div>
+                <div class="brief-dt-name" style="font-family:var(--font-serif);font-size:16px;font-weight:400;color:var(--ink-primary);margin-bottom:2px">${dt.label}</div>
+                <div class="dt-badge ${dt.limb1Status}" style="display:inline-block;margin-top:4px">${dir.label}</div>
+              </div>
+              <div style="min-width:200px;padding:var(--sp-sm) var(--sp-md);border-radius:var(--r-md);border:1px solid ${dir.recClass==='defend'?'var(--defend-border)':dir.recClass==='conditions'?'var(--conditions-border)':'var(--settle-border)'};background:${dir.recClass==='defend'?'var(--defend-bg)':dir.recClass==='conditions'?'var(--conditions-bg)':'var(--settle-bg)'}">
+                <div style="font-family:var(--font-serif);font-size:14px;font-weight:700;color:${dir.recClass==='defend'?'var(--defend)':dir.recClass==='conditions'?'var(--conditions)':'var(--settle)'}">${dir.rec}</div>
+                <div style="font-size:11px;color:var(--ink-secondary);margin-top:2px;font-family:var(--font-spectral,serif)">${dir.recSub}</div>
+              </div>
             </div>
             <div class="brief-limb1">${dt.limb1}</div>
             ${renderCausalChain(causalNodes)}
@@ -4120,17 +4206,39 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
     }
 
     function buildSWPoints() {
-      if(!currentDT) return {strengths:[],weaknesses:[]};
-      const strengths=[],weaknesses=[];
-      for(const [idx,resp] of Object.entries(rmResponses)) {
-        const c=currentDT.challenges[+idx];
-        if(!c) continue;
-        const q=c.question.length>90?c.question.slice(0,87)+'…':c.question;
-        if(resp==='confirmed') strengths.push(q);
-        else if(resp==='gap')  weaknesses.push(q);
-        else weaknesses.push('Partial — '+q);
+      const strengths = [];
+      const weaknesses = [];
+      if (!currentDT) return { strengths, weaknesses };
+
+      // Build from node annotations (new system)
+      Object.entries(nodeAnnotations).forEach(([idx, ann]) => {
+        if (!ann) return;
+        const statuses = ann.evidenceStatuses || {};
+        const available = Object.values(statuses).filter(s => s === 'available').length;
+        const missing = Object.values(statuses).filter(s => s === 'missing').length;
+        const hasText = ann.text && ann.text.trim().length > 0;
+
+        // Get node label
+        const nodeLabel = (typeof causalNodes !== 'undefined' && causalNodes && causalNodes[parseInt(idx)])
+          ? causalNodes[parseInt(idx)].label
+          : `Event ${parseInt(idx)+1}`;
+
+        if (available > 0 && hasText) {
+          strengths.push(`${nodeLabel} — ${available} evidence item${available!==1?'s':''} confirmed`);
+        } else if (hasText && available === 0) {
+          weaknesses.push(`${nodeLabel} — annotated but no evidence confirmed yet`);
+        }
+        if (missing > 0) {
+          weaknesses.push(`${nodeLabel} — ${missing} evidence item${missing!==1?'s':''} marked missing`);
+        }
+      });
+
+      // If no node annotations yet, show placeholder
+      if (strengths.length === 0 && weaknesses.length === 0) {
+        weaknesses.push('Complete the event review in Pass II to populate this analysis');
       }
-      return {strengths,weaknesses};
+
+      return { strengths, weaknesses };
     }
 
     /* ----------------------------------------------------------
@@ -4431,6 +4539,12 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
             type: 'cascade',
             priority: 'medium',
             message: 'CASCADE DETECTED — ATFM regulation mentioned alongside weather. Establish whether the ATFM regulation was a consequence of the weather (airport ground stop → Eurocontrol regulation) or a separate event. Each link in the chain needs its own documentation.'
+          },
+          {
+            keywords: ['waited','decided to wait','previous rotation','prior rotation','earlier flight','earlier sector','inbound rotation','prior sector','held for','held at','delayed departure','prior delay','held pax','held passengers'],
+            type: 'weakness',
+            priority: 'high',
+            message: 'CAUSAL CHAIN RISK (NI, HZ v European Air Charter T-656/24, March 2026) — if the carrier voluntarily waited for delayed passengers from an earlier rotation, that operational decision may have BROKEN the causal chain between the extraordinary circumstance and this flight\'s delay. The carrier\'s own choice, if it becomes the determining cause of the later delay, defeats the Art 5(3) defence. Critically assess: was the wait a voluntary commercial decision, or was it legally required? If voluntary, the defence on this rotation may fail.'
           }
         ]
       },
@@ -4472,6 +4586,12 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
             type: 'cascade',
             priority: 'medium',
             message: 'CASCADE — ATFM delay leading to crew FDP exhaustion. Establish the precise timeline: CTOT issued → delay accrued → FDP limit approached → standby position. Each step needs documentation. The ATFM regulation is Limb 1; the FDP cascade must be shown as a direct consequence.'
+          },
+          {
+            keywords: ['waited','decided to wait','previous rotation','prior rotation','earlier flight','earlier sector','inbound rotation','held for','held at','held passengers','waited for pax','waited for passengers','delayed departure'],
+            type: 'weakness',
+            priority: 'high',
+            message: 'CAUSAL CHAIN RISK (NI, HZ v European Air Charter T-656/24, March 2026) — if the airline voluntarily chose to wait for passengers delayed by the ATFM event on an earlier rotation, that decision may have BROKEN the causal chain for this flight. The extraordinary circumstance must be the determining cause of this delay — not a subsequent voluntary operational decision by the carrier. If the carrier\'s choice to wait became the real cause of this flight\'s delay, Art 5(3) defence on this rotation may fail. Assess: was the wait commercially discretionary or legally required?'
           }
         ]
       },
