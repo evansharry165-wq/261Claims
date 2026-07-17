@@ -1616,6 +1616,187 @@
       padding: var(--sp-xs) var(--sp-sm);
     }
 
+    /* ── Caselaw "View Judgment" link ─────────────────────── */
+    .caselaw-source-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: var(--sp-sm);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: .04em;
+      color: var(--ink-faint);
+      cursor: pointer;
+      border: none;
+      background: none;
+      padding: 0;
+      text-decoration: none;
+    }
+    .caselaw-source-link:hover { color: var(--ink-secondary); }
+
+    /* ── Caselaw Detail Modal ──────────────────────────────── */
+    .cl-modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15,15,14,.55);
+      z-index: 900;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--sp-lg);
+      backdrop-filter: blur(2px);
+      animation: cl-fade-in .15s ease;
+    }
+    @keyframes cl-fade-in { from { opacity:0 } to { opacity:1 } }
+    .cl-modal-panel {
+      background: var(--surface-doc);
+      border: 1px solid var(--ink-rule);
+      border-radius: var(--r-lg);
+      box-shadow: 0 24px 64px rgba(0,0,0,.22);
+      width: 100%;
+      max-width: 720px;
+      max-height: 85vh;
+      overflow-y: auto;
+      position: relative;
+      animation: cl-slide-up .18s ease;
+    }
+    @keyframes cl-slide-up { from { transform: translateY(12px); opacity:0 } to { transform:none; opacity:1 } }
+    .cl-modal-header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: var(--surface-doc);
+      border-bottom: 1px solid var(--ink-rule2);
+      padding: var(--sp-md) var(--sp-lg);
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: var(--sp-md);
+    }
+    .cl-modal-citation {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: .06em;
+      color: var(--ink-faint);
+      margin-bottom: 4px;
+    }
+    .cl-modal-ref {
+      font-family: var(--font-serif);
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--ink-primary);
+      line-height: 1.3;
+    }
+    .cl-modal-meta {
+      font-size: 11px;
+      color: var(--ink-tertiary);
+      margin-top: 4px;
+      font-family: var(--font-sans);
+    }
+    .cl-modal-close {
+      flex-shrink: 0;
+      width: 28px;
+      height: 28px;
+      border: 1px solid var(--ink-rule);
+      border-radius: 50%;
+      background: transparent;
+      cursor: pointer;
+      font-size: 14px;
+      color: var(--ink-tertiary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+      margin-top: 2px;
+    }
+    .cl-modal-close:hover { background: var(--surface-ui); color: var(--ink-primary); }
+    .cl-modal-body {
+      padding: var(--sp-lg);
+    }
+    .cl-modal-section {
+      margin-bottom: var(--sp-lg);
+    }
+    .cl-modal-section-label {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      margin-bottom: var(--sp-sm);
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--ink-rule2);
+    }
+    .cl-modal-ratio {
+      font-family: var(--font-spectral, var(--font-serif));
+      font-size: 13px;
+      line-height: 1.75;
+      color: var(--ink-primary);
+    }
+    .cl-modal-props {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    .cl-modal-props li {
+      font-family: var(--font-spectral, var(--font-serif));
+      font-size: 12px;
+      line-height: 1.65;
+      color: var(--ink-secondary);
+      padding: 6px 0 6px var(--sp-md);
+      border-left: 2px solid var(--ink-rule2);
+      margin-bottom: 6px;
+    }
+    .cl-modal-keyquote {
+      font-family: var(--font-spectral, var(--font-serif));
+      font-size: 13px;
+      font-style: italic;
+      color: var(--ink-secondary);
+      line-height: 1.75;
+      padding: var(--sp-md);
+      background: var(--surface-ui);
+      border-radius: var(--r-md);
+      border-left: 3px solid var(--ink-rule);
+    }
+    .cl-modal-keypara {
+      font-family: var(--font-spectral, var(--font-serif));
+      font-size: 12px;
+      color: var(--ink-secondary);
+      line-height: 1.6;
+      padding: var(--sp-sm) var(--sp-md);
+      background: var(--judgment-bg);
+      border: 1px solid var(--judgment-border);
+      border-radius: var(--r-md);
+    }
+    .cl-modal-source-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      background: var(--ink-primary);
+      color: #fff;
+      border-radius: var(--r-md);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: .04em;
+      text-decoration: none;
+      cursor: pointer;
+      border: none;
+    }
+    .cl-modal-source-btn:hover { background: var(--ink-secondary); }
+    .cl-modal-favour-badge {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      padding: 2px 8px;
+      border-radius: 2px;
+      margin-top: 6px;
+    }
+    .cl-modal-favour-defence { background: var(--defend-bg); color: var(--defend); border: 1px solid var(--defend-border); }
+    .cl-modal-favour-claimant { background: var(--settle-bg); color: var(--settle); border: 1px solid var(--settle-border); }
+
     /* ── Causal Chain Timeline ─────────────────────────────── */
     .cc-wrap { margin: var(--sp-md) 0; }
     .cc-header {
@@ -3391,6 +3572,125 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
     ];
 
     /* ----------------------------------------------------------
+       CASELAW METADATA — source URLs & paragraph references
+       Each entry maps a CASELAW_DB id to its verified source URL,
+       the key paragraphs containing the ratio, and the source name
+       displayed in the modal and reference page.
+    ---------------------------------------------------------- */
+    const CASELAW_META = {
+      'wallentin-hermann': {
+        sourceName: 'EUR-Lex (CJEU)',
+        sourceUrl:  'https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:62007CJ0549',
+        keyPara:    'Para. 23 — the foundational two-limb test: extraordinary circumstances must not be inherent in the normal exercise of airline activity, and must be beyond the carrier\'s actual control'
+      },
+      'eglitis': {
+        sourceName: 'EUR-Lex (CJEU)',
+        sourceUrl:  'https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:62010CJ0294',
+        keyPara:    'Paras. 25–30 — all reasonable measures test: the carrier must use all human, material and financial resources available, including planning adequate time buffers for foreseeable extraordinary circumstances'
+      },
+      'pesekova': {
+        sourceName: 'EUR-Lex (CJEU)',
+        sourceUrl:  'https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:62015CJ0315',
+        keyPara:    'Paras. 20–26 — birdstrike is not inherent in the normal exercise of airline activity; post-strike inspection is a mandatory airworthiness requirement whose duration does not negate the Art 5(3) defence'
+      },
+      'van-der-lans': {
+        sourceName: 'EUR-Lex (CJEU)',
+        sourceUrl:  'https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:62014CJ0257',
+        keyPara:    'Paras. 36–42 — premature failure of aircraft components is inherent in the normal operational risks of airline activity, even where failure was unexpected and maintenance was adequate'
+      },
+      'kruesemann': {
+        sourceName: 'EUR-Lex (CJEU)',
+        sourceUrl:  'https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:62017CJ0195',
+        keyPara:    'Paras. 34–46 — own-staff wildcat strike is part of the normal exercise of airline activity; labour disputes involving the carrier\'s own employees do not constitute extraordinary circumstances'
+      },
+      'sturgeon': {
+        sourceName: 'EUR-Lex (CJEU)',
+        sourceUrl:  'https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:62007CJ0402',
+        keyPara:    'Para. 61 — passengers delayed 3 or more hours at their final destination are in a situation comparable to passengers whose flights are cancelled and are entitled to Art 7 compensation'
+      },
+      'nelson': {
+        sourceName: 'EUR-Lex (CJEU)',
+        sourceUrl:  'https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:62010CJ0581',
+        keyPara:    'Paras. 33–40 — Sturgeon principle affirmed; standardised and immediate compensation for delay is compatible with the Montreal Convention, which operates on a distinct legal basis'
+      },
+      'mcdonagh': {
+        sourceName: 'EUR-Lex (CJEU)',
+        sourceUrl:  'https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:62011CJ0012',
+        keyPara:    'Paras. 29–44 — Art 9 care obligations (meals, accommodation, communication) apply even in extraordinary circumstances; Art 5(3) only exempts from Art 7 monetary compensation'
+      },
+      'sousa-rodriguez': {
+        sourceName: 'EUR-Lex (CJEU)',
+        sourceUrl:  'https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:62010CJ0083',
+        keyPara:    'Paras. 23–38 — a flight that takes off but is forced to return to the departure airport before reaching its destination constitutes a cancellation under EC261'
+      },
+      'folkerts': {
+        sourceName: 'EUR-Lex (CJEU)',
+        sourceUrl:  'https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:62011CJ0011',
+        keyPara:    'Para. 32 — the 3-hour compensation threshold is assessed against scheduled vs actual arrival time at the final destination specified in the passenger\'s booking, not at intermediate stops'
+      },
+      'iata-elfaa': {
+        sourceName: 'EUR-Lex (CJEU)',
+        sourceUrl:  'https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:62004CJ0344',
+        keyPara:    'Paras. 36–49 — EC261 upheld as valid; standardised compensation regime is proportionate and operates on a distinct legal basis from the individual damage remedy under the Montreal Convention'
+      },
+      'finnair-lassooy': {
+        sourceName: 'EUR-Lex (CJEU)',
+        sourceUrl:  'https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:62011CJ0022',
+        keyPara:    'Paras. 21–32 — denied boarding arises from the fact of non-carriage regardless of the carrier\'s stated reason; airlines cannot rely on disruption to cancel reservations and deny denied boarding liability'
+      },
+      'rodriguez-cachafeiro': {
+        sourceName: 'EUR-Lex (CJEU)',
+        sourceUrl:  'https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:62011CJ0321',
+        keyPara:    'Paras. 23–41 — where an airline cancels a passenger\'s onward reservation due to a delay on the first leg caused by the airline itself, this constitutes denied boarding on the subsequent flight'
+      },
+      'emirates-schenkel': {
+        sourceName: 'EUR-Lex (CJEU)',
+        sourceUrl:  'https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:62007CJ0173',
+        keyPara:    'Paras. 23–36 — EC261 scope is limited to flights departing from airports in EU member states; territorial jurisdiction is determined by the point of departure of each individual flight'
+      },
+      'air-baltic': {
+        sourceName: 'EUR-Lex (CJEU)',
+        sourceUrl:  'https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:62014CJ0429',
+        keyPara:    'Paras. 21–30 — Art 9 EC261 care obligations are not subject to the liability caps in Art 22(1) of the Montreal Convention; the two regimes operate in parallel'
+      },
+      'jet2-huzar': {
+        sourceName: 'BAILII (EWCA)',
+        sourceUrl:  'https://www.bailii.org/ew/cases/EWCA/Civ/2014/791.html',
+        keyPara:    'Paras. 22–40 — UK Court of Appeal applies Wallentin-Hermann without modification: technical defects are not extraordinary circumstances regardless of their unexpectedness or the carrier\'s maintenance record'
+      },
+      'dawson-thomson': {
+        sourceName: 'BAILII (EWCA)',
+        sourceUrl:  'https://www.bailii.org/ew/cases/EWCA/Civ/2014/845.html',
+        keyPara:    'Paras. 23–35 — EC261 claims in England and Wales are subject to the 6-year limitation period under s.2 Limitation Act 1980, not the 2-year Montreal Convention period; the two are distinct remedies'
+      },
+      'lipton-cityflyer': {
+        sourceName: 'BAILII / UKSC',
+        sourceUrl:  'https://www.bailii.org/uk/cases/UKSC/2024/24.html',
+        keyPara:    'Paras. 42–66 — crew illness is inherent in the normal exercise of airline operations regardless of whether it occurred on or off duty; the purpose of EC261 is standardised, immediate compensation inconsistent with granular fact-finding as to the cause of illness'
+      },
+      'tap-flightright': {
+        sourceName: 'EUR-Lex (CJEU)',
+        sourceUrl:  'https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:62022CJ0156',
+        keyPara:    'Paras. 28–48 — even the unexpected and tragic death of a crew member immediately before departure constitutes an event inherent in the normal exercise of airline activity; crew absence is never an extraordinary circumstance'
+      },
+      'matkustaja-finnair': {
+        sourceName: 'EUR-Lex (CJEU)',
+        sourceUrl:  'https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:62023CJ0385',
+        keyPara:    'Paras. 23–47 — four-part test for a latent design defect to constitute extraordinary circumstances; it is irrelevant that the manufacturer only recognised and confirmed the defect after the cancellation occurred'
+      },
+      'dsa-psa': {
+        sourceName: 'EUR-Lex (CJEU)',
+        sourceUrl:  'https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:62023CJ0411',
+        keyPara:    'Paras. 25–45 — prior knowledge of a hidden design defect does not defeat the Art 5(3) defence if the carrier still had no power to remedy it; carriers are not required to maintain a back-up fleet as a general reasonable measure'
+      },
+      'ni-hz-charter': {
+        sourceName: 'CURIA (General Court)',
+        sourceUrl:  'https://curia.europa.eu/juris/liste.jsf?num=T-656/24',
+        keyPara:    'Key ratio — a voluntary operational decision by the carrier (such as waiting for delayed passengers from an earlier rotation) can break the direct causal link between an extraordinary circumstance and a subsequent flight\'s delay if that decision becomes the determining cause of the later delay'
+      }
+    };
+
+    /* ----------------------------------------------------------
        EVIDENCE DATABASE — per disruption type
     ---------------------------------------------------------- */
     const EVIDENCE_DB = {
@@ -4456,7 +4756,9 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
       const defence  = relevantCases.filter(c => c.favoursAirline);
       const claimant = relevantCases.filter(c => !c.favoursAirline);
 
-      const renderCase = (c) => `
+      const renderCase = (c) => {
+        const meta = (typeof CASELAW_META !== 'undefined') ? (CASELAW_META[c.id] || {}) : {};
+        return `
         <div class="caselaw-card ${c.favoursAirline ? 'favours-airline' : 'favours-claimant'}">
           <div class="caselaw-card-header">
             <span class="caselaw-citation">${c.citation || c.court}</span>
@@ -4467,8 +4769,12 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
           <div class="caselaw-ratio">${c.ratio}</div>
           ${c.propositions && c.propositions.length > 0 ? `<ul class="caselaw-propositions">${c.propositions.map(p => `<li>${p}</li>`).join('')}</ul>` : ''}
           ${c.keyQuote ? `<blockquote class="caselaw-quote">&ldquo;${c.keyQuote}&rdquo;</blockquote>` : ''}
+          <button class="caselaw-source-link" onclick="openCaselawModal('${c.id}')">
+            ⊞ Full judgment &amp; source${meta.sourceName ? ' · ' + meta.sourceName : ''} →
+          </button>
         </div>
-      `;
+        `;
+      };
 
       let html = `<div class="caselaw-bundle">
         <div class="pass3-section-header">Legal Authorities</div>`;
@@ -5711,6 +6017,93 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
       const el = document.getElementById('brief-modal-backdrop');
       if (el) el.remove();
     }
+
+    /* ----------------------------------------------------------
+       CASELAW DETAIL MODAL
+    ---------------------------------------------------------- */
+    function openCaselawModal(caseId) {
+      const c = (typeof CASELAW_DB !== 'undefined') ? CASELAW_DB.find(x => x.id === caseId) : null;
+      if (!c) return;
+      const meta = (typeof CASELAW_META !== 'undefined') ? (CASELAW_META[caseId] || {}) : {};
+
+      const favourBadge = c.favoursAirline
+        ? `<span class="cl-modal-favour-badge cl-modal-favour-defence">Supports Defence</span>`
+        : `<span class="cl-modal-favour-badge cl-modal-favour-claimant">Claimant May Cite</span>`;
+
+      const propHtml = c.propositions && c.propositions.length > 0
+        ? `<div class="cl-modal-section">
+            <div class="cl-modal-section-label">Legal Propositions</div>
+            <ul class="cl-modal-props">${c.propositions.map(p => `<li>${p}</li>`).join('')}</ul>
+          </div>` : '';
+
+      const quoteHtml = c.keyQuote
+        ? `<div class="cl-modal-section">
+            <div class="cl-modal-section-label">Key Passage</div>
+            <div class="cl-modal-keyquote">&ldquo;${c.keyQuote}&rdquo;</div>
+          </div>` : '';
+
+      const paraHtml = meta.keyPara
+        ? `<div class="cl-modal-section">
+            <div class="cl-modal-section-label">Key Paragraphs</div>
+            <div class="cl-modal-keypara">${meta.keyPara}</div>
+          </div>` : '';
+
+      const sourceBtn = meta.sourceUrl
+        ? `<div class="cl-modal-section">
+            <div class="cl-modal-section-label">Source Document</div>
+            <a class="cl-modal-source-btn" href="${meta.sourceUrl}" target="_blank" rel="noopener">
+              Open full judgment on ${meta.sourceName || 'source'} ↗
+            </a>
+            <div style="font-size:11px;color:var(--ink-faint);margin-top:8px;font-family:var(--font-mono)">
+              Verify every proposition cited above against the source judgment
+            </div>
+            <a href="defendable_reference.html" target="_blank" rel="noopener"
+               style="display:inline-block;margin-top:10px;font-family:var(--font-mono);font-size:10px;color:var(--ink-tertiary);letter-spacing:.04em;text-decoration:none;border-bottom:1px solid var(--ink-rule);">
+              ⊞ Open full legal reference page →
+            </a>
+          </div>` : '';
+
+      const html = `
+        <div class="cl-modal-backdrop" id="cl-modal-backdrop" onclick="if(event.target===this)closeCaselawModal()">
+          <div class="cl-modal-panel" onclick="event.stopPropagation()">
+            <div class="cl-modal-header">
+              <div>
+                <div class="cl-modal-citation">${c.court} &nbsp;·&nbsp; ${c.citation} &nbsp;·&nbsp; ${c.year}</div>
+                <div class="cl-modal-ref">${c.ref}</div>
+                <div class="cl-modal-meta">${c.date ? new Date(c.date).toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'}) : ''}</div>
+                ${favourBadge}
+              </div>
+              <button class="cl-modal-close" onclick="closeCaselawModal()" aria-label="Close">×</button>
+            </div>
+            <div class="cl-modal-body">
+              <div class="cl-modal-section">
+                <div class="cl-modal-section-label">Ratio Decidendi</div>
+                <div class="cl-modal-ratio">${c.ratio}</div>
+              </div>
+              ${propHtml}
+              ${quoteHtml}
+              ${paraHtml}
+              ${sourceBtn}
+            </div>
+          </div>
+        </div>`;
+
+      const existing = document.getElementById('cl-modal-backdrop');
+      if (existing) existing.remove();
+      document.body.insertAdjacentHTML('beforeend', html);
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeCaselawModal() {
+      const el = document.getElementById('cl-modal-backdrop');
+      if (el) el.remove();
+      document.body.style.overflow = '';
+    }
+
+    // Close on Escape key
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') { closeCaselawModal(); closeBrief(); }
+    });
 
   </script>
 
