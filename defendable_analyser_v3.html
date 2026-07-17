@@ -1912,8 +1912,8 @@
 
     .ev-rm-surface {
       display: none;
-      background: var(--conditions-bg);
-      border: 1px solid var(--conditions-border);
+      background: var(--paper, var(--surface-raised));
+      border: 1px solid var(--ink-rule2);
       border-radius: var(--r-md);
       padding: var(--sp-sm) var(--sp-md);
     }
@@ -4369,12 +4369,533 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
       renderPass3FromNodes();
     }
 
+    const ANNOTATION_CLASSIFIER = {
+      weather: {
+        rules: [
+          {
+            keywords: ['other flight','other aircraft','other airline','other carrier','landed','did land','was landing','managed to land','got in','did get in'],
+            type: 'weakness',
+            priority: 'high',
+            message: 'MATERIAL WEAKNESS — if other operators landed at the same aerodrome during the same window, Limb 1 is significantly undermined. Obtain third-party flight tracking data immediately. Identify which aircraft landed, which operator, and at what time relative to your diversion decision.'
+          },
+          {
+            keywords: ['cleared','lifted','improved','better','passed','died down','eased','stopped','ceased'],
+            type: 'weakness',
+            priority: 'high',
+            message: 'CONDITIONS DURATION — if weather cleared before the end of the total delay, Limb 1 may not cover the full delay period. The extraordinary circumstance must persist for the duration it is relied upon. Establish the exact window of disruption against the delay timeline.'
+          },
+          {
+            keywords: ['no metar','no weather','missing metar','cannot find','cant find','not available','not obtained','no report'],
+            type: 'action',
+            priority: 'high',
+            message: 'EVIDENCE GAP — METAR is the primary document for weather conditions. Without it, Limb 1 cannot be properly established. Request immediately from the national meteorological service or Ogimet for the aerodrome and time window.'
+          },
+          {
+            keywords: ['forecast','notam','pre-notified','warned','expected','predicted','known'],
+            type: 'weakness',
+            priority: 'medium',
+            message: 'FORESEEABILITY — if conditions were forecast or pre-notified, the question arises whether the carrier took proactive measures (e.g. holding standby, alternative routing, early departure). Pre-notified conditions may weaken Limb 2 if no contingency was in place.'
+          },
+          {
+            keywords: ['atc','air traffic control','instructed','directed','mandated','told to divert','required to divert','atc instruction','atc mandated','approach banned','ground stop'],
+            type: 'strength',
+            priority: 'high',
+            message: 'STRENGTH — ATC instruction documented. Where ATC directed the diversion or approach discontinuation, this substantially closes Limb 2. Ensure the ATC instruction is recorded in the commander\'s report and ideally corroborated by ATC records.'
+          },
+          {
+            keywords: ['afm','aircraft flight manual','crosswind limit','operating limit','certified limit','exceeded limit','above limit','minima','below minima','not within limits'],
+            type: 'strength',
+            priority: 'high',
+            message: 'STRENGTH — AFM operating limits comparison is the legal benchmark. Document the exact certified limit and the recorded actual value (from METAR). The margin between the two is the evidence that Limb 1 is met.'
+          },
+          {
+            keywords: ['commander','captain','pic','decision','pilot in command','authority','air navigation order','ano'],
+            type: 'strength',
+            priority: 'medium',
+            message: 'COMMANDER\'S AUTHORITY — document that the diversion was a commander\'s decision under statutory authority. The Air Navigation Order grants absolute authority to the commander for safety of the aircraft. This should be explicit in the commander\'s report.'
+          },
+          {
+            keywords: ['standby','spare aircraft','replacement','positioning','held','available'],
+            type: 'strength',
+            priority: 'medium',
+            message: 'CONTINGENCY DOCUMENTED — standby or replacement aircraft availability strengthens Limb 2 by demonstrating the carrier was positioned to recover. Document when standby was activated and what its availability position was.'
+          },
+          {
+            keywords: ['crew','fdp','duty','hours','flight time','out of hours','could not operate','rest'],
+            type: 'cascade',
+            priority: 'medium',
+            message: 'CASCADE DETECTED — crew FDP issue mentioned within the weather context. If weather delay caused crew to exhaust flight duty period, document the cascade clearly: weather event → delay → FDP limit reached. The root extraordinary event (weather) establishes Limb 1 for the FDP cascade.'
+          },
+          {
+            keywords: ['atfm','eurocontrol','ctot','slot','regulation','flow'],
+            type: 'cascade',
+            priority: 'medium',
+            message: 'CASCADE DETECTED — ATFM regulation mentioned alongside weather. Establish whether the ATFM regulation was a consequence of the weather (airport ground stop → Eurocontrol regulation) or a separate event. Each link in the chain needs its own documentation.'
+          }
+        ]
+      },
+
+      atfm: {
+        rules: [
+          {
+            keywords: ['not all','only us','just us','only our','our flight only','selective','specific to','targeted us'],
+            type: 'weakness',
+            priority: 'high',
+            message: 'MATERIAL WEAKNESS — if the regulation applied only to this carrier and not to all operators on the route, the extraordinary circumstance argument is significantly undermined. ATFM regulations must be network-wide to be clearly extraordinary. Obtain Eurocontrol flight list data for the regulated period to confirm scope.'
+          },
+          {
+            keywords: ['accepted late','delayed acceptance','late filing','filed late','missed slot','slot missed','did not accept','failure to accept'],
+            type: 'weakness',
+            priority: 'high',
+            message: 'LIMB 2 RISK — if the CTOT was accepted late or the slot was missed due to a carrier-side action, this creates an airline contribution to the delay. Under Eglitis (C-294/10), the carrier must take all measures within the ATFM system. Late slot acceptance weakens the RM position.'
+          },
+          {
+            keywords: ['alternative','another route','different airport','reroute','re-route','via','alternative routing'],
+            type: 'action',
+            priority: 'medium',
+            message: 'ALTERNATIVE ROUTING — Eglitis requires consideration of all reasonable measures, including alternative routings. Was an alternative departure airport or routing assessed that would have avoided the regulation? Document the assessment even if alternatives were not viable — the assessment itself is the RM.'
+          },
+          {
+            keywords: ['ctot','regulation number','reg ref','nmoc','network manager','eurocontrol ref'],
+            type: 'strength',
+            priority: 'high',
+            message: 'STRENGTH — specific Eurocontrol regulation reference identified. The regulation notice with reference number is the primary document establishing the extraordinary circumstance. Ensure the exact regulation reference, CTOT time, and affected flight identifier are on record.'
+          },
+          {
+            keywords: ['all carriers','all flights','all operators','network-wide','sector-wide','everyone affected','same slot','same regulation'],
+            type: 'strength',
+            priority: 'high',
+            message: 'STRENGTH — network-wide impact documented. Confirmation that the regulation applied to all carriers on the route significantly strengthens Limb 1. Third-party flight tracking showing all operators affected provides independent corroboration.'
+          },
+          {
+            keywords: ['crew','fdp','duty','hours','standby','out of hours'],
+            type: 'cascade',
+            priority: 'medium',
+            message: 'CASCADE — ATFM delay leading to crew FDP exhaustion. Establish the precise timeline: CTOT issued → delay accrued → FDP limit approached → standby position. Each step needs documentation. The ATFM regulation is Limb 1; the FDP cascade must be shown as a direct consequence.'
+          }
+        ]
+      },
+
+      birdstrike: {
+        rules: [
+          {
+            keywords: ['no damage','minor damage','not damaged','no visible damage','aircraft serviceable','cleared serviceable','inspected ok'],
+            type: 'weakness',
+            priority: 'high',
+            message: 'CRITICAL ISSUE — if the aircraft was not damaged or was immediately cleared as serviceable, the delay cannot be attributed to the birdstrike as an extraordinary circumstance (Pešková C-315/15). The extraordinary circumstance is the collision event; if it caused no operationally relevant consequence, Limb 1 may fail. Document why operations could not continue despite serviceability.'
+          },
+          {
+            keywords: ['other birds','wildlife','habitat','known','regular','history','previous strike','common'],
+            type: 'weakness',
+            priority: 'medium',
+            message: 'FORESEEABILITY — if birdstrike risk at this aerodrome was known and documented, the question arises whether the carrier had taken appropriate precautions. Review whether the airport had an adequate wildlife hazard management programme and whether the carrier had been notified of elevated risk.'
+          },
+          {
+            keywords: ['mor','mandatory occurrence report','safety report','filed','submitted','reported'],
+            type: 'strength',
+            priority: 'high',
+            message: 'STRENGTH — MOR filed. The mandatory occurrence report is the primary contemporaneous document for a birdstrike. Contemporaneous filing is critical — reports filed significantly later will be challenged. Confirm the date/time of filing.'
+          },
+          {
+            keywords: ['engineer','inspection','engineer decision','unserviceable','grounded','aog','maintenance'],
+            type: 'strength',
+            priority: 'high',
+            message: 'STRENGTH — engineering unserviceability documented. The grounding decision must be on the engineer\'s authority, not just the commander\'s assessment. Ensure the maintenance event log shows the engineer\'s determination that the aircraft was unfit to operate, with the specific finding.'
+          },
+          {
+            keywords: ['runway','closed','inspection','fod','debris','swept'],
+            type: 'action',
+            priority: 'medium',
+            message: 'RUNWAY INSPECTION — if the birdstrike caused a runway inspection or temporary closure, obtain ATC records and the airport authority\'s inspection record. This supports the extraordinary circumstance argument and establishes ATC involvement.'
+          }
+        ]
+      },
+
+      technical: {
+        rules: [
+          {
+            keywords: ['happened before','previous','recurring','known issue','known defect','history of','happened again','same fault','repeated'],
+            type: 'weakness',
+            priority: 'high',
+            message: 'CRITICAL WEAKNESS — a recurring or previously known defect significantly undermines the extraordinary circumstance argument under Wallentin-Hermann (C-549/07). Technical faults inherent in the airline\'s operations are not extraordinary. Document whether this defect type had occurred on this or other aircraft in the fleet and what action was taken.'
+          },
+          {
+            keywords: ['mel','deferred','deferral','could defer','deferrable','cat b','cat c'],
+            type: 'weakness',
+            priority: 'high',
+            message: 'MEL DEFERRAL — if the defect was deferrable under the MEL but was not deferred, the decision to ground the aircraft needs clear justification. The MEL exists to allow operations to continue with certain defects. A decision not to use it when it was available weakens the RM position.'
+          },
+          {
+            keywords: ['no spare','no replacement','no aircraft','no aog cover','could not find','unavailable'],
+            type: 'weakness',
+            priority: 'medium',
+            message: 'REPLACEMENT AIRCRAFT — inability to source a replacement quickly will be scrutinised. Under Wallentin-Hermann, the carrier must take all measures including exhausting all resources (human, material, financial). Document the search for replacement aircraft: which bases were checked, what was the availability position, why alternatives were not viable.'
+          },
+          {
+            keywords: ['hidden','undiscovered','latent','manufacturing','factory','production defect','not detectable','could not have known','undetectable'],
+            type: 'strength',
+            priority: 'high',
+            message: 'POTENTIAL EXTRAORDINARY CIRCUMSTANCE — hidden manufacturing defects or latent faults not discoverable by standard maintenance procedures represent one of the few viable extraordinary circumstance arguments for a technical defect. Document: when the defect manifested, what maintenance had been carried out, why the defect was not detectable in advance.'
+          },
+          {
+            keywords: ['tech log','journey log','engineer signed','released','certification','maintenance release'],
+            type: 'strength',
+            priority: 'medium',
+            message: 'STRENGTH — technical log entry documented. The tech log is a contemporaneous airworthiness record. Ensure it records: the defect description, the engineer\'s assessment, and the decision (ground / defer / release). This is the primary document for any technical defence.'
+          }
+        ]
+      },
+
+      'third-party-ia': {
+        rules: [
+          {
+            keywords: ['some flights operated','operated some','some services','partial operation','not all cancelled','selected flights'],
+            type: 'action',
+            priority: 'high',
+            message: 'SELECTION CRITERIA — if the carrier operated some services during the industrial action, the selection criteria for which flights operated must be clearly documented and defensible. Inconsistent or unexplained selection will be challenged. Document the basis for each operational decision made during the action.'
+          },
+          {
+            keywords: ['france','french','dgac','direction générale','snpl','cgt','cfdt'],
+            type: 'action',
+            priority: 'high',
+            message: 'FRENCH IA REQUIREMENTS — for French strikes affecting ATC, the carrier must have filed its schedule with the DGAC within the required notice period. Failure to file correctly can expose the carrier to liability for Art 9 care costs even where compensation is not due. Confirm the DGAC filing was made and on time.'
+          },
+          {
+            keywords: ['no notice','without notice','sudden','unexpected','surprise','unannounced'],
+            type: 'strength',
+            priority: 'high',
+            message: 'STRENGTH — unannounced / wildcat action. Where third-party industrial action was unannounced, the carrier had no opportunity to prepare contingency, strengthening both Limb 1 and Limb 2. Confirm the timeline of when the action was notified and when it took effect.'
+          },
+          {
+            keywords: ['government','official','national','authority','ministry','confirmed','declared'],
+            type: 'strength',
+            priority: 'high',
+            message: 'STRENGTH — government / authority confirmation. Official confirmation of the industrial action by a national authority or aviation regulator is strong primary evidence. This establishes the action was a formally recognised third-party event, not an operational dispute internal to one carrier.'
+          }
+        ]
+      },
+
+      'own-ia': {
+        rules: [
+          {
+            keywords: ['planned','announced','notice','warned','known','scheduled','pre-notified','two week','five day'],
+            type: 'weakness',
+            priority: 'high',
+            message: 'CRITICAL — planned industrial action with notice is extremely difficult to characterise as extraordinary. The carrier had advance warning and time to negotiate or prepare contingency. Under Krüsemann (C-195/17), the distinction between planned and wildcat action is legally significant. Consider whether a settle position is appropriate.'
+          },
+          {
+            keywords: ['wildcat','unofficial','spontaneous','without notice','sudden','unexpected','immediate','unannounced'],
+            type: 'strength',
+            priority: 'high',
+            message: 'WILDCAT / SPONTANEOUS ACTION — Krüsemann (C-195/17) treated spontaneous wildcat strikes more favourably as extraordinary circumstances. If the action was unannounced and without prior indication, document this clearly. The timeline from first indication to operational impact is critical evidence.'
+          },
+          {
+            keywords: ['negotiation','talks','acas','arbitration','mediation','tried to resolve','offered','proposal'],
+            type: 'strength',
+            priority: 'medium',
+            message: 'NEGOTIATION EFFORTS — documenting the carrier\'s genuine attempts to resolve the dispute through negotiation strengthens the Limb 2 position. Reasonable measures include good-faith engagement with the dispute. Compile all correspondence, offers made, and the union\'s responses.'
+          },
+          {
+            keywords: ['all cancelled','entire operation','complete shutdown','no flights','all grounded'],
+            type: 'action',
+            priority: 'medium',
+            message: 'SCALE OF IMPACT — where the entire operation was affected, document the specific staff groups involved, their functions, and why no partial operation was possible. This establishes that the carrier had no reasonable means of partial recovery.'
+          }
+        ]
+      },
+
+      medical: {
+        rules: [
+          {
+            keywords: ['minor','not serious','recovered','sat down','felt better','refused help','declined medical'],
+            type: 'weakness',
+            priority: 'high',
+            message: 'SEVERITY QUESTION — if the medical situation was minor or the passenger recovered quickly, the proportionality of the diversion decision may be questioned. The commander\'s report must clearly articulate why, at the moment of decision, diversion was the only safe option. Medical radio consultation strengthens the justification.'
+          },
+          {
+            keywords: ['medical radio','medlink','med radio','ground doctor','doctor advised','medical advice','physician'],
+            type: 'strength',
+            priority: 'high',
+            message: 'STRENGTH — in-flight medical consultation documented. Where the commander sought professional medical advice via medical radio and was advised to divert, this substantially closes both the extraordinary circumstance and proportionality questions. Obtain the consultation record with time and advice given.'
+          },
+          {
+            keywords: ['airport medical','paramedics','ambulance','hospital','met by medical','medical team boarded'],
+            type: 'strength',
+            priority: 'high',
+            message: 'STRENGTH — medical authority response documented. The medical team response at the diversion aerodrome independently validates the severity of the situation. Obtain the airport medical team\'s record / ATLS report. This is independent corroboration that the diversion was clinically justified.'
+          },
+          {
+            keywords: ['replacement','spare','positioning','next crew','standby crew','next aircraft','recovery'],
+            type: 'action',
+            priority: 'medium',
+            message: 'RECOVERY RM — the cascade delay after the diversion requires its own RM documentation. Was replacement crew / aircraft sourced as quickly as reasonably possible? Art 9 care obligations run from the diversion. Document the exact timeline of the recovery effort.'
+          }
+        ]
+      },
+
+      security: {
+        rules: [
+          {
+            keywords: ['carrier decision','our decision','we decided','decided to','our call','precautionary','discretionary'],
+            type: 'weakness',
+            priority: 'high',
+            message: 'CRITICAL — if the security response was a carrier discretionary decision rather than an external authority mandate, the extraordinary circumstance argument is significantly weakened. The extraordinary circumstance is a threat or authority directive, not the carrier\'s own precautionary response. Establish what external authority required the action taken.'
+          },
+          {
+            keywords: ['police','security authority','instructed by','directed by','authority required','police required','law enforcement','national security'],
+            type: 'strength',
+            priority: 'high',
+            message: 'STRENGTH — external authority mandate documented. Police or security authority direction that required the operational response is the primary document establishing the extraordinary circumstance. The authority\'s written instruction or incident reference should be obtained.'
+          },
+          {
+            keywords: ['bomb threat','security threat','suspicious','item found','device','threat received'],
+            type: 'strength',
+            priority: 'medium',
+            message: 'THREAT DOCUMENTED — ensure the nature of the security threat is documented in the commander\'s report and the air safety report. The report should be specific about when the threat was received, by whom, and what the operational response was.'
+          }
+        ]
+      },
+
+      'disruptive-pax': {
+        rules: [
+          {
+            keywords: ['boarding','check-in','warned','behaviour before','indicated before','previous warning','at gate'],
+            type: 'weakness',
+            priority: 'high',
+            message: 'PRE-BOARDING BEHAVIOUR — if the passenger displayed disruptive behaviour before boarding that was observed by staff, the question arises why they were permitted to board. This is a significant risk point — the claimant may argue the disruption was foreseeable and preventable. Document staff observations and the boarding decision.'
+          },
+          {
+            keywords: ['immediately','straight away','quickly','without delay','fast response','promptly'],
+            type: 'strength',
+            priority: 'medium',
+            message: 'STRENGTH — prompt response documented. Swift action by crew to address the situation and make the diversion decision demonstrates proportionate and reasonable management. Timeline documentation is important — the faster the commander acted once the situation was assessed, the stronger the RM position.'
+          },
+          {
+            keywords: ['crew statement','witness','saw','observed','can confirm','will confirm','statement taken'],
+            type: 'strength',
+            priority: 'high',
+            message: 'STRENGTH — crew witness statements obtained. Contemporaneous statements from crew members who observed the behaviour are critical. They must be taken as close to the event as possible. Delay in obtaining statements significantly reduces their evidential weight.'
+          },
+          {
+            keywords: ['police','arrested','offloaded','removed','escort','cuffed','restrained','handcuffed'],
+            type: 'strength',
+            priority: 'high',
+            message: 'STRENGTH — police involvement documented. Arrest or removal of the passenger by police provides independent third-party corroboration of the severity of the behaviour. Obtain the police incident reference and records.'
+          }
+        ]
+      },
+
+      'ground-damage': {
+        rules: [
+          {
+            keywords: ['our fault','carrier fault','our staff','our ground','our handling','we caused','pilot error','pushback error'],
+            type: 'weakness',
+            priority: 'high',
+            message: 'CRITICAL — if the damage was caused by the carrier\'s own staff or ground operation, this is NOT an extraordinary circumstance. Ground damage is only extraordinary where caused by a third-party ground handler acting independently. Establish clearly who caused the damage and their contractual relationship to the carrier.'
+          },
+          {
+            keywords: ['handler report','handler incident','ground handler','handling agent','gha','dnata','swissport','menzies','globe','aviance'],
+            type: 'strength',
+            priority: 'high',
+            message: 'STRENGTH — third-party handler involvement documented. The ground handler\'s incident report is the primary document. Ensure it is obtained and preserved immediately — handlers may amend or dispute accounts later. The report should identify the specific equipment, operator, and sequence of events.'
+          },
+          {
+            keywords: ['cctv','camera','footage','video','recorded','witnessed','caught on'],
+            type: 'strength',
+            priority: 'high',
+            message: 'CCTV / VIDEO EVIDENCE — if the incident was captured on CCTV, preserve the footage immediately by formal request to the airport authority. CCTV is typically overwritten within 30 days. This is independent objective evidence of how the damage occurred and who caused it.'
+          },
+          {
+            keywords: ['disputed','denying','not accepting','pushed back','not their fault','handler disputes'],
+            type: 'action',
+            priority: 'high',
+            message: 'DISPUTED LIABILITY — if the handler disputes their responsibility, escalate immediately. Request airport apron records, CCTV, and any witness statements from airport staff. A disputed handler report significantly complicates the extraordinary circumstance argument — if liability is not established, the damage could be treated as the carrier\'s operational issue.'
+          }
+        ]
+      },
+
+      'airport-closure': {
+        rules: [
+          {
+            keywords: ['scheduled','planned','known','notam advance','advance notice','pre-announced','pre-planned'],
+            type: 'weakness',
+            priority: 'medium',
+            message: 'PRE-NOTIFIED CLOSURE — if the closure was pre-announced by NOTAM, the question arises whether the carrier could have operated before the closure, or offered alternative routing. Pre-notified events raise Limb 2 questions about proactive measures. Document any assessment of alternatives made before the closure took effect.'
+          },
+          {
+            keywords: ['notam','number','reference','issued','aerodrome notice'],
+            type: 'strength',
+            priority: 'high',
+            message: 'STRENGTH — NOTAM identified. Obtain the specific NOTAM reference, the issuing authority, the notified period, and the reason for closure. The NOTAM is the primary legal document establishing the extraordinary circumstance. Attach it to the evidence pack.'
+          },
+          {
+            keywords: ['all','every','no flights','none operating','complete closure','everyone diverted','all carriers'],
+            type: 'strength',
+            priority: 'high',
+            message: 'STRENGTH — complete closure affecting all operators. Third-party flight tracking showing no aircraft operated to/from the aerodrome during the closure period is powerful corroboration. This establishes the closure was total and not carrier-selective.'
+          }
+        ]
+      },
+
+      'natural-disaster': {
+        rules: [
+          {
+            keywords: ['art 9','meals','accommodation','hotel','vouchers','care','looked after','welfare'],
+            type: 'strength',
+            priority: 'high',
+            message: 'ART 9 COMPLIANCE — McDonagh (C-12/11) confirmed Art 9 care obligations apply without financial limit during natural disasters even when compensation is not payable. Document all care provided: meals, accommodation, transport, communications. Failure to provide adequate Art 9 care is a separate liability even where compensation is successfully defended.'
+          },
+          {
+            keywords: ['warning','forecast','expected','predicted','known in advance','volcano','eruption warning','hurricane warning','flood warning'],
+            type: 'weakness',
+            priority: 'medium',
+            message: 'ADVANCE WARNING — if the natural event was forecast or warned in advance, the carrier\'s contingency response will be scrutinised. The question is not whether the event was extraordinary (it was), but whether reasonable measures were taken in response to available advance warning. Proactive cancellation before the event is generally better RM than reactive cancellation during it.'
+          },
+          {
+            keywords: ['recovering','improving','conditions cleared','back to normal','reopened','resumed','flights restarted'],
+            type: 'action',
+            priority: 'medium',
+            message: 'RECOVERY PERIOD — once conditions improved sufficiently to allow operations to resume, the extraordinary circumstance period ends and the RM clock restarts. The carrier must demonstrate it resumed operations at the earliest reasonable opportunity. Delays in resuming after conditions cleared are not covered by the natural disaster.'
+          }
+        ]
+      },
+
+      'political-unrest': {
+        rules: [
+          {
+            keywords: ['fco','foreign office','travel advice','travel advisory','government advice','gov.uk','state department'],
+            type: 'strength',
+            priority: 'high',
+            message: 'STRENGTH — government travel advisory referenced. The FCO or national government travel advisory is the strongest primary document for political unrest. It represents an official government assessment that travel is unsafe — this is independent of the carrier\'s own judgement and very difficult to challenge.'
+          },
+          {
+            keywords: ['our decision','carrier decided','we chose','commercial decision','we suspended','we cancelled'],
+            type: 'weakness',
+            priority: 'high',
+            message: 'CARRIER DISCRETION RISK — if the suspension of operations was a carrier commercial decision rather than a response to an official restriction (government advisory, airspace closure, NOTAM), the extraordinary circumstance argument is weaker. Establish what formal external trigger necessitated the operational decision.'
+          },
+          {
+            keywords: ['known','expected','anticipated','tensions','reported','news','weeks before','prior'],
+            type: 'weakness',
+            priority: 'medium',
+            message: 'FORESEEABILITY — if political tensions in the region were reported in the news or known to the carrier in advance, the question arises whether adequate contingency was in place. The carrier\'s risk assessment process and any pre-event contingency planning will be scrutinised under Limb 2.'
+          }
+        ]
+      },
+
+      'crew-fdp': {
+        rules: [
+          {
+            keywords: ['no standby','standby unavailable','no spare crew','exhausted standby','no crew available','all crew used','all on duty'],
+            type: 'action',
+            priority: 'high',
+            message: 'STANDBY EXHAUSTION — under Eglitis (C-294/10), the carrier must have adequate standby cover. If standby was genuinely exhausted, document why: how many crew were on standby, how many had already been deployed, and what the demand was across the operation. If standby was never held, this is a significant RM weakness.'
+          },
+          {
+            keywords: ['because of weather','because of atfm','due to diversion','caused by','as a result of','following'],
+            type: 'strength',
+            priority: 'high',
+            message: 'STRENGTH — FDP cascade from extraordinary upstream event. If FDP was reached because of an earlier extraordinary event (weather, ATFM, diversion), document the cascade chain explicitly. The root extraordinary event establishes Limb 1 for the entire cascade, including the FDP constraint. Each link must be evidenced.'
+          },
+          {
+            keywords: ['running late','late departure','late start','delay on previous','previous sector','prior sector','rotation'],
+            type: 'weakness',
+            priority: 'medium',
+            message: 'OPERATIONAL LATE-RUNNING — if FDP was reached primarily through routine operational late-running (minor delays accumulating) rather than an upstream extraordinary event, Limb 1 may not be established. Distinguish between extraordinary-event-caused delay and ordinary operational delay in the crew timeline.'
+          },
+          {
+            keywords: ['frms','commander discretion','discretion','exceed','extension','authority to exceed'],
+            type: 'action',
+            priority: 'medium',
+            message: 'FRMS / COMMANDER DISCRETION — if FRMS extension or commander discretion to exceed FDP limits was available and not used, the decision must be justified. The reason for not using available FRMS authority should be documented — typically crew fatigue assessment. Unused FRMS authority without documented justification is a risk point.'
+          },
+          {
+            keywords: ['rest','rested','adequate rest','proper rest','had rest','came off rest'],
+            type: 'strength',
+            priority: 'medium',
+            message: 'STRENGTH — pre-duty rest documented. Evidence that crew had their full statutory rest period before reporting for duty demonstrates the FDP limit was not approached due to fatigue management failure. Crew duty records showing the full preceding rest period should be included in the evidence pack.'
+          }
+        ]
+      }
+    };
+
+    function classifyAnnotation(text, dtId) {
+      if (!text || !text.trim() || !dtId || !ANNOTATION_CLASSIFIER[dtId]) return [];
+      const lower = text.toLowerCase();
+      const rules = ANNOTATION_CLASSIFIER[dtId].rules || [];
+      const flags = [];
+      rules.forEach(rule => {
+        const matched = rule.keywords.some(kw => lower.includes(kw.toLowerCase()));
+        if (matched) {
+          flags.push({ type: rule.type, priority: rule.priority, message: rule.message });
+        }
+      });
+      // Sort: high priority first, then by type (weakness > action > cascade > strength)
+      const typeOrder = { weakness:0, action:1, cascade:2, strength:3 };
+      flags.sort((a,b) => {
+        if (a.priority !== b.priority) return a.priority === 'high' ? -1 : 1;
+        return (typeOrder[a.type]||4) - (typeOrder[b.type]||4);
+      });
+      return flags;
+    }
+
     function onAnnotationInput(nodeIdx, el) {
       if (!nodeAnnotations[nodeIdx]) nodeAnnotations[nodeIdx] = { text:'', evidenceStatuses:{} };
       nodeAnnotations[nodeIdx].text = el.value;
-      // Show RM surface if text entered
+
+      // Run keyword classifier
+      const flags = classifyAnnotation(el.value, currentDT ? currentDT.id : null);
+
+      // Update RM surface
       const rmEl = document.getElementById('ev-rm-' + nodeIdx);
-      if (rmEl) rmEl.classList.toggle('visible', el.value.trim().length > 0);
+      if (rmEl) {
+        if (!el.value.trim()) {
+          rmEl.classList.remove('visible');
+          rmEl.innerHTML = '';
+        } else {
+          rmEl.classList.add('visible');
+          const flagColour = { strength:'var(--defend)', weakness:'var(--settle)', action:'var(--conditions)', cascade:'var(--judgment)' };
+          const flagBg = { strength:'var(--defend-bg)', weakness:'var(--settle-bg)', action:'var(--conditions-bg)', cascade:'var(--judgment-bg)' };
+          const flagBorder = { strength:'var(--defend-border)', weakness:'var(--settle-border)', action:'var(--conditions-border)', cascade:'var(--judgment-border)' };
+          const flagLabel = { strength:'Strength', weakness:'⚠ Weakness', action:'Action Required', cascade:'Cascade Detected' };
+
+          let html = '';
+          if (flags.length > 0) {
+            html += `<div class="ev-rm-header" style="margin-bottom:8px">Engine Analysis</div>`;
+            flags.forEach(f => {
+              html += `<div style="
+                border:1px solid ${flagBorder[f.type]};
+                background:${flagBg[f.type]};
+                border-radius:var(--r-md);
+                padding:var(--sp-sm) var(--sp-md);
+                margin-bottom:6px;
+              ">
+                <div style="font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:${flagColour[f.type]};margin-bottom:3px">${flagLabel[f.type]}</div>
+                <div style="font-size:12px;font-family:var(--font-spectral,serif);color:var(--ink-primary);line-height:1.5">${f.message}</div>
+              </div>`;
+            });
+            // Add generic RM points below
+            const genericPoints = (RM_SURFACE[currentDT ? currentDT.id : ''] || []);
+            if (genericPoints.length > 0) {
+              html += `<div class="ev-rm-header" style="margin-top:10px;margin-bottom:6px">General RM Checklist</div>`;
+              genericPoints.forEach(p => {
+                html += `<div class="ev-rm-item">${p}</div>`;
+              });
+            }
+          } else {
+            // No flags — show generic RM points
+            const genericPoints = (RM_SURFACE[currentDT ? currentDT.id : ''] || []);
+            if (genericPoints.length > 0) {
+              html += `<div class="ev-rm-header" style="margin-bottom:6px">RM Considerations</div>`;
+              genericPoints.forEach(p => {
+                html += `<div class="ev-rm-item">${p}</div>`;
+              });
+            }
+          }
+          rmEl.innerHTML = html;
+        }
+      }
+
       updateNodeStatus(nodeIdx);
       renderPass3FromNodes();
     }
