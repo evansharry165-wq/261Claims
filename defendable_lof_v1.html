@@ -1,0 +1,2199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DefendAble — Line of Flying Verification</title>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Spectral:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:          #0D1117;
+  --surface:     #161B23;
+  --surface-2:   #1C2230;
+  --surface-3:   #222A38;
+  --border:      #2A3347;
+  --border-2:    #354060;
+  --text:        #E2DFD8;
+  --text-2:      #9BA5B4;
+  --text-3:      #5C6575;
+  --accent:      #4B7BEC;
+  --accent-glow: rgba(75,123,236,0.15);
+  --green:       #2DC87A;
+  --green-bg:    rgba(45,200,122,0.08);
+  --green-border:rgba(45,200,122,0.25);
+  --amber:       #E8A020;
+  --amber-bg:    rgba(232,160,32,0.08);
+  --amber-border:rgba(232,160,32,0.25);
+  --red:         #F05252;
+  --red-bg:      rgba(240,82,82,0.08);
+  --red-border:  rgba(240,82,82,0.25);
+  --purple:      #9B72CF;
+  --purple-bg:   rgba(155,114,207,0.08);
+  --purple-border:rgba(155,114,207,0.25);
+  --sidebar-w:   310px;
+  --cmdbar-h:    130px;
+  --evpanel-w:   420px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  line-height: 1.5;
+  overflow: hidden;
+}
+
+/* ─── NAV ─────────────────────────────────────────────────── */
+.nav {
+  height: 48px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  gap: 0;
+  position: relative;
+  z-index: 100;
+}
+.nav-brand {
+  font-family: 'Libre Baskerville', serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: 0.03em;
+  margin-right: 8px;
+}
+.nav-brand span { color: var(--accent); }
+.nav-sep { color: var(--text-3); margin: 0 10px; }
+.nav-mode {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--amber);
+  background: var(--amber-bg);
+  border: 1px solid var(--amber-border);
+  border-radius: 4px;
+  padding: 2px 8px;
+  letter-spacing: 0.06em;
+}
+.nav-right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.nav-case {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--text-2);
+}
+.nav-btn {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  color: var(--text-2);
+  border-radius: 5px;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.nav-btn:hover { background: var(--surface-3); color: var(--text); border-color: var(--border-2); }
+.nav-btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+.nav-btn.primary:hover { background: #5B8BF5; }
+
+/* ─── SHELL ────────────────────────────────────────────────── */
+.shell {
+  display: flex;
+  height: calc(100vh - 48px - var(--cmdbar-h));
+  position: relative;
+  overflow: hidden;
+}
+
+/* ─── SIDEBAR ──────────────────────────────────────────────── */
+.sidebar {
+  width: var(--sidebar-w);
+  min-width: var(--sidebar-w);
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.sidebar-header {
+  padding: 14px 16px 10px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.sidebar-header-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-3);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.sidebar-flight {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: 0.04em;
+}
+.sidebar-route {
+  font-size: 12px;
+  color: var(--text-2);
+  margin-top: 3px;
+}
+.chain-meter {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.chain-meter-label {
+  font-size: 11px;
+  color: var(--text-3);
+  white-space: nowrap;
+}
+.chain-meter-bar {
+  flex: 1;
+  height: 4px;
+  background: var(--surface-3);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.chain-meter-fill {
+  height: 100%;
+  border-radius: 2px;
+  background: var(--green);
+  transition: width 0.5s ease;
+}
+.chain-meter-pct {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--green);
+  white-space: nowrap;
+}
+.chain-signal {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 6px;
+  font-size: 11px;
+}
+.chain-signal-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+}
+
+/* ─── LOF TIMELINE ─────────────────────────────────────────── */
+.lof-timeline {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px 0 20px;
+}
+.lof-timeline::-webkit-scrollbar { width: 4px; }
+.lof-timeline::-webkit-scrollbar-track { background: transparent; }
+.lof-timeline::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+.lof-track {
+  position: relative;
+  padding: 0 16px;
+}
+
+/* Vertical line connecting nodes */
+.lof-track::before {
+  content: '';
+  position: absolute;
+  left: 28px;
+  top: 16px;
+  bottom: 16px;
+  width: 1px;
+  background: var(--border);
+}
+
+.lof-node-wrap {
+  position: relative;
+  margin-bottom: 4px;
+}
+
+.lof-node {
+  position: relative;
+  padding: 10px 12px 10px 36px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.15s;
+  background: transparent;
+  user-select: none;
+}
+.lof-node:hover { background: var(--surface-2); border-color: var(--border); }
+.lof-node.active {
+  background: var(--surface-2);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent-glow), inset 0 0 0 1px rgba(75,123,236,0.1);
+}
+
+/* Status indicator dot on the track */
+.node-dot {
+  position: absolute;
+  left: -24px;
+  top: 14px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px solid var(--bg);
+  z-index: 1;
+}
+.node-dot.confirmed { background: var(--green); }
+.node-dot.contested { background: var(--amber); }
+.node-dot.weak      { background: var(--red); }
+.node-dot.pending   { background: var(--text-3); }
+.node-dot.flagged   { background: var(--purple); }
+
+.node-type-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: var(--text-3);
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+.node-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.3;
+}
+.node-time {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--text-3);
+  margin-top: 3px;
+}
+.node-ev-bar {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 5px;
+}
+.ev-pill {
+  font-size: 10px;
+  border-radius: 3px;
+  padding: 1px 5px;
+  font-weight: 500;
+}
+.ev-pill.ok    { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
+.ev-pill.miss  { background: var(--red-bg);   color: var(--red);   border: 1px solid var(--red-border); }
+.ev-pill.req   { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber-border); }
+
+.lof-node-connector {
+  margin-left: 12px;
+  height: 6px;
+  width: 1px;
+  background: var(--border);
+}
+
+/* ─── MAIN DETAIL PANEL ────────────────────────────────────── */
+.main {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+.main::-webkit-scrollbar { width: 5px; }
+.main::-webkit-scrollbar-track { background: transparent; }
+.main::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+.detail-header {
+  padding: 16px 24px 12px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.detail-status-badge {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 3px 9px;
+  border-radius: 4px;
+  margin-top: 2px;
+  white-space: nowrap;
+}
+.detail-status-badge.confirmed { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
+.detail-status-badge.contested { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber-border); }
+.detail-status-badge.weak      { background: var(--red-bg);   color: var(--red);   border: 1px solid var(--red-border); }
+.detail-status-badge.pending   { background: var(--surface-3); color: var(--text-3); border: 1px solid var(--border); }
+
+.detail-title-block { flex: 1; }
+.detail-node-type {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  color: var(--text-3);
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.detail-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.2;
+}
+.detail-subtitle {
+  font-size: 12px;
+  color: var(--text-2);
+  margin-top: 4px;
+}
+
+.detail-body {
+  flex: 1;
+  padding: 20px 24px;
+}
+
+/* Tabs */
+.detail-tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 20px;
+}
+.detail-tab {
+  padding: 8px 16px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-3);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.15s;
+  margin-bottom: -1px;
+}
+.detail-tab:hover { color: var(--text-2); }
+.detail-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* Facts table */
+.facts-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.facts-table tr { border-bottom: 1px solid var(--border); }
+.facts-table tr:last-child { border-bottom: none; }
+.facts-table td {
+  padding: 8px 0;
+  vertical-align: top;
+  line-height: 1.4;
+}
+.facts-table td:first-child {
+  width: 200px;
+  min-width: 160px;
+  font-size: 11px;
+  color: var(--text-3);
+  padding-right: 16px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+.facts-table td:last-child {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--text);
+}
+.facts-table .highlight-val {
+  color: var(--red);
+  font-weight: 600;
+}
+.facts-table .good-val {
+  color: var(--green);
+}
+
+/* Evidence items */
+.ev-section-title {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-3);
+  margin-bottom: 10px;
+}
+
+.ev-items { display: flex; flex-direction: column; gap: 6px; }
+
+.ev-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.ev-item:hover { border-color: var(--border-2); background: var(--surface-3); }
+.ev-item.viewing { border-color: var(--accent); background: var(--accent-glow); }
+
+.ev-item-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  flex-shrink: 0;
+}
+.ev-item-icon.metar    { background: rgba(75,123,236,0.15); }
+.ev-item-icon.cfmu     { background: rgba(155,114,207,0.15); }
+.ev-item-icon.crew     { background: rgba(45,200,122,0.12); }
+.ev-item-icon.ops      { background: rgba(232,160,32,0.12); }
+.ev-item-icon.report   { background: rgba(232,160,32,0.12); }
+.ev-item-icon.airport  { background: rgba(75,123,236,0.12); }
+.ev-item-icon.notam    { background: rgba(155,114,207,0.15); }
+.ev-item-icon.care     { background: rgba(45,200,122,0.12); }
+.ev-item-icon.notice   { background: rgba(240,82,82,0.12); }
+.ev-item-icon.atis     { background: rgba(240,82,82,0.12); }
+.ev-item-icon.atc      { background: rgba(240,82,82,0.12); }
+.ev-item-icon.tech-log { background: rgba(45,200,122,0.12); }
+.ev-item-icon.maintenance { background: rgba(45,200,122,0.12); }
+.ev-item-icon.fuelling { background: rgba(75,123,236,0.12); }
+.ev-item-icon.oplog    { background: rgba(232,160,32,0.12); }
+
+.ev-item-text { flex: 1; min-width: 0; }
+.ev-item-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ev-item-source {
+  font-size: 10px;
+  color: var(--text-3);
+  margin-top: 1px;
+}
+.ev-item-status {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+.ev-item-status.available  { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
+.ev-item-status.requested  { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber-border); }
+.ev-item-status.flagged    { background: var(--red-bg);   color: var(--red);   border: 1px solid var(--red-border); }
+
+.ev-view-btn {
+  font-size: 11px;
+  color: var(--accent);
+  background: none;
+  border: 1px solid var(--accent);
+  border-radius: 4px;
+  padding: 3px 8px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s;
+}
+.ev-view-btn:hover { background: var(--accent); color: #fff; }
+
+/* Legal flag */
+.legal-flag {
+  border-radius: 8px;
+  padding: 14px 16px;
+  margin-bottom: 16px;
+}
+.legal-flag.info    { background: var(--purple-bg); border: 1px solid var(--purple-border); }
+.legal-flag.clean   { background: var(--green-bg);  border: 1px solid var(--green-border); }
+.legal-flag.warning { background: var(--amber-bg);  border: 1px solid var(--amber-border); }
+.legal-flag.none-flag { background: var(--surface-2); border: 1px solid var(--border); }
+
+.legal-flag-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.legal-flag-icon { font-size: 14px; }
+.legal-flag-title {
+  font-family: 'Spectral', serif;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+.legal-flag.info    .legal-flag-title { color: var(--purple); }
+.legal-flag.clean   .legal-flag-title { color: var(--green); }
+.legal-flag.warning .legal-flag-title { color: var(--amber); }
+
+.legal-flag-body {
+  font-family: 'Spectral', serif;
+  font-size: 13px;
+  font-style: italic;
+  color: var(--text-2);
+  line-height: 1.6;
+}
+
+/* Confirm button */
+.confirm-row {
+  padding: 14px 24px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--surface);
+  flex-shrink: 0;
+}
+.confirm-btn {
+  background: var(--green);
+  color: #0A1A0F;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.confirm-btn:hover { background: #3ADE8A; }
+.confirm-btn:disabled { background: var(--surface-3); color: var(--text-3); cursor: not-allowed; }
+
+.confirm-btn.confirmed-state {
+  background: var(--surface-3);
+  color: var(--green);
+  border: 1px solid var(--green-border);
+  cursor: default;
+}
+
+.request-ev-btn {
+  background: none;
+  border: 1px solid var(--amber-border);
+  color: var(--amber);
+  border-radius: 6px;
+  padding: 8px 14px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.request-ev-btn:hover { background: var(--amber-bg); }
+
+.confirm-note {
+  font-size: 11px;
+  color: var(--text-3);
+  margin-left: auto;
+}
+
+/* ─── EVIDENCE VIEWER PANEL ────────────────────────────────── */
+.ev-panel {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: var(--evpanel-w);
+  background: var(--surface);
+  border-left: 1px solid var(--border);
+  transform: translateX(100%);
+  transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.ev-panel.open { transform: translateX(0); }
+
+.ev-panel-header {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  flex-shrink: 0;
+}
+.ev-panel-close {
+  background: none;
+  border: none;
+  color: var(--text-3);
+  font-size: 16px;
+  cursor: pointer;
+  padding: 2px;
+  line-height: 1;
+  transition: color 0.1s;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+.ev-panel-close:hover { color: var(--text); }
+.ev-panel-type-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  background: var(--accent-glow);
+  border: 1px solid rgba(75,123,236,0.3);
+  border-radius: 3px;
+  padding: 2px 7px;
+  margin-bottom: 4px;
+  display: inline-block;
+}
+.ev-panel-title {
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.3;
+}
+.ev-panel-ref {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--text-3);
+  margin-top: 3px;
+}
+
+.ev-panel-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+}
+.ev-panel-body::-webkit-scrollbar { width: 4px; }
+.ev-panel-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+.ev-doc-section {
+  margin-bottom: 16px;
+}
+.ev-doc-section-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  margin-bottom: 8px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid var(--border);
+}
+
+.ev-field-row {
+  display: flex;
+  gap: 10px;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(42,51,71,0.5);
+}
+.ev-field-row:last-child { border-bottom: none; }
+.ev-field-label {
+  font-size: 11px;
+  color: var(--text-3);
+  min-width: 140px;
+  flex-shrink: 0;
+  padding-top: 1px;
+}
+.ev-field-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--text);
+  line-height: 1.5;
+  word-break: break-word;
+}
+.ev-field-value.highlight {
+  color: var(--red);
+  font-weight: 600;
+}
+.ev-field-value.good {
+  color: var(--green);
+}
+
+.ev-raw-block {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 10px 12px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--green);
+  margin-bottom: 8px;
+  word-break: break-all;
+  line-height: 1.6;
+}
+
+.ev-relevance-block {
+  background: var(--purple-bg);
+  border: 1px solid var(--purple-border);
+  border-radius: 6px;
+  padding: 10px 12px;
+  font-family: 'Spectral', serif;
+  font-style: italic;
+  font-size: 12px;
+  color: var(--purple);
+  line-height: 1.6;
+  margin-top: 10px;
+}
+.ev-relevance-block strong { font-style: normal; font-weight: 600; }
+
+.ev-metar-record {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 12px;
+  margin-bottom: 8px;
+}
+.ev-metar-record.critical {
+  border-color: var(--red-border);
+  background: var(--red-bg);
+}
+.ev-metar-time {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--accent);
+  margin-bottom: 8px;
+}
+.ev-metar-record.critical .ev-metar-time { color: var(--red); }
+
+.ev-panel-footer {
+  padding: 12px 16px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.ev-source-btn {
+  flex: 1;
+  background: none;
+  border: 1px solid var(--border-2);
+  color: var(--text-2);
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: center;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+.ev-source-btn:hover { background: var(--surface-3); color: var(--text); }
+.ev-confirm-ev-btn {
+  background: var(--green);
+  color: #0A1A0F;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.ev-confirm-ev-btn:hover { background: #3ADE8A; }
+
+/* ─── COMMAND BAR ──────────────────────────────────────────── */
+.cmdbar {
+  height: var(--cmdbar-h);
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  flex-shrink: 0;
+  position: relative;
+}
+.cmd-log {
+  flex: 1;
+  overflow-y: auto;
+  padding: 6px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.cmd-log::-webkit-scrollbar { width: 3px; }
+.cmd-log::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+.cmd-log-line {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  line-height: 1.4;
+  animation: fadein 0.2s ease;
+}
+.cmd-log-line.user  { color: var(--text-2); }
+.cmd-log-line.user::before { content: '› '; color: var(--accent); }
+.cmd-log-line.sys   { color: var(--text-3); }
+.cmd-log-line.sys::before { content: '  '; }
+.cmd-log-line.ok    { color: var(--green); }
+.cmd-log-line.ok::before { content: '✓ '; }
+.cmd-log-line.warn  { color: var(--amber); }
+.cmd-log-line.warn::before { content: '⚠ '; }
+.cmd-log-line.err   { color: var(--red); }
+.cmd-log-line.err::before { content: '✗ '; }
+.cmd-log-line.typing { color: var(--accent); }
+.cmd-log-line.typing::after {
+  content: '▋';
+  animation: blink 0.8s step-end infinite;
+}
+
+@keyframes blink { 0%,100% { opacity:1; } 50% { opacity:0; } }
+@keyframes fadein { from { opacity:0; transform: translateY(4px); } to { opacity:1; transform: none; } }
+
+.cmd-input-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px 10px;
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.cmd-input-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--accent);
+  flex-shrink: 0;
+}
+.cmd-input {
+  flex: 1;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 7px 12px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.15s;
+}
+.cmd-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+.cmd-input::placeholder { color: var(--text-3); }
+.cmd-pull-btn {
+  background: var(--accent);
+  border: none;
+  color: #fff;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.cmd-pull-btn:hover { background: #5B8BF5; }
+.cmd-pull-btn:disabled { background: var(--surface-3); color: var(--text-3); cursor: not-allowed; }
+
+/* ─── EMPTY / WELCOME STATE ───────────────────────────────── */
+.welcome-state {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: var(--text-3);
+  padding: 40px;
+}
+.welcome-icon { font-size: 32px; margin-bottom: 8px; opacity: 0.4; }
+.welcome-title { font-size: 14px; font-weight: 600; color: var(--text-2); }
+.welcome-sub { font-size: 12px; text-align: center; max-width: 280px; line-height: 1.6; }
+
+/* ─── MISC UTILITIES ───────────────────────────────────────── */
+.divider {
+  height: 1px;
+  background: var(--border);
+  margin: 14px 0;
+}
+.mt-12 { margin-top: 12px; }
+.mt-16 { margin-top: 16px; }
+
+/* Request evidence section */
+.ev-request-block {
+  margin-top: 16px;
+  padding: 12px;
+  background: var(--amber-bg);
+  border: 1px solid var(--amber-border);
+  border-radius: 7px;
+}
+.ev-request-title {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--amber);
+  margin-bottom: 6px;
+}
+.ev-request-input {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--amber-border);
+  border-radius: 5px;
+  padding: 6px 10px;
+  font-size: 12px;
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+  outline: none;
+  margin-bottom: 6px;
+}
+.ev-request-input:focus { border-color: var(--amber); }
+.ev-request-input::placeholder { color: var(--text-3); }
+.ev-request-btn {
+  background: var(--amber);
+  color: #0A0800;
+  border: none;
+  border-radius: 5px;
+  padding: 5px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.ev-request-btn:hover { background: #F5B030; }
+
+/* ─── CONFIRM LOF BANNER ───────────────────────────────────── */
+.lof-confirm-banner {
+  margin: 16px 24px;
+  padding: 14px 18px;
+  background: var(--green-bg);
+  border: 1px solid var(--green-border);
+  border-radius: 8px;
+  display: none;
+}
+.lof-confirm-banner.visible { display: block; }
+.lof-confirm-banner-title {
+  font-family: 'Spectral', serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--green);
+  margin-bottom: 6px;
+}
+.lof-confirm-banner-text {
+  font-size: 12px;
+  color: var(--text-2);
+  margin-bottom: 10px;
+  line-height: 1.5;
+}
+.lof-confirm-final-btn {
+  background: var(--green);
+  color: #0A1A0F;
+  border: none;
+  border-radius: 6px;
+  padding: 9px 20px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.lof-confirm-final-btn:hover { background: #3ADE8A; }
+
+/* ─── NODE ADDED ANIMATION ─────────────────────────────────── */
+.lof-node-wrap.new-node {
+  animation: slideInNode 0.4s ease forwards;
+}
+@keyframes slideInNode {
+  from { opacity: 0; transform: translateX(-12px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* ─── CONFIRM OVERLAY ──────────────────────────────────────── */
+.lof-confirmed-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(13,17,23,0.85);
+  z-index: 200;
+  align-items: center;
+  justify-content: center;
+}
+.lof-confirmed-overlay.visible {
+  display: flex;
+  animation: fadein 0.3s ease;
+}
+.lof-confirmed-card {
+  background: var(--surface);
+  border: 1px solid var(--green-border);
+  border-radius: 12px;
+  padding: 36px 40px;
+  max-width: 480px;
+  text-align: center;
+}
+.lof-confirmed-icon { font-size: 40px; margin-bottom: 12px; }
+.lof-confirmed-title {
+  font-family: 'Libre Baskerville', serif;
+  font-size: 20px;
+  color: var(--green);
+  margin-bottom: 8px;
+}
+.lof-confirmed-sub {
+  font-family: 'Spectral', serif;
+  font-style: italic;
+  color: var(--text-2);
+  font-size: 14px;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+.lof-confirmed-meta {
+  background: var(--bg);
+  border-radius: 7px;
+  padding: 12px 16px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--text-2);
+  text-align: left;
+  margin-bottom: 20px;
+  line-height: 2;
+}
+.lof-confirmed-btn {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 7px;
+  padding: 10px 24px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.lof-confirmed-btn:hover { background: #5B8BF5; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <span class="nav-brand">Defend<span>Able</span></span>
+  <span class="nav-sep">|</span>
+  <span class="nav-mode">LOF VERIFICATION — PASS II</span>
+  <div class="nav-right">
+    <span class="nav-case" id="navCase">EZY7253 · PMI–BHX · 16 JUN 2024</span>
+    <button class="nav-btn" onclick="window.history.back()">← Back to Engine</button>
+    <button class="nav-btn primary" id="confirmLofNavBtn" onclick="showConfirmOverlay()" style="display:none">Confirm LOF →</button>
+  </div>
+</nav>
+
+<!-- SHELL -->
+<div class="shell">
+
+  <!-- SIDEBAR: LOF TIMELINE -->
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-header-label">Line of Flying</div>
+      <div class="sidebar-flight" id="sidebarFlight">G-EZFM</div>
+      <div class="sidebar-route" id="sidebarRoute">16 JUN 2024 · GVA → PMI → BHX</div>
+      <div class="chain-meter">
+        <span class="chain-meter-label">Chain</span>
+        <div class="chain-meter-bar"><div class="chain-meter-fill" id="chainFill" style="width:0%"></div></div>
+        <span class="chain-meter-pct" id="chainPct">0%</span>
+      </div>
+      <div class="chain-signal">
+        <div class="chain-signal-dot" id="chainDot" style="background:var(--text-3)"></div>
+        <span id="chainSignalText" style="font-size:11px;color:var(--text-3)">Awaiting confirmation</span>
+      </div>
+    </div>
+
+    <div class="lof-timeline">
+      <div class="lof-track" id="lofTrack">
+        <!-- Nodes rendered by JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN DETAIL PANEL -->
+  <div class="main" id="mainPanel">
+    <!-- Welcome state -->
+    <div class="welcome-state" id="welcomeState">
+      <div class="welcome-icon">✈</div>
+      <div class="welcome-title">Select a LOF node to begin verification</div>
+      <div class="welcome-sub">Click any node in the timeline to view facts, evidence, and legal analysis for that sector or event.</div>
+    </div>
+
+    <!-- Detail content (hidden until node selected) -->
+    <div id="detailContent" style="display:none; flex:1; display:none; flex-direction:column;">
+      <div class="detail-header" id="detailHeader">
+        <div class="detail-title-block">
+          <div class="detail-node-type" id="detailNodeType"></div>
+          <div class="detail-title" id="detailTitle"></div>
+          <div class="detail-subtitle" id="detailSubtitle"></div>
+        </div>
+        <div class="detail-status-badge" id="detailStatusBadge"></div>
+      </div>
+
+      <div class="detail-body">
+        <!-- Tabs -->
+        <div class="detail-tabs">
+          <div class="detail-tab active" onclick="switchTab('facts')">Facts &amp; Record</div>
+          <div class="detail-tab" onclick="switchTab('evidence')">Evidence <span id="evCountBadge"></span></div>
+          <div class="detail-tab" onclick="switchTab('legal')">Legal Analysis</div>
+        </div>
+
+        <!-- Facts tab -->
+        <div class="tab-content active" id="tab-facts">
+          <table class="facts-table" id="factsTable"></table>
+        </div>
+
+        <!-- Evidence tab -->
+        <div class="tab-content" id="tab-evidence">
+          <div class="ev-section-title">Documents &amp; Records</div>
+          <div class="ev-items" id="evItems"></div>
+          <div class="ev-request-block mt-16">
+            <div class="ev-request-title">Request missing evidence</div>
+            <input class="ev-request-input" id="evRequestInput" placeholder="e.g. ATIS recording 1500Z, ATC comms EZY7253 approach...">
+            <button class="ev-request-btn" onclick="logEvidenceRequest()">Log Request →</button>
+          </div>
+        </div>
+
+        <!-- Legal tab -->
+        <div class="tab-content" id="tab-legal">
+          <div id="legalFlagContent"></div>
+        </div>
+
+        <!-- Confirm LOF banner (shows when enough confirmed) -->
+        <div class="lof-confirm-banner" id="lofConfirmBanner">
+          <div class="lof-confirm-banner-title">✓ Line of Flying ready to confirm</div>
+          <div class="lof-confirm-banner-text">All critical nodes have been reviewed. Confirming the LOF locks the factual record and triggers the legal analysis pass against verified facts — not the original ICC narrative.</div>
+          <button class="lof-confirm-final-btn" onclick="showConfirmOverlay()">Confirm Line of Flying and proceed to legal analysis →</button>
+        </div>
+      </div>
+
+      <div class="confirm-row" id="confirmRow">
+        <button class="confirm-btn" id="nodeConfirmBtn" onclick="confirmCurrentNode()">Confirm this node ✓</button>
+        <button class="request-ev-btn" onclick="switchTab('evidence'); document.getElementById('evRequestInput').focus()">Request evidence</button>
+        <span class="confirm-note" id="confirmNote"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- EVIDENCE VIEWER PANEL -->
+  <div class="ev-panel" id="evPanel">
+    <div class="ev-panel-header">
+      <div style="flex:1">
+        <div class="ev-panel-type-badge" id="evPanelTypeBadge">DOCUMENT</div>
+        <div class="ev-panel-title" id="evPanelTitle">Evidence Document</div>
+        <div class="ev-panel-ref" id="evPanelRef"></div>
+      </div>
+      <button class="ev-panel-close" onclick="closeEvPanel()">✕</button>
+    </div>
+    <div class="ev-panel-body" id="evPanelBody"></div>
+    <div class="ev-panel-footer" id="evPanelFooter"></div>
+  </div>
+
+</div><!-- /shell -->
+
+<!-- COMMAND BAR -->
+<div class="cmdbar">
+  <div class="cmd-log" id="cmdLog"></div>
+  <div class="cmd-input-row">
+    <span class="cmd-input-label">⌘</span>
+    <input class="cmd-input" id="cmdInput"
+      placeholder="Request data — e.g. 'pull line of flying for G-EZFM on 15JUN24' or 'Eurocontrol CFMU docs for GVA-PMI'"
+      onkeydown="if(event.key==='Enter') processCmd()">
+    <button class="cmd-pull-btn" id="cmdPullBtn" onclick="processCmd()">Pull Data</button>
+  </div>
+</div>
+
+<!-- CONFIRM LOF OVERLAY -->
+<div class="lof-confirmed-overlay" id="lofConfirmedOverlay">
+  <div class="lof-confirmed-card">
+    <div class="lof-confirmed-icon">⚖️</div>
+    <div class="lof-confirmed-title">Line of Flying Confirmed</div>
+    <div class="lof-confirmed-sub">The factual record is locked. Legal analysis will now fire against the confirmed LOF — not the original ICC narrative.</div>
+    <div class="lof-confirmed-meta" id="lofConfirmedMeta"></div>
+    <button class="lof-confirmed-btn" onclick="document.getElementById('lofConfirmedOverlay').classList.remove('visible')">Proceed to Legal Analysis →</button>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   DATA
+   ═══════════════════════════════════════════════════════════════ */
+
+const LOF_NODES = [
+  {
+    id: 'aircraft',
+    type: 'aircraft',
+    label: 'AIRCRAFT',
+    title: 'G-EZFM — Line of Flying',
+    subtitle: 'Airbus A320-214 · MSN 4892 · easyJet UK',
+    status: 'confirmed',
+    time: 'Day start: GVA',
+    facts: [
+      { label: 'Registration', value: 'G-EZFM' },
+      { label: 'Type', value: 'Airbus A320-214 (CFM56-5B4)' },
+      { label: 'MSN', value: '4892' },
+      { label: 'Operator', value: 'easyJet UK Ltd (EZY)' },
+      { label: 'Home base', value: 'London Gatwick (LGW)' },
+      { label: 'Day start location', value: 'Geneva Cointrin (GVA) — overnight positioning' },
+      { label: 'Last C-Check', value: '14 FEB 2024 · EGKK line maintenance' },
+      { label: 'Snags at day start', value: 'Nil — clean tech log', highlight: false },
+      { label: 'MEL items open', value: 'Nil — no deferred defects', highlight: false }
+    ],
+    evidence: [
+      { id: 'ev-tech-log', type: 'tech-log', label: 'Technical Log — G-EZFM 16JUN24', status: 'available', source: 'Aircraft records / Engineering' },
+      { id: 'ev-maintenance', type: 'maintenance', label: 'Maintenance Release — last C-Check Feb 2024', status: 'available', source: 'Engineering records / CAMO' }
+    ],
+    legalFlag: { level: 'clean', title: 'Aircraft serviceability confirmed — no MEL items', body: 'Clean technical log at day start with no MEL deferred items materially strengthens the position. A technical defect defence requires a prior undetected fault. Nil snags removes any technical extraordinary circumstance argument from the defence chain — the disruption on this LOF flows from third-party ATFM and weather, not aircraft condition.' },
+    confirmable: true
+  },
+  {
+    id: 'prior-sector',
+    type: 'sector',
+    label: 'PRIOR SECTOR',
+    title: 'EZY3061 GVA–PMI',
+    subtitle: 'Cascade origin — ATFM slot delay causes late aircraft at PMI',
+    status: 'contested',
+    time: 'STD 0650Z / ATD 0842Z (+1h 52m)',
+    facts: [
+      { label: 'Flight', value: 'EZY3061' },
+      { label: 'Route', value: 'Geneva (GVA) → Palma (PMI)' },
+      { label: 'STD / STA', value: '0650Z / 0935Z' },
+      { label: 'ATD / ATA', value: '0842Z / 1110Z' },
+      { label: 'Departure delay', value: '+1h 52m (ATFM CTOT 0833Z)', highlight: true },
+      { label: 'Arrival delay', value: '+1h 35m — cascaded to PMI as late aircraft' },
+      { label: 'CTOT issued', value: '0833Z — notified crew at 0542Z (3h prior)' },
+      { label: 'ATFM measure', value: 'French FIR (LFRR/LFBB) — CB complex Toulouse sector' },
+      { label: 'Regulation ref', value: 'LSAGZRH21 — Eurocontrol CFMU' },
+      { label: 'Network impact', value: 'All traffic via French FIR south of FL200 affected' },
+      { label: 'Alt routing assessed', value: 'No viable alternative — LFRR restriction network-wide' }
+    ],
+    evidence: [
+      { id: 'ev-cfmu', type: 'cfmu', label: 'CFMU Slot Confirmation — EZY3061 / LSAGZRH21', status: 'available', source: 'Eurocontrol NOP' },
+      { id: 'ev-notam', type: 'notam', label: 'Eurocontrol ATFM NOTAM A2847/24', status: 'available', source: 'Eurocontrol / AIS' },
+      { id: 'ev-crew-gva', type: 'crew', label: 'Crew sign-on records — GVA 16JUN24 0550Z', status: 'available', source: 'Crew scheduling system' },
+      { id: 'ev-oplog-gva', type: 'oplog', label: 'GVA Operations Log — EZY3061 CTOT notification', status: 'requested', source: 'Ground ops / OCC' }
+    ],
+    legalFlag: { level: 'info', title: 'Third-party ATFM — Limb 1 established; RM check required', body: 'Eurocontrol ATFM regulation (French FIR) constitutes a third-party extraordinary circumstance outside the carrier\'s actual control — Wallentin-Hermann Limb 1 passes. Key evidence: CFMU slot ref LSAGZRH21 is the contemporaneous primary document. RM question: CTOT assigned 3hrs prior to EOBT — was alternative routing via non-French-FIR airspace assessed? Was a slot improvement bid submitted? If OCC ops log confirms no viable alternative, Limb 2 is satisfied. Request ops log to complete the record.' },
+    confirmable: true
+  },
+  {
+    id: 'pmi-departure',
+    type: 'sector',
+    label: 'CLAIMED FLIGHT — DEPARTURE',
+    title: 'EZY7253 PMI — Departure',
+    subtitle: 'Cascade delay absorbed — no new extraordinary circumstance at PMI',
+    status: 'confirmed',
+    time: 'STD 1100Z / ATD 1215Z (+1h 15m)',
+    facts: [
+      { label: 'Flight', value: 'EZY7253' },
+      { label: 'Route', value: 'Palma (PMI) → Birmingham (BHX)' },
+      { label: 'STD', value: '1100Z' },
+      { label: 'ATD', value: '1215Z (+1h 15m)', highlight: true },
+      { label: 'Aircraft arrived PMI', value: '1110Z (EZY3061 ATA — 1h 35m late)' },
+      { label: 'Turnaround time', value: '65 minutes (standard: 45min — within tolerance)' },
+      { label: 'Pax aboard', value: '173 passengers (full load)' },
+      { label: 'Crew', value: 'Same operating crew — EZY3061/EZY7253 rotation' },
+      { label: 'FDP at departure', value: 'Started 0550Z GVA. 6h 25m elapsed. FDP limit: 1950Z.' },
+      { label: 'Causal chain', value: 'Delay = direct cascade from GVA ATFM restriction', highlight: false }
+    ],
+    evidence: [
+      { id: 'ev-pmi-records', type: 'airport', label: 'PMI Airport Movement Records — EZY7253', status: 'available', source: 'AENA / Airport authority' },
+      { id: 'ev-fuelling', type: 'fuelling', label: 'Fuelling records — G-EZFM PMI 16JUN24', status: 'available', source: 'Fuel supplier / ACARS' },
+      { id: 'ev-turnaround', type: 'oplog', label: 'Turnaround supervisor log — PMI ground handler', status: 'requested', source: 'Ground handling agent' }
+    ],
+    legalFlag: { level: 'clean', title: 'Causal chain intact — no new extraordinary circumstance at PMI', body: 'The departure delay at PMI (1h 15m) is a direct consequence of the ATFM cascade from EZY3061 GVA–PMI. No new extraordinary circumstance arose at PMI. The causal chain from the GVA ATFM regulation to EZY7253 is unbroken. Note: confirm the turnaround supervisor log shows no discretionary wait for additional passengers from another flight — any such voluntary act would break the chain (NI/HZ v European Air Charter principle). Request turnaround log to close this point.' },
+    confirmable: true
+  },
+  {
+    id: 'bhx-weather',
+    type: 'event',
+    label: 'EXTRAORDINARY EVENT',
+    title: 'BHX Approach — Crosswind Diversion',
+    subtitle: 'Wind exceeds A320 certified operating limit → mandatory diversion BOH',
+    status: 'weak',
+    time: 'Approach 1445Z / Diversion declared 1508Z',
+    facts: [
+      { label: 'ETA BHX (revised)', value: '1545Z' },
+      { label: 'Approach commenced', value: '1445Z' },
+      { label: 'BHX METAR 1420Z', value: 'Wind 270°/36G49KT — at certified limit' },
+      { label: 'BHX METAR 1450Z', value: 'Wind 265°/41G57KT — EXCEEDS limit ⚠', highlight: true },
+      { label: 'BHX ATIS 1500Z', value: 'Wind 280°/43G61KT — LVP in force' },
+      { label: 'A320 crosswind limit', value: '38KT demonstrated crosswind (FCOM Vol.2)', highlight: false },
+      { label: 'Commander decision', value: 'Approach discontinued 1450Z — conditions below operating limits' },
+      { label: 'Diversion declared', value: '1508Z — ATC informed' },
+      { label: 'Alternate selected', value: 'EGHH Bournemouth (BOH) — nearest suitable' },
+      { label: 'Landed BOH', value: '1534Z' },
+      { label: 'ATC comms', value: 'NATS recording requested — outstanding', highlight: true },
+      { label: 'ATIS recording', value: 'Requested from NATS — outstanding', highlight: true }
+    ],
+    evidence: [
+      { id: 'ev-metar-bhx', type: 'metar', label: 'METAR EGBB — 16JUN24 1420Z and 1450Z series', status: 'available', source: 'NOAA / Met Office / Ogimet' },
+      { id: 'ev-commander', type: 'report', label: "Commander's Diversion Report — EZY7253", status: 'available', source: 'Flight crew report' },
+      { id: 'ev-atis', type: 'atis', label: 'BHX ATIS recording — 1500Z wind/LVP', status: 'requested', source: 'NATS / EGBB ATC' },
+      { id: 'ev-atc-comms', type: 'atc', label: 'ATC communications — EZY7253 approach 1445–1520Z', status: 'requested', source: 'NATS recordings archive' }
+    ],
+    legalFlag: { level: 'warning', title: 'Weather extraordinary — CRITICAL evidence gap must be closed', body: 'Adverse crosswind constitutes an extraordinary circumstance (Wallentin-Hermann Limb 1) — weather phenomena are not inherent in airline operations. METAR 1450Z records wind 41G57KT against the A320 38KT demonstrated crosswind limit. The commander\'s report corroborates the diversion decision. CRITICAL GAP: ATC communications and ATIS recording are not yet on file. Without these, the commander\'s report is the sole contemporaneous corroboration for approach conditions. NATS recordings must be obtained urgently — these are decisive for this node. If ATC confirms the wind report and LVP declaration, this node moves from contested to confirmed. Limb 2 (RM): diversion was the only available measure — no other runway orientation at BHX would have reduced the crosswind component below limit.' },
+    confirmable: false
+  },
+  {
+    id: 'boh-recovery',
+    type: 'recovery',
+    label: 'RECOVERY',
+    title: 'BOH — Standby Crew & Art 9 Care',
+    subtitle: 'Standby deployment · Passenger care documented · Return BHX',
+    status: 'confirmed',
+    time: 'BOH landed 1534Z / BHX arrived 2220Z',
+    facts: [
+      { label: 'Landed BOH', value: '1534Z' },
+      { label: 'FDP — original crew', value: 'Started 0550Z. Limit: 1950Z (13h max). Remaining at 1534Z: 4h 16m' },
+      { label: 'Continuance possible?', value: 'No — estimated BOH departure 1830Z → breach at 1950Z', highlight: true },
+      { label: 'Standby requested', value: '1545Z — 11 minutes post-landing' },
+      { label: 'Standby crew confirmed', value: '1600Z — 2× A320-qualified (BHX airport standby)' },
+      { label: 'Standby depart BHX', value: '1635Z (road transfer — est. 75min)' },
+      { label: 'Standby arrive BOH', value: '1748Z' },
+      { label: 'Art 9 — meal vouchers', value: 'Issued 1610Z at BOH (£10/pax × 173 = £1,730)' },
+      { label: 'Art 9 — accommodation', value: 'Not required — same-day recovery confirmed' },
+      { label: 'Departed BOH', value: '2130Z (fuelling + pax re-board complete)' },
+      { label: 'Arrived BHX', value: '2220Z' },
+      { label: 'Total delay at BHX', value: '8h 20m (STA 1400Z → ATA 2220Z)', highlight: true },
+      { label: 'Art 7 quantum', value: '€400/pax (PMI–BHX ≈ 1,775km — Band 2)' },
+      { label: 'Art 14 check', value: 'Written notice at BHX check-in — confirmed. BOH diversion — PENDING', highlight: true }
+    ],
+    evidence: [
+      { id: 'ev-fdp', type: 'crew', label: 'FDP Calculation — EZY7253 operating crew', status: 'available', source: 'Crew scheduling / OCC' },
+      { id: 'ev-standby', type: 'ops', label: 'Standby crew deployment record — OCC 1545Z', status: 'available', source: 'OCC records system' },
+      { id: 'ev-art9', type: 'care', label: 'Art 9 care receipts — BOH catering vouchers', status: 'requested', source: 'Ground handling / catering' },
+      { id: 'ev-art14', type: 'notice', label: 'Art 14 notice — BOH diversion written notice', status: 'flagged', source: 'BOH operations / check-in' }
+    ],
+    legalFlag: { level: 'info', title: 'RM clearly established — Art 14 requires independent check', body: 'Standby crew deployed 11 minutes post-landing — strong Limb 2 evidence. FDP calculation confirms original crew could not legally operate recovery flight. Standby crew available from BHX base (D.S.A. v P.S.A. — carrier not required to source aircraft from third parties). Art 9 documented at BOH. SEPARATE REGULATORY OBLIGATION: Art 14 written passenger notice at the diversion airport (BOH) is unconfirmed. Bacău Air Centre confirms Art 14 is an independent obligation — a successful Art 5(3) extraordinary circumstances defence does not excuse an Art 14 breach. Obtain confirmation that written notice was provided at BOH as well as at the BHX departure gate.' },
+    confirmable: true
+  }
+];
+
+/* ─── EVIDENCE CONTENT ────────────────────────────────────── */
+const EV_CONTENT = {
+  'ev-tech-log': {
+    typeLabel: 'TECH LOG',
+    title: 'Technical Log — G-EZFM',
+    ref: '16 JUN 2024 · Day start check · GVA',
+    fields: [
+      { label: 'Registration', value: 'G-EZFM' },
+      { label: 'Date', value: '16 JUN 2024' },
+      { label: 'Check performed', value: 'Pre-flight technical check — GVA 0515Z' },
+      { label: 'Engineer', value: '[Redacted — ref on file]' },
+      { label: 'Snags reported', value: 'NIL', cls: 'good' },
+      { label: 'MEL items open', value: 'NIL', cls: 'good' },
+      { label: 'Fuel state', value: '12,400kg FOB — sufficient for sector + diversion reserve' },
+      { label: 'Certification', value: 'CRS issued — aircraft serviceable for flight', cls: 'good' }
+    ],
+    relevance: 'Nil snags at day start removes any technical extraordinary circumstance defence. The disruption chain rests entirely on ATFM and weather — both of which are stronger extraordinary circumstance arguments than technical defects.',
+    source: null
+  },
+  'ev-cfmu': {
+    typeLabel: 'CFMU / ATFM',
+    title: 'CFMU Slot Confirmation',
+    ref: 'EUR-CFMU-20240616 · Regulation LSAGZRH21',
+    sections: [
+      {
+        title: 'Regulation Details',
+        fields: [
+          { label: 'Regulation ref', value: 'LSAGZRH21' },
+          { label: 'Measure type', value: 'Weather regulation — CB complex' },
+          { label: 'Applying unit', value: 'LFBB (Bordeaux ACC) / LFRR (Brest ACC)' },
+          { label: 'Reason', value: 'Severe CB activity — Toulouse / Marseille FIR' },
+          { label: 'Period', value: '16 JUN 2024 · 0400Z – 1400Z' },
+          { label: 'Traffic affected', value: 'All flights via French FIR south of FL200' }
+        ]
+      },
+      {
+        title: 'Slot Assignment — EZY3061',
+        fields: [
+          { label: 'Flight', value: 'EZY3061 (GVA → PMI)' },
+          { label: 'EOBT', value: '0650Z' },
+          { label: 'CTOT assigned', value: '0833Z', cls: 'highlight' },
+          { label: 'Notified at', value: '0542Z (3h 08m before EOBT)' },
+          { label: 'Slot delay', value: '+1h 43m on GVA departure', cls: 'highlight' },
+          { label: 'Improvement bid', value: 'Submitted 0610Z — no earlier slot available' },
+          { label: 'Alt routing', value: 'Not available — restriction network-wide' }
+        ]
+      }
+    ],
+    relevance: '<strong>Primary contemporaneous evidence</strong> for the third-party ATFM extraordinary circumstance. Retain reference LSAGZRH21 for court filing. The improvement bid at 0610Z demonstrates RM — the carrier actively sought to minimise the delay.',
+    source: 'https://www.eurocontrol.int/network-manager',
+    sourceLabel: 'Eurocontrol Network Manager (NOP) ↗'
+  },
+  'ev-notam': {
+    typeLabel: 'NOTAM / ATFM',
+    title: 'Eurocontrol ATFM NOTAM A2847/24',
+    ref: '16 JUN 2024 · French FIR weather restriction',
+    fields: [
+      { label: 'NOTAM ref', value: 'A2847/24' },
+      { label: 'Subject', value: 'ATFM measure — French FIR weather' },
+      { label: 'FIRs affected', value: 'LFBB (Bordeaux), LFRR (Brest), LFMM (Marseille)' },
+      { label: 'Period', value: '16 JUN 2024 0400Z – 1400Z' },
+      { label: 'Cause', value: 'Severe convective activity (CB) — embedded thunderstorms complex' },
+      { label: 'Traffic impact', value: 'Regulation applied to all traffic routing through French FIR sectors below FL200' },
+      { label: 'Coordination', value: 'Eurocontrol NMOC — Brussels' }
+    ],
+    relevance: 'Corroborates the CFMU slot confirmation. Both documents together establish that the ATFM restriction was (a) imposed by a third-party air navigation service provider, (b) caused by weather, and (c) affected all traffic — not selectively applied to this carrier.',
+    source: 'https://www.eurocontrol.int/network-manager',
+    sourceLabel: 'Eurocontrol NOP ↗'
+  },
+  'ev-metar-bhx': {
+    typeLabel: 'METEOROLOGICAL',
+    title: 'METAR — EGBB Birmingham International',
+    ref: '16 JUN 2024 · 1420Z and 1450Z observations',
+    isMETAR: true,
+    records: [
+      {
+        time: '1420Z',
+        raw: 'METAR EGBB 161420Z 27036G49KT 9999 FEW025 BKN040 12/08 Q1008 NOSIG=',
+        critical: false,
+        fields: [
+          { label: 'Wind', value: '270° / 36KT gusting 49KT' },
+          { label: 'Visibility', value: '9,999m (CAVOK conditions)' },
+          { label: 'Cloud', value: 'FEW 2,500ft · BKN 4,000ft' },
+          { label: 'Temp / Dew', value: '12°C / 8°C' },
+          { label: 'QNH', value: '1008 hPa' },
+          { label: 'Assessment', value: 'Wind at certified limit (36KT / limit 38KT) — marginal' }
+        ],
+        note: 'Conditions at or near operating limits. EZY7253 still en route — approach not yet commenced.'
+      },
+      {
+        time: '1450Z',
+        raw: 'METAR EGBB 161450Z 26541G57KT 9999 BKN024 12/09 Q1008 NOSIG=',
+        critical: true,
+        fields: [
+          { label: 'Wind', value: '265° / 41KT gusting 57KT', cls: 'highlight' },
+          { label: 'Visibility', value: '9,999m' },
+          { label: 'Cloud', value: 'BKN 2,400ft' },
+          { label: 'Temp / Dew', value: '12°C / 9°C' },
+          { label: 'QNH', value: '1008 hPa' },
+          { label: 'Assessment', value: 'EXCEEDS A320 38KT limit — mandatory discontinue', cls: 'highlight' }
+        ],
+        note: '⚠ CRITICAL: Timestamp 1450Z aligns with EZY7253 approach. Wind 41KT (gusting 57KT) exceeds A320 FCOM certified crosswind limit of 38KT demonstrated. This METAR is the primary corroborating evidence for the commander\'s diversion decision.'
+      }
+    ],
+    relevance: 'METAR 1450Z is the decisive document: it independently corroborates the commander\'s report that conditions were below operating limits at the time of the approach. The 11KT gust margin above the certified limit makes this a clear case — not a marginal judgement call.',
+    source: 'https://www.ogimet.com/metars.phtml?lang=en&lugar=EGBB&tipo=SA&ord=DIR&nil=SI&fmt=html&ano=2024&mes=06&day=16&hora=14&anof=2024&mesf=06&dayf=16&horaf=16&minf=59&send=send',
+    sourceLabel: 'EGBB METAR archive (Ogimet) ↗'
+  },
+  'ev-commander': {
+    typeLabel: 'CREW REPORT',
+    title: "Commander's Diversion Report",
+    ref: 'EZY7253 / G-EZFM · 16 JUN 2024',
+    fields: [
+      { label: 'Report type', value: "Commander's ASR / Diversion report" },
+      { label: 'Flight', value: 'EZY7253 PMI–BHX' },
+      { label: 'Aircraft', value: 'G-EZFM (A320-214)' },
+      { label: 'Decision time', value: '1450Z' },
+      { label: 'Reason', value: 'Crosswind at EGBB assessed as exceeding A320 certified operating limit. METAR 1450Z: 265/41G57KT. Certified limit: 38KT demonstrated (FCOM Vol.2 2.02.10).' },
+      { label: 'ATIS confirmed', value: 'Yes — ATIS 1500Z: wind 280°/43G61KT, LVP in force' },
+      { label: 'ATC informed', value: 'Yes — EGBB approach control notified 1448Z' },
+      { label: 'Alternate selected', value: 'EGHH Bournemouth — nearest suitable alternate (runway 08/26, lower crosswind)' },
+      { label: 'Landing at BOH', value: '1534Z — uneventful' },
+      { label: 'Passengers', value: '173 aboard — no injuries' }
+    ],
+    relevance: "The commander's report establishes the decision rationale and timing. It is self-serving evidence — independently corroborated by METAR 1450Z (available). ATC communications are outstanding and remain the strongest independent corroboration. Obtain NATS recording urgently.",
+    source: null,
+    warningNote: '⚠ Outstanding: ATC communications (NATS) needed to independently corroborate approach conditions at the time of discontinuance.'
+  },
+  'ev-fdp': {
+    typeLabel: 'FDP / CREW DUTY',
+    title: 'Flight Duty Period Calculation',
+    ref: 'EZY7253 Operating Crew · 16 JUN 2024',
+    fields: [
+      { label: 'Crew', value: '[Redacted — crew IDs on file]' },
+      { label: 'FDP start (check-in)', value: '0550Z 16 JUN 2024 — GVA' },
+      { label: 'Sectors flown', value: 'EZY3061 GVA–PMI + EZY7253 PMI–BOH' },
+      { label: 'Max FDP (EASA Part-ORO)', value: '13h 00m (2-crew, >3 sectors, early start)' },
+      { label: 'FDP limit reached', value: '1850Z 16 JUN 2024', cls: 'highlight' },
+      { label: 'FDP at BOH landing (1534Z)', value: '9h 44m elapsed — 3h 16m remaining' },
+      { label: 'Est. BOH departure (recovery)', value: '1830Z minimum' },
+      { label: 'BOH–BHX flight time', value: '≈ 50 minutes' },
+      { label: 'Estimated BHX arrival', value: '1920Z (within FDP)' },
+      { label: 'Post-flight duty + debrief', value: '30 minutes minimum — breach at 1850Z', cls: 'highlight' },
+      { label: 'Continuance possible?', value: 'NO — FDP breach before post-flight duty completed', cls: 'highlight' },
+      { label: 'Standby crew required?', value: 'YES — mandatory', cls: 'good' }
+    ],
+    relevance: 'FDP calculation confirms original crew could not legally continue the recovery operation. The standby crew deployment was mandatory under EASA Part-ORO, not a precautionary or commercial decision. This is strong Limb 2 evidence — it directly demonstrates that all reasonable measures to speed recovery were constrained by regulatory duty time limits outside the carrier\'s control.',
+    source: null
+  },
+  'ev-standby': {
+    typeLabel: 'OCC RECORD',
+    title: 'Standby Crew Deployment Record',
+    ref: 'OCC Duty Log — 16 JUN 2024 · 1545Z',
+    fields: [
+      { label: 'Event', value: 'Standby crew mobilisation — EZY7253 diversion recovery' },
+      { label: 'Diversion reported to OCC', value: '1536Z (2 min post-landing)' },
+      { label: 'Standby crew requested', value: '1545Z — 11 minutes post-landing', cls: 'good' },
+      { label: 'OCC Duty Manager', value: '[Redacted — ref on file]' },
+      { label: 'Standby type', value: 'Airport standby — BHX base' },
+      { label: 'Crew contacted', value: '1547Z' },
+      { label: 'Crew accepted', value: '1553Z' },
+      { label: 'Crew mobilised', value: '1635Z — road transfer BHX → BOH' },
+      { label: 'ETA BOH', value: '1750Z (75min road, incl. airside security)' },
+      { label: 'Actual arrival BOH', value: '1748Z', cls: 'good' },
+      { label: 'Crew briefed', value: '1800Z' },
+      { label: 'Departure BOH (recovery)', value: '2130Z' },
+      { label: 'Arrived BHX', value: '2220Z' }
+    ],
+    relevance: 'Standby crew requested 11 minutes post-landing — demonstrates prompt RM. Airport standby crew available from BHX base means no fleet sourcing from third parties was required (D.S.A. v P.S.A.). Gap from crew arrival (1748Z) to departure (2130Z): 3h 42m — document as: fuelling 1800-1900Z, pax re-boarding 1900-1930Z, ATC startup slot 2045Z, departure 2130Z.',
+    source: null
+  },
+  'ev-art14': {
+    typeLabel: 'REGULATORY NOTICE',
+    title: 'Art 14 Written Notice — Passenger Rights',
+    ref: 'EC261 Art. 14 · EZY7253 · 16 JUN 2024',
+    fields: [
+      { label: 'Obligation', value: 'EC261 Art. 14 — written notice of rights must be provided' },
+      { label: 'BHX check-in notice', value: 'Confirmed — notice displayed at departure gate', cls: 'good' },
+      { label: 'BOH diversion notice', value: 'STATUS: UNCONFIRMED — obtain confirmation urgently', cls: 'highlight' },
+      { label: 'Format required', value: 'Written notice (physical or electronic) at point of disruption' },
+      { label: 'Action required', value: 'Confirm with BOH ground ops that notice was issued to diverted passengers at BOH' }
+    ],
+    relevance: '<strong>Art 14 is an independent regulatory obligation.</strong> Bacău Air Centre confirms that even where an Art 5(3) extraordinary circumstances defence succeeds, a failure to provide Art 14 written notice is a separate breach — potentially carrying a separate penalty. Confirm BOH notice provision immediately.',
+    source: null,
+    warningNote: '⚠ This item is flagged. BOH Art 14 notice confirmation is outstanding and must be obtained before this node is confirmed.'
+  }
+};
+
+/* ═══════════════════════════════════════════════════════════════
+   STATE
+   ═══════════════════════════════════════════════════════════════ */
+let activeNodeId = null;
+let activeTab = 'facts';
+let confirmedNodes = new Set(['aircraft', 'pmi-departure', 'boh-recovery']); // pre-confirmed for demo
+let viewingEvId = null;
+
+/* ═══════════════════════════════════════════════════════════════
+   INIT
+   ═══════════════════════════════════════════════════════════════ */
+function init() {
+  renderTimeline();
+  updateChainMeter();
+  logCmd('sys', 'LOF Verification Engine initialised — EZY7253 PMI–BHX 16JUN24');
+  logCmd('sys', 'Aircraft G-EZFM loaded. 5 nodes detected across LOF chain.');
+  logCmd('sys', '3 nodes pre-confirmed. Node 4 (weather event) requires evidence. Select a node to begin.');
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TIMELINE RENDER
+   ═══════════════════════════════════════════════════════════════ */
+function renderTimeline() {
+  const track = document.getElementById('lofTrack');
+  track.innerHTML = '';
+  LOF_NODES.forEach((node, idx) => {
+    const status = confirmedNodes.has(node.id) ? 'confirmed' : node.status;
+    const evAvail = node.evidence.filter(e => e.status === 'available').length;
+    const evReq   = node.evidence.filter(e => e.status === 'requested').length;
+    const evFlag  = node.evidence.filter(e => e.status === 'flagged').length;
+
+    const wrap = document.createElement('div');
+    wrap.className = 'lof-node-wrap';
+    wrap.id = `node-wrap-${node.id}`;
+
+    const dotClass = status === 'confirmed' ? 'confirmed'
+                   : status === 'contested' ? 'contested'
+                   : status === 'weak'      ? 'weak'
+                   : 'pending';
+
+    wrap.innerHTML = `
+      <div class="lof-node ${activeNodeId===node.id?'active':''}" id="lof-node-${node.id}" onclick="selectNode('${node.id}')">
+        <div class="node-dot ${dotClass}" style="left:calc(-24px + 16px);"></div>
+        <div class="node-type-badge">${node.label}</div>
+        <div class="node-title">${node.title}</div>
+        <div class="node-time">${node.time}</div>
+        <div class="node-ev-bar">
+          ${evAvail > 0 ? `<span class="ev-pill ok">${evAvail} docs</span>` : ''}
+          ${evReq  > 0 ? `<span class="ev-pill req">${evReq} pending</span>` : ''}
+          ${evFlag > 0 ? `<span class="ev-pill miss">${evFlag} flagged</span>` : ''}
+        </div>
+      </div>
+      ${idx < LOF_NODES.length-1 ? '<div style="margin-left:24px;height:6px;width:1px;background:var(--border)"></div>' : ''}
+    `;
+    track.appendChild(wrap);
+  });
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   NODE SELECTION
+   ═══════════════════════════════════════════════════════════════ */
+function selectNode(nodeId) {
+  activeNodeId = nodeId;
+  closeEvPanel();
+
+  // Update timeline active state
+  document.querySelectorAll('.lof-node').forEach(n => n.classList.remove('active'));
+  const nodeEl = document.getElementById(`lof-node-${nodeId}`);
+  if (nodeEl) nodeEl.classList.add('active');
+
+  // Show detail panel
+  document.getElementById('welcomeState').style.display = 'none';
+  const dc = document.getElementById('detailContent');
+  dc.style.display = 'flex';
+  dc.style.flexDirection = 'column';
+
+  const node = LOF_NODES.find(n => n.id === nodeId);
+  if (!node) return;
+
+  const status = confirmedNodes.has(node.id) ? 'confirmed' : node.status;
+
+  // Header
+  document.getElementById('detailNodeType').textContent = node.label;
+  document.getElementById('detailTitle').textContent = node.title;
+  document.getElementById('detailSubtitle').textContent = node.subtitle;
+
+  const badge = document.getElementById('detailStatusBadge');
+  const badgeTexts = { confirmed:'✓ Confirmed', contested:'~ Contested', weak:'⚠ Evidence gap', pending:'○ Pending', flagged:'⚑ Flagged' };
+  badge.className = 'detail-status-badge ' + (status === 'weak' ? 'weak' : status === 'contested' ? 'contested' : status === 'confirmed' ? 'confirmed' : 'pending');
+  badge.textContent = badgeTexts[status] || status;
+
+  // Reset to facts tab
+  switchTab('facts');
+  renderFacts(node);
+  renderEvidence(node);
+  renderLegal(node);
+
+  // Confirm button
+  const btn = document.getElementById('nodeConfirmBtn');
+  const note = document.getElementById('confirmNote');
+  if (confirmedNodes.has(nodeId)) {
+    btn.textContent = '✓ Node confirmed';
+    btn.className = 'confirm-btn confirmed-state';
+    btn.disabled = true;
+    note.textContent = '';
+  } else if (!node.confirmable) {
+    btn.textContent = 'Confirm this node ✓';
+    btn.className = 'confirm-btn';
+    btn.disabled = true;
+    note.textContent = 'Evidence required before confirming';
+    note.style.color = 'var(--red)';
+  } else {
+    btn.textContent = 'Confirm this node ✓';
+    btn.className = 'confirm-btn';
+    btn.disabled = false;
+    note.textContent = '';
+  }
+
+  // Ev count badge
+  const evTotal = node.evidence.length;
+  document.getElementById('evCountBadge').textContent = evTotal > 0 ? `(${evTotal})` : '';
+
+  checkConfirmBanner();
+}
+
+function renderFacts(node) {
+  const table = document.getElementById('factsTable');
+  table.innerHTML = node.facts.map(f => `
+    <tr>
+      <td>${f.label}</td>
+      <td class="${f.highlight ? 'highlight-val' : ''}">${f.value}</td>
+    </tr>
+  `).join('');
+}
+
+function renderEvidence(node) {
+  const container = document.getElementById('evItems');
+  const iconMap = {
+    metar:'🌦', cfmu:'📡', crew:'👥', ops:'📋', report:'📄', airport:'🏛',
+    notam:'⚠️', care:'🎫', notice:'📋', atis:'📻', atc:'🎙', 'tech-log':'🔧',
+    maintenance:'🔧', fuelling:'⛽', oplog:'📝'
+  };
+  container.innerHTML = node.evidence.map(ev => `
+    <div class="ev-item ${viewingEvId===ev.id?'viewing':''}" id="ev-item-${ev.id}" onclick="viewEvidence('${ev.id}')">
+      <div class="ev-item-icon ${ev.type}">${iconMap[ev.type]||'📄'}</div>
+      <div class="ev-item-text">
+        <div class="ev-item-label">${ev.label}</div>
+        <div class="ev-item-source">${ev.source}</div>
+      </div>
+      <span class="ev-item-status ${ev.status}">${ev.status === 'available' ? 'Available' : ev.status === 'requested' ? 'Requested' : 'Flagged'}</span>
+      ${EV_CONTENT[ev.id] ? `<button class="ev-view-btn" onclick="event.stopPropagation();viewEvidence('${ev.id}')">View</button>` : ''}
+    </div>
+  `).join('');
+}
+
+function renderLegal(node) {
+  const container = document.getElementById('legalFlagContent');
+  if (!node.legalFlag) {
+    container.innerHTML = '<div style="color:var(--text-3);font-size:13px;padding:20px 0;">No legal flag for this node.</div>';
+    return;
+  }
+  const f = node.legalFlag;
+  const iconMap = { clean: '✓', info: 'ℹ', warning: '⚠', none: '○' };
+  container.innerHTML = `
+    <div class="legal-flag ${f.level}">
+      <div class="legal-flag-header">
+        <span class="legal-flag-icon">${iconMap[f.level]||'ℹ'}</span>
+        <div class="legal-flag-title">${f.title}</div>
+      </div>
+      <div class="legal-flag-body">${f.body}</div>
+    </div>
+  `;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TABS
+   ═══════════════════════════════════════════════════════════════ */
+function switchTab(tab) {
+  activeTab = tab;
+  document.querySelectorAll('.detail-tab').forEach((t, i) => {
+    const tabs = ['facts', 'evidence', 'legal'];
+    t.classList.toggle('active', tabs[i] === tab);
+  });
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  const tc = document.getElementById('tab-' + tab);
+  if (tc) tc.classList.add('active');
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   EVIDENCE VIEWER
+   ═══════════════════════════════════════════════════════════════ */
+function viewEvidence(evId) {
+  const content = EV_CONTENT[evId];
+  if (!content) return;
+  viewingEvId = evId;
+
+  // Update active state on items
+  document.querySelectorAll('.ev-item').forEach(el => el.classList.remove('viewing'));
+  const evEl = document.getElementById('ev-item-' + evId);
+  if (evEl) evEl.classList.add('viewing');
+
+  document.getElementById('evPanelTypeBadge').textContent = content.typeLabel || 'DOCUMENT';
+  document.getElementById('evPanelTitle').textContent = content.title;
+  document.getElementById('evPanelRef').textContent = content.ref;
+
+  const body = document.getElementById('evPanelBody');
+  body.innerHTML = buildEvPanelBody(content);
+
+  const footer = document.getElementById('evPanelFooter');
+  footer.innerHTML = '';
+  if (content.source) {
+    const a = document.createElement('a');
+    a.href = content.source;
+    a.target = '_blank';
+    a.rel = 'noopener';
+    a.className = 'ev-source-btn';
+    a.textContent = content.sourceLabel || 'View source ↗';
+    footer.appendChild(a);
+  }
+  const confirmEvBtn = document.createElement('button');
+  confirmEvBtn.className = 'ev-confirm-ev-btn';
+  confirmEvBtn.textContent = '✓ Evidence noted';
+  confirmEvBtn.onclick = () => {
+    closeEvPanel();
+    logCmd('ok', `Evidence reviewed: ${content.title}`);
+  };
+  footer.appendChild(confirmEvBtn);
+
+  document.getElementById('evPanel').classList.add('open');
+}
+
+function buildEvPanelBody(content) {
+  let html = '';
+
+  if (content.isMETAR) {
+    // Special METAR multi-record layout
+    content.records.forEach(rec => {
+      html += `
+        <div class="ev-metar-record ${rec.critical ? 'critical' : ''}">
+          <div class="ev-metar-time">METAR ${rec.time} ${rec.critical ? '⚠ CRITICAL' : ''}</div>
+          <div class="ev-raw-block">${rec.raw}</div>
+          ${rec.fields.map(f => `
+            <div class="ev-field-row">
+              <span class="ev-field-label">${f.label}</span>
+              <span class="ev-field-value ${f.cls||''}">${f.value}</span>
+            </div>
+          `).join('')}
+          ${rec.note ? `<div style="margin-top:8px;font-size:11px;line-height:1.5;color:${rec.critical ? 'var(--red)' : 'var(--text-3)'};">${rec.note}</div>` : ''}
+        </div>
+      `;
+    });
+  } else if (content.sections) {
+    // Multi-section layout (CFMU)
+    content.sections.forEach(sec => {
+      html += `<div class="ev-doc-section"><div class="ev-doc-section-title">${sec.title}</div>`;
+      sec.fields.forEach(f => {
+        html += `
+          <div class="ev-field-row">
+            <span class="ev-field-label">${f.label}</span>
+            <span class="ev-field-value ${f.cls||''}">${f.value}</span>
+          </div>
+        `;
+      });
+      html += `</div>`;
+    });
+  } else if (content.fields) {
+    html += `<div class="ev-doc-section"><div class="ev-doc-section-title">Document Record</div>`;
+    content.fields.forEach(f => {
+      html += `
+        <div class="ev-field-row">
+          <span class="ev-field-label">${f.label}</span>
+          <span class="ev-field-value ${f.cls||''}">${f.value}</span>
+        </div>
+      `;
+    });
+    html += `</div>`;
+  }
+
+  if (content.warningNote) {
+    html += `<div style="margin-top:12px;padding:10px 12px;background:var(--amber-bg);border:1px solid var(--amber-border);border-radius:6px;font-size:11px;color:var(--amber);line-height:1.5;">${content.warningNote}</div>`;
+  }
+
+  if (content.relevance) {
+    html += `<div class="ev-relevance-block"><strong>Relevance to defence:</strong> ${content.relevance}</div>`;
+  }
+
+  return html;
+}
+
+function closeEvPanel() {
+  document.getElementById('evPanel').classList.remove('open');
+  viewingEvId = null;
+  document.querySelectorAll('.ev-item').forEach(el => el.classList.remove('viewing'));
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   NODE CONFIRMATION
+   ═══════════════════════════════════════════════════════════════ */
+function confirmCurrentNode() {
+  if (!activeNodeId) return;
+  confirmedNodes.add(activeNodeId);
+
+  const node = LOF_NODES.find(n => n.id === activeNodeId);
+  logCmd('ok', `Node confirmed: ${node ? node.title : activeNodeId}`);
+
+  renderTimeline();
+  updateChainMeter();
+  selectNode(activeNodeId); // re-render detail
+  checkConfirmBanner();
+}
+
+function updateChainMeter() {
+  const total = LOF_NODES.length;
+  const confirmed = LOF_NODES.filter(n => confirmedNodes.has(n.id)).length;
+  const pct = Math.round((confirmed / total) * 100);
+
+  document.getElementById('chainFill').style.width = pct + '%';
+  document.getElementById('chainPct').textContent = pct + '%';
+
+  const dot = document.getElementById('chainDot');
+  const sig = document.getElementById('chainSignalText');
+
+  if (pct === 100) {
+    dot.style.background = 'var(--green)';
+    sig.style.color = 'var(--green)';
+    sig.textContent = 'Chain complete — ready to confirm';
+    document.getElementById('confirmLofNavBtn').style.display = 'block';
+  } else if (pct >= 60) {
+    dot.style.background = 'var(--amber)';
+    sig.style.color = 'var(--amber)';
+    sig.textContent = 'Chain building — evidence pending';
+  } else {
+    dot.style.background = 'var(--text-3)';
+    sig.style.color = 'var(--text-3)';
+    sig.textContent = 'Awaiting confirmation';
+  }
+}
+
+function checkConfirmBanner() {
+  const banner = document.getElementById('lofConfirmBanner');
+  const total = LOF_NODES.length;
+  const confirmed = LOF_NODES.filter(n => confirmedNodes.has(n.id)).length;
+  if (confirmed >= total - 1) { // at least 4/5 confirmed
+    banner.classList.add('visible');
+  } else {
+    banner.classList.remove('visible');
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   EVIDENCE REQUEST
+   ═══════════════════════════════════════════════════════════════ */
+function logEvidenceRequest() {
+  const input = document.getElementById('evRequestInput');
+  const val = input.value.trim();
+  if (!val) return;
+
+  logCmd('warn', `Evidence request logged: "${val}"`);
+  logCmd('sys', 'Request queued — will be tracked in evidence management system.');
+  input.value = '';
+
+  // If the request mentions ATIS or ATC for the BHX weather node, unlock it
+  const lower = val.toLowerCase();
+  if ((lower.includes('atis') || lower.includes('atc') || lower.includes('nats')) && activeNodeId === 'bhx-weather') {
+    setTimeout(() => {
+      logCmd('ok', 'NATS recordings request confirmed — BHX weather node flagged as evidence pending receipt.');
+    }, 600);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   COMMAND PROCESSOR
+   ═══════════════════════════════════════════════════════════════ */
+function processCmd() {
+  const input = document.getElementById('cmdInput');
+  const val = input.value.trim();
+  if (!val) return;
+
+  const btn = document.getElementById('cmdPullBtn');
+  btn.disabled = true;
+  input.disabled = true;
+
+  logCmd('user', val);
+  input.value = '';
+
+  const lower = val.toLowerCase();
+
+  // Pattern matching
+  if (lower.includes('15jun') || lower.includes('15 jun') || (lower.includes('prior') && lower.includes('day'))) {
+    runCmd_priorDay();
+  } else if (lower.includes('cfmu') || lower.includes('eurocontrol') || (lower.includes('slot') && !lower.includes('atc'))) {
+    runCmd_cfmu();
+  } else if (lower.includes('metar') || lower.includes('weather') || lower.includes('wind') || lower.includes('met ')) {
+    runCmd_metar();
+  } else if (lower.includes('oplog') || lower.includes('ops log') || lower.includes('opslog')) {
+    runCmd_opslog();
+  } else if (lower.includes('atc') || lower.includes('atis') || lower.includes('nats') || lower.includes('comms')) {
+    runCmd_atc();
+  } else if (lower.includes('crew') || lower.includes('fdp') || lower.includes('duty')) {
+    runCmd_crew();
+  } else if (lower.includes('standby') || lower.includes('occ') || lower.includes('recovery')) {
+    runCmd_occ();
+  } else if (lower.includes('art 14') || lower.includes('art14') || lower.includes('notice') || lower.includes('passenger right')) {
+    runCmd_art14();
+  } else {
+    typeResponse('Parsing request...', 800, () => {
+      logCmd('warn', 'Request not matched to a known data source pattern. Try: CFMU, METAR, ATC, crew FDP, ops log, or line of flying for [reg] on [date].');
+      logCmd('sys', 'Tip: "pull Eurocontrol CFMU docs for GVA-PMI" · "get BHX METAR 1450Z" · "crew FDP records for EZY7253" · "line of flying for G-EZFM on 15JUN24"');
+      enableCmd();
+    });
+  }
+}
+
+function typeResponse(msg, delay, callback) {
+  const log = document.getElementById('cmdLog');
+  const line = document.createElement('div');
+  line.className = 'cmd-log-line typing';
+  line.textContent = msg;
+  log.appendChild(line);
+  scrollLog();
+  setTimeout(() => {
+    log.removeChild(line);
+    if (callback) callback();
+  }, delay);
+}
+
+function runCmd_priorDay() {
+  typeResponse('Querying aircraft movement records for G-EZFM 15JUN24...', 1400, () => {
+    // Check if prior day node already exists
+    const exists = LOF_NODES.find(n => n.id === 'prior-day');
+    if (exists) {
+      logCmd('sys', 'Prior day LOF for G-EZFM 15JUN24 already loaded in timeline.');
+      enableCmd();
+      return;
+    }
+    logCmd('ok', 'Aircraft movement data retrieved — G-EZFM 15JUN24');
+    logCmd('sys', 'Prior day LOF: LGW→ACE→LGW→GVA. Final sector landed GVA 2208Z. No significant delays. Aircraft overnight GVA — serviceable.');
+
+    // Inject new node at start of array
+    LOF_NODES.unshift({
+      id: 'prior-day',
+      type: 'aircraft',
+      label: 'PRIOR DAY LOF',
+      title: 'G-EZFM — 15 JUN 2024',
+      subtitle: 'Previous day rotation confirms clean aircraft history',
+      status: 'confirmed',
+      time: 'Final sector: overnight GVA 2208Z',
+      facts: [
+        { label: 'Date', value: '15 JUN 2024' },
+        { label: 'Sectors', value: 'LGW–ACE · ACE–LGW · LGW–GVA' },
+        { label: 'LGW–ACE', value: 'On time. No delay.' },
+        { label: 'ACE–LGW', value: '+18min (slot — within tolerance)' },
+        { label: 'LGW–GVA', value: 'On time. ATA GVA 2208Z.' },
+        { label: 'Overnight at', value: 'GVA — crew and aircraft' },
+        { label: 'Tech log', value: 'Nil snags carried forward. Clean handover.' },
+        { label: 'MEL items', value: 'Nil' }
+      ],
+      evidence: [
+        { id: 'ev-prior-day', type: 'ops', label: 'G-EZFM movement record — 15JUN24', status: 'available', source: 'Aircraft tracking / OCC records' }
+      ],
+      legalFlag: { level: 'clean', title: 'Prior day history clean — no pre-existing technical issues', body: 'G-EZFM completed a standard rotation on 15JUN24 with no significant delays or technical issues. No MEL items carried into 16JUN24. Prior day history supports the position that the disruption on 16JUN24 arose from external third-party causes (ATFM + weather), not pre-existing aircraft condition.' },
+      confirmable: true
+    });
+    confirmedNodes.add('prior-day');
+    renderTimeline();
+    updateChainMeter();
+    logCmd('ok', 'Prior day LOF node added to timeline — G-EZFM confirmed clean into day start 16JUN24.');
+    enableCmd();
+  });
+}
+
+function runCmd_cfmu() {
+  typeResponse('Querying Eurocontrol NOP for ATFM data — EZY3061 GVA–PMI 16JUN24...', 1600, () => {
+    logCmd('ok', 'CFMU slot confirmation retrieved — regulation LSAGZRH21');
+    logCmd('sys', 'Slot delay: +1h 43m (CTOT 0833Z vs EOBT 0650Z). Slot improvement bid confirmed 0610Z — no earlier slot available.');
+    logCmd('sys', 'Document added to prior sector (EZY3061 GVA–PMI) evidence record.');
+
+    // Navigate to the prior sector node if not there
+    if (activeNodeId !== 'prior-sector') {
+      setTimeout(() => selectNode('prior-sector'), 300);
+    }
+
+    const evItem = LOF_NODES.find(n => n.id === 'prior-sector')?.evidence.find(e => e.id === 'ev-cfmu');
+    if (evItem) evItem.status = 'available';
+    if (activeNodeId === 'prior-sector') renderEvidence(LOF_NODES.find(n => n.id === 'prior-sector'));
+    renderTimeline();
+    enableCmd();
+  });
+}
+
+function runCmd_metar() {
+  typeResponse('Retrieving EGBB METAR archive — 16JUN24 1400Z–1600Z series...', 1500, () => {
+    logCmd('ok', 'METAR data retrieved — EGBB 16JUN24 (1420Z and 1450Z observations)');
+    logCmd('sys', 'METAR 1420Z: 270/36G49KT — at limit. METAR 1450Z: 265/41G57KT — EXCEEDS limit.');
+    logCmd('warn', 'METAR 1450Z timestamp aligns with EZY7253 approach window — critical corroborating evidence.');
+    logCmd('sys', 'Select node "BHX Approach — Crosswind Diversion" and open Evidence tab to view decoded METAR.');
+
+    if (activeNodeId !== 'bhx-weather') {
+      setTimeout(() => selectNode('bhx-weather'), 300);
+    }
+    enableCmd();
+  });
+}
+
+function runCmd_opslog() {
+  typeResponse('Requesting operational log from ground ops systems — GVA/PMI 16JUN24...', 1800, () => {
+    logCmd('ok', 'Ops log request submitted to OCC records system.');
+    logCmd('sys', 'GVA ops log: CTOT notification logged at 0542Z. Slot improvement bid: 0610Z. No crew change. Turnaround complete 0840Z.');
+    logCmd('sys', 'PMI ops log: Aircraft arrived stand 12 at 1112Z. Turnaround commenced 1113Z. Pax boarding complete 1210Z. Pushback 1215Z.');
+
+    // Update oplog status
+    const priorNode = LOF_NODES.find(n => n.id === 'prior-sector');
+    const oplogEv = priorNode?.evidence.find(e => e.id === 'ev-oplog-gva');
+    if (oplogEv) oplogEv.status = 'available';
+
+    const pmiNode = LOF_NODES.find(n => n.id === 'pmi-departure');
+    const turnEv = pmiNode?.evidence.find(e => e.id === 'ev-turnaround');
+    if (turnEv) turnEv.status = 'available';
+
+    if (activeNodeId === 'prior-sector' || activeNodeId === 'pmi-departure') {
+      const node = LOF_NODES.find(n => n.id === activeNodeId);
+      if (node) renderEvidence(node);
+    }
+    renderTimeline();
+    logCmd('ok', 'Ops log evidence updated on GVA prior sector and PMI departure nodes.');
+    enableCmd();
+  });
+}
+
+function runCmd_atc() {
+  typeResponse('Submitting request to NATS for BHX ATC recordings — EZY7253 approach 1445–1520Z...', 1700, () => {
+    logCmd('sys', 'NATS recordings request logged — ref NATS/REC/20240616/EZY7253');
+    logCmd('warn', 'ATC recordings and ATIS: request submitted. Response time: 5–10 working days.');
+    logCmd('warn', 'BHX weather node remains contested until NATS recording confirms approach conditions.');
+    logCmd('sys', 'METAR 1450Z currently provides primary evidence — ATC comms will add independent corroboration.');
+
+    // Mark ATIS and ATC as requested (already are, but confirm the log entry)
+    if (activeNodeId !== 'bhx-weather') {
+      setTimeout(() => selectNode('bhx-weather'), 300);
+    }
+    enableCmd();
+  });
+}
+
+function runCmd_crew() {
+  typeResponse('Retrieving crew scheduling records — EZY7253 operating crew FDP 16JUN24...', 1400, () => {
+    logCmd('ok', 'FDP calculation retrieved — operating crew EZY7253.');
+    logCmd('sys', 'FDP start: 0550Z GVA. Max FDP: 13h (EASA Part-ORO). Limit: 1850Z.');
+    logCmd('sys', 'At BOH landing (1534Z): 9h 44m elapsed, 3h 16m remaining.');
+    logCmd('ok', 'Continuance confirmed NOT possible — estimated BHX arrival post-debrief would breach 1850Z limit.');
+    logCmd('ok', 'Standby crew deployment mandatory. FDP evidence confirms RM under Limb 2.');
+
+    if (activeNodeId !== 'boh-recovery') {
+      setTimeout(() => selectNode('boh-recovery'), 300);
+    }
+    enableCmd();
+  });
+}
+
+function runCmd_occ() {
+  typeResponse('Pulling OCC records — standby crew deployment EZY7253 16JUN24...', 1300, () => {
+    logCmd('ok', 'OCC deployment record confirmed — standby crew requested 1545Z (11min post-landing at BOH).');
+    logCmd('sys', 'Crew mobilised 1635Z. Road transfer BHX→BOH. Arrived BOH 1748Z. Departed BOH 2130Z. BHX 2220Z.');
+    logCmd('ok', 'Document available in recovery node evidence. Select "BOH — Standby Crew" node to review.');
+
+    if (activeNodeId !== 'boh-recovery') {
+      setTimeout(() => selectNode('boh-recovery'), 300);
+    }
+    enableCmd();
+  });
+}
+
+function runCmd_art14() {
+  typeResponse('Checking Art 14 notice compliance records — EZY7253 BHX/BOH 16JUN24...', 1200, () => {
+    logCmd('warn', 'Art 14 — BHX check-in: Notice confirmed (displayed at departure gate).');
+    logCmd('err',  'Art 14 — BOH diversion: Written notice NOT yet confirmed. Obtain from BOH ground ops.');
+    logCmd('warn', 'Art 14 breach is an independent regulatory liability (Bacău Air Centre). Resolve before case closure.');
+
+    if (activeNodeId !== 'boh-recovery') {
+      setTimeout(() => {
+        selectNode('boh-recovery');
+        setTimeout(() => switchTab('evidence'), 200);
+      }, 300);
+    }
+    enableCmd();
+  });
+}
+
+function enableCmd() {
+  document.getElementById('cmdPullBtn').disabled = false;
+  document.getElementById('cmdInput').disabled = false;
+  document.getElementById('cmdInput').focus();
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CMD LOG HELPERS
+   ═══════════════════════════════════════════════════════════════ */
+function logCmd(type, text) {
+  const log = document.getElementById('cmdLog');
+  const line = document.createElement('div');
+  line.className = 'cmd-log-line ' + type;
+  line.textContent = text;
+  log.appendChild(line);
+  scrollLog();
+}
+
+function scrollLog() {
+  const log = document.getElementById('cmdLog');
+  log.scrollTop = log.scrollHeight;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CONFIRM LOF OVERLAY
+   ═══════════════════════════════════════════════════════════════ */
+function showConfirmOverlay() {
+  const confirmed = LOF_NODES.filter(n => confirmedNodes.has(n.id));
+  const pending = LOF_NODES.filter(n => !confirmedNodes.has(n.id));
+
+  const meta = document.getElementById('lofConfirmedMeta');
+  meta.innerHTML = `
+    Flight:       EZY7253 PMI–BHX · 16 JUN 2024<br>
+    Aircraft:     G-EZFM (Airbus A320-214)<br>
+    Total delay:  8h 20m at BHX<br>
+    Nodes confirmed:  ${confirmed.length} / ${LOF_NODES.length}<br>
+    ${pending.length > 0 ? 'Nodes outstanding: ' + pending.map(n => n.title).join(', ') + '<br>' : ''}
+    Evidence available:  ${LOF_NODES.flatMap(n => n.evidence).filter(e => e.status === 'available').length} documents<br>
+    Evidence requested:  ${LOF_NODES.flatMap(n => n.evidence).filter(e => e.status === 'requested').length} outstanding<br>
+    Causal chain:    ATFM (GVA) → cascade delay (PMI) → crosswind diversion (BHX)
+  `;
+
+  document.getElementById('lofConfirmedOverlay').classList.add('visible');
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   BOOT
+   ═══════════════════════════════════════════════════════════════ */
+init();
+</script>
+</body>
+</html>
