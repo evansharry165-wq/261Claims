@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DefendAble — Phase 3 ACT 1: Personal Knowledge Guide</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Spectral:ital,wght@0,300;0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --surface-page:  #F4F3EF;
+      --surface-doc:   #FEFEFE;
+      --surface-ui:    #EEECEA;
+      --ink-primary:   #0F0F0E;
+      --ink-secondary: #3D3C39;
+      --ink-tertiary:  #6B6A67;
+      --ink-faint:     #A8A7A4;
+      --ink-rule:      #D8D6D0;
+      --ink-rule2:     #ECEAE6;
+      --defend:        #1B4A32;
+      --defend-bg:     #EBF5EE;
+      --defend-border: #B5D8C2;
+      --settle:        #7A1A1A;
+      --settle-bg:     #FBF0F0;
+      --settle-border: #F0BABA;
+      --judgment:      #1A3A7A;
+      --judgment-bg:   #EEF2FB;
+      --judgment-border:#B0C4EC;
+      --amber:         #7A5500;
+      --amber-bg:      #FFF8EC;
+      --amber-border:  #E8C878;
+      --font-serif:    'Libre Baskerville', Georgia, serif;
+      --font-spectral: 'Spectral', Georgia, serif;
+      --font-sans:     'Inter', -apple-system, sans-serif;
+      --font-mono:     'JetBrains Mono', monospace;
+      --doc-w:         820px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--surface-page);
+      color: var(--ink-primary);
+      font-family: var(--font-sans);
+      font-size: 14px;
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Nav ── */
+    .g-nav {
+      background: var(--ink-primary);
+      height: 52px;
+      display: flex;
+      align-items: center;
+      padding: 0 40px;
+      gap: 32px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .g-nav-brand { font-family: var(--font-serif); font-size: 15px; color: #fff; letter-spacing: .02em; }
+    .g-nav-tag   { font-family: var(--font-mono); font-size: 10px; color: rgba(255,255,255,.4); letter-spacing: .06em; }
+    .g-nav-links { margin-left: auto; display: flex; gap: 24px; }
+    .g-nav-links a { font-family: var(--font-mono); font-size: 10px; color: rgba(255,255,255,.45); text-decoration: none; letter-spacing: .04em; }
+    .g-nav-links a:hover { color: rgba(255,255,255,.8); }
+
+    /* ── Page ── */
+    .page { max-width: var(--doc-w); margin: 0 auto; padding: 52px 40px 100px; }
+
+    /* ── Masthead ── */
+    .masthead {
+      border-bottom: 3px solid var(--ink-primary);
+      padding-bottom: 28px;
+      margin-bottom: 48px;
+    }
+    .masthead-eyebrow { font-family: var(--font-mono); font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 10px; }
+    .masthead-title   { font-family: var(--font-serif); font-size: 34px; font-weight: 700; line-height: 1.15; margin-bottom: 14px; }
+    .masthead-title em { font-style: italic; font-weight: 400; }
+    .masthead-sub     { font-family: var(--font-spectral); font-size: 16px; color: var(--ink-secondary); line-height: 1.65; max-width: 600px; }
+    .masthead-meta    { display: flex; gap: 28px; margin-top: 18px; flex-wrap: wrap; }
+    .masthead-meta-item { font-family: var(--font-mono); font-size: 10px; color: var(--ink-faint); letter-spacing: .06em; }
+
+    /* ── TOC ── */
+    .toc {
+      background: var(--surface-doc);
+      border: 1px solid var(--ink-rule);
+      border-radius: 4px;
+      padding: 24px 28px;
+      margin-bottom: 52px;
+    }
+    .toc-title { font-family: var(--font-mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 14px; }
+    .toc-grid  { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 32px; }
+    .toc-item  { font-family: var(--font-spectral); font-size: 13px; color: var(--ink-secondary); text-decoration: none; line-height: 1.8; }
+    .toc-item:hover { color: var(--ink-primary); }
+    .toc-num   { font-family: var(--font-mono); font-size: 10px; color: var(--ink-faint); margin-right: 8px; }
+
+    /* ── Sections ── */
+    .section { margin-bottom: 60px; }
+    .section-label {
+      font-family: var(--font-mono); font-size: 9px; font-weight: 700;
+      letter-spacing: .12em; text-transform: uppercase; color: var(--ink-faint);
+      border-top: 2px solid var(--ink-primary); padding-top: 8px; margin-bottom: 18px;
+    }
+    .section-title {
+      font-family: var(--font-serif); font-size: 22px; font-weight: 700;
+      line-height: 1.2; margin-bottom: 14px;
+    }
+    .section-body {
+      font-family: var(--font-spectral); font-size: 14px;
+      color: var(--ink-secondary); line-height: 1.75;
+    }
+    .section-body p { margin-bottom: 14px; }
+    .section-body p:last-child { margin-bottom: 0; }
+    .section-body strong { color: var(--ink-primary); font-weight: 600; }
+
+    /* ── Subsections ── */
+    .sub-title {
+      font-family: var(--font-serif); font-size: 15px; font-weight: 700;
+      color: var(--ink-primary); margin-top: 28px; margin-bottom: 10px;
+    }
+
+    /* ── Workflow Diagrams ── */
+    .diagram-wrap {
+      background: var(--surface-doc);
+      border: 1px solid var(--ink-rule);
+      border-radius: 4px;
+      padding: 28px;
+      margin: 24px 0;
+      overflow-x: auto;
+    }
+    .diagram-label { font-family: var(--font-mono); font-size: 9px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 18px; }
+    .flow-row      { display: flex; align-items: center; gap: 0; flex-wrap: nowrap; }
+    .flow-node {
+      background: var(--ink-primary); color: #fff;
+      font-family: var(--font-mono); font-size: 10px; font-weight: 700;
+      letter-spacing: .05em; text-transform: uppercase;
+      padding: 8px 14px; border-radius: 3px;
+      text-align: center; white-space: nowrap; flex-shrink: 0;
+    }
+    .flow-node-sm {
+      background: var(--surface-ui); color: var(--ink-secondary);
+      border: 1px solid var(--ink-rule); font-family: var(--font-mono);
+      font-size: 9px; padding: 6px 12px; border-radius: 3px;
+      text-align: center; white-space: nowrap; flex-shrink: 0; line-height: 1.4;
+    }
+    .flow-node-win  { background: var(--defend-bg); color: var(--defend); border: 1px solid var(--defend-border); }
+    .flow-node-loss { background: var(--settle-bg); color: var(--settle); border: 1px solid var(--settle-border); }
+    .flow-node-warn { background: var(--amber-bg);  color: var(--amber);  border: 1px solid var(--amber-border); }
+    .flow-arrow { font-family: var(--font-mono); font-size: 13px; color: var(--ink-faint); padding: 0 8px; flex-shrink: 0; }
+    .flow-label { font-family: var(--font-mono); font-size: 9px; color: var(--ink-faint); text-align: center; margin-top: 5px; letter-spacing: .04em; }
+    .flow-col   { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
+    .flow-vert  { display: flex; flex-direction: column; gap: 8px; }
+    .flow-branch-wrap { display: flex; gap: 20px; margin-top: 12px; }
+
+    /* Two-limb test diagram */
+    .limb-grid {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 0 20px;
+      align-items: start;
+      margin-top: 16px;
+    }
+    .limb-box {
+      background: var(--surface-ui);
+      border: 1px solid var(--ink-rule);
+      border-radius: 3px;
+      padding: 16px;
+    }
+    .limb-num  { font-family: var(--font-mono); font-size: 9px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 6px; }
+    .limb-name { font-family: var(--font-serif); font-size: 13px; font-weight: 700; margin-bottom: 8px; }
+    .limb-q    { font-family: var(--font-spectral); font-size: 12px; color: var(--ink-secondary); line-height: 1.55; font-style: italic; }
+    .limb-divider { display: flex; align-items: center; justify-content: center; font-family: var(--font-serif); font-size: 16px; font-weight: 700; color: var(--ink-faint); padding-top: 32px; }
+    .limb-outcomes { margin-top: 14px; display: flex; gap: 10px; }
+    .limb-outcome  { font-family: var(--font-mono); font-size: 9px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; padding: 4px 10px; border-radius: 2px; }
+
+    /* Chain signal display */
+    .signal-row { display: flex; gap: 12px; margin-top: 14px; flex-wrap: wrap; }
+    .signal-card {
+      flex: 1; min-width: 160px;
+      padding: 14px 16px;
+      border-radius: 3px;
+      border: 1px solid;
+    }
+    .signal-card.solid    { background: var(--defend-bg);  border-color: var(--defend-border); }
+    .signal-card.fragile  { background: var(--amber-bg);   border-color: var(--amber-border);  }
+    .signal-card.broken   { background: var(--settle-bg);  border-color: var(--settle-border); }
+    .signal-name { font-family: var(--font-mono); font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 6px; }
+    .signal-card.solid   .signal-name { color: var(--defend); }
+    .signal-card.fragile .signal-name { color: var(--amber);  }
+    .signal-card.broken  .signal-name { color: var(--settle); }
+    .signal-desc { font-family: var(--font-spectral); font-size: 12px; line-height: 1.5; color: var(--ink-secondary); }
+
+    /* ── Callouts ── */
+    .callout {
+      padding: 14px 18px;
+      border-radius: 3px;
+      margin: 18px 0;
+      border-left: 3px solid;
+    }
+    .callout-defend  { background: var(--defend-bg);  border-color: var(--defend);  }
+    .callout-settle  { background: var(--settle-bg);  border-color: var(--settle);  }
+    .callout-amber   { background: var(--amber-bg);   border-color: var(--amber);   }
+    .callout-law     { background: var(--judgment-bg); border-color: var(--judgment); }
+    .callout-label   { font-family: var(--font-mono); font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 6px; }
+    .callout-defend  .callout-label { color: var(--defend);  }
+    .callout-settle  .callout-label { color: var(--settle);  }
+    .callout-amber   .callout-label { color: var(--amber);   }
+    .callout-law     .callout-label { color: var(--judgment); }
+    .callout-text    { font-family: var(--font-spectral); font-size: 13px; line-height: 1.65; color: var(--ink-secondary); }
+    .callout-text strong { color: var(--ink-primary); }
+
+    /* ── Task log ── */
+    .task-log { border: 1px solid var(--ink-rule); border-radius: 4px; overflow: hidden; margin: 20px 0; }
+    .task-row {
+      display: grid; grid-template-columns: 28px 1fr auto;
+      gap: 0 16px; padding: 12px 16px;
+      border-bottom: 1px solid var(--ink-rule2);
+      align-items: start;
+    }
+    .task-row:last-child { border-bottom: none; }
+    .task-num  { font-family: var(--font-mono); font-size: 10px; color: var(--ink-faint); padding-top: 2px; }
+    .task-name { font-family: var(--font-spectral); font-size: 13px; color: var(--ink-primary); font-weight: 600; }
+    .task-desc { font-family: var(--font-spectral); font-size: 12px; color: var(--ink-tertiary); margin-top: 3px; line-height: 1.5; }
+    .task-status { font-family: var(--font-mono); font-size: 9px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; padding: 3px 9px; border-radius: 2px; white-space: nowrap; align-self: start; margin-top: 2px; }
+    .ts-done  { background: var(--defend-bg); color: var(--defend); }
+    .ts-next  { background: var(--amber-bg);  color: var(--amber);  }
+
+    /* ── Glossary ── */
+    .glossary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 14px; }
+    .gloss-item { padding: 12px 16px; background: var(--surface-doc); border: 1px solid var(--ink-rule); border-radius: 3px; }
+    .gloss-term { font-family: var(--font-mono); font-size: 10px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-primary); margin-bottom: 5px; }
+    .gloss-def  { font-family: var(--font-spectral); font-size: 12px; color: var(--ink-secondary); line-height: 1.55; }
+
+    /* ── Case matrix ── */
+    .case-matrix { border: 1px solid var(--ink-rule); border-radius: 4px; overflow: hidden; margin: 18px 0; }
+    .cm-header { display: grid; grid-template-columns: 2fr 2fr 1fr; background: var(--ink-primary); padding: 10px 16px; gap: 12px; }
+    .cm-header span { font-family: var(--font-mono); font-size: 9px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: rgba(255,255,255,.6); }
+    .cm-row    { display: grid; grid-template-columns: 2fr 2fr 1fr; padding: 10px 16px; gap: 12px; border-bottom: 1px solid var(--ink-rule2); align-items: start; }
+    .cm-row:last-child { border-bottom: none; }
+    .cm-row:nth-child(even) { background: var(--surface-ui); }
+    .cm-case   { font-family: var(--font-spectral); font-size: 12px; font-weight: 600; color: var(--ink-primary); line-height: 1.4; }
+    .cm-prop   { font-family: var(--font-spectral); font-size: 12px; color: var(--ink-secondary); line-height: 1.45; }
+    .cm-badge  { font-family: var(--font-mono); font-size: 9px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; padding: 3px 8px; border-radius: 2px; display: inline-block; }
+    .cm-d { background: var(--defend-bg); color: var(--defend); }
+    .cm-c { background: var(--settle-bg); color: var(--settle); }
+    .cm-b { background: var(--amber-bg);  color: var(--amber);  }
+
+    /* ── Scenario matrix ── */
+    .sc-matrix { border: 1px solid var(--ink-rule); border-radius: 4px; overflow: hidden; margin: 18px 0; }
+    .sc-m-header { display: grid; grid-template-columns: 1fr 2fr 1fr; background: var(--ink-primary); padding: 10px 16px; gap: 12px; }
+    .sc-m-header span { font-family: var(--font-mono); font-size: 9px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: rgba(255,255,255,.6); }
+    .sc-m-row  { display: grid; grid-template-columns: 1fr 2fr 1fr; padding: 10px 16px; gap: 12px; border-bottom: 1px solid var(--ink-rule2); align-items: start; }
+    .sc-m-row:last-child { border-bottom: none; }
+    .sc-m-row:nth-child(even) { background: var(--surface-ui); }
+    .sc-m-type { font-family: var(--font-mono); font-size: 10px; color: var(--ink-secondary); letter-spacing: .04em; }
+    .sc-m-case { font-family: var(--font-spectral); font-size: 12px; color: var(--ink-primary); line-height: 1.4; }
+
+    /* ── Footer ── */
+    .doc-footer {
+      margin-top: 72px; padding-top: 24px; border-top: 1px solid var(--ink-rule);
+      display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 16px;
+    }
+    .doc-footer-brand { font-family: var(--font-serif); font-size: 13px; font-weight: 700; color: var(--ink-secondary); }
+    .doc-footer-note  { font-family: var(--font-spectral); font-size: 12px; color: var(--ink-faint); font-style: italic; max-width: 400px; text-align: right; line-height: 1.5; }
+
+    @media print {
+      .g-nav { display: none; }
+      .page { padding: 24px; }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="g-nav">
+  <div>
+    <div class="g-nav-brand">DefendAble</div>
+    <div class="g-nav-tag">PHASE 3 · ACT 1 · PERSONAL GUIDE</div>
+  </div>
+  <div class="g-nav-links">
+    <a href="defendable_analyser_v3.html">Engine</a>
+    <a href="defendable_reference.html">Reference</a>
+  </div>
+</nav>
+
+<div class="page">
+
+  <!-- MASTHEAD -->
+  <div class="masthead">
+    <div class="masthead-eyebrow">Personal Knowledge Document · July 2026</div>
+    <h1 class="masthead-title">DefendAble — Phase 3 <em>ACT 1</em><br>Plan, Review & Reference Guide</h1>
+    <div class="masthead-sub">A personal reference covering everything built in Phase 3 ACT 1: what it does, how it works, the legal framework underpinning it, and what comes next. Written so you can stay on top of the project, speak to it confidently, and understand the decisions behind every component.</div>
+    <div class="masthead-meta">
+      <span class="masthead-meta-item">PHASE 3 · ACT 1 COMPLETE</span>
+      <span class="masthead-meta-item">13 BUILD TASKS DELIVERED</span>
+      <span class="masthead-meta-item">31 LEGAL AUTHORITIES</span>
+      <span class="masthead-meta-item">16 DEMO SCENARIOS</span>
+    </div>
+  </div>
+
+  <!-- TOC -->
+  <div class="toc">
+    <div class="toc-title">Contents</div>
+    <div class="toc-grid">
+      <a class="toc-item" href="#what-is-it"><span class="toc-num">01</span>What DefendAble Is</a>
+      <a class="toc-item" href="#project-arc"><span class="toc-num">06</span>The Demo Scenario Library</a>
+      <a class="toc-item" href="#legal-framework"><span class="toc-num">02</span>The Legal Framework</a>
+      <a class="toc-item" href="#glossary"><span class="toc-num">07</span>Glossary — Key Terms</a>
+      <a class="toc-item" href="#architecture"><span class="toc-num">03</span>System Architecture</a>
+      <a class="toc-item" href="#caselaw"><span class="toc-num">08</span>Cases to Know by Name</a>
+      <a class="toc-item" href="#built"><span class="toc-num">04</span>What Was Built in ACT 1</a>
+      <a class="toc-item" href="#product-position"><span class="toc-num">09</span>Product Positioning</a>
+      <a class="toc-item" href="#cross-node"><span class="toc-num">05</span>Cross-Node Intelligence</a>
+      <a class="toc-item" href="#lof"><span class="toc-num">10</span>LOF Workflow — Pass II Rebuild</a>
+      <a class="toc-item" href="#strategic"><span class="toc-num">11</span>Strategic Review — Ed's Questions</a>
+      <a class="toc-item" href="#act2"><span class="toc-num">12</span>ACT 2 — What's Coming</a>
+    </div>
+  </div>
+
+  <!-- 01 WHAT IS IT -->
+  <div class="section" id="what-is-it">
+    <div class="section-label">01 · Overview</div>
+    <div class="section-title">What DefendAble Is</div>
+    <div class="section-body">
+      <p>DefendAble is a legal intelligence engine for airline legal teams. Its job is to take a disruption event — a flight delay, cancellation, diversion — and produce a structured, legally-grounded defence framework under EU Regulation 261/2004 (EC261) and its retained UK equivalent (UK261). It does not replace the lawyer. It replaces the blank page and the inconsistent first draft.</p>
+      <p>The target user is a Disruption Investigation Officer (DIO) or in-house aviation paralegal. They receive a claim, they open the engine, they enter what happened, and the system walks them through every legal question that needs answering, surfaces the relevant court judgments, identifies the weak points in the defence, and produces a brief the lawyer can use in court or in settlement negotiation.</p>
+      <p><strong>The core design principle, stated once and never deviated from:</strong> the system creates the layout. The lawyer makes the judgment.</p>
+    </div>
+
+    <div class="callout callout-law">
+      <div class="callout-label">Regulatory Foundation</div>
+      <div class="callout-text">
+        <strong>EC261/2004</strong> — EU Regulation, applies to flights departing from any EU airport, or arriving at an EU airport on an EU-based carrier. Still applies to UK-departing flights that occurred before 31 December 2020.<br><br>
+        <strong>UK261</strong> — Retained UK equivalent, applies to flights departing UK airports from 1 January 2021 onwards (post-IP Completion Day). CJEU decisions are persuasive but no longer binding on UK courts following Lipton v BA CityFlyer [2024] UKSC 24.<br><br>
+        <strong>IP Completion Day (IPCD)</strong> — 31 December 2020. The single most important date when determining which regulation applies and which court judgments are binding vs persuasive. Every analysis in the engine checks this.
+      </div>
+    </div>
+  </div>
+
+  <!-- 02 LEGAL FRAMEWORK -->
+  <div class="section" id="legal-framework">
+    <div class="section-label">02 · Legal Framework</div>
+    <div class="section-title">The Legal Framework — What the Engine Applies</div>
+    <div class="section-body">
+      <p>Everything in DefendAble flows from one foundational judgment: <strong>Wallentin-Hermann v Alitalia (C-549/07)</strong>, decided by the Court of Justice of the EU in 2008. This case established the two-limb test that every extraordinary circumstances defence must satisfy. If you remember one thing about the legal framework, remember this test.</p>
+    </div>
+
+    <div class="sub-title">The Wallentin-Hermann Two-Limb Test</div>
+    <div class="diagram-wrap">
+      <div class="diagram-label">Wallentin-Hermann (C-549/07) — The Defence Gateway</div>
+      <div class="limb-grid">
+        <div class="limb-box">
+          <div class="limb-num">Limb 1</div>
+          <div class="limb-name">Extraordinary Circumstance</div>
+          <div class="limb-q">"Is the event not inherent in the normal exercise of the carrier's activity AND beyond its actual control?"</div>
+          <div style="margin-top:12px">
+            <div style="font-family:var(--font-mono);font-size:9px;color:var(--ink-faint);letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px">Examples that pass Limb 1</div>
+            <div style="font-family:var(--font-spectral);font-size:11px;color:var(--ink-secondary);line-height:1.6">
+              Weather · Birdstrike · Third-party ATC strike · Hidden design defect (per Matkustaja) · Government travel ban · Lawfully-called trade union strike
+            </div>
+            <div style="font-family:var(--font-mono);font-size:9px;color:var(--ink-faint);letter-spacing:.06em;text-transform:uppercase;margin-top:10px;margin-bottom:6px">Examples that fail Limb 1</div>
+            <div style="font-family:var(--font-spectral);font-size:11px;color:var(--ink-secondary);line-height:1.6">
+              Technical defect · Crew illness · Own-staff wildcat strike · Carrier insolvency · Routine maintenance delay
+            </div>
+          </div>
+        </div>
+        <div class="limb-divider">+</div>
+        <div class="limb-box">
+          <div class="limb-num">Limb 2</div>
+          <div class="limb-name">All Reasonable Measures</div>
+          <div class="limb-q">"Did the carrier take all measures reasonably available to avoid the delay, exhausting human, material and financial resources — without making an unacceptable sacrifice?"</div>
+          <div style="margin-top:12px">
+            <div style="font-family:var(--font-mono);font-size:9px;color:var(--ink-faint);letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px">What counts as RM</div>
+            <div style="font-family:var(--font-spectral);font-size:11px;color:var(--ink-secondary);line-height:1.6">
+              Standby crew positioning · Alternative aircraft sourcing · Schedule buffers for foreseeable events · Alternate routing or CTOT bidding · Passenger re-booking and care
+            </div>
+            <div style="font-family:var(--font-mono);font-size:9px;color:var(--ink-faint);letter-spacing:.06em;text-transform:uppercase;margin-top:10px;margin-bottom:6px">What is NOT required</div>
+            <div style="font-family:var(--font-spectral);font-size:11px;color:var(--ink-secondary);line-height:1.6">
+              Maintaining a back-up fleet on standby (D.S.A. v P.S.A.) · Any measure representing an unacceptable sacrifice in terms of the carrier's undertaking capacity
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:16px;padding:12px 16px;background:var(--surface-ui);border-radius:3px;font-family:var(--font-spectral);font-size:12px;color:var(--ink-secondary);line-height:1.6">
+        <strong style="color:var(--ink-primary)">Both limbs must be satisfied.</strong> A defence that passes Limb 1 (extraordinary circumstance confirmed) but fails Limb 2 (reasonable measures not taken) loses. This is the most common reason a genuine extraordinary circumstance still results in a compensation award — the carrier had the event but failed to act on it.
+      </div>
+    </div>
+
+    <div class="sub-title">The Sturgeon Principle — When Compensation is Owed</div>
+    <div class="section-body">
+      <p>Under <strong>Sturgeon v Condor (C-402/07)</strong>, passengers whose flight arrives 3 or more hours late at their final destination are entitled to Art 7 compensation — the same as if the flight were cancelled. The 3-hour threshold is measured against the <em>scheduled</em> arrival time, calculated from the moment the first aircraft door opens for disembarkation (Germanwings v Henning, C-452/13). This is not touch-down time. The engine applies this automatically.</p>
+    </div>
+
+    <div class="callout callout-amber">
+      <div class="callout-label">Key Timing Rule</div>
+      <div class="callout-text"><strong>Arrival time = first door opens.</strong> Not wheels-on. Not gate arrival. Not seatbelt sign off. This matters in cases where the carrier argues the threshold wasn't met — a 2h 55m delay from a wheels-on perspective can become a 3h 10m delay from a door-opening perspective if the aircraft sat on the taxiway. Always check what time the doors actually opened.</div>
+    </div>
+
+    <div class="sub-title">Art 7 Compensation Bands</div>
+    <div class="section-body">
+      <p>Quantum is determined by the great circle distance (straight line, point to point) between departure airport and the booked final destination — not the actual route flown. This was confirmed in <strong>Bossen v Brussels Airlines (C-559/16)</strong>.</p>
+    </div>
+    <div class="diagram-wrap">
+      <div class="diagram-label">Art 7 Compensation Structure</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
+        <div style="padding:16px;background:var(--surface-ui);border-radius:3px;border:1px solid var(--ink-rule2)">
+          <div style="font-family:var(--font-mono);font-size:9px;color:var(--ink-faint);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px">Band 1</div>
+          <div style="font-family:var(--font-serif);font-size:22px;font-weight:700;margin-bottom:4px">€250</div>
+          <div style="font-family:var(--font-spectral);font-size:12px;color:var(--ink-secondary)">Flights up to 1,500 km</div>
+        </div>
+        <div style="padding:16px;background:var(--surface-ui);border-radius:3px;border:1px solid var(--ink-rule2)">
+          <div style="font-family:var(--font-mono);font-size:9px;color:var(--ink-faint);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px">Band 2</div>
+          <div style="font-family:var(--font-serif);font-size:22px;font-weight:700;margin-bottom:4px">€400</div>
+          <div style="font-family:var(--font-spectral);font-size:12px;color:var(--ink-secondary)">1,500–3,500 km · or intra-EU flights over 1,500 km</div>
+        </div>
+        <div style="padding:16px;background:var(--surface-ui);border-radius:3px;border:1px solid var(--ink-rule2)">
+          <div style="font-family:var(--font-mono);font-size:9px;color:var(--ink-faint);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px">Band 3</div>
+          <div style="font-family:var(--font-serif);font-size:22px;font-weight:700;margin-bottom:4px">€600</div>
+          <div style="font-family:var(--font-spectral);font-size:12px;color:var(--ink-secondary)">All other flights over 3,500 km</div>
+        </div>
+      </div>
+      <div style="margin-top:12px;font-family:var(--font-spectral);font-size:12px;color:var(--ink-tertiary);font-style:italic">Note: 50% reduction applies where carrier offers re-routing and arrival at final destination is within 2/3/4 hours of scheduled arrival for each band respectively.</div>
+    </div>
+  </div>
+
+  <!-- 03 ARCHITECTURE -->
+  <div class="section" id="architecture">
+    <div class="section-label">03 · System Architecture</div>
+    <div class="section-title">How the Engine Works — Three-Pass Architecture</div>
+    <div class="section-body">
+      <p>The engine processes every disruption through three sequential analytical passes. Each pass feeds the next. Pass I classifies the disruption and sets the legal directive. Pass II builds an evidence-mapped causal chain and tests its integrity. Pass III delivers the legal verdict and outputs the defence brief. This sequence is deterministic — the same inputs always produce the same legal framework, every time, with no variation based on who is operating it.</p>
+    </div>
+
+    <div class="diagram-wrap">
+      <div class="diagram-label">Three-Pass Architecture — End to End</div>
+      <div style="display:flex;flex-direction:column;gap:0">
+
+        <!-- Input -->
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
+          <div class="flow-node" style="background:#3D3C39;min-width:120px">Input</div>
+          <div class="flow-arrow">→</div>
+          <div style="font-family:var(--font-spectral);font-size:12px;color:var(--ink-secondary)">ICC / Network Control disruption summary, or structured operational data from carrier systems</div>
+        </div>
+
+        <!-- Pass I -->
+        <div style="border:1px solid var(--ink-rule);border-radius:3px;padding:16px;margin-bottom:8px;background:var(--surface-doc)">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
+            <div class="flow-node" style="min-width:80px">Pass I</div>
+            <div style="font-family:var(--font-serif);font-size:13px;font-weight:700">Classification & Legal Directive</div>
+          </div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <div class="flow-node-sm">Disruption type identified<br>(14 categories)</div>
+            <div class="flow-arrow" style="align-self:center">→</div>
+            <div class="flow-node-sm">Directive issued:<br>Defend / Settle / Borderline</div>
+            <div class="flow-arrow" style="align-self:center">→</div>
+            <div class="flow-node-sm">IPCD check:<br>EC261 vs UK261</div>
+            <div class="flow-arrow" style="align-self:center">→</div>
+            <div class="flow-node-sm">Wallentin-Hermann<br>Limb 1 assessment</div>
+          </div>
+        </div>
+
+        <!-- Pass II -->
+        <div style="border:1px solid var(--ink-rule);border-radius:3px;padding:16px;margin-bottom:8px;background:var(--surface-doc)">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
+            <div class="flow-node" style="min-width:80px">Pass II</div>
+            <div style="font-family:var(--font-serif);font-size:13px;font-weight:700">Causal Chain Timeline & Evidence Mapping</div>
+          </div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <div class="flow-node-sm">Root cause node<br>identified</div>
+            <div class="flow-arrow" style="align-self:center">→</div>
+            <div class="flow-node-sm">Propagation nodes<br>(ATFM, crew, aircraft)</div>
+            <div class="flow-arrow" style="align-self:center">→</div>
+            <div class="flow-node-sm">Evidence status<br>per node</div>
+            <div class="flow-arrow" style="align-self:center">→</div>
+            <div class="flow-node-sm">Cross-node signals:<br>Solid / Warning / Alert</div>
+            <div class="flow-arrow" style="align-self:center">→</div>
+            <div class="flow-node-sm">But-for statement<br>derived</div>
+          </div>
+        </div>
+
+        <!-- Pass III -->
+        <div style="border:1px solid var(--ink-rule);border-radius:3px;padding:16px;margin-bottom:8px;background:var(--surface-doc)">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
+            <div class="flow-node" style="min-width:80px">Pass III</div>
+            <div style="font-family:var(--font-serif);font-size:13px;font-weight:700">Legal Decision Engine & Defence Brief</div>
+          </div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <div class="flow-node-sm">Strengths & Weaknesses<br>assessment</div>
+            <div class="flow-arrow" style="align-self:center">→</div>
+            <div class="flow-node-sm">Caselaw bundle<br>with source links</div>
+            <div class="flow-arrow" style="align-self:center">→</div>
+            <div class="flow-node-sm">Chain integrity<br>meter</div>
+            <div class="flow-arrow" style="align-self:center">→</div>
+            <div class="flow-node-sm">Quantum & limitation<br>calculation</div>
+            <div class="flow-arrow" style="align-self:center">→</div>
+            <div class="flow-node-sm">Defence brief<br>generated</div>
+          </div>
+        </div>
+
+        <!-- Output -->
+        <div style="display:flex;align-items:center;gap:12px;margin-top:4px">
+          <div class="flow-node" style="background:#3D3C39;min-width:120px">Output</div>
+          <div class="flow-arrow">→</div>
+          <div style="font-family:var(--font-spectral);font-size:12px;color:var(--ink-secondary)">Structured defence framework for lawyer review, with cited authorities and evidence gaps flagged</div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="sub-title">The Line of Flying</div>
+    <div class="section-body">
+      <p>One of the most important concepts in the system. The <strong>line of flying</strong> is the full rotation of an aircraft across sectors and days. If a flight is delayed, the root cause may not be on that flight at all — it may be on the aircraft's previous sector the day before. The engine detects this from language in the disruption summary (phrases like "inbound from", "prior sector", "prior rotation", "aircraft came from") and automatically prepends an "Aircraft Line of Flying" node to the causal chain before the root cause node.</p>
+      <p>This matters legally because it determines whether the extraordinary circumstance defence starts on the day of the delayed flight, or earlier. A carrier that had time overnight to source a replacement aircraft cannot claim the extraordinary circumstance from the prior day continues to justify the delay — the but-for test and causal chain integrity become critical in these cases.</p>
+    </div>
+  </div>
+
+  <!-- 04 WHAT WAS BUILT -->
+  <div class="section" id="built">
+    <div class="section-label">04 · Build Log</div>
+    <div class="section-title">What Was Built in Phase 3 ACT 1</div>
+    <div class="section-body">
+      <p>Phase 3 ACT 1 ran from the foundation of the legal intelligence engine through to the completion of the caselaw source infrastructure and demo scenario library. Thirteen tasks were completed across two working modes: foundational engine build, and intelligence layer build.</p>
+    </div>
+
+    <div class="task-log">
+      <div class="task-row">
+        <div class="task-num">01</div>
+        <div><div class="task-name">Foundation & Architecture</div><div class="task-desc">Core HTML/CSS/JS structure, design system, font stack, colour palette. Established the page layout and the three-pass framework as the structural spine of the product.</div></div>
+        <div><span class="task-status ts-done">Done</span></div>
+      </div>
+      <div class="task-row">
+        <div class="task-num">02</div>
+        <div><div class="task-name">Input Layer & Flight Lookup</div><div class="task-desc">Dual input system: Mode 1 (ICC text) for direct disruption summary input; Mode 2 (Flight Lookup) for IATA-code driven flight retrieval. Airport IATA→ICAO mapping and weather retrieval infrastructure built.</div></div>
+        <div><span class="task-status ts-done">Done</span></div>
+      </div>
+      <div class="task-row">
+        <div class="task-num">03</div>
+        <div><div class="task-name">Netlify API Proxy</div><div class="task-desc">Planned as the live data integration layer (OpenSky + weather APIs). Reached build stage but Netlify team credits exhausted. Pivoted to pre-loaded demo scenarios as a more realistic representation of the production data flow.</div></div>
+        <div><span class="task-status ts-done">Pivoted</span></div>
+      </div>
+      <div class="task-row">
+        <div class="task-num">04</div>
+        <div><div class="task-name">RM Decision Tree & Lawyer Loop</div><div class="task-desc">Built the reasonable measures assessment layer inside Pass II. Each evidence node surfaces RM-specific questions for the lawyer — what was available, what was attempted, what was documented. The classifier flags high-priority weaknesses in RM evidence automatically.</div></div>
+        <div><span class="task-status ts-done">Done</span></div>
+      </div>
+      <div class="task-row">
+        <div class="task-num">05</div>
+        <div><div class="task-name">Verdict, Quantum & Limitation Engine</div><div class="task-desc">Pass III verdict output: Defend / Borderline / Settle. Art 7 quantum calculation (€250/400/600 based on great circle distance), 50% reduction logic, UK vs EU limitation period determination (6 years Limitation Act 1980 per Dawson v Thomson Airways).</div></div>
+        <div><span class="task-status ts-done">Done</span></div>
+      </div>
+      <div class="task-row">
+        <div class="task-num">06</div>
+        <div><div class="task-name">CASELAW_DB — Verified Legal Authorities</div><div class="task-desc">22 core EC261/UK261 cases built into the engine's caselaw bundle, each with ratio decidendi, propositions, key quotes, court, citation, and whether the case supports defence or claimant. Surfaced in Pass III by disruption type.</div></div>
+        <div><span class="task-status ts-done">Done</span></div>
+      </div>
+      <div class="task-row">
+        <div class="task-num">07</div>
+        <div><div class="task-name">Pass II Redesign — Question-Answer Input</div><div class="task-desc">Replaced early button-selection model with a free-text annotation system per causal chain node. Each node has an annotation textarea and per-item evidence status toggles. The keyword classifier reads the annotation in real time and flags legal weaknesses.</div></div>
+        <div><span class="task-status ts-done">Done</span></div>
+      </div>
+      <div class="task-row">
+        <div class="task-num">08</div>
+        <div><div class="task-name">Defence Brief Generator</div><div class="task-desc">Pass III output: a formatted defence brief the lawyer can copy, extend or send. Auto-populated from Pass I classification, Pass II chain analysis, quantum engine, and caselaw bundle. Includes cover fields, case particulars, legal argument, and outstanding evidence checklist.</div></div>
+        <div><span class="task-status ts-done">Done</span></div>
+      </div>
+      <div class="task-row">
+        <div class="task-num">09</div>
+        <div><div class="task-name">Causal Chain Timeline</div><div class="task-desc">Visual demonstrative layer in Pass II. The chain renders as a vertical timeline of nodes, each showing the event, evidence status, RM assessment, and annotations. The but-for banner sits above the chain and updates live as the lawyer annotates.</div></div>
+        <div><span class="task-status ts-done">Done</span></div>
+      </div>
+      <div class="task-row">
+        <div class="task-num">10</div>
+        <div><div class="task-name">Annotation Keyword Classifier</div><div class="task-desc">Live RM intelligence per node. As the lawyer types into a node's annotation box, the classifier scans for weak phrases ("no standby", "not attempted", "no documentation", "crew timed out") and flags them as high or medium priority weaknesses. Different warning types are surfaced per disruption type.</div></div>
+        <div><span class="task-status ts-done">Done</span></div>
+      </div>
+      <div class="task-row">
+        <div class="task-num">11</div>
+        <div><div class="task-name">Pass I/II/III Cleanup</div><div class="task-desc">Directive output refinement, caselaw rendering bug fixed, strengths and weaknesses panel updated. General reliability pass across all three stages.</div></div>
+        <div><span class="task-status ts-done">Done</span></div>
+      </div>
+      <div class="task-row">
+        <div class="task-num">12</div>
+        <div><div class="task-name">EC261 Judgment Research</div><div class="task-desc">Deep research pass across publicly available CJEU, UKSC, and EWCA judgments to understand what information a defence lawyer actually needs in a court or settlement context. Informed the design of the caselaw bundle, proposition structure, and paragraph-level citation system.</div></div>
+        <div><span class="task-status ts-done">Done</span></div>
+      </div>
+      <div class="task-row">
+        <div class="task-num">13</div>
+        <div><div class="task-name">Cross-Node Intelligence Layer</div><div class="task-desc">The most technically sophisticated build in ACT 1. See Section 05 for full detail.</div></div>
+        <div><span class="task-status ts-done">Done</span></div>
+      </div>
+      <div class="task-row">
+        <div class="task-num">18</div>
+        <div><div class="task-name">Caselaw Source URLs + Modal + Reference Page</div><div class="task-desc">Every case in the engine now links to its source judgment on EUR-Lex, BAILII or UKSC. In-engine modal overlay shows full ratio, propositions and key paragraph references. Standalone defendable_reference.html built as a 31-authority legal knowledge base lawyers can bookmark independently.</div></div>
+        <div><span class="task-status ts-done">Done</span></div>
+      </div>
+      <div class="task-row">
+        <div class="task-num">19</div>
+        <div><div class="task-name">Demo Scenario Library</div><div class="task-desc">16 pre-loaded real disruption scenarios across 8 disruption types, each with a verdict (WIN/LOSS/CONTESTED) and the legal principle it demonstrates. Integrated into the engine as a collapsible scenario browser above the ICC input. Flagship demo scenario (EZY7253 PMI–BHX) retained as a permanent quick-launch.</div></div>
+        <div><span class="task-status ts-done">Done</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 05 CROSS-NODE INTELLIGENCE -->
+  <div class="section" id="cross-node">
+    <div class="section-label">05 · Technical Deep Dive</div>
+    <div class="section-title">Cross-Node Intelligence — How the Chain Thinks</div>
+    <div class="section-body">
+      <p>The most important technical build in ACT 1. Cross-node intelligence is the layer that makes the causal chain <em>reason</em> rather than just display. Without it, the chain is a list of events. With it, the chain understands when its own evidence structure is strong enough to defend, when it has gaps that could break the argument, and where a single weak node could collapse the entire defence.</p>
+    </div>
+
+    <div class="sub-title">Node Status — Four States</div>
+    <div class="section-body">
+      <p>Every node in the causal chain is assigned a status based on the lawyer's annotations and the evidence flags they've set. The status is computed live as the lawyer works.</p>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0">
+      <div style="padding:14px;background:var(--defend-bg);border:1px solid var(--defend-border);border-radius:3px">
+        <div style="font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--defend);margin-bottom:6px">Strong</div>
+        <div style="font-family:var(--font-spectral);font-size:12px;color:var(--ink-secondary);line-height:1.5">Annotation provided, evidence available, no high-priority weaknesses flagged by classifier. This node will hold in court.</div>
+      </div>
+      <div style="padding:14px;background:var(--amber-bg);border:1px solid var(--amber-border);border-radius:3px">
+        <div style="font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--amber);margin-bottom:6px">Contested</div>
+        <div style="font-family:var(--font-spectral);font-size:12px;color:var(--ink-secondary);line-height:1.5">Annotation present but high-priority weakness flagged, or evidence available but some items missing. Defensible but will face challenge.</div>
+      </div>
+      <div style="padding:14px;background:var(--settle-bg);border:1px solid var(--settle-border);border-radius:3px">
+        <div style="font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--settle);margin-bottom:6px">Weak</div>
+        <div style="font-family:var(--font-spectral);font-size:12px;color:var(--ink-secondary);line-height:1.5">Evidence missing, no available items confirmed. This node cannot be substantiated from current documentation. Urgent action needed.</div>
+      </div>
+      <div style="padding:14px;background:var(--surface-ui);border:1px solid var(--ink-rule);border-radius:3px">
+        <div style="font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-tertiary);margin-bottom:6px">Unworked</div>
+        <div style="font-family:var(--font-spectral);font-size:12px;color:var(--ink-secondary);line-height:1.5">No annotation, no evidence status set. Not yet assessed. The lawyer has not reached this node.</div>
+      </div>
+    </div>
+
+    <div class="sub-title">Chain Integrity Signals — Three Levels</div>
+    <div class="section-body">
+      <p>Once node statuses are computed, the chain's overall integrity is assessed by propagating signals upward from each node. The chain signal determines the colour of the Chain Integrity meter in Pass III and influences the defence brief's opening assessment.</p>
+    </div>
+    <div class="signal-row">
+      <div class="signal-card solid">
+        <div class="signal-name">Solid</div>
+        <div class="signal-desc">All worked nodes are Strong or Contested. No critical gaps. The causal chain as documented is defensible. Chain Integrity meter shows green.</div>
+      </div>
+      <div class="signal-card fragile">
+        <div class="signal-name">Fragile</div>
+        <div class="signal-desc">At least one Weak node exists, or multiple Contested nodes. The chain has identifiable gaps that opposing counsel will target. Amber meter. Lawyer action needed before this can be filed.</div>
+      </div>
+      <div class="signal-card broken">
+        <div class="signal-name">Broken</div>
+        <div class="signal-desc">A Weak node exists at a critical position (typically root cause or direct propagation link). The argument cannot be sustained as currently documented. Red meter. Settlement should be considered.</div>
+      </div>
+    </div>
+
+    <div class="sub-title">The But-For Statement</div>
+    <div class="section-body">
+      <p>The but-for statement is the engine's plain-language summary of the causal chain's legal argument. It appears as a banner above Pass II and updates live. Its function is to let the lawyer read the argument as a single sentence before they've worked every node — and to make clear what the defence will have to prove.</p>
+      <p>Example: <em>"But for the Eurocontrol ATFM restriction (French FIR) which caused a 3h 20m slot delay and exhausted crew FDP, flight EZY8812 GVA–MAN would have arrived within the scheduled tolerance."</em></p>
+      <p>If the causal chain breaks — if a voluntary carrier decision intervenes between the extraordinary circumstance and the delay — the but-for statement should reflect that break. This is the <strong>NI/HZ v European Air Charter</strong> principle: a carrier decision to wait for delayed passengers can sever the direct causal link, breaking the Art 5(3) defence even where the original extraordinary circumstance was genuine.</p>
+    </div>
+  </div>
+
+  <!-- 06 SCENARIO LIBRARY -->
+  <div class="section" id="demo-scenarios">
+    <div class="section-label">06 · Demo Library</div>
+    <div class="section-title">The Demo Scenario Library — 16 Cases</div>
+    <div class="section-body">
+      <p>Every scenario is pre-loaded with a realistic ICC-format disruption summary. Selecting a scenario collapses the browser, populates the text input, and the lawyer runs the engine from there. The verdict shown in the browser (WIN/LOSS/CONTESTED) is what the engine should produce when fully worked — it is not pre-determined or hard-coded into the output, it emerges from the legal reasoning. This is intentional: it demonstrates that the engine finds the right answer, not that the answer is written in.</p>
+    </div>
+    <div class="sc-matrix">
+      <div class="sc-m-header"><span>Type</span><span>Scenario</span><span>Expected Verdict</span></div>
+      <div class="sc-m-row"><div class="sc-m-type">Weather</div><div class="sc-m-case">EZY4321 LGW–MAD · Thunderstorm closure at MAD, diversion VLC, RM documented</div><div><span class="cm-badge cm-d">WIN</span></div></div>
+      <div class="sc-m-row"><div class="sc-m-type">Weather</div><div class="sc-m-case">BA2156 LHR–BCN · Forecast fog — TAF issued 6hrs prior, no schedule buffer</div><div><span class="cm-badge cm-b">CONTESTED</span></div></div>
+      <div class="sc-m-row"><div class="sc-m-type">Technical</div><div class="sc-m-case">U24953 AMS–BHX · A220-300 hidden FFCU design defect, first worldwide occurrence</div><div><span class="cm-badge cm-d">WIN</span></div></div>
+      <div class="sc-m-row"><div class="sc-m-type">Technical</div><div class="sc-m-case">RYR442 STN–FCO · Engine oil chip detector, metal swarf, borescope, 5h 40m delay</div><div><span class="cm-badge cm-c">LOSS</span></div></div>
+      <div class="sc-m-row"><div class="sc-m-type">Crew &amp; Medical</div><div class="sc-m-case">BA436 LHR–JFK · Captain incapacitated T-45min, no standby, cancellation</div><div><span class="cm-badge cm-c">LOSS</span></div></div>
+      <div class="sc-m-row"><div class="sc-m-type">Crew &amp; Medical</div><div class="sc-m-case">EZY8812 GVA–MAN · ATFM slot pushes crew to FDP, OCC warned 3hrs early, no action</div><div><span class="cm-badge cm-b">CONTESTED</span></div></div>
+      <div class="sc-m-row"><div class="sc-m-type">Own-Staff IA</div><div class="sc-m-case">BE1821 LCY–DUB · Cabin crew spontaneous walkout, no notice, no union</div><div><span class="cm-badge cm-c">LOSS</span></div></div>
+      <div class="sc-m-row"><div class="sc-m-type">Own-Staff IA</div><div class="sc-m-case">VY1234 BCN–MAN · Formally notified SITCPLA trade union strike, 72hr notice</div><div><span class="cm-badge cm-d">WIN</span></div></div>
+      <div class="sc-m-row"><div class="sc-m-type">Third-Party IA</div><div class="sc-m-case">AF1680 CDG–LHR · French ATC wildcat strike, DGAC NOTAM, CFMU documentation</div><div><span class="cm-badge cm-d">WIN</span></div></div>
+      <div class="sc-m-row"><div class="sc-m-type">Third-Party IA</div><div class="sc-m-case">RYR2234 DUB–FCO · Ground handler strike FCO, 48hr notice, alternate not secured</div><div><span class="cm-badge cm-b">CONTESTED</span></div></div>
+      <div class="sc-m-row"><div class="sc-m-type">Birdstrike</div><div class="sc-m-case">EZY3301 EDI–ALC · Seagull ingestion, mandatory borescope, FOD damage confirmed</div><div><span class="cm-badge cm-d">WIN</span></div></div>
+      <div class="sc-m-row"><div class="sc-m-type">Birdstrike</div><div class="sc-m-case">RYR558 STN–PMI · Second birdstrike same aircraft within 4hrs of first</div><div><span class="cm-badge cm-b">CONTESTED</span></div></div>
+      <div class="sc-m-row"><div class="sc-m-type">Line of Flying</div><div class="sc-m-case">EZY2847 GLA–LPA · Prior rotation hit CAT turbulence, mandatory inspection, carry-forward delay</div><div><span class="cm-badge cm-d">WIN</span></div></div>
+      <div class="sc-m-row"><div class="sc-m-type">Line of Flying</div><div class="sc-m-case">BE437 BHX–ABZ · MEL Category C snag overnight, no rectification attempted, Art 14 missing</div><div><span class="cm-badge cm-b">CONTESTED</span></div></div>
+      <div class="sc-m-row"><div class="sc-m-type">ATFM</div><div class="sc-m-case">EZY6612 LGW–SPU · Croatian FIR military exercise restriction, CFMU documented</div><div><span class="cm-badge cm-d">WIN</span></div></div>
+      <div class="sc-m-row"><div class="sc-m-type">ATFM</div><div class="sc-m-case">RYR1122 STN–MAD · ATFM slot, crew reaches FDP limit, 3hr window to position standby</div><div><span class="cm-badge cm-b">CONTESTED</span></div></div>
+    </div>
+  </div>
+
+  <!-- 07 GLOSSARY -->
+  <div class="section" id="glossary">
+    <div class="section-label">07 · Terminology</div>
+    <div class="section-title">Glossary — Key Terms to Know</div>
+    <div class="glossary-grid">
+      <div class="gloss-item">
+        <div class="gloss-term">Extraordinary Circumstance</div>
+        <div class="gloss-def">An event not inherent in the normal exercise of airline activity and beyond the carrier's actual control. Must satisfy Wallentin-Hermann Limb 1. If absent, there is no Art 5(3) defence regardless of what the carrier did.</div>
+      </div>
+      <div class="gloss-item">
+        <div class="gloss-term">Reasonable Measures (RM)</div>
+        <div class="gloss-def">All steps reasonably available to avoid the delay — Wallentin-Hermann Limb 2. Exhausting human, material and financial resources. The most commonly failed part of the defence even where extraordinary circumstances are clearly established.</div>
+      </div>
+      <div class="gloss-item">
+        <div class="gloss-term">Causal Chain</div>
+        <div class="gloss-def">The sequence of events from the root cause through to the passenger's delay at final destination. Every link in the chain must be established for the Art 5(3) defence to hold. A broken link means the extraordinary circumstance cannot be said to have caused the delay.</div>
+      </div>
+      <div class="gloss-item">
+        <div class="gloss-term">But-For Statement</div>
+        <div class="gloss-def">The plain-language articulation of the causal chain: "but for [extraordinary event], the flight would not have been delayed." The engine derives this automatically from the confirmed chain nodes.</div>
+      </div>
+      <div class="gloss-item">
+        <div class="gloss-term">Line of Flying</div>
+        <div class="gloss-def">An aircraft's full rotation across sectors and days. A delay on flight B may be caused by an event that happened to the same aircraft on flight A the previous day. Establishing the line of flying is critical to tracing root cause across rotations.</div>
+      </div>
+      <div class="gloss-item">
+        <div class="gloss-term">ATFM / CTOT</div>
+        <div class="gloss-def">Air Traffic Flow Management / Calculated Take-Off Time. Eurocontrol assigns CTOTs to aircraft when network capacity is restricted. A CTOT is evidence of a third-party restriction. CFMU documentation is the key evidence item for ATFM defences.</div>
+      </div>
+      <div class="gloss-item">
+        <div class="gloss-term">FDP</div>
+        <div class="gloss-def">Flight Duty Period. The maximum period a crew can be on duty under EASA Part-ORO regulations. If FDP is reached, the crew cannot legally operate. An FDP breach causes a cancellation. Critically: if the FDP breach was foreseeable hours in advance, the question is always whether standby crew could have been positioned as RM.</div>
+      </div>
+      <div class="gloss-item">
+        <div class="gloss-term">MEL</div>
+        <div class="gloss-def">Minimum Equipment List. Allows an aircraft to operate with certain items unserviceable, under defined conditions and time limits (Category A/B/C/D). A MEL Category C dispatch (10-day limit) means the fault was known — it is a foreseeable circumstance, not extraordinary. This weakens any subsequent technical delay claim.</div>
+      </div>
+      <div class="gloss-item">
+        <div class="gloss-term">IPCD</div>
+        <div class="gloss-def">IP Completion Day — 31 December 2020. Flights departing UK airports before this date fall under EC261. Flights departing UK airports from 1 January 2021 fall under UK261. CJEU decisions are binding for EC261 but only persuasive for UK261 cases.</div>
+      </div>
+      <div class="gloss-item">
+        <div class="gloss-term">DIO</div>
+        <div class="gloss-def">Disruption Investigation Officer. The primary user of DefendAble within an airline legal or operations team. Responsible for compiling the disruption record and defence file. DefendAble is built around the DIO's workflow.</div>
+      </div>
+      <div class="gloss-item">
+        <div class="gloss-term">ICC Log</div>
+        <div class="gloss-def">Integrated Control Centre log. The real-time operational record kept by airline Network Control during a disruption. The primary source document for Pass I input. DefendAble's ICC text mode is designed to accept this format directly.</div>
+      </div>
+      <div class="gloss-item">
+        <div class="gloss-term">Chain Integrity Meter</div>
+        <div class="gloss-def">The visual indicator in Pass III showing whether the causal chain as annotated is Solid (green / all nodes strong), Fragile (amber / gaps present), or Broken (red / critical node weak). The colour of the meter is derived from the cross-node intelligence signals, not a manual assessment.</div>
+      </div>
+      <div class="gloss-item">
+        <div class="gloss-term">Art 9 Obligations</div>
+        <div class="gloss-def">Care obligations that survive extraordinary circumstances. Meals, refreshments, hotel accommodation, communication. These are NOT disapplied by Art 5(3) — an airline can win on extraordinary circumstances and still be sanctioned separately for failing to provide Art 9 care (McDonagh v Ryanair).</div>
+      </div>
+      <div class="gloss-item">
+        <div class="gloss-term">Art 14 Obligation</div>
+        <div class="gloss-def">Written notification of passenger rights at check-in. An independent obligation — a carrier can satisfy Art 5(3) and still be sanctioned by a national enforcement body for failing to post the Art 14 notice (Bacău Air Centre). A frequent oversight in high-volume operations.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 08 CASES TO KNOW -->
+  <div class="section" id="caselaw">
+    <div class="section-label">08 · Legal Authorities</div>
+    <div class="section-title">Cases to Know by Name</div>
+    <div class="section-body">
+      <p>These are the cases you will encounter most often in the context of the product, in demos, and in conversations with airline legal teams. You don't need to know the paragraph numbers — that's what the reference page is for — but you should be able to name the case and state its core rule. The full reference page has all 31 authorities with source links.</p>
+    </div>
+    <div class="case-matrix">
+      <div class="cm-header"><span>Case</span><span>What it established</span><span>Favours</span></div>
+      <div class="cm-row"><div class="cm-case">Wallentin-Hermann v Alitalia (C-549/07)</div><div class="cm-prop">The foundational two-limb test. Technical defects are not extraordinary. Every defence starts here.</div><div><span class="cm-badge cm-c">Claimant</span></div></div>
+      <div class="cm-row"><div class="cm-case">Sturgeon v Condor (C-402/07)</div><div class="cm-prop">3hr delay = same rights as cancellation. Compensation threshold confirmed.</div><div><span class="cm-badge cm-c">Claimant</span></div></div>
+      <div class="cm-row"><div class="cm-case">Lipton v BA CityFlyer [2024] UKSC 24</div><div class="cm-prop">UK Supreme Court: crew illness is never extraordinary. Irrelevant whether on or off duty.</div><div><span class="cm-badge cm-c">Claimant</span></div></div>
+      <div class="cm-row"><div class="cm-case">Pešková v Travel Service (C-315/15)</div><div class="cm-prop">Birdstrike is extraordinary. Mandatory post-strike inspection does not negate the defence.</div><div><span class="cm-badge cm-d">Defence</span></div></div>
+      <div class="cm-row"><div class="cm-case">Matkustaja v Finnair (C-385/23)</div><div class="cm-prop">Latent hidden design defect (first worldwide occurrence, OEM confirmed) is extraordinary. Four-part test.</div><div><span class="cm-badge cm-d">Defence</span></div></div>
+      <div class="cm-row"><div class="cm-case">D.S.A. v P.S.A. (C-411/23)</div><div class="cm-prop">Prior knowledge of a hidden defect doesn't defeat the defence if carrier still can't remedy it. No back-up fleet required.</div><div><span class="cm-badge cm-d">Defence</span></div></div>
+      <div class="cm-row"><div class="cm-case">Krüsemann v TUIfly (C-195/17)</div><div class="cm-prop">Wildcat/spontaneous own-staff strike is NOT extraordinary. Inherent in normal operations.</div><div><span class="cm-badge cm-c">Claimant</span></div></div>
+      <div class="cm-row"><div class="cm-case">Airhelp v Swiss International (C-28/20)</div><div class="cm-prop">Formally notified, lawfully-called trade union strike CAN be extraordinary. Distinguishes Krüsemann.</div><div><span class="cm-badge cm-d">Defence</span></div></div>
+      <div class="cm-row"><div class="cm-case">Van der Lans v KLM (C-257/14)</div><div class="cm-prop">Premature component failure is inherent in airline operations. Not extraordinary regardless of how unexpected.</div><div><span class="cm-badge cm-c">Claimant</span></div></div>
+      <div class="cm-row"><div class="cm-case">Eglitis v Latvijas (C-294/10)</div><div class="cm-prop">Carriers must plan adequate time buffers for foreseeable extraordinary circumstances. Key RM case.</div><div><span class="cm-badge cm-c">Claimant</span></div></div>
+      <div class="cm-row"><div class="cm-case">NI, HZ v European Air Charter (T-656/24)</div><div class="cm-prop">A voluntary carrier decision can break the causal chain even where the original extraordinary circumstance was genuine.</div><div><span class="cm-badge cm-c">Claimant</span></div></div>
+      <div class="cm-row"><div class="cm-case">McDonagh v Ryanair (C-12/11)</div><div class="cm-prop">Art 9 care obligations survive extraordinary circumstances. Losing on Art 5(3) doesn't extinguish the care duty.</div><div><span class="cm-badge cm-c">Claimant</span></div></div>
+      <div class="cm-row"><div class="cm-case">Germanwings v Henning (C-452/13)</div><div class="cm-prop">Arrival time = first door opens. Not touch-down. Determines whether 3hr threshold is met.</div><div><span class="cm-badge cm-c">Claimant</span></div></div>
+      <div class="cm-row"><div class="cm-case">TAP v Flightright (C-156/22)</div><div class="cm-prop">Even a co-pilot's death is not extraordinary. Staff absence — however extreme the cause — is inherent in airline operations.</div><div><span class="cm-badge cm-c">Claimant</span></div></div>
+      <div class="cm-row"><div class="cm-case">Finnair v Lassooy (C-22/11)</div><div class="cm-prop">Denied boarding from a replacement flight is an independent Art 4 right. Extraordinary circumstances on the original flight don't extinguish it.</div><div><span class="cm-badge cm-c">Claimant</span></div></div>
+    </div>
+  </div>
+
+  <!-- 09 PRODUCT POSITION -->
+  <div class="section" id="product-position">
+    <div class="section-label">09 · Product Strategy</div>
+    <div class="section-title">What DefendAble Is — and What It Is Not</div>
+    <div class="section-body">
+      <p>This is the section to read before any demo or meeting. Getting this framing right matters.</p>
+    </div>
+
+    <div class="callout callout-defend">
+      <div class="callout-label">What DefendAble Is</div>
+      <div class="callout-text">A <strong>legal reasoning engine</strong> that applies EC261/UK261 logic to structured disruption data and produces a defence framework for lawyer review. Its IP is the workflow: the classification, the causal chain structure, the cross-node intelligence, the caselaw application. It is the layer that sits between raw operational data and the lawyer's desk.</div>
+    </div>
+
+    <div class="callout callout-settle">
+      <div class="callout-label">What DefendAble Is Not</div>
+      <div class="callout-text">A <strong>data system</strong>. It does not hold flight data, operational records, or claim files. Those exist in the airline's own operational infrastructure. DefendAble is a downstream reasoning layer that processes whatever structured data is fed to it. The data integration is an implementation project, not a product feature.</div>
+    </div>
+
+    <div class="callout callout-amber">
+      <div class="callout-label">The Data Integration Story</div>
+      <div class="callout-text">Airlines already hold the data DefendAble needs: disruption reason, timing data, crew records, ATFM documentation, METAR/TAF. This sits in operational data systems (data warehouses, lake houses, case management platforms). The integration question is: what does a structured disruption record look like coming out of those systems, and how closely does it map to DefendAble's input format? If that mapping is close, the integration is a data engineering project. If it's not close, it's a data transformation layer. DefendAble does not need the airline to change its infrastructure — it sits downstream of what they already have.</div>
+    </div>
+
+    <div class="sub-title">The Demo's Job</div>
+    <div class="section-body">
+      <p>In a demo to airline legal teams or DIOs, the scenarios in the engine should be introduced with the framing: "This is a disruption record as it would arrive from your operational data layer." That framing makes the integration story concrete without requiring any live system connection. The audience will immediately map it to their own data — they know what their ICC logs look like.</p>
+      <p>The demo has three moments that always land: (1) the system correctly classifying a complex multi-node disruption and identifying the legal weakness before the lawyer does; (2) the system catching a loss early — a case where the carrier has no extraordinary circumstances defence — and recommending settle clearly and with cited authority; (3) the caselaw modal opening to a directly linkable EUR-Lex judgment, demonstrating that the legal foundations are independently verifiable.</p>
+    </div>
+  </div>
+
+  <!-- 10 LOF WORKFLOW + STRATEGIC REVIEW -->
+  <div class="section" id="lof">
+    <div class="section-label">10 · Pass II Redesign</div>
+    <div class="section-title">The LOF Verification Workflow — Pass II Rebuilt</div>
+    <div class="section-body">
+      <p>The original Pass II displayed the causal chain derived from ICC text and asked the lawyer to annotate each node. The problem: fact verification and legal analysis happened simultaneously, from the same narrative. The lawyer never had a dedicated moment to confirm the factual picture before legal flags fired. This was identified as a structural gap — the LOF and legal workflow lacked the lawyer-in-the-loop relationship they needed.</p>
+      <p>The redesigned Pass II separates the workflow into two explicit stages:</p>
+      <p><strong>Stage 1 — Factual Verification.</strong> The Line of Flying is presented as an interactive evidence-backed timeline. Each node represents a sector, event, or recovery action in the aircraft's full rotation — not just the claimed flight. The lawyer verifies each node against actual evidence: CFMU slot confirmations, METAR records, crew FDP calculations, ops logs. Evidence documents open in a slide-in viewer alongside the LOF timeline so the lawyer can verify facts against the source simultaneously. Missing evidence can be logged as a request, which is tracked. When the lawyer is satisfied, they confirm the node.</p>
+      <p><strong>Stage 2 — Legal Analysis.</strong> Only after the factual record is confirmed does the legal analysis fire — and it fires against the confirmed facts, not the original ICC narrative. This is the critical difference. A legal flag about an extraordinary circumstance is only meaningful if the underlying fact has been verified against contemporaneous evidence. The two stages enforce this discipline.</p>
+    </div>
+
+    <div class="callout callout-law">
+      <div class="callout-label">Core Design Principle</div>
+      <div class="callout-text">
+        <em>The system creates the layout. The lawyer makes the judgement.</em><br><br>
+        DefendAble's role is to surface the right facts, evidence, and legal context at the right moment — not to make the defence decision. The lawyer confirms, challenges, or requests more evidence at each node. The engine reacts to what is confirmed, not to what the ICC text says.
+      </div>
+    </div>
+
+    <div class="section-body">
+      <p><strong>Interactive command bar.</strong> Within the LOF interface, the lawyer can type natural language requests alongside the timeline — for example: <em>"pull line of flying for G-EZFM on 15JUN24"</em> or <em>"get Eurocontrol CFMU docs for GVA-PMI"</em>. The system responds by pulling and updating — either adding a new LOF node (e.g. prior day rotation), or adding evidence documents to an existing node. The lawyer reviews the update and confirms or challenges it.</p>
+      <p><strong>Evidence viewer.</strong> Each evidence item opens a structured document card in a slide-in panel — not a raw external page, but a parsed, key-field-highlighted view of the document. A METAR card shows the wind, decoded, with the critical timestamp and speed highlighted against the certified aircraft limit. A CFMU card shows the slot reference, delay, and regulation applied. For public source documents (METAR archive, Eurocontrol NOP), a <em>View Source ↗</em> link takes the lawyer to the actual document for independent verification. This is how the lawyer verifies the LOF against the evidence it is based on, within the same interface.</p>
+      <p><strong>Confirm Line of Flying.</strong> When the factual record is confirmed across all nodes, the lawyer triggers "Confirm Line of Flying" — which locks Stage 1 and passes the verified record to legal analysis. The LOF confirmation screen shows the full chain summary: confirmed nodes, outstanding evidence, causal chain narrative, delay quantum. This is the handover point from fact to law.</p>
+    </div>
+
+    <div class="callout">
+      <div class="callout-label">Files Delivered</div>
+      <div class="callout-text">
+        <strong>defendable_lof_v1.html</strong> — Standalone LOF Verification interface. Pre-loaded with EZY7253 PMI–BHX 16JUN24 demo scenario (5 LOF nodes, evidence items, CFMU/METAR viewer, Art 14 flag, FDP calculation, standby crew deployment). Interactive command bar with 8 recognised request patterns. Slide-in evidence viewer with structured document cards.<br><br>
+        <strong>defendable_analyser_v3.html</strong> — Pass II renamed to "Line of Flying Verification &amp; Evidence Review". Updated intro text describes the two-stage workflow. "Open LOF Verification →" bridge button links to the standalone LOF page from within the main engine's Pass II section.
+      </div>
+    </div>
+  </div>
+
+  <!-- 11 STRATEGIC REVIEW -->
+  <div class="section" id="strategic">
+    <div class="section-label">11 · Strategic Review</div>
+    <div class="section-title">Ed's Email — The Strategic Questions and Where They Lead</div>
+    <div class="section-body">
+      <p>A strategic review of DefendAble identified four questions that need answers before the product can be sold to an airline:</p>
+      <p><strong>1. Who is the buyer?</strong> The most likely buyer is not the DIO or paralegal (the user) — it is the Head of Legal or General Counsel at the airline, who signs off on operational tooling. The product needs to speak their language at the demo: cost per case, portfolio exposure visibility, time to defence, consistency of legal output across the team. The demo should land for someone who manages a legal budget, not just for someone who files defences.</p>
+      <p><strong>2. The 80/20 problem.</strong> DefendAble has built the right 20%: the legal intelligence layer. The hard 80% is data integration — getting structured disruption records out of the airline's operational infrastructure (data warehouse, ICC system, operational control) and into DefendAble's input layer reliably and at scale. This is not a legal problem. It is a data engineering problem. The answer: the DIO enters the data manually in Phase 1. The integration comes later, airline by airline, as part of the commercial agreement. The product is still valuable without the integration — but the integration is what makes it transformational.</p>
+      <p><strong>3. Liability positioning.</strong> DefendAble provides legal intelligence, not legal advice. The lawyer makes the judgement. The system surfaces the facts, the evidence structure, the applicable authority, and the causal chain analysis. The decision is always the lawyer's. This is not just a disclaimer — it is the design principle. The two-stage LOF workflow (verify facts first, then fire legal analysis) enforces this operationally. The lawyer cannot skip fact verification. This is the "human in the loop" architecture.</p>
+      <p><strong>4. Law keeps moving.</strong> The legal landscape changes: new CJEU rulings, domestic court decisions, CAA enforcement positions. DefendAble's CASELAW_DB and reference repository are designed to be updated as the law evolves. New legal references added to the reference document should always be cross-checked against the engine's CASELAW_DB to ensure the analysis layer reflects current law. The reference document is the knowledge foundation; the engine applies it.</p>
+    </div>
+
+    <div class="callout callout-law">
+      <div class="callout-label">Two-Product Vision (Emerging)</div>
+      <div class="callout-text">
+        <strong>DefendAble Analyse</strong> — The legal intelligence engine built in Phase 3. Takes a disruption record, produces a three-pass legal analysis, LOF verification workflow, and defence brief. Used per-case by the DIO or paralegal.<br><br>
+        <strong>DefendAble Manage</strong> — The case management and portfolio layer planned for ACT 2. Where cases live after analysis: portfolio tracking, exposure calculation across batches, workflow states (claim received → under investigation → defence prepared → resolved), and the connection to the airline's data infrastructure.
+      </div>
+    </div>
+  </div>
+
+  <!-- 12 ACT 2 -->
+  <div class="section" id="act2">
+    <div class="section-label">12 · What's Next</div>
+    <div class="section-title">ACT 2 — The Case Management Layer</div>
+    <div class="section-body">
+      <p>ACT 1 built the intelligence engine: the thing that takes a disruption and produces a legal framework. ACT 2 is the layer that sits above and around it: where cases live once they've been analysed, how portfolios of claims are tracked across a carrier's operation, how the engine connects to the airline's data infrastructure, and how the DIO manages work in progress across multiple open cases simultaneously.</p>
+      <p>ACT 2 is a planning session before it is a build. The LOF workflow redesign (Section 10) is the final element of ACT 1 — it completes the legal intelligence layer. ACT 2 builds the operational layer around it. The questions it needs to answer: what does a case lifecycle look like from receipt of claim to settlement or court? How are cases grouped by disruption event? What does a DIO's daily dashboard look like? And critically — what does the data connection between an airline's operational infrastructure and DefendAble's input layer look like in practice?</p>
+    </div>
+
+    <div class="callout callout-law">
+      <div class="callout-label">ACT 2 Key Questions to Plan</div>
+      <div class="callout-text">
+        <strong>Case portfolio view:</strong> How many live claims, what stage, what's the total exposure?<br><br>
+        <strong>Event-based batching:</strong> One disruption event typically generates multiple claims from the same flight. ACT 2 needs to group these and allow one defence to serve the batch.<br><br>
+        <strong>Data connection:</strong> What is the input format from a data warehouse perspective? What fields are mandatory vs enrichable by the DIO? The Databricks loop — how does the airline's operational record become DefendAble's input?<br><br>
+        <strong>Workflow states:</strong> New claim → Under investigation → Defence prepared → Settled / Filed / Defended. The engine needs to know where in this lifecycle a case sits.<br><br>
+        <strong>The Jet2 opportunity:</strong> The first target commercial relationship. The demo needs to land for a Head of Legal who manages a team of DIOs across a substantial UK-domestic and short-haul European operation. The portfolio view — how many live claims, what's the exposure, where is each one — is what they will ask for first.
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="doc-footer">
+    <div>
+      <div class="doc-footer-brand">DefendAble Intelligence Engine</div>
+      <div style="font-family:var(--font-mono);font-size:10px;color:var(--ink-faint);margin-top:4px;letter-spacing:.06em">PHASE 3 · ACT 1 COMPLETE + PASS II REBUILD · JULY 2026</div>
+    </div>
+    <div class="doc-footer-note">Personal reference only — not for external distribution. All carrier-specific operational system names redacted. Legal propositions should be verified against source judgments before reliance.</div>
+  </div>
+
+</div>
+</body>
+</html>
