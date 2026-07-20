@@ -4903,11 +4903,31 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
       causalNodes = parseCausalChain(inputText, dt);
       causalNodesCount = causalNodes ? causalNodes.length : 1;
 
-      // Directive recommendation from limb1Status
+      // Directive recommendation — wording differs for custom vs scenario mode
+      // Scenario mode: position is based on verified pre-built case facts
+      // Custom mode: position is initial classification only — must not be read as confirmed
       const directives = {
-        extraordinary: { label:'Extraordinary', rec:'Position: Defend', recClass:'defend', recSub:'Limb 1 established — build Limb 2 evidence' },
-        contested:     { label:'Requires Investigation', rec:'Position: Investigate', recClass:'conditions', recSub:'Limb 1 uncertain — gather evidence before committing' },
-        unlikely:      { label:'Non-Extraordinary', rec:'Position: Consider Settling', recClass:'settle', recSub:'Limb 1 weak — assess exposure before proceeding' }
+        extraordinary: {
+          label:   isScenarioMode ? 'Extraordinary'               : 'Classified: Extraordinary',
+          rec:     isScenarioMode ? 'Position: Defend'            : 'Initial Position: Defend',
+          recClass:'defend',
+          recSub:  isScenarioMode ? 'Limb 1 established — build Limb 2 evidence'
+                                  : 'Based on classification — confirm with evidence before committing'
+        },
+        contested: {
+          label:   isScenarioMode ? 'Requires Investigation'      : 'Classified: Contested',
+          rec:     isScenarioMode ? 'Position: Investigate'       : 'Initial Position: Investigate',
+          recClass:'conditions',
+          recSub:  isScenarioMode ? 'Limb 1 uncertain — gather evidence before committing'
+                                  : 'Classification contested — evidence required to determine Limb 1'
+        },
+        unlikely: {
+          label:   isScenarioMode ? 'Non-Extraordinary'           : 'Classified: Non-Extraordinary',
+          rec:     isScenarioMode ? 'Position: Consider Settling' : 'Initial Position: Consider Settling',
+          recClass:'settle',
+          recSub:  isScenarioMode ? 'Limb 1 weak — assess exposure before proceeding'
+                                  : 'Classification weak — verify before any settlement decision'
+        }
       };
       const dir = directives[dt.limb1Status] || directives.contested;
 
@@ -5009,7 +5029,8 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
             </div>
             ${jurisFlag}
             ${!isScenarioMode ? buildFactsPanel(currentFacts, dt) : ''}
-            <div class="brief-limb1" style="margin-top:var(--sp-md)">${dt.limb1}</div>
+            ${!isScenarioMode ? '<div style="font-family:var(--font-mono);font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-faint);margin-top:var(--sp-md);margin-bottom:4px">Legal basis — if classification confirmed</div>' : ''}
+            <div class="brief-limb1" style="margin-top:${isScenarioMode?'var(--sp-md)':'4px'}">${dt.limb1}</div>
             ${renderCausalChain(causalNodes)}
           </div>
 
@@ -6812,94 +6833,205 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
     /* ----------------------------------------------------------
        CAUSAL CHAIN — Feature 1
     ---------------------------------------------------------- */
-    function extractWeatherDetail(t) {
-      if (/windshear/.test(t)) return 'Windshear / crosswind';
-      if (/thunderstorm|storm/.test(t)) return 'Thunderstorm activity';
-      if (/fog|vis/.test(t)) return 'Low visibility / fog';
-      if (/snow|ice/.test(t)) return 'Snow / ice on ground';
+    /* ----------------------------------------------------------
+       WEATHER DETAIL EXTRACTOR
+       Uses specific patterns with word boundaries to avoid false
+       positives from short substrings (e.g. 'vis' in 'investigation',
+       'ice' in 'service', 'wind' in 'window').
+    ---------------------------------------------------------- */
+    function extractWeatherDetail(lower) {
+      if (/windshear|wind\s*shear/.test(lower))                return 'Windshear conditions';
+      if (/crosswind/.test(lower))                             return 'Crosswind / operating limits';
+      if (/\btsra\b|thunderstorm/.test(lower))                 return 'Thunderstorm activity';
+      if (/\bcb\b|cumulonimbus/.test(lower))                   return 'Cumulonimbus / severe convection';
+      if (/turbulence|\bcat\b|clear air turbulence/.test(lower)) return 'Turbulence event';
+      if (/\bfog\b|low visibility|low vis\b|lvp/.test(lower))  return 'Low visibility / fog';
+      if (/\bsnow\b/.test(lower))                              return 'Snow / winter conditions';
+      if (/\bicing\b/.test(lower))                             return 'Aircraft icing conditions';
+      if (/\bsigmet\b/.test(lower))                            return 'SIGMET advisory active';
+      if (/volcanic ash|ash cloud|\bvaac\b/.test(lower))       return 'Volcanic ash disruption';
+      if (/\bwind\b/.test(lower))                              return 'Wind / operating limits';
       return 'Meteorological conditions';
     }
 
+    /* ----------------------------------------------------------
+       CAUSAL CHAIN BUILDER
+       RULE: Root node is driven ONLY by dt.id (the classifier result).
+       No secondary text re-testing for the root.
+       Cascade / operational nodes require specific, unambiguous phrases
+       with word boundaries — never single short substrings.
+       Only add a node if the text actually says it happened.
+    ---------------------------------------------------------- */
     function parseCausalChain(text, dt) {
       const nodes = [];
-      const t = text.toLowerCase();
+      const lower = text.toLowerCase();
 
-      // ── Prior-day / prior-sector detection ──────────────────────────
-      // Look for references that place the root event on a different day
-      // or a different sector before the claimed flight.
-      const hasPriorDay = /prior day|previous day|day before|night before|earlier that day|the previous|inbound from|arrived from|came from|[\d]{1,2}\s+(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*.{0,10}(?:previous|prior|before|earlier)/.test(t)
-        || /prior rotation|earlier rotation|prior sector|previous sector|inbound rotation/.test(t);
+      // ── Aircraft registration extraction ────────────────────────────
+      const allRegs = [...text.matchAll(/\b([A-Z]{1,2}-[A-Z]{2,4})\b/g)].map(m => m[1]);
+      const acReg = allRegs[0] || null;
 
-      // Extract aircraft registration if present (e.g. OE-IJJ, G-EZBT)
-      const regMatch = text.match(/\b([A-Z]{1,2}-[A-Z]{2,4})\b/);
-      const acReg = regMatch ? regMatch[1] : null;
+      // ── Prior sector detection — requires explicit prior-sector language ─
+      // Not 'inbound' alone — needs to clearly reference a rotation before the claimed flight.
+      const hasPriorSector = /\b(prior rotation|prior sector|previous sector|inbound rotation|earlier rotation|inbound from|arrived from|came from)\b/.test(lower);
 
-      // ── Root cause node ─────────────────────────────────────────────
+      // ── Root cause node — from classifier result only ─────────────────
       let rootNode;
-      if (dt.id === 'weather' || /weather|storm|wind|fog|snow|ice|vis|metar|sigmet|crosswind|windshear/.test(t)) {
-        const weatherDetail = extractWeatherDetail(t);
-        // Try to extract airport
-        const airportMatch = text.match(/\b([A-Z]{3})\b/);
-        const airportNote = airportMatch ? ` at ${airportMatch[1]}` : '';
-        rootNode = { type:'root', label:'Adverse Weather', sub: weatherDetail + airportNote, icon:'🌩' };
-      } else if (dt.id === 'atfm' || /atfm|eurocontrol|ctot|flow|regulation|slot/.test(t)) {
-        rootNode = { type:'root', label:'ATFM Regulation', sub: 'Eurocontrol / National ANSP', icon:'🗼' };
-      } else if (dt.id === 'birdstrike' || /bird/.test(t)) {
-        rootNode = { type:'root', label:'Birdstrike', sub: 'Third-party collision event', icon:'🐦' };
-      } else if (dt.id === 'technical' || /tech|defect|snag|aog|maint/.test(t)) {
-        rootNode = { type:'root', label:'Technical Defect', sub: 'Aircraft unserviceable', icon:'🔧' };
-      } else if (dt.id === 'medical' || /medic|passenger ill|pax ill|emergency med/.test(t)) {
-        rootNode = { type:'root', label:'Medical Emergency', sub: 'Passenger / crew medical', icon:'🏥' };
-      } else if (dt.id === 'security' || /security|threat|bomb|suspicious/.test(t)) {
-        rootNode = { type:'root', label:'Security Event', sub: 'Security authority directive', icon:'🛡' };
-      } else {
-        rootNode = { type:'root', label: dt.label, sub: 'Primary disruption event', icon:'⚡' };
+      switch (dt.id) {
+        case 'weather': {
+          const detail = extractWeatherDetail(lower);
+          rootNode = { type:'root', label:'Adverse Weather', sub: detail, icon:'🌩' };
+          break;
+        }
+        case 'atfm':
+          rootNode = { type:'root', label:'ATFM Regulation', sub: 'Eurocontrol / National ANSP restriction', icon:'🗼' };
+          break;
+        case 'birdstrike': {
+          // Extract species if mentioned
+          const species = /seagull/.test(lower) ? 'Seagull ingestion'
+                        : /pigeon/.test(lower)  ? 'Pigeon strike'
+                        : /raptor|hawk|eagle/.test(lower) ? 'Raptor strike'
+                        : 'Wildlife collision event';
+          rootNode = { type:'root', label:'Wildlife Strike', sub: species, icon:'🐦' };
+          break;
+        }
+        case 'technical': {
+          // Extract defect type if stated
+          const defect = /hydraulic/.test(lower)       ? 'Hydraulic system defect'
+                       : /engine failure/.test(lower)  ? 'Engine failure'
+                       : /avionics|efis/.test(lower)   ? 'Avionics fault'
+                       : /\bmel\b/.test(lower)         ? 'MEL-listed defect'
+                       : /oil chip|swarf/.test(lower)  ? 'Oil system contamination'
+                       : /firmware|software/.test(lower) ? 'Firmware / software defect'
+                       : 'Aircraft technical defect';
+          rootNode = { type:'root', label:'Technical Defect', sub: defect, icon:'🔧' };
+          break;
+        }
+        case 'medical':
+          rootNode = { type:'root', label:'Medical Emergency', sub: 'In-flight medical event — commander divert', icon:'🏥' };
+          break;
+        case 'security':
+          rootNode = { type:'root', label:'Security Alert', sub: 'Competent authority security directive', icon:'🛡' };
+          break;
+        case 'third-party-ia': {
+          const body = /dgac|french atc/.test(lower)   ? 'DGAC / French ATC'
+                     : /enac|italian atc/.test(lower)  ? 'ENAC / Italian ATC'
+                     : /ground handler/.test(lower)    ? 'Third-party ground handler'
+                     : 'Third-party ATC / authority';
+          rootNode = { type:'root', label:'Third-Party Industrial Action', sub: body + ' strike action', icon:'🚫' };
+          break;
+        }
+        case 'own-ia':
+          rootNode = { type:'root', label:'Own Staff Industrial Action', sub: 'Carrier staff disruption', icon:'🚫' };
+          break;
+        case 'disruptive-pax':
+          rootNode = { type:'root', label:'Disruptive Passenger', sub: 'Unruly behaviour requiring commander intervention', icon:'🚨' };
+          break;
+        case 'ground-damage':
+          rootNode = { type:'root', label:'Third-Party Ground Damage', sub: 'Airside vehicle / ground handling incident', icon:'🔧' };
+          break;
+        case 'airport-closure':
+          rootNode = { type:'root', label:'Airport / Runway Closure', sub: 'Aerodrome authority directive', icon:'⛔' };
+          break;
+        case 'natural-disaster':
+          rootNode = { type:'root', label:'Natural Disaster', sub: 'Force majeure — authority restriction', icon:'🌋' };
+          break;
+        case 'political-unrest':
+          rootNode = { type:'root', label:'Political / Civil Unrest', sub: 'Government restriction on operations', icon:'🚫' };
+          break;
+        case 'crew-fdp':
+          rootNode = { type:'root', label:'Crew FDP Constraint', sub: 'Flight Duty Period exhaustion — root cause required', icon:'👨‍✈️' };
+          break;
+        default:
+          rootNode = { type:'root', label: dt.label || 'Disruption Event', sub: 'Root cause — verify and classify', icon:'⚡' };
       }
 
-      // If root event was on a prior day / prior sector, flag it clearly
-      if (hasPriorDay) {
+      // Prior sector prefix node — only if explicitly mentioned in text
+      if (hasPriorSector) {
         rootNode.sub = (rootNode.sub || '') + ' · Prior sector / prior day';
         rootNode.priorDay = true;
-        // Insert a line-of-flying prefix node to show the aircraft's journey to this point
         nodes.push({
-          type: 'root',
-          priorDay: true,
-          label: acReg ? `Aircraft Line of Flying${acReg ? ' (' + acReg + ')' : ''}` : 'Aircraft Line of Flying',
-          sub: 'Root event occurred on a prior sector or calendar day — chain spans multiple sectors',
+          type: 'root', priorDay: true,
+          label: acReg ? `Aircraft Line of Flying (${acReg})` : 'Aircraft Line of Flying',
+          sub: 'Root event occurred on a prior sector — chain spans multiple sectors',
           icon: '✈'
         });
       }
 
       nodes.push(rootNode);
 
-      // ── Cascade events ───────────────────────────────────────────────
-      if (/atfm|eurocontrol|ctot|flow|slot/.test(t) && rootNode.label !== 'ATFM Regulation') {
-        nodes.push({ type:'cascade', label:'ATFM Cascade', sub:'Eurocontrol regulation imposed', icon:'📡' });
-      }
-      if (/divert|diversion/.test(t)) {
-        const dest = t.match(/divert(?:ed)?\s+(?:to\s+)?([a-z]{3})/)?.[1]?.toUpperCase();
-        nodes.push({ type:'cascade', label:'Aircraft Diversion', sub: dest ? `Diverted to ${dest}` : 'Commander decision', icon:'✈' });
-      }
-      if (/inbound|rotation|incoming|prior sector/.test(t) && !hasPriorDay) {
-        // Only add as a cascade node if we haven't already captured this as prior-day root
-        nodes.push({ type:'cascade', label:'Inbound Delay', sub:'Rotation affected by prior sector', icon:'🔄' });
-      }
-      if (/replacement aircraft|spare aircraft|sub aircraft/.test(t)) {
-        nodes.push({ type:'operational', label:'Replacement Aircraft', sub:'Substitute airframe deployed', icon:'🛫' });
-      }
-      if (/crew|fdp|duty|standby|rest|fatigue/.test(t)) {
-        const crewType = /standby/.test(t) ? 'Standby Crew Deployed' : 'Crew FDP Limit';
-        const crewSub  = /standby/.test(t) ? 'Reserve crew called in' : 'Flight time regulations exceeded';
-        nodes.push({ type:'operational', label: crewType, sub: crewSub, icon:'👨‍✈️' });
-      }
-      if (/coach|bus|transfer|transport|hotel|accommodation/.test(t)) {
-        nodes.push({ type:'operational', label:'Passenger Care', sub:'Art 9 obligations enacted', icon:'🏨' });
+      // ── Cascade nodes — ONLY if the text explicitly states the event ───
+      // Each check uses word boundaries or multi-word phrases to prevent
+      // false positives from short substring matches.
+
+      // ATFM cascade: only if Eurocontrol/CTOT/ATFM explicitly mentioned AND root is not already ATFM
+      if (dt.id !== 'atfm' && /\b(atfm|eurocontrol|ctot|network manager|flow management|calculated take.off time)\b/.test(lower)) {
+        const slot = lower.match(/ctot\s+([\d]{4}[z]?)/)?.[1]?.toUpperCase();
+        nodes.push({ type:'cascade', label:'ATFM Cascade', sub: slot ? `CTOT ${slot} imposed` : 'Air traffic flow restriction imposed', icon:'📡' });
       }
 
-      // ── Outcome — always last ────────────────────────────────────────
-      const delayMatch = t.match(/(\d+)h\s*(\d+)?\s*min|\d+\s*hour/);
-      const delayStr = delayMatch ? delayMatch[0].replace(/\s+/g,'') : 'delay';
-      nodes.push({ type:'outcome', label:'Arrival Delay', sub: delayStr + ' at destination', icon:'⏱' });
+      // Diversion: only if 'diverted' / 'diversion' explicitly stated
+      if (/\b(diverted?|diversion)\b/.test(lower)) {
+        const dest = lower.match(/divert(?:ed)?\s+to\s+([a-z]{3})\b/)?.[1]?.toUpperCase()
+                  || lower.match(/diversion\s+to\s+([a-z]{3})\b/)?.[1]?.toUpperCase();
+        nodes.push({ type:'cascade', label:'Aircraft Diversion', sub: dest ? `Diverted to ${dest}` : 'Commander divert decision', icon:'✈' });
+      }
+
+      // AOG: only for disruption types where AOG is a cascade (not the root cause itself)
+      // Exclude birdstrike and technical where AOG is intrinsic to the root event
+      if (dt.id !== 'birdstrike' && dt.id !== 'technical' && /\baog\b/.test(lower)) {
+        nodes.push({ type:'cascade', label:'Aircraft AOG', sub: 'Aircraft grounded — airworthiness hold', icon:'⛔' });
+      }
+
+      // Inbound rotation delay — only if prior sector language present AND not already shown as root
+      if (!hasPriorSector && /\b(inbound rotation|rotation delay|rotation was delayed|late inbound|prior sector delay)\b/.test(lower)) {
+        nodes.push({ type:'cascade', label:'Inbound Rotation Delay', sub: 'Prior sector delay cascaded to this flight', icon:'🔄' });
+      }
+
+      // Replacement aircraft — only if explicitly stated in text
+      if (/\b(replacement aircraft|spare aircraft|aircraft repositioned|sub aircraft)\b/.test(lower)) {
+        const replReg = text.match(/replacement aircraft\s+([A-Z]{1,2}-[A-Z]{2,4})/i)?.[1]
+                     || text.match(/aircraft\s+([A-Z]{1,2}-[A-Z]{2,4})\s+repositioned/i)?.[1];
+        nodes.push({ type:'operational', label:'Replacement Aircraft', sub: replReg ? `${replReg} repositioned` : 'Substitute airframe deployed', icon:'🛫' });
+      }
+
+      // Crew FDP exhaustion — only if explicit limit-reached language (not just 'crew' or 'FDP')
+      if (/\b(timed out|out of hours|fdp limit|fdp exceeded|fdp reached|duty limit reached|crew duty expired)\b/.test(lower) && dt.id !== 'crew-fdp') {
+        nodes.push({ type:'operational', label:'Crew FDP Exhausted', sub: 'Duty period limit reached — standby required', icon:'👨‍✈️' });
+      }
+
+      // Standby crew DEPLOYED — requires an affirmative deployment signal AND no negation nearby.
+      // 'Replacement crew LGW could not position' must NOT fire this node.
+      // 'Standby crew deployed from BHX' / 'Relief captain repositioned from GLA' must fire.
+      if (dt.id !== 'crew-fdp') {
+        const crewIdx = lower.search(/\b(standby crew|relief crew|replacement crew|relief captain|standby captain)\b/);
+        if (crewIdx >= 0) {
+          const window = lower.slice(Math.max(0, crewIdx - 20), crewIdx + 140);
+          const hasDeployVerb = /\b(deployed|repositioned|arrived|activated|called in|positioned from)\b/.test(window)
+                             || /\bfrom [a-z]{3}\b/.test(window);
+          const hasNegation   = /\b(could not|unable|not available|not position|not able|cannot)\b/.test(window);
+          if (hasDeployVerb && !hasNegation) {
+            nodes.push({ type:'operational', label:'Standby Crew Deployed', sub: 'Reserve crew activated to operate flight', icon:'👨‍✈️' });
+          }
+        }
+      }
+
+      // Passenger care — only if hotel / accommodation / meal voucher / coach explicitly stated
+      if (/\b(hotel|accommodation|meal vouchers?|coach transfer|bus transfer)\b/.test(lower)) {
+        nodes.push({ type:'operational', label:'Passenger Care', sub: 'Art 9 care obligations enacted', icon:'🏨' });
+      }
+
+      // ── Outcome — always last ─────────────────────────────────────────
+      const isCancelled = /\b(flight cancelled|flights? cancelled|passengers rebooked|service cancelled)\b/.test(lower);
+      const delayMatch  = lower.match(/(\d+)h\s*(\d+)?\s*min(?:utes?)?|(\d+)\s*hours?\s*delay/);
+      const delayStr    = delayMatch ? delayMatch[0].replace(/\s+/g,' ').trim() : null;
+
+      nodes.push({
+        type:  'outcome',
+        label: isCancelled ? 'Flight Cancellation' : 'Arrival Delay',
+        sub:   isCancelled ? 'Passengers rebooked onto alternative services'
+                           : (delayStr ? delayStr + ' at destination' : 'Delay at destination'),
+        icon:  isCancelled ? '✗' : '⏱'
+      });
 
       return nodes;
     }
