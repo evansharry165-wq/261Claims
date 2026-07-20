@@ -163,7 +163,7 @@
        PAGE BODY
     ============================================================ */
     .page-body {
-      max-width: var(--doc-w);
+      max-width: 980px;
       margin: 0 auto;
       padding: var(--sp-xl) var(--sp-xl) var(--sp-2xl);
     }
@@ -832,6 +832,174 @@
     }
 
     .brief-area.active { display: block; }
+
+    /* ============================================================
+       PAGE OUTER — wraps intake + workspace
+    ============================================================ */
+    .page-outer {
+      min-height: calc(100vh - 52px);
+    }
+
+    .intake-section {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: var(--sp-xl) var(--sp-xl) var(--sp-lg);
+    }
+
+    /* ============================================================
+       WORKSPACE GRID — three-zone layout
+    ============================================================ */
+    .workspace-grid {
+      display: none;
+      grid-template-columns: 1fr 420px;
+      align-items: start;
+      border-top: 1px solid var(--ink-rule);
+    }
+
+    .zone-1 {
+      padding: var(--sp-lg) var(--sp-xl) var(--sp-2xl);
+      min-height: calc(100vh - 52px);
+    }
+
+    .zone-right-rail {
+      position: sticky;
+      top: 52px;
+      height: calc(100vh - 52px);
+      overflow: hidden;
+      border-left: 1px solid var(--ink-rule);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .zone-2 {
+      border-bottom: 1px solid var(--ink-rule);
+      overflow-y: auto;
+      max-height: 46vh;
+      flex-shrink: 0;
+    }
+
+    .zone-3 {
+      flex: 1;
+      overflow-y: auto;
+      min-height: 0;
+    }
+
+    .zone-bar {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      padding: 10px var(--sp-md);
+      border-bottom: 1px solid var(--ink-rule2);
+      background: var(--surface-ui);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      flex-shrink: 0;
+    }
+
+    .zone-bar__label {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      color: var(--ink-secondary);
+    }
+
+    .zone-bar__sub {
+      font-size: 10.5px;
+      color: var(--ink-faint);
+    }
+
+    .zone-body {
+      padding: var(--sp-md);
+    }
+
+    /* Zone 2 content styles */
+    .z2-disruption-type {
+      font-family: var(--font-serif);
+      font-size: 17px;
+      font-weight: 400;
+      color: var(--ink-primary);
+      letter-spacing: -0.01em;
+      margin-bottom: 6px;
+      line-height: 1.2;
+    }
+
+    .z2-directive {
+      font-family: var(--font-serif);
+      font-size: 13px;
+      font-weight: 700;
+      margin-top: var(--sp-sm);
+      padding: 8px var(--sp-md);
+      border-radius: var(--r-md);
+    }
+
+    .z2-directive.defend { background: var(--defend-bg); color: var(--defend); border: 1px solid var(--defend-border); }
+    .z2-directive.conditions { background: var(--conditions-bg); color: var(--conditions); border: 1px solid var(--conditions-border); }
+    .z2-directive.settle { background: var(--settle-bg); color: var(--settle); border: 1px solid var(--settle-border); }
+
+    .z2-directive-sub {
+      font-size: 11px;
+      color: var(--ink-secondary);
+      margin-top: 4px;
+      font-family: var(--font-spectral, serif);
+      line-height: 1.5;
+    }
+
+    .z2-section {
+      padding-top: var(--sp-md);
+      border-top: 1px solid var(--ink-rule2);
+      margin-top: var(--sp-md);
+    }
+
+    .z2-section-label {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      margin-bottom: 6px;
+    }
+
+    .z2-limb1 {
+      font-family: var(--font-spectral, serif);
+      font-size: 12.5px;
+      line-height: 1.65;
+      color: var(--ink-secondary);
+    }
+
+    .z2-legal-char {
+      font-family: var(--font-spectral, serif);
+      font-size: 12px;
+      line-height: 1.6;
+      color: var(--ink-secondary);
+    }
+
+    .z2-rm-tip {
+      font-size: 11.5px;
+      font-family: var(--font-spectral, serif);
+      color: var(--ink-secondary);
+      line-height: 1.55;
+      padding: 5px 0;
+      border-bottom: 1px solid var(--ink-rule2);
+    }
+
+    .z2-rm-tip:last-child { border-bottom: none; }
+
+    .z2-juris {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--ink-faint);
+      letter-spacing: 0.03em;
+      margin-top: var(--sp-sm);
+    }
+
+    @media (max-width: 960px) {
+      .workspace-grid { grid-template-columns: 1fr; }
+      .zone-right-rail { position: static; height: auto; border-left: none; border-top: 1px solid var(--ink-rule); }
+      .zone-2 { max-height: none; }
+    }
 
     /* ============================================================
        EMPTY STATE
@@ -2434,9 +2602,12 @@
   </nav>
 
   <!-- ============================================================
-       PAGE BODY
+       PAGE OUTER
   ============================================================ -->
-  <main class="page-body">
+  <main class="page-outer">
+
+  <!-- Intake section — centred, fixed width -->
+  <div class="intake-section">
 
     <!-- Page Header -->
     <header class="page-header">
@@ -2644,16 +2815,13 @@
       </div>
     </div>
 
-    <!-- ============================================================
-         BRIEF AREA (rendered by MODE 3 & 4)
-    ============================================================ -->
-    <div class="brief-area" id="briefArea">
-      <!-- Populated by later build modes -->
-    </div>
+  </div>
+  <!-- / intake-section -->
 
-    <!-- ============================================================
-         EMPTY STATE
-    ============================================================ -->
+  <!-- ============================================================
+       EMPTY STATE
+  ============================================================ -->
+  <div class="intake-section" id="emptyStateWrap">
     <div class="empty-state" id="emptyState">
       <div class="empty-state__glyph">⚖</div>
       <div class="empty-state__title">Ready to analyse</div>
@@ -2682,8 +2850,52 @@
         <span class="node-badge">U-16 Settle vs Defend</span>
       </div>
     </div>
+  </div>
+  <!-- / emptyStateWrap -->
+
+  <!-- ============================================================
+       WORKSPACE GRID — three zones, shown after analysis runs
+  ============================================================ -->
+  <div class="workspace-grid" id="workspaceGrid">
+
+    <!-- Zone 1: Factual Record -->
+    <div class="zone-1" id="zone1">
+      <div class="zone-bar">
+        <span class="zone-bar__label">Factual Record</span>
+        <span class="zone-bar__sub">Causal chain · Line of flying · Evidence</span>
+      </div>
+      <div class="zone-body" id="zone1-body"></div>
+    </div>
+
+    <!-- Right rail: Classification + Legal Output -->
+    <div class="zone-right-rail" id="zoneRightRail">
+
+      <!-- Zone 2: Legal Classification -->
+      <div class="zone-2" id="zone2">
+        <div class="zone-bar">
+          <span class="zone-bar__label">Legal Classification</span>
+          <span class="zone-bar__sub">Why the decision was made</span>
+        </div>
+        <div class="zone-body" id="zone2-body"></div>
+      </div>
+
+      <!-- Zone 3: Legal Position -->
+      <div class="zone-3" id="zone3">
+        <div class="zone-bar">
+          <span class="zone-bar__label">Legal Position</span>
+          <span class="zone-bar__sub">Verdict · quantum · authorities</span>
+        </div>
+        <div class="zone-body" id="zone3-body"></div>
+      </div>
+
+    </div>
+    <!-- / zone-right-rail -->
+
+  </div>
+  <!-- / workspace-grid -->
 
   </main>
+  <!-- / page-outer -->
 
   <!-- ============================================================
        FOOTER
@@ -3601,10 +3813,16 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
         else if (dM) currentDelayMins = parseInt(dM[1]);
       }
 
-      // Hide empty state, reset brief
-      document.getElementById('emptyState').style.display = 'none';
-      document.getElementById('briefArea').classList.remove('active');
-      document.getElementById('briefArea').innerHTML = '';
+      // Hide empty state, hide workspace (re-shown after analysis completes)
+      document.getElementById('emptyStateWrap').style.display = 'none';
+      const _grid = document.getElementById('workspaceGrid');
+      if (_grid) _grid.style.display = 'none';
+      const _z1 = document.getElementById('zone1-body');
+      const _z2 = document.getElementById('zone2-body');
+      const _z3 = document.getElementById('zone3-body');
+      if (_z1) _z1.innerHTML = '';
+      if (_z2) _z2.innerHTML = '';
+      if (_z3) _z3.innerHTML = '';
 
       // Show progress
       const progress = document.getElementById('analysisProgress');
@@ -4929,9 +5147,6 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
        RENDER ANALYSIS OUTPUT (replaces showBriefPlaceholder)
     ---------------------------------------------------------- */
     function renderAnalysisOutput(inputText) {
-      const area = document.getElementById('briefArea');
-      area.classList.add('active');
-
       // Determine mode: scenario if currentScenarioKey points to a matching EXAMPLES text
       const isScenarioMode = !!(currentScenarioKey && EXAMPLES[currentScenarioKey] &&
         EXAMPLES[currentScenarioKey].trim() === inputText.trim());
@@ -4953,8 +5168,6 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
       causalNodesCount = causalNodes ? causalNodes.length : 1;
 
       // Directive recommendation — wording differs for custom vs scenario mode
-      // Scenario mode: position is based on verified pre-built case facts
-      // Custom mode: position is initial classification only — must not be read as confirmed
       const directives = {
         extraordinary: {
           label:   isScenarioMode ? 'Extraordinary'               : 'Classified: Extraordinary',
@@ -4980,7 +5193,7 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
       };
       const dir = directives[dt.limb1Status] || directives.contested;
 
-      // Build annotated event nodes for Pass II
+      // Build annotated event nodes for Zone 1 evidence review
       const evNodesHtml = (causalNodes && causalNodes.length > 0 ? causalNodes : [{type:'root', label:dt.label, sub:dt.limb1Status, icon:'⚡'}]).map((node, idx) => {
         const dtKey = idx === 0 ? dt.id : (node.type === 'outcome' ? null : dt.id);
         const evidenceItems = (dtKey && EVIDENCE_DB[dtKey]) ? EVIDENCE_DB[dtKey] : [];
@@ -4990,7 +5203,6 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
         const rmPoints = (dtKey && RM_SURFACE[dtKey]) ? RM_SURFACE[dtKey] : [];
 
         const renderEvidenceItem = (item) => {
-          // In custom mode: check if this evidence was referenced in the summary text
           let mentionHtml = '';
           if (!isScenarioMode && currentFacts) {
             const mentioned = evidenceMentionedInText(item.name, currentFacts);
@@ -5057,83 +5269,87 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
       }).join('');
 
       const juris = getJurisdiction();
-      const jurisFlag = juris ? `<div style="font-family:var(--font-mono);font-size:10px;color:var(--ink-faint);margin-top:var(--sp-sm);letter-spacing:.03em">${juris.regime} &nbsp;·&nbsp; CJEU authority: ${juris.cjeuAuth} &nbsp;·&nbsp; ${juris.note}</div>` : '';
+      const jurisStr = juris ? `${juris.regime} · CJEU authority: ${juris.cjeuAuth} · ${juris.note}` : '';
 
-      area.innerHTML = `
-        <div class="brief-doc">
-
-          <!-- PASS I: Causal Classification -->
-          <div class="brief-section">
-            <div class="brief-section-label">Pass I — Causal Chain &amp; Classification</div>
-            <div style="display:flex;align-items:flex-start;gap:var(--sp-md);flex-wrap:wrap;margin-bottom:var(--sp-md)">
-              <div style="flex:1;min-width:200px">
-                <div style="font-family:var(--font-mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:4px">Disruption Type</div>
-                <div class="brief-dt-name" style="font-family:var(--font-serif);font-size:16px;font-weight:400;color:var(--ink-primary);margin-bottom:2px">${dt.label}</div>
-                <div class="dt-badge ${dt.limb1Status}" style="display:inline-block;margin-top:4px">${dir.label}</div>
-              </div>
-              <div style="min-width:200px;padding:var(--sp-sm) var(--sp-md);border-radius:var(--r-md);border:1px solid ${dir.recClass==='defend'?'var(--defend-border)':dir.recClass==='conditions'?'var(--conditions-border)':'var(--settle-border)'};background:${dir.recClass==='defend'?'var(--defend-bg)':dir.recClass==='conditions'?'var(--conditions-bg)':'var(--settle-bg)'}">
-                <div style="font-family:var(--font-serif);font-size:14px;font-weight:700;color:${dir.recClass==='defend'?'var(--defend)':dir.recClass==='conditions'?'var(--conditions)':'var(--settle)'}">${dir.rec}</div>
-                <div style="font-size:11px;color:var(--ink-secondary);margin-top:2px;font-family:var(--font-spectral,serif)">${dir.recSub}</div>
-              </div>
-            </div>
-            ${jurisFlag}
-            ${!isScenarioMode ? buildFactsPanel(currentFacts, dt) : ''}
-            ${!isScenarioMode ? '<div style="font-family:var(--font-mono);font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-faint);margin-top:var(--sp-md);margin-bottom:4px">Legal basis — if classification confirmed</div>' : ''}
-            <div class="brief-limb1" style="margin-top:${isScenarioMode?'var(--sp-md)':'4px'}">${dt.limb1}</div>
-            ${renderCausalChain(causalNodes)}
+      // ─────────────────────────────────────────────────────────────
+      // ZONE 1 — Factual Record
+      // ─────────────────────────────────────────────────────────────
+      const z1 = document.getElementById('zone1-body');
+      z1.innerHTML = `
+        ${!isScenarioMode ? buildFactsPanel(currentFacts, dt) : ''}
+        <div class="z1-section-label" style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-faint);margin:16px 0 6px">Causal chain</div>
+        ${renderCausalChain(causalNodes)}
+        <div class="z1-section-label" style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-faint);margin:20px 0 6px">Line of flying</div>
+        ${buildLOFModule(dt)}
+        <div style="margin: 10px 0 14px; padding: 9px 13px; background: var(--surface-ui); border: 1px solid var(--ink-rule2); border-radius: 5px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
+          <div style="font-size: 11px; color: var(--ink-faint); line-height: 1.4;">Multi-tail complex cases — full sector-by-sector verification interface.</div>
+          <a href="defendable_lof_v1.html" target="_blank" style="background: var(--surface-raised); color: var(--ink-secondary); border: 1px solid var(--ink-rule); border-radius: 4px; padding: 5px 11px; font-size: 11px; font-weight: 600; white-space: nowrap; text-decoration: none; flex-shrink: 0;">Full LOF Interface ↗</a>
+        </div>
+        <div class="z1-section-label" style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-faint);margin:20px 0 6px">Event review</div>
+        <div class="ev-section-intro" style="margin-bottom:var(--sp-md)">
+          ${isScenarioMode
+            ? 'Verify the factual record against each event in the Line of Flying. Confirm facts, review evidence documents, and flag what is missing. The legal position in Zone 3 updates as events are confirmed.'
+            : 'Evidence items below are flagged based on what the summary text references directly. Items marked <em>Not referenced in summary</em> are gaps to chase before the defence position can be confirmed.'}
+        </div>
+        <div id="ev-but-for-banner"></div>
+        <div class="ev-nodes" id="ev-nodes">${evNodesHtml}</div>
+        <div class="rm-meter-wrap" style="margin-top:var(--sp-lg)">
+          <div class="rm-meter-row">
+            <span>Chain Integrity</span>
+            <span id="rm-position-label">Begin reviewing events above</span>
           </div>
-
-          <!-- PASS II: LOF Verification & Event Review -->
-          <div class="brief-section">
-            <div class="brief-section-label">Pass II — Line of Flying Verification &amp; Evidence Review</div>
-            <div class="ev-section-intro">
-              ${isScenarioMode
-                ? 'Verify the factual record against each event in the Line of Flying. Confirm facts, review evidence documents, and flag what is missing. The legal position in Pass III updates as events are confirmed.'
-                : 'Evidence items below are flagged based on what the summary text references directly. Items marked <em>Not referenced in summary</em> are gaps to chase before the defence position can be confirmed.'}
-            </div>
-            ${buildLOFModule(dt)}
-            <div style="margin: 12px 0 16px; padding: 10px 14px; background: #F9F7F3; border: 1px solid var(--ink-rule); border-radius: 6px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;">
-              <div style="font-size: 11.5px; color: var(--ink-faint); line-height: 1.4;">For complex multi-tail cases — the interactive LOF interface provides sector-by-sector evidence verification, document requests, and chain integrity confirmation.</div>
-              <a href="defendable_lof_v1.html" target="_blank" style="background: #fff; color: var(--ink-secondary); border: 1px solid var(--ink-rule); border-radius: 5px; padding: 6px 12px; font-size: 11px; font-weight: 600; cursor: pointer; white-space: nowrap; text-decoration: none; display: inline-block; flex-shrink: 0;">Full LOF Interface ↗</a>
-            </div>
-            <div id="ev-but-for-banner"></div>
-            <div class="ev-nodes" id="ev-nodes">
-              ${evNodesHtml}
-            </div>
-            <div class="rm-meter-wrap" style="margin-top:var(--sp-lg)">
-              <div class="rm-meter-row">
-                <span>Chain Integrity</span>
-                <span id="rm-position-label">Begin reviewing events above</span>
-              </div>
-              <div class="rm-meter-track">
-                <div class="rm-meter-fill" id="rm-meter-fill"></div>
-              </div>
-              <div style="font-size:11px;color:var(--ink-faint);margin-top:4px" id="rm-tally">0 confirmed · 0 partial</div>
-            </div>
-            <div id="gen-brief-wrap" style="display:none;margin-top:var(--sp-lg);text-align:center">
-              <button class="btn-gen-brief" onclick="generateBrief()">⚖ Generate Defence Brief</button>
-              <div style="font-size:11px;color:var(--ink-faint);margin-top:6px">Ready to compile — generate a formal defence brief from your review</div>
-            </div>
+          <div class="rm-meter-track">
+            <div class="rm-meter-fill" id="rm-meter-fill"></div>
           </div>
-
-          <!-- PASS III: Legal Position -->
-          <div class="brief-section">
-            <div class="brief-section-label">Pass III — Legal Position &amp; Applicable Authority</div>
-            <div id="pass3-content" style="margin-bottom:var(--sp-md)">
-              ${!isScenarioMode ? `<div style="background:#FFFBF0;border:1px solid #DAC070;border-radius:5px;padding:10px 14px;margin-bottom:12px;font-size:12px;line-height:1.55;color:var(--ink-secondary)">
-                <strong style="color:#A07010">Preliminary assessment — incomplete evidence</strong> &nbsp;· This legal position is based on the classification derived from the summary text. It cannot be confirmed until the evidence gaps identified in Pass II are resolved. Do not rely on this position for a court submission or formal defence response until the factual record is verified.
-              </div>` : ''}
-              <div class="rm-position-banner" id="rm-position-banner">
-                Classification-based position loaded. Confirm events in Pass II — verdict and quantum refine automatically as evidence is reviewed.
-              </div>
-            </div>
-            <div id="pass3-caselaw">
-              ${renderCaselawBundle(dt)}
-            </div>
-          </div>
-
+          <div style="font-size:11px;color:var(--ink-faint);margin-top:4px" id="rm-tally">0 confirmed · 0 partial</div>
+        </div>
+        <div id="gen-brief-wrap" style="display:none;margin-top:var(--sp-lg);text-align:center">
+          <button class="btn-gen-brief" onclick="generateBrief()">⚖ Generate Defence Brief</button>
+          <div style="font-size:11px;color:var(--ink-faint);margin-top:6px">Ready to compile — generate a formal defence brief from your review</div>
         </div>
       `;
+
+      // ─────────────────────────────────────────────────────────────
+      // ZONE 2 — Legal Classification
+      // ─────────────────────────────────────────────────────────────
+      const legalChar = LEGAL_CHAR[dt.id] || '';
+      const rmTips = (RM_SURFACE[dt.id] || []);
+      const z2 = document.getElementById('zone2-body');
+      z2.innerHTML = `
+        <div class="z2-disruption-type">${dt.label}</div>
+        <div class="dt-badge ${dt.limb1Status}" style="display:inline-block">${dir.label}</div>
+        <div class="z2-directive ${dir.recClass}">
+          ${dir.rec}
+          <div class="z2-directive-sub">${dir.recSub}</div>
+        </div>
+        ${jurisStr ? `<div class="z2-juris">${jurisStr}</div>` : ''}
+
+        <div class="z2-section">
+          <div class="z2-section-label">Legal basis</div>
+          <div class="z2-limb1">${dt.limb1}</div>
+        </div>
+
+        ${legalChar ? `
+        <div class="z2-section">
+          <div class="z2-section-label">Legal characterisation</div>
+          <div class="z2-legal-char">${legalChar}</div>
+        </div>` : ''}
+
+        ${rmTips.length > 0 ? `
+        <div class="z2-section">
+          <div class="z2-section-label">Key considerations</div>
+          ${rmTips.map(tip => `<div class="z2-rm-tip">${tip}</div>`).join('')}
+        </div>` : ''}
+      `;
+
+      // ─────────────────────────────────────────────────────────────
+      // ZONE 3 — Legal Position (via renderPass3Extended)
+      // ─────────────────────────────────────────────────────────────
+      renderPass3Extended();
+
+      // Show workspace grid
+      const grid = document.getElementById('workspaceGrid');
+      if (grid) grid.style.display = 'grid';
     }
 
     /* ----------------------------------------------------------
@@ -5364,7 +5580,7 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
        PASS III — Full legal output
     ---------------------------------------------------------- */
     function renderPass3Extended() {
-      const p3=document.getElementById('pass3-content');
+      const p3=document.getElementById('zone3-body');
       if(!p3||!currentDT) return;
 
       const reviewed=Object.keys(rmResponses).length;
