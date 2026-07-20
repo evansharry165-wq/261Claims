@@ -1996,6 +1996,181 @@
     }
 
 
+    /* ── LOF Module ──────────────────────────────────────────── */
+    .lof-module {
+      border: 1px solid var(--ink-rule);
+      border-radius: var(--r-md);
+      margin-bottom: var(--sp-lg);
+      overflow: hidden;
+      font-size: 12px;
+    }
+    .lof-module-hdr {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      background: #F5F3EE;
+      border-bottom: 1px solid var(--ink-rule);
+      cursor: pointer;
+      user-select: none;
+      gap: 12px;
+    }
+    .lof-module-hdr:hover { background: #EDEAE3; }
+    .lof-module-hdr-left { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .lof-module-hdr-label {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      color: var(--ink-secondary);
+      text-transform: uppercase;
+    }
+    .lof-tail-badge {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 600;
+      padding: 2px 7px;
+      border-radius: 3px;
+      background: var(--ink-primary);
+      color: #fff;
+      letter-spacing: 0.04em;
+    }
+    .lof-tail-badge.replacement {
+      background: #4B7BEC;
+    }
+    .lof-module-hdr-toggle {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--ink-faint);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .lof-module-body { overflow-x: auto; }
+    .lof-tail-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--ink-rule);
+      background: #FAF8F5;
+    }
+    .lof-tail-tab {
+      padding: 7px 14px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--ink-faint);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all 0.12s;
+      white-space: nowrap;
+    }
+    .lof-tail-tab:hover { color: var(--ink-secondary); }
+    .lof-tail-tab.active {
+      color: var(--ink-primary);
+      border-bottom-color: var(--ink-primary);
+    }
+    .lof-tail-content { padding: 0; }
+    .lof-day-group { border-bottom: 1px solid var(--ink-rule2); }
+    .lof-day-group:last-child { border-bottom: none; }
+    .lof-day-hdr {
+      padding: 6px 14px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ink-secondary);
+      background: #F5F3EE;
+      border-bottom: 1px solid var(--ink-rule2);
+    }
+    .lof-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11.5px;
+    }
+    .lof-table thead tr {
+      background: #F9F7F3;
+      border-bottom: 1px solid var(--ink-rule);
+    }
+    .lof-table th {
+      padding: 5px 10px;
+      font-family: var(--font-mono);
+      font-size: 9.5px;
+      font-weight: 600;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      text-align: left;
+      white-space: nowrap;
+    }
+    .lof-table td {
+      padding: 7px 10px;
+      border-bottom: 1px solid var(--ink-rule2);
+      vertical-align: middle;
+      color: var(--ink-secondary);
+    }
+    .lof-table td:first-child {
+      font-family: var(--font-mono);
+      font-weight: 600;
+      color: var(--ink-primary);
+      white-space: nowrap;
+    }
+    .lof-table td.lof-route {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      white-space: nowrap;
+    }
+    .lof-table td.lof-time {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--ink-secondary);
+      white-space: nowrap;
+    }
+    .lof-table td.lof-time.actual-late { color: #8B4000; }
+    .lof-table td.lof-note {
+      font-size: 11px;
+      color: var(--ink-secondary);
+      font-style: italic;
+      min-width: 180px;
+    }
+    .lof-row-claimed { background: rgba(75,123,236,0.05); }
+    .lof-row-claimed td { border-bottom: 1px solid rgba(75,123,236,0.15); }
+    .lof-row-diverted { background: rgba(180,120,0,0.04); }
+    .lof-row-aog { background: rgba(160,40,40,0.04); }
+    .lof-status-badge {
+      font-family: var(--font-mono);
+      font-size: 9.5px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      padding: 2px 6px;
+      border-radius: 3px;
+      white-space: nowrap;
+    }
+    .lof-status-ok    { background: var(--defend-bg);  color: var(--defend);  border: 1px solid var(--defend-border); }
+    .lof-status-delay { background: #FFF8E6; color: #7A5500; border: 1px solid #D4A820; }
+    .lof-status-div   { background: #FFF8E6; color: #7A5500; border: 1px solid #D4A820; }
+    .lof-status-claim { background: rgba(75,123,236,0.1); color: #1A3A8A; border: 1px solid rgba(75,123,236,0.3); }
+    .lof-status-aog   { background: var(--settle-bg); color: var(--settle); border: 1px solid var(--settle-border); }
+    .lof-status-canx  { background: var(--settle-bg); color: var(--settle); border: 1px solid var(--settle-border); }
+    .lof-status-repl  { background: #EDF4FF; color: #2A5AAA; border: 1px solid #A0BDE8; }
+    .lof-event-row td {
+      padding: 5px 10px 5px 14px;
+      background: #FDFCF9;
+      font-size: 11px;
+      color: var(--ink-secondary);
+      border-bottom: 1px solid var(--ink-rule2);
+      font-style: italic;
+    }
+    .lof-event-row.lof-event-incident td { color: #7A5500; background: #FFFBF0; }
+    .lof-event-row.lof-event-impact td  { color: var(--defend); background: #F4FBF7; }
+    .lof-event-row.lof-event-alert td   { color: var(--settle); background: #FDF5F5; }
+    .lof-empty-state {
+      padding: 20px 16px;
+      font-size: 12px;
+      color: var(--ink-faint);
+      font-style: italic;
+      text-align: center;
+      font-family: var(--font-spectral, serif);
+    }
+
     /* ── Pass II: Annotated Event Nodes ─────────────────────── */
     .ev-section-intro {
       font-family: var(--font-spectral, serif);
@@ -2520,6 +2695,7 @@
     let savedApiKey       = null;
     let currentInputText  = '';
     let currentDT         = null;
+    let currentScenarioKey = '';
     let rmResponses       = {};
     let nodeAnnotations   = {};   // { nodeIdx: { text, evidenceStatuses: { evidenceId: 'available'|'requested'|'missing' } } }
     let causalNodes       = [];
@@ -2782,6 +2958,7 @@
     }
 
     function loadScenario(key) {
+      currentScenarioKey = key;
       const text = EXAMPLES[key];
       const meta = SCENARIO_META[key];
       if (!text) return;
@@ -2802,6 +2979,7 @@
     }
 
     function loadExample(key) {
+      currentScenarioKey = key;
       const text = EXAMPLES[key];
       if (!text) return;
       document.getElementById('iccText').value = text;
@@ -4676,6 +4854,7 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
               </div>
               <a href="defendable_lof_v1.html" target="_blank" style="background: #4B7BEC; color: #fff; border: none; border-radius: 6px; padding: 8px 16px; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap; text-decoration: none; display: inline-block; flex-shrink: 0;">Open LOF Verification →</a>
             </div>
+            ${buildLOFModule(dt)}
             <div id="ev-but-for-banner"></div>
             <div class="ev-nodes" id="ev-nodes">
               ${evNodesHtml}
@@ -5145,6 +5324,604 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
 
       html += `</div>`;
       return html;
+    }
+
+    /* ----------------------------------------------------------
+       LOF MODULE — DATA & FUNCTIONS
+    ---------------------------------------------------------- */
+
+    const LOF_DATA = {
+
+      demo: {
+        tails: [
+          {
+            reg: 'G-EZFM',
+            type: 'Airbus A320',
+            role: 'operating',
+            label: 'G-EZFM — Operating Aircraft',
+            days: [
+              {
+                date: '15 JUN 2024 (D-1)',
+                sectors: [
+                  { flight: 'EZY1842', route: 'LGW→GVA', sched_out: '06:20', sched_in: '09:00', actual_out: '06:22', actual_in: '09:04', status: 'ok',    note: 'On time departure — aircraft serviceable' },
+                  { flight: 'EZY1843', route: 'GVA→LGW', sched_out: '09:40', sched_in: '10:50', actual_out: '09:45', actual_in: '11:02', status: 'delay',  note: '+12 min delay — late boarding, operationally absorbed' },
+                  { flight: 'EZY7252', route: 'LGW→PMI', sched_out: '13:15', sched_in: '16:00', actual_out: '13:28', actual_in: '16:11', status: 'ok',    note: 'Minor push-back delay, arrived within tolerance' },
+                  { flight: 'EZY7253', route: 'PMI→LGW', sched_out: '16:45', sched_in: '19:05', actual_out: '17:22', actual_in: '19:38', status: 'delay',  note: '+37 min — ATC slot restriction (CTOT W896) PMI departure. Aircraft RON at LGW.' },
+                ],
+                event: { type: 'incident', text: 'ATFM CTOT slot W896 issued by Eurocontrol for PMI departure 16:45z rotation. Slot assigned 17:18z. Aircraft reaches LGW 19:38z — crew FDP approaching regulatory limit.' }
+              },
+              {
+                date: '16 JUN 2024 (Day of Disruption)',
+                sectors: [
+                  { flight: 'EZY7253', route: 'LGW→PMI', sched_out: '07:10', sched_in: '09:55', actual_out: '07:18', actual_in: '10:09', status: 'ok',    note: 'Minor departure delay absorbed. Aircraft serviceable at PMI.' },
+                  { flight: 'EZY7254', route: 'PMI→BHX', sched_out: '10:35', sched_in: '12:40', actual_out: '11:47', actual_in: '—',     status: 'div',   note: 'Diverted to BOH — severe convective weather cell over BHX (CB tops FL380). METAR BHX 12:21z: TS GRGS.' },
+                  { flight: '—',       route: 'BOH hold', sched_out: '—',    sched_in: '—',    actual_out: '—',    actual_in: '—',     status: 'delay', note: 'Ground hold at BOH awaiting BHX weather clearance. ATC slot BHX 15:40z.' },
+                  { flight: 'EZY7254', route: 'BOH→BHX', sched_out: '—',    sched_in: '—',    actual_out: '15:52', actual_in: '16:19', status: 'claim', note: '★ CLAIMED FLIGHT — passengers on-board. Arrival BHX 16:19z. Scheduled arrival 12:40z. Delay: +219 min (3h 39m).' },
+                ],
+                event: { type: 'impact', text: 'Disruption root cause: extraordinary weather event at destination (BHX). Diversion to BOH unavoidable. Delay to passengers: 3h 39m — triggers Art 7 compensation entitlement under Sturgeon principle unless Art 5(3) defence established.' }
+              }
+            ]
+          }
+        ]
+      },
+
+      lof_win: {
+        tails: [
+          {
+            reg: 'G-EZTD',
+            type: 'Airbus A320',
+            role: 'operating',
+            label: 'G-EZTD — Original Aircraft (AOG at GLA)',
+            days: [
+              {
+                date: '14 JUN 2024 (D-1)',
+                sectors: [
+                  { flight: 'EZY401',  route: 'LGW→GLA', sched_out: '08:30', sched_in: '09:50', actual_out: '08:35', actual_in: '10:02', status: 'ok',  note: 'Routine operation — aircraft serviceable' },
+                  { flight: 'EZY402',  route: 'GLA→LGW', sched_out: '10:30', sched_in: '11:45', actual_out: '10:42', actual_in: '11:58', status: 'ok',  note: 'Minor push-back delay absorbed' },
+                  { flight: 'EZY445',  route: 'LGW→GLA', sched_out: '14:05', sched_in: '15:25', actual_out: '14:08', actual_in: '15:31', status: 'ok',  note: 'Severe turbulence encountered on descent into GLA (PIREP FL180). No structural damage confirmed on arrival.' },
+                  { flight: 'EZY446',  route: 'GLA→LGW', sched_out: '16:00', sched_in: '17:20', actual_out: '—',     actual_in: '—',     status: 'aog', note: 'AOG — mandatory post-turbulence structural inspection ordered per MEL/CAME. Aircraft grounded at GLA. Sector cancelled.' },
+                ],
+                event: { type: 'alert', text: 'Aircraft G-EZTD grounded at GLA following mandatory post-CAT turbulence inspection. Inspection requires minimum 4 hours — aircraft cannot operate return to LGW. Tail change required for next day\'s rotations.' }
+              }
+            ]
+          },
+          {
+            reg: 'G-EZWA',
+            type: 'Airbus A320',
+            role: 'replacement',
+            label: 'G-EZWA — Replacement Aircraft (sourced LGW)',
+            days: [
+              {
+                date: '14 JUN 2024 (D-1)',
+                sectors: [
+                  { flight: 'EZY719',  route: 'LGW→AMS', sched_out: '07:15', sched_in: '08:40', actual_out: '07:18', actual_in: '08:44', status: 'ok',  note: 'Routine operation' },
+                  { flight: 'EZY720',  route: 'AMS→LGW', sched_out: '09:20', sched_in: '10:35', actual_out: '09:22', actual_in: '10:38', status: 'ok',  note: 'Routine operation. Aircraft available at LGW for reassignment.' },
+                ],
+                event: { type: 'impact', text: 'G-EZWA reassigned from spare pool at LGW to cover G-EZTD\'s cancelled GLA rotation. Crew positioning flight arranged. Replacement aircraft serviceable.' }
+              },
+              {
+                date: '15 JUN 2024 (Day of Disruption)',
+                sectors: [
+                  { flight: 'EZY445',  route: 'LGW→GLA', sched_out: '09:00', sched_in: '10:20', actual_out: '09:47', actual_in: '11:09', status: 'delay', note: '+47 min — late start due to G-EZWA crew positioning and pre-flight safety checks on replacement aircraft' },
+                  { flight: 'EZY446',  route: 'GLA→LGW', sched_out: '11:00', sched_in: '12:20', actual_out: '11:52', actual_in: '13:08', status: 'delay', note: 'Delay cascades from late inbound. +48 min departure.' },
+                  { flight: 'EZY523',  route: 'LGW→EDI', sched_out: '13:40', sched_in: '15:00', actual_out: '14:29', actual_in: '15:47', status: 'claim', note: '★ CLAIMED FLIGHT — arrival delay 47 min. Cascade from G-EZTD AOG at GLA (D-1). Tail change introduces cumulative delay across rotation.' },
+                ],
+                event: { type: 'impact', text: 'Cascading delay on replacement aircraft G-EZWA. Root cause: mandatory post-turbulence inspection on G-EZTD at GLA (D-1). All delays on G-EZWA rotation are downstream consequence of the extraordinary circumstances affecting G-EZTD.' }
+              }
+            ]
+          }
+        ]
+      },
+
+      lof_contested: {
+        tails: [
+          {
+            reg: 'G-FBJA',
+            type: 'Airbus A319',
+            role: 'operating',
+            label: 'G-FBJA — Operating Aircraft',
+            days: [
+              {
+                date: '22 MAY 2024 (D-1)',
+                sectors: [
+                  { flight: 'EZY321',  route: 'BHX→ALC', sched_out: '06:45', sched_in: '10:05', actual_out: '06:50', actual_in: '10:12', status: 'ok',  note: 'Normal operation' },
+                  { flight: 'EZY322',  route: 'ALC→BHX', sched_out: '10:45', sched_in: '14:10', actual_out: '11:03', actual_in: '14:31', status: 'ok',  note: 'Minor push-back delay. Aircraft RON at BHX.' },
+                ],
+                event: { type: 'incident', text: 'MEL Cat C defect identified during overnight C-check at BHX. Snag raised: hydraulic actuator system advisory. Rectification deferred under MEL — aircraft permitted to operate but with minimum equipment constraint. Engineering sign-off obtained 05:30z D-day.' }
+              },
+              {
+                date: '23 MAY 2024 (Day of Disruption)',
+                sectors: [
+                  { flight: 'EZY321',  route: 'BHX→ALC', sched_out: '06:45', sched_in: '10:05', actual_out: '08:22', actual_in: '11:41', status: 'delay', note: '+97 min — MEL rectification and engineering departure release overran. Technical delay.' },
+                  { flight: 'EZY322',  route: 'ALC→BHX', sched_out: '10:45', sched_in: '14:10', actual_out: '12:28', actual_in: '15:47', status: 'claim', note: '★ CLAIMED FLIGHT — delay 97 min cascades from MEL technical issue (D-1 snag). Arrival BHX +97 min.' },
+                ],
+                event: { type: 'alert', text: 'CONTESTED — MEL Cat C defect may not constitute extraordinary circumstances. Technical defects inherent in aircraft operation. Carrier must establish defect arose from event outside normal operations. Strength: MEDIUM. Recommend legal review of defect origin.' }
+              }
+            ]
+          }
+        ]
+      },
+
+      weather_win: {
+        tails: [
+          {
+            reg: 'G-EZUH',
+            type: 'Airbus A320',
+            role: 'operating',
+            label: 'G-EZUH — Operating Aircraft',
+            days: [
+              {
+                date: '03 APR 2024 (Day of Disruption)',
+                sectors: [
+                  { flight: 'EZY8801', route: 'LGW→VLC', sched_out: '11:20', sched_in: '14:40', actual_out: '11:24', actual_in: '14:48', status: 'ok',    note: 'Outbound rotation normal — VLC serviceable' },
+                  { flight: 'EZY8802', route: 'VLC→LGW', sched_out: '15:25', sched_in: '17:10', actual_out: '15:31', actual_in: '—',     status: 'div',   note: 'Diverted to BCN — severe weather system over LGW (SIGMET active, CB tops FL420, TS GRGS). METAR LGW 17:02z: +TSRA BKN020 OVC060 TS.' },
+                  { flight: '—',       route: 'BCN hold',sched_out: '—',    sched_in: '—',    actual_out: '—',    actual_in: '—',     status: 'delay', note: 'Ground hold BCN — LGW weather monitoring. Passengers offloaded. Hotel accommodation arranged.' },
+                  { flight: 'EZY8802', route: 'BCN→LGW', sched_out: '—',    sched_in: '—',    actual_out: '23:14', actual_in: '00:48', status: 'claim', note: '★ CLAIMED FLIGHT — overnight delay. Passengers arrive LGW +7h 38m. Extraordinary weather event established.' },
+                ],
+                event: { type: 'impact', text: 'Severe convective weather system over LGW airspace rendered airport temporarily unacceptable for approach (SIGMET WC03). Diversion to BCN was mandatory safety decision. All reasonable measures taken — no alternative routing available. Strong Art 5(3) defence.' }
+              }
+            ]
+          }
+        ]
+      },
+
+      atfm_win: {
+        tails: [
+          {
+            reg: 'G-EZTK',
+            type: 'Airbus A320',
+            role: 'operating',
+            label: 'G-EZTK — Operating Aircraft',
+            days: [
+              {
+                date: '18 JUL 2024 (Day of Disruption)',
+                sectors: [
+                  { flight: 'EZY2251', route: 'LGW→SPU', sched_out: '08:00', sched_in: '11:30', actual_out: '08:04', actual_in: '11:39', status: 'ok',  note: 'Outbound normal. Minor push-back delay.' },
+                  { flight: 'EZY2252', route: 'SPU→LGW', sched_out: '12:15', sched_in: '14:00', actual_out: '14:28', actual_in: '16:12', status: 'claim', note: '★ CLAIMED FLIGHT — CTOT slot C341 issued by Eurocontrol for Croatian FIR capacity restriction. Slot 14:24z. Delay to passengers: +132 min (2h 12m). CFMU Network Manager confirms slot assignment.' },
+                ],
+                event: { type: 'impact', text: 'Eurocontrol Network Manager issued CTOT slot C341 for SPU departure due to Croatian FIR sector capacity restriction (LDZOCUP sector). Slot mandatory — non-compliance results in loss of route rights. CFMU slot confirmation and NOP portal data obtained as contemporaneous evidence. Strong ATFM extraordinary circumstances defence.' }
+              }
+            ]
+          }
+        ]
+      }
+
+      weather_contested: {
+        tails: [
+          {
+            reg: 'G-EUUD',
+            type: 'Airbus A320',
+            role: 'operating',
+            label: 'G-EUUD — Operating Aircraft',
+            days: [
+              {
+                date: '03 MAR 2025 (Day of Disruption)',
+                sectors: [
+                  { flight: 'BA2155', route: 'LHR→BCN', sched_out: '06:30', sched_in: '09:50', actual_out: '06:33', actual_in: '09:55', status: 'ok',    note: 'Outbound rotation normal. Crew briefed TAF BCN 0600Z at LHR: TEMPO BKN003 0600–1800Z, BCFG, vis 400m. LVP active at BCN from 0730Z.' },
+                  { flight: 'BA2156', route: 'BCN→LHR', sched_out: '10:35', sched_in: '11:55', actual_out: '10:38', actual_in: '15:15', status: 'claim', note: '★ CLAIMED FLIGHT — delay 3h 20m. LVP lifted BCN at 1030Z. Departure BCN 1038Z after LVP clear. Carrier crew were briefed on forecast fog at 0700Z crew briefing — no schedule buffer inserted.' },
+                ],
+                event: { type: 'alert', text: 'CONTESTED — TAF BCN issued at 0600Z, 6 hours before planned departure, forecast TEMPO BKN003 BCFG. LVP in force at BCN from 0730Z but lifted at 1030Z. Carrier crew briefed on forecast before departure — Eglitis principle: foreseeable extraordinary circumstance requires schedule buffer planning. RM question: was additional slot time requested? Was earlier departure feasible?' }
+              }
+            ]
+          }
+        ]
+      },
+
+      technical_win: {
+        tails: [
+          {
+            reg: 'PH-NXC',
+            type: 'Airbus A220-300',
+            role: 'operating',
+            label: 'PH-NXC — Operating Aircraft',
+            days: [
+              {
+                date: '07 JAN 2025 (D-1)',
+                sectors: [
+                  { flight: 'U21001', route: 'AMS→LIS', sched_out: '07:45', sched_in: '10:20', actual_out: '07:48', actual_in: '10:26', status: 'ok', note: 'Normal operation — no fault codes recorded. FFCU systems operating within parameters.' },
+                  { flight: 'U21002', route: 'LIS→AMS', sched_out: '11:00', sched_in: '13:40', actual_out: '11:04', actual_in: '13:43', status: 'ok', note: 'Normal operation. Aircraft RON at AMS.' },
+                ],
+                event: { type: 'impact', text: 'No faults or warnings recorded on 07 JAN rotation. Defect unknown and undetectable by standard maintenance procedures. OEM subsequently confirmed latent firmware issue in FFCU Part No. 4054-001 series — not triggerable by normal pre-flight checks.' }
+              },
+              {
+                date: '08 JAN 2025 (Day of Disruption)',
+                sectors: [
+                  { flight: 'U24953', route: 'AMS→BHX', sched_out: '09:10', sched_in: '09:50', actual_out: '—',    actual_in: '—',    status: 'canx', note: 'Aircraft CANCELLED — at pre-departure power-up 08:55Z, fault code 347 generated on Fuel Flow Control Unit (FFCU) Engine 2. Engineers and Airbus OEM technical desk consulted. Airbus confirmed: fault code 347 is result of previously unidentified firmware defect affecting all A220-300 aircraft with FFCU Part No. 4054-001. First recorded occurrence worldwide in commercial service. Aircraft AOG — airworthiness release not possible.' },
+                ],
+                event: { type: 'alert', text: 'STRONG DEFENCE — Matkustaja / Finnair (C-385/23) four-limb hidden design defect test: (1) defect previously unknown to OEM ✓; (2) not reasonably detectable by carrier ✓; (3) OEM confirms no prior indication in any fleet ✓; (4) carrier took immediate grounding action ✓. Technical defect constitutes extraordinary circumstances where it arises from a cause external to normal aircraft operation.' }
+              }
+            ]
+          }
+        ]
+      },
+
+      technical_loss: {
+        tails: [
+          {
+            reg: 'EI-DPH',
+            type: 'Boeing 737-800',
+            role: 'operating',
+            label: 'EI-DPH — Operating Aircraft',
+            days: [
+              {
+                date: '21 APR 2025 (D-1)',
+                sectors: [
+                  { flight: 'FR441',  route: 'STN→FCO', sched_out: '07:20', sched_in: '10:40', actual_out: '07:22', actual_in: '10:45', status: 'ok', note: 'No oil system faults recorded. No EICAS warnings or maintenance log entries. Aircraft fully serviceable.' },
+                  { flight: 'FR442',  route: 'FCO→STN', sched_out: '11:25', sched_in: '13:00', actual_out: '11:28', actual_in: '13:04', status: 'ok', note: 'Normal operation. Aircraft RON at STN.' },
+                ],
+                event: { type: 'impact', text: 'No prior oil system warnings on D-1 or in any preceding maintenance log entries. Defect was undetected and undetectable from prior performance data.' }
+              },
+              {
+                date: '22 APR 2025 (Day of Disruption)',
+                sectors: [
+                  { flight: 'FR442',  route: 'STN→FCO', sched_out: '07:15', sched_in: '10:35', actual_out: '—',    actual_in: '—',    status: 'delay', note: 'On push-back at 07:12Z, Engine 2 oil chip detector illuminated. Aircraft returned to stand. Engineers inspected: metal swarf found in oil system. Engine removed to hangar for borescope per AMM 79-00-00.' },
+                  { flight: 'FR442',  route: 'STN→FCO', sched_out: '—',    sched_in: '—',    actual_out: '12:58', actual_in: '16:17', status: 'claim', note: '★ CLAIMED FLIGHT — 5h 40m delay. Borescope completed 12:30Z — no damage confirmed, oil system flushed and refilled, airworthiness release obtained. No prior maintenance warnings on oil system recorded.' },
+                ],
+                event: { type: 'alert', text: 'LOSS LIKELY — Van der Lans (C-257/14): component failure and maintenance issues are inherent in normal airline operations and do not constitute extraordinary circumstances, even where there is no prior fault history. Oil chip detector activation is a known maintenance event type — not outside the normal exercise of carrier\'s activity.' }
+              }
+            ]
+          }
+        ]
+      },
+
+      crew_loss: {
+        tails: [
+          {
+            reg: 'G-EUUA',
+            type: 'Airbus A320',
+            role: 'operating',
+            label: 'G-EUUA — Operating Aircraft',
+            days: [
+              {
+                date: '14 FEB 2025 (Day of Disruption)',
+                sectors: [
+                  { flight: 'BA436',  route: 'LHR→JFK', sched_out: '09:30', sched_in: '12:20', actual_out: '—',    actual_in: '—',    status: 'canx', note: 'Flight CANCELLED — rostered Captain reported sick at T-45 minutes (0845Z) with acute gastroenteritis. No standby command-qualified captain available at LHR at time of rostered departure. Cabin crew and First Officer present and available.' },
+                ],
+                event: { type: 'alert', text: 'Captain reported sick 0845Z — T-45min before scheduled departure 0930Z. OCC confirmed no LHR-based standby captain available. Relief captain rostered from GLA — positioned by commercial flight, arrived LHR 1445Z (+6hrs). Crew rest obligation applied: relief captain required 10hr rest post-positioning before permissible FDP commencement. Earliest departure 0200Z next day. Flight cancelled, 246 passengers rebooked.' }
+              },
+              {
+                date: '14 FEB 2025 (Recovery)',
+                sectors: [
+                  { flight: 'BA436',  route: 'LHR→JFK', sched_out: '09:30', sched_in: '12:20', actual_out: '—',    actual_in: '—',    status: 'canx', note: 'Original rotation cancelled. Passengers rebooked onto BA436 15/02/25 and partner carrier services.' },
+                ],
+                event: { type: 'alert', text: 'LOSS — Lipton v BA CityFlyer [2024] UKSC 24: crew illness (including sudden captain incapacitation) is inherent in normal airline operations and is never extraordinary circumstances regardless of absence of prior notice. No Art 5(3) defence available. Quantum: Art 7(2)(b) €600 per passenger (LHR–JFK > 3,500km). Art 14 written notification obligation applies independently.' }
+              }
+            ]
+          }
+        ]
+      },
+
+      crew_contested: {
+        tails: [
+          {
+            reg: 'G-EZRZ',
+            type: 'Airbus A319',
+            role: 'operating',
+            label: 'G-EZRZ — Operating Aircraft',
+            days: [
+              {
+                date: '07 NOV 2024 (Day of Disruption)',
+                sectors: [
+                  { flight: 'EZY8811', route: 'MAN→GVA', sched_out: '10:45', sched_in: '13:30', actual_out: '10:48', actual_in: '13:36', status: 'ok',    note: 'Outbound rotation normal. Aircraft serviceable. Crew check-in MAN 09:45Z.' },
+                  { flight: 'EZY8812', route: 'GVA→MAN', sched_out: '14:20', sched_in: '15:30', actual_out: '18:45', actual_in: '21:15', status: 'claim', note: '★ CLAIMED FLIGHT — CTOT 1845Z issued at 1410Z. Revised ETA MAN 2115Z. Crew FDP commenced 09:45Z — limit reached at 2115Z on landing. No standby crew at MAN. Outbound MAN cancelled following outstop.' },
+                ],
+                event: { type: 'alert', text: 'ATFM CTOT 1845Z issued by Eurocontrol French FIR capacity regulation. OCC identified FDP conflict at 1740Z — 35 minutes before CTOT departure. No standby crew positioned at MAN despite 3hr window (1410Z identification → 1740Z). Key RM question: was a standby crew available at MAN or any nearby outstation from 1400Z? Should OCC have positioned relief crew immediately at 1410Z identification?' }
+              }
+            ]
+          }
+        ]
+      },
+
+      ownia_loss: {
+        tails: [
+          {
+            reg: 'G-LCYM',
+            type: 'Embraer E175',
+            role: 'operating',
+            label: 'G-LCYM — One of Three Affected Aircraft',
+            days: [
+              {
+                date: '03 JUN 2025 (Day of Disruption)',
+                sectors: [
+                  { flight: 'BE1821', route: 'LCY→DUB', sched_out: '06:30', sched_in: '07:45', actual_out: '—',    actual_in: '—',    status: 'canx', note: 'Flight CANCELLED — rostered cabin crew failed to report at LCY from 0545Z. Crew planning confirmed attendance previous evening. No notice served. Three aircraft unable to crew: all LCY morning departures affected.' },
+                  { flight: 'BE1822', route: 'DUB→LCY', sched_out: '09:00', sched_in: '10:15', actual_out: '—',    actual_in: '—',    status: 'canx', note: 'Return rotation cancelled — no crew available for inbound positioning from DUB.' },
+                  { flight: 'BE1823', route: 'LCY→DUB', sched_out: '13:00', sched_in: '14:15', actual_out: '16:12', actual_in: '17:28', status: 'delay', note: 'Services partially recovered from 1600Z following management intervention. Crew sourced from standby roster.' },
+                ],
+                event: { type: 'alert', text: 'LOSS — Krüsemann (C-195/17): spontaneous wildcat industrial action by own cabin crew is not extraordinary circumstances — it falls within the normal exercise of the carrier\'s activity and is within the carrier\'s sphere of control. No advance trade union notice served. No Art 5(3) defence available. Art 9 care not proactively arranged until 0930Z — 3hrs 45min after disruption onset.' }
+              }
+            ]
+          }
+        ]
+      },
+
+      ownia_win: {
+        tails: [
+          {
+            reg: 'EC-MIH',
+            type: 'Airbus A320',
+            role: 'operating',
+            label: 'EC-MIH — Operating Aircraft',
+            days: [
+              {
+                date: '18 MAR 2025 (Day of Disruption)',
+                sectors: [
+                  { flight: 'VY1234', route: 'BCN→MAN', sched_out: '08:10', sched_in: '10:25', actual_out: '—',    actual_in: '—',    status: 'canx', note: 'Flight CANCELLED — SITCPLA formal trade union strike. Strike notice served 15/03/25 (72hrs advance), compliant with Spanish RDL 17/1977. Ministry of Transport designated minimum services: 50% of scheduled operations. VY1234 BCN-MAN outside minimum service roster — cancelled in accordance with Ministry designation.' },
+                ],
+                event: { type: 'impact', text: 'STRONG DEFENCE — Airhelp v Swiss International Air Lines (C-28/20): lawfully-called trade union strike, with proper advance notice and compliant with applicable labour law, constitutes extraordinary circumstances. SITCPLA notice: 15/03/25, formal compliance with RDL 17/1977 confirmed. Ministry minimum services designation obtained. Alternative routing offered via MAD 19/03/25. Passengers notified by SMS and app 72hrs prior.' }
+              }
+            ]
+          }
+        ]
+      },
+
+      thirdparty_win: {
+        tails: [
+          {
+            reg: 'F-GKXL',
+            type: 'Airbus A320',
+            role: 'operating',
+            label: 'F-GKXL — Operating Aircraft',
+            days: [
+              {
+                date: '13 JAN 2025 (Day of Disruption)',
+                sectors: [
+                  { flight: 'AF1679', route: 'LHR→CDG', sched_out: '07:30', sched_in: '09:45', actual_out: '07:33', actual_in: '09:50', status: 'ok',    note: 'Inbound positioning normal. CDG serviceable on arrival.' },
+                  { flight: 'AF1680', route: 'CDG→LHR', sched_out: '11:00', sched_in: '11:40', actual_out: '13:48', actual_in: '15:30', status: 'claim', note: '★ CLAIMED FLIGHT — delay 4h 30m. French ATC wildcat strike commenced 0600Z without advance notice — DSNA controllers absent from posts. DGAC issued NOTAM A0034/25 restricting French FIR capacity 70%. Eurocontrol ATFM regulation issued 0715Z. CTOT 1340Z assigned.' },
+                ],
+                event: { type: 'impact', text: 'STRONG DEFENCE — ATC wildcat strike without advance DGAC notice is third-party industrial action beyond carrier\'s control: extraordinary circumstances established. All carriers operating CDG affected equally by CTOT 1340Z. CFMU slot documentation ref CTOT 1340Z retained. DGAC restriction notice NOTAM A0034/25 retained as contemporaneous evidence. All reasonable measures taken — no alternative routing available without CTOT.' }
+              }
+            ]
+          }
+        ]
+      },
+
+      thirdparty_contested: {
+        tails: [
+          {
+            reg: 'EI-EBH',
+            type: 'Boeing 737-800',
+            role: 'operating',
+            label: 'EI-EBH — Operating Aircraft',
+            days: [
+              {
+                date: '23 SEP 2024 (D-2 Notice)',
+                sectors: [],
+                event: { type: 'incident', text: 'Groundforce Italia (FCO ground handler) served 24hr strike notice 23/09/24 — effective from 0001Z 25/09/24. RYR OCC received notice and began assessment. Attempted to engage Swissport FCO as alternate handler 24/09/24 — FCO Airport Authority confirmed no apron slot allocation for secondary handler at short notice. Alternate handler engagement failed.' }
+              },
+              {
+                date: '25 SEP 2024 (Day of Disruption)',
+                sectors: [
+                  { flight: 'FR2233', route: 'DUB→FCO', sched_out: '07:15', sched_in: '10:45', actual_out: '07:18', actual_in: '10:51', status: 'ok', note: 'Outbound rotation completed. Landed FCO — Groundforce Italia strike active from midnight.' },
+                  { flight: 'FR2234', route: 'DUB→FCO', sched_out: '14:30', sched_in: '18:00', actual_out: '—',    actual_in: '—',    status: 'canx', note: 'Flight CANCELLED — no ground handling available at FCO. Alternate handler Swissport not secured. All passengers notified T-44hrs. Alternative routing offered via NAP same day.' },
+                ],
+                event: { type: 'alert', text: 'CONTESTED — Third-party IA is extraordinary circumstances (Wallentin-Hermann). However: 48-hour advance notice received 23/09/24. RM question: was there a sufficient time window to secure alternate handler or re-route passengers onto services operating through non-Groundforce-Italia terminals? FCO slot authority refusal documented but: was earlier contact made? Was alternate routing through FCO Terminal 1 (different handler) assessed? Carrier RM record critical.' }
+              }
+            ]
+          }
+        ]
+      },
+
+      birdstrike_win: {
+        tails: [
+          {
+            reg: 'G-EZTF',
+            type: 'Airbus A320',
+            role: 'operating',
+            label: 'G-EZTF — Original Aircraft (AOG at EDI)',
+            days: [
+              {
+                date: '29 JUL 2024 (Day of Disruption)',
+                sectors: [
+                  { flight: 'EZY3300', route: 'ALC→EDI', sched_out: '06:30', sched_in: '09:45', actual_out: '06:33', actual_in: '09:49', status: 'ok', note: 'Inbound rotation normal. Aircraft fully serviceable on arrival EDI.' },
+                  { flight: 'EZY3301', route: 'EDI→ALC', sched_out: '10:25', sched_in: '14:10', actual_out: '—',    actual_in: '—',    status: 'aog', note: 'AOG — birdstrike confirmed on take-off roll EDI at 10:22Z. Seagull ingestion into Engine 1. Aircraft stopped on runway, returned to stand. Mandatory post-strike borescope per AMM task 71-00-00-200-001 initiated. Inspection confirmed FOD damage to Engine 1 fan blades. Airworthiness release not possible. Aircraft grounded at EDI.' },
+                ],
+                event: { type: 'alert', text: 'Post-birdstrike mandatory inspection confirmed Engine 1 fan blade FOD damage. Aircraft G-EZTF unairworthy — cannot continue service. No spare aircraft available at EDI same day. Replacement aircraft G-EZWU requested from LGW spare pool.' }
+              }
+            ]
+          },
+          {
+            reg: 'G-EZWU',
+            type: 'Airbus A320',
+            role: 'replacement',
+            label: 'G-EZWU — Replacement Aircraft (from LGW)',
+            days: [
+              {
+                date: '29 JUL 2024 (Day of Disruption)',
+                sectors: [
+                  { flight: 'EZY9999', route: 'LGW→EDI', sched_out: '—',    sched_in: '—',    actual_out: '13:45', actual_in: '15:05', status: 'repl', note: 'Positioning flight LGW→EDI — replacement aircraft dispatched from LGW spare pool following G-EZTF AOG. Crew positioning arranged concurrently.' },
+                  { flight: 'EZY3301', route: 'EDI→ALC', sched_out: '10:25', sched_in: '14:10', actual_out: '15:48', actual_in: '19:52', status: 'claim', note: '★ CLAIMED FLIGHT — operated by G-EZWU. Delay 5h 42m. Passengers rebooked onto replacement service. Birdstrike on G-EZTF is extraordinary circumstances: event external to carrier (wildlife), mandatory safety inspection unavoidable, replacement aircraft sourced with minimum delay.' },
+                ],
+                event: { type: 'impact', text: 'STRONG DEFENCE — Birdstrike is an event external to carrier control (wildlife incursion at aerodrome). Mandatory post-strike inspection per AMM is a non-discretionary safety requirement. FOD damage confirmed — airworthiness grounding mandatory. All reasonable measures taken: replacement aircraft positioned from LGW within 3h 23m of AOG declaration. Art 5(3) defence well-founded.' }
+              }
+            ]
+          }
+        ]
+      },
+
+      birdstrike_contested: {
+        tails: [
+          {
+            reg: 'EI-DPH',
+            type: 'Boeing 737-800',
+            role: 'operating',
+            label: 'EI-DPH — Operating Aircraft',
+            days: [
+              {
+                date: '14 AUG 2024 (Day of Disruption)',
+                sectors: [
+                  { flight: 'FR557',  route: 'PMI→STN', sched_out: '06:15', sched_in: '08:30', actual_out: '06:18', actual_in: '08:34', status: 'ok',    note: 'Normal inbound rotation. Aircraft lands STN at 0834Z.' },
+                  { flight: 'FR558a', route: 'STN→PMI', sched_out: '09:10', sched_in: '11:35', actual_out: '—',    actual_in: '—',    status: 'delay', note: '1ST BIRDSTRIKE 0830Z — during initial take-off roll STN. Aircraft rejected take-off. Returned to stand. Visual engine inspection completed 1015Z. No damage confirmed by engineers. Aircraft signed serviceable and returned to service.' },
+                  { flight: 'FR558b', route: 'STN→PMI', sched_out: '—',    sched_in: '—',    actual_out: '—',    actual_in: '—',    status: 'delay', note: '2ND BIRDSTRIKE 1235Z — during take-off roll on STN-PMI departure. Second wildlife strike. Aircraft AOG — second mandatory borescope inspection initiated.' },
+                  { flight: 'FR558',  route: 'STN→PMI', sched_out: '09:10', sched_in: '11:35', actual_out: '15:22', actual_in: '17:48', status: 'claim', note: '★ CLAIMED FLIGHT — 6h delay. Second birdstrike at 1235Z required full borescope. Departure STN 1522Z. Arrival PMI 1748Z.' },
+                ],
+                event: { type: 'alert', text: 'CONTESTED — First birdstrike 0830Z: visual inspection only (not full borescope per AMM 71-00-00-200-001). Aircraft returned to service without mandatory post-strike borescope. Second birdstrike 1235Z triggered full AOG. Key legal question: was the correct airworthiness procedure followed after the first birdstrike? If first borescope had been conducted, could second event have been prevented? RM argument against carrier: inadequate post-strike inspection procedure after first event.' }
+              }
+            ]
+          }
+        ]
+      },
+
+      atfm_contested: {
+        tails: [
+          {
+            reg: 'EI-EBM',
+            type: 'Boeing 737-800',
+            role: 'operating',
+            label: 'EI-EBM — Operating Aircraft',
+            days: [
+              {
+                date: '25 SEP 2024 (Day of Disruption)',
+                sectors: [
+                  { flight: 'FR1121', route: 'MAD→STN', sched_out: '08:30', sched_in: '10:45', actual_out: '08:33', actual_in: '10:48', status: 'ok',    note: 'Inbound rotation normal. Crew check-in STN 12:20Z for FR1122 departure.' },
+                  { flight: 'FR1122', route: 'STN→MAD', sched_out: '13:20', sched_in: '16:30', actual_out: '—',    actual_in: '—',    status: 'canx', note: 'CANCELLED 1700Z — Eurocontrol ATFM regulation Spanish FIR (thunderstorm complex MAD sector). CTOT 1815Z issued 1200Z. Crew check-in 1220Z, FDP limit under EASA Part-ORO: 2200Z. Revised ETA MAD with CTOT: 2130Z. OCC identified FDP risk at 1400Z. No standby crew arranged STN or MAD outstation. Flight cancelled at 1700Z when CTOT unchanged.' },
+                ],
+                event: { type: 'alert', text: 'CONTESTED — ATFM extraordinary circumstances (Limb 1) established: Eurocontrol CTOT issued for thunderstorm complex, beyond carrier control. However RM FAILURE identified: OCC identified FDP conflict at 1400Z — 3 hours before cancellation at 1700Z and 4hrs 15min before CTOT departure 1815Z. No standby crew was positioned at STN or MAD outstation during this window. All reasonable measures question: was there sufficient time to position a relief crew? If yes — defence on Limb 2 fails.' }
+              }
+            ]
+          }
+        ]
+      }
+
+    }; // end LOF_DATA
+
+    let _lofExpanded  = false;
+    let _lofTailIdx   = 0;
+
+    function buildLOFModule(dt) {
+      if (!dt) return '';
+      const key    = currentScenarioKey || 'demo';
+      const data   = LOF_DATA[key];
+      if (!data || !data.tails || data.tails.length === 0) return buildLOFEmpty();
+
+      const tails  = data.tails;
+      const tailTabsHtml = tails.length > 1
+        ? `<div class="lof-tail-tabs" id="lof-tail-tabs">
+            ${tails.map((t, i) => `<div class="lof-tail-tab${i===0?' active':''}" onclick="selectLOFTail(${i})">${t.label}</div>`).join('')}
+           </div>`
+        : '';
+
+      const badgesHtml = tails.map(t =>
+        `<span class="lof-tail-badge${t.role==='replacement'?' replacement':''}">${t.reg}</span>`
+      ).join(' ');
+
+      const bodyHtml = tails.map((t, i) =>
+        `<div class="lof-tail-content" id="lof-tail-${i}" style="${i===0?'':'display:none'}">
+          ${t.days.map(d => buildLOFDay(d)).join('')}
+         </div>`
+      ).join('');
+
+      return `
+        <div class="lof-module" id="lof-module">
+          <div class="lof-module-hdr" onclick="toggleLOFModule()">
+            <div class="lof-module-hdr-left">
+              <span class="lof-module-hdr-label">Line of Flying</span>
+              ${badgesHtml}
+              ${tails.length > 1 ? '<span style="font-size:10px;color:var(--ink-faint);font-family:var(--font-mono)">· Tail change</span>' : ''}
+            </div>
+            <span class="lof-module-hdr-toggle" id="lof-toggle-label">▶ Expand sector record</span>
+          </div>
+          <div id="lof-module-body" style="display:none">
+            ${tailTabsHtml}
+            ${bodyHtml}
+          </div>
+        </div>`;
+    }
+
+    function buildLOFDay(day) {
+      const headersHtml = `
+        <thead>
+          <tr>
+            <th>Flight</th>
+            <th>Route</th>
+            <th>Sched OUT</th>
+            <th>Sched IN</th>
+            <th>Actual OUT</th>
+            <th>Actual IN</th>
+            <th>Status</th>
+            <th>Note</th>
+          </tr>
+        </thead>`;
+
+      const rowsHtml = day.sectors.map(s => {
+        const rowClass = s.status === 'claim' ? 'lof-row-claimed'
+                       : s.status === 'div'   ? 'lof-row-diverted'
+                       : s.status === 'aog'   ? 'lof-row-aog'
+                       : '';
+
+        const badge = s.status === 'ok'    ? `<span class="lof-status-badge lof-status-ok">✓ On Time</span>`
+                    : s.status === 'delay' ? `<span class="lof-status-badge lof-status-delay">⚠ Delayed</span>`
+                    : s.status === 'div'   ? `<span class="lof-status-badge lof-status-div">⚠ Diverted</span>`
+                    : s.status === 'claim' ? `<span class="lof-status-badge lof-status-claim">★ Claimed</span>`
+                    : s.status === 'aog'   ? `<span class="lof-status-badge lof-status-aog">AOG</span>`
+                    : s.status === 'canx'  ? `<span class="lof-status-badge lof-status-canx">Cancelled</span>`
+                    : s.status === 'repl'  ? `<span class="lof-status-badge lof-status-repl">Replacement</span>`
+                    : `<span class="lof-status-badge">${s.status}</span>`;
+
+        const actualOutLate = s.actual_out !== '—' && s.sched_out !== '—' && s.actual_out > s.sched_out;
+        const actualInLate  = s.actual_in  !== '—' && s.sched_in  !== '—' && s.actual_in  > s.sched_in;
+
+        return `<tr class="${rowClass}">
+          <td>${s.flight}</td>
+          <td class="lof-route">${s.route}</td>
+          <td class="lof-time">${s.sched_out}</td>
+          <td class="lof-time">${s.sched_in}</td>
+          <td class="lof-time${actualOutLate?' actual-late':''}">${s.actual_out}</td>
+          <td class="lof-time${actualInLate?' actual-late':''}">${s.actual_in}</td>
+          <td>${badge}</td>
+          <td class="lof-note">${s.note}</td>
+        </tr>`;
+      }).join('');
+
+      const eventRowHtml = day.event
+        ? `<tr class="lof-event-row lof-event-${day.event.type}">
+             <td colspan="8">ℹ ${day.event.text}</td>
+           </tr>`
+        : '';
+
+      return `
+        <div class="lof-day-group">
+          <div class="lof-day-hdr">${day.date}</div>
+          <table class="lof-table">
+            ${headersHtml}
+            <tbody>
+              ${rowsHtml}
+              ${eventRowHtml}
+            </tbody>
+          </table>
+        </div>`;
+    }
+
+    function buildLOFEmpty() {
+      return `<div class="lof-module" id="lof-module">
+        <div class="lof-module-hdr" style="cursor:default">
+          <span class="lof-module-hdr-label">Line of Flying</span>
+        </div>
+        <div class="lof-empty-state">No LOF data available for this scenario. Sector record will appear here when aircraft tail data is loaded.</div>
+      </div>`;
+    }
+
+    function toggleLOFModule() {
+      const body  = document.getElementById('lof-module-body');
+      const label = document.getElementById('lof-toggle-label');
+      if (!body) return;
+      _lofExpanded = !_lofExpanded;
+      body.style.display  = _lofExpanded ? '' : 'none';
+      label.textContent   = _lofExpanded ? '▼ Collapse sector record' : '▶ Expand sector record';
+    }
+
+    function selectLOFTail(idx) {
+      const key  = currentScenarioKey || 'demo';
+      const data = LOF_DATA[key];
+      if (!data) return;
+      const n = data.tails.length;
+      for (let i = 0; i < n; i++) {
+        const content = document.getElementById(`lof-tail-${i}`);
+        if (content) content.style.display = (i === idx) ? '' : 'none';
+      }
+      document.querySelectorAll('.lof-tail-tab').forEach((tab, i) => {
+        tab.classList.toggle('active', i === idx);
+      });
+      _lofTailIdx = idx;
     }
 
     /* ----------------------------------------------------------
