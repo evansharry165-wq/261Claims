@@ -2579,6 +2579,90 @@
       font-family: var(--font-spectral, serif);
     }
 
+    /* ============================================================
+       CHRONOLOGICAL TIMELINE — Zone 1
+    ============================================================ */
+    .tl-spine { display: flex; flex-direction: column; }
+    .tl-row { display: flex; align-items: stretch; }
+    .tl-col { display: flex; flex-direction: column; align-items: center; width: 34px; flex-shrink: 0; }
+    .tl-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; margin-top: 13px; }
+    .tl-connector { width: 1px; background: var(--ink-rule2); flex: 1; min-height: 12px; }
+
+    .tl-dot-gray   { background: var(--surface-raised); border: 1.5px solid var(--ink-faint); }
+    .tl-dot-amber  { background: var(--conditions-mid); }
+    .tl-dot-blue   { background: var(--judgment-mid); }
+    .tl-dot-red    { background: var(--settle-mid); }
+    .tl-dot-green  { background: var(--defend-mid); }
+
+    .tl-card {
+      flex: 1;
+      margin: 5px 0 5px 10px;
+      border-radius: var(--r-lg);
+      border: 1px solid var(--ink-rule);
+      background: var(--surface-raised);
+      padding: 10px 14px;
+    }
+    .tl-card.tl-disruption { border-color: var(--conditions-border); background: var(--conditions-bg); }
+    .tl-card.tl-cascade    { border-color: var(--judgment-border);   background: var(--judgment-bg);   }
+    .tl-card.tl-decision   { border-color: var(--settle-border);     background: var(--settle-bg);     }
+    .tl-card.tl-recovery   { border-color: var(--defend-border);     background: var(--defend-bg);     }
+
+    .tl-time  { font-family: var(--font-mono); font-size: 9.5px; color: var(--ink-faint); margin-bottom: 3px; }
+    .tl-head  { display: flex; align-items: center; gap: 7px; margin-bottom: 3px; flex-wrap: wrap; }
+    .tl-icon  { font-size: 15px; flex-shrink: 0; }
+    .tl-label { font-size: 12.5px; font-weight: 600; color: var(--ink-primary); }
+    .tl-ref   { font-family: var(--font-mono); font-size: 10px; color: var(--ink-secondary); }
+    .tl-badge { font-size: 9.5px; padding: 1px 6px; border-radius: var(--r); font-weight: 600; letter-spacing: .03em; }
+    .tl-badge-disruption { background: var(--conditions-bg); color: var(--conditions); border: 1px solid var(--conditions-border); }
+    .tl-badge-cascade    { background: var(--judgment-bg);   color: var(--judgment);   border: 1px solid var(--judgment-border); }
+    .tl-badge-decision   { background: var(--settle-bg);     color: var(--settle);     border: 1px solid var(--settle-border); }
+    .tl-badge-recovery   { background: var(--defend-bg);     color: var(--defend);     border: 1px solid var(--defend-border); }
+    .tl-desc  { font-size: 11.5px; color: var(--ink-secondary); line-height: 1.5; margin: 4px 0 8px; }
+
+    .tl-ev-label { font-size: 9px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--ink-faint); margin: 4px 0 5px; }
+    .tl-ev-row   { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 6px; }
+    .tl-chip {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 10.5px; padding: 3px 8px 3px 7px;
+      border-radius: var(--r-md);
+      border: 1px solid var(--ink-rule2);
+      background: var(--surface-ui);
+      color: var(--ink-secondary);
+      cursor: pointer; user-select: none;
+      transition: border-color .12s, background .12s;
+      line-height: 1.3;
+    }
+    .tl-chip:hover { border-color: var(--ink-rule); background: var(--surface-raised); }
+    .tl-chip.ev-available { border-color: var(--defend-border);     background: var(--defend-bg);     color: var(--defend); }
+    .tl-chip.ev-requested { border-color: var(--conditions-border); background: var(--conditions-bg); color: var(--conditions); }
+    .tl-chip.ev-missing   { border-color: var(--settle-border);     background: var(--settle-bg);     color: var(--settle); }
+    .tl-chip-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--ink-faint); flex-shrink: 0; transition: background .12s; }
+    .tl-chip.ev-available .tl-chip-dot { background: var(--defend-mid); }
+    .tl-chip.ev-requested .tl-chip-dot { background: var(--conditions-mid); }
+    .tl-chip.ev-missing   .tl-chip-dot { background: var(--settle-mid); }
+    .tl-chip-state { opacity: 0.65; font-size: 9.5px; margin-left: 2px; }
+
+    .tl-ann-row   { margin-top: 8px; }
+    .tl-ann-label { font-size: 9px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 4px; }
+    .tl-ann {
+      width: 100%;
+      font-size: 11.5px;
+      border: 1px solid var(--ink-rule2);
+      border-radius: var(--r-md);
+      padding: 7px 10px;
+      resize: vertical;
+      min-height: 50px;
+      background: var(--surface-raised);
+      color: var(--ink-primary);
+      font-family: var(--font-sans);
+      line-height: 1.5;
+      box-sizing: border-box;
+    }
+    .tl-ann::placeholder { color: var(--ink-faint); font-style: italic; }
+    .tl-ann:focus { outline: none; border-color: var(--ink-faint); }
+    .tl-mention-yes { font-size: 9.5px; color: var(--defend-mid); display: block; margin-top: 3px; }
+    .tl-mention-no  { font-size: 9.5px; color: var(--conditions-mid); display: block; margin-top: 3px; }
+
   </style>
 </head>
 <body>
@@ -4451,123 +4535,89 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
     ---------------------------------------------------------- */
     const EVIDENCE_DB = {
       weather: [
-        { id:'metar', name:'METAR / TAF — Historical Weather Records', source:'National meteorological service / Ogimet', proves:'Actual aerodrome conditions at time of disruption', priority:'primary' },
-        { id:'afm', name:'Aircraft Flight Manual — Certified Operating Limits', source:'Aircraft manufacturer / type certificate', proves:'Conditions exceeded certified crosswind, visibility or precipitation limits', priority:'primary' },
-        { id:'atc-rec', name:'ATC Records / Airport Authority Statement', source:'Air traffic control authority', proves:'ATC-mandated decision — diversion, hold, or ground stop', priority:'primary' },
-        { id:'safety-report', name:'Air Safety / Occurrence Report', source:'Internal safety management system', proves:"Commander's contemporaneous account of conditions and decisions made", priority:'primary' },
-        { id:'sigmet', name:'SIGMET / Meteorological Warning', source:'National aviation weather service', proves:'Significant meteorological hazard formally notified', priority:'supporting' },
-        { id:'hazard-fcst', name:'Meteorological Hazard Forecast', source:'Meteorological authority', proves:'Pre-flight weather assessment identified risk', priority:'supporting' },
-        { id:'third-party-track', name:'Third-party Flight Tracking Data', source:'Public flight tracking service', proves:'Other operators also unable to land / diverted — conditions affected all carriers', priority:'supporting' },
-        { id:'notam', name:'NOTAM', source:'National AIS', proves:'Formal aerodrome / airspace notice issued regarding conditions', priority:'supporting' },
-        { id:'eurocontrol', name:'Eurocontrol Network Records', source:'Eurocontrol NOP / NMOC', proves:'Network-wide impact; ATFM regulations or ground programmes imposed', priority:'supporting' },
-        { id:'ops-log', name:'Operations Control Disruption Log', source:'Internal flight operations system', proves:'Real-time disruption management decisions and timeline', priority:'supporting' },
+        { id:'safety-report', name:'Air Safety / Occurrence Report', source:'Internal safety management system', proves:"Commander's contemporaneous account of conditions, the decision made, and any ATC / authority mandate received", priority:'primary' },
+        { id:'metar', name:'METAR / TAF Records', source:'National meteorological service (Ogimet or met authority)', proves:'Actual aerodrome conditions at the time of the approach or operation — the objective weather record', priority:'primary' },
+        { id:'hazard-fcst', name:'Meteorological Hazard Forecast', source:'National meteorological authority', proves:'Pre-flight forecast confirming the risk was identified — demonstrates conditions were not transient', priority:'primary' },
+        { id:'eurocontrol', name:'Eurocontrol Network Records', source:'Eurocontrol NOP', proves:'Any ATFM regulation or ground programme arising from the weather — confirms network-wide impact', priority:'supporting' },
+        { id:'notam', name:'NOTAM', source:'National AIS', proves:'Formal aerodrome or airspace notice regarding conditions — adds official corroboration', priority:'supporting' },
       ],
       atfm: [
-        { id:'ctot', name:'Eurocontrol CTOT / ATFM Regulation Notice', source:'Eurocontrol Network Manager', proves:'Specific slot regulation imposed on the flight', priority:'primary' },
-        { id:'eurocontrol-nop', name:'Eurocontrol Network Operations Portal Records', source:'Eurocontrol NMOC', proves:'Regulation timeline, affected flights, network-wide scope', priority:'primary' },
-        { id:'flight-plan', name:'Flight Plan Records', source:'Internal flight operations system', proves:'CTOT applied to the specific flight; slot compliance demonstrated', priority:'primary' },
-        { id:'atfm-brief', name:'Eurocontrol ATFM Daily Brief / Post Ops Brief', source:'Eurocontrol', proves:'Pre-notified airspace capacity constraints', priority:'supporting' },
-        { id:'oplog', name:'Eurocontrol Operations Log (Oplog)', source:'Eurocontrol', proves:'Real-time record of ATFM events, regulations, and slot updates', priority:'supporting' },
-        { id:'third-party-track', name:'Third-party Flight Tracking Data', source:'Public flight tracking service', proves:'Regulation imposed on all carriers on the route, not carrier-specific delay', priority:'supporting' },
-        { id:'ops-log', name:'Operations Control Disruption Log', source:'Internal flight operations system', proves:'Timeline of ATFM impact on the rotation', priority:'supporting' },
+        { id:'ctot', name:'Eurocontrol Regulation Record / CTOT', source:'Eurocontrol Network Manager', proves:'Specific ATFM regulation and slot assigned to this flight — the primary document', priority:'primary' },
+        { id:'eurocontrol-oplog', name:'Eurocontrol Oplog / Network Operations Records', source:'Eurocontrol NOP', proves:'Regulation timeline, scope, and affected flights — confirms network-wide imposition not carrier-specific', priority:'primary' },
+        { id:'third-party-track', name:'Third-party Flight Tracking Data', source:'Public flight tracking service', proves:'All carriers on the route affected — corroborates regulation was not selective', priority:'supporting' },
+        { id:'ops-log', name:'Duty Controller\'s Operations Log', source:'Internal flight operations / OCC', proves:'Timeline of ATFM impact on the specific rotation, decisions made, and standby position', priority:'supporting' },
       ],
       birdstrike: [
-        { id:'safety-report', name:'Air Safety / Occurrence Report (MOR)', source:'Internal safety management system / national aviation authority', proves:'Mandatory occurrence report — primary contemporaneous record of the strike', priority:'primary' },
-        { id:'maint-log', name:'Aircraft Maintenance Event Log', source:'Internal maintenance management system', proves:'Damage assessment; airworthiness determination; unserviceability record', priority:'primary' },
-        { id:'commander-report', name:"Commander's Report", source:'Flight crew / internal', proves:'Contemporaneous account of the strike, impact, and subsequent decision', priority:'primary' },
-        { id:'atc-rec', name:'ATC Records', source:'Air traffic control', proves:'ATC notified; runway inspection called; airport wildlife response', priority:'supporting' },
-        { id:'wildlife-record', name:'Airport Wildlife Strike / Hazard Record', source:'Airport authority', proves:"Airport's bird hazard management; confirms bird activity at the aerodrome", priority:'supporting' },
-        { id:'eurocontrol', name:'Eurocontrol Records', source:'Eurocontrol NMOC', proves:'Any ATFM regulation arising from resulting runway closure or inspection', priority:'supporting' },
+        { id:'safety-report', name:'Air Safety / Occurrence Report (MOR)', source:'Internal safety management system / national aviation authority', proves:'Mandatory occurrence report — the primary contemporaneous record of the strike and its impact', priority:'primary' },
+        { id:'maint-log', name:'Engineering Event Record', source:'Internal maintenance management system', proves:'Damage assessment, airworthiness determination, and grounding decision — confirms unserviceability', priority:'primary' },
+        { id:'atc-rec', name:'ATC Records', source:'Air traffic control', proves:'ATC notification and runway inspection instruction — third-party corroboration of the event', priority:'supporting' },
+        { id:'eurocontrol', name:'Eurocontrol / Flight Tracking Records', source:'Eurocontrol NOP / public flight tracking', proves:'Any ATFM arising from runway inspection or closure; confirms operational impact', priority:'supporting' },
       ],
       technical: [
-        { id:'maint-log', name:'Aircraft Maintenance Event Log', source:'Internal maintenance management system', proves:'Primary record of the defect — nature, discovery, rectification or deferral', priority:'primary' },
-        { id:'tech-log', name:'Aircraft Technical Log / Journey Log', source:'Aircraft document set', proves:'Pilot-reported defect; ground engineer certification of serviceability or deferral', priority:'primary' },
-        { id:'safety-report', name:'Air Safety / Occurrence Report', source:'Internal safety management system', proves:'Contemporaneous occurrence record; mandatory if reportable', priority:'primary' },
-        { id:'eng-auth', name:'Engineering Authorisation / MEL Release', source:'Internal maintenance / CAMO', proves:'Defect could not be deferred under MEL; aircraft grounded on airworthiness grounds', priority:'supporting' },
-        { id:'part-trace', name:'Part Traceability / Maintenance Release', source:'Maintenance organisation / supplier', proves:'Component history and origin — relevant if hidden defect argument', priority:'supporting' },
-        { id:'commander-report', name:"Commander's Report", source:'Flight crew / internal', proves:"Pilot's account of defect symptoms and decision", priority:'supporting' },
+        { id:'maint-log', name:'Engineering Event Record', source:'Internal maintenance management system', proves:'Nature of the defect, date and time of discovery, rectification attempted or deferred — primary engineering record', priority:'primary' },
+        { id:'tech-log', name:'Aircraft Technical Log', source:'Aircraft document set', proves:'Pilot-reported defect and ground engineer\'s serviceability determination or deferral', priority:'primary' },
+        { id:'safety-report', name:'Air Safety / Occurrence Report', source:'Internal safety management system', proves:'Contemporaneous occurrence record; mandatory if the defect was reportable', priority:'primary' },
+        { id:'ops-log', name:'Duty Controller\'s Operations Log', source:'Internal flight operations / OCC', proves:'OCC timeline from defect discovery through replacement aircraft actions and recovery', priority:'supporting' },
       ],
       'third-party-ia': [
-        { id:'official-notice', name:'Official Industrial Action Notice', source:'Employer / trade union / government', proves:'Formal notification of strike action — primary document', priority:'primary' },
-        { id:'nat-caa', name:'National Civil Aviation Authority Records', source:'Relevant national CAA (e.g. DGAC, ENAC, CAA)', proves:'Regulatory authority confirmation of ATC/ANSP strike and aviation impact', priority:'primary' },
-        { id:'eurocontrol', name:'Eurocontrol Network Records', source:'Eurocontrol NMOC', proves:'Network-wide impact; sector capacity reductions imposed', priority:'primary' },
-        { id:'nat-ia-record', name:'National Industrial Action Register', source:'National IA commission / government body', proves:'Legally registered action; scope and duration confirmed', priority:'supporting' },
-        { id:'notam', name:'NOTAM', source:'National AIS', proves:'Airspace / aerodrome notice issued in connection with the action', priority:'supporting' },
-        { id:'news', name:'News Articles / Official Media Coverage', source:'Established news sources', proves:"Public record of the action; confirms it was not carrier-specific", priority:'supporting' },
-        { id:'third-party-track', name:'Third-party Flight Tracking Data', source:'Public flight tracking service', proves:'All carriers affected — network-wide impact', priority:'supporting' },
+        { id:'official-notice', name:'Official Industrial Action Notice', source:'Trade union / employer / competent authority', proves:'Formal notification of the action — identifies the striking body as a third party, not the airline', priority:'primary' },
+        { id:'nat-caa', name:'National CAA / Authority Records', source:'Relevant national CAA (e.g. DGAC, ENAC)', proves:'Regulatory body confirmation of the ATC / ANSP strike and its operational impact', priority:'primary' },
+        { id:'eurocontrol', name:'Eurocontrol Network Records', source:'Eurocontrol NOP', proves:'Network-wide impact — sector capacity reductions and regulations imposed by the action', priority:'supporting' },
+        { id:'notam', name:'NOTAM / News Coverage', source:'National AIS / established news sources', proves:'Formal notices and public record confirming the action was not carrier-specific', priority:'supporting' },
       ],
       'own-ia': [
-        { id:'official-notice', name:'Official Industrial Action Notice', source:'Trade union / employer', proves:'Formal notification — note: own-staff IA is a contested extraordinary circumstance', priority:'primary' },
-        { id:'hr-records', name:'Internal HR / Employment Records', source:'Internal HR', proves:'Scale of absence; which staff groups affected; contingency deployed', priority:'primary' },
-        { id:'union-correspondence', name:'Union Correspondence / Collective Agreement', source:'Internal / legal', proves:"Nature of dispute; carrier's attempts to resolve through negotiation", priority:'supporting' },
-        { id:'absence-records', name:'Staff Absence Records', source:'Internal HR system', proves:'Operational impact — which flights affected, scale of disruption', priority:'supporting' },
-        { id:'ops-log', name:'Operations Control Disruption Log', source:'Internal flight operations system', proves:"Carrier's contingency measures and their scope", priority:'supporting' },
+        { id:'hr-records', name:'HR Records / Official Strike Notice', source:'Internal HR / trade union', proves:'Identity of striking staff, scale of absence, and formal notification received', priority:'primary' },
+        { id:'union-correspondence', name:'Union Correspondence', source:'Internal HR / legal', proves:"Nature of the dispute and the carrier's documented attempts to resolve", priority:'supporting' },
+        { id:'ops-log', name:'Duty Controller\'s Operations Log', source:'Internal flight operations / OCC', proves:'Contingency measures deployed and their scope — relevant to Limb 2 position (if any)', priority:'supporting' },
       ],
       medical: [
-        { id:'safety-report', name:'Air Safety / Occurrence Report', source:'Internal safety management system', proves:"Contemporaneous record of the medical emergency and commander's diversion decision", priority:'primary' },
-        { id:'commander-report', name:"Commander's Report", source:'Flight crew / internal', proves:'Primary account of the emergency, options considered, and diversion decision', priority:'primary' },
-        { id:'medical-records', name:'Medical Authority Records', source:'Airport medical team / ATLS / local hospital', proves:"Confirms the medical emergency; validates the commander's decision", priority:'primary' },
-        { id:'crew-report', name:'Crew Report / In-flight Record', source:'Cabin / flight crew', proves:'Contemporaneous crew account of emergency and actions taken', priority:'supporting' },
-        { id:'eurocontrol', name:'Eurocontrol Records', source:'Eurocontrol NMOC', proves:'Any ATFM impact from the diversion on the subsequent rotation', priority:'supporting' },
+        { id:'safety-report', name:'Air Safety / Occurrence Report', source:'Internal safety management system', proves:"Commander's contemporaneous account of the emergency, diversion decision, and options considered", priority:'primary' },
+        { id:'medical-records', name:'Medical Authority Records', source:'Airport medical team / local hospital', proves:"Confirms the medical emergency and its severity — independent validation of the commander's decision", priority:'primary' },
+        { id:'eurocontrol', name:'ACARS / Ops Records', source:'Aircraft communications / internal flight ops', proves:'Diversion record and subsequent rotation timeline — establishes cascade impact', priority:'supporting' },
       ],
       security: [
-        { id:'authority-statement', name:'Police / Security Authority Statement', source:'Law enforcement / airport security authority', proves:'Primary external authority document — response was mandated, not carrier discretion', priority:'primary' },
-        { id:'safety-report', name:'Air Safety / Occurrence Report', source:'Internal safety management system', proves:'Contemporaneous occurrence record', priority:'primary' },
-        { id:'commander-report', name:"Commander's Report", source:'Flight crew / internal', proves:'Account of security event and decision made', priority:'primary' },
-        { id:'airport-statement', name:'Airport Authority Statement', source:'Airport authority', proves:"Airport-level security response; confirms event was not carrier-specific", priority:'supporting' },
-        { id:'ops-log', name:'Operations Control Disruption Log', source:'Internal flight operations system', proves:"Carrier's response and management of the event", priority:'supporting' },
+        { id:'authority-statement', name:'Police / Security Authority Statement', source:'Law enforcement / airport security authority', proves:'Response was mandated by an external authority — not a discretionary carrier decision', priority:'primary' },
+        { id:'safety-report', name:'Air Safety / Occurrence Report', source:'Internal safety management system', proves:'Contemporaneous occurrence record filed at time of event', priority:'primary' },
+        { id:'ops-log', name:'Duty Controller\'s Operations Log', source:'Internal flight operations / OCC', proves:"Carrier's response timeline and passenger management actions", priority:'supporting' },
       ],
       'disruptive-pax': [
-        { id:'safety-report', name:'Air Safety / Occurrence Report', source:'Internal safety management system', proves:'Contemporaneous record of the disruption — primary document', priority:'primary' },
-        { id:'commander-report', name:"Commander's Report", source:'Flight crew / internal', proves:"Commander's account of the behaviour and decision to divert / offload", priority:'primary' },
-        { id:'crew-witness', name:'Crew Witness Statements', source:'Cabin / flight crew', proves:'Contemporaneous accounts from crew members who witnessed the behaviour', priority:'primary' },
-        { id:'police-records', name:'Police / Authority Records', source:'Law enforcement', proves:'Confirms passenger was offloaded / arrested — establishes severity', priority:'supporting' },
-        { id:'handler-records', name:'Ground Handler / CCTV Records', source:'Ground handling agent / airport', proves:'Independent evidence of the incident', priority:'supporting' },
+        { id:'safety-report', name:'Air Safety / Occurrence Report', source:'Internal safety management system', proves:'Contemporaneous record of the disruption — the primary document establishing what occurred', priority:'primary' },
+        { id:'crew-witness', name:'Crew Witness Statements', source:'Cabin / flight crew', proves:'Contemporaneous accounts of the behaviour — taken immediately after landing, not days later', priority:'primary' },
+        { id:'police-records', name:'Police / Authority Records', source:'Law enforcement', proves:'Confirms offloading or arrest — establishes the severity that justified the diversion or delay', priority:'supporting' },
       ],
       'ground-damage': [
-        { id:'handler-report', name:'Ground Handler Incident Report', source:'Ground handling agent', proves:'Third-party damage — primary document establishing the third-party cause', priority:'primary' },
-        { id:'safety-report', name:'Air Safety / Occurrence Report', source:'Internal safety management system', proves:'Contemporaneous occurrence record', priority:'primary' },
-        { id:'maint-log', name:'Aircraft Maintenance Event Log', source:'Internal maintenance management system', proves:'Damage extent; airworthiness determination; repair requirement', priority:'primary' },
-        { id:'airport-statement', name:'Airport Authority Statement', source:'Airport authority', proves:'Stand / apron records; confirms handler responsibility', priority:'supporting' },
-        { id:'commander-report', name:"Commander's Report", source:'Flight crew / internal', proves:'Account of damage discovery and decision', priority:'supporting' },
+        { id:'handler-report', name:'Ground Handler Incident Report', source:'Ground handling agent', proves:'Third-party liability — the primary document establishing the cause was the handler, not the carrier', priority:'primary' },
+        { id:'maint-log', name:'Engineering Event Record', source:'Internal maintenance management system', proves:'Damage assessment, airworthiness determination, and repair or replacement requirement', priority:'primary' },
+        { id:'safety-report', name:'Air Safety / Occurrence Report', source:'Internal safety management system', proves:'Contemporaneous occurrence record filed at time of discovery', priority:'supporting' },
       ],
       'airport-closure': [
-        { id:'notam', name:'NOTAM', source:'National AIS', proves:'Official aerodrome / runway closure notice — primary document', priority:'primary' },
-        { id:'airport-statement', name:'Airport Authority Statement', source:'Airport authority', proves:"Confirms closure and cause; establishes it was beyond any carrier's control", priority:'primary' },
-        { id:'eurocontrol', name:'Eurocontrol Records', source:'Eurocontrol NMOC', proves:'Network impact; ATFM regulations or ground stops from closure', priority:'supporting' },
-        { id:'atc-rec', name:'ATC Records', source:'Air traffic control', proves:'ATC confirmation of closure and instructions issued', priority:'supporting' },
-        { id:'third-party-track', name:'Third-party Flight Tracking Data', source:'Public flight tracking service', proves:'All operators affected — confirms airport-level event', priority:'supporting' },
+        { id:'notam', name:'NOTAM', source:'National AIS', proves:'Official aerodrome or runway closure notice — the primary legal document', priority:'primary' },
+        { id:'airport-statement', name:'Airport Authority Statement / Duty Controller\'s Log', source:'Airport authority / internal flight ops', proves:"Confirms closure cause and duration; establishes it was beyond any carrier's control", priority:'primary' },
+        { id:'eurocontrol', name:'Eurocontrol Network Records', source:'Eurocontrol NOP', proves:'ATFM regulations or ground stops arising from closure — network-level corroboration', priority:'supporting' },
+        { id:'third-party-track', name:'Third-party Flight Tracking Data', source:'Public flight tracking service', proves:'All operators affected — confirms closure was genuine and complete', priority:'supporting' },
       ],
       'natural-disaster': [
-        { id:'govt-declaration', name:'Government / Emergency Authority Declaration', source:'National / regional government', proves:'Official declaration of the natural disaster — primary document', priority:'primary' },
-        { id:'eurocontrol', name:'Eurocontrol Records', source:'Eurocontrol NMOC', proves:'Airspace / network impact; regulations imposed', priority:'primary' },
-        { id:'notam', name:'NOTAM', source:'National AIS', proves:'Airspace / aerodrome closure notice', priority:'primary' },
-        { id:'news', name:'News Articles / Official Media Coverage', source:'Established news sources', proves:"Public record; confirms scale and aviation impact", priority:'supporting' },
-        { id:'disaster-monitoring', name:'Disaster / Emergency Monitoring Records', source:'Copernicus EMS / national emergency monitoring', proves:'Objective data on extent and timeline of the natural event', priority:'supporting' },
-        { id:'third-party-track', name:'Third-party Flight Tracking Data', source:'Public flight tracking service', proves:"All operators affected — beyond any single carrier's control", priority:'supporting' },
+        { id:'govt-declaration', name:'Government / Emergency Authority Declaration', source:'National or regional government', proves:'Official declaration of the natural disaster — primary document', priority:'primary' },
+        { id:'notam', name:'NOTAM', source:'National AIS', proves:'Airspace or aerodrome closure notice arising from the disaster', priority:'primary' },
+        { id:'eurocontrol', name:'Eurocontrol Network Records', source:'Eurocontrol NOP', proves:'Airspace restrictions and ATFM regulations imposed — confirms network-level impact', priority:'supporting' },
+        { id:'news', name:'News / Disaster Monitoring Records', source:'Established news sources / Copernicus EMS', proves:'Objective data on scale and timeline — supports proportionality of carrier response', priority:'supporting' },
       ],
       'political-unrest': [
-        { id:'govt-advisory', name:'Foreign Office / Government Travel Advisory', source:'FCO / national government', proves:'Official government advice against travel — primary document', priority:'primary' },
-        { id:'authority-statement', name:'Official Authority Statement', source:'National authority / embassy', proves:'Confirms the unrest and its impact on aviation operations', priority:'primary' },
-        { id:'news', name:'News Articles / Official Media Coverage', source:'Established news sources', proves:"Public record; scale and nature of the unrest", priority:'supporting' },
-        { id:'notam', name:'NOTAM', source:'National AIS', proves:'Airspace / aerodrome notices issued', priority:'supporting' },
-        { id:'eurocontrol', name:'Eurocontrol Records', source:'Eurocontrol NMOC', proves:'Network impact; airspace restrictions imposed', priority:'supporting' },
+        { id:'govt-advisory', name:'Foreign Office / Government Travel Advisory', source:'FCO / national government', proves:'Official government position — the strongest single document for this disruption type', priority:'primary' },
+        { id:'notam', name:'NOTAM', source:'National AIS', proves:'Airspace or aerodrome restriction formally issued as a result of the unrest', priority:'primary' },
+        { id:'eurocontrol', name:'Eurocontrol Network Records', source:'Eurocontrol NOP', proves:'Airspace restrictions imposed and ATFM impact — confirms operational consequence', priority:'supporting' },
+        { id:'news', name:'News Coverage', source:'Established news sources', proves:'Public record of the unrest and its aviation impact — corroborates the restriction was genuine', priority:'supporting' },
       ],
       'crew-fdp': [
-        { id:'crew-duty', name:'Crew Duty Records — Flight & Duty Time Log', source:'Internal crew scheduling / FTL system', proves:'Actual flight and duty times recorded — demonstrates duty limit was reached', priority:'primary' },
-        { id:'roster', name:'Crew Roster / Scheduling Records', source:'Internal crew scheduling system', proves:'Planned and actual duty patterns; confirms crew could not lawfully operate', priority:'primary' },
-        { id:'standby-deployment', name:'Standby Crew Availability / Deployment Record', source:'Internal crew scheduling system', proves:'What standby options were available; whether exhausted or deployed', priority:'primary' },
-        { id:'fdp-exceedance', name:'Duty Limit Exceedance Documentation', source:'Internal safety / crew management', proves:'Formal record if limits were approached under regulatory authority', priority:'supporting' },
-        { id:'rest-records', name:'Rest Period Records', source:'Internal crew scheduling / FTL system', proves:'Pre-flight rest period; crew were legally rostered', priority:'supporting' },
-        { id:'ops-manual', name:'Operations Manual — FTL Rules / FRMS Authority', source:'Internal / regulatory', proves:'Applicable FTL rules; FRMS extensions used or considered', priority:'supporting' },
+        { id:'crew-duty', name:'Crew Duty & Route Records', source:'Internal crew scheduling / FTL system', proves:'Actual flight and duty times — demonstrates the statutory limit was reached and the crew could not lawfully operate', priority:'primary' },
+        { id:'standby-deployment', name:'Standby Crew Availability Record', source:'Internal crew scheduling / OCC', proves:'What command-qualified standby was available at the base; whether exhausted or deployed', priority:'primary' },
+        { id:'ops-manual', name:'Operations Manual — FTL Rules', source:'Internal / regulatory', proves:'Applicable duty limit rules and any FRMS extension authority — confirms the limit is statutory, not discretionary', priority:'supporting' },
       ],
       'crew-sick': [
-        { id:'sick-cert', name:'Medical Certificate / Sick Note', source:'Crew member\'s medical practitioner', proves:'Contemporaneous record of incapacitation — confirms crew member was medically unfit', priority:'primary' },
-        { id:'crew-occ-log', name:'OCC / Crew Control Log', source:'Internal crew scheduling / OCC', proves:'Contemporaneous operations record of incapacitation notification, timing, and response actions', priority:'primary' },
-        { id:'standby-availability', name:'Standby Crew Availability Record', source:'Internal crew scheduling system', proves:'Confirms no command-qualified standby was available at the relevant base', priority:'primary' },
-        { id:'relief-positioning', name:'Relief Crew Positioning Record', source:'Internal crew scheduling / OCC', proves:'Documents positioning of relief crew — flight taken, arrival time, rest requirement triggered', priority:'supporting' },
-        { id:'pax-comms', name:'Passenger Communication Records', source:'Internal CRM / passenger notifications', proves:'Art 14 written notice compliance — timing of cancellation notification to passengers', priority:'supporting' },
-        { id:'art9-care', name:'Art 9 Care Records', source:'Ground operations / customer care', proves:'Vouchers issued, accommodation arranged — Art 9 compliance record', priority:'supporting' },
+        { id:'sick-cert', name:'Medical Certificate', source:"Crew member's medical practitioner", proves:'Contemporaneous confirmation of incapacitation — crew member was medically unfit for duty', priority:'primary' },
+        { id:'crew-occ-log', name:'OCC / Crew Control Log', source:'Internal crew scheduling / OCC', proves:'Notification timing, response actions taken, and standby position at the time', priority:'primary' },
+        { id:'standby-availability', name:'Standby Crew Availability Record', source:'Internal crew scheduling system', proves:'No command-qualified standby was available at the relevant base', priority:'primary' },
+        { id:'art9-care', name:'Art 9 Care Records', source:'Ground operations / customer care', proves:'Meals, accommodation, and transport provided — Art 9 compliance', priority:'supporting' },
       ],
     };
 
@@ -5144,6 +5194,237 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
     }
 
     /* ----------------------------------------------------------
+       TIMELINE — evidence status store
+    ---------------------------------------------------------- */
+    let tlEvStatus = {};
+
+    /* ----------------------------------------------------------
+       cycleEvChip — tap chip to cycle: unset → available → requested → missing → unset
+    ---------------------------------------------------------- */
+    function cycleEvChip(nodeId, evId, chip) {
+      const key = nodeId + '_' + evId;
+      const cycle = [null, 'available', 'requested', 'missing'];
+      const cur = tlEvStatus[key] || null;
+      const next = cycle[(cycle.indexOf(cur) + 1) % cycle.length];
+      tlEvStatus[key] = next;
+
+      chip.classList.remove('ev-available', 'ev-requested', 'ev-missing');
+      const stateEl = chip.querySelector('.tl-chip-state');
+      const labels = { available:' · ✓ Available', requested:' · ↗ Requested', missing:' · ✗ Missing' };
+      if (next) {
+        chip.classList.add('ev-' + next);
+        if (stateEl) stateEl.textContent = labels[next];
+      } else {
+        if (stateEl) stateEl.textContent = '';
+      }
+      updateRMStrength();
+    }
+
+    /* ----------------------------------------------------------
+       handleTimelineAnnotation — keyword hints on node textarea
+    ---------------------------------------------------------- */
+    function handleTimelineAnnotation(nodeId, text, signalId) {
+      nodeAnnotations[nodeId] = text;
+      const signal = document.getElementById(signalId);
+      if (!signal) return;
+      if (!text.trim()) { signal.innerHTML = ''; return; }
+
+      const lower = text.toLowerCase();
+      const hints = [];
+      if (/amos|maintenance|engineering record/.test(lower))
+        hints.push('↳ Engineering event record referenced — confirm it has been obtained from maintenance');
+      if (/occurrence|safety report|mor\b|safetynet/.test(lower))
+        hints.push('↳ Occurrence report referenced — ensure filed and obtained');
+      if (/aims|crew duty|fdp|flight duty|duty hours/.test(lower))
+        hints.push('↳ Crew duty records referenced — request from crew scheduling system');
+      if (/ogimet|metar|taf|weather data|met office/.test(lower))
+        hints.push('↳ Meteorological records referenced — download from national met authority');
+      if (/eurocontrol|ctot|atfm|network manager/.test(lower))
+        hints.push('↳ Eurocontrol records referenced — pull from NOP portal or oplog');
+      if (/lof|line of flying|prior sector|rotation|prior day/.test(lower))
+        hints.push('↳ LOF note — add sector details to the Line of Flying table below');
+
+      signal.innerHTML = hints.map(h =>
+        `<div style="font-size:10px;color:var(--conditions);background:var(--conditions-bg);border:1px solid var(--conditions-border);border-radius:var(--r);padding:4px 8px;margin-top:4px;line-height:1.4">${h}</div>`
+      ).join('');
+    }
+
+    /* ----------------------------------------------------------
+       buildChronologicalTimeline — replaces facts panel + causal chain + ev-nodes
+    ---------------------------------------------------------- */
+    function buildChronologicalTimeline(facts, causalNodes, dt, isScenarioMode) {
+      tlEvStatus = {};
+
+      const typeConfig = {
+        root:        { cardClass:'tl-disruption', dotClass:'tl-dot-amber', badgeClass:'tl-badge-disruption', badgeText:'extraordinary circumstance' },
+        cascade:     { cardClass:'tl-cascade',    dotClass:'tl-dot-blue',  badgeClass:'tl-badge-cascade',    badgeText:'cascade' },
+        operational: { cardClass:'tl-cascade',    dotClass:'tl-dot-blue',  badgeClass:'tl-badge-cascade',    badgeText:'operational' },
+        outcome:     { cardClass:'tl-decision',   dotClass:'tl-dot-red',   badgeClass:'tl-badge-decision',   badgeText:'outcome' },
+        impact:      { cardClass:'tl-recovery',   dotClass:'tl-dot-green', badgeClass:'tl-badge-recovery',   badgeText:'passenger impact' },
+      };
+
+      const allNodes = [];
+
+      // Flight departure node — from extracted facts
+      if (facts && facts.flightNum) {
+        const route = (facts.depIata && facts.arrIata) ? `${facts.depIata} → ${facts.arrIata}` : '';
+        const descParts = [
+          facts.date        ? `Date: ${facts.date}` : '',
+          facts.aircraftReg ? `Aircraft: ${facts.aircraftReg}` : '',
+          facts.delayText   ? `Stated delay: ${facts.delayText}` : '',
+        ].filter(Boolean);
+        allNodes.push({
+          nodeType: 'flight-dep',
+          label: `${facts.flightNum}${route ? ' — ' + route : ''}`,
+          ref: '',
+          desc: descParts.length ? descParts.join(' · ') : 'Extracted from summary — verify times against OCC records',
+          icon: '✈',
+          time: '',
+          evidenceItems: [],
+          showAnnotation: false,
+          nodeId: 'tl-flight-dep',
+          cfg: null,
+        });
+      }
+
+      // Causal chain nodes → timeline cards
+      if (causalNodes && causalNodes.length > 0) {
+        causalNodes.forEach((cn, idx) => {
+          const cfg = typeConfig[cn.type] || typeConfig.cascade;
+          const nodeId = `tl-cn-${idx}`;
+
+          // Evidence items per node type
+          let evItems = [];
+          if (idx === 0 && cn.type === 'root') {
+            // Primary disruption node gets the full evidence checklist for this disruption type
+            evItems = EVIDENCE_DB[dt.id] || [];
+          } else if (cn.type === 'outcome') {
+            // Outcome node — show OCC log and standby record as decision support evidence
+            const crewFdp = EVIDENCE_DB['crew-fdp'] || [];
+            const opsLog  = (() => {
+              for (const arr of Object.values(EVIDENCE_DB)) {
+                const found = arr.find(e => e.id === 'ops-log');
+                if (found) return found;
+              }
+              return null;
+            })();
+            evItems = crewFdp.filter(e => e.id === 'crew-duty' || e.id === 'standby-deployment');
+            if (!evItems.length && opsLog) evItems = [opsLog];
+          }
+
+          // Annotate evidence items with mention signals (custom mode only)
+          const enrichedEv = evItems.map(item => {
+            const mentioned = (!isScenarioMode && facts) ? evidenceMentionedInText(item.name, facts) : null;
+            return { ...item, mentioned };
+          });
+
+          const annPlaceholder = cn.type === 'outcome'
+            ? 'Add context on the decision — standby position, options considered, passenger comms...'
+            : 'Add what you know about this event — evidence you have, issues to flag, LOF amendments...';
+
+          allNodes.push({
+            nodeType: cn.type,
+            label: cn.label,
+            ref: '',
+            desc: cn.sub || '',
+            icon: cn.icon || '⚡',
+            time: cn.time || '',
+            evidenceItems: enrichedEv,
+            showAnnotation: true,
+            nodeId,
+            cfg,
+            annPlaceholder,
+          });
+        });
+      }
+
+      // Render nodes as HTML spine
+      return '<div class="tl-spine">' + allNodes.map((n, i) => {
+        const isFirst = i === 0;
+        const isLast  = i === allNodes.length - 1;
+
+        // Flight departure — simple neutral card
+        if (n.nodeType === 'flight-dep') {
+          return `<div class="tl-row">
+            <div class="tl-col">
+              ${isFirst ? '<div style="height:13px"></div>' : ''}
+              <div class="tl-dot tl-dot-gray"></div>
+              ${isLast ? '' : '<div class="tl-connector"></div>'}
+            </div>
+            <div class="tl-card" style="border-left:2px solid var(--ink-rule)">
+              <div class="tl-head">
+                <span class="tl-icon">${n.icon}</span>
+                <span class="tl-label">${n.label}</span>
+              </div>
+              <div class="tl-desc">${n.desc}</div>
+            </div>
+          </div>`;
+        }
+
+        const cfg = n.cfg || typeConfig.cascade;
+
+        // Evidence chips
+        let evHtml = '';
+        if (n.evidenceItems && n.evidenceItems.length > 0) {
+          const primary   = n.evidenceItems.filter(e => e.priority === 'primary');
+          const secondary = n.evidenceItems.filter(e => e.priority !== 'primary');
+          const renderChip = (item) => {
+            const mentionHtml = item.mentioned === true
+              ? `<span class="tl-mention-yes">↳ Referenced in summary</span>`
+              : item.mentioned === false
+              ? `<span class="tl-mention-no">↳ Not in summary — chase from OCC / DIO</span>`
+              : '';
+            return `<div>
+              <div class="tl-chip" onclick="cycleEvChip('${n.nodeId}','${item.id}',this)" title="${item.proves}">
+                <span class="tl-chip-dot"></span>
+                <span class="tl-chip-text">${item.name}</span>
+                <span class="tl-chip-state"></span>
+              </div>
+              ${mentionHtml}
+            </div>`;
+          };
+          evHtml = `<div class="tl-ev-label">Evidence required — tap to mark status</div>
+            <div class="tl-ev-row">
+              ${primary.map(renderChip).join('')}
+            </div>
+            ${secondary.length > 0 ? `<div class="tl-ev-row" style="margin-top:0">${secondary.map(renderChip).join('')}</div>` : ''}`;
+        }
+
+        // Annotation textarea
+        const annId    = `tl-ann-${n.nodeId}`;
+        const signalId = `tl-sig-${n.nodeId}`;
+        const annHtml  = n.showAnnotation ? `
+          <div class="tl-ann-row">
+            <div class="tl-ann-label">Add note · request evidence · flag LOF amendment</div>
+            <textarea class="tl-ann" id="${annId}"
+              placeholder="${n.annPlaceholder}"
+              oninput="handleTimelineAnnotation('${n.nodeId}',this.value,'${signalId}')"></textarea>
+            <div id="${signalId}"></div>
+          </div>` : '';
+
+        return `<div class="tl-row">
+          <div class="tl-col">
+            ${isFirst ? '<div style="height:13px"></div>' : ''}
+            <div class="tl-dot ${cfg.dotClass}"></div>
+            ${isLast ? '' : '<div class="tl-connector"></div>'}
+          </div>
+          <div class="tl-card ${cfg.cardClass}">
+            ${n.time ? `<div class="tl-time">${n.time}</div>` : ''}
+            <div class="tl-head">
+              <span class="tl-icon">${n.icon}</span>
+              <span class="tl-label">${n.label}</span>
+              ${n.ref ? `<span class="tl-ref">${n.ref}</span>` : ''}
+              <span class="tl-badge ${cfg.badgeClass}">${cfg.badgeText}</span>
+            </div>
+            <div class="tl-desc">${n.desc}</div>
+            ${evHtml}
+            ${annHtml}
+          </div>
+        </div>`;
+      }).join('') + '</div>';
+    }
+
+    /* ----------------------------------------------------------
        RENDER ANALYSIS OUTPUT (replaces showBriefPlaceholder)
     ---------------------------------------------------------- */
     function renderAnalysisOutput(inputText) {
@@ -5272,36 +5553,31 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
       const jurisStr = juris ? `${juris.regime} · CJEU authority: ${juris.cjeuAuth} · ${juris.note}` : '';
 
       // ─────────────────────────────────────────────────────────────
-      // ZONE 1 — Factual Record
+      // ZONE 1 — Chronological Event Record
       // ─────────────────────────────────────────────────────────────
       const z1 = document.getElementById('zone1-body');
       z1.innerHTML = `
-        ${!isScenarioMode ? buildFactsPanel(currentFacts, dt) : ''}
-        <div class="z1-section-label" style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-faint);margin:16px 0 6px">Causal chain</div>
-        ${renderCausalChain(causalNodes)}
-        <div class="z1-section-label" style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-faint);margin:20px 0 6px">Line of flying</div>
+        <div style="font-size:10.5px;color:var(--ink-faint);line-height:1.5;margin-bottom:14px;padding:8px 12px;background:var(--surface-ui);border-radius:var(--r-md);border:1px solid var(--ink-rule2)">
+          ${isScenarioMode
+            ? 'Events and evidence extracted from the scenario. Tap each evidence chip to mark its status — the legal position in Zone 3 updates as you confirm.'
+            : 'Events and evidence inferred from the summary. Chips marked <em>↳ Not in summary</em> are gaps to chase. Use the text box on each event to add notes, request evidence, or flag LOF amendments.'}
+        </div>
+        ${buildChronologicalTimeline(currentFacts, causalNodes, dt, isScenarioMode)}
+        <div class="z1-section-label" style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-faint);margin:24px 0 6px">Line of flying</div>
         ${buildLOFModule(dt)}
         <div style="margin: 10px 0 14px; padding: 9px 13px; background: var(--surface-ui); border: 1px solid var(--ink-rule2); border-radius: 5px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
           <div style="font-size: 11px; color: var(--ink-faint); line-height: 1.4;">Multi-tail complex cases — full sector-by-sector verification interface.</div>
           <a href="defendable_lof_v1.html" target="_blank" style="background: var(--surface-raised); color: var(--ink-secondary); border: 1px solid var(--ink-rule); border-radius: 4px; padding: 5px 11px; font-size: 11px; font-weight: 600; white-space: nowrap; text-decoration: none; flex-shrink: 0;">Full LOF Interface ↗</a>
         </div>
-        <div class="z1-section-label" style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-faint);margin:20px 0 6px">Event review</div>
-        <div class="ev-section-intro" style="margin-bottom:var(--sp-md)">
-          ${isScenarioMode
-            ? 'Verify the factual record against each event in the Line of Flying. Confirm facts, review evidence documents, and flag what is missing. The legal position in Zone 3 updates as events are confirmed.'
-            : 'Evidence items below are flagged based on what the summary text references directly. Items marked <em>Not referenced in summary</em> are gaps to chase before the defence position can be confirmed.'}
-        </div>
-        <div id="ev-but-for-banner"></div>
-        <div class="ev-nodes" id="ev-nodes">${evNodesHtml}</div>
         <div class="rm-meter-wrap" style="margin-top:var(--sp-lg)">
           <div class="rm-meter-row">
             <span>Chain Integrity</span>
-            <span id="rm-position-label">Begin reviewing events above</span>
+            <span id="rm-position-label">Tap evidence chips above to mark status</span>
           </div>
           <div class="rm-meter-track">
             <div class="rm-meter-fill" id="rm-meter-fill"></div>
           </div>
-          <div style="font-size:11px;color:var(--ink-faint);margin-top:4px" id="rm-tally">0 confirmed · 0 partial</div>
+          <div style="font-size:11px;color:var(--ink-faint);margin-top:4px" id="rm-tally">Mark evidence above to track chain integrity</div>
         </div>
         <div id="gen-brief-wrap" style="display:none;margin-top:var(--sp-lg);text-align:center">
           <button class="btn-gen-brief" onclick="generateBrief()">⚖ Generate Defence Brief</button>
@@ -5371,49 +5647,72 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
     }
 
     /* ----------------------------------------------------------
-       RM STRENGTH METER + LEGAL POSITION BANNER
+       RM STRENGTH METER — driven by timeline evidence chips
     ---------------------------------------------------------- */
     function updateRMStrength() {
       if (!currentDT) return;
-      const total     = currentDT.challenges.length;
-      const confirmed = Object.values(rmResponses).filter(r => r === 'confirmed').length;
-      const partial   = Object.values(rmResponses).filter(r => r === 'partial').length;
-      const gaps      = Object.values(rmResponses).filter(r => r === 'gap').length;
-      const reviewed  = confirmed + partial + gaps;
+
+      // Timeline evidence chip counts
+      const tlEntries   = Object.entries(tlEvStatus);
+      const tlTotal     = tlEntries.length;
+      const tlAvailable = tlEntries.filter(([,v]) => v === 'available').length;
+      const tlRequested = tlEntries.filter(([,v]) => v === 'requested').length;
+      const tlMissing   = tlEntries.filter(([,v]) => v === 'missing').length;
+      const tlReviewed  = tlAvailable + tlRequested + tlMissing;
+
+      // Fallback: RM card responses from Pass II (if no timeline chips yet)
+      const rmTotal     = currentDT.challenges ? currentDT.challenges.length : 0;
+      const rmConfirmed = Object.values(rmResponses).filter(r => r === 'confirmed').length;
+      const rmPartial   = Object.values(rmResponses).filter(r => r === 'partial').length;
+      const rmGaps      = Object.values(rmResponses).filter(r => r === 'gap').length;
+      const rmReviewed  = rmConfirmed + rmPartial + rmGaps;
+
+      const useTimeline = tlTotal > 0;
+      const total    = useTimeline ? tlTotal    : rmTotal;
+      const reviewed = useTimeline ? tlReviewed : rmReviewed;
+      const missing  = useTimeline ? tlMissing  : rmGaps;
+
+      const score = useTimeline
+        ? (tlTotal > 0 ? (tlAvailable + tlRequested * 0.5) / tlTotal : 0)
+        : (rmTotal > 0 ? (rmConfirmed + rmPartial * 0.5) / rmTotal   : 0);
+      const pct = Math.round(score * 100);
 
       const tally = document.getElementById('rm-tally');
       if (tally) {
         const parts = [];
-        if (confirmed) parts.push(`${confirmed} confirmed`);
-        if (partial)   parts.push(`${partial} partial`);
-        if (gaps)      parts.push(`${gaps} gap${gaps > 1 ? 's' : ''}`);
-        tally.textContent = (parts.length ? parts.join(' · ') : '0 reviewed') + ` — ${reviewed}/${total}`;
+        if (useTimeline) {
+          if (tlAvailable) parts.push(`${tlAvailable} available`);
+          if (tlRequested) parts.push(`${tlRequested} requested`);
+          if (tlMissing)   parts.push(`${tlMissing} missing`);
+        } else {
+          if (rmConfirmed) parts.push(`${rmConfirmed} confirmed`);
+          if (rmPartial)   parts.push(`${rmPartial} partial`);
+          if (rmGaps)      parts.push(`${rmGaps} gap${rmGaps > 1 ? 's' : ''}`);
+        }
+        tally.textContent = (parts.length ? parts.join(' · ') : 'Mark evidence above') + ` — ${reviewed}/${total}`;
       }
 
       if (!reviewed) return;
 
-      // Score: confirmed=1.0, partial=0.5, gap=0
-      const score = (confirmed + partial * 0.5) / total;
-      const pct   = Math.round(score * 100);
-
-      const fill   = document.getElementById('rm-meter-fill');
-      const label  = document.getElementById('rm-position-label');
-      const banner = document.getElementById('rm-position-banner');
+      const fill  = document.getElementById('rm-meter-fill');
+      const label = document.getElementById('rm-position-label');
 
       let meterColor, posLabel;
-      if (gaps === 0 && score >= 0.8) {
-        meterColor = 'var(--defend-mid)';     posLabel = 'Strong — RM position well-evidenced';
-      } else if (gaps <= 1 && score >= 0.55) {
-        meterColor = 'var(--conditions-mid)'; posLabel = 'Conditional — address gap items';
+      if (missing === 0 && score >= 0.75) {
+        meterColor = 'var(--defend-mid)';     posLabel = 'Strong — evidence position well-supported';
+      } else if (missing <= 1 && score >= 0.4) {
+        meterColor = 'var(--conditions-mid)'; posLabel = 'Conditional — chase outstanding items';
       } else {
-        meterColor = 'var(--settle-mid)';     posLabel = 'Exposed — significant RM gaps';
+        meterColor = 'var(--settle-mid)';     posLabel = 'Exposed — significant evidence gaps';
       }
 
       if (fill)  { fill.style.width = pct + '%'; fill.style.background = meterColor; }
       if (label) label.textContent = posLabel;
 
       const briefWrap = document.getElementById('gen-brief-wrap');
-      if (briefWrap) briefWrap.style.display = (reviewed === total) ? 'block' : 'none';
+      if (briefWrap && total > 0) {
+        briefWrap.style.display = (reviewed === total && missing === 0) ? 'block' : 'none';
+      }
 
       renderPass3Extended();
     }
