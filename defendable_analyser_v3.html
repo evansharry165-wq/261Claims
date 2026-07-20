@@ -2465,6 +2465,7 @@
           class="icc-textarea"
           id="iccText"
           placeholder="e.g. HC 1184 LTN-BCN 14/03/26. Thunderstorms BCN, approach below minima, mandatory ATC diversion Valencia. Standby LTN could not position, thunderstorms BCN. Passengers cared for Valencia, coach transfer arranged."
+          oninput="currentScenarioKey = ''"
         ></textarea>
         <!-- Scenario Browser -->
         <div class="scenario-browser">
@@ -2700,6 +2701,7 @@
     let nodeAnnotations   = {};   // { nodeIdx: { text, evidenceStatuses: { evidenceId: 'available'|'requested'|'missing' } } }
     let causalNodes       = [];
     let causalNodesCount  = 0;
+    let currentFacts      = null;    // extracted from input text; null until first analysis
     let currentDepIata    = '';
     let currentArrIata    = '';
     let currentFlightDate = '';
@@ -4468,7 +4470,8 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
       {
         id: 'weather',
         label: 'Weather Disruption',
-        keywords: ['weather','storm','thunderstorm','wind','snow','ice','fog','visibility','crosswind','diversion','minima','sigmet','windshear','precipitation','hail','turbulence','icing','lightning'],
+        keywords: ['weather','storm','thunderstorm','wind','snow','ice','fog','visibility','crosswind','minima','sigmet','windshear','precipitation','hail','turbulence','icing','lightning','below minima','crosswind limit','lenticular','volcanic ash','ash cloud'],
+        primaryKeywords: ['metar','sigmet','thunderstorm','windshear','below minima','crosswind limit','taf','weather','storm'],
         limb1Status: 'extraordinary',
         limb1: 'Adverse meteorological conditions — inherently beyond operational control. Consistent with Art 5(3) EC261/UK261 where conditions reached or exceeded certified operating limits. Limb 1 likely satisfied subject to evidence of actual conditions at the relevant time and place.',
         caselaw: [
@@ -4542,7 +4545,8 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
       {
         id: 'birdstrike',
         label: 'Wildlife Strike',
-        keywords: ['birdstrike','bird strike','bird ingestion','wildlife','avian','bird hit','wildlife strike'],
+        keywords: ['birdstrike','bird strike','bird ingestion','wildlife','avian','bird hit','wildlife strike','bird','seagull','pigeon','raptor','flock','avian strike','post-strike','borescope','fod damage','wildlife hazard','bird ingestion'],
+        primaryKeywords: ['birdstrike','bird strike','bird ingestion','bird hit','wildlife strike','seagull','pigeon','raptor','avian strike','post-strike','bird'],
         limb1Status: 'extraordinary',
         limb1: 'Wildlife strike — inherently unpredictable and beyond the airline\'s control. Confirmed as extraordinary by the CJEU in Pešková (C-315/15). Limb 1 generally satisfied provided the strike is properly documented and damage is confirmed by maintenance inspection.',
         caselaw: [
@@ -4719,16 +4723,157 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
 
     /* ----------------------------------------------------------
        DISRUPTION TYPE DETECTION
-       Keyword scoring against RM_DB. Returns best match.
+       Weighted keyword scoring against RM_DB.
+       primaryKeywords (type-exclusive identifiers) score 5×.
+       General keywords score 1×. Returns best match or null.
     ---------------------------------------------------------- */
     function detectDisruptionType(text) {
       const lower = text.toLowerCase();
       let best = null, bestScore = 0;
       for (const dt of RM_DB) {
-        const score = dt.keywords.reduce((acc, kw) => acc + (lower.includes(kw) ? 1 : 0), 0);
+        let score = 0;
+        for (const kw of dt.keywords) {
+          if (lower.includes(kw)) {
+            score += (dt.primaryKeywords && dt.primaryKeywords.includes(kw)) ? 5 : 1;
+          }
+        }
         if (score > bestScore) { bestScore = score; best = dt; }
       }
-      return best || RM_DB[0]; // default to weather if no match
+      return best; // null if nothing matched — caller decides fallback
+    }
+
+    /* ----------------------------------------------------------
+       FACT EXTRACTOR
+       Pulls known data points out of any disruption summary text.
+       Returns a facts object — null fields = not found in text.
+    ---------------------------------------------------------- */
+    function extractFacts(text) {
+      const f = {
+        flightNum:      null,
+        depIata:        null,
+        arrIata:        null,
+        date:           null,
+        aircraftReg:    null,
+        replacementReg: null,
+        delayText:      null,
+        mentions: {
+          metar:              /\bmetar\b/i.test(text),
+          sigmet:             /\bsigmet\b/i.test(text),
+          taf:                /\btaf\b/i.test(text),
+          cfmu:               /\bcfmu\b/i.test(text),
+          ctot:               /\bctot\b/i.test(text),
+          atfm:               /\batfm\b/i.test(text),
+          eurocontrol:        /eurocontrol/i.test(text),
+          borescope:          /borescope/i.test(text),
+          amm:                /\bamm\b/i.test(text),
+          occurrenceReport:   /occurrence report|safety report|air safety report|aaib/i.test(text),
+          aog:                /\baog\b/i.test(text),
+          fdp:                /\bfdp\b|flight duty period|timed out|out of hours/i.test(text),
+          standbyAircraft:    /standby aircraft|spare aircraft/i.test(text),
+          replacementAircraft:/replacement aircraft/i.test(text),
+          standbyCrewDeployed:/standby crew|relief crew|replacement crew/i.test(text),
+          art9Care:           /art[\.\s]*9|hotel|accommodation|meal voucher|coach transfer|bus transfer/i.test(text),
+          mel:                /\bmel\b/i.test(text),
+          snag:               /\bsnag\b/i.test(text),
+          maintenanceRecord:  /maintenance record|tech log|engineering log/i.test(text),
+        }
+      };
+
+      // Flight number: 2–3 letter ICAO/IATA code + 3–5 digits (e.g. EZY3301, HC2291, BA436)
+      const flMatch = text.match(/\b([A-Z]{2,3}\s*\d{3,5})\b/);
+      if (flMatch) f.flightNum = flMatch[1].replace(/\s+/, '');
+
+      // Route: three-letter IATA pair (e.g. EDI-ALC, GVA–MAN)
+      const rtMatch = text.match(/\b([A-Z]{3})\s*[-–—]\s*([A-Z]{3})\b/);
+      if (rtMatch) { f.depIata = rtMatch[1]; f.arrIata = rtMatch[2]; }
+
+      // Date: dd/mm/yy or dd/mm/yyyy
+      const dtMatch = text.match(/\b(\d{1,2})[\/\.](\d{1,2})[\/\.](\d{2,4})\b/);
+      if (dtMatch) {
+        f.date = dtMatch[0];
+      } else {
+        const dt2 = text.match(/\b(\d{1,2})\s+(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\.?\s+(\d{2,4})\b/i);
+        if (dt2) f.date = dt2[0];
+      }
+
+      // Aircraft registrations (first = primary, also catch replacement)
+      const allRegs = [...text.matchAll(/\b([A-Z]{1,2}-[A-Z]{2,5})\b/g)].map(m => m[1]);
+      if (allRegs.length > 0) f.aircraftReg = allRegs[0];
+      const replMatch = text.match(/[Rr]eplacement\s+aircraft\s+([A-Z]{1,2}-[A-Z]{2,5})/);
+      if (replMatch) {
+        f.replacementReg = replMatch[1];
+        // Make sure primary reg isn't the replacement
+        if (allRegs.length > 1 && allRegs[0] === f.replacementReg) f.aircraftReg = allRegs[1];
+      }
+
+      // Delay duration
+      const dlMatch = text.match(/(\d+)h\s*(\d+)?\s*min(?:utes?)?|(\d+)\s*hours?\s*delay/i);
+      if (dlMatch) f.delayText = dlMatch[0].replace(/\s+/g,' ').trim();
+
+      return f;
+    }
+
+    /* ----------------------------------------------------------
+       EVIDENCE MENTION CHECK
+       Returns true if the evidence item name maps to something
+       that was referenced in the summary text.
+       Returns null if we can't determine (no signal either way).
+    ---------------------------------------------------------- */
+    function evidenceMentionedInText(itemName, facts) {
+      if (!facts || !facts.mentions) return null;
+      const nm = itemName.toLowerCase();
+      const m  = facts.mentions;
+      if (/metar/.test(nm))                                    return m.metar || false;
+      if (/sigmet/.test(nm))                                   return m.sigmet || false;
+      if (/aerodrome forecast|taf\b/.test(nm))                 return m.taf || false;
+      if (/cfmu|network manager|atfm|ctot|eurocontrol|flow management/.test(nm))
+                                                               return m.cfmu || m.ctot || m.atfm || m.eurocontrol || false;
+      if (/borescope/.test(nm))                                return m.borescope || false;
+      if (/occurrence report|safety report|air safety/.test(nm)) return m.occurrenceReport || false;
+      if (/standby aircraft|spare aircraft/.test(nm))          return m.standbyAircraft || false;
+      if (/replacement aircraft/.test(nm))                     return m.replacementAircraft || false;
+      if (/standby crew|relief crew/.test(nm))                 return m.standbyCrewDeployed || false;
+      if (/art.?9|hotel|passenger care|meal voucher|coach|accommodation/.test(nm)) return m.art9Care || false;
+      if (/fdp|flight duty|duty period|flight time/.test(nm))  return m.fdp || false;
+      if (/\bmel\b/.test(nm))                                  return m.mel || false;
+      if (/maintenance record|tech log/.test(nm))              return m.maintenanceRecord || false;
+      if (/aog|aircraft on ground/.test(nm))                   return m.aog || false;
+      return null; // can't determine from text alone
+    }
+
+    /* ----------------------------------------------------------
+       FACTS PANEL — Pass I header for custom analysis mode
+    ---------------------------------------------------------- */
+    function buildFactsPanel(facts, dt) {
+      const found = (label, value) =>
+        `<div style="display:flex;align-items:baseline;gap:10px;padding:5px 0;border-bottom:1px solid var(--ink-rule)">
+          <span style="min-width:130px;color:var(--ink-faint);font-family:var(--font-mono);font-size:10px;text-transform:uppercase;letter-spacing:.06em;flex-shrink:0">${label}</span>
+          <span style="font-size:12px;color:var(--ink-primary);font-weight:600;font-family:var(--font-mono)">${value}</span>
+        </div>`;
+      const gap = (label) =>
+        `<div style="display:flex;align-items:baseline;gap:10px;padding:5px 0;border-bottom:1px solid var(--ink-rule)">
+          <span style="min-width:130px;color:var(--ink-faint);font-family:var(--font-mono);font-size:10px;text-transform:uppercase;letter-spacing:.06em;flex-shrink:0">${label}</span>
+          <span style="font-size:11.5px;color:#B07A10;font-style:italic">Not identified — verify with OCC before proceeding</span>
+        </div>`;
+
+      const rows = [
+        facts.flightNum ? found('Flight', facts.flightNum) : gap('Flight'),
+        (facts.depIata && facts.arrIata) ? found('Route', `${facts.depIata} → ${facts.arrIata}`) : gap('Route'),
+        facts.date ? found('Date', facts.date) : gap('Date'),
+        facts.aircraftReg ? found('Aircraft', facts.aircraftReg) : gap('Aircraft'),
+        facts.replacementReg ? found('Replacement Acft', facts.replacementReg) : '',
+        facts.delayText ? found('Delay stated', facts.delayText) : gap('Delay duration'),
+        found('Classified as', dt.label),
+      ].join('');
+
+      return `
+        <div style="background:var(--surface-raised,#F9F7F3);border:1px solid var(--ink-rule);border-radius:6px;padding:14px 16px;margin:14px 0 10px">
+          <div style="font-family:var(--font-mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:10px">Facts extracted from summary</div>
+          ${rows}
+        </div>
+        <div style="background:#FFFBF0;border:1px solid #DAC070;border-radius:5px;padding:9px 13px;margin-bottom:14px;font-size:11.5px;color:var(--ink-secondary);line-height:1.55">
+          <strong style="color:#A07010">Custom analysis mode</strong> — Classification and causal chain are derived from the text provided. Fields above marked as unidentified require confirmation before the defence position can be finalised. Evidence items below are flagged as referenced or unreferenced based on what appears in the summary.
+        </div>`;
     }
 
     /* ----------------------------------------------------------
@@ -4738,7 +4883,20 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
       const area = document.getElementById('briefArea');
       area.classList.add('active');
 
-      const dt = detectDisruptionType(inputText);
+      // Determine mode: scenario if currentScenarioKey points to a matching EXAMPLES text
+      const isScenarioMode = !!(currentScenarioKey && EXAMPLES[currentScenarioKey] &&
+        EXAMPLES[currentScenarioKey].trim() === inputText.trim());
+
+      // Extract facts from text (always — used in custom mode for gap display and evidence signals)
+      currentFacts = extractFacts(inputText);
+
+      // Classify disruption type; fall back to 'unknown' sentinel if nothing matches
+      const dt = detectDisruptionType(inputText) || {
+        id: 'unknown', label: 'Unclassified', limb1Status: 'contested',
+        limb1: 'Disruption type could not be determined from the summary text. Review the summary and identify the root cause event before proceeding.',
+        keywords: [], challenges: [], caselaw: [], caselawIds: [],
+        primaryKeywords: []
+      };
       currentDT = dt;
       rmResponses = {};
       nodeAnnotations = {};
@@ -4762,17 +4920,30 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
         const legalChar = LEGAL_CHAR[dtKey] || 'Review the ICC summary and apply the appropriate EC261 / UK261 legal test to this event.';
         const rmPoints = (dtKey && RM_SURFACE[dtKey]) ? RM_SURFACE[dtKey] : [];
 
-        const renderEvidenceItem = (item) => `
+        const renderEvidenceItem = (item) => {
+          // In custom mode: check if this evidence was referenced in the summary text
+          let mentionHtml = '';
+          if (!isScenarioMode && currentFacts) {
+            const mentioned = evidenceMentionedInText(item.name, currentFacts);
+            if (mentioned === true) {
+              mentionHtml = `<div style="font-size:10.5px;color:#2A7A3A;font-weight:600;margin:4px 0 2px;font-family:var(--font-mono);letter-spacing:.02em">↳ Referenced in summary — obtain and verify</div>`;
+            } else if (mentioned === false) {
+              mentionHtml = `<div style="font-size:10.5px;color:#B07010;font-style:italic;margin:4px 0 2px">↳ Not referenced in summary — request from OCC / DIO</div>`;
+            }
+          }
+          return `
           <div class="ev-item">
             <div class="ev-item-name">${item.name}</div>
             <div class="ev-item-source">${item.source}</div>
             <div class="ev-item-proves">${item.proves}</div>
+            ${mentionHtml}
             <div class="ev-item-btns">
               <button class="ev-status-btn" onclick="setEvidenceStatus(${idx},'${item.id}','available',this)">Available</button>
               <button class="ev-status-btn" onclick="setEvidenceStatus(${idx},'${item.id}','requested',this)">Requested</button>
               <button class="ev-status-btn" onclick="setEvidenceStatus(${idx},'${item.id}','missing',this)">Missing</button>
             </div>
           </div>`;
+        };
 
         const rmHtml = rmPoints.length > 0 ? `
           <div class="ev-rm-surface" id="ev-rm-${idx}">
@@ -4837,6 +5008,7 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
               </div>
             </div>
             ${jurisFlag}
+            ${!isScenarioMode ? buildFactsPanel(currentFacts, dt) : ''}
             <div class="brief-limb1" style="margin-top:var(--sp-md)">${dt.limb1}</div>
             ${renderCausalChain(causalNodes)}
           </div>
@@ -4845,7 +5017,9 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
           <div class="brief-section">
             <div class="brief-section-label">Pass II — Line of Flying Verification &amp; Evidence Review</div>
             <div class="ev-section-intro">
-              <strong>Stage 1 — Verify the factual record.</strong> The causal chain below is derived from the ICC text. Before legal flags fire, the lawyer verifies each event in the Line of Flying against actual evidence. Confirm facts, view and verify evidence documents, and note what is missing. Legal analysis in Stage 2 fires against the confirmed factual record — not the original ICC narrative.
+              ${isScenarioMode
+                ? '<strong>Stage 1 — Verify the factual record.</strong> The causal chain below is derived from the ICC text. Before legal flags fire, the lawyer verifies each event in the Line of Flying against actual evidence. Confirm facts, view and verify evidence documents, and note what is missing. Legal analysis in Stage 2 fires against the confirmed factual record — not the original ICC narrative.'
+                : '<strong>Stage 1 — Evidence gap review.</strong> Evidence items below are flagged based on what the summary text references directly. Items marked <em>Not referenced in summary</em> are gaps that must be chased before the defence position can be confirmed. Use the notes field on each event to log what you know and what has been requested.'}
             </div>
             ${buildLOFModule(dt)}
             <div style="margin: 12px 0 16px; padding: 10px 14px; background: #F9F7F3; border: 1px solid var(--ink-rule); border-radius: 6px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;">
@@ -4876,6 +5050,9 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
           <div class="brief-section">
             <div class="brief-section-label">Pass III — Legal Position &amp; Applicable Authority</div>
             <div id="pass3-content" style="margin-bottom:var(--sp-md)">
+              ${!isScenarioMode ? `<div style="background:#FFFBF0;border:1px solid #DAC070;border-radius:5px;padding:10px 14px;margin-bottom:12px;font-size:12px;line-height:1.55;color:var(--ink-secondary)">
+                <strong style="color:#A07010">Preliminary assessment — incomplete evidence</strong> &nbsp;· This legal position is based on the classification derived from the summary text. It cannot be confirmed until the evidence gaps identified in Pass II are resolved. Do not rely on this position for a court submission or formal defence response until the factual record is verified.
+              </div>` : ''}
               <div class="rm-position-banner" id="rm-position-banner">
                 Complete the RM review above — verdict, quantum and limitation analysis update automatically.
               </div>
@@ -5784,9 +5961,33 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
     let _lofExpanded  = false;
     let _lofTailIdx   = 0;
 
+    function buildLOFCustomEmpty() {
+      return `<div class="lof-module" id="lof-module">
+        <div class="lof-module-hdr" style="cursor:default">
+          <span class="lof-module-hdr-label">Line of Flying</span>
+          <span style="font-size:10px;color:var(--ink-faint);font-family:var(--font-mono);margin-left:8px">Custom analysis</span>
+        </div>
+        <div class="lof-empty-state" style="padding:16px 18px">
+          <div style="font-size:12.5px;font-weight:600;color:var(--ink-secondary);margin-bottom:6px">Aircraft registration required</div>
+          <div style="font-size:12px;color:var(--ink-faint);line-height:1.6;margin-bottom:12px">
+            The LOF sector record cannot be built without the aircraft tail number.
+            If the registration was not provided in the disruption summary,
+            request it from OCC before verifying the causal chain.
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+            <input id="lof-custom-reg" type="text" placeholder="e.g. G-EZTF"
+              style="border:1px solid var(--ink-rule);border-radius:4px;padding:6px 10px;font-family:var(--font-mono);font-size:12px;width:110px;color:var(--ink-primary);background:#fff;outline:none">
+            <span style="font-size:11px;color:var(--ink-faint);font-style:italic">Enter registration to load LOF from case system</span>
+          </div>
+        </div>
+      </div>`;
+    }
+
     function buildLOFModule(dt) {
       if (!dt) return '';
-      const key    = currentScenarioKey || 'demo';
+      // Custom input mode (no scenario selected) — show honest empty state
+      if (!currentScenarioKey) return buildLOFCustomEmpty();
+      const key    = currentScenarioKey;
       const data   = LOF_DATA[key];
       if (!data || !data.tails || data.tails.length === 0) return buildLOFEmpty();
 
