@@ -2131,6 +2131,16 @@
       font-style: italic;
       min-width: 180px;
     }
+    .lof-rot-label-col { width: 44px; }
+    .lof-table td.lof-rot-label {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      color: var(--ink-faint);
+      text-transform: uppercase;
+      padding-right: 8px;
+    }
     .lof-row-claimed { background: rgba(75,123,236,0.05); }
     .lof-row-claimed td { border-bottom: 1px solid rgba(75,123,236,0.15); }
     .lof-row-diverted { background: rgba(180,120,0,0.04); }
@@ -4326,12 +4336,20 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
         { id:'eurocontrol', name:'Eurocontrol Records', source:'Eurocontrol NMOC', proves:'Network impact; airspace restrictions imposed', priority:'supporting' },
       ],
       'crew-fdp': [
-        { id:'crew-duty', name:'Crew Duty Records — Flight & Duty Time Log', source:'Internal crew scheduling / FTL system', proves:'Actual flight and duty times recorded — demonstrates FDP limit was reached', priority:'primary' },
+        { id:'crew-duty', name:'Crew Duty Records — Flight & Duty Time Log', source:'Internal crew scheduling / FTL system', proves:'Actual flight and duty times recorded — demonstrates duty limit was reached', priority:'primary' },
         { id:'roster', name:'Crew Roster / Scheduling Records', source:'Internal crew scheduling system', proves:'Planned and actual duty patterns; confirms crew could not lawfully operate', priority:'primary' },
         { id:'standby-deployment', name:'Standby Crew Availability / Deployment Record', source:'Internal crew scheduling system', proves:'What standby options were available; whether exhausted or deployed', priority:'primary' },
-        { id:'fdp-exceedance', name:'FDP Exceedance Documentation', source:'Internal safety / crew management', proves:'Formal record if limits were approached under regulatory authority', priority:'supporting' },
+        { id:'fdp-exceedance', name:'Duty Limit Exceedance Documentation', source:'Internal safety / crew management', proves:'Formal record if limits were approached under regulatory authority', priority:'supporting' },
         { id:'rest-records', name:'Rest Period Records', source:'Internal crew scheduling / FTL system', proves:'Pre-flight rest period; crew were legally rostered', priority:'supporting' },
-        { id:'ops-manual', name:'Operations Manual — FDP Rules / FRMS Authority', source:'Internal / regulatory', proves:'Applicable FTL rules; FRMS extensions used or considered', priority:'supporting' },
+        { id:'ops-manual', name:'Operations Manual — FTL Rules / FRMS Authority', source:'Internal / regulatory', proves:'Applicable FTL rules; FRMS extensions used or considered', priority:'supporting' },
+      ],
+      'crew-sick': [
+        { id:'sick-cert', name:'Medical Certificate / Sick Note', source:'Crew member\'s medical practitioner', proves:'Contemporaneous record of incapacitation — confirms crew member was medically unfit', priority:'primary' },
+        { id:'crew-occ-log', name:'OCC / Crew Control Log', source:'Internal crew scheduling / OCC', proves:'Contemporaneous operations record of incapacitation notification, timing, and response actions', priority:'primary' },
+        { id:'standby-availability', name:'Standby Crew Availability Record', source:'Internal crew scheduling system', proves:'Confirms no command-qualified standby was available at the relevant base', priority:'primary' },
+        { id:'relief-positioning', name:'Relief Crew Positioning Record', source:'Internal crew scheduling / OCC', proves:'Documents positioning of relief crew — flight taken, arrival time, rest requirement triggered', priority:'supporting' },
+        { id:'pax-comms', name:'Passenger Communication Records', source:'Internal CRM / passenger notifications', proves:'Art 14 written notice compliance — timing of cancellation notification to passengers', priority:'supporting' },
+        { id:'art9-care', name:'Art 9 Care Records', source:'Ground operations / customer care', proves:'Vouchers issued, accommodation arranged — Art 9 compliance record', priority:'supporting' },
       ],
     };
 
@@ -4437,12 +4455,20 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
         'Art 9 obligations run regardless — document all passenger care provisions made.',
       ],
       'crew-fdp': [
-        'Crew FDP limits are statutory — they cannot be operated beyond them. This is a well-established legitimate ground.',
+        'Crew duty limits are statutory — they cannot be operated beyond them. This is a well-established legitimate ground.',
         'Eglitis (C-294/10): the carrier must have taken all reasonable measures including ensuring standby crew availability.',
-        'CRITICAL QUESTION: is the FDP issue the result of an extraordinary upstream event (weather, ATFM) cascading? If yes, document the chain clearly — Limb 1 is established by the root event.',
-        'If FDP was reached through purely operational delay (not upstream extraordinary event), Limb 1 is significantly weakened.',
+        'CRITICAL QUESTION: is the duty limit exhaustion the result of an extraordinary upstream event (weather, ATFM) cascading? If yes, document the chain clearly — Limb 1 is established by the root event.',
+        'If the duty limit was reached through purely operational delay (not upstream extraordinary event), Limb 1 is significantly weakened.',
         'Standby crew position: was standby available? If not, was that because standby was exhausted by earlier extraordinary events?',
         'FRMS extension: was commander discretion available? If available and not used, the decision not to use it needs clear justification.',
+      ],
+      'crew-sick': [
+        'LOSS POSITION — Lipton v BA CityFlyer [2024] UKSC 24: crew illness is inherent in normal airline operations and is never extraordinary circumstances. No Art 5(3) defence available.',
+        'Focus shifts entirely to quantum, Art 9 care compliance, and Art 14 written notification — these are the areas of live exposure.',
+        'Art 14: was written notice of cancellation provided at the point of cancellation? Failure to notify separately triggers Art 14 obligations.',
+        'Art 9: meals, refreshments, accommodation (if overnight stay required), and transport must all be evidenced.',
+        'Compensation at correct rate: verify Art 7(2) quantum — route distance determines applicable rate. Over 3,500km: €600 per passenger.',
+        'Early settlement or proactive offer is the appropriate strategy — contested litigation on liability will be lost.',
       ],
     };
 
@@ -4463,14 +4489,15 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
       'airport-closure': "Airport or runway closure by the aerodrome authority is extraordinary — it is beyond any carrier's control. The NOTAM is the primary legal evidence. The RM analysis focuses on: the speed of the diversion arrangement, the onward routing offered to passengers, and Art 9 compliance. Pre-notified closures raise additional RM questions — whether a proactive response before the closure would have been possible.",
       'natural-disaster': "Natural disasters are extraordinary circumstances (confirmed by McDonagh C-12/11 for volcanic ash). McDonagh also confirmed that Art 9 care obligations (meals, accommodation, transport) apply without financial cap even where compensation is not payable. The RM analysis examines whether: (1) the carrier had adequate contingency for a foreseeable natural event, (2) operations resumed as quickly as conditions allowed, and (3) Art 9 was complied with throughout — including during extended delays.",
       'political-unrest': "Political unrest resulting in airspace or aerodrome restrictions is extraordinary — it is a state action outside any carrier's control. The strength of the position correlates with the formality of the restriction. An official Foreign Office advisory and NOTAM-based airspace closure are the strongest positions. Foreseeability is relevant to Limb 2: if social or political tensions were known in advance, the adequacy of the carrier's contingency response will be examined.",
-      'crew-fdp': "Crew reaching statutory Flight Duty Period limits is a legitimate operational constraint grounded in regulatory compliance. Carriers cannot operate crew beyond FDP limits (EU FTL regulations / UK FTL). The Limb 1 analysis depends on WHY the FDP limit was reached. If it resulted from an extraordinary upstream event (weather, ATFM, medical diversion), Limb 1 is established by the root event and the FDP constraint is part of the cascade. If FDP was reached through purely operational delay, Limb 1 is not established. Eglitis (C-294/10) requires the carrier to have had adequate standby cover in place.",
+      'crew-fdp': "Crew reaching statutory duty limits is a legitimate operational constraint grounded in regulatory compliance. Carriers cannot operate crew beyond FTL limits (EU FTL regulations / UK CAP 1615). The Limb 1 analysis depends on WHY the duty limit was reached. If it resulted from an extraordinary upstream event (weather, ATFM, medical diversion), Limb 1 is established by the root event and the duty limit constraint is part of the cascade. If the limit was reached through purely operational delay, Limb 1 is not established. Eglitis (C-294/10) requires the carrier to have had adequate standby cover in place.",
+      'crew-sick': "Crew illness and incapacitation is NOT extraordinary circumstances. Lipton v BA CityFlyer [2024] UKSC 24 (UK Supreme Court) definitively held that sudden crew incapacitation — including captain illness with no prior notice — is inherent in the normal exercise of airline operations and can never constitute extraordinary circumstances under Art 5(3) EC261 / UK261. This is consistent with Wallentin-Hermann (C-549/07) and Van der Lans (C-257/14). No defence is available on liability. The legal analysis must focus on: (1) quantum at the correct Art 7(2) rate; (2) Art 9 care obligations met; (3) Art 14 written notification given at the point of cancellation; and (4) rerouting offered at the earliest opportunity.",
     };
 
     const RM_DB = [
       {
         id: 'weather',
         label: 'Weather Disruption',
-        keywords: ['weather','storm','thunderstorm','wind','snow','ice','fog','visibility','crosswind','minima','sigmet','windshear','precipitation','hail','turbulence','icing','lightning','below minima','crosswind limit','lenticular','volcanic ash','ash cloud'],
+        keywords: ['weather','storm','thunderstorm','wind','snow','fog','visibility','crosswind','minima','sigmet','windshear','precipitation','hail','turbulence','icing','lightning','below minima','crosswind limit','lenticular','volcanic ash','ash cloud','black ice','ice on runway'],
         primaryKeywords: ['metar','sigmet','thunderstorm','windshear','below minima','crosswind limit','taf','weather','storm'],
         limb1Status: 'extraordinary',
         limb1: 'Adverse meteorological conditions — inherently beyond operational control. Consistent with Art 5(3) EC261/UK261 where conditions reached or exceeded certified operating limits. Limb 1 likely satisfied subject to evidence of actual conditions at the relevant time and place.',
@@ -4490,7 +4517,7 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
       {
         id: 'atfm',
         label: 'ATC / ATFM Restriction',
-        keywords: ['atfm','ctot','slot','atc','air traffic','regulation','eurocontrol','fir','network manager','flow management','ground delay','calculated take-off'],
+        keywords: ['atfm','ctot','atc','air traffic','regulation','eurocontrol','network manager','flow management','ground delay','calculated take-off','flow regulation','fir restriction','fir capacity'],
         limb1Status: 'extraordinary',
         limb1: 'Air traffic flow management restriction imposed by Eurocontrol or a national ANSP — a decision of a third-party authority inherently beyond the airline\'s control. Limb 1 generally satisfied where the regulation is formally issued and applies to all carriers.',
         caselaw: [
@@ -4702,21 +4729,43 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
       },
       {
         id: 'crew-fdp',
-        label: 'Crew FDP / Rest Constraint',
-        keywords: ['crew','fdp','flight duty period','timed out','rest','out of hours','standby crew','crew unavailable','crew rest','ftl','cap 1615','oro.ftl','duty limit'],
+        label: 'Crew Duty Limit',
+        keywords: ['fdp','flight duty period','timed out','out of hours','crew rest','ftl','cap 1615','oro.ftl','duty limit','duty period','ftl limit'],
+        primaryKeywords: ['timed out','out of hours','duty limit exceeded','fdp exceeded','fdp limit reached'],
         limb1Status: 'contested',
-        limb1: 'CONTESTED — FDP exhaustion alone is NOT extraordinary circumstances. The root cause of the FDP exhaustion must independently qualify. If a third-party extraordinary event (ATFM, weather, birdstrike) caused the rotation delay that exhausted crew duty, the cascading FDP impact may fall within Art 5(3) — but the causal chain must be clearly traced and evidenced.',
+        limb1: 'CONTESTED — Crew duty limit exhaustion alone is NOT extraordinary circumstances. The root cause of the exhaustion must independently qualify. If a third-party extraordinary event (ATFM, weather, birdstrike) caused the rotation delay that exhausted crew duty, the cascading duty limit impact may fall within Art 5(3) — but the causal chain must be clearly traced and evidenced.',
         caselaw: [
           { ref: 'Wallentin-Hermann C-549/07', text: 'Causal link required: the extraordinary circumstance must be the actual cause of the cancellation or delay, not merely a contributing factor. The chain from root cause to disruption must be unbroken.' },
           { ref: 'Eglitis C-294/10', text: 'All available resources — including standby crew — must be deployed before extraordinary circumstances can be relied upon. Absence of standby without explanation is a serious vulnerability.' }
         ],
         caselawIds: ['eglitis', 'ni-hz-charter', 'sturgeon', 'nelson'],
         challenges: [
-          { question: 'Was the root cause of the FDP exhaustion itself an extraordinary circumstance — and is that root cause separately evidenced and established?', evidence: 'Flight operations system rotation history tracing the delay cascade back to the originating cause event', note: 'CRITICAL: FDP exhaustion is a consequence, not a cause. The originating event must independently qualify as extraordinary. Analyse the root cause disruption type separately.' },
-          { question: 'Is the FDP calculation correctly documented under applicable regulations, accounting for all sectors operated and any authorised extensions?', evidence: 'Crew scheduling / FDP records with sector-by-sector calculation, applicable regulatory limit reference', note: null },
-          { question: 'Was any available FDP extension exercised under the commander\'s authority where appropriate and safe to do so?', evidence: 'FDP extension provisions under applicable regulations, crew scheduling records showing whether extension was considered', note: null },
+          { question: 'Was the root cause of the duty limit exhaustion itself an extraordinary circumstance — and is that root cause separately evidenced and established?', evidence: 'Flight operations system rotation history tracing the delay cascade back to the originating cause event', note: 'CRITICAL: Duty limit exhaustion is a consequence, not a cause. The originating event must independently qualify as extraordinary. Analyse the root cause disruption type separately.' },
+          { question: 'Is the duty calculation correctly documented under applicable regulations, accounting for all sectors operated and any authorised extensions?', evidence: 'Crew scheduling / FTL records with sector-by-sector calculation, applicable regulatory limit reference', note: null },
+          { question: 'Was any available FTL extension exercised under the commander\'s authority where appropriate and safe to do so?', evidence: 'FTL extension provisions under applicable regulations, crew scheduling records showing whether extension was considered', note: null },
           { question: 'Was standby crew available at the relevant station — and if so, why could it not be deployed in time to avoid or materially reduce the delay?', evidence: 'Standby crew availability log for the relevant station on the date of operation', note: 'Under Eglitis, failure to deploy available standby is a significant vulnerability. If standby was available, the reason for non-deployment must be clearly documented.' },
           { question: 'Could crew have been positioned from an adjacent base within a timeframe that would have materially reduced the delay — and was this option assessed?', evidence: 'Crew scheduling records showing positioning options considered, operational timeline for positioning feasibility', note: null }
+        ]
+      },
+      {
+        id: 'crew-sick',
+        label: 'Crew Incapacitation / Sickness',
+        keywords: ['sick','reported sick','sickness','incapacitation','incapacitated','unwell','medical grounds','unfit','gastroenteritis','captain sick','crew sick','acute illness','illness','crew sickness','unable to report','medically unfit','crew member sick'],
+        primaryKeywords: ['reported sick','incapacitation','incapacitated','gastroenteritis','captain sick','crew sick','unfit for duty','crew sickness','medically unfit','acute illness','sickness'],
+        limb1Status: 'unlikely',
+        limb1: 'LOSS — Crew illness and incapacitation is inherent in the normal exercise of airline operations and is NOT extraordinary circumstances. Lipton v BA CityFlyer [2024] UKSC 24 (UK Supreme Court) definitively held that sudden crew incapacitation — including captain illness with no prior notice — can never constitute extraordinary circumstances under Art 5(3) EC261 / UK261. No liability defence available. Focus: quantum (Art 7), Art 9 care, and Art 14 written notice.',
+        caselaw: [
+          { ref: 'Lipton v BA CityFlyer [2024] UKSC 24', text: 'Crew illness — including sudden and unforeseeable captain incapacitation — is inherent in normal airline operations and can never constitute extraordinary circumstances. No Art 5(3) defence available regardless of absence of prior notice.' },
+          { ref: 'Wallentin-Hermann C-549/07', text: 'Extraordinary circumstances must be outside the carrier\'s control AND not inherent to its normal activity. Crew sickness fails on inherency.' },
+          { ref: 'Van der Lans C-257/14', text: 'Events inherent in the normal exercise of airline activity, even where entirely unforeseeable, do not constitute extraordinary circumstances.' }
+        ],
+        caselawIds: ['lipton', 'wallentin', 'van-der-lans', 'sturgeon'],
+        challenges: [
+          { question: 'Was the crew member\'s medical incapacitation properly certified — and is there a contemporaneous OCC / crew control log recording notification time and response?', evidence: 'Medical certificate or sick note, OCC log entry confirming incapacitation notification time, crew planning records', note: 'No Art 5(3) defence available — documentation is needed for Art 9 / Art 14 compliance evidence and quantum.' },
+          { question: 'Was the passenger notified of the cancellation at the earliest opportunity — and was written Art 14 notice provided at the point of cancellation?', evidence: 'Passenger communication records (SMS, app, email) with timestamps; check-in desk / airport notification records', note: 'Art 14 written notification obligation applies independently. Failure to notify is a separate exposure.' },
+          { question: 'Was rerouting to the final destination offered on the carrier\'s own or partner services at the earliest opportunity?', evidence: 'Passenger rebooking records, alternative service availability log, OCC rerouting assessment', note: null },
+          { question: 'Were Art 9 care obligations met — meals, refreshments, accommodation where an overnight stay was required, and transport to/from accommodation?', evidence: 'Art 9 care records — vouchers issued, hotel bookings, transport provided', note: null },
+          { question: 'Was compensation tendered at the correct Art 7(2) rate — verified against route distance?', evidence: 'Compensation calculation records, route distance confirmation for Art 7(2)(a)/(b)/(c) band', note: 'Routes over 3,500km: Art 7(2)(c) — €600 per passenger.' }
         ]
       }
     ];
@@ -5039,8 +5088,8 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
             <div class="brief-section-label">Pass II — Line of Flying Verification &amp; Evidence Review</div>
             <div class="ev-section-intro">
               ${isScenarioMode
-                ? '<strong>Stage 1 — Verify the factual record.</strong> The causal chain below is derived from the ICC text. Before legal flags fire, the lawyer verifies each event in the Line of Flying against actual evidence. Confirm facts, view and verify evidence documents, and note what is missing. Legal analysis in Stage 2 fires against the confirmed factual record — not the original ICC narrative.'
-                : '<strong>Stage 1 — Evidence gap review.</strong> Evidence items below are flagged based on what the summary text references directly. Items marked <em>Not referenced in summary</em> are gaps that must be chased before the defence position can be confirmed. Use the notes field on each event to log what you know and what has been requested.'}
+                ? 'Verify the factual record against each event in the Line of Flying. Confirm facts, review evidence documents, and flag what is missing. The legal position in Pass III updates as events are confirmed.'
+                : 'Evidence items below are flagged based on what the summary text references directly. Items marked <em>Not referenced in summary</em> are gaps to chase before the defence position can be confirmed.'}
             </div>
             ${buildLOFModule(dt)}
             <div style="margin: 12px 0 16px; padding: 10px 14px; background: #F9F7F3; border: 1px solid var(--ink-rule); border-radius: 6px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;">
@@ -5075,7 +5124,7 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
                 <strong style="color:#A07010">Preliminary assessment — incomplete evidence</strong> &nbsp;· This legal position is based on the classification derived from the summary text. It cannot be confirmed until the evidence gaps identified in Pass II are resolved. Do not rely on this position for a court submission or formal defence response until the factual record is verified.
               </div>` : ''}
               <div class="rm-position-banner" id="rm-position-banner">
-                Complete the RM review above — verdict, quantum and limitation analysis update automatically.
+                Classification-based position loaded. Confirm events in Pass II — verdict and quantum refine automatically as evidence is reviewed.
               </div>
             </div>
             <div id="pass3-caselaw">
@@ -5319,20 +5368,27 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
       if(!p3||!currentDT) return;
 
       const reviewed=Object.keys(rmResponses).length;
-      if(!reviewed) return;
 
       const total    =currentDT.challenges.length;
       const confirmed=Object.values(rmResponses).filter(r=>r==='confirmed').length;
       const partial  =Object.values(rmResponses).filter(r=>r==='partial').length;
       const gaps     =Object.values(rmResponses).filter(r=>r==='gap').length;
-      const score    =(confirmed+partial*0.5)/total;
-      const verdict  =getVerdict(currentDT.limb1Status,score,gaps);
+      // When no evidence reviewed yet, derive initial position from classification alone
+      const score    = reviewed > 0 ? (confirmed+partial*0.5)/total : null;
+      const verdict  = score !== null
+        ? getVerdict(currentDT.limb1Status, score, gaps)
+        : (currentDT.limb1Status === 'extraordinary' ? 'conditions'
+          : currentDT.limb1Status === 'unlikely' ? 'settle' : 'conditions');
 
       const vLabels={defend:'Defend',conditions:'Conditional Defence',settle:'Settle — Consider Early Resolution'};
-      const vSubs={
+      const vSubs = reviewed > 0 ? {
         defend:`RM position well-evidenced — ${confirmed}/${total} challenge points confirmed`,
         conditions:`${confirmed} confirmed · ${partial} partial · ${gaps} gap${gaps!==1?'s':''} — address before hearing`,
         settle:`Significant exposure — Limb 1 or RM position weak · ${gaps} gap${gaps!==1?'s':''} identified`
+      } : {
+        defend:`Classification: ${currentDT.label} — confirm evidence in Pass II to lock position`,
+        conditions:`Initial classification: ${currentDT.label} — evidence review required before position confirmed`,
+        settle:`Classification: ${currentDT.label} — early settlement recommended · confirm quantum and Art 9 compliance`
       };
       const vRefs={defend:'Art 5(3) EC261 / UK261',conditions:'Art 5(3) — evidence gaps',settle:'Wallentin-Hermann risk'};
 
@@ -6047,9 +6103,67 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
     }
 
     function buildLOFDay(day) {
+      // ── Sector badge helper ──────────────────────────────────────
+      function sectorBadge(status) {
+        return status === 'ok'    ? `<span class="lof-status-badge lof-status-ok">✓ On Time</span>`
+             : status === 'delay' ? `<span class="lof-status-badge lof-status-delay">⚠ Delayed</span>`
+             : status === 'div'   ? `<span class="lof-status-badge lof-status-div">⚠ Diverted</span>`
+             : status === 'claim' ? `<span class="lof-status-badge lof-status-claim">★ Claimed</span>`
+             : status === 'aog'   ? `<span class="lof-status-badge lof-status-aog">AOG</span>`
+             : status === 'canx'  ? `<span class="lof-status-badge lof-status-canx">Cancelled</span>`
+             : status === 'repl'  ? `<span class="lof-status-badge lof-status-repl">Replacement</span>`
+             : `<span class="lof-status-badge">${status}</span>`;
+      }
+
+      function sectorRow(s, rotLabel) {
+        const rowClass = s.status === 'claim' ? 'lof-row-claimed'
+                       : s.status === 'div'   ? 'lof-row-diverted'
+                       : s.status === 'aog'   ? 'lof-row-aog'
+                       : '';
+        const actualOutLate = s.actual_out !== '—' && s.sched_out !== '—' && s.actual_out > s.sched_out;
+        const actualInLate  = s.actual_in  !== '—' && s.sched_in  !== '—' && s.actual_in  > s.sched_in;
+        return `<tr class="${rowClass}">
+          <td class="lof-rot-label">${rotLabel}</td>
+          <td>${s.flight}</td>
+          <td class="lof-route">${s.route}</td>
+          <td class="lof-time">${s.sched_out}</td>
+          <td class="lof-time">${s.sched_in}</td>
+          <td class="lof-time${actualOutLate?' actual-late':''}">${s.actual_out}</td>
+          <td class="lof-time${actualInLate?' actual-late':''}">${s.actual_in}</td>
+          <td>${sectorBadge(s.status)}</td>
+          <td class="lof-note">${s.note}</td>
+        </tr>`;
+      }
+
+      // ── Group sectors into rotation pairs ────────────────────────
+      // A rotation is outbound (A→B) + return (B→A).
+      // Detect pairs: consecutive sectors where route[i] ends at X
+      // and route[i+1] starts at X (i.e. B→A pattern after A→B).
+      // Unpaired sectors (divert holds, single long-haul, etc.) stand alone.
+      function getOrigin(route) { return route.split('→')[0].trim(); }
+      function getDest(route)   { return (route.split('→')[1] || '').trim(); }
+
+      const sectors = day.sectors;
+      const groups = []; // each group is array of 1 or 2 sectors
+      let i = 0;
+      while (i < sectors.length) {
+        const s = sectors[i];
+        const dest = getDest(s.route);
+        const next = sectors[i + 1];
+        // Pair if next sector's origin matches this sector's destination
+        if (next && getOrigin(next.route) === dest && dest !== '—' && dest !== '') {
+          groups.push([s, next]);
+          i += 2;
+        } else {
+          groups.push([s]);
+          i++;
+        }
+      }
+
       const headersHtml = `
         <thead>
           <tr>
+            <th class="lof-rot-label-col">Rotation</th>
             <th>Flight</th>
             <th>Route</th>
             <th>Sched OUT</th>
@@ -6061,39 +6175,26 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
           </tr>
         </thead>`;
 
-      const rowsHtml = day.sectors.map(s => {
-        const rowClass = s.status === 'claim' ? 'lof-row-claimed'
-                       : s.status === 'div'   ? 'lof-row-diverted'
-                       : s.status === 'aog'   ? 'lof-row-aog'
-                       : '';
-
-        const badge = s.status === 'ok'    ? `<span class="lof-status-badge lof-status-ok">✓ On Time</span>`
-                    : s.status === 'delay' ? `<span class="lof-status-badge lof-status-delay">⚠ Delayed</span>`
-                    : s.status === 'div'   ? `<span class="lof-status-badge lof-status-div">⚠ Diverted</span>`
-                    : s.status === 'claim' ? `<span class="lof-status-badge lof-status-claim">★ Claimed</span>`
-                    : s.status === 'aog'   ? `<span class="lof-status-badge lof-status-aog">AOG</span>`
-                    : s.status === 'canx'  ? `<span class="lof-status-badge lof-status-canx">Cancelled</span>`
-                    : s.status === 'repl'  ? `<span class="lof-status-badge lof-status-repl">Replacement</span>`
-                    : `<span class="lof-status-badge">${s.status}</span>`;
-
-        const actualOutLate = s.actual_out !== '—' && s.sched_out !== '—' && s.actual_out > s.sched_out;
-        const actualInLate  = s.actual_in  !== '—' && s.sched_in  !== '—' && s.actual_in  > s.sched_in;
-
-        return `<tr class="${rowClass}">
-          <td>${s.flight}</td>
-          <td class="lof-route">${s.route}</td>
-          <td class="lof-time">${s.sched_out}</td>
-          <td class="lof-time">${s.sched_in}</td>
-          <td class="lof-time${actualOutLate?' actual-late':''}">${s.actual_out}</td>
-          <td class="lof-time${actualInLate?' actual-late':''}">${s.actual_in}</td>
-          <td>${badge}</td>
-          <td class="lof-note">${s.note}</td>
-        </tr>`;
+      let rotNum = 1;
+      const rowsHtml = groups.map(group => {
+        if (group.length === 2) {
+          // Outbound + return — label both rows with same rotation number,
+          // second row gets a small continuation indent
+          const label = `R${rotNum}`;
+          const html = sectorRow(group[0], label) + sectorRow(group[1], '');
+          rotNum++;
+          return html;
+        } else {
+          // Unpaired — standalone sector (divert hold, long-haul, cancelled)
+          const label = `R${rotNum}`;
+          rotNum++;
+          return sectorRow(group[0], label);
+        }
       }).join('');
 
       const eventRowHtml = day.event
         ? `<tr class="lof-event-row lof-event-${day.event.type}">
-             <td colspan="8">ℹ ${day.event.text}</td>
+             <td colspan="9">ℹ ${day.event.text}</td>
            </tr>`
         : '';
 
@@ -6939,7 +7040,10 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
           rootNode = { type:'root', label:'Political / Civil Unrest', sub: 'Government restriction on operations', icon:'🚫' };
           break;
         case 'crew-fdp':
-          rootNode = { type:'root', label:'Crew FDP Constraint', sub: 'Flight Duty Period exhaustion — root cause required', icon:'👨‍✈️' };
+          rootNode = { type:'root', label:'Crew Duty Limit', sub: 'FTL duty limit exhausted — root cause of delay required', icon:'⏱' };
+          break;
+        case 'crew-sick':
+          rootNode = { type:'root', label:'Crew Incapacitation', sub: 'Captain / crew member reported medically unfit for duty', icon:'🚑' };
           break;
         default:
           rootNode = { type:'root', label: dt.label || 'Disruption Event', sub: 'Root cause — verify and classify', icon:'⚡' };
@@ -6995,14 +7099,33 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
       }
 
       // Crew FDP exhaustion — only if explicit limit-reached language (not just 'crew' or 'FDP')
-      if (/\b(timed out|out of hours|fdp limit|fdp exceeded|fdp reached|duty limit reached|crew duty expired)\b/.test(lower) && dt.id !== 'crew-fdp') {
-        nodes.push({ type:'operational', label:'Crew FDP Exhausted', sub: 'Duty period limit reached — standby required', icon:'👨‍✈️' });
+      if (/\b(timed out|out of hours|fdp limit|fdp exceeded|fdp reached|duty limit reached|crew duty expired)\b/.test(lower) && dt.id !== 'crew-fdp' && dt.id !== 'crew-sick') {
+        nodes.push({ type:'operational', label:'Crew Duty Limit Reached', sub: 'FTL duty period limit reached — standby required', icon:'⏱' });
+      }
+
+      // Crew-sick specific cascade nodes — only fire for crew-sick root
+      if (dt.id === 'crew-sick') {
+        // No standby available at base
+        if (/\bno standby\b|\bno.*command.qualified\b|\bno.*captain.*available\b/.test(lower)) {
+          nodes.push({ type:'cascade', label:'No Standby Captain Available', sub: 'No command-qualified standby at departure base', icon:'⚠' });
+        }
+        // Relief crew positioned from another base
+        const reliefMatch = lower.match(/relief (?:captain|crew|pilot|officer)\s+positioned from\s+([a-z]{3})|(?:captain|crew)\s+positioned from\s+([a-z]{3})/);
+        if (reliefMatch || /\brelief (?:captain|crew)\b/.test(lower)) {
+          const fromBase = (reliefMatch?.[1] || reliefMatch?.[2] || '').toUpperCase();
+          nodes.push({ type:'operational', label:'Relief Crew Positioned', sub: fromBase ? `Captain repositioned from ${fromBase}` : 'Relief crew repositioned from oustation', icon:'✈' });
+        }
+        // Crew rest requirement triggered (not the same as FDP limit)
+        if (/\bcrew rest obligation\b|\brest obligation\b|\bminimum rest\b|\brest period required\b/.test(lower)) {
+          nodes.push({ type:'operational', label:'Crew Rest Requirement', sub: 'Mandatory rest period before next FDP — departure delayed to next day', icon:'🌙' });
+        }
       }
 
       // Standby crew DEPLOYED — requires an affirmative deployment signal AND no negation nearby.
       // 'Replacement crew LGW could not position' must NOT fire this node.
       // 'Standby crew deployed from BHX' / 'Relief captain repositioned from GLA' must fire.
-      if (dt.id !== 'crew-fdp') {
+      // crew-sick handles its own crew cascade nodes above — exclude here.
+      if (dt.id !== 'crew-fdp' && dt.id !== 'crew-sick') {
         const crewIdx = lower.search(/\b(standby crew|relief crew|replacement crew|relief captain|standby captain)\b/);
         if (crewIdx >= 0) {
           const window = lower.slice(Math.max(0, crewIdx - 20), crewIdx + 140);
