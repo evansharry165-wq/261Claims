@@ -4765,8 +4765,8 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
       {
         id: 'weather',
         label: 'Weather Disruption',
-        keywords: ['weather','storm','thunderstorm','wind','snow','fog','visibility','crosswind','minima','sigmet','windshear','precipitation','hail','turbulence','icing','lightning','below minima','crosswind limit','lenticular','volcanic ash','ash cloud','black ice','ice on runway'],
-        primaryKeywords: ['metar','sigmet','thunderstorm','windshear','below minima','crosswind limit','taf','weather','storm'],
+        keywords: ['weather','storm','thunderstorm','wind','snow','fog','visibility','crosswind','minima','sigmet','windshear','precipitation','hail','turbulence','icing','lightning','below minima','crosswind limit','lenticular','volcanic ash','ash cloud','black ice','ice on runway','freezing rain','fzra','squall','gust','gusting','severe weather','wx minima','lvp','low visibility procedures','braking action','poor braking','contaminated runway','runway contamination','snowtam','dust storm','sandstorm','wx'],
+        primaryKeywords: ['metar','sigmet','thunderstorm','windshear','below minima','crosswind limit','taf','weather','storm','low visibility procedures','lvp','freezing rain'],
         limb1Status: 'extraordinary',
         limb1: 'Adverse meteorological conditions — inherently beyond operational control. Consistent with Art 5(3) EC261/UK261 where conditions reached or exceeded certified operating limits. Limb 1 likely satisfied subject to evidence of actual conditions at the relevant time and place.',
         caselaw: [
@@ -4785,7 +4785,7 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
       {
         id: 'atfm',
         label: 'ATC / ATFM Restriction',
-        keywords: ['atfm','ctot','atc','air traffic','regulation','eurocontrol','network manager','flow management','ground delay','calculated take-off','flow regulation','fir restriction','fir capacity'],
+        keywords: ['atfm','ctot','atc','air traffic','regulation','eurocontrol','network manager','flow management','ground delay','calculated take-off','flow regulation','fir restriction','fir capacity','departure restriction','capacity restriction','sector capacity','regulation imposed','regulation lifted','zero rate','zero-rate','departure sequence','traffic flow','departure slot','miles-in-trail'],
         limb1Status: 'extraordinary',
         limb1: 'Air traffic flow management restriction imposed by Eurocontrol or a national ANSP — a decision of a third-party authority inherently beyond the airline\'s control. Limb 1 generally satisfied where the regulation is formally issued and applies to all carriers.',
         caselaw: [
@@ -4879,7 +4879,7 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
       {
         id: 'medical',
         label: 'Medical Emergency',
-        keywords: ['medical','medical emergency','ill passenger','passenger unwell','diversion medical','cardiac','health emergency','medical diversion','passenger ill'],
+        keywords: ['medical','medical emergency','ill passenger','passenger unwell','diversion medical','cardiac','health emergency','medical diversion','passenger ill','pax collapsed','passenger collapsed','medevac','medical offload','offloaded on medical grounds','ambulance','seizure','stroke','unconscious','loss of consciousness','in-flight medical','oxygen requested','defibrillator','first responder','doctor on board','ground medical','pan pan','mayday medical','pax deteriorated','passenger deteriorated'],
         limb1Status: 'extraordinary',
         limb1: 'In-flight medical emergency requiring diversion — the aircraft commander\'s mandatory duty of care under applicable aviation regulations and international conventions. Diversion to provide urgent medical treatment is a regulatory requirement, not a discretionary commercial act. Limb 1 generally well-established.',
         caselaw: [
@@ -4897,7 +4897,7 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
       {
         id: 'security',
         label: 'Security Alert',
-        keywords: ['security','security alert','suspicious','bomb','threat','item in hold','security hold','screening','manifest','security search','police security'],
+        keywords: ['security','security alert','suspicious','bomb','threat','item in hold','security hold','screening','manifest','security search','police security','unaccompanied bag','unaccompanied baggage','unaccompanied item','pax did not board','passenger did not board','manifest reconciliation','bag-pax reconciliation','hold search','baggage search','suspicious package','suspicious item','police attended','police attendance','security sweep','security clearance','deportee','inadmissible passenger','cabin search','reconciliation','hoax','threat received'],
         limb1Status: 'extraordinary',
         limb1: 'Security directive or response mandated by a competent authority (police, airport security authority, state security agency) — beyond the airline\'s control. Mandatory compliance with security authority directions constitutes extraordinary circumstances.',
         caselaw: [
@@ -4914,7 +4914,7 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
       {
         id: 'disruptive-pax',
         label: 'Disruptive Passenger',
-        keywords: ['disruptive passenger','unruly','aggressive','threatening','passenger removal','alcohol','behaviour','disruptive pax','passenger behaviour','abusive'],
+        keywords: ['disruptive passenger','unruly','aggressive','threatening','passenger removal','alcohol','behaviour','disruptive pax','passenger behaviour','abusive','refused to sit','refused to be seated','verbal abuse','verbally abusive','intoxicated','heavily intoxicated','drunk passenger','vaping','smoking on board','smoking in toilet','pax restrained','pax detained','pax offloaded','passenger offloaded','refused to comply','altercation','confrontation','police escort','threatening behaviour','pax escorted off','de-escalation','seat belt refusal'],
         limb1Status: 'extraordinary',
         limb1: 'Unforeseeable passenger behaviour requiring commander intervention — an event not inherent in the normal exercise of the airline\'s activity and beyond effective control once the passenger is on board or at the gate. Limb 1 generally established provided the behaviour was not foreseeable from pre-boarding conduct.',
         caselaw: [
@@ -4931,7 +4931,7 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
       {
         id: 'ground-damage',
         label: 'Third-Party Ground Damage',
-        keywords: ['ground damage','ground incident','tug','pushback incident','ramp','airside','ground handling damage','third party damage','ramp damage'],
+        keywords: ['ground damage','ground incident','tug','pushback incident','push-back incident','ramp','airside','ground handling damage','third party damage','ramp damage','catering truck','catering vehicle','airbridge contact','jetway contact','airbridge collision','gpu contact','ground power unit','boarding stairs','stairs contact','de-icing vehicle','fuelling vehicle','fuel bowser','ground support equipment','gse','wing tip contact','tail contact','tow tractor','baggage loader','baggage belt','made contact with aircraft'],
         limb1Status: 'extraordinary',
         limb1: 'Physical damage to the aircraft by a third-party ground handling operator or airside vehicle — beyond the airline\'s operational control, provided the airline\'s own contracted ground handling staff were not responsible for the incident.',
         caselaw: [
@@ -4949,7 +4949,7 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
       {
         id: 'airport-closure',
         label: 'Airport / Runway Closure',
-        keywords: ['runway closed','airport closed','rwy closed','aerodrome closure','emergency closure','runway inspection','notam closure','aerodrome closed'],
+        keywords: ['runway closed','airport closed','rwy closed','aerodrome closure','emergency closure','runway inspection','notam closure','aerodrome closed','fod sweep','bird sweep','foreign object debris','fod on runway','runway contamination','snow clearance','runway excursion','emergency vehicles on runway','runway blocked','all departures suspended','runway re-opened'],
         limb1Status: 'extraordinary',
         limb1: 'Formal aerodrome or runway closure by the aerodrome authority — a regulatory decision by a third party inherently beyond the airline\'s control. Limb 1 generally satisfied where closure is confirmed by NOTAM or ATC directive and applies to all operators.',
         caselaw: [
@@ -4998,8 +4998,8 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
       {
         id: 'crew-fdp',
         label: 'Crew Duty Limit',
-        keywords: ['fdp','flight duty period','timed out','out of hours','crew rest','ftl','cap 1615','oro.ftl','duty limit','duty period','ftl limit'],
-        primaryKeywords: ['timed out','out of hours','duty limit exceeded','fdp exceeded','fdp limit reached'],
+        keywords: ['fdp','flight duty period','timed out','out of hours','crew rest','ftl','cap 1615','oro.ftl','duty limit','duty period','ftl limit','fdp expiry','fdp would expire','crew delayed inbound','crew late inbound','discretion','commander\'s discretion','extension not possible','crew timed'],
+        primaryKeywords: ['timed out','out of hours','duty limit exceeded','fdp exceeded','fdp limit reached','fdp expiry','crew timed out'],
         limb1Status: 'contested',
         limb1: 'CONTESTED — Crew duty limit exhaustion alone is NOT extraordinary circumstances. The root cause of the exhaustion must independently qualify. If a third-party extraordinary event (ATFM, weather, birdstrike) caused the rotation delay that exhausted crew duty, the cascading duty limit impact may fall within Art 5(3) — but the causal chain must be clearly traced and evidenced.',
         caselaw: [
@@ -5018,8 +5018,8 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
       {
         id: 'crew-sick',
         label: 'Crew Incapacitation / Sickness',
-        keywords: ['sick','reported sick','sickness','incapacitation','incapacitated','unwell','medical grounds','unfit','gastroenteritis','captain sick','crew sick','acute illness','illness','crew sickness','unable to report','medically unfit','crew member sick'],
-        primaryKeywords: ['reported sick','incapacitation','incapacitated','gastroenteritis','captain sick','crew sick','unfit for duty','crew sickness','medically unfit','acute illness','sickness'],
+        keywords: ['sick','reported sick','sickness','incapacitation','incapacitated','unwell','medical grounds','unfit','gastroenteritis','captain sick','crew sick','acute illness','illness','crew sickness','unable to report','medically unfit','crew member sick','indisposed','not fit to fly','unfit to report','called in sick','crew unavailable medical'],
+        primaryKeywords: ['reported sick','incapacitation','incapacitated','gastroenteritis','captain sick','crew sick','unfit for duty','crew sickness','medically unfit','acute illness','sickness','not fit to fly','called in sick'],
         limb1Status: 'unlikely',
         limb1: 'LOSS — Crew illness and incapacitation is inherent in the normal exercise of airline operations and is NOT extraordinary circumstances. Lipton v BA CityFlyer [2024] UKSC 24 (UK Supreme Court) definitively held that sudden crew incapacitation — including captain illness with no prior notice — can never constitute extraordinary circumstances under Art 5(3) EC261 / UK261. No liability defence available. Focus: quantum (Art 7), Art 9 care, and Art 14 written notice.',
         caselaw: [
@@ -7477,17 +7477,25 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
        'ice' in 'service', 'wind' in 'window').
     ---------------------------------------------------------- */
     function extractWeatherDetail(lower) {
-      if (/windshear|wind\s*shear/.test(lower))                return 'Windshear conditions';
-      if (/crosswind/.test(lower))                             return 'Crosswind / operating limits';
-      if (/\btsra\b|thunderstorm/.test(lower))                 return 'Thunderstorm activity';
-      if (/\bcb\b|cumulonimbus/.test(lower))                   return 'Cumulonimbus / severe convection';
-      if (/turbulence|\bcat\b|clear air turbulence/.test(lower)) return 'Turbulence event';
-      if (/\bfog\b|low visibility|low vis\b|lvp/.test(lower))  return 'Low visibility / fog';
-      if (/\bsnow\b/.test(lower))                              return 'Snow / winter conditions';
-      if (/\bicing\b/.test(lower))                             return 'Aircraft icing conditions';
-      if (/\bsigmet\b/.test(lower))                            return 'SIGMET advisory active';
-      if (/volcanic ash|ash cloud|\bvaac\b/.test(lower))       return 'Volcanic ash disruption';
-      if (/\bwind\b/.test(lower))                              return 'Wind / operating limits';
+      if (/windshear|wind\s*shear/.test(lower))                          return 'Windshear conditions';
+      if (/crosswind/.test(lower))                                        return 'Crosswind / operating limits';
+      if (/\btsra\b|thunderstorm/.test(lower))                           return 'Thunderstorm activity';
+      if (/\bcb\b|cumulonimbus/.test(lower))                             return 'Cumulonimbus / severe convection';
+      if (/turbulence|\bclear air turbulence/.test(lower))               return 'Turbulence event';
+      if (/freezing rain|\bfzra\b/.test(lower))                          return 'Freezing rain — runway contamination';
+      if (/\bhail\b/.test(lower))                                        return 'Hail / severe precipitation';
+      if (/\bsquall\b/.test(lower))                                      return 'Squall / severe gusting';
+      if (/below minima|wx minima|below limits/.test(lower))             return 'Conditions below operating minima';
+      if (/poor braking|braking action|contaminated runway|runway contamination/.test(lower)) return 'Contaminated runway surface';
+      if (/low visibility procedures|lvp/.test(lower))                   return 'Low visibility procedures — CAT II/III';
+      if (/\bfog\b|low visibility|low vis\b/.test(lower))                return 'Low visibility / fog';
+      if (/\bsnow\b|\bsnowtam\b/.test(lower))                           return 'Snow / winter conditions';
+      if (/\bicing\b/.test(lower))                                       return 'Aircraft icing conditions';
+      if (/\bsigmet\b/.test(lower))                                      return 'SIGMET advisory active';
+      if (/volcanic ash|ash cloud|\bvaac\b/.test(lower))                 return 'Volcanic ash disruption';
+      if (/dust storm|sandstorm/.test(lower))                            return 'Dust / sand storm';
+      if (/gust|gusting/.test(lower))                                    return 'Severe gusting / wind limits';
+      if (/\bwind\b/.test(lower))                                        return 'Wind / operating limits';
       return 'Meteorological conditions';
     }
 
@@ -7533,12 +7541,20 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
         }
         case 'technical': {
           // Extract defect type if stated
-          const defect = /hydraulic/.test(lower)       ? 'Hydraulic system defect'
-                       : /engine failure/.test(lower)  ? 'Engine failure'
-                       : /avionics|efis/.test(lower)   ? 'Avionics fault'
-                       : /\bmel\b/.test(lower)         ? 'MEL-listed defect'
-                       : /oil chip|swarf/.test(lower)  ? 'Oil system contamination'
-                       : /firmware|software/.test(lower) ? 'Firmware / software defect'
+          const defect = /hydraulic/.test(lower)                           ? 'Hydraulic system defect'
+                       : /engine failure/.test(lower)                      ? 'Engine failure'
+                       : /avionics|efis/.test(lower)                       ? 'Avionics fault'
+                       : /brake system|brake failure|brake fault/.test(lower) ? 'Brake system defect'
+                       : /landing gear|gear fault|gear indication/.test(lower) ? 'Landing gear defect'
+                       : /pressurisation|pressurization|cabin pressure/.test(lower) ? 'Pressurisation system fault'
+                       : /fuel leak|fuel system|fuel fault/.test(lower)    ? 'Fuel system defect'
+                       : /\bapu\b/.test(lower)                             ? 'APU fault'
+                       : /cargo door|door fault|door indication/.test(lower) ? 'Door / door indication fault'
+                       : /flight controls|control surface/.test(lower)     ? 'Flight control fault'
+                       : /\bmel\b|deferred defect/.test(lower)             ? 'MEL-listed defect'
+                       : /oil chip|swarf/.test(lower)                      ? 'Oil system contamination'
+                       : /firmware|software/.test(lower)                   ? 'Firmware / software defect'
+                       : /bleed air|\bbleed\b/.test(lower)                 ? 'Bleed air system fault'
                        : 'Aircraft technical defect';
           rootNode = { type:'root', label:'Technical Defect', sub: defect, icon:'🔧' };
           break;
@@ -7614,15 +7630,70 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
         nodes.push({ type:'cascade', label:'ATC / ATFM Restriction', sub: subText, icon:'📡' });
       }
 
-      // Diversion: only if 'diverted' / 'diversion' explicitly stated
-      if (/\b(diverted?|diversion)\b/.test(lower)) {
-        const dest = lower.match(/divert(?:ed)?\s+to\s+([a-z]{3})\b/)?.[1]?.toUpperCase()
-                  || lower.match(/diversion\s+to\s+([a-z]{3})\b/)?.[1]?.toUpperCase();
-        nodes.push({ type:'cascade', label:'Aircraft Diversion', sub: dest ? `Diverted to ${dest}` : 'Commander divert decision', icon:'✈' });
+      // Diversion / emergency landing: explicit divert, emergency or precautionary landing, RTB
+      if (/\b(diverted?|diversion|emergency landing|precautionary landing|mayday|pan pan|declared emergency|rtb|return to base|returned to|alternate aerodrome|landed at alternate)\b/.test(lower)) {
+        const dest = lower.match(/divert(?:ed)?\s+to\s+([a-z]{3,4})\b/)?.[1]?.toUpperCase()
+                  || lower.match(/diversion\s+to\s+([a-z]{3,4})\b/)?.[1]?.toUpperCase()
+                  || lower.match(/(?:emergency|precautionary)\s+landing\s+(?:at\s+)?([a-z]{3,4})\b/)?.[1]?.toUpperCase()
+                  || lower.match(/landed\s+(?:at\s+)?([a-z]{3,4})\b/)?.[1]?.toUpperCase()
+                  || lower.match(/returned?\s+to\s+([a-z]{3,4})\b/)?.[1]?.toUpperCase();
+        const divType = /emergency landing|mayday|declared emergency/.test(lower) ? 'Emergency landing'
+                      : /precautionary landing/.test(lower) ? 'Precautionary landing'
+                      : /pan pan/.test(lower)               ? 'PAN PAN declared — precautionary landing'
+                      : /rtb|return to base|returned to/.test(lower) ? 'Return to departure aerodrome'
+                      : 'Aircraft diversion';
+        nodes.push({ type:'cascade', label: divType, sub: dest ? `${divType} — ${dest}` : 'Commander divert / emergency decision', icon:'✈' });
+      }
+
+      // Medical specific cascades
+      if (dt.id === 'medical') {
+        if (/\b(ambulance|paramedic|medical team|medical handover)\b/.test(lower)) {
+          nodes.push({ type:'operational', label:'Ambulance / Medical Handover', sub: 'Passenger transferred to emergency medical services at divert aerodrome', icon:'🚑' });
+        }
+        if (/\b(continued to|departed|departure resumed|resumed service|cleared to depart|medical clearance)\b/.test(lower)) {
+          nodes.push({ type:'operational', label:'Flight Continuation', sub: 'Medical clearance received — flight continued to destination', icon:'✈' });
+        }
+      }
+
+      // Security specific cascades
+      if (dt.id === 'security') {
+        if (/\b(hold search|baggage search|cabin search|security sweep)\b/.test(lower)) {
+          nodes.push({ type:'cascade', label:'Baggage / Cabin Search', sub: 'Authority-directed search of hold and/or cabin', icon:'🔍' });
+        }
+        if (/\b(manifest reconciliation|bag.pax reconciliation|reconciliation)\b/.test(lower)) {
+          nodes.push({ type:'cascade', label:'Manifest Reconciliation', sub: 'Bag-passenger reconciliation completed', icon:'📋' });
+        }
+        if (/\b(police clearance|security clearance|cleared to depart|cleared by police)\b/.test(lower)) {
+          nodes.push({ type:'operational', label:'Authority Clearance', sub: 'Security authority confirmed aircraft cleared to depart', icon:'✅' });
+        }
+      }
+
+      // Disruptive pax specific cascades
+      if (dt.id === 'disruptive-pax') {
+        if (/\b(police attended|police attendance|police called|police requested|gmp|met police|airport police)\b/.test(lower)) {
+          const policeUnit = lower.match(/\b(gmp|met police|airport police|thames valley|hampshire)\b/)?.[1]?.toUpperCase() || null;
+          nodes.push({ type:'cascade', label:'Police Attendance', sub: policeUnit ? `${policeUnit} attended aircraft at stand` : 'Police requested and attended aircraft at stand', icon:'🚔' });
+        }
+        if (/\b(pax offloaded|passenger offloaded|pax removed|passenger removed|escorted off|pax escorted)\b/.test(lower)) {
+          nodes.push({ type:'cascade', label:'Passenger Offloaded', sub: 'Disruptive passenger removed from aircraft by crew / authority', icon:'🚪' });
+        }
+        if (/\b(bags? (?:located|removed|searched)|baggage removed|baggage located)\b/.test(lower)) {
+          nodes.push({ type:'cascade', label:'Baggage Removal', sub: 'Passenger baggage located in hold and removed', icon:'🧳' });
+        }
+      }
+
+      // Birdstrike inspection cascade (fires before AOG)
+      if (dt.id === 'birdstrike' && /\b(borescope|post.strike inspection|engine inspection|inspection required|maintenance manual|task \d{2})\b/.test(lower)) {
+        nodes.push({ type:'cascade', label:'Post-Strike Engineering Inspection', sub: 'Mandatory borescope / maintenance inspection per approved programme', icon:'🔬' });
+      }
+
+      // Ground damage engineering assessment
+      if (dt.id === 'ground-damage' && /\b(engineering assessment|airworthiness|structural inspection|inspected|assessment required|damage assessment)\b/.test(lower)) {
+        nodes.push({ type:'cascade', label:'Engineering Assessment', sub: 'Airworthiness engineering inspection — grounded pending clearance', icon:'🔍' });
       }
 
       // AOG: fire for all disruption types — birdstrike and technical AOG are cascade consequences
-      if (/\baog\b/.test(lower)) {
+      if (/\baog\b|grounded pending inspection/.test(lower)) {
         const aogSub = dt.id === 'birdstrike' ? 'Aircraft grounded pending post-strike engineering inspection'
                      : dt.id === 'technical'   ? 'Aircraft grounded — defect cannot be deferred under MEL'
                      : 'Aircraft grounded — airworthiness hold';
@@ -7646,7 +7717,7 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
 
       // ── Multi-sector cascade: extract all subsequent flight references ────────
       // Build ordered list of unique flight codes mentioned in text
-      const flightExtRe = /\b(EZY|U2|BE|FR|W6|LS|TOM|TCX|BAW|EJU|EZS|RYR|IBE|AEA|VLG|EZT)\s*(\d{2,4})\b/gi;
+      const flightExtRe = /\b(EZY|EJU|EZS|EZT|U2|BE|FR|W6|LS|TOM|TCX|BY|DY|VY|LH|BA|AF|KL|IB|AZ|SK|TP|SN|HV|TO|QS|OK|BT|LO|LX|OS|BAW|RYR|IBE|AEA|VLG|HV)\s*(\d{2,4})\b/gi;
       const seenFltCodes = new Set();
       const flightSeq    = [];
       let fxm;
