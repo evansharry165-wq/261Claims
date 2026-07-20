@@ -5100,27 +5100,46 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
       const flMatch = text.match(/\b([A-Z]{2,3}\s*\d{3,5})\b/);
       if (flMatch) f.flightNum = flMatch[1].replace(/\s+/, '');
 
-      // Route: three-letter IATA pair (e.g. EDI-ALC, GVA–MAN)
-      const rtMatch = text.match(/\b([A-Z]{3})\s*[-–—]\s*([A-Z]{3})\b/);
-      if (rtMatch) { f.depIata = rtMatch[1]; f.arrIata = rtMatch[2]; }
-
-      // Date: dd/mm/yy or dd/mm/yyyy
+      // Date: dd/mm/yy, dd/mm/yyyy, or 12JUN26 / 12 Jun 26 formats
       const dtMatch = text.match(/\b(\d{1,2})[\/\.](\d{1,2})[\/\.](\d{2,4})\b/);
       if (dtMatch) {
         f.date = dtMatch[0];
       } else {
         const dt2 = text.match(/\b(\d{1,2})\s+(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\.?\s+(\d{2,4})\b/i);
-        if (dt2) f.date = dt2[0];
+        if (dt2) { f.date = dt2[0]; }
+        else {
+          const dt3 = text.match(/\b(\d{1,2})(JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC)(\d{2,4})\b/i);
+          if (dt3) f.date = dt3[0].toUpperCase();
+        }
       }
+
+      // Route: dash-separated (EDI-ALC) or space-separated near flight number (EZY824 LGW MXP)
+      const rtMatch = text.match(/\b([A-Z]{3})\s*[-–—]\s*([A-Z]{3})\b/);
+      if (rtMatch) { f.depIata = rtMatch[1]; f.arrIata = rtMatch[2]; }
+      if (!f.depIata && f.flightNum) {
+        const flPos = text.indexOf(f.flightNum);
+        if (flPos >= 0) {
+          const nearby = text.slice(flPos, flPos + 40);
+          const spaceRt = nearby.match(/\b([A-Z]{3})\s+([A-Z]{3})\b/);
+          if (spaceRt) { f.depIata = spaceRt[1]; f.arrIata = spaceRt[2]; }
+        }
+      }
+
+      // Departure time (HH:MMZ near "departed" / "departure" / "STD")
+      const depTimeM = text.match(/(?:depart(?:ed|s)?|std|block.?off|scheduled departure)\s+(?:at\s+)?(\d{2}:\d{2})[Zz]?/i);
+      if (depTimeM) f.depTime = depTimeM[1] + 'Z';
 
       // Aircraft registrations (first = primary, also catch replacement)
       const allRegs = [...text.matchAll(/\b([A-Z]{1,2}-[A-Z]{2,5})\b/g)].map(m => m[1]);
       if (allRegs.length > 0) f.aircraftReg = allRegs[0];
-      const replMatch = text.match(/[Rr]eplacement\s+aircraft\s+([A-Z]{1,2}-[A-Z]{2,5})/);
+      // Replacement / substituted aircraft ("moved onto A/C G-UZPH", "replacement aircraft G-XXXX")
+      const replMatch = text.match(/(?:replacement\s+aircraft|moved onto\s+(?:a\/c\s+)?|transferred\s+to\s+(?:a\/c\s+)?)([A-Z]{1,2}-[A-Z]{2,5})/i);
       if (replMatch) {
         f.replacementReg = replMatch[1];
-        // Make sure primary reg isn't the replacement
         if (allRegs.length > 1 && allRegs[0] === f.replacementReg) f.aircraftReg = allRegs[1];
+      } else if (allRegs.length > 1) {
+        // Second reg likely a substituted airframe
+        f.replacementReg = allRegs[1];
       }
 
       // Delay duration
@@ -5269,9 +5288,11 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
       if (facts && facts.flightNum) {
         const route = (facts.depIata && facts.arrIata) ? `${facts.depIata} → ${facts.arrIata}` : '';
         const descParts = [
-          facts.date        ? `Date: ${facts.date}` : '',
-          facts.aircraftReg ? `Aircraft: ${facts.aircraftReg}` : '',
-          facts.delayText   ? `Stated delay: ${facts.delayText}` : '',
+          facts.date           ? `Date: ${facts.date}` : '',
+          facts.aircraftReg    ? `Aircraft: ${facts.aircraftReg}` : '',
+          facts.replacementReg ? `Sub aircraft: ${facts.replacementReg}` : '',
+          facts.depTime        ? `Dep: ${facts.depTime}` : '',
+          facts.delayText      ? `Delay: ${facts.delayText}` : '',
         ].filter(Boolean);
         allNodes.push({
           nodeType: 'flight-dep',
@@ -7582,10 +7603,15 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
       // Each check uses word boundaries or multi-word phrases to prevent
       // false positives from short substring matches.
 
-      // ATFM cascade: only if Eurocontrol/CTOT/ATFM explicitly mentioned AND root is not already ATFM
-      if (dt.id !== 'atfm' && /\b(atfm|eurocontrol|ctot|network manager|flow management|calculated take.off time)\b/.test(lower)) {
+      // ATFM cascade: Eurocontrol/CTOT/ATFM/ATC restrictions/traffic regulation
+      if (dt.id !== 'atfm' && /\b(atfm|eurocontrol|ctot|network manager|flow management|calculated take.off time|atc restrictions?|traffic regulation|departure congestion|departure slot|atc delay)\b/.test(lower)) {
         const slot = lower.match(/ctot\s+([\d]{4}[z]?)/)?.[1]?.toUpperCase();
-        nodes.push({ type:'cascade', label:'ATFM Cascade', sub: slot ? `CTOT ${slot} imposed` : 'Air traffic flow restriction imposed', icon:'📡' });
+        // Try to identify the specific airport where the restriction applied
+        const restrictionApt = lower.match(/(?:atc restrictions?|traffic regulation|departure congestion)\s+(?:at\s+)?([a-z]{3})\b/)?.[1]?.toUpperCase();
+        const subText = slot        ? `CTOT ${slot} imposed`
+                      : restrictionApt ? `ATC restriction — ${restrictionApt}`
+                      : 'ATC / network flow restriction imposed';
+        nodes.push({ type:'cascade', label:'ATC / ATFM Restriction', sub: subText, icon:'📡' });
       }
 
       // Diversion: only if 'diverted' / 'diversion' explicitly stated
@@ -7595,10 +7621,12 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
         nodes.push({ type:'cascade', label:'Aircraft Diversion', sub: dest ? `Diverted to ${dest}` : 'Commander divert decision', icon:'✈' });
       }
 
-      // AOG: only for disruption types where AOG is a cascade (not the root cause itself)
-      // Exclude birdstrike and technical where AOG is intrinsic to the root event
-      if (dt.id !== 'birdstrike' && dt.id !== 'technical' && /\baog\b/.test(lower)) {
-        nodes.push({ type:'cascade', label:'Aircraft AOG', sub: 'Aircraft grounded — airworthiness hold', icon:'⛔' });
+      // AOG: fire for all disruption types — birdstrike and technical AOG are cascade consequences
+      if (/\baog\b/.test(lower)) {
+        const aogSub = dt.id === 'birdstrike' ? 'Aircraft grounded pending post-strike engineering inspection'
+                     : dt.id === 'technical'   ? 'Aircraft grounded — defect cannot be deferred under MEL'
+                     : 'Aircraft grounded — airworthiness hold';
+        nodes.push({ type:'cascade', label:'Aircraft AOG', sub: aogSub, icon:'⛔' });
       }
 
       // Inbound rotation delay — only if prior sector language present AND not already shown as root
@@ -7606,11 +7634,52 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
         nodes.push({ type:'cascade', label:'Inbound Rotation Delay', sub: 'Prior sector delay cascaded to this flight', icon:'🔄' });
       }
 
-      // Replacement aircraft — only if explicitly stated in text
-      if (/\b(replacement aircraft|spare aircraft|aircraft repositioned|sub aircraft)\b/.test(lower)) {
-        const replReg = text.match(/replacement aircraft\s+([A-Z]{1,2}-[A-Z]{2,4})/i)?.[1]
-                     || text.match(/aircraft\s+([A-Z]{1,2}-[A-Z]{2,4})\s+repositioned/i)?.[1];
-        nodes.push({ type:'operational', label:'Replacement Aircraft', sub: replReg ? `${replReg} repositioned` : 'Substitute airframe deployed', icon:'🛫' });
+      // Aircraft substitution — replacement / moved onto / transferred to
+      if (/\b(replacement aircraft|spare aircraft|aircraft repositioned|sub aircraft|moved onto|transferred to a\/c)\b/.test(lower)) {
+        const replReg = text.match(/replacement aircraft\s+([A-Z]{1,2}-[A-Z]{2,5})/i)?.[1]
+                     || text.match(/moved onto\s+(?:a\/c\s+)?([A-Z]{1,2}-[A-Z]{2,5})/i)?.[1]
+                     || text.match(/aircraft\s+([A-Z]{1,2}-[A-Z]{2,5})\s+repositioned/i)?.[1]
+                     || (allRegs.length > 1 ? allRegs.find(r => r !== acReg) : null);
+        const fromAcStr = acReg ? `${acReg} AOG — ` : '';
+        nodes.push({ type:'operational', label:'Aircraft Substitution', sub: replReg ? `${fromAcStr}${replReg} substituted for affected sectors` : 'Substitute airframe deployed for affected sectors', icon:'🔄' });
+      }
+
+      // ── Multi-sector cascade: extract all subsequent flight references ────────
+      // Build ordered list of unique flight codes mentioned in text
+      const flightExtRe = /\b(EZY|U2|BE|FR|W6|LS|TOM|TCX|BAW|EJU|EZS|RYR|IBE|AEA|VLG|EZT)\s*(\d{2,4})\b/gi;
+      const seenFltCodes = new Set();
+      const flightSeq    = [];
+      let fxm;
+      while ((fxm = flightExtRe.exec(text)) !== null) {
+        const fCode = (fxm[1] + fxm[2]).toUpperCase().replace(/\s+/g, '');
+        if (!seenFltCodes.has(fCode)) {
+          seenFltCodes.add(fCode);
+          flightSeq.push({ code: fCode, pos: fxm.index });
+        }
+      }
+      // Skip the primary flight (flightSeq[0]) — handled by flight-dep node
+      if (flightSeq.length > 1) {
+        for (let fi = 1; fi < flightSeq.length; fi++) {
+          const { code: fCode, pos: fPos } = flightSeq[fi];
+          const ctxOrig = text.slice(fPos, fPos + 300);
+          const ctxLow  = ctxOrig.toLowerCase();
+          // If this sector is the OND/cancelled flight, skip — outcome node handles it
+          const sectorOND = /\bond\b|overnight.{0,20}delay|overnight delayed|booked for tomorrow|cancelled/.test(ctxLow);
+          if (sectorOND) continue;
+          // Extract route (first pair of 3-letter codes in vicinity)
+          const routeM = ctxOrig.match(/\b([A-Z]{3})\s+([A-Z]{3})\b/);
+          const routeStr = routeM ? `${routeM[1]} → ${routeM[2]}` : '';
+          // Extract time
+          const timeM = ctxOrig.match(/\b(\d{2}:\d{2})[Zz]?\b/);
+          const timeStr = timeM ? timeM[1] + 'Z' : '';
+          // Determine context
+          const sectorDelayed  = /\bdelayed\b|\blate\b|\brestrictions?\b|\bcongestion\b/.test(ctxLow);
+          const sectorCrewFDP  = /\bran out|out of hours|crew timed|fdp\b/.test(ctxLow);
+          const sub = sectorCrewFDP ? 'Crew FDP limit reached on turnaround'
+                    : sectorDelayed ? 'Delayed — cascade from prior disruption'
+                    : 'Sector — cascade from prior disruption';
+          nodes.push({ type:'cascade', label:`${fCode}${routeStr ? '  ' + routeStr : ''}`, sub, icon:'✈', time: timeStr });
+        }
       }
 
       // Crew FDP exhaustion — only if explicit limit-reached language (not just 'crew' or 'FDP')
@@ -7659,15 +7728,19 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
       }
 
       // ── Outcome — always last ─────────────────────────────────────────
-      const isCancelled = /\b(flight cancelled|flights? cancelled|passengers rebooked|service cancelled)\b/.test(lower);
+      const isCancelled = /\b(ond\b|flight cancelled|flights? cancelled|passengers rebooked|service cancelled|overnight.{0,10}delay|booked for tomorrow)\b/i.test(lower);
       const delayMatch  = lower.match(/(\d+)h\s*(\d+)?\s*min(?:utes?)?|(\d+)\s*hours?\s*delay/);
       const delayStr    = delayMatch ? delayMatch[0].replace(/\s+/g,' ').trim() : null;
+      // Extract next-day date for OND if present
+      const ondDateM = isCancelled ? text.match(/\b(\d{1,2}[A-Z]{3}\d{2,4}|\d{1,2}[\s\/]\w{3,9}[\s\/]\d{2,4})\b/i) : null;
+      const ondDate  = ondDateM ? ondDateM[1].toUpperCase() : null;
 
       nodes.push({
         type:  'outcome',
-        label: isCancelled ? 'Flight Cancellation' : 'Arrival Delay',
-        sub:   isCancelled ? 'Passengers rebooked onto alternative services'
-                           : (delayStr ? delayStr + ' at destination' : 'Delay at destination'),
+        label: isCancelled ? 'Flight Cancellation — OND' : 'Arrival Delay',
+        sub:   isCancelled
+          ? (ondDate ? `Overnight delay notice — rebooked to ${ondDate}` : 'Overnight delay notice — passengers rebooked to next available service')
+          : (delayStr ? delayStr + ' at destination' : 'Delay at destination'),
         icon:  isCancelled ? '✗' : '⏱'
       });
 
