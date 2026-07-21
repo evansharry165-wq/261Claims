@@ -5700,6 +5700,14 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
                 <span class="tl-label" style="font-family:var(--font-mono);font-size:14px;letter-spacing:.02em">${n.label}</span>
               </div>
               ${gridHtml}
+              <hr class="tl-rule">
+              <div class="tl-ann-row">
+                <div class="tl-ann-label">Your note — add to / correct this sector</div>
+                <textarea class="tl-ann" id="tl-ann-${n.nodeId}"
+                  placeholder="${n.annPlaceholder || 'Add detail…'}"
+                  oninput="handleTimelineAnnotation('${n.nodeId}',this.value,'tl-sig-${n.nodeId}')"></textarea>
+                <div id="tl-sig-${n.nodeId}"></div>
+              </div>
             </div>
           </div>`;
         }
@@ -7157,7 +7165,7 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
         banner.classList.add('locked');
         banner.innerHTML = `
           <div class="lof-confirm-title">Line of Flying confirmed</div>
-          <div class="lof-confirm-text">Factual record locked · ${_lofRows.filter(r => (r.flight||'').trim()).length} sector(s) · legal pre-rating issued below. Re-run analysis to unlock and edit again.</div>
+          <div class="lof-confirm-text">Factual record locked · ${_lofRows.filter(r => (r.flight||'').trim()).length} sector(s) · document checklist ready for Manage handoff. Re-run analysis to unlock and edit again.</div>
           <button class="lof-confirm-btn" disabled>Confirmed</button>`;
       }
 
