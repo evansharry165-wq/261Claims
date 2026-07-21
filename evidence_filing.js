@@ -9,7 +9,7 @@
   'use strict';
 
   var STORAGE_KEY = 'dfa_evidence_filing';
-  var VERSION = 2;
+  var VERSION = 1;
 
   var FILING_CATEGORIES = [
     { id: 'tops', name: 'Operational delay records system — Flight Details & Legislation', icon: 'ti-report-analytics', libKey: 'tops', tier: 'K', group: 'Always required' },
@@ -88,7 +88,6 @@
     return [
       { t: 'Evidence filing system initialised — SharePoint mirror structure loaded', type: 'create', time: '05 Jun 2026 09:00', by: 'System' },
       { t: 'Seeded 24 files across 8 evidence categories for demo operations days', type: 'upload', time: '05 Jun 2026 09:01', by: 'E. Hughes' },
-      { t: 'Added EZY4470/4471 LGW CB·GDP·ATFM·fuelling evidence pack (11 files)', type: 'upload', time: '21 Jul 2026 20:10', by: 'E. Hughes' },
     ];
   }
 
@@ -118,18 +117,6 @@
       mk('f022', 'met_office', '2026-04-28', 'MetOffice_HazardForecast_28Apr2026.pdf', { flights: ['HC 330'], routes: 'LGW-ALC', uploadedBy: 'EH', source: 'API', size: 112000 }),
       mk('f023', 'flight_tracking', '2026-03-14', 'HC1184_Flightradar24_Track_14Mar2026.pdf', { flights: ['HC 1184'], routes: 'LTN-BCN', uploadedBy: 'EH', source: 'API', size: 134000 }),
       mk('f024', 'internal_email', '2026-03-14', 'ICC_DiversionAlert_HC1184_14Mar2026.msg', { flights: ['HC 1184'], routes: 'LTN-BCN', uploadedBy: 'EH', source: 'Manual', size: 28000 }),
-      // EZY4470 / EZY4471 — LGW CB / GDP / ATFM / turnaround demo pack
-      mk('f025', 'weather', '2024-06-16', 'LGW_METAR_TSRA_CB_16Jun2024.pdf', { flights: ['EZY4470', 'EZY4471'], routes: 'PMI-LGW / LGW-PMI', uploadedBy: 'EH', source: 'API', size: 82000, notes: 'METAR LGW 0600-1100z TS+RA CB significant' }),
-      mk('f026', 'met_office', '2024-06-16', 'MetOffice_LondonTMA_CB_GDP_16Jun2024.pdf', { flights: ['EZY4470', 'EZY4471'], routes: 'LGW', uploadedBy: 'EH', source: 'API', size: 96000, notes: 'London TMA CBs / GDP from ~0700z' }),
-      mk('f027', 'eurocontrol', '2024-06-16', 'Eurocontrol_ATFM_LGW_GDP_EZY4470_16Jun2024.pdf', { flights: ['EZY4470', 'EZY4471'], routes: 'PMI-LGW', uploadedBy: 'EH', source: 'API', size: 388000, notes: 'ATFM slot restrictions LGW · slot 1015z for 4470' }),
-      mk('f028', 'tops', '2024-06-16', 'EZY4471_OperationalDelay_LOF_16Jun2024.pdf', { flights: ['EZY4471', 'EZY4470'], routes: 'LGW-PMI', uploadedBy: 'EH', source: 'API', size: 256000, notes: 'Sector times, onboard hold, arrival delay 3h05m' }),
-      mk('f029', 'disco', '2024-06-16', 'EZY4471_DisruptionRecord_ATFM_Weather_16Jun2024.pdf', { flights: ['EZY4471'], routes: 'LGW-PMI', uploadedBy: 'EH', source: 'API', size: 141000 }),
-      mk('f030', 'dpm', '2024-06-16', 'DPM_Notes_FuellerDelay_EZY4471_16Jun2024.docx', { flights: ['EZY4471'], routes: 'LGW-PMI', uploadedBy: 'EH', source: 'Manual', size: 47000, notes: 'Fuel uplift delayed ~20 mins — fueller recalled' }),
-      mk('f031', 'max_ops', '2024-06-16', 'EZY4471_MAXOPS_Art9_Refreshments_16Jun2024.pdf', { flights: ['EZY4471'], routes: 'LGW-PMI', uploadedBy: 'EH', source: 'API', size: 74000, notes: 'Water/snack pack ~1100z; no meal service' }),
-      mk('f032', 'internal_email', '2024-06-16', 'OCC_HoldOnBoard_Decision_EZY4471_16Jun2024.msg', { flights: ['EZY4471'], routes: 'LGW-PMI', uploadedBy: 'EH', source: 'Manual', size: 31000, notes: 'OCC 1130z hold pax on board — duty manager authorised' }),
-      mk('f033', 'safetynet', '2024-06-16', 'EZY4471_CommandersReport_Draft_16Jun2024.pdf', { flights: ['EZY4471'], routes: 'LGW-PMI', uploadedBy: 'EH', source: 'Manual', size: 88000, notes: 'Commanders report being completed; no PIREP yet' }),
-      mk('f034', 'flight_tracking', '2024-06-16', 'EZY4470_EZY4471_FR24_Track_16Jun2024.pdf', { flights: ['EZY4470', 'EZY4471'], routes: 'PMI-LGW / LGW-PMI', uploadedBy: 'EH', source: 'API', size: 152000 }),
-      mk('f035', 'aims', '2024-06-16', 'EZY4471_CrewFDP_SameCrew_16Jun2024.pdf', { flights: ['EZY4471', 'EZY4470'], routes: 'LGW-PMI', uploadedBy: 'EH', source: 'API', size: 91000, notes: 'Same crew within FDP — no changeover' }),
     ];
   }
 
