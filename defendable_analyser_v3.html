@@ -2741,6 +2741,168 @@
       outline: none; padding: 0; width: 100%;
     }
 
+    /* ── LOF primary work surface + Confirm gate ─────────────── */
+    .lof-primary {
+      border: 1px solid var(--ink-rule);
+      border-radius: 2px;
+      background: var(--surface-raised);
+      margin-bottom: 18px;
+      overflow: hidden;
+    }
+    .lof-primary-hdr {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--ink-rule2);
+      background: var(--surface-page);
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .lof-primary-eyebrow {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      margin-bottom: 4px;
+    }
+    .lof-primary-title {
+      font-family: var(--font-serif);
+      font-size: 16px;
+      font-weight: 400;
+      color: var(--ink-primary);
+    }
+    .lof-primary-sub {
+      font-size: 11.5px;
+      color: var(--ink-secondary);
+      line-height: 1.45;
+      margin-top: 4px;
+      max-width: 520px;
+    }
+    .lof-primary-body { padding: 12px 16px 14px; }
+    .lof-primary-section-label {
+      font-family: var(--font-mono);
+      font-size: 8.5px;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      margin: 14px 0 8px;
+    }
+    .lof-primary-section-label:first-child { margin-top: 0; }
+    .lof-confirm-banner {
+      margin-top: 14px;
+      padding: 14px 16px;
+      border: 1px solid var(--defend-border);
+      border-left: 3px solid var(--defend-mid);
+      background: var(--defend-bg);
+      border-radius: 2px;
+    }
+    .lof-confirm-banner.locked {
+      border-color: var(--ink-rule);
+      border-left-color: var(--ink-secondary);
+      background: var(--surface-page);
+    }
+    .lof-confirm-title {
+      font-family: var(--font-serif);
+      font-size: 14px;
+      color: var(--ink-primary);
+      margin-bottom: 4px;
+    }
+    .lof-confirm-text {
+      font-size: 11.5px;
+      color: var(--ink-secondary);
+      line-height: 1.5;
+      margin-bottom: 10px;
+    }
+    .lof-confirm-btn {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: .04em;
+      background: var(--defend-mid);
+      color: #fff;
+      border: none;
+      border-radius: 2px;
+      padding: 8px 14px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .lof-confirm-btn:hover { filter: brightness(1.05); }
+    .lof-confirm-btn:disabled {
+      background: var(--ink-rule);
+      color: var(--ink-faint);
+      cursor: not-allowed;
+      filter: none;
+    }
+    .lof-prerating {
+      margin-top: 14px;
+      padding: 14px 16px;
+      border-radius: 2px;
+      border: 1px solid var(--ink-rule);
+      border-left: 3px solid var(--ink-rule);
+      display: none;
+    }
+    .lof-prerating.visible { display: block; }
+    .lof-prerating.defendable {
+      border-left-color: var(--defend-mid);
+      background: var(--defend-bg);
+      border-color: var(--defend-border);
+    }
+    .lof-prerating.investigate {
+      border-left-color: var(--conditions-mid);
+      background: var(--conditions-bg);
+      border-color: var(--conditions-border);
+    }
+    .lof-prerating.borderline {
+      border-left-color: var(--judgment-mid);
+      background: var(--judgment-bg);
+      border-color: var(--judgment-border);
+    }
+    .lof-prerating-eyebrow {
+      font-family: var(--font-mono);
+      font-size: 8.5px;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      margin-bottom: 4px;
+    }
+    .lof-prerating-title {
+      font-family: var(--font-serif);
+      font-size: 15px;
+      color: var(--ink-primary);
+      margin-bottom: 4px;
+    }
+    .lof-prerating-text {
+      font-size: 11.5px;
+      color: var(--ink-secondary);
+      line-height: 1.5;
+    }
+    .zone3-locked {
+      padding: 28px 18px;
+      text-align: center;
+      border: 1px dashed var(--ink-rule2);
+      border-radius: 2px;
+      background: var(--surface-page);
+    }
+    .zone3-locked-title {
+      font-family: var(--font-serif);
+      font-size: 14px;
+      color: var(--ink-primary);
+      margin-bottom: 6px;
+    }
+    .zone3-locked-sub {
+      font-size: 11.5px;
+      color: var(--ink-faint);
+      line-height: 1.5;
+      max-width: 280px;
+      margin: 0 auto;
+    }
+    .story-secondary {
+      margin-top: 6px;
+      border-top: 1px solid var(--ink-rule2);
+      padding-top: 12px;
+    }
+
   </style>
 </head>
 <body>
@@ -3020,11 +3182,11 @@
   ============================================================ -->
   <div class="workspace-grid" id="workspaceGrid">
 
-    <!-- Zone 1: Factual Record -->
+    <!-- Zone 1: Factual Record — LOF first -->
     <div class="zone-1" id="zone1">
       <div class="zone-bar">
-        <span class="zone-bar__label">Factual Record</span>
-        <span class="zone-bar__sub">Causal chain · Line of flying · Evidence</span>
+        <span class="zone-bar__label">Line of Flying</span>
+        <span class="zone-bar__sub">Story · Evidence · Confirm before legal</span>
       </div>
       <div class="zone-body" id="zone1-body"></div>
     </div>
@@ -3091,6 +3253,9 @@
     let currentFlightDate = '';
     let currentDelayMins  = 0;
     let claimants         = 1;
+    let lofConfirmed      = false;   // hard gate: legal unlocks only after Confirm LOF
+    let lofPreRating      = null;    // { band, title, text } after confirm
+    let lastAnalysisText  = '';      // ICC/ops text for LOF auto-extract
 
     /* ----------------------------------------------------------
        EXAMPLES (Mode 1 chips)
@@ -5587,6 +5752,10 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
       const isScenarioMode = !!(currentScenarioKey && EXAMPLES[currentScenarioKey] &&
         EXAMPLES[currentScenarioKey].trim() === inputText.trim());
 
+      lastAnalysisText = inputText || '';
+      lofConfirmed = false;
+      lofPreRating = null;
+
       // Extract facts from text (always — used in custom mode for gap display and evidence signals)
       currentFacts = extractFacts(inputText);
 
@@ -5708,45 +5877,57 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
       const jurisStr = juris ? `${juris.regime} · CJEU authority: ${juris.cjeuAuth} · ${juris.note}` : '';
 
       // ─────────────────────────────────────────────────────────────
-      // ZONE 1 — Chronological Event Record
+      // ZONE 1 — Line of Flying first (story + evidence + confirm gate)
       // ─────────────────────────────────────────────────────────────
       const z1 = document.getElementById('zone1-body');
       z1.innerHTML = `
-        <div style="font-size:10.5px;color:var(--ink-faint);line-height:1.5;margin-bottom:14px;padding:8px 12px;background:var(--surface-ui);border-radius:var(--r-md);border:1px solid var(--ink-rule2)">
-          ${isScenarioMode
-            ? 'Events and evidence extracted from the scenario. Tap each evidence chip to mark its status — the legal position in Zone 3 updates as you confirm.'
-            : 'Events and evidence inferred from the summary. Chips marked <em>↳ Not in summary</em> are gaps to chase. Use the text box on each event to add notes, request evidence, or flag LOF amendments.'}
-        </div>
-        ${buildChronologicalTimeline(currentFacts, causalNodes, dt, isScenarioMode)}
-        <div class="z1-section-label" style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-faint);margin:24px 0 6px">Line of flying</div>
-        ${buildLOFModule(dt)}
-        <div style="margin: 10px 0 14px; padding: 9px 13px; background: var(--surface-ui); border: 1px solid var(--ink-rule2); border-radius: 5px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
-          <div style="font-size: 11px; color: var(--ink-faint); line-height: 1.4;">Multi-tail complex cases — full sector-by-sector verification interface.</div>
-          <a href="defendable_lof_v1.html" target="_blank" style="background: var(--surface-raised); color: var(--ink-secondary); border: 1px solid var(--ink-rule); border-radius: 4px; padding: 5px 11px; font-size: 11px; font-weight: 600; white-space: nowrap; text-decoration: none; flex-shrink: 0;">Full LOF Interface ↗</a>
-        </div>
-        <div class="rm-meter-wrap" style="margin-top:var(--sp-lg)">
-          <div class="rm-meter-row">
-            <span>Chain Integrity</span>
-            <span id="rm-position-label">Tap evidence chips above to mark status</span>
+        <div class="lof-primary" id="lof-primary">
+          <div class="lof-primary-hdr">
+            <div>
+              <div class="lof-primary-eyebrow">Pass II · Stage 1 — Factual record</div>
+              <div class="lof-primary-title">Line of Flying</div>
+              <div class="lof-primary-sub">Edit the sector record and mark evidence until this reflects absolute truth. Legal analysis stays locked until you confirm the LOF.</div>
+            </div>
           </div>
-          <div class="rm-meter-track">
-            <div class="rm-meter-fill" id="rm-meter-fill"></div>
+          <div class="lof-primary-body">
+            <div class="lof-primary-section-label">Editable sector record</div>
+            ${buildLOFModule(dt)}
+            <div class="lof-primary-section-label">Flight story · evidence</div>
+            <div class="story-secondary">
+              ${buildChronologicalTimeline(currentFacts, causalNodes, dt, isScenarioMode)}
+            </div>
+            <div class="rm-meter-wrap" style="margin-top:14px">
+              <div class="rm-meter-row">
+                <span>Evidence position</span>
+                <span id="rm-position-label">Mark evidence status on the story beats above</span>
+              </div>
+              <div class="rm-meter-track">
+                <div class="rm-meter-fill" id="rm-meter-fill"></div>
+              </div>
+              <div style="font-size:11px;color:var(--ink-faint);margin-top:4px" id="rm-tally">Mark evidence to track position strength</div>
+            </div>
+            <div class="lof-confirm-banner" id="lof-confirm-banner">
+              <div class="lof-confirm-title">Confirm Line of Flying</div>
+              <div class="lof-confirm-text">Locks the factual record. A legal pre-rating then unlocks the thorough legal position against this confirmed story — not the raw ICC text alone.</div>
+              <button class="lof-confirm-btn" id="lof-confirm-btn" onclick="confirmLineOfFlying()">Confirm Line of Flying →</button>
+            </div>
+            <div class="lof-prerating" id="lof-prerating"></div>
+            <div id="gen-brief-wrap" style="display:none;margin-top:14px;text-align:center">
+              <button class="btn-gen-brief" onclick="generateBrief()">Generate Defence Brief</button>
+              <div style="font-size:11px;color:var(--ink-faint);margin-top:6px">Available after LOF confirmation</div>
+            </div>
           </div>
-          <div style="font-size:11px;color:var(--ink-faint);margin-top:4px" id="rm-tally">Mark evidence above to track chain integrity</div>
-        </div>
-        <div id="gen-brief-wrap" style="display:none;margin-top:var(--sp-lg);text-align:center">
-          <button class="btn-gen-brief" onclick="generateBrief()">⚖ Generate Defence Brief</button>
-          <div style="font-size:11px;color:var(--ink-faint);margin-top:6px">Ready to compile — generate a formal defence brief from your review</div>
         </div>
       `;
 
       // ─────────────────────────────────────────────────────────────
-      // ZONE 2 — Legal Classification
+      // ZONE 2 — Legal Classification (provisional until LOF confirm)
       // ─────────────────────────────────────────────────────────────
       const legalChar = LEGAL_CHAR[dt.id] || '';
       const rmTips = (RM_SURFACE[dt.id] || []);
       const z2 = document.getElementById('zone2-body');
       z2.innerHTML = `
+        <div style="font-size:10px;font-family:var(--font-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:8px">Provisional — awaiting LOF confirm</div>
         <div class="z2-disruption-type">${dt.label}</div>
         <div class="dt-badge ${dt.limb1Status}" style="display:inline-block">${dir.label}</div>
         <div class="z2-directive ${dir.recClass}">
@@ -5774,7 +5955,7 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
       `;
 
       // ─────────────────────────────────────────────────────────────
-      // ZONE 3 — Legal Position (via renderPass3Extended)
+      // ZONE 3 — Legal Position (gated until Confirm LOF)
       // ─────────────────────────────────────────────────────────────
       renderPass3Extended();
 
@@ -5865,8 +6046,9 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
       if (label) label.textContent = posLabel;
 
       const briefWrap = document.getElementById('gen-brief-wrap');
-      if (briefWrap && total > 0) {
-        briefWrap.style.display = (reviewed === total && missing === 0) ? 'block' : 'none';
+      // Brief only after Confirm LOF — evidence completeness alone does not unlock legal
+      if (briefWrap) {
+        briefWrap.style.display = (lofConfirmed && total > 0 && reviewed === total && missing === 0) ? 'block' : 'none';
       }
 
       renderPass3Extended();
@@ -6036,6 +6218,15 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
     function renderPass3Extended() {
       const p3=document.getElementById('zone3-body');
       if(!p3||!currentDT) return;
+
+      if (!lofConfirmed) {
+        p3.innerHTML = `
+          <div class="zone3-locked">
+            <div class="zone3-locked-title">Legal position locked</div>
+            <div class="zone3-locked-sub">Confirm the Line of Flying first. Thorough legal analysis runs only against the locked factual record.</div>
+          </div>`;
+        return;
+      }
 
       const reviewed=Object.keys(rmResponses).length;
 
@@ -6814,51 +7005,128 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
       if (wrap) wrap.outerHTML = renderLOFEditableTable();
     }
 
+    function mapLofSectorStatus(status) {
+      return status === 'ok'    ? 'On Time'
+           : status === 'delay' ? 'Delayed'
+           : status === 'div'   ? 'Diverted'
+           : status === 'claim' ? 'Claimed'
+           : status === 'aog'   ? 'AOG'
+           : status === 'canx'  ? 'Cancelled'
+           : status === 'repl'  ? 'On Time'
+           : (status || '');
+    }
+
+    function lofDataToEditableRows(data) {
+      if (!data || !data.tails) return [];
+      const rows = [];
+      data.tails.forEach(tail => {
+        (tail.days || []).forEach(day => {
+          (day.sectors || []).forEach(s => {
+            rows.push({
+              flight: s.flight || '',
+              route:  (s.route || '').replace(/\s*→\s*/g, ' → '),
+              std:    s.sched_out || '',
+              atd:    s.actual_out === '—' ? '' : (s.actual_out || ''),
+              sta:    s.sched_in || '',
+              ata:    s.actual_in === '—' ? '' : (s.actual_in || ''),
+              status: mapLofSectorStatus(s.status),
+              note:   s.note || (day.event && day.event.text) || ''
+            });
+          });
+        });
+      });
+      return rows;
+    }
+
     function buildLOFCustomEmpty() {
-      const rows = parseLOFFromText(document.getElementById('icc-input')?.value || '');
+      const text = lastAnalysisText
+        || document.getElementById('iccText')?.value
+        || document.getElementById('supplementaryText')?.value
+        || '';
+      const rows = parseLOFFromText(text);
       return buildLOFEditable(rows);
     }
 
     function buildLOFModule(dt) {
       if (!dt) return '';
-      // Custom input mode (no scenario selected) — show honest empty state
-      if (!currentScenarioKey) return buildLOFCustomEmpty();
-      const key    = currentScenarioKey;
-      const data   = LOF_DATA[key];
-      if (!data || !data.tails || data.tails.length === 0) return buildLOFEmpty();
+      // Always use editable working table as the primary LOF surface
+      if (currentScenarioKey && LOF_DATA[currentScenarioKey]) {
+        const rows = lofDataToEditableRows(LOF_DATA[currentScenarioKey]);
+        if (rows.length) return buildLOFEditable(rows);
+      }
+      return buildLOFCustomEmpty();
+    }
 
-      const tails  = data.tails;
-      const tailTabsHtml = tails.length > 1
-        ? `<div class="lof-tail-tabs" id="lof-tail-tabs">
-            ${tails.map((t, i) => `<div class="lof-tail-tab${i===0?' active':''}" onclick="selectLOFTail(${i})">${t.label}</div>`).join('')}
-           </div>`
-        : '';
+    function computeLegalPreRating() {
+      const tlEntries   = Object.entries(tlEvStatus);
+      const tlAvailable = tlEntries.filter(([,v]) => v === 'available').length;
+      const tlRequested = tlEntries.filter(([,v]) => v === 'requested').length;
+      const tlMissing   = tlEntries.filter(([,v]) => v === 'missing').length;
+      const tlReviewed  = tlAvailable + tlRequested + tlMissing;
+      const tlTotal     = tlEntries.length;
+      const completeness = tlTotal > 0 ? (tlAvailable + tlRequested * 0.5) / tlTotal : 0;
+      const limb = (currentDT && currentDT.limb1Status) || 'contested';
+      const sectorsFilled = (_lofRows || []).filter(r => (r.flight || '').trim()).length;
 
-      const badgesHtml = tails.map(t =>
-        `<span class="lof-tail-badge${t.role==='replacement'?' replacement':''}">${t.reg}</span>`
-      ).join(' ');
+      if (limb === 'unlikely') {
+        return {
+          band: 'investigate',
+          title: 'Needs further investigation',
+          text: 'Limb 1 looks non-extraordinary on current classification. Confirm quantum exposure and Art 9 compliance before committing resource to a full defence.'
+        };
+      }
+      if (tlMissing > 0 || (tlTotal > 0 && completeness < 0.45) || limb === 'contested') {
+        return {
+          band: 'investigate',
+          title: 'Needs further investigation',
+          text: `${tlMissing || 0} evidence item(s) marked missing · ${tlRequested || 0} requested · ${sectorsFilled} sector(s) on the LOF. Chase critical documents before treating the position as locked.`
+        };
+      }
+      if (limb === 'extraordinary' && completeness >= 0.75 && tlMissing === 0) {
+        return {
+          band: 'defendable',
+          title: 'Defendable with current evidence',
+          text: `Limb 1 extraordinary · ${tlAvailable}/${tlTotal || tlReviewed} evidence items available on the record · ${sectorsFilled} sector(s) confirmed in the LOF. Thorough legal pass may proceed.`
+        };
+      }
+      return {
+        band: 'borderline',
+        title: 'Borderline — conditions apply',
+        text: 'Classification supports a defence path, but evidence completeness or Limb 1 certainty still needs lawyer judgment. Use the thorough legal section to stress-test before filing.'
+      };
+    }
 
-      const bodyHtml = tails.map((t, i) =>
-        `<div class="lof-tail-content" id="lof-tail-${i}" style="${i===0?'':'display:none'}">
-          ${t.days.map(d => buildLOFDay(d)).join('')}
-         </div>`
-      ).join('');
+    function confirmLineOfFlying() {
+      if (!currentDT) return;
+      lofConfirmed = true;
+      lofPreRating = computeLegalPreRating();
 
-      return `
-        <div class="lof-module" id="lof-module">
-          <div class="lof-module-hdr" onclick="toggleLOFModule()">
-            <div class="lof-module-hdr-left">
-              <span class="lof-module-hdr-label">Line of Flying</span>
-              ${badgesHtml}
-              ${tails.length > 1 ? '<span style="font-size:10px;color:var(--ink-faint);font-family:var(--font-mono)">· Tail change</span>' : ''}
-            </div>
-            <span class="lof-module-hdr-toggle" id="lof-toggle-label">▶ Expand sector record</span>
-          </div>
-          <div id="lof-module-body" style="display:none">
-            ${tailTabsHtml}
-            ${bodyHtml}
-          </div>
-        </div>`;
+      const banner = document.getElementById('lof-confirm-banner');
+      if (banner) {
+        banner.classList.add('locked');
+        banner.innerHTML = `
+          <div class="lof-confirm-title">Line of Flying confirmed</div>
+          <div class="lof-confirm-text">Factual record locked · ${_lofRows.filter(r => (r.flight||'').trim()).length} sector(s) · legal pre-rating issued below. Re-run analysis to unlock and edit again.</div>
+          <button class="lof-confirm-btn" disabled>Confirmed</button>`;
+      }
+
+      const pre = document.getElementById('lof-prerating');
+      if (pre && lofPreRating) {
+        pre.className = `lof-prerating visible ${lofPreRating.band}`;
+        pre.innerHTML = `
+          <div class="lof-prerating-eyebrow">Legal pre-rating</div>
+          <div class="lof-prerating-title">${lofPreRating.title}</div>
+          <div class="lof-prerating-text">${lofPreRating.text}</div>`;
+      }
+
+      const z2badge = document.querySelector('#zone2-body > div');
+      if (z2badge && z2badge.textContent && /Provisional/.test(z2badge.textContent)) {
+        z2badge.textContent = 'Classification · LOF confirmed';
+        z2badge.style.color = 'var(--defend-mid)';
+      }
+
+      renderPass3Extended();
+      updateRMStrength();
     }
 
     function buildLOFDay(day) {
@@ -8315,6 +8583,10 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
     ---------------------------------------------------------- */
     function generateBrief() {
       if (!currentDT) return;
+      if (!lofConfirmed) {
+        alert('Confirm the Line of Flying before generating a defence brief.');
+        return;
+      }
 
       // Derive score from nodeAnnotations (new Pass II system)
       const total = causalNodesCount || 1;
