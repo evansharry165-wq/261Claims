@@ -2817,6 +2817,50 @@
     .decide-btn:disabled { opacity: .45; cursor: not-allowed; }
     .decide-g1-done { padding: 8px 10px; background: var(--defend-bg); border: 1px solid var(--defend-border); font-size: 12px; }
     .decide-g1-actions { display: flex; flex-wrap: wrap; gap: 4px; }
+    .decide-brief {
+      padding: 16px 16px 14px; margin-bottom: 12px; border-radius: 2px;
+      border: 1px solid var(--ink-rule); border-left: 4px solid var(--ink-rule);
+      background: var(--surface-raised, #fff);
+    }
+    .decide-brief.band-defendable { border-left-color: var(--defend-mid); background: var(--defend-bg); border-color: var(--defend-border); }
+    .decide-brief.band-borderline { border-left-color: var(--judgment-mid); background: var(--judgment-bg); border-color: var(--judgment-border); }
+    .decide-brief.band-investigate { border-left-color: var(--conditions-mid); background: var(--conditions-bg); border-color: var(--conditions-border); }
+    .decide-brief-tag { font-family: var(--font-mono); font-size: 9px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 4px; }
+    .decide-brief-title { font-family: var(--font-serif); font-size: 22px; line-height: 1.2; color: var(--ink-primary); margin-bottom: 4px; }
+    .decide-brief-sub { font-size: 12px; color: var(--ink-secondary); line-height: 1.45; margin-bottom: 8px; }
+    .decide-brief-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+    .decide-chip { font-family: var(--font-mono); font-size: 10px; padding: 2px 8px; border: 1px solid var(--ink-rule); border-radius: 2px; background: var(--surface-page); color: var(--ink-secondary); }
+    .decide-trail-steps { display: flex; flex-direction: column; gap: 8px; }
+    .decide-trail-step { display: flex; gap: 10px; align-items: flex-start; }
+    .decide-trail-dot {
+      flex-shrink: 0; width: 28px; height: 28px; border-radius: 2px;
+      background: var(--ink-primary); color: #fff; font-family: var(--font-mono); font-size: 11px;
+      display: flex; align-items: center; justify-content: center; font-weight: 600;
+    }
+    .decide-trail-step.input .decide-trail-dot { background: var(--ink-secondary); }
+    .decide-trail-step.brk .decide-trail-dot { background: var(--settle-mid, #B33); }
+    .decide-trail-step.verdict .decide-trail-dot { background: var(--defend-mid); }
+    .decide-trail-card { flex: 1; border: 1px solid var(--ink-rule2); border-left: 2px solid var(--ink-rule); padding: 8px 10px; background: var(--surface-page); border-radius: 2px; }
+    .decide-trail-id { font-family: var(--font-mono); font-size: 10px; color: var(--ink-faint); margin-bottom: 2px; }
+    .decide-trail-desc { font-size: 12.5px; color: var(--ink-primary); line-height: 1.4; margin-bottom: 4px; }
+    .decide-trail-meta { display: flex; flex-wrap: wrap; gap: 4px; }
+    .decide-trail-tag { font-family: var(--font-mono); font-size: 9px; letter-spacing: .04em; padding: 2px 6px; border-radius: 2px; border: 1px solid var(--ink-rule); }
+    .decide-trail-tag.lof-third, .decide-trail-tag.ec-y { background: #E4F0E9; color: #2F6B4F; border-color: #A8C9B5; }
+    .decide-trail-tag.lof-own, .decide-trail-tag.ec-n { background: #F8E8E5; color: #8B3A2F; border-color: #E0B0A8; }
+    .decide-trail-tag.ec-st, .decide-trail-tag.dt { background: #E6EEF5; color: #2A4A6B; border-color: #A8BFD4; }
+    .decide-trail-tag.unk { background: #EEE; color: #555; }
+    .decide-conditions-card { border-left-color: #9A6B1F; }
+    .decide-conditions-list { margin: 0 0 0 18px; padding: 0; font-size: 12.5px; color: var(--ink-primary); line-height: 1.5; }
+    .decide-conditions-list li { margin-bottom: 4px; }
+    .decide-actions { display: flex; flex-direction: column; gap: 6px; }
+    .decide-action-row { display: flex; gap: 8px; align-items: flex-start; padding: 6px 0; border-bottom: 1px solid var(--ink-rule2); }
+    .decide-pri { font-family: var(--font-mono); font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 2px; flex-shrink: 0; }
+    .decide-pri.critical { background: #F8E8E5; color: #8B3A2F; }
+    .decide-pri.important { background: #F5EDD9; color: #6B4A10; }
+    .decide-pri.supporting { background: #EEE; color: #555; }
+    .decide-action-text { font-size: 12.5px; color: var(--ink-primary); }
+    .decide-pass3-secondary { margin-top: 16px; padding-top: 12px; border-top: 1px dashed var(--ink-rule2); }
+    .decide-pass3-secondary summary { cursor: pointer; font-family: var(--font-mono); font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-faint); }
 
   </style>
 </head>
@@ -5427,6 +5471,19 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
       const next = cycle[(cycle.indexOf(cur) + 1) % cycle.length];
       tlEvStatus[key] = next;
 
+      // Mirror into nodeAnnotations shape expected by buildSWPoints (tl-cn-N → index N)
+      const cnMatch = String(nodeId).match(/^tl-cn-(\d+)$/);
+      if (cnMatch) {
+        const idx = cnMatch[1];
+        if (!nodeAnnotations[idx] || typeof nodeAnnotations[idx] === 'string') {
+          const prevText = typeof nodeAnnotations[idx] === 'string' ? nodeAnnotations[idx] : '';
+          nodeAnnotations[idx] = { text: prevText, evidenceStatuses: {} };
+        }
+        if (!nodeAnnotations[idx].evidenceStatuses) nodeAnnotations[idx].evidenceStatuses = {};
+        if (next) nodeAnnotations[idx].evidenceStatuses[evId] = next;
+        else delete nodeAnnotations[idx].evidenceStatuses[evId];
+      }
+
       row.classList.remove('ev-available', 'ev-requested', 'ev-missing');
       const indicatorEl = row.querySelector('.tl-ev-indicator');
       const statusEl    = row.querySelector('.tl-ev-status');
@@ -5441,13 +5498,21 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
         if (statusEl)    statusEl.textContent    = '— unset';
       }
       updateRMStrength();
+      if (lofConfirmed && typeof renderPass3Extended === 'function') renderPass3Extended();
     }
 
     /* ----------------------------------------------------------
        handleTimelineAnnotation — keyword hints on node textarea
     ---------------------------------------------------------- */
     function handleTimelineAnnotation(nodeId, text, signalId) {
-      nodeAnnotations[nodeId] = text;
+      const cnMatch = String(nodeId).match(/^tl-cn-(\d+)$/);
+      const idx = cnMatch ? cnMatch[1] : nodeId;
+      if (!nodeAnnotations[idx] || typeof nodeAnnotations[idx] === 'string') {
+        const prevStatuses = (nodeAnnotations[idx] && nodeAnnotations[idx].evidenceStatuses) || {};
+        nodeAnnotations[idx] = { text: '', evidenceStatuses: prevStatuses };
+      }
+      nodeAnnotations[idx].text = text;
+
       const signal = document.getElementById(signalId);
       if (!signal) return;
       if (!text.trim()) { signal.innerHTML = ''; return; }
@@ -5592,7 +5657,7 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
             { label:'Delay',     value: fields['Delay'] || '—' },
             { label:'Sub A/C',   value: fields['Sub A/C'] || '' },
             { label:'Pax',       value: fields['Pax']   || '' },
-          ].filter(f => f.value && f.value !== '—' || ['Aircraft','Date','STD','ATA'].includes(f.label));
+          ].filter(f => f.value && f.value !== '—');
 
           const gridHtml = `<div class="tl-flight-grid">
             ${gridFields.map(f => `<div class="tl-flight-field">
@@ -5697,6 +5762,19 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
 
       // Extract facts from text (always — used in custom mode for gap display and evidence signals)
       currentFacts = extractFacts(inputText);
+      if (typeof DefendableIccParse !== 'undefined' && DefendableIccParse.enrichFacts) {
+        currentFacts = DefendableIccParse.enrichFacts(currentFacts, inputText) || currentFacts;
+      }
+      if (currentFacts) {
+        if (currentFacts.depIata) currentDepIata = currentFacts.depIata;
+        if (currentFacts.arrIata) currentArrIata = currentFacts.arrIata;
+        if (currentFacts.date) currentFlightDate = currentFacts.date;
+        if (currentFacts.delayMins != null) currentDelayMins = currentFacts.delayMins;
+        else if (currentFacts.delayText && typeof DefendableIccParse !== 'undefined' && DefendableIccParse.parseDelayMins) {
+          const dm = DefendableIccParse.parseDelayMins(currentFacts.delayText);
+          if (dm) currentDelayMins = dm;
+        }
+      }
 
       // Classify disruption type; fall back to 'unknown' sentinel if nothing matches
       const dt = detectDisruptionType(inputText) || {
@@ -6114,32 +6192,77 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
       const weaknesses = [];
       if (!currentDT) return { strengths, weaknesses };
 
-      // Build from node annotations (new system)
+      // Dual-read: structured annotations + timeline chip statuses
+      const byIdx = {};
       Object.entries(nodeAnnotations).forEach(([idx, ann]) => {
         if (!ann) return;
+        if (typeof ann === 'string') {
+          byIdx[idx] = { text: ann, evidenceStatuses: {} };
+        } else {
+          byIdx[idx] = {
+            text: ann.text || '',
+            evidenceStatuses: Object.assign({}, ann.evidenceStatuses || {})
+          };
+        }
+      });
+      Object.entries(tlEvStatus || {}).forEach(([key, status]) => {
+        if (!status) return;
+        const m = key.match(/^tl-cn-(\d+)_(.+)$/);
+        if (!m) return;
+        const idx = m[1];
+        const evId = m[2];
+        if (!byIdx[idx]) byIdx[idx] = { text: '', evidenceStatuses: {} };
+        if (!byIdx[idx].evidenceStatuses[evId]) byIdx[idx].evidenceStatuses[evId] = status;
+      });
+
+      Object.entries(byIdx).forEach(([idx, ann]) => {
         const statuses = ann.evidenceStatuses || {};
         const available = Object.values(statuses).filter(s => s === 'available').length;
         const missing = Object.values(statuses).filter(s => s === 'missing').length;
+        const requested = Object.values(statuses).filter(s => s === 'requested').length;
         const hasText = ann.text && ann.text.trim().length > 0;
-
-        // Get node label
-        const nodeLabel = (typeof causalNodes !== 'undefined' && causalNodes && causalNodes[parseInt(idx)])
+        const nodeLabel = (causalNodes && causalNodes[parseInt(idx)])
           ? causalNodes[parseInt(idx)].label
-          : `Event ${parseInt(idx)+1}`;
+          : `Event ${parseInt(idx) + 1}`;
 
-        if (available > 0 && hasText) {
-          strengths.push(`${nodeLabel} — ${available} evidence item${available!==1?'s':''} confirmed`);
-        } else if (hasText && available === 0) {
+        if (available > 0) {
+          strengths.push(`${nodeLabel} — ${available} evidence item${available !== 1 ? 's' : ''} marked available`);
+        } else if (hasText) {
           weaknesses.push(`${nodeLabel} — annotated but no evidence confirmed yet`);
         }
         if (missing > 0) {
-          weaknesses.push(`${nodeLabel} — ${missing} evidence item${missing!==1?'s':''} marked missing`);
+          weaknesses.push(`${nodeLabel} — ${missing} evidence item${missing !== 1 ? 's' : ''} marked missing`);
+        }
+        if (requested > 0 && available === 0) {
+          weaknesses.push(`${nodeLabel} — ${requested} evidence item${requested !== 1 ? 's' : ''} still requested`);
         }
       });
 
-      // If no node annotations yet, show placeholder
-      if (strengths.length === 0 && weaknesses.length === 0) {
-        weaknesses.push('Complete the event review in Pass II to populate this analysis');
+      // Seed from ICC / classification so first paint is never empty
+      if (strengths.length === 0 && currentDT) {
+        if (currentDT.limb1Status === 'extraordinary') {
+          strengths.push(`${currentDT.label} — Limb 1 extraordinary candidate on ICC classification`);
+        }
+        const text = currentInputText || '';
+        if (/\bctot\b|\batfm\b|\beurocontrol\b|\bgdp\b/i.test(text)) {
+          strengths.push('Network ATFM/CTOT language in ICC — third-party flow control Limb 1 candidate');
+        }
+        if (/\bmetar\b|\btaf\b|\bsigmet\b|\bthunderstorm\b|\bcb\b/i.test(text)) {
+          strengths.push('Weather evidence language in ICC (METAR/TAF/SIGMET/CB) — corroborate with official feed');
+        }
+        if (causalNodes && causalNodes.length > 1) {
+          strengths.push(`Sequential causal chain — ${causalNodes.length} events identified from the summary`);
+        }
+        if ((window._lastDisruptionFactors || []).length > 1) {
+          strengths.push('Multi-factor disruption flagged — primary/secondary trees will apply after Confirm LOF');
+        }
+      }
+
+      if (weaknesses.length === 0) {
+        const chipCount = Object.values(tlEvStatus || {}).filter(Boolean).length;
+        if (chipCount === 0) {
+          weaknesses.push('Evidence chips unset — mark Available / Requested / Missing on story beats to lock RM position');
+        }
       }
 
       return { strengths, weaknesses };
@@ -6311,17 +6434,20 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
 
       p3.innerHTML=`
         <div id="decide-mount"></div>
-        <div class="verdict-banner ${verdict}" style="margin-bottom:var(--sp-lg)">
-          <div>
-            <div class="verdict-word">${vLabels[verdict]}</div>
-            <div class="verdict-sub">${vSubs[verdict]}</div>
+        <details class="decide-pass3-secondary">
+          <summary>Supporting detail — strengths · quantum · authorities</summary>
+          <div class="verdict-banner ${verdict}" style="margin:12px 0 var(--sp-lg)">
+            <div>
+              <div class="verdict-word">${vLabels[verdict]}</div>
+              <div class="verdict-sub">${vSubs[verdict]}</div>
+            </div>
+            <div class="verdict-ref">${vRefs[verdict]}</div>
           </div>
-          <div class="verdict-ref">${vRefs[verdict]}</div>
-        </div>
-        ${swHtml}
-        ${quantumHtml}
-        ${limitHtml}
-        ${renderCaselawBundle(currentDT)}
+          ${swHtml}
+          ${quantumHtml}
+          ${limitHtml}
+          ${renderCaselawBundle(currentDT)}
+        </details>
       `;
       remountDecideWorkspace();
     }
@@ -7026,39 +7152,14 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
     let _lofTailIdx   = 0;
 
     /* ----------------------------------------------------------
-       parseLOFFromText — extract sector data from ICC prompt text
+       parseLOFFromText — delegate to DefendableIccParse (bare flight
+       numbers, compact Z-times, claimed-flight preference)
     ---------------------------------------------------------- */
     function parseLOFFromText(text) {
-      if (!text) return [];
-      const rows = [];
-      const seen = new Set();
-
-      // Match flight codes with context
-      const flightExtRe = /\b(EZY|EJU|EZS|EZT|U2|BE|FR|W6|LS|TOM|TCX|BY|DY|VY|LH|BA|AF|KL|IB|AZ|SK|TP|SN|HV|TO|QS|OK|BT|LO|LX|OS|BAW|RYR|IBE|AEA|VLG|HV)\s*(\d{2,4})\b/gi;
-      let m;
-      while ((m = flightExtRe.exec(text)) !== null) {
-        const code = (m[1] + m[2]).toUpperCase().replace(/\s+/g, '');
-        if (seen.has(code)) continue;
-        seen.add(code);
-        const ctx  = text.slice(m.index, m.index + 350);
-        const ctxL = ctx.toLowerCase();
-        // Route
-        const routeM = ctx.match(/\b([A-Z]{3})\s*[-→]\s*([A-Z]{3})\b/) || ctx.match(/\b([A-Z]{3})\s+([A-Z]{3})\b/);
-        const route  = routeM ? `${routeM[1]} → ${routeM[2]}` : '';
-        // Times
-        const times  = [...ctx.matchAll(/\b(\d{2}:\d{2})[Zz]?\b/g)].map(t => t[1]+'Z');
-        const std    = ctxL.match(/std\s+(\d{2}:\d{2})/i)?.[1] ? ctxL.match(/std\s+(\d{2}:\d{2})/i)[1]+'Z' : (times[0] || '');
-        const atd    = ctxL.match(/(?:atd|depart(?:ed|ure at))\s+(\d{2}:\d{2})/i)?.[1] ? ctxL.match(/(?:atd|depart(?:ed|ure at))\s+(\d{2}:\d{2})/i)[1]+'Z' : (times[1] || '');
-        const ata    = ctxL.match(/(?:ata|arriv(?:al|ed)\s+\w+\s+at)\s+(\d{2}:\d{2})/i)?.[1] ? ctxL.match(/(?:ata|arriv(?:al|ed)\s+\w+\s+at)\s+(\d{2}:\d{2})/i)[1]+'Z' : '';
-        // Status
-        const status = /\bcancelled\b|ond\b/.test(ctxL) ? 'Cancelled'
-                     : /\bdelayed\b/.test(ctxL)          ? 'Delayed'
-                     : /\bdiverted?\b/.test(ctxL)        ? 'Diverted'
-                     : /\baog\b/.test(ctxL)              ? 'AOG'
-                     : '';
-        rows.push({ flight: code, route, std, atd, sta: '', ata, status, note: '' });
+      if (typeof DefendableIccParse !== 'undefined' && DefendableIccParse.parseLOFFromText) {
+        return DefendableIccParse.parseLOFFromText(text) || [];
       }
-      return rows;
+      return [];
     }
 
     /* ----------------------------------------------------------
@@ -7132,7 +7233,8 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
     }
 
     function buildLOFCustomEmpty() {
-      const rows = parseLOFFromText(document.getElementById('icc-input')?.value || '');
+      const raw = (document.getElementById('iccText') || document.getElementById('icc-input') || {}).value || currentInputText || '';
+      const rows = parseLOFFromText(raw);
       return buildLOFEditable(rows);
     }
 

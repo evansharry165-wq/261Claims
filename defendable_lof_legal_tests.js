@@ -22,6 +22,8 @@ eval(stripExports(fs.readFileSync(path.join(root, 'defendable_pass2.js'), 'utf8'
 eval(stripExports(fs.readFileSync(path.join(root, 'defendable_orchestrator.js'), 'utf8')));
 eval(stripExports(fs.readFileSync(path.join(root, 'defendable_type_map.js'), 'utf8')));
 eval(stripExports(fs.readFileSync(path.join(root, 'defendable_lof_legal_bridge.js'), 'utf8')));
+eval(stripExports(fs.readFileSync(path.join(root, 'defendable_decide_workspace.js'), 'utf8')));
+var DefendableIccParse = require('./defendable_icc_parse.js');
 
 var passed = 0;
 var failed = 0;
@@ -196,6 +198,78 @@ console.log('\n=== Analyser wiring sanity ===');
   assert(html.indexOf('function confirmLineOfFlying') !== -1, 'confirmLineOfFlying present');
   assert(html.indexOf('defendable_legal_tree.html') !== -1, 'framework map linked from analyser');
   assert(fs.existsSync(path.join(root, 'defendable_legal_tree.html')), 'legal tree HTML in repo');
+  assert(html.indexOf('DefendableIccParse.enrichFacts') !== -1, 'enrichFacts wired in analyser');
+  assert(html.indexOf('DefendableIccParse.parseLOFFromText') !== -1, 'LOF delegates to icc parse module');
+  assert(html.indexOf('decide-brief') !== -1 || html.indexOf('decide-brief-bar') !== -1 || html.indexOf('decide-brief-title') !== -1, 'brief-bar CSS present');
+})();
+
+console.log('\n=== ICC enrich + multi-flight LOF (v2 parity) ===');
+(function () {
+  var sample = [
+    'EZY4470 LGW-FAO sched dep LGW 1030z airborne 1341z.',
+    'LGW CB thunderstorm METAR TSRA. GDP ATFM CTOT ground delay.',
+    '4471 FAO-LGW late inbound fuelling delay. ETA now 1545 local (1445z).',
+    'Claimed flight EZY4471. Pax 186. Delay 3h 20m.'
+  ].join(' ');
+  var rows = DefendableIccParse.parseLOFFromText(sample);
+  var flights = rows.map(function (r) { return r.flight; });
+  assert(flights.indexOf('EZY4470') >= 0, 'LOF includes EZY4470');
+  assert(flights.indexOf('EZY4471') >= 0, 'LOF includes EZY4471 (bare 4471 carry)');
+  var facts = DefendableIccParse.enrichFacts({}, sample);
+  assert(!!facts.flightNum, 'enrichFacts sets flightNum');
+  assert(!!facts.depTime || !!facts.atdTime || !!facts.staTime || !!facts.ataTime,
+    'enrichFacts fills at least one ops time (got STD=' + facts.depTime + ' ATD=' + facts.atdTime + ')');
+})();
+
+console.log('\n=== Thinking trail + CONDITIONS + CRIT (Decide v2 spine) ===');
+(function () {
+  var record = DefendAbleLofLegalBridge.buildConfirmedRecord({
+    lofRows: [
+      { flight: 'EZY4470', route: 'LGW → FAO', status: 'Delayed', note: 'CB GDP ATFM' },
+      { flight: 'EZY4471', route: 'FAO → LGW', status: 'Delayed', note: 'late inbound' }
+    ],
+    causalNodes: [
+      { type: 'root', label: 'CB / thunderstorm LGW', sub: 'METAR TSRA CB' },
+      { type: 'cascade', label: 'GDP / ATFM', sub: 'Eurocontrol CTOT' },
+      { type: 'operational', label: 'Fuelling', sub: 'extended turnround' }
+    ],
+    rawText: 'EZY4470/4471 LGW CB METAR GDP ATFM CTOT fuelling. Claimed EZY4471.',
+    dt: { id: 'weather', limb1Status: 'extraordinary' },
+    factorIds: ['weather', 'atfm'],
+    jurisdiction: 'UK261',
+    tlEvStatus: { 'tl-cn-0_eurocontrol': 'requested' }
+  });
+  var run = DefendAbleLofLegalBridge.runTreesOnConfirmedRecord(record);
+  var trail = DefendAbleDecideWorkspace.buildThinkingTrail(record, run);
+  assert(trail.structure === 'SEQUENTIAL', 'trail structure SEQUENTIAL for 3 events (got ' + trail.structure + ')');
+  assert(trail.steps.length >= 4, 'trail has ICC + events + OUT');
+  assert(trail.steps.some(function (s) { return s.id === 'E1'; }), 'trail has E1');
+  assert(trail.steps.some(function (s) { return (s.tags || []).some(function (t) { return /EC|DT-|ESTABLISHED|CANDIDATE|THIRD/i.test(t.text); }); }),
+    'trail tags include EC/DT labels');
+
+  var fakeHold = {
+    treeResults: [{
+      treeId: 'DT-01',
+      applicable: true,
+      exit: { verdict: 'DEFEND', conditions: [], authority: 'Pešková C-315/15' },
+      gates: [{ gateId: 'DT1-G1', answer: 'yes', gaps: [{ libKey: 'eurocontrol', status: 'requested', name: 'ATFM / Eurocontrol log' }], conclusion: 'EC confirmed' }]
+    }],
+    causalCheck: { risk: false },
+    typePriority: { primaryTree: 'DT-01' }
+  };
+  var pos = DefendAbleLofLegalBridge.mapTreeExitToVerdict(fakeHold.treeResults, fakeHold.causalCheck, 'extraordinary');
+  assert(pos.conditionType === 'EVIDENCE_HOLD', 'hold path for conditions list');
+  assert(pos.conditions && pos.conditions.length > 0, 'conditions before final response non-empty');
+  var actions = DefendAbleDecideWorkspace.buildCritActionList(record, Object.assign({}, fakeHold, { position: pos }));
+  assert(actions.some(function (a) { return a.badge === 'CRIT' || a.priority === 'critical'; }), 'CRIT items present for eurocontrol gap');
+  var pv = DefendAbleDecideWorkspace.plainVerdict(pos);
+  assert(/subject to evidence|Defend/i.test(pv.title), 'plainVerdict title is lawyer-legible (got ' + pv.title + ')');
+
+  record.g1 = { action: 'approve', by: 'SB', at: new Date().toISOString() };
+  var dp = DefendAbleLofLegalBridge.buildDecisionPacket(record, Object.assign({}, run, { position: pos, treeResults: fakeHold.treeResults }), record.g1);
+  assert(dp.conditionsBeforeFinalResponse && dp.conditionsBeforeFinalResponse.length > 0, 'packet carries conditionsBeforeFinalResponse');
+  assert(dp.thinkingTrail && dp.thinkingTrail.steps && dp.thinkingTrail.steps.length > 0, 'packet carries thinkingTrail');
+  assert(dp.evidencePriorities && dp.evidencePriorities.length > 0, 'packet carries evidencePriorities');
 })();
 
 console.log('\n' + passed + ' passed, ' + failed + ' failed\n');

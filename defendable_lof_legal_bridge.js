@@ -511,6 +511,16 @@ var DefendAbleLofLegalBridge = (function () {
   function buildDecisionPacket(record, run, g1) {
     run = run || {};
     var position = run.position || run.preRating || {};
+    var trail = null;
+    var critActions = null;
+    if (typeof DefendAbleDecideWorkspace !== 'undefined') {
+      if (DefendAbleDecideWorkspace.buildThinkingTrail) {
+        trail = DefendAbleDecideWorkspace.buildThinkingTrail(record, run);
+      }
+      if (DefendAbleDecideWorkspace.buildCritActionList) {
+        critActions = DefendAbleDecideWorkspace.buildCritActionList(record, run);
+      }
+    }
     return {
       schemaVersion: 1,
       type: 'decision_packet',
@@ -520,6 +530,9 @@ var DefendAbleLofLegalBridge = (function () {
       frameworkLabel: position.frameworkLabel || null,
       conditionType: position.conditionType || null,
       conditions: position.conditions || [],
+      conditionsBeforeFinalResponse: position.conditions || [],
+      thinkingTrail: trail,
+      evidencePriorities: critActions,
       treeResults: run.treeResults || record.treeResults || [],
       typePriority: run.typePriority || null,
       causalCheck: run.causalCheck || null,
