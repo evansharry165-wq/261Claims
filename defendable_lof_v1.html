@@ -66,6 +66,7 @@ html, body {
   color: var(--text);
   letter-spacing: 0.03em;
   margin-right: 8px;
+  text-decoration: none;
 }
 .nav-brand span { color: var(--accent); }
 .nav-sep { color: var(--text-3); margin: 0 10px; }
@@ -80,6 +81,22 @@ html, body {
   padding: 2px 8px;
   letter-spacing: 0.06em;
 }
+.nav-spine {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-left: 16px;
+  flex-wrap: wrap;
+}
+.nav-spine a {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--text-3);
+  text-decoration: none;
+  letter-spacing: 0.04em;
+}
+.nav-spine a:hover { color: var(--text-2); }
+.nav-spine a.active { color: var(--text); }
 .nav-right {
   margin-left: auto;
   display: flex;
@@ -101,6 +118,9 @@ html, body {
   font-family: 'Inter', sans-serif;
   cursor: pointer;
   transition: all 0.15s;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
 }
 .nav-btn:hover { background: var(--surface-3); color: var(--text); border-color: var(--border-2); }
 .nav-btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
@@ -1072,15 +1092,17 @@ html, body {
 
 <!-- NAV -->
 <nav class="nav">
-  <span class="nav-brand">Defend<span>Able</span></span>
+  <a class="nav-brand" href="index.html" data-defendable-brand>Defend<span>Able</span></a>
   <span class="nav-sep">|</span>
   <span class="nav-mode">LOF VERIFICATION — PASS II</span>
+  <div class="nav-spine" data-defendable-nav></div>
   <div class="nav-right">
     <span class="nav-case" id="navCase">EZY7253 · PMI–BHX · 16 JUN 2024</span>
-    <button class="nav-btn" onclick="window.history.back()">← Back to Engine</button>
+    <a class="nav-btn" href="defendable_analyser_v3.html">← Back to Engine</a>
     <button class="nav-btn primary" id="confirmLofNavBtn" onclick="showConfirmOverlay()" style="display:none">Confirm LOF →</button>
   </div>
 </nav>
+<script src="defendable_site_nav.js"></script>
 
 <!-- SHELL -->
 <div class="shell">

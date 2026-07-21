@@ -61,6 +61,7 @@
       font-size: 15px;
       color: #fff;
       letter-spacing: .02em;
+      text-decoration: none;
     }
     .g-nav-sub {
       font-family: var(--font-mono);
@@ -68,15 +69,21 @@
       color: rgba(255,255,255,.45);
       letter-spacing: .06em;
     }
-    .g-nav-back {
+    .g-nav-links {
       margin-left: auto;
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .g-nav-links a {
       font-family: var(--font-mono);
       font-size: 10px;
-      color: rgba(255,255,255,.5);
+      color: rgba(255,255,255,.45);
       text-decoration: none;
       letter-spacing: .04em;
     }
-    .g-nav-back:hover { color: rgba(255,255,255,.8); }
+    .g-nav-links a:hover { color: rgba(255,255,255,.8); }
+    .g-nav-links a.active { color: rgba(255,255,255,.92); }
 
     /* ── Page ── */
     .page-wrap {
@@ -299,11 +306,12 @@
 
   <nav class="g-nav">
     <div>
-      <div class="g-nav-brand">DefendAble</div>
+      <a class="g-nav-brand" href="index.html" data-defendable-brand>DefendAble</a>
       <div class="g-nav-sub">LEGAL REFERENCE</div>
     </div>
-    <a class="g-nav-back" href="defendable_analyser_v3.html">← Back to Engine</a>
+    <div class="g-nav-links" data-defendable-nav></div>
   </nav>
+  <script src="defendable_site_nav.js"></script>
 
   <div class="page-wrap">
 
