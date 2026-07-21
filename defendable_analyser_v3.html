@@ -4839,7 +4839,7 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
       },
       {
         id: 'birdstrike',
-        label: 'Wildlife Strike',
+        label: 'Bird Strike',
         keywords: ['birdstrike','bird strike','bird ingestion','wildlife','avian','bird hit','wildlife strike','bird','seagull','pigeon','raptor','flock','avian strike','post-strike','borescope','fod damage','wildlife hazard','bird ingestion'],
         primaryKeywords: ['birdstrike','bird strike','bird ingestion','bird hit','wildlife strike','seagull','pigeon','raptor','avian strike','post-strike','bird'],
         limb1Status: 'extraordinary',
@@ -7531,12 +7531,10 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
           rootNode = { type:'root', label:'ATFM Regulation', sub: 'Eurocontrol / National ANSP restriction', icon:'🗼' };
           break;
         case 'birdstrike': {
-          // Extract species if mentioned
-          const species = /seagull/.test(lower) ? 'Seagull ingestion'
-                        : /pigeon/.test(lower)  ? 'Pigeon strike'
-                        : /raptor|hawk|eagle/.test(lower) ? 'Raptor strike'
-                        : 'Wildlife collision event';
-          rootNode = { type:'root', label:'Wildlife Strike', sub: species, icon:'🐦' };
+          const bsDetail = /engine ingestion|ingestion/.test(lower) ? 'Bird strike — engine ingestion confirmed'
+                         : /fod|foreign object/.test(lower)          ? 'Foreign object damage — runway contamination'
+                         : 'Bird strike event';
+          rootNode = { type:'root', label:'Bird Strike', sub: bsDetail, icon:'🐦' };
           break;
         }
         case 'technical': {
@@ -7559,9 +7557,15 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
           rootNode = { type:'root', label:'Technical Defect', sub: defect, icon:'🔧' };
           break;
         }
-        case 'medical':
-          rootNode = { type:'root', label:'Medical Emergency', sub: 'In-flight medical event — commander divert', icon:'🏥' };
+        case 'medical': {
+          const medDetail = /cardiac arrest|cardiac/.test(lower)  ? 'Cardiac event on board'
+                          : /seizure/.test(lower)                 ? 'Passenger seizure on board'
+                          : /unconscious|loss of consciousness/.test(lower) ? 'Passenger unconscious — medical intervention required'
+                          : /collapsed|pax collapsed/.test(lower) ? 'Passenger collapsed on board'
+                          : 'In-flight medical event';
+          rootNode = { type:'root', label:'Medical Emergency', sub: `${medDetail}. Evidenced by cabin crew report, ICC email chain, and commander\'s occurrence report.`, icon:'🏥' };
           break;
+        }
         case 'security':
           rootNode = { type:'root', label:'Security Alert', sub: 'Competent authority security directive', icon:'🛡' };
           break;
@@ -7620,13 +7624,14 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
       // false positives from short substring matches.
 
       // ATFM cascade: Eurocontrol/CTOT/ATFM/ATC restrictions/traffic regulation
-      if (dt.id !== 'atfm' && /\b(atfm|eurocontrol|ctot|network manager|flow management|calculated take.off time|atc restrictions?|traffic regulation|departure congestion|departure slot|atc delay)\b/.test(lower)) {
-        const slot = lower.match(/ctot\s+([\d]{4}[z]?)/)?.[1]?.toUpperCase();
-        // Try to identify the specific airport where the restriction applied
-        const restrictionApt = lower.match(/(?:atc restrictions?|traffic regulation|departure congestion)\s+(?:at\s+)?([a-z]{3})\b/)?.[1]?.toUpperCase();
-        const subText = slot        ? `CTOT ${slot} imposed`
-                      : restrictionApt ? `ATC restriction — ${restrictionApt}`
-                      : 'ATC / network flow restriction imposed';
+      if (dt.id !== 'atfm' && /\b(atfm|eurocontrol|ctot|network manager|flow management|calculated take.off time|atc restrictions?|traffic regulation|departure congestion|departure slot|atc delay|departure restriction|capacity restriction)\b/.test(lower)) {
+        const slot = lower.match(/ctot\s+([\d]{4}[z]?)/)?.[1]?.toUpperCase()
+                  || lower.match(/slot\s+(?:of\s+|time\s+)?(\d{4})[zZ]?/)?.[1];
+        const restrictionApt = lower.match(/(?:atc restrictions?|traffic regulation|departure congestion|departure restriction)\s+(?:at\s+)?([a-z]{3})\b/)?.[1]?.toUpperCase();
+        const subText = slot && restrictionApt ? `CTOT ${slot} — restriction at ${restrictionApt}. Eurocontrol oplog, flight data and regulation ref required.`
+                      : slot                   ? `CTOT ${slot} imposed. Evidenced by Eurocontrol oplog / flight data and cascading flight delays.`
+                      : restrictionApt          ? `ATC restriction at ${restrictionApt}. Evidenced by Eurocontrol records and flights on tail.`
+                      : 'ATC / network flow restriction. Evidenced by Eurocontrol oplog and flight data.';
         nodes.push({ type:'cascade', label:'ATC / ATFM Restriction', sub: subText, icon:'📡' });
       }
 
@@ -7694,10 +7699,12 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
 
       // AOG: fire for all disruption types — birdstrike and technical AOG are cascade consequences
       if (/\baog\b|grounded pending inspection/.test(lower)) {
-        const aogSub = dt.id === 'birdstrike' ? 'Aircraft grounded pending post-strike engineering inspection'
-                     : dt.id === 'technical'   ? 'Aircraft grounded — defect cannot be deferred under MEL'
-                     : 'Aircraft grounded — airworthiness hold';
-        nodes.push({ type:'cascade', label:'Aircraft AOG', sub: aogSub, icon:'⛔' });
+        const aogAc  = acReg ? `${acReg} ` : '';
+        const aogSub = dt.id === 'birdstrike' ? `${aogAc}grounded — post-strike engineering inspection required. Evidenced by maintenance event log and internal engineering communication.`
+                     : dt.id === 'technical'   ? `${aogAc}grounded — defect cannot be deferred under MEL. Evidenced by maintenance event log.`
+                     : dt.id === 'ground-damage' ? `${aogAc}grounded pending airworthiness clearance. Evidenced by ground damage report and engineering assessment.`
+                     : `${aogAc}grounded — airworthiness hold pending inspection.`;
+        nodes.push({ type:'cascade', label:`AOG — ${aogAc || 'Aircraft'}`, sub: aogSub, icon:'⛔' });
       }
 
       // Inbound rotation delay — only if prior sector language present AND not already shown as root
@@ -7712,7 +7719,7 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
                      || text.match(/aircraft\s+([A-Z]{1,2}-[A-Z]{2,5})\s+repositioned/i)?.[1]
                      || (allRegs.length > 1 ? allRegs.find(r => r !== acReg) : null);
         const fromAcStr = acReg ? `${acReg} AOG — ` : '';
-        nodes.push({ type:'operational', label:'Aircraft Substitution', sub: replReg ? `${fromAcStr}${replReg} substituted for affected sectors` : 'Substitute airframe deployed for affected sectors', icon:'🔄' });
+        nodes.push({ type:'operational', label:'A/C Change', sub: replReg ? `${fromAcStr}${replReg} deployed for affected sectors` : 'Replacement airframe deployed for affected sectors', icon:'🔄' });
       }
 
       // ── Multi-sector cascade: extract all subsequent flight references ────────
@@ -7753,6 +7760,14 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
         }
       }
 
+      // Fuel stop — only if fuel is explicitly the reason for a stop/diversion (e.g. repeat approach, fly-by)
+      // Do NOT fire just because 'fuel' or 'refuel' appears (routine uplift)
+      if (/\b(fuel stop|diversion for fuel|fuel endurance|fuel state|fuel critical|fuel uplift required|additional fuel|low fuel|fly.by|repeat approach|second approach|third approach)\b/.test(lower)) {
+        const fuelApt = lower.match(/fuel stop\s+(?:at\s+)?([a-z]{3})\b/)?.[1]?.toUpperCase()
+                     || lower.match(/diverted?\s+(?:to\s+)?([a-z]{3})\b.{0,40}fuel/)?.[1]?.toUpperCase();
+        nodes.push({ type:'cascade', label:'Fuel Stop', sub: fuelApt ? `Fuel state required stop at ${fuelApt} before continuing to destination` : 'Fuel state required stop before continuing to destination', icon:'⛽' });
+      }
+
       // Crew FDP exhaustion — only if explicit limit-reached language (not just 'crew' or 'FDP')
       if (/\b(timed out|out of hours|fdp limit|fdp exceeded|fdp reached|duty limit reached|crew duty expired)\b/.test(lower) && dt.id !== 'crew-fdp' && dt.id !== 'crew-sick') {
         nodes.push({ type:'operational', label:'Crew Duty Limit Reached', sub: 'FTL duty period limit reached — standby required', icon:'⏱' });
@@ -7788,14 +7803,21 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
                              || /\bfrom [a-z]{3}\b/.test(window);
           const hasNegation   = /\b(could not|unable|not available|not position|not able|cannot)\b/.test(window);
           if (hasDeployVerb && !hasNegation) {
-            nodes.push({ type:'operational', label:'Standby Crew Deployed', sub: 'Reserve crew activated to operate flight', icon:'👨‍✈️' });
+            const fromBase = window.match(/from ([a-z]{3})\b/)?.[1]?.toUpperCase() || null;
+            nodes.push({ type:'operational', label:'Standby Crew Deployed', sub: fromBase ? `Reserve crew activated from ${fromBase}` : 'Reserve crew activated to operate flight', icon:'👨‍✈️' });
           }
         }
       }
 
-      // Passenger care — only if hotel / accommodation / meal voucher / coach explicitly stated
-      if (/\b(hotel|accommodation|meal vouchers?|coach transfer|bus transfer)\b/.test(lower)) {
-        nodes.push({ type:'operational', label:'Passenger Care', sub: 'Art 9 care obligations enacted', icon:'🏨' });
+      // Passenger care — Art 9 obligations
+      if (/\b(hotel|accommodation|meal vouchers?|coach transfer|bus transfer|refreshments?|care provided|art\s*9|rebooked|offered refund|right to refund)\b/.test(lower)) {
+        const hasHotel = /hotel|accommodation/.test(lower);
+        const hasVoucher = /meal vouchers?|refreshments?/.test(lower);
+        const careDetail = hasHotel ? 'Art 9 — Hotel accommodation and meals provided'
+                         : hasVoucher ? 'Art 9 — Meal vouchers issued at gate'
+                         : 'Art 9 — Care obligations met';
+        const careEvidence = 'Evidenced by: internal passenger comms (SMS / email), rebooking portal records, voucher issuance log.';
+        nodes.push({ type:'operational', label:'Art 9 — Passenger Care', sub: `${careDetail}. ${careEvidence}`, icon:'🏨' });
       }
 
       // ── Outcome — always last ─────────────────────────────────────────
