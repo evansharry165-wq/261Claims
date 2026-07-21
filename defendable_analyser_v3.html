@@ -3230,6 +3230,11 @@
   </footer>
 
   <!-- ============================================================
+       SCRIPT — ICC / ops narrative parser
+  ============================================================ -->
+  <script src="defendable_icc_parse.js"></script>
+
+  <!-- ============================================================
        SCRIPT — MODE 0: Foundation
   ============================================================ -->
   <script>
@@ -4130,14 +4135,19 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
           if (!currentFlightDate) currentFlightDate = `${yr}-${dateM[2]}-${dateM[1]}`;
         }
       }
-      // Parse delay e.g. "8h 20min", "8h", "500 min"
+      // Parse delay e.g. "8h 20min", "3h05m", "8h", "500 min"
       if (!currentDelayMins) {
-        const dHM = inputText.match(/(\d+)\s*h(?:ours?)?\s*(\d+)\s*m(?:in)?/i);
-        const dH  = inputText.match(/(\d+)\s*h(?:ours?)?(?:\s+delay|\s+late)?/i);
-        const dM  = inputText.match(/(\d+)\s*min(?:ute)?s?\s+delay/i);
-        if (dHM) currentDelayMins = parseInt(dHM[1]) * 60 + parseInt(dHM[2]);
-        else if (dH) currentDelayMins = parseInt(dH[1]) * 60;
-        else if (dM) currentDelayMins = parseInt(dM[1]);
+        if (typeof DefendableIccParse !== 'undefined' && DefendableIccParse.parseDelayMins) {
+          currentDelayMins = DefendableIccParse.parseDelayMins(inputText) || 0;
+        }
+        if (!currentDelayMins) {
+          const dHM = inputText.match(/(\d+)\s*h(?:ours?)?\s*0?(\d+)\s*m(?:in)?/i);
+          const dH  = inputText.match(/(\d+)\s*h(?:ours?)?(?:\s+delay|\s+late)?/i);
+          const dM  = inputText.match(/(\d+)\s*min(?:ute)?s?\s+delay/i);
+          if (dHM) currentDelayMins = parseInt(dHM[1]) * 60 + parseInt(dHM[2]);
+          else if (dH) currentDelayMins = parseInt(dH[1]) * 60;
+          else if (dM) currentDelayMins = parseInt(dM[1]);
+        }
       }
 
       // Hide empty state, hide workspace (re-shown after analysis completes)
@@ -5008,8 +5018,8 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
       {
         id: 'weather',
         label: 'Weather Disruption',
-        keywords: ['weather','storm','thunderstorm','wind','snow','fog','visibility','crosswind','minima','sigmet','windshear','precipitation','hail','turbulence','icing','lightning','below minima','crosswind limit','lenticular','volcanic ash','ash cloud','black ice','ice on runway','freezing rain','fzra','squall','gust','gusting','severe weather','wx minima','lvp','low visibility procedures','braking action','poor braking','contaminated runway','runway contamination','snowtam','dust storm','sandstorm','wx'],
-        primaryKeywords: ['metar','sigmet','thunderstorm','windshear','below minima','crosswind limit','taf','weather','storm','low visibility procedures','lvp','freezing rain'],
+        keywords: ['weather','storm','thunderstorm','wind','snow','fog','visibility','crosswind','minima','sigmet','windshear','precipitation','hail','turbulence','icing','lightning','below minima','crosswind limit','lenticular','volcanic ash','ash cloud','black ice','ice on runway','freezing rain','fzra','squall','gust','gusting','severe weather','wx minima','lvp','low visibility procedures','braking action','poor braking','contaminated runway','runway contamination','snowtam','dust storm','sandstorm','wx','metar','taf','cb','cumulonimbus','tsra','ts+ra','ts+ra','convection','convective','gdp','ground delay programme','ground delay program','tma'],
+        primaryKeywords: ['metar','sigmet','thunderstorm','windshear','below minima','crosswind limit','taf','weather','storm','low visibility procedures','lvp','freezing rain','cb','cumulonimbus','tsra','ts+ra'],
         limb1Status: 'extraordinary',
         limb1: 'Adverse meteorological conditions — inherently beyond operational control. Consistent with Art 5(3) EC261/UK261 where conditions reached or exceeded certified operating limits. Limb 1 likely satisfied subject to evidence of actual conditions at the relevant time and place.',
         caselaw: [
@@ -5028,7 +5038,7 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
       {
         id: 'atfm',
         label: 'ATC / ATFM Restriction',
-        keywords: ['atfm','ctot','atc','air traffic','regulation','eurocontrol','network manager','flow management','ground delay','calculated take-off','flow regulation','fir restriction','fir capacity','departure restriction','capacity restriction','sector capacity','regulation imposed','regulation lifted','zero rate','zero-rate','departure sequence','traffic flow','departure slot','miles-in-trail'],
+        keywords: ['atfm','ctot','atc','air traffic','regulation','eurocontrol','network manager','flow management','ground delay','calculated take-off','flow regulation','fir restriction','fir capacity','departure restriction','capacity restriction','sector capacity','regulation imposed','regulation lifted','zero rate','zero-rate','departure sequence','traffic flow','departure slot','miles-in-trail','slot restriction','slot issued'],
         limb1Status: 'extraordinary',
         limb1: 'Air traffic flow management restriction imposed by Eurocontrol or a national ANSP — a decision of a third-party authority inherently beyond the airline\'s control. Limb 1 generally satisfied where the regulation is formally issued and applies to all carriers.',
         caselaw: [
@@ -5290,6 +5300,11 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
     function detectDisruptionType(text) {
       const lower = text.toLowerCase();
       let best = null, bestScore = 0;
+      const hints = (typeof DefendableIccParse !== 'undefined' && DefendableIccParse.disruptionFactorHints)
+        ? DefendableIccParse.disruptionFactorHints(text)
+        : { weatherBonus: 0, factors: [] };
+      window._lastDisruptionFactors = hints.factors || [];
+
       for (const dt of RM_DB) {
         let score = 0;
         for (const kw of dt.keywords) {
@@ -5297,7 +5312,15 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
             score += (dt.primaryKeywords && dt.primaryKeywords.includes(kw)) ? 5 : 1;
           }
         }
+        if (dt.id === 'weather') score += hints.weatherBonus || 0;
         if (score > bestScore) { bestScore = score; best = dt; }
+      }
+
+      // Weather-driven GDP/ATFM: treat convective METAR evidence as the root,
+      // with ATFM remaining a cascade factor in the story.
+      if ((hints.weatherBonus || 0) >= 6) {
+        const wx = RM_DB.find(d => d.id === 'weather');
+        if (wx && best && best.id === 'atfm') best = wx;
       }
       return best; // null if nothing matched — caller decides fallback
     }
@@ -5399,9 +5422,15 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
         f.replacementReg = allRegs[1];
       }
 
-      // Delay duration
-      const dlMatch = text.match(/(\d+)h\s*(\d+)?\s*min(?:utes?)?|(\d+)\s*hours?\s*delay/i);
+      // Delay duration — accept 3h05m / 3h5m / 3h 05min / 3 hours delay
+      const dlMatch = text.match(/(\d+)\s*h(?:ours?)?\s*0?(\d+)\s*m(?:in(?:utes?)?)?/i)
+        || text.match(/arrival delay\s+approx\s+(\d+)\s*h(?:ours?)?\s*0?(\d+)\s*m/i)
+        || text.match(/(\d+)\s*hours?\s*delay/i);
       if (dlMatch) f.delayText = dlMatch[0].replace(/\s+/g,' ').trim();
+
+      if (typeof DefendableIccParse !== 'undefined' && DefendableIccParse.enrichFacts) {
+        DefendableIccParse.enrichFacts(f, text);
+      }
 
       return f;
     }
@@ -5925,6 +5954,10 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
       // ─────────────────────────────────────────────────────────────
       const legalChar = LEGAL_CHAR[dt.id] || '';
       const rmTips = (RM_SURFACE[dt.id] || []);
+      const factorBits = (window._lastDisruptionFactors || [])
+        .filter((f, i, arr) => arr.findIndex(x => x.id === f.id) === i)
+        .map(f => `<span style="display:inline-block;margin:2px 6px 2px 0;padding:2px 8px;border:1px solid var(--ink-rule);border-radius:4px;font-size:11px;color:var(--ink-secondary)">${f.label}</span>`)
+        .join('');
       const z2 = document.getElementById('zone2-body');
       z2.innerHTML = `
         <div style="font-size:10px;font-family:var(--font-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:8px">Provisional — awaiting LOF confirm</div>
@@ -5935,6 +5968,12 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
           <div class="z2-directive-sub">${dir.recSub}</div>
         </div>
         ${jurisStr ? `<div class="z2-juris">${jurisStr}</div>` : ''}
+
+        ${factorBits ? `
+        <div class="z2-section">
+          <div class="z2-section-label">Factors in summary</div>
+          <div>${factorBits}</div>
+        </div>` : ''}
 
         <div class="z2-section">
           <div class="z2-section-label">Legal basis</div>
@@ -6903,12 +6942,13 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
        parseLOFFromText — extract sector data from ICC prompt text
     ---------------------------------------------------------- */
     function parseLOFFromText(text) {
+      if (typeof DefendableIccParse !== 'undefined' && DefendableIccParse.parseLOFFromText) {
+        return DefendableIccParse.parseLOFFromText(text);
+      }
       if (!text) return [];
       const rows = [];
       const seen = new Set();
-
-      // Match flight codes with context
-      const flightExtRe = /\b(EZY|EJU|EZS|EZT|U2|BE|FR|W6|LS|TOM|TCX|BY|DY|VY|LH|BA|AF|KL|IB|AZ|SK|TP|SN|HV|TO|QS|OK|BT|LO|LX|OS|BAW|RYR|IBE|AEA|VLG|HV)\s*(\d{2,4})\b/gi;
+      const flightExtRe = /\b(EZY|EJU|EZS|EZT|U2|BE|FR|W6|LS|TOM|TCX|BY|DY|VY|LH|BA|AF|KL|IB|AZ|SK|TP|SN|HV|QS|OK|BT|LO|LX|OS|BAW|RYR|IBE|AEA|VLG)\s*(\d{2,4})\b/g;
       let m;
       while ((m = flightExtRe.exec(text)) !== null) {
         const code = (m[1] + m[2]).toUpperCase().replace(/\s+/g, '');
@@ -6916,15 +6956,12 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
         seen.add(code);
         const ctx  = text.slice(m.index, m.index + 350);
         const ctxL = ctx.toLowerCase();
-        // Route
         const routeM = ctx.match(/\b([A-Z]{3})\s*[-→]\s*([A-Z]{3})\b/) || ctx.match(/\b([A-Z]{3})\s+([A-Z]{3})\b/);
         const route  = routeM ? `${routeM[1]} → ${routeM[2]}` : '';
-        // Times
         const times  = [...ctx.matchAll(/\b(\d{2}:\d{2})[Zz]?\b/g)].map(t => t[1]+'Z');
         const std    = ctxL.match(/std\s+(\d{2}:\d{2})/i)?.[1] ? ctxL.match(/std\s+(\d{2}:\d{2})/i)[1]+'Z' : (times[0] || '');
         const atd    = ctxL.match(/(?:atd|depart(?:ed|ure at))\s+(\d{2}:\d{2})/i)?.[1] ? ctxL.match(/(?:atd|depart(?:ed|ure at))\s+(\d{2}:\d{2})/i)[1]+'Z' : (times[1] || '');
         const ata    = ctxL.match(/(?:ata|arriv(?:al|ed)\s+\w+\s+at)\s+(\d{2}:\d{2})/i)?.[1] ? ctxL.match(/(?:ata|arriv(?:al|ed)\s+\w+\s+at)\s+(\d{2}:\d{2})/i)[1]+'Z' : '';
-        // Status
         const status = /\bcancelled\b|ond\b/.test(ctxL) ? 'Cancelled'
                      : /\bdelayed\b/.test(ctxL)          ? 'Delayed'
                      : /\bdiverted?\b/.test(ctxL)        ? 'Diverted'
@@ -7049,8 +7086,14 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
 
     function buildLOFModule(dt) {
       if (!dt) return '';
-      // Always use editable working table as the primary LOF surface
-      if (currentScenarioKey && LOF_DATA[currentScenarioKey]) {
+      // Only use seeded scenario LOF when the analysed text is still the scenario seed
+      const text = lastAnalysisText
+        || document.getElementById('iccText')?.value
+        || document.getElementById('supplementaryText')?.value
+        || '';
+      const isScenario = !!(currentScenarioKey && EXAMPLES[currentScenarioKey]
+        && EXAMPLES[currentScenarioKey].trim() === text.trim());
+      if (isScenario && LOF_DATA[currentScenarioKey]) {
         const rows = lofDataToEditableRows(LOF_DATA[currentScenarioKey]);
         if (rows.length) return buildLOFEditable(rows);
       }
@@ -7998,6 +8041,34 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
       const nodes = [];
       const lower = text.toLowerCase();
 
+      // Prefer structured story extraction for free-text ICC / ops narratives
+      if (typeof DefendableIccParse !== 'undefined' && DefendableIccParse.extractStoryEvents) {
+        const story = DefendableIccParse.extractStoryEvents(text);
+        if (story && story.length >= 3) {
+          const delayMatch = lower.match(/(\d+)\s*h(?:ours?)?\s*0?(\d+)\s*m(?:in(?:utes?)?)?/i)
+            || lower.match(/(\d+)\s*hours?\s*delay/);
+          const delayStr = delayMatch
+            ? (delayMatch[2] != null
+                ? `${delayMatch[1]}h${delayMatch[2]}m`
+                : delayMatch[0].replace(/\s+/g, ' ').trim())
+            : null;
+          const isCancelled = /\b(ond\b|flight cancelled|flights? cancelled|overnight.{0,10}delay)\b/i.test(lower);
+          const cleaned = story.filter(n => n.type !== 'outcome' || !/Missed Connections/i.test(n.label));
+          const missed = story.find(n => /Missed Connections/i.test(n.label));
+          cleaned.forEach(n => nodes.push(n));
+          if (missed) nodes.push(missed);
+          nodes.push({
+            type: 'outcome',
+            label: isCancelled ? 'Flight Cancellation — OND' : 'Arrival Delay',
+            sub: isCancelled
+              ? 'Overnight delay notice — passengers rebooked to next available service'
+              : (delayStr ? delayStr + ' at destination' : 'Delay at destination'),
+            icon: isCancelled ? '✗' : '⏱'
+          });
+          return nodes;
+        }
+      }
+
       // ── Aircraft registration extraction ────────────────────────────
       const allRegs = [...text.matchAll(/\b([A-Z]{1,2}-[A-Z]{2,4})\b/g)].map(m => m[1]);
       const acReg = allRegs[0] || null;
@@ -8266,6 +8337,16 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
         nodes.push({ type:'cascade', label:'Fuel Stop', sub: fuelApt ? `Fuel state required stop at ${fuelApt} before continuing to destination` : 'Fuel state required stop before continuing to destination', icon:'⛽' });
       }
 
+      // Fuelling / turnaround delay (ground ops) — distinct from fuel-stop diversion
+      if (/fuel uplift delayed|fueller|fuel truck|bowser|fuel(?:ling)?\s+delayed|assigned to another aircraft/.test(lower)) {
+        nodes.push({
+          type: 'operational',
+          label: 'Fuelling Delay',
+          sub: 'Fuel uplift delayed — fueller / bowser allocation issue during turnaround. Contributes to overall delay; relevant to Limb 2 reasonable measures.',
+          icon: '⛽'
+        });
+      }
+
       // Crew FDP exhaustion — only if explicit limit-reached language (not just 'crew' or 'FDP')
       if (/\b(timed out|out of hours|fdp limit|fdp exceeded|fdp reached|duty limit reached|crew duty expired)\b/.test(lower) && dt.id !== 'crew-fdp' && dt.id !== 'crew-sick') {
         nodes.push({ type:'operational', label:'Crew Duty Limit Reached', sub: 'FTL duty period limit reached — standby required', icon:'⏱' });
@@ -8307,21 +8388,29 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
         }
       }
 
-      // Passenger care — Art 9 obligations
-      if (/\b(hotel|accommodation|meal vouchers?|coach transfer|bus transfer|refreshments?|care provided|art\s*9|rebooked|offered refund|right to refund)\b/.test(lower)) {
+      // Passenger care — Art 9 obligations (flag gaps, not just presence)
+      if (/\b(hotel|accommodation|meal vouchers?|coach transfer|bus transfer|refreshments?|care provided|art\s*9|rebooked|offered refund|right to refund|snack pack|no meal service|held on stand|remain(?:ed)? on board)\b/.test(lower)) {
+        const hasGap = /no meal service|despite delay|exceeding 3hrs on stand|hold pax on board rather than disembark/.test(lower);
         const hasHotel = /hotel|accommodation/.test(lower);
-        const hasVoucher = /meal vouchers?|refreshments?/.test(lower);
-        const careDetail = hasHotel ? 'Art 9 — Hotel accommodation and meals provided'
-                         : hasVoucher ? 'Art 9 — Meal vouchers issued at gate'
-                         : 'Art 9 — Care obligations met';
-        const careEvidence = 'Evidenced by: internal passenger comms (SMS / email), rebooking portal records, voucher issuance log.';
-        nodes.push({ type:'operational', label:'Art 9 — Passenger Care', sub: `${careDetail}. ${careEvidence}`, icon:'🏨' });
+        const hasVoucher = /meal vouchers?|refreshments?|snack pack/.test(lower);
+        const careDetail = hasGap
+          ? 'Art 9 — Care gap flagged (refreshments only / extended onboard hold)'
+          : hasHotel ? 'Art 9 — Hotel accommodation and meals provided'
+          : hasVoucher ? 'Art 9 — Refreshments / vouchers referenced'
+          : 'Art 9 — Care obligations met';
+        const careEvidence = hasGap
+          ? 'Water/snack pack only; no meal service despite >3h on stand. OCC hold-on-board decision may need Art 9 scrutiny.'
+          : 'Evidenced by: internal passenger comms (SMS / email), rebooking portal records, voucher issuance log.';
+        nodes.push({ type:'operational', label: hasGap ? 'Art 9 — Care Gap Flagged' : 'Art 9 — Passenger Care', sub: `${careDetail}. ${careEvidence}`, icon:'🏨' });
       }
 
       // ── Outcome — always last ─────────────────────────────────────────
       const isCancelled = /\b(ond\b|flight cancelled|flights? cancelled|passengers rebooked|service cancelled|overnight.{0,10}delay|booked for tomorrow)\b/i.test(lower);
-      const delayMatch  = lower.match(/(\d+)h\s*(\d+)?\s*min(?:utes?)?|(\d+)\s*hours?\s*delay/);
-      const delayStr    = delayMatch ? delayMatch[0].replace(/\s+/g,' ').trim() : null;
+      const delayMatch  = lower.match(/(\d+)\s*h(?:ours?)?\s*0?(\d+)\s*m(?:in(?:utes?)?)?/i)
+                       || lower.match(/(\d+)\s*hours?\s*delay/);
+      const delayStr    = delayMatch
+        ? (delayMatch[2] != null ? `${delayMatch[1]}h${delayMatch[2]}m` : delayMatch[0].replace(/\s+/g,' ').trim())
+        : null;
       // Extract next-day date for OND if present
       const ondDateM = isCancelled ? text.match(/\b(\d{1,2}[A-Z]{3}\d{2,4}|\d{1,2}[\s\/]\w{3,9}[\s\/]\d{2,4})\b/i) : null;
       const ondDate  = ondDateM ? ondDateM[1].toUpperCase() : null;
