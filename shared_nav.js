@@ -2,6 +2,8 @@
 (function () {
   var FALLBACK = {
     work: 'Work',
+    analyse: 'Analyse',
+    journey: 'Journey',
     cases: 'Cases',
     repository: 'Repository',
     insights: 'Insights',
@@ -13,6 +15,8 @@
 
   var LEGAL_NAV = [
     { key: 'work', icon: 'ti-layout-dashboard', href: 'index.html' },
+    { key: 'analyse', icon: 'ti-search', href: 'defendable_analyser_v3.html', label: 'Analyse' },
+    { key: 'journey', icon: 'ti-route', href: 'defendable_product_flow.html', label: 'Journey' },
     { key: 'cases', icon: 'ti-briefcase', href: 'cases.html' },
     { key: 'terminal', icon: 'ti-send', href: 'terminal.html' },
     { key: 'repository', icon: 'ti-database', href: 'repository.html' },
@@ -42,6 +46,8 @@
     if (p === 'dio-knowledge.html') return 'knowledge';
     if (p === 'dio-case.html') return 'cases';
     if (p === 'index.html' || p === '') return 'work';
+    if (p.indexOf('defendable_analyser') === 0 || p === 'defendable_lof_v1.html') return 'analyse';
+    if (p === 'defendable_product_flow.html') return 'journey';
     if (p === 'case.html' || p === 'cases.html') return 'cases';
     if (p === 'terminal.html' || p.indexOf('module8') >= 0) return 'terminal';
     if (p === 'intake.html' || p.indexOf('module1') >= 0 || p.indexOf('intake') >= 0) return 'cases';

@@ -58,11 +58,12 @@
       top: 0;
       z-index: 100;
     }
-    .g-nav-brand { font-family: var(--font-serif); font-size: 15px; color: #fff; letter-spacing: .02em; }
+    .g-nav-brand { font-family: var(--font-serif); font-size: 15px; color: #fff; letter-spacing: .02em; text-decoration: none; }
     .g-nav-tag   { font-family: var(--font-mono); font-size: 10px; color: rgba(255,255,255,.4); letter-spacing: .06em; }
-    .g-nav-links { margin-left: auto; display: flex; gap: 24px; }
+    .g-nav-links { margin-left: auto; display: flex; gap: 20px; flex-wrap: wrap; }
     .g-nav-links a { font-family: var(--font-mono); font-size: 10px; color: rgba(255,255,255,.45); text-decoration: none; letter-spacing: .04em; }
     .g-nav-links a:hover { color: rgba(255,255,255,.8); }
+    .g-nav-links a.active { color: rgba(255,255,255,.92); }
 
     /* ── Page ── */
     .page { max-width: var(--doc-w); margin: 0 auto; padding: 52px 40px 100px; }
@@ -273,14 +274,12 @@
 
 <nav class="g-nav">
   <div>
-    <div class="g-nav-brand">DefendAble</div>
+    <a class="g-nav-brand" href="index.html" data-defendable-brand>DefendAble</a>
     <div class="g-nav-tag">PHASE 3 · ACT 1 · PERSONAL GUIDE</div>
   </div>
-  <div class="g-nav-links">
-    <a href="defendable_analyser_v3.html">Engine</a>
-    <a href="defendable_reference.html">Reference</a>
-  </div>
+  <div class="g-nav-links" data-defendable-nav></div>
 </nav>
+<script src="defendable_site_nav.js"></script>
 
 <div class="page">
 

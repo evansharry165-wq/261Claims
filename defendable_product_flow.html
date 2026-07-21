@@ -86,6 +86,8 @@
     font-size: 18px;
     font-weight: 700;
     letter-spacing: 0.02em;
+    color: inherit;
+    text-decoration: none;
   }
   .brand span { color: var(--green); }
   .top-meta {
@@ -102,6 +104,11 @@
     border-bottom: 1px solid transparent;
   }
   .top-links a:hover { border-bottom-color: var(--ink-2); }
+  .top-links a.active {
+    color: var(--ink);
+    border-bottom-color: var(--green);
+    font-weight: 600;
+  }
 
   main { max-width: 1100px; margin: 0 auto; padding: 36px 24px 80px; }
 
@@ -270,17 +277,13 @@
 <header class="top">
   <div class="top-inner">
     <div>
-      <div class="brand">Defend<span>Able</span></div>
+      <a class="brand" href="index.html" data-defendable-brand>Defend<span>Able</span></a>
       <div class="top-meta">CLAIM JOURNEY · JULY 2026</div>
     </div>
-    <nav class="top-links">
-      <a href="defendable_analyser_v3.html">Analyser v3</a>
-      <a href="defendable_reference.html">Legal reference</a>
-      <a href="index.html">Manage / Work</a>
-      <a href="defendable_phase3_guide.html">Phase 3 guide</a>
-    </nav>
+    <nav class="top-links" data-defendable-nav></nav>
   </div>
 </header>
+<script src="defendable_site_nav.js"></script>
 
 <main>
   <div class="hero">
