@@ -2699,6 +2699,214 @@
     .tl-ann::placeholder { color: var(--ink-faint); font-style: italic; }
     .tl-ann:focus { outline: none; border-color: var(--ink-faint); }
 
+    /* LOF evidence workflow cards */
+    .lof-ev-card {
+      display: block !important;
+      padding: 10px 0 12px !important;
+      cursor: default !important;
+    }
+    .lof-ev-top {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+    .lof-ev-copy { flex: 1; min-width: 0; }
+    .lof-ev-proves {
+      font-size: 11px;
+      color: var(--ink-faint);
+      line-height: 1.4;
+      margin-top: 2px;
+    }
+    .lof-ev-priority {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      color: var(--defend-mid);
+      border: 1px solid var(--defend-border);
+      background: var(--defend-bg);
+      border-radius: 3px;
+      padding: 0 5px;
+      margin-left: 4px;
+    }
+    .lof-ev-matches, .lof-ev-empty, .lof-ev-attached { margin: 8px 0 0 22px; }
+    .lof-ev-empty {
+      font-size: 11px;
+      color: var(--ink-faint);
+      font-style: italic;
+    }
+    .lof-ev-match {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 8px;
+      border: 1px solid var(--ink-rule2);
+      border-radius: 4px;
+      background: var(--surface-page);
+      margin-bottom: 5px;
+    }
+    .lof-ev-match-meta { flex: 1; min-width: 0; }
+    .lof-ev-match-name {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--ink-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .lof-ev-match-sub {
+      font-size: 10px;
+      color: var(--ink-faint);
+      margin-top: 1px;
+    }
+    .lof-ev-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin: 8px 0 0 22px;
+    }
+    .lof-ev-btn {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: .02em;
+      border: 1px solid var(--ink-rule);
+      background: #fff;
+      color: var(--ink-secondary);
+      border-radius: 4px;
+      padding: 4px 8px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .lof-ev-btn:hover { border-color: var(--ink-faint); color: var(--ink-primary); }
+    .lof-ev-btn.primary {
+      background: var(--ink-primary);
+      border-color: var(--ink-primary);
+      color: #fff;
+    }
+    .lof-ev-btn.danger { color: var(--settle); border-color: var(--settle-border); }
+    .lof-ev-btn.link { background: transparent; }
+    .lof-ev-pill {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      padding: 2px 7px;
+      border-radius: 999px;
+      border: 1px solid var(--ink-rule);
+      color: var(--ink-secondary);
+    }
+    .lof-ev-pill.attached {
+      background: var(--defend-bg);
+      border-color: var(--defend-border);
+      color: var(--defend);
+    }
+    .lof-pack {
+      margin-top: 16px;
+      border: 1px solid var(--ink-rule);
+      border-radius: 6px;
+      background: #fff;
+      padding: 14px 16px;
+    }
+    .lof-pack-hdr {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+    .lof-pack-eyebrow {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+    }
+    .lof-pack-title {
+      font-family: var(--font-serif);
+      font-size: 18px;
+      color: var(--ink-primary);
+      margin-top: 2px;
+    }
+    .lof-pack-sub {
+      font-size: 12.5px;
+      color: var(--ink-secondary);
+      margin-top: 4px;
+      max-width: 420px;
+      line-height: 1.45;
+    }
+    .lof-pack-stats {
+      display: flex;
+      gap: 14px;
+      align-items: flex-end;
+    }
+    .lof-pack-stats div {
+      text-align: center;
+      min-width: 54px;
+    }
+    .lof-pack-stats strong {
+      display: block;
+      font-family: var(--font-mono);
+      font-size: 18px;
+      color: var(--ink-primary);
+    }
+    .lof-pack-stats span {
+      font-size: 10px;
+      color: var(--ink-faint);
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+    .lof-pack-meter {
+      height: 6px;
+      background: var(--ink-rule2);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    .lof-pack-meter-fill {
+      height: 100%;
+      background: var(--defend-mid);
+      transition: width .2s ease;
+    }
+    .lof-pack-meter-label {
+      font-size: 11px;
+      color: var(--ink-faint);
+      margin: 6px 0 10px;
+    }
+    .lof-pack-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+    .lof-pack-table th {
+      text-align: left;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      border-bottom: 1px solid var(--ink-rule);
+      padding: 6px 4px;
+    }
+    .lof-pack-table td {
+      border-bottom: 1px solid var(--ink-rule2);
+      padding: 7px 4px;
+      vertical-align: top;
+      color: var(--ink-secondary);
+    }
+    .lof-pack-foot {
+      margin-top: 10px;
+      font-size: 11px;
+      color: var(--ink-faint);
+    }
+    .lof-pack-foot a { color: var(--judgment); }
+    .lof-locked .lof-editable-table td[contenteditable],
+    .lof-locked .lof-status-sel,
+    .lof-locked .lof-add-row-btn,
+    .lof-locked .lof-row-btn,
+    .lof-locked .tl-ann,
+    .lof-locked .lof-ev-btn:not(.link) {
+      pointer-events: none;
+      opacity: 0.72;
+    }
+
     /* LOF editable table */
     .lof-editable-wrap { margin-top: 4px; }
     .lof-editable-table { width: 100%; border-collapse: collapse; font-size: 11px; }
@@ -3230,8 +3438,10 @@
   </footer>
 
   <!-- ============================================================
-       SCRIPT — ICC / ops narrative parser
+       SCRIPT — evidence filing + LOF workflow
   ============================================================ -->
+  <script src="evidence_filing.js"></script>
+  <script src="defendable_lof_workflow.js"></script>
   <script src="defendable_icc_parse.js"></script>
 
   <!-- ============================================================
@@ -5499,12 +5709,80 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
     }
 
     /* ----------------------------------------------------------
-       TIMELINE — evidence status store
+       TIMELINE — evidence status store (bridged from LOF workflow)
     ---------------------------------------------------------- */
     let tlEvStatus = {};
 
+    function syncTlEvFromWorkflow() {
+      if (typeof DefendableLofWorkflow !== 'undefined' && DefendableLofWorkflow.toTlEvStatus) {
+        tlEvStatus = DefendableLofWorkflow.toTlEvStatus();
+      }
+    }
+
+    function refreshLofEvidenceUi() {
+      syncTlEvFromWorkflow();
+      updateRMStrength();
+      const pack = document.getElementById('lof-evidence-pack');
+      if (pack && typeof DefendableLofWorkflow !== 'undefined') {
+        pack.outerHTML = DefendableLofWorkflow.renderPackPanelHtml();
+      }
+      // Re-render evidence sections inside beats without full Zone 1 rebuild
+      if (typeof DefendableLofWorkflow === 'undefined') return;
+      const st = DefendableLofWorkflow.getState();
+      if (!st) return;
+      st.beats.forEach(beat => {
+        const section = document.getElementById('lof-ev-section-' + beat.id);
+        if (!section) return;
+        section.innerHTML = (beat.evidenceItems || [])
+          .map(item => DefendableLofWorkflow.renderEvidenceItemHtml(beat, item))
+          .join('');
+      });
+    }
+
+    window.lofAttachEvidence = function (beatId, evId, fileId) {
+      if (typeof DefendableLofWorkflow === 'undefined') return;
+      DefendableLofWorkflow.attachFile(beatId, evId, fileId);
+      refreshLofEvidenceUi();
+    };
+
+    window.lofRequestEvidence = function (beatId, evId) {
+      if (typeof DefendableLofWorkflow === 'undefined') return;
+      const beat = DefendableLofWorkflow.getBeat(beatId);
+      const noteEl = document.getElementById('tl-ann-' + beatId);
+      const note = (noteEl && noteEl.value) || (beat && beat.note) || '';
+      if (noteEl && beat) DefendableLofWorkflow.setBeatNote(beatId, noteEl.value);
+      const result = DefendableLofWorkflow.requestEvidence(beatId, evId, note);
+      refreshLofEvidenceUi();
+      if (result && result.request) {
+        const signal = document.getElementById('tl-sig-' + beatId);
+        if (signal) {
+          signal.innerHTML = `<div style="font-size:10px;color:var(--conditions);background:var(--conditions-bg);border:1px solid var(--conditions-border);border-radius:var(--r);padding:4px 8px;margin-top:4px;line-height:1.4">↳ Evidence requested: <strong>${result.request.evidenceName}</strong> — chase keywords: ${(result.request.keywords || []).slice(0, 6).join(', ')}</div>`;
+        }
+      }
+    };
+
+    window.lofChaseEvidence = function (beatId, evId) {
+      if (typeof DefendableLofWorkflow === 'undefined') return;
+      const noteEl = document.getElementById('tl-ann-' + beatId);
+      if (noteEl) DefendableLofWorkflow.setBeatNote(beatId, noteEl.value);
+      const beat = DefendableLofWorkflow.getBeat(beatId);
+      const entry = DefendableLofWorkflow.getEvidence(beatId, evId);
+      if (beat && entry) {
+        entry.matches = DefendableLofWorkflow.searchRepository(beat, entry, (DefendableLofWorkflow.getState() || {}).facts || {});
+        if (entry.matches.length && entry.status === 'unreviewed') entry.status = 'found';
+      }
+      refreshLofEvidenceUi();
+    };
+
+    window.lofMarkEvidence = function (beatId, evId, status) {
+      if (typeof DefendableLofWorkflow === 'undefined') return;
+      if (status === 'available') DefendableLofWorkflow.markAvailable(beatId, evId);
+      else if (status === 'missing') DefendableLofWorkflow.markMissing(beatId, evId);
+      refreshLofEvidenceUi();
+    };
+
     /* ----------------------------------------------------------
-       cycleEvChip — tap chip to cycle: unset → available → requested → missing → unset
+       cycleEvChip — legacy bridge (prefer LOF workflow buttons)
     ---------------------------------------------------------- */
     function cycleEvChip(nodeId, evId, row) {
       const key = nodeId + '_' + evId;
@@ -5530,10 +5808,40 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
     }
 
     /* ----------------------------------------------------------
-       handleTimelineAnnotation — keyword hints on node textarea
+       handleTimelineAnnotation — notes drive repository chase
     ---------------------------------------------------------- */
     function handleTimelineAnnotation(nodeId, text, signalId) {
+      // Structured note storage for brief / Pass III compatibility
+      const idxMatch = String(nodeId).match(/(\d+)$/);
+      const idx = idxMatch ? parseInt(idxMatch[1], 10) : nodeId;
       nodeAnnotations[nodeId] = text;
+      nodeAnnotations[idx] = {
+        text: text,
+        evidenceStatuses: (typeof DefendableLofWorkflow !== 'undefined'
+          ? Object.keys((DefendableLofWorkflow.getState() || {}).evidence || {})
+              .filter(k => k.indexOf(nodeId + '::') === 0)
+              .reduce((acc, k) => {
+                const e = DefendableLofWorkflow.getState().evidence[k];
+                acc[e.evId] = e.status;
+                return acc;
+              }, {})
+          : {})
+      };
+
+      if (typeof DefendableLofWorkflow !== 'undefined' && DefendableLofWorkflow.getBeat(nodeId)) {
+        DefendableLofWorkflow.setBeatNote(nodeId, text);
+        // Live refresh matches as the lawyer types keywords
+        const section = document.getElementById('lof-ev-section-' + nodeId);
+        const beat = DefendableLofWorkflow.getBeat(nodeId);
+        if (section && beat) {
+          section.innerHTML = (beat.evidenceItems || [])
+            .map(item => DefendableLofWorkflow.renderEvidenceItemHtml(beat, item))
+            .join('');
+        }
+        const pack = document.getElementById('lof-evidence-pack');
+        if (pack) pack.outerHTML = DefendableLofWorkflow.renderPackPanelHtml();
+      }
+
       const signal = document.getElementById(signalId);
       if (!signal) return;
       if (!text.trim()) { signal.innerHTML = ''; return; }
@@ -5541,17 +5849,23 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
       const lower = text.toLowerCase();
       const hints = [];
       if (/amos|maintenance|engineering record/.test(lower))
-        hints.push('↳ Engineering event record referenced — confirm it has been obtained from maintenance');
-      if (/occurrence|safety report|mor\b|safetynet/.test(lower))
-        hints.push('↳ Occurrence report referenced — ensure filed and obtained');
+        hints.push('↳ Engineering keywords — chasing maintenance / AMOS files in repository');
+      if (/occurrence|safety report|mor\b|safetynet|commander/.test(lower))
+        hints.push('↳ Safety / commander report keywords — chasing SafetyNet records');
       if (/aims|crew duty|fdp|flight duty|duty hours/.test(lower))
-        hints.push('↳ Crew duty records referenced — request from crew scheduling system');
-      if (/ogimet|metar|taf|weather data|met office/.test(lower))
-        hints.push('↳ Meteorological records referenced — download from national met authority');
-      if (/eurocontrol|ctot|atfm|network manager/.test(lower))
-        hints.push('↳ Eurocontrol records referenced — pull from NOP portal or oplog');
+        hints.push('↳ Crew duty keywords — chasing AIMS / FDP records');
+      if (/ogimet|metar|taf|weather|cb\b|sigmet/.test(lower))
+        hints.push('↳ Weather keywords — chasing METAR / Met Office files');
+      if (/eurocontrol|ctot|atfm|network manager|gdp|slot/.test(lower))
+        hints.push('↳ ATFM keywords — chasing Eurocontrol regulation / CTOT files');
+      if (/fuel|fueller|bowser|uplift|turnaround/.test(lower))
+        hints.push('↳ Fuelling keywords — chasing DPM / turnaround notes');
+      if (/art\s*9|refreshment|meal|hotel|snack|hold on board/.test(lower))
+        hints.push('↳ Art 9 / care keywords — chasing passenger care records');
       if (/lof|line of flying|prior sector|rotation|prior day/.test(lower))
-        hints.push('↳ LOF note — add sector details to the Line of Flying table below');
+        hints.push('↳ LOF note — keep the editable sector table aligned with this beat');
+      if (!hints.length)
+        hints.push('↳ Note saved — use Chase repository / Request to pull or raise evidence for this event');
 
       signal.innerHTML = hints.map(h =>
         `<div style="font-size:10px;color:var(--conditions);background:var(--conditions-bg);border:1px solid var(--conditions-border);border-radius:var(--r);padding:4px 8px;margin-top:4px;line-height:1.4">${h}</div>`
@@ -5564,128 +5878,113 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
     function buildChronologicalTimeline(facts, causalNodes, dt, isScenarioMode) {
       tlEvStatus = {};
 
+      if (typeof DefendableLofWorkflow !== 'undefined') {
+        DefendableLofWorkflow.init({
+          inputText: lastAnalysisText || '',
+          facts: facts,
+          dt: dt,
+          causalNodes: causalNodes,
+          evidenceDb: EVIDENCE_DB,
+          rows: _lofRows || []
+        });
+        syncTlEvFromWorkflow();
+      }
+
       const typeConfig = {
         root:        { cardClass:'tl-disruption', dotClass:'tl-dot-amber', badgeClass:'tl-badge-disruption', badgeText:'extraordinary circumstance' },
         cascade:     { cardClass:'tl-cascade',    dotClass:'tl-dot-blue',  badgeClass:'tl-badge-cascade',    badgeText:'cascade' },
         operational: { cardClass:'tl-cascade',    dotClass:'tl-dot-blue',  badgeClass:'tl-badge-cascade',    badgeText:'operational' },
         outcome:     { cardClass:'tl-decision',   dotClass:'tl-dot-red',   badgeClass:'tl-badge-decision',   badgeText:'outcome' },
         impact:      { cardClass:'tl-recovery',   dotClass:'tl-dot-green', badgeClass:'tl-badge-recovery',   badgeText:'passenger impact' },
+        'flight-dep':{ cardClass:'tl-flight-hdr', dotClass:'tl-dot-gray',  badgeClass:'tl-badge-cascade',    badgeText:'flight record' },
       };
 
+      const workflow = (typeof DefendableLofWorkflow !== 'undefined') ? DefendableLofWorkflow.getState() : null;
       const allNodes = [];
 
-      // Flight departure node — from extracted facts
-      if (facts && facts.flightNum) {
+      if (workflow && workflow.beats && workflow.beats.length) {
+        workflow.beats.forEach((beat) => {
+          allNodes.push({
+            nodeType: beat.type || 'cascade',
+            label: beat.label,
+            ref: '',
+            desc: beat.desc || '',
+            icon: beat.icon || '⚡',
+            time: beat.time || '',
+            evidenceItems: beat.evidenceItems || [],
+            showAnnotation: beat.type !== 'flight-dep',
+            nodeId: beat.id,
+            cfg: typeConfig[beat.type] || typeConfig.cascade,
+            annPlaceholder: beat.type === 'outcome'
+              ? 'Add decision context — standby, options considered, passenger comms…'
+              : 'Confirm or correct this event. Note missing evidence keywords — then Chase / Request below.',
+            workflowBeat: beat,
+          });
+        });
+      } else if (facts && facts.flightNum) {
         const route = (facts.depIata && facts.arrIata) ? `${facts.depIata} → ${facts.arrIata}` : '';
         const descParts = [
-          facts.date           ? `Date: ${facts.date}` : '',
-          facts.aircraftReg    ? `A/C: ${facts.aircraftReg}` : '',
-          facts.replacementReg ? `Sub A/C: ${facts.replacementReg}` : '',
-          facts.paxCount       ? `Pax: ${facts.paxCount}` : '',
-          facts.depTime        ? `STD: ${facts.depTime}` : '',
-          facts.atdTime        ? `ATD: ${facts.atdTime}` : '',
-          facts.staTime        ? `STA: ${facts.staTime}` : '',
-          facts.ataTime        ? `ATA: ${facts.ataTime}` : '',
-          facts.delayText      ? `Delay: ${facts.delayText}` : '',
+          facts.date ? `Date: ${facts.date}` : '',
+          facts.aircraftReg ? `A/C: ${facts.aircraftReg}` : '',
+          facts.depTime ? `STD: ${facts.depTime}` : '',
+          facts.atdTime ? `ATD: ${facts.atdTime}` : '',
+          facts.staTime ? `STA: ${facts.staTime}` : '',
+          facts.ataTime ? `ATA: ${facts.ataTime}` : '',
+          facts.delayText ? `Delay: ${facts.delayText}` : '',
+          facts.paxCount ? `Pax: ${facts.paxCount}` : '',
         ].filter(Boolean);
         allNodes.push({
           nodeType: 'flight-dep',
           label: `${facts.flightNum}${route ? ' — ' + route : ''}`,
-          ref: '',
-          desc: descParts.length ? descParts.join(' · ') : 'Extracted from summary — verify times against OCC records',
-          icon: '✈',
-          time: '',
+          desc: descParts.join(' · ') || 'Verify times against OCC records',
           evidenceItems: [],
           showAnnotation: false,
           nodeId: 'tl-flight-dep',
           cfg: null,
         });
-      }
-
-      // Causal chain nodes → timeline cards
-      if (causalNodes && causalNodes.length > 0) {
-        causalNodes.forEach((cn, idx) => {
-          const cfg = typeConfig[cn.type] || typeConfig.cascade;
-          const nodeId = `tl-cn-${idx}`;
-
-          // Evidence items per node type
-          let evItems = [];
-          if (idx === 0 && cn.type === 'root') {
-            // Primary disruption node gets the full evidence checklist for this disruption type
-            evItems = EVIDENCE_DB[dt.id] || [];
-          } else if (cn.type === 'outcome') {
-            // Outcome node — show OCC log and standby record as decision support evidence
-            const crewFdp = EVIDENCE_DB['crew-fdp'] || [];
-            const opsLog  = (() => {
-              for (const arr of Object.values(EVIDENCE_DB)) {
-                const found = arr.find(e => e.id === 'ops-log');
-                if (found) return found;
-              }
-              return null;
-            })();
-            evItems = crewFdp.filter(e => e.id === 'crew-duty' || e.id === 'standby-deployment');
-            if (!evItems.length && opsLog) evItems = [opsLog];
-          }
-
-          // Annotate evidence items with mention signals (custom mode only)
-          const enrichedEv = evItems.map(item => {
-            const mentioned = (!isScenarioMode && facts) ? evidenceMentionedInText(item.name, facts) : null;
-            return { ...item, mentioned };
-          });
-
-          const annPlaceholder = cn.type === 'outcome'
-            ? 'Add context on the decision — standby position, options considered, passenger comms...'
-            : 'Add what you know about this event — evidence you have, issues to flag, LOF amendments...';
-
+        (causalNodes || []).forEach((cn, idx) => {
           allNodes.push({
             nodeType: cn.type,
             label: cn.label,
-            ref: '',
             desc: cn.sub || '',
             icon: cn.icon || '⚡',
             time: cn.time || '',
-            evidenceItems: enrichedEv,
+            evidenceItems: (idx === 0 && cn.type === 'root') ? (EVIDENCE_DB[dt.id] || []) : [],
             showAnnotation: true,
-            nodeId,
-            cfg,
-            annPlaceholder,
+            nodeId: `tl-cn-${idx}`,
+            cfg: typeConfig[cn.type] || typeConfig.cascade,
+            annPlaceholder: 'Add notes for this event…',
           });
         });
       }
 
-      // Render nodes as HTML spine
       return '<div class="tl-spine">' + allNodes.map((n, i) => {
         const isFirst = i === 0;
         const isLast  = i === allNodes.length - 1;
-
         const connectorHtml = isLast ? '' : '<div class="tl-connector"></div>';
 
-        // ── Flight departure — structured operational record ─────────────
         if (n.nodeType === 'flight-dep') {
-          // Parse the desc back out into fields for grid display
           const fields = {};
-          n.desc.split(' · ').forEach(part => {
+          (n.desc || '').split(' · ').forEach(part => {
             const [k, ...v] = part.split(': ');
             if (k && v.length) fields[k.trim()] = v.join(': ').trim();
           });
           const gridFields = [
-            { label:'Aircraft',  value: fields['A/C']   || fields['Aircraft'] || '—' },
-            { label:'Date',      value: fields['Date']  || '—' },
-            { label:'STD',       value: fields['STD']   || '—' },
-            { label:'ATD',       value: fields['ATD']   || '—' },
-            { label:'STA',       value: fields['STA']   || '—' },
-            { label:'ATA',       value: fields['ATA']   || '—' },
-            { label:'Delay',     value: fields['Delay'] || '—' },
-            { label:'Sub A/C',   value: fields['Sub A/C'] || '' },
-            { label:'Pax',       value: fields['Pax']   || '' },
+            { label:'Aircraft', value: fields['A/C'] || '—' },
+            { label:'Date', value: fields['Date'] || '—' },
+            { label:'STD', value: fields['STD'] || '—' },
+            { label:'ATD', value: fields['ATD'] || '—' },
+            { label:'STA', value: fields['STA'] || '—' },
+            { label:'ATA', value: fields['ATA'] || '—' },
+            { label:'Delay', value: fields['Delay'] || '—' },
+            { label:'Pax', value: fields['Pax'] || '' },
           ].filter(f => f.value && f.value !== '—' || ['Aircraft','Date','STD','ATA'].includes(f.label));
 
-          const gridHtml = `<div class="tl-flight-grid">
-            ${gridFields.map(f => `<div class="tl-flight-field">
-              <div class="tl-ff-label">${f.label}</div>
-              <div class="tl-ff-value${f.value === '—' ? ' faint' : ''}">${f.value || '—'}</div>
-            </div>`).join('')}
-          </div>`;
+          let flightEv = '';
+          if (n.evidenceItems && n.evidenceItems.length && typeof DefendableLofWorkflow !== 'undefined') {
+            const beat = n.workflowBeat || { id: n.nodeId, label: n.label, desc: n.desc, note: '', evidenceItems: n.evidenceItems };
+            flightEv = `<hr class="tl-rule"><div class="tl-ev-label">Evidence for this sector</div><div class="tl-ev-section" id="lof-ev-section-${n.nodeId}">${n.evidenceItems.map(item => DefendableLofWorkflow.renderEvidenceItemHtml(beat, item)).join('')}</div>`;
+          }
 
           return `<div class="tl-row">
             <div class="tl-col">
@@ -5698,57 +5997,47 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
               <div class="tl-head">
                 <span class="tl-label" style="font-family:var(--font-mono);font-size:14px;letter-spacing:.02em">${n.label}</span>
               </div>
-              ${gridHtml}
+              <div class="tl-flight-grid">
+                ${gridFields.map(f => `<div class="tl-flight-field">
+                  <div class="tl-ff-label">${f.label}</div>
+                  <div class="tl-ff-value${f.value === '—' ? ' faint' : ''}">${f.value || '—'}</div>
+                </div>`).join('')}
+              </div>
+              ${flightEv}
             </div>
           </div>`;
         }
 
         const cfg = n.cfg || typeConfig.cascade;
-
-        // Node type label (replaces badge bubble)
         const nodeTypeText = cfg.badgeText === 'extraordinary circumstance' ? 'DISRUPTION · Art 5(3)'
-                           : cfg.badgeText === 'cascade'     ? 'CASCADE'
+                           : cfg.badgeText === 'cascade' ? 'CASCADE'
                            : cfg.badgeText === 'operational' ? 'OPERATIONAL'
-                           : cfg.badgeText === 'outcome'     ? 'OUTCOME'
-                           : cfg.badgeText === 'passenger impact' ? 'PASSENGER IMPACT'
+                           : cfg.badgeText === 'outcome' ? 'OUTCOME'
                            : cfg.badgeText.toUpperCase();
         const nodeTypeClass = cfg.badgeText === 'extraordinary circumstance' ? 'type-disruption'
-                            : cfg.badgeText === 'outcome'     ? 'type-outcome'
-                            : cfg.badgeText === 'passenger impact' ? 'type-recovery'
+                            : cfg.badgeText === 'outcome' ? 'type-outcome'
                             : 'type-cascade';
 
-        // ── Evidence as plain list ──────────────────────────────────────
         let evHtml = '';
-        if (n.evidenceItems && n.evidenceItems.length > 0) {
-          const renderEvItem = (item) => {
-            const key = n.nodeId + '_' + item.id;
-            const mentionHtml = item.mentioned === true
-              ? `<span class="tl-mention-yes">↳ Referenced in summary</span>`
-              : item.mentioned === false
-              ? `<span class="tl-mention-no">↳ Not in summary — chase from OCC / DIO</span>`
-              : '';
-            return `<div class="tl-ev-item" id="evi-${key}" onclick="cycleEvChip('${n.nodeId}','${item.id}',this)" title="${item.proves}">
-              <span class="tl-ev-indicator">○</span>
-              <span class="tl-ev-name">${item.name}${mentionHtml}</span>
-              <span class="tl-ev-status">— unset</span>
-            </div>`;
+        if (n.evidenceItems && n.evidenceItems.length > 0 && typeof DefendableLofWorkflow !== 'undefined') {
+          const beat = n.workflowBeat || DefendableLofWorkflow.getBeat(n.nodeId) || {
+            id: n.nodeId, label: n.label, desc: n.desc, note: '', evidenceItems: n.evidenceItems
           };
           evHtml = `<hr class="tl-rule">
-            <div class="tl-ev-label">Evidence — click to mark status</div>
-            <div class="tl-ev-section">
-              ${n.evidenceItems.map(renderEvItem).join('')}
+            <div class="tl-ev-label">Evidence — attach from repository, request, or mark missing</div>
+            <div class="tl-ev-section" id="lof-ev-section-${n.nodeId}">
+              ${n.evidenceItems.map(item => DefendableLofWorkflow.renderEvidenceItemHtml(beat, item)).join('')}
             </div>`;
         }
 
-        // ── Annotation ──────────────────────────────────────────────────
-        const annId    = `tl-ann-${n.nodeId}`;
+        const annId = `tl-ann-${n.nodeId}`;
         const signalId = `tl-sig-${n.nodeId}`;
-        const annHtml  = n.showAnnotation ? `
+        const annHtml = n.showAnnotation ? `
           <hr class="tl-rule">
           <div class="tl-ann-row">
-            <div class="tl-ann-label">Add note · request evidence · flag LOF amendment</div>
+            <div class="tl-ann-label">Lawyer note · keywords chase repository · request evidence</div>
             <textarea class="tl-ann" id="${annId}"
-              placeholder="${n.annPlaceholder}"
+              placeholder="${n.annPlaceholder || 'Add notes…'}"
               oninput="handleTimelineAnnotation('${n.nodeId}',this.value,'${signalId}')"></textarea>
             <div id="${signalId}"></div>
           </div>` : '';
@@ -5765,7 +6054,7 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
               <span class="tl-label">${n.label}</span>
               ${n.time ? `<span class="tl-time">${n.time}</span>` : ''}
             </div>
-            <div class="tl-desc">${n.desc}</div>
+            <div class="tl-desc">${n.desc || ''}</div>
             ${evHtml}
             ${annHtml}
           </div>
@@ -5920,31 +6209,32 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
         <div class="lof-primary" id="lof-primary">
           <div class="lof-primary-hdr">
             <div>
-              <div class="lof-primary-eyebrow">Pass II · Stage 1 — Factual record</div>
+              <div class="lof-primary-eyebrow">Pass II · Stage 1 — Factual record &amp; evidence pack</div>
               <div class="lof-primary-title">Line of Flying</div>
-              <div class="lof-primary-sub">Edit the sector record and mark evidence until this reflects absolute truth. Legal analysis stays locked until you confirm the LOF.</div>
+              <div class="lof-primary-sub">Edit the sector record, confirm each story beat, attach or request evidence from the repository, and build the defence pack here. Legal analysis stays locked until you confirm the LOF.</div>
             </div>
           </div>
           <div class="lof-primary-body">
             <div class="lof-primary-section-label">Editable sector record</div>
             ${buildLOFModule(dt)}
-            <div class="lof-primary-section-label">Flight story · evidence</div>
+            <div class="lof-primary-section-label">Flight story · evidence workspace</div>
             <div class="story-secondary">
               ${buildChronologicalTimeline(currentFacts, causalNodes, dt, isScenarioMode)}
             </div>
+            ${typeof DefendableLofWorkflow !== 'undefined' ? DefendableLofWorkflow.renderPackPanelHtml() : ''}
             <div class="rm-meter-wrap" style="margin-top:14px">
               <div class="rm-meter-row">
-                <span>Evidence position</span>
-                <span id="rm-position-label">Mark evidence status on the story beats above</span>
+                <span>Evidence pack strength</span>
+                <span id="rm-position-label">Attach, request, or mark missing on each beat</span>
               </div>
               <div class="rm-meter-track">
                 <div class="rm-meter-fill" id="rm-meter-fill"></div>
               </div>
-              <div style="font-size:11px;color:var(--ink-faint);margin-top:4px" id="rm-tally">Mark evidence to track position strength</div>
+              <div style="font-size:11px;color:var(--ink-faint);margin-top:4px" id="rm-tally">Repository matches auto-searched from each event</div>
             </div>
             <div class="lof-confirm-banner" id="lof-confirm-banner">
               <div class="lof-confirm-title">Confirm Line of Flying</div>
-              <div class="lof-confirm-text">Locks the factual record. A legal pre-rating then unlocks the thorough legal position against this confirmed story — not the raw ICC text alone.</div>
+              <div class="lof-confirm-text">Locks the sector table, story notes, and evidence pack snapshot. Thorough legal analysis then runs against this confirmed defence record — not the raw ICC alone.</div>
               <button class="lof-confirm-btn" id="lof-confirm-btn" onclick="confirmLineOfFlying()">Confirm Line of Flying →</button>
             </div>
             <div class="lof-prerating" id="lof-prerating"></div>
@@ -6033,6 +6323,7 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
     ---------------------------------------------------------- */
     function updateRMStrength() {
       if (!currentDT) return;
+      syncTlEvFromWorkflow();
 
       // Timeline evidence chip counts
       const tlEntries   = Object.entries(tlEvStatus);
@@ -7149,14 +7440,36 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
     function confirmLineOfFlying() {
       if (!currentDT) return;
       lofConfirmed = true;
+      syncTlEvFromWorkflow();
+
+      if (typeof DefendableLofWorkflow !== 'undefined') {
+        DefendableLofWorkflow.confirmSnapshot(_lofRows || []);
+      }
+
       lofPreRating = computeLegalPreRating();
+
+      const primary = document.getElementById('lof-primary');
+      if (primary) primary.classList.add('lof-locked');
+
+      // Freeze editable LOF cells
+      document.querySelectorAll('#lof-editable-wrap [contenteditable]').forEach(el => {
+        el.setAttribute('contenteditable', 'false');
+      });
+      document.querySelectorAll('#lof-editable-wrap select, #lof-editable-wrap .lof-row-btn, #lof-editable-wrap .lof-add-row-btn').forEach(el => {
+        el.disabled = true;
+      });
+
+      const packSummary = (typeof DefendableLofWorkflow !== 'undefined')
+        ? DefendableLofWorkflow.packSummary()
+        : { attached: 0, available: 0, requested: 0, missing: 0, found: 0, total: 0 };
+      const inPack = (packSummary.attached || 0) + (packSummary.available || 0);
 
       const banner = document.getElementById('lof-confirm-banner');
       if (banner) {
         banner.classList.add('locked');
         banner.innerHTML = `
           <div class="lof-confirm-title">Line of Flying confirmed</div>
-          <div class="lof-confirm-text">Factual record locked · ${_lofRows.filter(r => (r.flight||'').trim()).length} sector(s) · legal pre-rating issued below. Re-run analysis to unlock and edit again.</div>
+          <div class="lof-confirm-text">Factual record locked · ${(_lofRows || []).filter(r => (r.flight||'').trim()).length} sector(s) · evidence pack ${inPack}/${packSummary.total || 0} attached/available · ${packSummary.requested || 0} requested · ${packSummary.missing || 0} missing. Re-run analysis to unlock and revise.</div>
           <button class="lof-confirm-btn" disabled>Confirmed</button>`;
       }
 
@@ -7173,6 +7486,11 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
       if (z2badge && z2badge.textContent && /Provisional/.test(z2badge.textContent)) {
         z2badge.textContent = 'Classification · LOF confirmed';
         z2badge.style.color = 'var(--defend-mid)';
+      }
+
+      if (typeof DefendableLofWorkflow !== 'undefined') {
+        const pack = document.getElementById('lof-evidence-pack');
+        if (pack) pack.outerHTML = DefendableLofWorkflow.renderPackPanelHtml();
       }
 
       renderPass3Extended();
