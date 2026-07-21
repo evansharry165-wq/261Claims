@@ -6580,7 +6580,11 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
             at: new Date().toISOString()
           };
           const briefWrap = document.getElementById('gen-brief-wrap');
-          if (briefWrap) briefWrap.style.display = 'block';
+          if (briefWrap) {
+            briefWrap.style.display = 'block';
+            const hint = briefWrap.querySelector('div');
+            if (hint) hint.textContent = 'Editable Case Handoff Pack — Confirm creates the Manage case';
+          }
           remountDecideWorkspace();
         },
         onSendToManage: function () {
@@ -6660,6 +6664,16 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
 
       renderPass3Extended();
       if (typeof updateRMStrength === 'function') updateRMStrength();
+
+      // Draft handoff available after trees; Confirm still requires G1
+      const briefWrap = document.getElementById('gen-brief-wrap');
+      if (briefWrap) {
+        briefWrap.style.display = 'block';
+        const hint = briefWrap.querySelector('div');
+        if (hint && !confirmedRecord.g1) {
+          hint.textContent = 'Draft handoff after trees — Confirm into Manage still requires G1 sign-off';
+        }
+      }
     }
 
     function openCaseHandoffPack() {
