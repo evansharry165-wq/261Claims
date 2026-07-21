@@ -2740,6 +2740,83 @@
       background: transparent; color: var(--ink-secondary); cursor: pointer;
       outline: none; padding: 0; width: 100%;
     }
+    .lof-confirm-banner {
+      margin-top: 14px; padding: 14px 16px;
+      border: 1px solid var(--defend-border); border-left: 3px solid var(--defend-mid);
+      background: var(--defend-bg); border-radius: 2px;
+    }
+    .lof-confirm-banner.locked {
+      border-color: var(--ink-rule); border-left-color: var(--ink-secondary); background: var(--surface-page);
+    }
+    .lof-confirm-title { font-family: var(--font-serif); font-size: 14px; color: var(--ink-primary); margin-bottom: 4px; }
+    .lof-confirm-text { font-size: 11.5px; color: var(--ink-secondary); line-height: 1.5; margin-bottom: 10px; }
+    .lof-confirm-btn {
+      font-family: var(--font-mono); font-size: 11px; letter-spacing: .04em;
+      background: var(--defend-mid); color: #fff; border: none; border-radius: 2px;
+      padding: 8px 14px; cursor: pointer; font-weight: 600;
+    }
+    .lof-confirm-btn:hover { filter: brightness(1.05); }
+    .lof-confirm-btn:disabled { background: var(--ink-rule); color: var(--ink-faint); cursor: not-allowed; filter: none; }
+    .lof-prerating {
+      margin-top: 14px; padding: 14px 16px; border-radius: 2px;
+      border: 1px solid var(--ink-rule); border-left: 3px solid var(--ink-rule); display: none;
+    }
+    .lof-prerating.visible { display: block; }
+    .lof-prerating.defendable { border-left-color: var(--defend-mid); background: var(--defend-bg); border-color: var(--defend-border); }
+    .lof-prerating.investigate { border-left-color: var(--conditions-mid); background: var(--conditions-bg); border-color: var(--conditions-border); }
+    .lof-prerating.borderline { border-left-color: var(--judgment-mid); background: var(--judgment-bg); border-color: var(--judgment-border); }
+    .lof-prerating-eyebrow { font-family: var(--font-mono); font-size: 8.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 4px; }
+    .lof-prerating-title { font-family: var(--font-serif); font-size: 15px; color: var(--ink-primary); margin-bottom: 4px; }
+    .lof-prerating-text { font-size: 11.5px; color: var(--ink-secondary); line-height: 1.5; }
+    .zone3-locked {
+      padding: 28px 18px; text-align: center; border: 1px dashed var(--ink-rule2);
+      border-radius: 2px; background: var(--surface-page);
+    }
+    .zone3-locked-title { font-family: var(--font-serif); font-size: 14px; color: var(--ink-primary); margin-bottom: 6px; }
+    .zone3-locked-sub { font-size: 12px; color: var(--ink-secondary); line-height: 1.5; max-width: 280px; margin: 0 auto; }
+    .decide-workspace { font-size: 12px; color: var(--ink-primary); }
+    .decide-hero { margin-bottom: 12px; }
+    .decide-hero-title { font-family: var(--font-serif); font-size: 18px; margin: 2px 0 4px; }
+    .decide-card-kicker { font-family: var(--font-mono); font-size: 9px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 4px; }
+    .decide-card { border: 1px solid var(--ink-rule); border-left: 3px solid var(--ink-rule); padding: 12px 14px; margin: 10px 0; background: var(--surface-raised, #fff); border-radius: 2px; }
+    .decide-card-risk { border-left-color: var(--settle-mid, #B33); background: #FDF6F4; }
+    .decide-card-title { font-weight: 600; margin-bottom: 4px; }
+    .decide-muted { color: var(--ink-secondary); font-size: 11.5px; line-height: 1.45; }
+    .decide-verdict { font-family: var(--font-serif); font-size: 20px; margin: 4px 0; }
+    .decide-position.band-defendable { border-left: 3px solid var(--defend-mid); background: var(--defend-bg); padding: 12px 14px; margin: 10px 0; }
+    .decide-position.band-borderline { border-left: 3px solid var(--judgment-mid); background: var(--judgment-bg); padding: 12px 14px; margin: 10px 0; }
+    .decide-position.band-investigate { border-left: 3px solid var(--conditions-mid); background: var(--conditions-bg); padding: 12px 14px; margin: 10px 0; }
+    .decide-hold-badge { display: inline-block; margin: 6px 0; padding: 3px 8px; font-family: var(--font-mono); font-size: 10px; background: #F5EDD9; border: 1px solid #9A6B1F; color: #6B4A10; }
+    .decide-tree { margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--ink-rule2); }
+    .decide-tree-hdr { font-weight: 600; margin-bottom: 6px; }
+    .decide-tree-id { font-family: var(--font-mono); font-size: 11px; }
+    .decide-gate { padding: 8px 0; border-bottom: 1px solid var(--ink-rule2); }
+    .decide-gate-top { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 4px; }
+    .decide-gate-id { font-family: var(--font-mono); font-size: 10px; color: var(--ink-faint); }
+    .decide-gate-q { font-size: 12px; margin-bottom: 2px; }
+    .decide-gate-auth, .decide-gate-reason { font-size: 11px; color: var(--ink-secondary); }
+    .decide-ans { font-family: var(--font-mono); font-size: 10px; padding: 2px 6px; border-radius: 2px; }
+    .decide-ans-yes { background: #E4F0E9; color: #2F6B4F; }
+    .decide-ans-no { background: #F8E8E5; color: #8B3A2F; }
+    .decide-ans-na { background: #EEE; color: #666; }
+    .decide-gaps { margin: 4px 0 0 16px; padding: 0; font-size: 11px; color: var(--ink-secondary); }
+    .decide-override-row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 6px; }
+    .decide-override-row select, .decide-override-row input, .decide-card textarea, .decide-card input[type=text] {
+      font-size: 11px; padding: 4px 6px; border: 1px solid var(--ink-rule); border-radius: 2px; background: var(--surface-page);
+    }
+    .decide-auth-list { margin: 0; padding-left: 16px; }
+    .decide-auth-list .auth-binding strong::after { content: ''; }
+    .auth-binding { color: var(--ink-primary); }
+    .auth-persuasive { color: var(--ink-secondary); }
+    .decide-btn {
+      font-family: var(--font-mono); font-size: 11px; padding: 7px 12px; border: 1px solid var(--ink-rule);
+      background: var(--surface-page); cursor: pointer; border-radius: 2px; margin-right: 6px; margin-top: 4px;
+    }
+    .decide-btn-primary { background: var(--defend-mid); color: #fff; border-color: var(--defend-mid); }
+    .decide-btn-warn { background: #F5EDD9; border-color: #9A6B1F; color: #6B4A10; }
+    .decide-btn:disabled { opacity: .45; cursor: not-allowed; }
+    .decide-g1-done { padding: 8px 10px; background: var(--defend-bg); border: 1px solid var(--defend-border); font-size: 12px; }
+    .decide-g1-actions { display: flex; flex-wrap: wrap; gap: 4px; }
 
   </style>
 </head>
@@ -2755,10 +2832,11 @@
     </a>
     <div class="g-nav__divider"></div>
     <ul class="g-nav__links">
-      <li><a href="#" class="active">Analyse</a></li>
-      <li><a href="#">Platform</a></li>
-      <li><a href="#">Law Updates</a></li>
-      <li><a href="#">Case Register</a></li>
+      <li><a href="defendable_analyser_v3.html" class="active">Analyse</a></li>
+      <li><a href="defendable_legal_tree.html">Decide map</a></li>
+      <li><a href="defendable_product_flow.html">Journey</a></li>
+      <li><a href="defendable_legal_reference.html">Law</a></li>
+      <li><a href="index.html">Manage</a></li>
     </ul>
     <span class="g-nav__badge">Intelligence Engine · v3.0</span>
   </nav>
@@ -3067,6 +3145,24 @@
     <span class="page-footer__nodes">EC261 · UK261 · 20 disruption types · 16 universal legal nodes · 3-pass chain analysis</span>
   </footer>
 
+  <!-- Modular legal engine (trees run post Confirm LOF) -->
+  <script src="defendable_framework.js"></script>
+  <script src="defendable_evidence_manager.js"></script>
+  <script src="defendable_confidence_manager.js"></script>
+  <script src="defendable_registry.js"></script>
+  <script src="defendable_evidence_pack.js"></script>
+  <script src="defendable_tree_engine.js"></script>
+  <script src="defendable_tree_dt01_atc.js"></script>
+  <script src="defendable_tree_dt02_weather.js"></script>
+  <script src="defendable_trees.js"></script>
+  <script src="defendable_pass2.js"></script>
+  <script src="defendable_orchestrator.js"></script>
+  <script src="defendable_type_map.js"></script>
+  <script src="defendable_lof_legal_bridge.js"></script>
+  <script src="defendable_decide_workspace.js"></script>
+  <script src="case_filing.js"></script>
+  <script src="defendable_icc_parse.js"></script>
+
   <!-- ============================================================
        SCRIPT — MODE 0: Foundation
   ============================================================ -->
@@ -3091,6 +3187,12 @@
     let currentFlightDate = '';
     let currentDelayMins  = 0;
     let claimants         = 1;
+    let lofConfirmed      = false;
+    let lofPreRating      = null;
+    let lastTreeResults   = [];
+    let confirmedRecord   = null;
+    let lastDecideRun     = null;
+    let lawyerOverrides   = {};
 
     /* ----------------------------------------------------------
        EXAMPLES (Mode 1 chips)
@@ -3948,6 +4050,12 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
       }
 
       currentInputText = inputText;
+      lofConfirmed = false;
+      lofPreRating = null;
+      lastTreeResults = [];
+      confirmedRecord = null;
+      lastDecideRun = null;
+      lawyerOverrides = {};
 
       // Extract route, date, delay for quantum & limitation
       if (currentMode === 'flight' && retrievedFlightData) {
@@ -5726,27 +5834,34 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
         </div>
         <div class="rm-meter-wrap" style="margin-top:var(--sp-lg)">
           <div class="rm-meter-row">
-            <span>Chain Integrity</span>
-            <span id="rm-position-label">Tap evidence chips above to mark status</span>
+            <span>Documents marked for Manage</span>
+            <span id="rm-position-label">Held / needed / missing — travels with the case when confirmed</span>
           </div>
           <div class="rm-meter-track">
             <div class="rm-meter-fill" id="rm-meter-fill"></div>
           </div>
           <div style="font-size:11px;color:var(--ink-faint);margin-top:4px" id="rm-tally">Mark evidence above to track chain integrity</div>
         </div>
+        <div class="lof-confirm-banner" id="lof-confirm-banner">
+          <div class="lof-confirm-title">Confirm Line of Flying</div>
+          <div class="lof-confirm-text">Locks this factual story and the document checklist. Deterministic legal trees then run against the confirmed LOF — not the raw ICC alone.</div>
+          <button class="lof-confirm-btn" id="lof-confirm-btn" onclick="confirmLineOfFlying()">Confirm Line of Flying →</button>
+        </div>
+        <div class="lof-prerating" id="lof-prerating"></div>
         <div id="gen-brief-wrap" style="display:none;margin-top:var(--sp-lg);text-align:center">
           <button class="btn-gen-brief" onclick="generateBrief()">⚖ Generate Defence Brief</button>
-          <div style="font-size:11px;color:var(--ink-faint);margin-top:6px">Ready to compile — generate a formal defence brief from your review</div>
+          <div style="font-size:11px;color:var(--ink-faint);margin-top:6px">Available after LOF confirmation and G1 sign-off</div>
         </div>
       `;
 
       // ─────────────────────────────────────────────────────────────
-      // ZONE 2 — Legal Classification
+      // ZONE 2 — Legal Classification (provisional until LOF confirm)
       // ─────────────────────────────────────────────────────────────
       const legalChar = LEGAL_CHAR[dt.id] || '';
       const rmTips = (RM_SURFACE[dt.id] || []);
       const z2 = document.getElementById('zone2-body');
       z2.innerHTML = `
+        <div style="font-size:10px;font-family:var(--font-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:8px">Provisional — awaiting LOF confirm</div>
         <div class="z2-disruption-type">${dt.label}</div>
         <div class="dt-badge ${dt.limb1Status}" style="display:inline-block">${dir.label}</div>
         <div class="z2-directive ${dir.recClass}">
@@ -6037,6 +6152,15 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
       const p3=document.getElementById('zone3-body');
       if(!p3||!currentDT) return;
 
+      if (!lofConfirmed) {
+        p3.innerHTML = `
+          <div class="zone3-locked">
+            <div class="zone3-locked-title">Legal position locked</div>
+            <div class="zone3-locked-sub">Confirm the Line of Flying first. Deterministic trees and the Decide workspace run only against the locked factual record.</div>
+          </div>`;
+        return;
+      }
+
       const reviewed=Object.keys(rmResponses).length;
 
       const total    =currentDT.challenges.length;
@@ -6186,6 +6310,7 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
       }
 
       p3.innerHTML=`
+        <div id="decide-mount"></div>
         <div class="verdict-banner ${verdict}" style="margin-bottom:var(--sp-lg)">
           <div>
             <div class="verdict-word">${vLabels[verdict]}</div>
@@ -6198,6 +6323,198 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
         ${limitHtml}
         ${renderCaselawBundle(currentDT)}
       `;
+      remountDecideWorkspace();
+    }
+
+    function remountDecideWorkspace() {
+      const mount = document.getElementById('decide-mount');
+      if (!mount || typeof DefendAbleDecideWorkspace === 'undefined') return;
+      DefendAbleDecideWorkspace.configure({
+        setGateOverride: function (treeId, gateId, value, note) {
+          const key = treeId + ':' + gateId;
+          lawyerOverrides[key] = lawyerOverrides[key] || {};
+          if (value != null) lawyerOverrides[key].answer = value;
+          if (note != null) lawyerOverrides[key].note = note;
+        },
+        setCausalOverride: function (value) {
+          if (!lastDecideRun || !lastDecideRun.causalCheck) return;
+          lastDecideRun.causalCheck.override = value || null;
+          if (confirmedRecord && typeof DefendAbleLofLegalBridge !== 'undefined') {
+            lastDecideRun.position = DefendAbleLofLegalBridge.mapTreeExitToVerdict(
+              lastDecideRun.treeResults, lastDecideRun.causalCheck, confirmedRecord.limb1Status
+            );
+            lastDecideRun.preRating = lastDecideRun.position;
+            lofPreRating = lastDecideRun.position;
+            remountDecideWorkspace();
+          }
+        },
+        setCausalNote: function (value) {
+          if (lastDecideRun && lastDecideRun.causalCheck) lastDecideRun.causalCheck.note = value || '';
+        },
+        onSignOff: function (action, by, note) {
+          if (!confirmedRecord) return;
+          if (action === 'send_back_evidence') {
+            confirmedRecord.evidenceRequests = confirmedRecord.evidenceRequests || [];
+            confirmedRecord.evidenceRequests.push({
+              id: 'evr-' + Date.now(),
+              at: new Date().toISOString(),
+              by: by || 'Lawyer',
+              note: note || 'Evidence requested — G0 remains frozen',
+              status: 'open'
+            });
+          }
+          confirmedRecord.g1 = {
+            action: action,
+            by: by || 'Lawyer',
+            note: note || '',
+            at: new Date().toISOString()
+          };
+          const briefWrap = document.getElementById('gen-brief-wrap');
+          if (briefWrap) briefWrap.style.display = 'block';
+          remountDecideWorkspace();
+        },
+        onSendToManage: function () {
+          sendDecidePacketsToManage();
+        }
+      });
+      DefendAbleDecideWorkspace.render(mount, {
+        record: confirmedRecord,
+        run: lastDecideRun
+      });
+    }
+
+    function confirmLineOfFlying() {
+      if (!currentDT) return;
+      lofConfirmed = true;
+
+      const juris = getJurisdiction();
+      const jurisdiction = juris ? juris.regime : 'UK261';
+      const factorIds = (window._lastDisruptionFactors || []).map(function (f) { return f.id; }).filter(Boolean);
+
+      if (typeof DefendAbleLofLegalBridge !== 'undefined') {
+        confirmedRecord = DefendAbleLofLegalBridge.buildConfirmedRecord({
+          lofRows: _lofRows || [],
+          facts: currentFacts,
+          causalNodes: causalNodes || [],
+          rawText: currentInputText || '',
+          tlEvStatus: tlEvStatus || {},
+          nodeAnnotations: nodeAnnotations || {},
+          dt: currentDT,
+          evidenceDb: typeof EVIDENCE_DB !== 'undefined' ? EVIDENCE_DB : null,
+          factorIds: factorIds,
+          jurisdiction: jurisdiction
+        });
+        try {
+          localStorage.setItem('dfa_confirmed_lof', JSON.stringify(confirmedRecord));
+        } catch (e) { /* ignore quota */ }
+
+        lastDecideRun = DefendAbleLofLegalBridge.runTreesOnConfirmedRecord(confirmedRecord);
+        lastTreeResults = lastDecideRun.treeResults || [];
+        lofPreRating = lastDecideRun.position || lastDecideRun.preRating;
+        confirmedRecord.treeResults = lastTreeResults;
+        confirmedRecord.preRating = lofPreRating;
+        confirmedRecord.typePriority = lastDecideRun.typePriority;
+        confirmedRecord.causalCheck = lastDecideRun.causalCheck;
+        confirmedRecord.authorities = lastDecideRun.authorities;
+      } else {
+        lofPreRating = {
+          band: currentDT.limb1Status === 'extraordinary' ? 'defendable' : 'investigate',
+          title: 'Heuristic pre-rating (trees unavailable)',
+          text: 'Tree modules did not load — classification only.'
+        };
+      }
+
+      const banner = document.getElementById('lof-confirm-banner');
+      if (banner) {
+        banner.classList.add('locked');
+        banner.innerHTML = `
+          <div class="lof-confirm-title">Line of Flying confirmed</div>
+          <div class="lof-confirm-text">Factual record locked · ${(_lofRows || []).filter(r => (r.flight||'').trim()).length} sector(s). Re-run analysis to unlock and edit again.</div>
+          <button class="lof-confirm-btn" disabled>Confirmed</button>`;
+      }
+
+      const pre = document.getElementById('lof-prerating');
+      if (pre && lofPreRating) {
+        pre.className = `lof-prerating visible ${lofPreRating.band || ''}`;
+        pre.innerHTML = `
+          <div class="lof-prerating-eyebrow">Legal pre-rating · tree-driven</div>
+          <div class="lof-prerating-title">${lofPreRating.title || lofPreRating.frameworkLabel || ''}</div>
+          <div class="lof-prerating-text">${lofPreRating.text || ''}</div>`;
+      }
+
+      const z2badge = document.querySelector('#zone2-body > div');
+      if (z2badge && /Provisional/.test(z2badge.textContent || '')) {
+        z2badge.textContent = 'Classification · LOF confirmed · Decide unlocked';
+        z2badge.style.color = 'var(--defend-mid)';
+      }
+
+      renderPass3Extended();
+      if (typeof updateRMStrength === 'function') updateRMStrength();
+    }
+
+    function sendDecidePacketsToManage() {
+      const statusEl = document.getElementById('decide-send-status');
+      if (!confirmedRecord || !confirmedRecord.g1) {
+        if (statusEl) statusEl.textContent = 'G1 sign-off required first.';
+        return;
+      }
+      if (typeof DefendAbleLofLegalBridge === 'undefined' || typeof CaseFiling === 'undefined') {
+        if (statusEl) statusEl.textContent = 'CaseFiling or bridge missing.';
+        return;
+      }
+
+      const facts = confirmedRecord.facts || {};
+      const flightNum = facts.flightNum || ((_lofRows[0] && _lofRows[0].flight) || 'UNKNOWN');
+      const ref = 'DA-' + flightNum.replace(/\s+/g, '') + '-' + String(Date.now()).slice(-6);
+      const route = (facts.depIata && facts.arrIata)
+        ? (facts.depIata + ' → ' + facts.arrIata)
+        : ((_lofRows[0] && _lofRows[0].route) || '');
+      const pos = (lastDecideRun && lastDecideRun.position) || lofPreRating || {};
+      const classification = pos.frameworkLabel || pos.verdict || 'JUDGMENT REQUIRED';
+
+      CaseFiling.ensureCaseFile({
+        ref: ref,
+        claimant: 'From Legal Engine',
+        flightNum: flightNum,
+        route: route,
+        dep: facts.depIata || '',
+        arr: facts.arrIata || '',
+        flight: flightNum + (route ? (' — ' + route) : ''),
+        flightDate: facts.date || currentFlightDate || '',
+        jurisdiction: (confirmedRecord.jurisdiction === 'UK261') ? 'england-wales' : 'eu',
+        stage: pos.conditionType === 'EVIDENCE_HOLD' ? 'evidence' : 'intake',
+        disruptionType: currentDT ? currentDT.label : (confirmedRecord.dtId || ''),
+        classification: classification,
+        triageNote: (pos.title || '') + ' — ' + (pos.text || ''),
+        type: 'EC261 / UK261',
+        uploadedByName: (confirmedRecord.g1 && confirmedRecord.g1.by) || 'Legal Engine'
+      });
+
+      const casePacket = DefendAbleLofLegalBridge.buildCasePacket(confirmedRecord, { meta: { ref: ref } });
+      const decisionPacket = DefendAbleLofLegalBridge.buildDecisionPacket(confirmedRecord, lastDecideRun, confirmedRecord.g1);
+
+      CaseFiling.addDocument(ref, {
+        name: 'case_packet.json',
+        folderId: 'legal',
+        mime: 'application/json',
+        content: JSON.stringify(casePacket, null, 2),
+        source: 'Legal Engine'
+      });
+      CaseFiling.addDocument(ref, {
+        name: 'decision_packet.json',
+        folderId: 'legal',
+        mime: 'application/json',
+        content: JSON.stringify(decisionPacket, null, 2),
+        source: 'Legal Engine'
+      });
+      CaseFiling.addActivity(ref, 'Received from Legal Engine — G1 ' + confirmedRecord.g1.action, 'legal', confirmedRecord.g1.by || 'Legal Engine');
+
+      try {
+        localStorage.setItem('dfa_last_manage_ref', ref);
+      } catch (e) {}
+
+      if (statusEl) statusEl.textContent = 'Case ' + ref + ' created.';
+      window.location.href = 'case.html?ref=' + encodeURIComponent(ref);
     }
 
     /* ----------------------------------------------------------
@@ -8315,6 +8632,14 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
     ---------------------------------------------------------- */
     function generateBrief() {
       if (!currentDT) return;
+      if (!lofConfirmed) {
+        alert('Confirm the Line of Flying before generating a defence brief.');
+        return;
+      }
+      if (!confirmedRecord || !confirmedRecord.g1) {
+        alert('Complete G1 lawyer sign-off in the Decide workspace before generating the brief.');
+        return;
+      }
 
       // Derive score from nodeAnnotations (new Pass II system)
       const total = causalNodesCount || 1;
