@@ -88,7 +88,7 @@ var DefendAbleTrees = (function () {
     {
       treeId: 'DT-04',
       disruptionType: 'Birdstrike',
-      authority: 'Pešková C-315/15 — birdstrike per se EC',
+      authority: 'Pešková C-315/15 — birdstrike per se EC; post-strike delay dissected node-by-node',
       priority: 5,
       ecGateId: 'DT4-G1',
       matches: function (t) { return /\bbirdstrike|\bbird strike|\bingestion\b/i.test(t || ''); },
@@ -96,68 +96,85 @@ var DefendAbleTrees = (function () {
         {
           id: 'DT4-G1', name: 'Birdstrike event', type: 'entry',
           question: 'Did a birdstrike or engine ingestion event occur?',
-          authority: 'Pešková — per se extraordinary',
+          authority: 'Pešková — per se extraordinary (regardless of damage)',
           iccPattern: /\bbirdstrike|\bbird strike|\bingestion\b/i,
           requiredLibKeys: ['amos', 'tops', 'safetynet'],
           findingTypes: { tops: 'AMOS_BIRDSTRIKE' },
           conclusionIds: ['DT4_BIRDSTRIKE_EC', 'U7_EC_ESTABLISHED'],
-          yesMeans: 'Birdstrike EC established — both Wallentin-Hermann limbs satisfied.',
+          yesMeans: 'Birdstrike EC established — both Wallentin-Hermann limbs satisfied on the collision itself.',
           onYes: 'DT4-G2', onNo: 'ROUTE_AWAY'
         },
         {
           id: 'DT4-G2', name: 'Mandatory inspection', type: 'confirm',
-          question: 'Was mandatory AMOS/EASA inspection completed and documented?',
-          authority: 'Without inspection record claim is unsubstantiated',
+          question: 'Was mandatory AMOS/EASA inspection completed and documented within programme scope?',
+          authority: 'Pešková — mandatory inspection is a reasonable measure; its required duration does not negate EC',
           requiredLibKeys: ['amos', 'tops'],
           findingTypes: { amos: 'AMOS_NO_PRIOR_DEFECT' },
           onYes: 'DT4-G3', onNo: 'DT4-G3'
         },
-        stdMeasures('DT4-G3', 'DT4')
+        {
+          id: 'DT4-G3', name: 'Post-strike delay dissection', type: 'confirm',
+          question: 'Is any additional delay after the first inspection (second technician wait, extended grounding) separately justified as unavoidable?',
+          authority: 'Pešková secondary holding — post-strike waiting for a second technician is a NEW event not automatically covered by EC',
+          iccPattern: /\bsecond technician|\badditional delay|\bpost-strike|\bextended grounding|\bwaited for engineer\b/i,
+          conclusionIds: ['U8_RM_SLOT_RECOVERY'],
+          yesMeans: 'Post-strike timeline elements documented as unavoidable RM steps.',
+          noMeans: 'Excess post-strike delay may defeat Art 5(3) even though the strike itself was EC.',
+          onYes: 'DT4-G4', onNo: 'DT4-G4', onUnknown: 'DT4-G4'
+        },
+        stdMeasures('DT4-G4', 'DT4')
       ]
     },
 
     {
       treeId: 'DT-05',
       disruptionType: 'Technical Issues',
-      authority: 'van der Lans C-257/14 — ordinary technical fault NOT EC',
+      authority: 'van der Lans C-257/14; Jet2 v Huzar; Wallentin-Hermann — ordinary technical fault NOT EC; lightning C-399/24 may be external EC',
       priority: 12,
       ecGateId: 'DT5-G2',
       matches: function (t) {
         if (/\bpositioning\b/i.test(t || '')) return false;
         if (/\bhidden defect|\bmanufacturing defect|\bno prior ad\b/i.test(t || '')) return false;
-        return /\bhydraulic|\btechnical fault|\baog\b|\bdefect\b|\bmel\b|\bcategory a\b/i.test(t || '');
+        return /\bhydraulic|\btechnical fault|\baog\b|\bdefect\b|\bmel\b|\bcategory a\b|\blightning\b/i.test(t || '');
       },
       gates: [
         {
           id: 'DT5-G1', name: 'Technical fault identified', type: 'entry',
           question: 'Was an aircraft technical fault the stated cause of disruption?',
-          iccPattern: /\bhydraulic|\btechnical|\baog\b|\bdefect\b|\bmel\b/i,
+          iccPattern: /\bhydraulic|\btechnical|\baog\b|\bdefect\b|\bmel\b|\blightning\b/i,
           requiredLibKeys: ['amos', 'tops'],
           onYes: 'DT5-G2', onNo: 'ROUTE_AWAY'
         },
         {
           id: 'DT5-G2', name: 'Ordinary technical (van der Lans)', type: 'concede',
-          question: 'Is this Category A / MEL no-dispatch — ordinary technical fault?',
-          authority: 'van der Lans — routine faults NOT EC',
+          question: 'Is this an ordinary / premature component fault (not external event, not OEM/AD hidden design defect)?',
+          authority: 'van der Lans / Huzar — routine and even undetectable ordinary faults NOT EC',
           conditional: function (ctx) {
-            return /\bcategory a|\bmel dispatch not|\bvan der lans\b/i.test(ctx.iccText || '');
+            var t = ctx.iccText || '';
+            // Skip concede when lightning / ground damage / birdstrike / hidden OEM defect indicated
+            if (/\blightning\b|\bground damage\b|\bbirdstrike\b|\bhidden (design |manufacturing )?defect\b|\beasa\b.*\bad\b|\boem\b/i.test(t)) {
+              return false;
+            }
+            return /\bhydraulic|\btechnical|\baog\b|\bdefect\b|\bmel\b|\bcategory a\b|\bcomponent failure\b/i.test(t);
           },
-          conclusion: 'Ordinary technical fault — concede EC on technical point.',
-          conditions: ['Concede EC if ordinary technical fault — assess quantum and passenger rights.'],
+          conclusion: 'Ordinary technical fault — concede EC on technical point (Wallentin / van der Lans / Huzar).',
+          conditions: ['Concede EC if ordinary technical fault — assess quantum and passenger rights.', 'Art 9 care remains owed (McDonagh).'],
           onSkip: 'DT5-G2b', onNA: 'DT5-G2b'
         },
         {
           id: 'DT5-G2b', name: 'Technical fault scope', type: 'confirm',
-          question: 'Is an aircraft technical fault the stated cause of disruption?',
-          iccPattern: /\bhydraulic|\btechnical|\baog\b|\bdefect\b/i,
+          question: 'Is an aircraft technical fault or lightning/external technical event the stated cause?',
+          iccPattern: /\bhydraulic|\btechnical|\baog\b|\bdefect\b|\blightning\b/i,
           requiredLibKeys: ['amos', 'tops'],
           onYes: 'DT5-G3', onNo: 'ROUTE_AWAY'
         },
         {
           id: 'DT5-G3', name: 'External technical cause', type: 'confirm',
-          question: 'Was fault caused by external event (lightning, ground damage, birdstrike)?',
-          iccPattern: /\blightning|\bground damage|\bbirdstrike\b/i,
+          question: 'Was fault caused by external event (lightning, ground damage, birdstrike) or confirmed OEM/AD hidden defect?',
+          authority: 'C-399/24 lightning; Pešková birdstrike; Matkustaja/Finnair hidden defect',
+          iccPattern: /\blightning|\bground damage|\bbirdstrike|\bhidden (design |manufacturing )?defect\b|\beasa\b|\boem\b/i,
           conclusionIds: ['U7_EC_ESTABLISHED'],
+          yesMeans: 'External/hidden-defect technical path — EC candidate; RM still required.',
           onYes: 'DT5-G4', onNo: 'EXIT'
         },
         stdMeasures('DT5-G4', 'DT5')
@@ -209,7 +226,7 @@ var DefendAbleTrees = (function () {
     {
       treeId: 'DT-07',
       disruptionType: 'Industrial Action',
-      authority: 'Krüsemann C-195/17; Pešková C-315/15',
+      authority: 'Krüsemann C-195/17; Airhelp v Swiss C-28/20 — own-staff NOT EC; third-party may be EC',
       priority: 15,
       ecGateId: 'DT7-G2',
       matches: function (t) {
@@ -219,13 +236,13 @@ var DefendAbleTrees = (function () {
         {
           id: 'DT7-G1', name: 'Own-staff strike', type: 'concede',
           question: 'Is this carrier own-staff industrial action?',
-          authority: 'Krüsemann — own-staff strike NOT EC',
+          authority: 'Krüsemann C-195/17; Airhelp v Swiss C-28/20 — own-staff strike NOT EC (lawful or wildcat)',
           conditional: function (ctx) {
-            return /\bown\b[\s\S]{0,40}\bstrike|\bpilot union|\bown pilot|\bown staff strike|\bpilot staff participating\b/i.test(ctx.iccText || '')
-              && !/\batc industrial|\bthird.party|\bhandler\b/i.test(ctx.iccText || '');
+            return /\bown\b[\s\S]{0,40}\bstrike|\bpilot union|\bown pilot|\bown staff strike|\bpilot staff participating|\bown (cabin |ground )?staff\b[\s\S]{0,30}\bstrike\b/i.test(ctx.iccText || '')
+              && !/\batc industrial|\bthird.party|\bhandler\b|\bairport strike|\bansp\b/i.test(ctx.iccText || '');
           },
-          conclusion: 'Own-staff strike — concede immediately.',
-          conditions: ['Concede — Krüsemann own-staff industrial action is not EC.']
+          conclusion: 'Own-staff strike — concede immediately (Krüsemann / Airhelp C-28/20).',
+          conditions: ['Concede — own-staff industrial action is not EC.', 'Art 9 care remains owed (McDonagh).']
         },
         {
           id: 'DT7-G2', name: 'Third-party strike', type: 'entry',
@@ -462,7 +479,16 @@ var DefendAbleTrees = (function () {
           question: 'Has root cause at rotation start been classified (weather, ATC, technical)?',
           iccPattern: /\bweather\b|\batc\b|\btechnical\b|\bctot\b|\bthunderstorm\b/i,
           conclusion: 'Apply appropriate disruption tree to root cause — cascade itself is not EC.',
-          onYes: 'EXIT', onNo: 'EXIT'
+          onYes: 'DT13-G4', onNo: 'DT13-G4'
+        },
+        {
+          id: 'DT13-G4', name: 'Causal chain integrity', type: 'confirm',
+          question: 'Did a voluntary carrier decision (e.g. waiting for delayed passengers) break the causal chain from the root EC?',
+          authority: 'NI, HZ v European Air Charter T-656/24 (March 2026) — also cited as T-134/25 in industry notes',
+          iccPattern: /\bvoluntar|\bchose to wait|\bwaited for (delayed )?passengers|\bcommercial decision\b/i,
+          yesMeans: 'Chain-break risk — Art 5(3) may fail on this rotation despite upstream EC.',
+          noMeans: 'No voluntary chain-break language detected — maintain root-cause tree analysis.',
+          onYes: 'EXIT', onNo: 'EXIT', onUnknown: 'EXIT'
         }
       ]
     },
