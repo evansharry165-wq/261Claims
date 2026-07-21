@@ -37,8 +37,28 @@ var CaseShell = (function () {
     try {
       stored = JSON.parse(sessionStorage.getItem('dfa_case') || 'null');
     } catch (e) {}
-    var c = typeof getCase === 'function' ? getCase(ref) : null;
-    if (stored && stored.ref === ref) c = stored;
+    var c = typeof resolveCase === 'function'
+      ? resolveCase(ref)
+      : (typeof getCase === 'function' ? getCase(ref) : null);
+    if (stored && stored.ref === ref) {
+      c = Object.assign({}, c || {}, stored);
+      // Prefer fresher filing meta for engine fields
+      if (typeof CaseFiling !== 'undefined') {
+        var cf = CaseFiling.getCase(ref);
+        if (cf) {
+          if (cf.locReady != null) c.locReady = !!cf.locReady;
+          if (cf.origin) c.origin = cf.origin;
+          if (cf.caseSummary) c.caseSummary = cf.caseSummary;
+          if (cf.verdictTitle) c.verdictTitle = cf.verdictTitle;
+          if (cf.verdictSub) c.verdictSub = cf.verdictSub;
+          if (cf.conditions) c.conditions = cf.conditions;
+          if (cf.points && cf.points.length) c.points = cf.points;
+          if (cf.classification) c.classification = cf.classification;
+          if (cf.evidencePct != null) c.evidencePct = cf.evidencePct;
+          if (cf.stage) c.stage = cf.stage;
+        }
+      }
+    }
     if (!c) return null;
 
     var u = USERS[c.assignedTo] || { name: c.assignedTo };
@@ -68,7 +88,9 @@ var CaseShell = (function () {
           triageNote: c.triageNote || '',
           classification: c.classification || '',
           assignedTo: u.name || c.assignedTo,
-          cprDaysLeft: c.cprDaysLeft
+          cprDaysLeft: c.cprDaysLeft,
+          origin: c.origin || '',
+          locReady: c.locReady != null ? !!c.locReady : true
         })
       );
     } catch (e) {}
@@ -225,8 +247,71 @@ var CaseShell = (function () {
       return s.id === c.stage || (c.stage === 'defence' && s.id === 'drafting');
     });
 
+    var enginePanel = '';
+    var isEngine = c.origin === 'legal_engine' || (typeof CaseFiling !== 'undefined' && CaseFiling.findByDocKey && CaseFiling.findByDocKey(c.ref, 'decision_packet'));
+    if (isEngine) {
+      var docs = typeof CaseFiling !== 'undefined' ? CaseFiling.getDocuments(c.ref) : [];
+      var legalDoc = docs.filter(function (d) { return d.docKey === 'legal_position'; })[0];
+      var summaryDoc = docs.filter(function (d) { return d.docKey === 'case_summary'; })[0];
+      var locBadge = c.locReady
+        ? '<span class="case-bar-pill" style="background:var(--confirm-faint);color:var(--confirm)">LOC on file</span>'
+        : '<span class="case-bar-pill" style="background:var(--caution-faint);color:var(--caution)">Awaiting LOC</span>';
+      enginePanel =
+        '<div class="panel-card" style="grid-column:1/-1">' +
+        '<div class="pc-label">Legal Engine handoff</div>' +
+        '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">' +
+        '<span class="case-bar-pill" style="background:var(--accent-faint);color:var(--accent)">Engine origin</span>' +
+        locBadge +
+        (c.classification
+          ? '<span class="case-bar-pill" style="background:var(--surface3);color:var(--ink2)">' +
+            escapeHtml(c.classification) +
+            '</span>'
+          : '') +
+        '</div>' +
+        (c.verdictTitle
+          ? '<div class="pc-title" style="font-size:15px;margin-bottom:6px">' + escapeHtml(c.verdictTitle) + '</div>'
+          : '') +
+        (c.verdictSub
+          ? '<div style="font-size:12px;color:var(--text2);margin-bottom:10px">' + escapeHtml(c.verdictSub) + '</div>'
+          : '') +
+        (c.caseSummary
+          ? '<div style="font-size:12px;line-height:1.55;white-space:pre-wrap;margin-bottom:12px;color:var(--text)">' +
+            escapeHtml(String(c.caseSummary).slice(0, 800)) +
+            '</div>'
+          : '') +
+        ((c.conditions || []).length
+          ? '<div style="font-size:11px;margin-bottom:10px"><strong>Conditions:</strong> ' +
+            escapeHtml((c.conditions || []).join('; ')) +
+            '</div>'
+          : '') +
+        '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">' +
+        (legalDoc
+          ? '<button class="btn-primary" type="button" onclick="CaseShell.openFilingDoc(\'legal_position\')">Open legal position</button>'
+          : '') +
+        (summaryDoc
+          ? '<button class="btn-primary" type="button" style="background:var(--ink2)" onclick="CaseShell.openFilingDoc(\'case_summary\')">Open case summary</button>'
+          : '') +
+        '<button class="btn-primary" type="button" style="background:var(--ink2)" onclick="CaseShell.switchTab(\'evidence\')">Evidence list</button>' +
+        '<a class="btn-primary" style="text-decoration:none;background:var(--ink2)" href="repository.html?ref=' +
+        encodeURIComponent(c.ref) +
+        '">All filing docs</a>' +
+        '</div>';
+
+      if (!c.locReady) {
+        enginePanel +=
+          '<div style="border-top:1px solid var(--border);padding-top:12px;margin-top:4px">' +
+          '<div class="pc-label">Awaiting Letter of Claim</div>' +
+          '<div style="font-size:12px;color:var(--text2);margin-bottom:8px">Case details from the engine are ready. Paste or drop the LOC when it arrives — no re-keying of facts.</div>' +
+          '<textarea id="shell-loc-paste" rows="4" placeholder="Paste LOC text or note…" style="width:100%;font-size:12px;padding:8px;border:1px solid var(--border);border-radius:var(--r);font-family:var(--font);margin-bottom:8px"></textarea>' +
+          '<button class="btn-primary" type="button" onclick="CaseShell.receiveLoc()">Mark LOC received</button>' +
+          '</div>';
+      }
+      enginePanel += '</div>';
+    }
+
     document.getElementById('tab-panel').innerHTML =
       '<div class="tab-panel-inner"><div class="overview-grid">' +
+      enginePanel +
       '<div class="panel-card highlight">' +
       '<div class="pc-label">Next action</div>' +
       '<div class="pc-title">' +
@@ -250,6 +335,12 @@ var CaseShell = (function () {
       '<div class="kv"><span>Disruption</span><span>' +
       escapeHtml(c.disruptionType || '—') +
       '</span></div>' +
+      '<div class="kv"><span>Classification</span><span>' +
+      escapeHtml(c.classification || '—') +
+      '</span></div>' +
+      '<div class="kv"><span>Evidence</span><span>' +
+      escapeHtml(String(c.evidencePct || 0)) +
+      '%</span></div>' +
       '<div class="kv"><span>Stage</span><span>' +
       escapeHtml(typeof t === 'function' ? t('stage_' + c.stage) || c.stage : c.stage) +
       '</span></div>' +
@@ -291,6 +382,47 @@ var CaseShell = (function () {
             .join('')
         : '<div class="empty-note">No similar cases in demo data.</div>') +
       '</div></div></div>';
+  }
+
+  function openFilingDoc(docKey) {
+    if (typeof CaseFiling === 'undefined' || !state.ref) return;
+    var doc = CaseFiling.findByDocKey(state.ref, docKey);
+    if (!doc) {
+      var all = CaseFiling.getDocuments(state.ref) || [];
+      doc = all.filter(function (d) { return d.docKey === docKey; })[0];
+    }
+    if (!doc) return;
+    var w = window.open('', '_blank');
+    if (!w) return;
+    w.document.write(
+      '<pre style="font-family:Georgia,serif;font-size:14px;white-space:pre-wrap;padding:24px;max-width:720px;margin:0 auto">' +
+      escapeHtml(doc.content || '') +
+      '</pre>'
+    );
+    w.document.close();
+  }
+
+  function receiveLoc() {
+    var paste = document.getElementById('shell-loc-paste');
+    var text = paste ? paste.value.trim() : '';
+    if (!text) {
+      text = 'Letter of Claim received (flagged from case overview — content to follow).';
+    }
+    if (typeof markLocReceived === 'function') {
+      markLocReceived(state.ref, {
+        content: text,
+        claimant: state.caseData && state.caseData.claimant,
+        by: (USERS[getActiveUser()] || {}).full || 'Lawyer',
+        stage: state.caseData && state.caseData.stage === 'evidence' ? 'evidence' : 'cpr'
+      });
+    }
+    loadCase(state.ref);
+    if (state.caseData) {
+      renderHeader(state.caseData);
+      renderTabs();
+      renderOverview();
+      logActivity('LOC received — ready for CPR/response', 'upload');
+    }
   }
 
   function renderActivity() {
@@ -623,6 +755,8 @@ var CaseShell = (function () {
     addNote: addNote,
     logActivity: logActivity,
     renderTabs: renderTabs,
-    renderCaseBar: renderHeader
+    renderCaseBar: renderHeader,
+    openFilingDoc: openFilingDoc,
+    receiveLoc: receiveLoc
   };
 })();

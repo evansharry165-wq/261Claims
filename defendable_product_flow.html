@@ -327,31 +327,30 @@ flowchart TB
     Opinion["Decide workspace + G1<br/>approve / override / send-back"]
   end
 
-  subgraph packet [Packets]
-    CP["case_packet JSON<br/>facts · LOF · evidence · G3/G4 nulls"]
-    DP["decision_packet JSON<br/>verdict · authorities · G1 · G3/G4 nulls"]
+  subgraph packet [Handoff]
+    Pack["Editable Case Handoff Pack<br/>Facts · Decide · meta · locReady"]
+    CP["case_packet + decision_packet<br/>summary · legal position · evidence index"]
   end
 
-  subgraph part3 [Part 3 — MANAGE · live shell]
-    Case["Case workspace<br/>Work · Cases · Evidence · Docs"]
-    Docs["Holding / defence / settlement drafts"]
+  subgraph part3 [Part 3 — MANAGE · consumes handoff]
+    Case["Live case workspace<br/>overview · evidence · docs"]
+    Loc["LOC arrives → locReady<br/>flag / paste into case"]
+    Docs["Holding / defence drafts · G2+"]
     Res["Resolution<br/>Defended · Settled · Paid"]
   end
 
   ICC --> Parse --> LOF --> Story --> Confirm
   Confirm --> Bridge
   Bridge --> Trees --> Causal --> Pre --> Opinion
-  Confirm --> CP
-  Opinion --> DP
-  CP --> Opinion
-  DP --> Case --> Docs --> Res
+  Opinion --> Pack --> CP --> Case
+  Case --> Loc --> Docs --> Res
 
   classDef built fill:#E4F0E9,stroke:#2F6B4F,color:#1C1A17
   classDef partial fill:#F5EDD9,stroke:#9A6B1F,color:#1C1A17
   classDef planned fill:#EDEAE4,stroke:#6B6560,color:#1C1A17
   classDef pkt fill:#E6EEF5,stroke:#2A4A6B,color:#1C1A17
 
-  class ICC,Parse,LOF,Story,Confirm,Bridge,Trees,Causal,Pre,Opinion,Case,CP,DP built
+  class ICC,Parse,LOF,Story,Confirm,Bridge,Trees,Causal,Pre,Opinion,Pack,CP,Case,Loc built
   class Docs,Res partial
       </pre>
     </div>
@@ -376,17 +375,18 @@ flowchart TD
   DT["runAllApplicable DT gates"]
   Causal["Thinking trail + CONDITIONS + CRIT"]
   Rate["Verdict-first brief bar"]
-  Z3["Zone 3 Decide · G1 → Manage"]
+  Z3["Zone 3 Decide · G1"]
+  Hand["Case Handoff Pack<br/>editable → Confirm into Manage"]
 
   Prompt --> Run --> Z1
   Run --> Z2
   Run --> Z3lock
   Z1 --> HitL --> Lock
-  Lock --> Map --> DT --> Causal --> Rate --> Z3
+  Lock --> Map --> DT --> Causal --> Rate --> Z3 --> Hand
 
   classDef built fill:#E4F0E9,stroke:#2F6B4F,color:#1C1A17
   classDef partial fill:#F5EDD9,stroke:#9A6B1F,color:#1C1A17
-  class Prompt,Run,Z1,Z2,Z3lock,HitL,Lock,Map,DT,Causal,Rate,Z3 built
+  class Prompt,Run,Z1,Z2,Z3lock,HitL,Lock,Map,DT,Causal,Rate,Z3,Hand built
       </pre>
     </div>
   </section>
@@ -419,19 +419,20 @@ flowchart TD
           <li>Confirm LOF → type-map priority → DT gates</li>
           <li>v2 thinking trail (E1…En) + CONDITIONS BEFORE FINAL RESPONSE</li>
           <li>CRIT / IMPO evidence priorities · EVIDENCE_HOLD under CONDITIONS</li>
-          <li>G1 sign-off → case_packet + decision_packet into Manage</li>
+          <li>G1 sign-off → editable Case Handoff Pack</li>
+          <li>Confirm → Manage case (summary, evidence index, legal position, packets)</li>
         </ul>
       </article>
-      <article class="card partial">
-        <span class="badge partial">Part 3 · shell + intake</span>
+      <article class="card built">
+        <span class="badge built">Part 3 · handoff closed</span>
         <div class="card-kicker">Manage</div>
         <h3>261Claims platform</h3>
-        <p>Case lifecycle after a signed legal decision.</p>
+        <p>Case lifecycle after Confirm into Manage — engine facts already on the file.</p>
         <ul>
-          <li>Work / Cases / Evidence / Docs exist</li>
-          <li>Packets land via CaseFiling from Decide Send</li>
-          <li>Next: richer holding / defence templates from EVIDENCE_HOLD</li>
-          <li>Lawyer send gates G2–G4 (schema nulls ready)</li>
+          <li>Overview shows verdict, summary, locReady / Awaiting LOC</li>
+          <li>Evidence seeded from handoff marks + CRIT/IMPO</li>
+          <li>Docs in intake / legal_drafts / evidence_index (valid folders)</li>
+          <li>LOC paste/flag on case when claim letter arrives</li>
         </ul>
       </article>
     </div>
@@ -471,17 +472,16 @@ flowchart TD
 flowchart LR
   S1["1 · Paste ICC<br/>LOF + timeline"]
   S2["2 · Confirm LOF<br/>trees + pre-rating"]
-  S3["3 · Lawyer sign-off<br/>opinion card"]
-  S4["4 · Case in Manage<br/>holding response"]
-  S5["5 · Evidence in<br/>defence letter"]
+  S3["3 · Lawyer sign-off<br/>G1 + handoff pack"]
+  S4["4 · Confirm → Manage<br/>summary · evidence · legal"]
+  S5["5 · LOC arrives<br/>flag on case · continue"]
 
   S1 --> S2 --> S3 --> S4 --> S5
 
   classDef built fill:#E4F0E9,stroke:#2F6B4F,color:#1C1A17
   classDef partial fill:#F5EDD9,stroke:#9A6B1F,color:#1C1A17
   classDef planned fill:#EDEAE4,stroke:#6B6560,color:#1C1A17
-  class S1,S2,S3,S4 built
-  class S5 partial
+  class S1,S2,S3,S4,S5 built
       </pre>
     </div>
     <p class="sec-sub" style="margin-top:12px">Demo smoke: ATC/CTOT-only ICC. Regression: EZY4470/4471 weather+ATFM+fuel for type-map priority.</p>
@@ -492,9 +492,10 @@ flowchart LR
     <a href="defendable_legal_tree.html">defendable_legal_tree.html</a> ·
     Legal reference <a href="defendable_legal_reference.html">KB</a> ·
     Manage shell at <a href="index.html">index.html</a>.
-    Packets: <code>case_packet</code> + <code>decision_packet</code> (G3/G4 fields null-ready).
+    Packets via Case Handoff Pack Confirm: case summary, legal position, evidence index,
+    <code>case_packet</code> + <code>decision_packet</code> (valid folders; locReady default false).
     This page: <code>defendable_product_flow.html</code> — July 2026.
-    Decide primary layer mirrors v2 clarity: verdict → thinking trail → conditions → CRIT/IMPO → gates/G1.
+    Decide primary layer mirrors v2 clarity: verdict → thinking trail → conditions → CRIT/IMPO → gates/G1 → handoff.
   </p>
 </main>
 

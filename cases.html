@@ -300,14 +300,19 @@ function renderCases(){
     var sl=t('stage_'+c.stage)||c.stage;
     var rowCls=(c.ref==='DEF-2026-EW-0089'||urg==='urgent')?'row-urgent':'';
     return '<tr data-ref="'+escapeHtml(c.ref)+'" data-tab="'+escapeHtml(action.tab)+'"'+(rowCls?' class="'+rowCls+'"':'')+'>'
-      +'<td><div class="td-ref">'+escapeHtml(c.ref)+'</div></td>'
-      +'<td><div class="td-name">'+escapeHtml(c.claimant)+'</div><div class="td-sub">'+escapeHtml(c.solicitor)+'</div></td>'
+      +'<td><div class="td-ref">'+escapeHtml(c.ref)+'</div>'
+      +(c.origin==='legal_engine'?'<div class="td-sub" style="color:var(--accent)">Engine</div>':'')
+      +'</td>'
+      +'<td><div class="td-name">'+escapeHtml(c.claimant)+'</div><div class="td-sub">'+escapeHtml(c.solicitor||'—')
+      +(c.classification?' · '+escapeHtml(c.classification):'')
+      +(c.locReady===false?' · Awaiting LOC':'')
+      +'</div></td>'
       +'<td><div class="td-sub">'+escapeHtml(c.flightNum)+'</div><div class="td-sub">'+escapeHtml(c.dep)+' → '+escapeHtml(c.arr)+'</div></td>'
       +'<td><span class="stage-pill" style="background:'+sc.bg+';color:'+sc.col+'">'+escapeHtml(sl)+'</span></td>'
       +'<td><div class="td-action">'+escapeHtml(action.text)+'</div></td>'
-      +'<td><div class="td-blocker">'+escapeHtml(blocker||'—')+'</div></td>'
+      +'<td><div class="td-blocker">'+escapeHtml(blocker||(evPct?('Ev '+evPct+'%'):'—'))+'</div></td>'
       +'<td><span class="dp dp-'+urg+'">'+escapeHtml(urgencyLabel(c.cprDaysLeft))+'</span></td>'
-      +'<td style="font-family:var(--mono);font-weight:500">'+escapeHtml(c.value)+'</td></tr>';
+      +'<td style="font-family:var(--mono);font-weight:500">'+escapeHtml(c.value||'—')+'</td></tr>';
   }).join('');
 
   tbody.querySelectorAll('tr[data-ref]').forEach(function(row){

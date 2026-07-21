@@ -320,11 +320,26 @@
         triageNote: meta.triageNote || '',
         assignedTo: meta.assignedTo || 'SB',
         evidencePct: meta.evidencePct || 0,
+        origin: meta.origin || '',
+        locReady: meta.locReady != null ? !!meta.locReady : true,
+        points: meta.points || [],
+        caseSummary: meta.caseSummary || '',
+        verdictTitle: meta.verdictTitle || '',
+        verdictSub: meta.verdictSub || '',
+        conditions: meta.conditions || [],
+        totalExposure: meta.totalExposure != null ? meta.totalExposure : null,
+        limitationDeadline: meta.limitationDeadline || null,
         createdAt: now,
         updatedAt: now,
         documents: [],
         activity: [{ text: 'Live case file created', time: new Date().toLocaleString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }), type: 'create', by: meta.uploadedByName || 'System' }],
       };
+      // Preserve additional handoff / engine fields on create
+      Object.keys(meta).forEach(function (k) {
+        if (store.cases[meta.ref][k] == null && meta[k] != null && meta[k] !== '') {
+          store.cases[meta.ref][k] = meta[k];
+        }
+      });
       addAuditEntry('Case file created: ' + meta.ref + ' — ' + (meta.claimant || ''), 'create', meta.uploadedByName || 'System', meta.ref);
     }
     saveStore(store);
@@ -362,7 +377,7 @@
   }
 
   function findByDocKey(ref, docKey) {
-    return getDocuments(ref, 'legal_drafts').concat(getDocuments(ref, 'correspondence')).find(function (d) {
+    return getDocuments(ref).find(function (d) {
       return d.docKey === docKey;
     }) || null;
   }
@@ -448,6 +463,17 @@
     return counts;
   }
 
+  /**
+   * Create a rich Manage case from an engine Case Handoff Pack.
+   * Delegates to DefendAbleCaseHandoff.fileIntoManage when available.
+   */
+  function fileFromEngineHandoff(pack) {
+    if (typeof DefendAbleCaseHandoff !== 'undefined' && DefendAbleCaseHandoff.fileIntoManage) {
+      return DefendAbleCaseHandoff.fileIntoManage(pack);
+    }
+    throw new Error('DefendAbleCaseHandoff.fileIntoManage unavailable');
+  }
+
   function saveDraftToCaseFile(ref, docKey, name, content, meta) {
     meta = meta || {};
     var existing = findByDocKey(ref, docKey);
@@ -511,6 +537,7 @@
     getAuditLog: getAuditLog,
     getFolderCounts: getFolderCounts,
     saveDraftToCaseFile: saveDraftToCaseFile,
+    fileFromEngineHandoff: fileFromEngineHandoff,
     formatSize: formatSize,
     stageLabel: stageLabel,
   };

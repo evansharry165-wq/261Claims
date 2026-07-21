@@ -92,6 +92,16 @@ function getNextAction(c) {
   var icon = 'ti-file';
   var evPct = getEffectiveEvidencePct(c);
 
+  if (c.origin === 'legal_engine' && c.locReady === false) {
+    return {
+      text: 'Awaiting Letter of Claim — flag when LOC arrives',
+      tab: 'overview',
+      icon: 'ti-mail',
+      urgency: c.cprDaysLeft,
+      blocker: 'LOC'
+    };
+  }
+
   if (c.stage === 'intake') {
     text = 'Review extracted claim and confirm triage';
     tab = 'triage';
@@ -319,6 +329,33 @@ function completeEvidenceRequest(id) {
   return req;
 }
 
+function pushEvidenceRequest(req) {
+  if (!req || !req.ref) return null;
+  var reqs = [];
+  try {
+    reqs = JSON.parse(sessionStorage.getItem('dfa_evidence_requests') || '[]');
+  } catch (e) {
+    reqs = [];
+  }
+  var entry = Object.assign(
+    {
+      id: 'REQ-' + Date.now(),
+      status: 'open',
+      since: 'Just now',
+      pack: 'Gold',
+      priority: 'Normal',
+      missing: []
+    },
+    req
+  );
+  reqs.unshift(entry);
+  try {
+    sessionStorage.setItem('dfa_evidence_requests', JSON.stringify(reqs.slice(0, 80)));
+  } catch (e) {}
+  if (typeof notifyEvidenceTeamRequest === 'function') notifyEvidenceTeamRequest(entry);
+  return entry;
+}
+
 function notifyEvidenceTeamRequest(req) {
   pushNotification({
     to: 'EH',
@@ -506,7 +543,7 @@ function caseFromFilingRecord(cf) {
     dep: dep || 'TBD',
     arr: arr || 'TBD',
     flightDate: cf.flightDate || '',
-    value: cf.value || '',
+    value: cf.value || cf.totalExposure || '',
     type: cf.type || cf.claimType || 'EC261 — New claim',
     locDate: cf.locDate || '',
     stage: cf.stage || 'intake',
@@ -520,10 +557,61 @@ function caseFromFilingRecord(cf) {
     points: cf.points || [],
     loaStatus: cf.loaStatus || '',
     triageNote: cf.triageNote || cf.notes || '',
+    origin: cf.origin || '',
+    locReady: cf.locReady != null ? !!cf.locReady : true,
+    caseSummary: cf.caseSummary || '',
+    verdictTitle: cf.verdictTitle || '',
+    verdictSub: cf.verdictSub || '',
+    conditions: cf.conditions || [],
+    totalExposure: cf.totalExposure || null,
+    limitationDeadline: cf.limitationDeadline || null,
     activity: (cf.activity || []).map(function (a) {
       return { text: a.text, time: a.time, type: a.type, by: a.by };
     }),
   };
+}
+
+/**
+ * Mark LOC received on an engine-origin (or any) case: locReady, intake doc, activity, stage bump.
+ */
+function markLocReceived(ref, opts) {
+  opts = opts || {};
+  ref = typeof normaliseCaseRef === 'function' ? normaliseCaseRef(ref) : ref;
+  var content = opts.content || opts.text || 'Letter of Claim received.';
+  var name = opts.name || ('Letter of Claim — ' + (opts.claimant || ref));
+  var by = opts.by || 'Lawyer';
+  var stage = opts.stage || 'cpr';
+
+  if (typeof CaseFiling !== 'undefined') {
+    CaseFiling.updateCaseMeta(ref, {
+      locReady: true,
+      locDate: opts.locDate || new Date().toISOString().slice(0, 10),
+      stage: stage
+    });
+    CaseFiling.addDocument(ref, {
+      folderId: 'intake',
+      name: name,
+      docKey: 'loc',
+      filename: (opts.filename || (ref + '-LOC.txt')),
+      content: content,
+      mimeType: opts.mimeType || 'text/plain',
+      source: opts.source || 'case_workspace',
+      uploadedByName: by
+    });
+    CaseFiling.addActivity(ref, 'LOC received — ready for CPR/response', 'upload', by);
+  }
+
+  var c = typeof resolveCase === 'function' ? resolveCase(ref) : null;
+  if (c) {
+    c.locReady = true;
+    c.locDate = opts.locDate || new Date().toISOString().slice(0, 10);
+    c.stage = stage;
+    if (typeof persistPortfolioCase === 'function') persistPortfolioCase(c);
+    try {
+      sessionStorage.setItem('dfa_case', JSON.stringify(c));
+    } catch (e) {}
+  }
+  return c;
 }
 
 function resolveCase(ref) {

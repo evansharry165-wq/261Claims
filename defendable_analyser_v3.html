@@ -2144,7 +2144,7 @@
       flex-shrink: 0;
     }
 
-    /* ── Generate Brief Button ───────────────────────────────── */
+    /* ── Case Handoff Pack ───────────────────────────────────── */
     .btn-gen-brief {
       font-family: var(--font-sans);
       font-size: 13px;
@@ -2161,6 +2161,88 @@
     .btn-gen-brief:hover {
       background: var(--ink-secondary);
       border-color: var(--ink-secondary);
+    }
+    .handoff-backdrop {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 9000;
+      display: flex; align-items: flex-start; justify-content: center;
+      padding: 32px 16px; overflow-y: auto;
+    }
+    .handoff-modal {
+      background: var(--surface-raised, #FEFEFE); max-width: 860px; width: 100%;
+      border-radius: var(--r-lg); box-shadow: 0 8px 40px rgba(0,0,0,0.25);
+    }
+    .handoff-hdr { padding: 24px 28px 16px; border-bottom: 2px solid var(--ink-primary); }
+    .handoff-kicker {
+      font-family: var(--font-mono); font-size: 10px; letter-spacing: .1em;
+      text-transform: uppercase; color: var(--ink-faint); margin-bottom: 6px;
+    }
+    .handoff-title { font-family: var(--font-serif); font-size: 22px; color: var(--ink-primary); margin-bottom: 4px; }
+    .handoff-body { padding: 20px 28px; max-height: 62vh; overflow-y: auto; }
+    .handoff-sec { margin-bottom: 28px; }
+    .handoff-sec h3 {
+      font-family: var(--font-serif); font-size: 14px; font-weight: 700;
+      letter-spacing: .04em; text-transform: uppercase; color: var(--ink-secondary);
+      border-bottom: 1px solid var(--ink-rule2); padding-bottom: 6px; margin-bottom: 12px;
+    }
+    .handoff-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+    .handoff-sec label {
+      display: block; font-size: 10px; font-weight: 700; letter-spacing: .06em;
+      text-transform: uppercase; color: var(--ink-faint); margin: 10px 0 4px;
+    }
+    .handoff-sec input[type=text], .handoff-sec textarea, .handoff-sec select {
+      width: 100%; font-family: var(--font-spectral, serif); font-size: 13px;
+      padding: 8px 10px; border: 1px solid var(--ink-rule); border-radius: var(--r-md);
+      background: var(--surface-raised, #fff); color: var(--ink-primary); box-sizing: border-box;
+    }
+    .handoff-ro {
+      font-size: 13px; font-family: var(--font-spectral, serif); color: var(--ink-primary);
+      padding: 8px 10px; background: var(--surface-ui, #EEECEA); border-radius: var(--r-md);
+      border: 1px solid var(--ink-rule2);
+    }
+    .handoff-block { white-space: pre-wrap; line-height: 1.55; }
+    .handoff-muted { font-size: 12px; color: var(--ink-faint); }
+    .handoff-warn { color: var(--settle, #8B1A1A); font-weight: 600; }
+    .handoff-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 8px; }
+    .handoff-table th, .handoff-table td {
+      border: 1px solid var(--ink-rule2); padding: 6px 8px; text-align: left;
+      font-family: var(--font-spectral, serif);
+    }
+    .handoff-table th { background: var(--surface-ui, #EEECEA); font-size: 10px; text-transform: uppercase; }
+    .handoff-pill {
+      display: inline-block; font-family: var(--font-mono); font-size: 10px;
+      padding: 1px 6px; border-radius: 3px; background: var(--ink-faint); color: #fff; margin-right: 4px;
+    }
+    .handoff-available { background: var(--defend, #2F6B4F); }
+    .handoff-requested { background: var(--conditions, #9A6B1F); }
+    .handoff-missing { background: var(--settle, #8B1A1A); }
+    .handoff-marks { list-style: none; padding: 0; margin: 0 0 8px; }
+    .handoff-marks li { padding: 4px 0; font-size: 12px; }
+    .handoff-trail { margin: 0 0 8px 18px; font-size: 12px; font-family: var(--font-spectral, serif); }
+    .handoff-crit { margin-bottom: 8px; font-size: 12px; }
+    .handoff-crit input { margin-top: 4px; }
+    .handoff-auth { margin-bottom: 8px; font-size: 12px; }
+    .handoff-check { display: flex !important; align-items: center; gap: 8px; text-transform: none !important; font-size: 13px !important; letter-spacing: 0 !important; font-weight: 500 !important; color: var(--ink-primary) !important; }
+    .handoff-ftr {
+      padding: 14px 28px; border-top: 1px solid var(--ink-rule2);
+      display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
+      background: var(--surface-ui, #EEECEA);
+    }
+    .handoff-btn {
+      font-family: var(--font-sans); font-size: 12px; font-weight: 600;
+      padding: 8px 16px; border: 1px solid var(--ink-rule); border-radius: var(--r-md);
+      background: var(--surface-raised, #FEFEFE); cursor: pointer; color: var(--ink-primary);
+    }
+    .handoff-btn-primary {
+      background: var(--ink-primary); color: #fff; border-color: var(--ink-primary); margin-left: auto;
+    }
+    .handoff-btn-primary:disabled { opacity: 0.45; cursor: not-allowed; }
+    @media (max-width: 700px) {
+      .handoff-grid { grid-template-columns: 1fr; }
+    }
+    @media print {
+      .handoff-backdrop { position: static; background: none; padding: 0; }
+      .handoff-ftr, .handoff-btn { display: none !important; }
+      .handoff-body { max-height: none; overflow: visible; }
     }
 
 
@@ -3204,7 +3286,9 @@
   <script src="defendable_type_map.js"></script>
   <script src="defendable_lof_legal_bridge.js"></script>
   <script src="defendable_decide_workspace.js"></script>
+  <script src="defendable_case_handoff.js"></script>
   <script src="case_filing.js"></script>
+  <script src="case_helpers.js"></script>
   <script src="defendable_icc_parse.js"></script>
 
   <!-- ============================================================
@@ -5927,8 +6011,8 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
         </div>
         <div class="lof-prerating" id="lof-prerating"></div>
         <div id="gen-brief-wrap" style="display:none;margin-top:var(--sp-lg);text-align:center">
-          <button class="btn-gen-brief" onclick="generateBrief()">⚖ Generate Defence Brief</button>
-          <div style="font-size:11px;color:var(--ink-faint);margin-top:6px">Available after LOF confirmation and G1 sign-off</div>
+          <button class="btn-gen-brief" onclick="openCaseHandoffPack()">Review handoff → Manage</button>
+          <div style="font-size:11px;color:var(--ink-faint);margin-top:6px">Editable Case Handoff Pack after LOF confirm + G1 — Confirm creates the Manage case</div>
         </div>
       `;
 
@@ -6500,7 +6584,7 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
           remountDecideWorkspace();
         },
         onSendToManage: function () {
-          sendDecidePacketsToManage();
+          openCaseHandoffPack();
         }
       });
       DefendAbleDecideWorkspace.render(mount, {
@@ -6578,69 +6662,69 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
       if (typeof updateRMStrength === 'function') updateRMStrength();
     }
 
-    function sendDecidePacketsToManage() {
+    function openCaseHandoffPack() {
+      if (typeof DefendAbleCaseHandoff === 'undefined') {
+        alert('Handoff module failed to load.');
+        return;
+      }
+      if (!confirmedRecord) {
+        alert('Confirm the Line of Flying before opening the handoff pack.');
+        return;
+      }
       const statusEl = document.getElementById('decide-send-status');
-      if (!confirmedRecord || !confirmedRecord.g1) {
+      const opts = {};
+      try {
+        const distKm = typeof getRouteDistanceKm === 'function'
+          ? getRouteDistanceKm(currentDepIata, currentArrIata)
+          : null;
+        if (distKm && typeof getQuantumBand === 'function') {
+          opts.quantumBand = getQuantumBand(distKm);
+          opts.claimants = typeof claimants !== 'undefined' ? claimants : 1;
+        }
+        if (typeof calcLimitationDate === 'function' && currentFlightDate) {
+          opts.limitation = calcLimitationDate(currentFlightDate);
+        }
+      } catch (e) { /* optional quantum */ }
+
+      const pack = DefendAbleCaseHandoff.buildPack(confirmedRecord, lastDecideRun || {}, opts);
+      // Allow draft review after trees; Confirm still requires G1
+      if (!pack.decideSection.g1 && confirmedRecord.g1) {
+        pack.decideSection.g1 = confirmedRecord.g1;
+      }
+      DefendAbleCaseHandoff.open(pack, {
+        onConfirm: function (edited) {
+          confirmHandoffIntoManage(edited);
+        }
+      });
+      if (statusEl) statusEl.textContent = 'Review handoff pack…';
+    }
+
+    function confirmHandoffIntoManage(pack) {
+      const statusEl = document.getElementById('decide-send-status');
+      if (!pack || !pack.decideSection || !pack.decideSection.g1) {
         if (statusEl) statusEl.textContent = 'G1 sign-off required first.';
         return;
       }
-      if (typeof DefendAbleLofLegalBridge === 'undefined' || typeof CaseFiling === 'undefined') {
-        if (statusEl) statusEl.textContent = 'CaseFiling or bridge missing.';
-        return;
-      }
-
-      const facts = confirmedRecord.facts || {};
-      const flightNum = facts.flightNum || ((_lofRows[0] && _lofRows[0].flight) || 'UNKNOWN');
-      const ref = 'DA-' + flightNum.replace(/\s+/g, '') + '-' + String(Date.now()).slice(-6);
-      const route = (facts.depIata && facts.arrIata)
-        ? (facts.depIata + ' → ' + facts.arrIata)
-        : ((_lofRows[0] && _lofRows[0].route) || '');
-      const pos = (lastDecideRun && lastDecideRun.position) || lofPreRating || {};
-      const classification = pos.frameworkLabel || pos.verdict || 'JUDGMENT REQUIRED';
-
-      CaseFiling.ensureCaseFile({
-        ref: ref,
-        claimant: 'From Legal Engine',
-        flightNum: flightNum,
-        route: route,
-        dep: facts.depIata || '',
-        arr: facts.arrIata || '',
-        flight: flightNum + (route ? (' — ' + route) : ''),
-        flightDate: facts.date || currentFlightDate || '',
-        jurisdiction: (confirmedRecord.jurisdiction === 'UK261') ? 'england-wales' : 'eu',
-        stage: pos.conditionType === 'EVIDENCE_HOLD' ? 'evidence' : 'intake',
-        disruptionType: currentDT ? currentDT.label : (confirmedRecord.dtId || ''),
-        classification: classification,
-        triageNote: (pos.title || '') + ' — ' + (pos.text || ''),
-        type: 'EC261 / UK261',
-        uploadedByName: (confirmedRecord.g1 && confirmedRecord.g1.by) || 'Legal Engine'
-      });
-
-      const casePacket = DefendAbleLofLegalBridge.buildCasePacket(confirmedRecord, { meta: { ref: ref } });
-      const decisionPacket = DefendAbleLofLegalBridge.buildDecisionPacket(confirmedRecord, lastDecideRun, confirmedRecord.g1);
-
-      CaseFiling.addDocument(ref, {
-        name: 'case_packet.json',
-        folderId: 'legal',
-        mime: 'application/json',
-        content: JSON.stringify(casePacket, null, 2),
-        source: 'Legal Engine'
-      });
-      CaseFiling.addDocument(ref, {
-        name: 'decision_packet.json',
-        folderId: 'legal',
-        mime: 'application/json',
-        content: JSON.stringify(decisionPacket, null, 2),
-        source: 'Legal Engine'
-      });
-      CaseFiling.addActivity(ref, 'Received from Legal Engine — G1 ' + confirmedRecord.g1.action, 'legal', confirmedRecord.g1.by || 'Legal Engine');
-
       try {
-        localStorage.setItem('dfa_last_manage_ref', ref);
-      } catch (e) {}
+        const result = typeof CaseFiling !== 'undefined' && CaseFiling.fileFromEngineHandoff
+          ? CaseFiling.fileFromEngineHandoff(pack)
+          : DefendAbleCaseHandoff.fileIntoManage(pack);
+        const ref = result && result.ref;
+        if (statusEl) statusEl.textContent = 'Case ' + ref + ' created.';
+        DefendAbleCaseHandoff.close();
+        try {
+          sessionStorage.setItem('dfa_case', JSON.stringify(result.portfolio));
+        } catch (e) {}
+        window.location.href = 'case.html?ref=' + encodeURIComponent(ref);
+      } catch (err) {
+        if (statusEl) statusEl.textContent = 'Handoff failed: ' + (err && err.message ? err.message : err);
+        alert('Could not create Manage case: ' + (err && err.message ? err.message : err));
+      }
+    }
 
-      if (statusEl) statusEl.textContent = 'Case ' + ref + ' created.';
-      window.location.href = 'case.html?ref=' + encodeURIComponent(ref);
+    /** @deprecated thin packet send — replaced by Case Handoff Pack Confirm */
+    function sendDecidePacketsToManage() {
+      openCaseHandoffPack();
     }
 
     /* ----------------------------------------------------------
@@ -8730,214 +8814,14 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
     }
 
     /* ----------------------------------------------------------
-       DEFENCE BRIEF GENERATOR — Feature 2 (Mode 4)
+       CASE HANDOFF PACK — replaces stale defence-brief print modal
     ---------------------------------------------------------- */
     function generateBrief() {
-      if (!currentDT) return;
-      if (!lofConfirmed) {
-        alert('Confirm the Line of Flying before generating a defence brief.');
-        return;
-      }
-      if (!confirmedRecord || !confirmedRecord.g1) {
-        alert('Complete G1 lawyer sign-off in the Decide workspace before generating the brief.');
-        return;
-      }
-
-      // Derive score from nodeAnnotations (new Pass II system)
-      const total = causalNodesCount || 1;
-      const confirmed = Object.keys(nodeAnnotations).filter(idx => {
-        const ann = nodeAnnotations[idx];
-        if (!ann) return false;
-        return ann.text && ann.text.trim().length > 0 && Object.values(ann.evidenceStatuses||{}).some(s => s === 'available');
-      }).length;
-      const partial = Object.keys(nodeAnnotations).filter(idx => {
-        const ann = nodeAnnotations[idx];
-        if (!ann) return false;
-        const hasText = ann.text && ann.text.trim().length > 0;
-        const hasAny = Object.values(ann.evidenceStatuses||{}).some(Boolean);
-        const hasAvailable = Object.values(ann.evidenceStatuses||{}).some(s => s === 'available');
-        return (hasText || hasAny) && !(hasText && hasAvailable);
-      }).length;
-      const gaps = total - confirmed - partial;
-      const score     = (confirmed + partial * 0.5) / Math.max(total, 1);
-      const verdict   = getVerdict(currentDT.limb1Status, score, gaps);
-      const { strengths, weaknesses } = buildSWPoints();
-
-      const distKm = getRouteDistanceKm(currentDepIata, currentArrIata);
-      const band   = distKm ? getQuantumBand(distKm) : null;
-      const lim    = calcLimitationDate(currentFlightDate);
-
-      const vLabels = { defend:'DEFEND', conditions:'CONDITIONAL DEFENCE', settle:'SETTLE / CONSIDER EARLY RESOLUTION' };
-
-      const now = new Date();
-      const dateStr = now.toLocaleDateString('en-GB', { day:'2-digit', month:'long', year:'numeric' });
-      const timeStr = now.toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' });
-
-      // Build evidence summary from node annotations
-      const _causalNodes = typeof causalNodes !== 'undefined' ? causalNodes : [];
-      const evidenceSummary = Object.entries(nodeAnnotations).map(([idx, ann]) => {
-        const node = (_causalNodes && _causalNodes[parseInt(idx)]) || { label: 'Event ' + idx, icon: '⚡' };
-        const statuses = ann.evidenceStatuses || {};
-        const available = Object.entries(statuses).filter(([,v]) => v === 'available').map(([k]) => k);
-        const missing = Object.entries(statuses).filter(([,v]) => v === 'missing').map(([k]) => k);
-        return { node, annotation: ann.text, available, missing };
-      }).filter(e => e.annotation || e.available.length > 0 || e.missing.length > 0);
-
-      const rmRows = evidenceSummary.length > 0
-        ? evidenceSummary.map(e => `<tr>
-            <td style="padding:8px 12px;font-size:12px;font-family:var(--font-spectral,serif);border-bottom:1px solid var(--ink-rule2);color:var(--ink-secondary);vertical-align:top;width:35%">
-              ${e.node.icon || ''} ${e.node.label}
-            </td>
-            <td style="padding:8px 12px;font-size:12px;font-family:var(--font-spectral,serif);border-bottom:1px solid var(--ink-rule2);color:var(--ink-primary);vertical-align:top;width:40%">
-              ${e.annotation || '<span style="color:var(--ink-faint);font-style:italic">No notes</span>'}
-            </td>
-            <td style="padding:8px 12px;font-size:11px;font-family:var(--font-mono);border-bottom:1px solid var(--ink-rule2);vertical-align:top">
-              ${e.available.length > 0 ? `<span style="color:var(--defend)">${e.available.length} available</span>` : ''}
-              ${e.missing.length > 0 ? `<br><span style="color:var(--settle)">${e.missing.length} missing</span>` : ''}
-            </td>
-          </tr>`).join('')
-        : `<tr><td colspan="3" style="padding:12px;text-align:center;color:var(--ink-faint);font-style:italic;font-size:12px">Complete the event review in Pass II to populate this section</td></tr>`;
-
-      // Key authorities
-      const relevantCases = (typeof CASELAW_DB !== 'undefined')
-        ? CASELAW_DB.filter(c => (currentDT.caselawIds || []).includes(c.id)).slice(0, 5)
-        : [];
-      const authHtml = relevantCases.map(c =>
-        `<div style="margin-bottom:8px">
-          <span style="font-family:var(--font-mono);font-size:10px;background:var(--ink-faint);padding:1px 5px;border-radius:2px;margin-right:6px">${c.citation}</span>
-          <em style="font-family:var(--font-spectral,serif);font-size:12px">${c.ref}</em>
-          <span style="font-size:11px;color:var(--ink-faint);margin-left:4px">(${c.year})</span>
-          <div style="font-size:11px;color:var(--ink-secondary);margin-top:2px;padding-left:4px;border-left:2px solid var(--ink-rule2);font-family:var(--font-spectral,serif)">${c.ratio}</div>
-        </div>`
-      ).join('');
-
-      const limHtml = lim
-        ? `${lim.expiry.toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'})} · ${lim.daysLeft} days remaining`
-        : 'Date not provided';
-
-      const briefHtml = `
-        <div id="brief-modal-backdrop" onclick="closeBrief()" style="position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:9000;display:flex;align-items:flex-start;justify-content:center;padding:40px 20px;overflow-y:auto">
-          <div onclick="event.stopPropagation()" style="background:var(--surface-raised,#FEFEFE);max-width:780px;width:100%;border-radius:var(--r-lg);box-shadow:0 8px 40px rgba(0,0,0,0.25);position:relative">
-
-            <!-- Brief header -->
-            <div style="padding:32px 40px 24px;border-bottom:2px solid var(--ink-primary)">
-              <div style="font-family:var(--font-mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:8px">Defence Brief — Privileged &amp; Confidential</div>
-              <div style="font-family:var(--font-serif);font-size:24px;font-weight:400;color:var(--ink-primary);margin-bottom:4px">EC261 / UK261 Defence Analysis</div>
-              <div style="font-family:var(--font-spectral,serif);font-size:14px;color:var(--ink-secondary)">
-                ${currentDepIata && currentArrIata ? currentDepIata + ' → ' + currentArrIata : 'Route not specified'}
-                ${currentFlightDate ? ' · ' + new Date(currentFlightDate+'T00:00:00Z').toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'}) : ''}
-              </div>
-              <div style="font-family:var(--font-mono);font-size:10px;color:var(--ink-faint);margin-top:8px">Generated: ${dateStr} at ${timeStr} · DefendAble engine</div>
-            </div>
-
-            <!-- Verdict banner -->
-            <div style="padding:20px 40px;background:${verdict==='defend'?'var(--defend-bg)':verdict==='conditions'?'var(--conditions-bg)':'var(--settle-bg)'};border-bottom:1px solid ${verdict==='defend'?'var(--defend-border)':verdict==='conditions'?'var(--conditions-border)':'var(--settle-border)'}">
-              <div style="font-family:var(--font-mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:4px">Recommended Position</div>
-              <div style="font-family:var(--font-serif);font-size:20px;color:${verdict==='defend'?'var(--defend)':verdict==='conditions'?'var(--conditions)':'var(--settle)'}">${vLabels[verdict]}</div>
-              <div style="font-size:12px;color:var(--ink-secondary);margin-top:4px">${confirmed}/${total} RM challenge points confirmed · ${gaps} gap${gaps!==1?'s':''} identified</div>
-            </div>
-
-            <!-- Brief body -->
-            <div style="padding:32px 40px">
-
-              <!-- Section 1: Classification -->
-              <div style="margin-bottom:28px">
-                <div style="font-family:var(--font-serif);font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-secondary);border-bottom:1px solid var(--ink-rule2);padding-bottom:6px;margin-bottom:12px">1. Disruption Classification</div>
-                <div style="font-family:var(--font-spectral,serif);font-size:13px;color:var(--ink-primary);line-height:1.6">
-                  <strong>${currentDT.label}</strong> — ${currentDT.limb1}
-                </div>
-              </div>
-
-              <!-- Section 2: RM Review -->
-              <div style="margin-bottom:28px">
-                <div style="font-family:var(--font-serif);font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-secondary);border-bottom:1px solid var(--ink-rule2);padding-bottom:6px;margin-bottom:12px">2. Reasonable Measures Review</div>
-                <table style="width:100%;border-collapse:collapse;border:1px solid var(--ink-rule2);border-radius:var(--r-md);overflow:hidden">
-                  <thead>
-                    <tr style="background:var(--surface-ui,#EEECEA)">
-                      <th style="padding:8px 12px;font-size:11px;font-weight:700;text-align:left;color:var(--ink-secondary);font-family:var(--font-sans)">Event</th>
-                      <th style="padding:8px 12px;font-size:11px;font-weight:700;text-align:left;color:var(--ink-secondary);font-family:var(--font-sans)">Notes</th>
-                      <th style="padding:8px 12px;font-size:11px;font-weight:700;text-align:left;color:var(--ink-secondary);font-family:var(--font-sans);white-space:nowrap">Evidence</th>
-                    </tr>
-                  </thead>
-                  <tbody>${rmRows}</tbody>
-                </table>
-              </div>
-
-              <!-- Section 3: Evidence Status -->
-              <div style="margin-bottom:28px">
-                <div style="font-family:var(--font-serif);font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-secondary);border-bottom:1px solid var(--ink-rule2);padding-bottom:6px;margin-bottom:4px">3. Evidence Status</div>
-                <div style="font-size:11px;color:var(--ink-faint);font-style:italic;margin-bottom:10px">Populated from evidence chips marked in the timeline above. Mark chips as Available / Requested / Missing to update this section.</div>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
-                  <div style="border:1px solid var(--defend-border);border-radius:var(--r-md);padding:12px;background:var(--defend-bg)">
-                    <div style="font-size:11px;font-weight:700;color:var(--defend);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Evidence Confirmed</div>
-                    ${strengths.length
-                      ? strengths.map(s=>`<div style="font-size:12px;font-family:var(--font-spectral,serif);color:var(--ink-primary);margin-bottom:4px;padding-left:10px;border-left:2px solid var(--defend-border)">• ${s}</div>`).join('')
-                      : '<div style="font-size:11px;color:var(--ink-faint);font-style:italic">Mark evidence chips above as Available to populate</div>'}
-                  </div>
-                  <div style="border:1px solid var(--settle-border);border-radius:var(--r-md);padding:12px;background:var(--settle-bg)">
-                    <div style="font-size:11px;font-weight:700;color:var(--settle);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Evidence Gaps</div>
-                    ${weaknesses.length
-                      ? weaknesses.map(w=>`<div style="font-size:12px;font-family:var(--font-spectral,serif);color:var(--ink-primary);margin-bottom:4px;padding-left:10px;border-left:2px solid var(--settle-border)">• ${w}</div>`).join('')
-                      : '<div style="font-size:11px;color:var(--defend-mid);font-style:italic">No gaps identified</div>'}
-                  </div>
-                </div>
-              </div>
-
-              <!-- Section 4: Quantum -->
-              ${band ? `
-              <div style="margin-bottom:28px">
-                <div style="font-family:var(--font-serif);font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-secondary);border-bottom:1px solid var(--ink-rule2);padding-bottom:6px;margin-bottom:12px">4. Quantum &amp; Exposure</div>
-                <div style="font-family:var(--font-spectral,serif);font-size:13px;color:var(--ink-primary);line-height:1.8">
-                  Route distance: <strong>${distKm.toLocaleString()} km</strong> · Band: ${band.band} (${band.article})<br>
-                  Statutory compensation per passenger: <strong>€${band.eur} / £${band.gbp}</strong><br>
-                  ${claimants > 1 ? `Total exposure (${claimants} claimants): <strong style="color:var(--settle)">€${band.eur*claimants} / £${band.gbp*claimants}</strong><br>` : ''}
-                  Limitation expiry: ${limHtml}
-                </div>
-              </div>` : ''}
-
-              <!-- Section 5: Legal Authorities -->
-              ${relevantCases.length ? `
-              <div style="margin-bottom:28px">
-                <div style="font-family:var(--font-serif);font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-secondary);border-bottom:1px solid var(--ink-rule2);padding-bottom:6px;margin-bottom:12px">5. Key Legal Authorities</div>
-                ${authHtml}
-              </div>` : ''}
-
-              <!-- Signature block -->
-              <div style="border-top:1px solid var(--ink-rule2);padding-top:20px;margin-top:8px">
-                <div style="font-size:11px;color:var(--ink-faint);font-family:var(--font-spectral,serif);margin-bottom:16px">This brief has been generated by the DefendAble engine for review by qualified legal counsel. It does not constitute legal advice and must be reviewed before use in proceedings.</div>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
-                  <div>
-                    <div style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-faint);margin-bottom:4px">Reviewed by</div>
-                    <div style="border-bottom:1px solid var(--ink-rule);height:32px"></div>
-                    <div style="font-size:10px;color:var(--ink-faint);margin-top:4px">Name / Signature</div>
-                  </div>
-                  <div>
-                    <div style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-faint);margin-bottom:4px">Date</div>
-                    <div style="border-bottom:1px solid var(--ink-rule);height:32px"></div>
-                    <div style="font-size:10px;color:var(--ink-faint);margin-top:4px">${dateStr}</div>
-                  </div>
-                </div>
-              </div>
-
-            </div>
-
-            <!-- Brief footer actions -->
-            <div style="padding:16px 40px;border-top:1px solid var(--ink-rule2);display:flex;gap:12px;align-items:center;background:var(--surface-ui,#EEECEA)">
-              <button onclick="window.print()" style="font-family:var(--font-sans);font-size:12px;font-weight:600;padding:8px 20px;border:1px solid var(--ink-rule);border-radius:var(--r-md);background:var(--surface-raised,#FEFEFE);cursor:pointer;color:var(--ink-primary)">Print / Export PDF</button>
-              <button onclick="closeBrief()" style="font-family:var(--font-sans);font-size:12px;font-weight:600;padding:8px 20px;border:1px solid var(--ink-rule);border-radius:var(--r-md);background:transparent;cursor:pointer;color:var(--ink-secondary)">Close</button>
-              <span style="font-size:11px;color:var(--ink-faint);margin-left:auto">Privileged — EC261 Defence · DefendAble</span>
-            </div>
-
-          </div>
-        </div>`;
-
-      // Mount modal
-      const existing = document.getElementById('brief-modal-backdrop');
-      if (existing) existing.remove();
-      document.body.insertAdjacentHTML('beforeend', briefHtml);
+      openCaseHandoffPack();
     }
 
     function closeBrief() {
+      if (typeof DefendAbleCaseHandoff !== 'undefined') DefendAbleCaseHandoff.close();
       const el = document.getElementById('brief-modal-backdrop');
       if (el) el.remove();
     }

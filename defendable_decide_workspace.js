@@ -398,7 +398,7 @@ var DefendAbleDecideWorkspace = (function () {
               '<textarea id="decide-g1-note" rows="2" placeholder="Sign-off note / evidence request…" style="margin-top:6px;width:100%"></textarea>') +
           '<div style="margin-top:12px">' +
             '<button type="button" class="decide-btn decide-btn-primary" id="decide-send-manage" onclick="DefendAbleDecideWorkspace.sendToManage()" ' +
-              (g1 ? '' : 'disabled') + '>Send to Manage →</button>' +
+              (g1 ? '' : 'disabled') + '>Review handoff → Manage</button>' +
             '<span class="decide-muted" style="margin-left:8px" id="decide-send-status"></span>' +
           '</div>' +
         '</div>' +
