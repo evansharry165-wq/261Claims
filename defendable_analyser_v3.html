@@ -2580,88 +2580,166 @@
     }
 
     /* ============================================================
-       CHRONOLOGICAL TIMELINE — Zone 1
+       CHRONOLOGICAL TIMELINE — Zone 1  (Aviation / Legal precision)
     ============================================================ */
     .tl-spine { display: flex; flex-direction: column; }
-    .tl-row { display: flex; align-items: stretch; }
-    .tl-col { display: flex; flex-direction: column; align-items: center; width: 34px; flex-shrink: 0; }
-    .tl-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; margin-top: 13px; }
-    .tl-connector { width: 1px; background: var(--ink-rule2); flex: 1; min-height: 12px; }
+    .tl-row   { display: flex; align-items: stretch; }
+    .tl-col   { display: flex; flex-direction: column; align-items: center; width: 26px; flex-shrink: 0; }
+    .tl-dot   { width: 7px; height: 7px; border-radius: 1px; flex-shrink: 0; margin-top: 15px; }
+    .tl-connector { width: 1px; background: var(--ink-rule2); flex: 1; min-height: 10px; }
 
-    .tl-dot-gray   { background: var(--surface-raised); border: 1.5px solid var(--ink-faint); }
+    /* Dot colours — square markers, not circles */
+    .tl-dot-gray   { background: var(--ink-rule);   }
     .tl-dot-amber  { background: var(--conditions-mid); }
     .tl-dot-blue   { background: var(--judgment-mid); }
     .tl-dot-red    { background: var(--settle-mid); }
     .tl-dot-green  { background: var(--defend-mid); }
 
+    /* Base card — clean white, left border carries the only colour signal */
     .tl-card {
       flex: 1;
-      margin: 5px 0 5px 10px;
-      border-radius: var(--r-lg);
-      border: 1px solid var(--ink-rule);
-      background: var(--surface-raised);
-      padding: 10px 14px;
-    }
-    .tl-card.tl-disruption { border-color: var(--conditions-border); background: var(--conditions-bg); }
-    .tl-card.tl-cascade    { border-color: var(--judgment-border);   background: var(--judgment-bg);   }
-    .tl-card.tl-decision   { border-color: var(--settle-border);     background: var(--settle-bg);     }
-    .tl-card.tl-recovery   { border-color: var(--defend-border);     background: var(--defend-bg);     }
-
-    .tl-time  { font-family: var(--font-mono); font-size: 9.5px; color: var(--ink-faint); margin-bottom: 3px; }
-    .tl-head  { display: flex; align-items: center; gap: 7px; margin-bottom: 3px; flex-wrap: wrap; }
-    .tl-icon  { font-size: 15px; flex-shrink: 0; }
-    .tl-label { font-size: 12.5px; font-weight: 600; color: var(--ink-primary); }
-    .tl-ref   { font-family: var(--font-mono); font-size: 10px; color: var(--ink-secondary); }
-    .tl-badge { font-size: 9.5px; padding: 1px 6px; border-radius: var(--r); font-weight: 600; letter-spacing: .03em; }
-    .tl-badge-disruption { background: var(--conditions-bg); color: var(--conditions); border: 1px solid var(--conditions-border); }
-    .tl-badge-cascade    { background: var(--judgment-bg);   color: var(--judgment);   border: 1px solid var(--judgment-border); }
-    .tl-badge-decision   { background: var(--settle-bg);     color: var(--settle);     border: 1px solid var(--settle-border); }
-    .tl-badge-recovery   { background: var(--defend-bg);     color: var(--defend);     border: 1px solid var(--defend-border); }
-    .tl-desc  { font-size: 11.5px; color: var(--ink-secondary); line-height: 1.5; margin: 4px 0 8px; }
-
-    .tl-ev-label { font-size: 9px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--ink-faint); margin: 4px 0 5px; }
-    .tl-ev-row   { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 6px; }
-    .tl-chip {
-      display: inline-flex; align-items: center; gap: 5px;
-      font-size: 10.5px; padding: 3px 8px 3px 7px;
-      border-radius: var(--r-md);
+      margin: 4px 0 4px 10px;
+      border-radius: 2px;
       border: 1px solid var(--ink-rule2);
-      background: var(--surface-ui);
-      color: var(--ink-secondary);
-      cursor: pointer; user-select: none;
-      transition: border-color .12s, background .12s;
-      line-height: 1.3;
+      border-left: 3px solid var(--ink-rule);
+      background: var(--surface-raised);
+      padding: 11px 14px 10px;
     }
-    .tl-chip:hover { border-color: var(--ink-rule); background: var(--surface-raised); }
-    .tl-chip.ev-available { border-color: var(--defend-border);     background: var(--defend-bg);     color: var(--defend); }
-    .tl-chip.ev-requested { border-color: var(--conditions-border); background: var(--conditions-bg); color: var(--conditions); }
-    .tl-chip.ev-missing   { border-color: var(--settle-border);     background: var(--settle-bg);     color: var(--settle); }
-    .tl-chip-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--ink-faint); flex-shrink: 0; transition: background .12s; }
-    .tl-chip.ev-available .tl-chip-dot { background: var(--defend-mid); }
-    .tl-chip.ev-requested .tl-chip-dot { background: var(--conditions-mid); }
-    .tl-chip.ev-missing   .tl-chip-dot { background: var(--settle-mid); }
-    .tl-chip-state { opacity: 0.65; font-size: 9.5px; margin-left: 2px; }
+    /* Left-border colour only — no background tint */
+    .tl-card.tl-disruption { border-left-color: var(--conditions-mid); }
+    .tl-card.tl-cascade    { border-left-color: var(--judgment-mid);   }
+    .tl-card.tl-decision   { border-left-color: var(--settle-mid);     }
+    .tl-card.tl-recovery   { border-left-color: var(--defend-mid);     }
+    .tl-card.tl-flight-hdr { border-left-color: var(--ink-secondary);  background: var(--surface-page); }
 
-    .tl-ann-row   { margin-top: 8px; }
-    .tl-ann-label { font-size: 9px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 4px; }
-    .tl-ann {
-      width: 100%;
+    /* Node type label — replaces badge bubbles */
+    .tl-node-type {
+      font-family: var(--font-mono);
+      font-size: 8.5px;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      margin-bottom: 4px;
+    }
+    .tl-node-type.type-disruption { color: var(--conditions); }
+    .tl-node-type.type-cascade    { color: var(--judgment); }
+    .tl-node-type.type-outcome    { color: var(--settle); }
+    .tl-node-type.type-recovery   { color: var(--defend); }
+
+    /* Label and description */
+    .tl-head  { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 2px; }
+    .tl-label { font-family: var(--font-serif); font-size: 13.5px; font-weight: 400; color: var(--ink-primary); flex: 1; }
+    .tl-time  { font-family: var(--font-mono); font-size: 10px; color: var(--ink-faint); flex-shrink: 0; white-space: nowrap; }
+    .tl-desc  { font-family: var(--font-sans); font-size: 11.5px; color: var(--ink-secondary); line-height: 1.55; margin: 5px 0 8px; }
+    .tl-rule  { border: none; border-top: 1px solid var(--ink-rule2); margin: 8px 0; }
+
+    /* Flight header grid — structured operational record */
+    .tl-flight-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px 14px;
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid var(--ink-rule2);
+    }
+    .tl-flight-field { }
+    .tl-ff-label {
+      font-family: var(--font-mono);
+      font-size: 8px;
+      letter-spacing: .09em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      margin-bottom: 2px;
+    }
+    .tl-ff-value {
+      font-family: var(--font-mono);
       font-size: 11.5px;
-      border: 1px solid var(--ink-rule2);
-      border-radius: var(--r-md);
-      padding: 7px 10px;
-      resize: vertical;
-      min-height: 50px;
-      background: var(--surface-raised);
       color: var(--ink-primary);
-      font-family: var(--font-sans);
-      line-height: 1.5;
-      box-sizing: border-box;
+      font-weight: 600;
+    }
+    .tl-ff-value.faint { color: var(--ink-faint); font-weight: 400; }
+
+    /* Evidence list — plain text, no bubble chips */
+    .tl-ev-section { margin: 6px 0 2px; }
+    .tl-ev-label   { font-family: var(--font-mono); font-size: 8.5px; letter-spacing: .09em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 5px; }
+    .tl-ev-item {
+      display: flex; align-items: flex-start; gap: 8px;
+      padding: 5px 0;
+      border-bottom: 1px solid var(--ink-rule2);
+      cursor: pointer; user-select: none;
+    }
+    .tl-ev-item:last-child { border-bottom: none; }
+    .tl-ev-item:hover .tl-ev-name { color: var(--ink-primary); }
+    .tl-ev-indicator {
+      font-family: var(--font-mono); font-size: 10px; min-width: 14px;
+      flex-shrink: 0; margin-top: 1px; color: var(--ink-faint);
+      transition: color .12s;
+    }
+    .tl-ev-item.ev-available .tl-ev-indicator { color: var(--defend-mid); }
+    .tl-ev-item.ev-requested .tl-ev-indicator { color: var(--conditions-mid); }
+    .tl-ev-item.ev-missing   .tl-ev-indicator { color: var(--settle-mid); }
+    .tl-ev-name  { font-family: var(--font-sans); font-size: 11.5px; color: var(--ink-secondary); flex: 1; line-height: 1.4; }
+    .tl-ev-status { font-family: var(--font-mono); font-size: 9.5px; color: var(--ink-faint); flex-shrink: 0; white-space: nowrap; transition: color .12s; }
+    .tl-ev-item.ev-available .tl-ev-status { color: var(--defend); }
+    .tl-ev-item.ev-requested .tl-ev-status { color: var(--conditions); }
+    .tl-ev-item.ev-missing   .tl-ev-status { color: var(--settle); }
+    .tl-mention-yes { font-size: 9px; color: var(--defend-mid); display: block; margin: 1px 0 0 22px; }
+    .tl-mention-no  { font-size: 9px; color: var(--ink-faint);  display: block; margin: 1px 0 0 22px; }
+
+    /* Annotation */
+    .tl-ann-row   { margin-top: 8px; }
+    .tl-ann-label { font-family: var(--font-mono); font-size: 8.5px; letter-spacing: .09em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 4px; }
+    .tl-ann {
+      width: 100%; font-size: 11.5px;
+      border: 1px solid var(--ink-rule2); border-radius: 2px;
+      padding: 7px 10px; resize: vertical; min-height: 46px;
+      background: var(--surface-page); color: var(--ink-primary);
+      font-family: var(--font-sans); line-height: 1.5; box-sizing: border-box;
     }
     .tl-ann::placeholder { color: var(--ink-faint); font-style: italic; }
     .tl-ann:focus { outline: none; border-color: var(--ink-faint); }
-    .tl-mention-yes { font-size: 9.5px; color: var(--defend-mid); display: block; margin-top: 3px; }
-    .tl-mention-no  { font-size: 9.5px; color: var(--conditions-mid); display: block; margin-top: 3px; }
+
+    /* LOF editable table */
+    .lof-editable-wrap { margin-top: 4px; }
+    .lof-editable-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+    .lof-editable-table thead tr { background: var(--surface-page); }
+    .lof-editable-table th {
+      font-family: var(--font-mono); font-size: 8.5px; letter-spacing: .08em;
+      text-transform: uppercase; color: var(--ink-faint);
+      padding: 5px 8px; text-align: left; white-space: nowrap;
+      border-bottom: 1px solid var(--ink-rule);
+    }
+    .lof-editable-table td {
+      padding: 4px 6px; border-bottom: 1px solid var(--ink-rule2);
+      vertical-align: middle;
+    }
+    .lof-editable-table td[contenteditable] {
+      font-family: var(--font-mono); font-size: 11px; color: var(--ink-primary);
+      min-width: 40px; outline: none;
+    }
+    .lof-editable-table td[contenteditable]:focus {
+      background: var(--surface-page); box-shadow: inset 0 0 0 1px var(--ink-rule);
+    }
+    .lof-editable-table td.lof-status-cell { min-width: 80px; }
+    .lof-editable-table td.lof-actions { white-space: nowrap; padding: 3px 6px; }
+    .lof-row-btn {
+      background: none; border: none; cursor: pointer; padding: 1px 4px;
+      font-size: 11px; color: var(--ink-faint); line-height: 1;
+    }
+    .lof-row-btn:hover { color: var(--ink-primary); }
+    .lof-add-row-btn {
+      margin-top: 6px; font-family: var(--font-mono); font-size: 10px;
+      letter-spacing: .06em; text-transform: uppercase;
+      background: none; border: 1px dashed var(--ink-rule2);
+      border-radius: 2px; color: var(--ink-faint); cursor: pointer;
+      padding: 5px 12px; width: 100%; transition: border-color .12s, color .12s;
+    }
+    .lof-add-row-btn:hover { border-color: var(--ink-rule); color: var(--ink-secondary); }
+    .lof-status-sel {
+      font-family: var(--font-mono); font-size: 10px; border: none;
+      background: transparent; color: var(--ink-secondary); cursor: pointer;
+      outline: none; padding: 0; width: 100%;
+    }
 
   </style>
 </head>
@@ -5234,21 +5312,25 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
     /* ----------------------------------------------------------
        cycleEvChip — tap chip to cycle: unset → available → requested → missing → unset
     ---------------------------------------------------------- */
-    function cycleEvChip(nodeId, evId, chip) {
+    function cycleEvChip(nodeId, evId, row) {
       const key = nodeId + '_' + evId;
       const cycle = [null, 'available', 'requested', 'missing'];
       const cur = tlEvStatus[key] || null;
       const next = cycle[(cycle.indexOf(cur) + 1) % cycle.length];
       tlEvStatus[key] = next;
 
-      chip.classList.remove('ev-available', 'ev-requested', 'ev-missing');
-      const stateEl = chip.querySelector('.tl-chip-state');
-      const labels = { available:' · ✓ Available', requested:' · ↗ Requested', missing:' · ✗ Missing' };
+      row.classList.remove('ev-available', 'ev-requested', 'ev-missing');
+      const indicatorEl = row.querySelector('.tl-ev-indicator');
+      const statusEl    = row.querySelector('.tl-ev-status');
+      const indicators  = { available: '●', requested: '→', missing: '✗' };
+      const labels      = { available: 'Available', requested: 'Requested', missing: 'Missing' };
       if (next) {
-        chip.classList.add('ev-' + next);
-        if (stateEl) stateEl.textContent = labels[next];
+        row.classList.add('ev-' + next);
+        if (indicatorEl) indicatorEl.textContent = indicators[next];
+        if (statusEl)    statusEl.textContent    = labels[next];
       } else {
-        if (stateEl) stateEl.textContent = '';
+        if (indicatorEl) indicatorEl.textContent = '○';
+        if (statusEl)    statusEl.textContent    = '— unset';
       }
       updateRMStrength();
     }
@@ -5382,57 +5464,93 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
         const isFirst = i === 0;
         const isLast  = i === allNodes.length - 1;
 
-        // Flight departure — simple neutral card
+        const connectorHtml = isLast ? '' : '<div class="tl-connector"></div>';
+
+        // ── Flight departure — structured operational record ─────────────
         if (n.nodeType === 'flight-dep') {
+          // Parse the desc back out into fields for grid display
+          const fields = {};
+          n.desc.split(' · ').forEach(part => {
+            const [k, ...v] = part.split(': ');
+            if (k && v.length) fields[k.trim()] = v.join(': ').trim();
+          });
+          const gridFields = [
+            { label:'Aircraft',  value: fields['A/C']   || fields['Aircraft'] || '—' },
+            { label:'Date',      value: fields['Date']  || '—' },
+            { label:'STD',       value: fields['STD']   || '—' },
+            { label:'ATD',       value: fields['ATD']   || '—' },
+            { label:'STA',       value: fields['STA']   || '—' },
+            { label:'ATA',       value: fields['ATA']   || '—' },
+            { label:'Delay',     value: fields['Delay'] || '—' },
+            { label:'Sub A/C',   value: fields['Sub A/C'] || '' },
+            { label:'Pax',       value: fields['Pax']   || '' },
+          ].filter(f => f.value && f.value !== '—' || ['Aircraft','Date','STD','ATA'].includes(f.label));
+
+          const gridHtml = `<div class="tl-flight-grid">
+            ${gridFields.map(f => `<div class="tl-flight-field">
+              <div class="tl-ff-label">${f.label}</div>
+              <div class="tl-ff-value${f.value === '—' ? ' faint' : ''}">${f.value || '—'}</div>
+            </div>`).join('')}
+          </div>`;
+
           return `<div class="tl-row">
             <div class="tl-col">
-              ${isFirst ? '<div style="height:13px"></div>' : ''}
+              ${isFirst ? '<div style="height:15px"></div>' : ''}
               <div class="tl-dot tl-dot-gray"></div>
-              ${isLast ? '' : '<div class="tl-connector"></div>'}
+              ${connectorHtml}
             </div>
-            <div class="tl-card" style="border-left:2px solid var(--ink-rule)">
+            <div class="tl-card tl-flight-hdr">
+              <div class="tl-node-type">Flight Record</div>
               <div class="tl-head">
-                <span class="tl-icon">${n.icon}</span>
-                <span class="tl-label">${n.label}</span>
+                <span class="tl-label" style="font-family:var(--font-mono);font-size:14px;letter-spacing:.02em">${n.label}</span>
               </div>
-              <div class="tl-desc">${n.desc}</div>
+              ${gridHtml}
             </div>
           </div>`;
         }
 
         const cfg = n.cfg || typeConfig.cascade;
 
-        // Evidence chips
+        // Node type label (replaces badge bubble)
+        const nodeTypeText = cfg.badgeText === 'extraordinary circumstance' ? 'DISRUPTION · Art 5(3)'
+                           : cfg.badgeText === 'cascade'     ? 'CASCADE'
+                           : cfg.badgeText === 'operational' ? 'OPERATIONAL'
+                           : cfg.badgeText === 'outcome'     ? 'OUTCOME'
+                           : cfg.badgeText === 'passenger impact' ? 'PASSENGER IMPACT'
+                           : cfg.badgeText.toUpperCase();
+        const nodeTypeClass = cfg.badgeText === 'extraordinary circumstance' ? 'type-disruption'
+                            : cfg.badgeText === 'outcome'     ? 'type-outcome'
+                            : cfg.badgeText === 'passenger impact' ? 'type-recovery'
+                            : 'type-cascade';
+
+        // ── Evidence as plain list ──────────────────────────────────────
         let evHtml = '';
         if (n.evidenceItems && n.evidenceItems.length > 0) {
-          const primary   = n.evidenceItems.filter(e => e.priority === 'primary');
-          const secondary = n.evidenceItems.filter(e => e.priority !== 'primary');
-          const renderChip = (item) => {
+          const renderEvItem = (item) => {
+            const key = n.nodeId + '_' + item.id;
             const mentionHtml = item.mentioned === true
               ? `<span class="tl-mention-yes">↳ Referenced in summary</span>`
               : item.mentioned === false
               ? `<span class="tl-mention-no">↳ Not in summary — chase from OCC / DIO</span>`
               : '';
-            return `<div>
-              <div class="tl-chip" onclick="cycleEvChip('${n.nodeId}','${item.id}',this)" title="${item.proves}">
-                <span class="tl-chip-dot"></span>
-                <span class="tl-chip-text">${item.name}</span>
-                <span class="tl-chip-state"></span>
-              </div>
-              ${mentionHtml}
+            return `<div class="tl-ev-item" id="evi-${key}" onclick="cycleEvChip('${n.nodeId}','${item.id}',this)" title="${item.proves}">
+              <span class="tl-ev-indicator">○</span>
+              <span class="tl-ev-name">${item.name}${mentionHtml}</span>
+              <span class="tl-ev-status">— unset</span>
             </div>`;
           };
-          evHtml = `<div class="tl-ev-label">Evidence required — tap to mark status</div>
-            <div class="tl-ev-row">
-              ${primary.map(renderChip).join('')}
-            </div>
-            ${secondary.length > 0 ? `<div class="tl-ev-row" style="margin-top:0">${secondary.map(renderChip).join('')}</div>` : ''}`;
+          evHtml = `<hr class="tl-rule">
+            <div class="tl-ev-label">Evidence — click to mark status</div>
+            <div class="tl-ev-section">
+              ${n.evidenceItems.map(renderEvItem).join('')}
+            </div>`;
         }
 
-        // Annotation textarea
+        // ── Annotation ──────────────────────────────────────────────────
         const annId    = `tl-ann-${n.nodeId}`;
         const signalId = `tl-sig-${n.nodeId}`;
         const annHtml  = n.showAnnotation ? `
+          <hr class="tl-rule">
           <div class="tl-ann-row">
             <div class="tl-ann-label">Add note · request evidence · flag LOF amendment</div>
             <textarea class="tl-ann" id="${annId}"
@@ -5443,17 +5561,15 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
 
         return `<div class="tl-row">
           <div class="tl-col">
-            ${isFirst ? '<div style="height:13px"></div>' : ''}
+            ${isFirst ? '<div style="height:15px"></div>' : ''}
             <div class="tl-dot ${cfg.dotClass}"></div>
-            ${isLast ? '' : '<div class="tl-connector"></div>'}
+            ${connectorHtml}
           </div>
           <div class="tl-card ${cfg.cardClass}">
-            ${n.time ? `<div class="tl-time">${n.time}</div>` : ''}
+            <div class="tl-node-type ${nodeTypeClass}">${nodeTypeText}</div>
             <div class="tl-head">
-              <span class="tl-icon">${n.icon}</span>
               <span class="tl-label">${n.label}</span>
-              ${n.ref ? `<span class="tl-ref">${n.ref}</span>` : ''}
-              <span class="tl-badge ${cfg.badgeClass}">${cfg.badgeText}</span>
+              ${n.time ? `<span class="tl-time">${n.time}</span>` : ''}
             </div>
             <div class="tl-desc">${n.desc}</div>
             ${evHtml}
@@ -6592,26 +6708,115 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
     let _lofExpanded  = false;
     let _lofTailIdx   = 0;
 
-    function buildLOFCustomEmpty() {
-      return `<div class="lof-module" id="lof-module">
-        <div class="lof-module-hdr" style="cursor:default">
-          <span class="lof-module-hdr-label">Line of Flying</span>
-          <span style="font-size:10px;color:var(--ink-faint);font-family:var(--font-mono);margin-left:8px">Custom analysis</span>
-        </div>
-        <div class="lof-empty-state" style="padding:16px 18px">
-          <div style="font-size:12.5px;font-weight:600;color:var(--ink-secondary);margin-bottom:6px">Aircraft registration required</div>
-          <div style="font-size:12px;color:var(--ink-faint);line-height:1.6;margin-bottom:12px">
-            The LOF sector record cannot be built without the aircraft tail number.
-            If the registration was not provided in the disruption summary,
-            request it from OCC before verifying the causal chain.
-          </div>
-          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-            <input id="lof-custom-reg" type="text" placeholder="e.g. G-EZTF"
-              style="border:1px solid var(--ink-rule);border-radius:4px;padding:6px 10px;font-family:var(--font-mono);font-size:12px;width:110px;color:var(--ink-primary);background:#fff;outline:none">
-            <span style="font-size:11px;color:var(--ink-faint);font-style:italic">Enter registration to load LOF from case system</span>
-          </div>
-        </div>
+    /* ----------------------------------------------------------
+       parseLOFFromText — extract sector data from ICC prompt text
+    ---------------------------------------------------------- */
+    function parseLOFFromText(text) {
+      if (!text) return [];
+      const rows = [];
+      const seen = new Set();
+
+      // Match flight codes with context
+      const flightExtRe = /\b(EZY|EJU|EZS|EZT|U2|BE|FR|W6|LS|TOM|TCX|BY|DY|VY|LH|BA|AF|KL|IB|AZ|SK|TP|SN|HV|TO|QS|OK|BT|LO|LX|OS|BAW|RYR|IBE|AEA|VLG|HV)\s*(\d{2,4})\b/gi;
+      let m;
+      while ((m = flightExtRe.exec(text)) !== null) {
+        const code = (m[1] + m[2]).toUpperCase().replace(/\s+/g, '');
+        if (seen.has(code)) continue;
+        seen.add(code);
+        const ctx  = text.slice(m.index, m.index + 350);
+        const ctxL = ctx.toLowerCase();
+        // Route
+        const routeM = ctx.match(/\b([A-Z]{3})\s*[-→]\s*([A-Z]{3})\b/) || ctx.match(/\b([A-Z]{3})\s+([A-Z]{3})\b/);
+        const route  = routeM ? `${routeM[1]} → ${routeM[2]}` : '';
+        // Times
+        const times  = [...ctx.matchAll(/\b(\d{2}:\d{2})[Zz]?\b/g)].map(t => t[1]+'Z');
+        const std    = ctxL.match(/std\s+(\d{2}:\d{2})/i)?.[1] ? ctxL.match(/std\s+(\d{2}:\d{2})/i)[1]+'Z' : (times[0] || '');
+        const atd    = ctxL.match(/(?:atd|depart(?:ed|ure at))\s+(\d{2}:\d{2})/i)?.[1] ? ctxL.match(/(?:atd|depart(?:ed|ure at))\s+(\d{2}:\d{2})/i)[1]+'Z' : (times[1] || '');
+        const ata    = ctxL.match(/(?:ata|arriv(?:al|ed)\s+\w+\s+at)\s+(\d{2}:\d{2})/i)?.[1] ? ctxL.match(/(?:ata|arriv(?:al|ed)\s+\w+\s+at)\s+(\d{2}:\d{2})/i)[1]+'Z' : '';
+        // Status
+        const status = /\bcancelled\b|ond\b/.test(ctxL) ? 'Cancelled'
+                     : /\bdelayed\b/.test(ctxL)          ? 'Delayed'
+                     : /\bdiverted?\b/.test(ctxL)        ? 'Diverted'
+                     : /\baog\b/.test(ctxL)              ? 'AOG'
+                     : '';
+        rows.push({ flight: code, route, std, atd, sta: '', ata, status, note: '' });
+      }
+      return rows;
+    }
+
+    /* ----------------------------------------------------------
+       buildLOFEditable — editable working table, auto-populated from text
+    ---------------------------------------------------------- */
+    let _lofRows = [];
+
+    function buildLOFEditable(rows) {
+      _lofRows = rows.length ? rows : [{ flight:'', route:'', std:'', atd:'', sta:'', ata:'', status:'', note:'' }];
+      return renderLOFEditableTable();
+    }
+
+    function renderLOFEditableTable() {
+      const rowsHtml = _lofRows.map((r, idx) => `
+        <tr id="lof-row-${idx}">
+          <td contenteditable="true" oninput="lofCellEdit(${idx},'flight',this.textContent)">${r.flight}</td>
+          <td contenteditable="true" oninput="lofCellEdit(${idx},'route',this.textContent)">${r.route}</td>
+          <td contenteditable="true" class="lof-time" oninput="lofCellEdit(${idx},'std',this.textContent)">${r.std}</td>
+          <td contenteditable="true" class="lof-time" oninput="lofCellEdit(${idx},'atd',this.textContent)">${r.atd}</td>
+          <td contenteditable="true" class="lof-time" oninput="lofCellEdit(${idx},'sta',this.textContent)">${r.sta}</td>
+          <td contenteditable="true" class="lof-time" oninput="lofCellEdit(${idx},'ata',this.textContent)">${r.ata}</td>
+          <td class="lof-status-cell">
+            <select class="lof-status-sel" onchange="lofCellEdit(${idx},'status',this.value)">
+              ${['','On Time','Delayed','Diverted','AOG','Cancelled','Claimed'].map(s =>
+                `<option value="${s}"${r.status===s?' selected':''}>${s||'—'}</option>`).join('')}
+            </select>
+          </td>
+          <td contenteditable="true" oninput="lofCellEdit(${idx},'note',this.textContent)" style="min-width:100px">${r.note}</td>
+          <td class="lof-actions">
+            <button class="lof-row-btn" onclick="lofMoveRow(${idx},-1)" title="Move up">↑</button>
+            <button class="lof-row-btn" onclick="lofMoveRow(${idx},1)"  title="Move down">↓</button>
+            <button class="lof-row-btn" onclick="lofDeleteRow(${idx})"  title="Delete row" style="color:var(--settle-mid)">✕</button>
+          </td>
+        </tr>`).join('');
+
+      return `<div class="lof-editable-wrap" id="lof-editable-wrap">
+        <table class="lof-editable-table">
+          <thead>
+            <tr>
+              <th>Flight</th><th>Route</th><th>STD</th><th>ATD</th>
+              <th>STA</th><th>ATA</th><th>Status</th><th>Note</th><th></th>
+            </tr>
+          </thead>
+          <tbody id="lof-editable-body">${rowsHtml}</tbody>
+        </table>
+        <button class="lof-add-row-btn" onclick="lofAddRow()">+ Add sector</button>
       </div>`;
+    }
+
+    function lofCellEdit(idx, field, val) { if (_lofRows[idx]) _lofRows[idx][field] = val.trim(); }
+
+    function lofAddRow() {
+      _lofRows.push({ flight:'', route:'', std:'', atd:'', sta:'', ata:'', status:'', note:'' });
+      const wrap = document.getElementById('lof-editable-wrap');
+      if (wrap) wrap.outerHTML = renderLOFEditableTable();
+    }
+
+    function lofDeleteRow(idx) {
+      if (_lofRows.length <= 1) { _lofRows[0] = { flight:'', route:'', std:'', atd:'', sta:'', ata:'', status:'', note:'' }; }
+      else { _lofRows.splice(idx, 1); }
+      const wrap = document.getElementById('lof-editable-wrap');
+      if (wrap) wrap.outerHTML = renderLOFEditableTable();
+    }
+
+    function lofMoveRow(idx, dir) {
+      const target = idx + dir;
+      if (target < 0 || target >= _lofRows.length) return;
+      [_lofRows[idx], _lofRows[target]] = [_lofRows[target], _lofRows[idx]];
+      const wrap = document.getElementById('lof-editable-wrap');
+      if (wrap) wrap.outerHTML = renderLOFEditableTable();
+    }
+
+    function buildLOFCustomEmpty() {
+      const rows = parseLOFFromText(document.getElementById('icc-input')?.value || '');
+      return buildLOFEditable(rows);
     }
 
     function buildLOFModule(dt) {
@@ -6766,12 +6971,8 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
     }
 
     function buildLOFEmpty() {
-      return `<div class="lof-module" id="lof-module">
-        <div class="lof-module-hdr" style="cursor:default">
-          <span class="lof-module-hdr-label">Line of Flying</span>
-        </div>
-        <div class="lof-empty-state">No LOF data available for this scenario. Sector record will appear here when aircraft tail data is loaded.</div>
-      </div>`;
+      // Blank editable table — one empty row ready for user input
+      return buildLOFEditable([]);
     }
 
     function toggleLOFModule() {
