@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DefendAble — Legal Reference</title>
+<style>
+  :root {
+    --ink: #0f1117;
+    --ink-2: #2a2d38;
+    --ink-muted: #6b7280;
+    --ink-rule: #e5e7eb;
+    --ink-rule2: #f3f4f6;
+    --surface: #ffffff;
+    --surface-page: #f8f9fb;
+    --accent: #1d4ed8;
+    --accent-light: #eff6ff;
+    --defend: #1e3a5f;
+    --settle: #b45309;
+    --warn: #dc2626;
+    --green: #15803d;
+    --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    --font-mono: 'SF Mono', 'JetBrains Mono', 'Fira Code', 'Menlo', monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--font-sans);
+    background: var(--surface-page);
+    color: var(--ink);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  /* ── Header ── */
+  .site-header {
+    background: var(--defend);
+    color: #fff;
+    padding: 14px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    border-bottom: 3px solid #0f2a4a;
+  }
+  .site-header .wordmark {
+    font-family: var(--font-mono);
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: #fff;
+    text-decoration: none;
+  }
+  .site-header .tagline {
+    font-size: 11px;
+    color: rgba(255,255,255,0.6);
+    font-family: var(--font-mono);
+  }
+  .site-header nav { margin-left: auto; display: flex; gap: 16px; }
+  .site-header nav a {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: rgba(255,255,255,0.7);
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .site-header nav a:hover { color: #fff; }
+
+  /* ── Page Title ── */
+  .page-title-bar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--ink-rule);
+    padding: 20px 24px 16px;
+  }
+  .page-title-bar h1 {
+    font-family: var(--font-mono);
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--defend);
+    margin-bottom: 4px;
+  }
+  .page-title-bar .subtitle {
+    font-size: 12px;
+    color: var(--ink-muted);
+  }
+  .page-title-bar .updated {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--ink-muted);
+    margin-top: 4px;
+  }
+
+  /* ── Layout ── */
+  .layout {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 0;
+    max-width: 1400px;
+    margin: 0 auto;
+    min-height: calc(100vh - 80px);
+  }
+
+  /* ── Sidebar ── */
+  .sidebar {
+    background: var(--surface);
+    border-right: 1px solid var(--ink-rule);
+    padding: 16px 0;
+    position: sticky;
+    top: 0;
+    height: calc(100vh - 80px);
+    overflow-y: auto;
+  }
+  .sidebar-section { margin-bottom: 16px; }
+  .sidebar-label {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--ink-muted);
+    padding: 4px 16px 4px;
+    display: block;
+  }
+  .sidebar a {
+    display: block;
+    font-size: 11px;
+    color: var(--ink-2);
+    text-decoration: none;
+    padding: 5px 16px;
+    border-left: 2px solid transparent;
+  }
+  .sidebar a:hover, .sidebar a.active {
+    border-left-color: var(--accent);
+    color: var(--accent);
+    background: var(--accent-light);
+  }
+
+  /* ── Main content ── */
+  .main { padding: 24px 32px; }
+
+  /* ── Search ── */
+  .search-bar {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+    max-width: 600px;
+  }
+  .search-bar input {
+    flex: 1;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    border: 1px solid var(--ink-rule);
+    border-radius: 4px;
+    padding: 7px 12px;
+    outline: none;
+    background: var(--surface);
+  }
+  .search-bar input:focus { border-color: var(--accent); }
+
+  /* ── Sections ── */
+  .section { margin-bottom: 40px; }
+  .section-header {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--defend);
+    border-bottom: 2px solid var(--defend);
+    padding-bottom: 6px;
+    margin-bottom: 16px;
+  }
+  .section-intro {
+    font-size: 12px;
+    color: var(--ink-muted);
+    margin-bottom: 16px;
+    max-width: 700px;
+    line-height: 1.6;
+  }
+
+  /* ── Case card ── */
+  .case-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 12px; }
+
+  .case-card {
+    background: var(--surface);
+    border: 1px solid var(--ink-rule);
+    border-radius: 6px;
+    padding: 14px 16px;
+    border-left: 4px solid var(--ink-rule);
+    transition: border-left-color 0.15s;
+  }
+  .case-card:hover { border-left-color: var(--accent); }
+  .case-card.defend { border-left-color: var(--green); }
+  .case-card.attack { border-left-color: var(--warn); }
+  .case-card.neutral { border-left-color: var(--accent); }
+  .case-card.warning { border-left-color: var(--settle); }
+
+  .case-name {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 2px;
+  }
+  .case-citation {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    color: var(--ink-muted);
+    margin-bottom: 8px;
+  }
+  .case-principle {
+    font-size: 12px;
+    color: var(--ink-2);
+    line-height: 1.55;
+    margin-bottom: 8px;
+  }
+  .case-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+  .tag {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    padding: 2px 6px;
+    border-radius: 3px;
+    background: var(--ink-rule2);
+    color: var(--ink-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .tag.defend { background: #dcfce7; color: #166534; }
+  .tag.attack { background: #fee2e2; color: #991b1b; }
+  .tag.warning { background: #fef3c7; color: #92400e; }
+  .tag.neutral { background: var(--accent-light); color: var(--accent); }
+
+  /* ── Verdict badge ── */
+  .verdict {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 2px 8px;
+    border-radius: 2px;
+    margin-bottom: 8px;
+  }
+  .verdict.ec { background: #dcfce7; color: #166534; }
+  .verdict.no-ec { background: #fee2e2; color: #991b1b; }
+  .verdict.mixed { background: #fef3c7; color: #92400e; }
+  .verdict.procedural { background: var(--accent-light); color: var(--accent); }
+
+  /* ── Principle table ── */
+  .principle-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 16px; }
+  .principle-table th {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-muted);
+    text-align: left;
+    padding: 6px 10px;
+    border-bottom: 1px solid var(--ink-rule);
+    background: var(--surface-page);
+  }
+  .principle-table td {
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--ink-rule2);
+    vertical-align: top;
+  }
+  .principle-table tr:hover td { background: var(--accent-light); }
+  .principle-table .mono { font-family: var(--font-mono); font-size: 11px; }
+
+  /* ── Quantum box ── */
+  .quantum-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
+  .quantum-card {
+    background: var(--surface);
+    border: 1px solid var(--ink-rule);
+    border-radius: 6px;
+    padding: 14px 16px;
+    text-align: center;
+  }
+  .quantum-card .amount {
+    font-family: var(--font-mono);
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--defend);
+    margin-bottom: 2px;
+  }
+  .quantum-card .amount-uk { font-size: 13px; color: var(--ink-muted); font-family: var(--font-mono); margin-bottom: 4px; }
+  .quantum-card .band { font-size: 11px; color: var(--ink-2); margin-bottom: 4px; }
+  .quantum-card .trigger { font-size: 10px; color: var(--ink-muted); font-family: var(--font-mono); }
+
+  /* ── Alert box ── */
+  .alert {
+    border-radius: 4px;
+    padding: 12px 16px;
+    margin-bottom: 16px;
+    font-size: 12px;
+    line-height: 1.6;
+    border-left: 4px solid;
+  }
+  .alert.red { background: #fff1f2; border-color: var(--warn); color: #7f1d1d; }
+  .alert.green { background: #f0fdf4; border-color: var(--green); color: #14532d; }
+  .alert.blue { background: var(--accent-light); border-color: var(--accent); color: #1e3a8a; }
+  .alert.amber { background: #fffbeb; border-color: var(--settle); color: #78350f; }
+  .alert strong { font-weight: 700; }
+
+  /* ── Timeline ── */
+  .reform-timeline { position: relative; padding-left: 24px; }
+  .reform-timeline::before {
+    content: '';
+    position: absolute;
+    left: 7px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--ink-rule);
+  }
+  .timeline-item { position: relative; margin-bottom: 16px; }
+  .timeline-dot {
+    position: absolute;
+    left: -20px;
+    top: 4px;
+    width: 10px;
+    height: 10px;
+    border-radius: 0;
+    background: var(--defend);
+    border: 2px solid var(--defend);
+  }
+  .timeline-date {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    color: var(--ink-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 2px;
+  }
+  .timeline-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 2px;
+  }
+  .timeline-body { font-size: 11px; color: var(--ink-muted); }
+
+  /* ── Two-limb display ── */
+  .two-limb {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 12px 0;
+  }
+  .limb-box {
+    background: var(--surface-page);
+    border: 1px solid var(--ink-rule);
+    border-radius: 4px;
+    padding: 12px 14px;
+  }
+  .limb-label {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--ink-muted);
+    margin-bottom: 6px;
+  }
+  .limb-text { font-size: 12px; color: var(--ink-2); }
+
+  /* ── Footer ── */
+  .site-footer {
+    background: var(--ink);
+    color: rgba(255,255,255,0.5);
+    padding: 16px 24px;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    text-align: center;
+    margin-top: 40px;
+  }
+
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+    .quantum-grid { grid-template-columns: 1fr; }
+    .two-limb { grid-template-columns: 1fr; }
+    .case-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <a class="wordmark" href="index.html">DEFENDABLE</a>
+  <span class="tagline">Aviation Claims Intelligence</span>
+  <nav>
+    <a href="index.html">Analyser</a>
+    <a href="defendable_legal_reference.html" class="active">Legal Reference</a>
+  </nav>
+</header>
+
+<div class="page-title-bar">
+  <h1>EC261 / UK261 — Legal Reference</h1>
+  <div class="subtitle">Authoritative case law, statutory principles and 2026 reform — for use in claim assessment and defence</div>
+  <div class="updated">Updated: July 2026 — includes EC261 Reform (agreed 15 June 2026) and CJEU decisions to Q1 2026</div>
+</div>
+
+<div class="layout">
+
+  <nav class="sidebar">
+    <div class="sidebar-section">
+      <span class="sidebar-label">Framework</span>
+      <a href="#two-limb">Two-Limb Test</a>
+      <a href="#quantum">Quantum</a>
+      <a href="#art9">Article 9 Care</a>
+      <a href="#limitation">Limitation</a>
+    </div>
+    <div class="sidebar-section">
+      <span class="sidebar-label">Disruption Types</span>
+      <a href="#technical">Technical Defects</a>
+      <a href="#design-defect">Design Defects (2024)</a>
+      <a href="#weather">Weather</a>
+      <a href="#atc">ATC / Slots</a>
+      <a href="#strikes">Strikes</a>
+      <a href="#crew">Crew Illness</a>
+      <a href="#bird">Bird Strike</a>
+      <a href="#security">Security</a>
+      <a href="#deicing">De-icing</a>
+      <a href="#unruly">Unruly Passengers</a>
+      <a href="#third-party">Third-Party Staff</a>
+    </div>
+    <div class="sidebar-section">
+      <span class="sidebar-label">Key Rules</span>
+      <a href="#causal-chain">Causal Chain</a>
+      <a href="#rerout">Re-routing</a>
+      <a href="#double-comp">Double Compensation</a>
+      <a href="#codeshare">Codeshare / Wetlease</a>
+      <a href="#denied">Denied Boarding</a>
+      <a href="#refund">Refund Scope</a>
+    </div>
+    <div class="sidebar-section">
+      <span class="sidebar-label">Reform & Enforcement</span>
+      <a href="#reform2026">EC261 Reform 2026</a>
+      <a href="#uk261">UK261 Post-Brexit</a>
+      <a href="#caa">CAA Enforcement</a>
+      <a href="#german">German Courts</a>
+    </div>
+  </nav>
+
+  <main class="main">
+
+    <!-- TWO-LIMB TEST -->
+    <div class="section" id="two-limb">
+      <div class="section-header">The Extraordinary Circumstances Test</div>
+      <p class="section-intro">The fundamental defence under Article 5(3). Both limbs must be satisfied cumulatively. Interpreted strictly as a derogation from the consumer-protection purpose of the Regulation. A third requirement — avoidability — operates independently.</p>
+
+      <div class="two-limb">
+        <div class="limb-box">
+          <div class="limb-label">Limb 1 — Not Inherent</div>
+          <div class="limb-text">The event must, by its nature or origin, not be inherent in the normal exercise of the activity of an air carrier.</div>
+        </div>
+        <div class="limb-box">
+          <div class="limb-label">Limb 2 — Beyond Control</div>
+          <div class="limb-text">The event must be beyond the carrier's actual control on account of its nature or origin.</div>
+        </div>
+      </div>
+
+      <div class="alert blue">
+        <strong>Third requirement — avoidability:</strong> Even where extraordinary circumstances are proved, the carrier must show the delay "could not have been avoided even if all reasonable measures had been taken." This is assessed separately and is the point most defences actually fail on.
+      </div>
+
+      <table class="principle-table">
+        <thead><tr><th>Source</th><th>Principle</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">Wallentin-Hermann<br>C-549/07 (2008)</td><td>Establishes the two-limb test. Technical defects not extraordinary unless hidden manufacturing defect confirmed by OEM/competent authority.</td></tr>
+          <tr><td class="mono">Pešková C-315/15 (2017)</td><td>Both limbs are cumulative; must be satisfied on specific facts of the individual flight.</td></tr>
+          <tr><td class="mono">Recital 14 EC261</td><td>Non-exhaustive examples: political instability, meteorological conditions incompatible with the flight, security risks, unexpected flight safety shortcomings, strikes affecting the carrier.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- QUANTUM -->
+    <div class="section" id="quantum">
+      <div class="section-header">Compensation Quantum</div>
+      <p class="section-intro">Fixed-rate compensation triggered by ≥3hr arrival delay at final destination (Sturgeon), or by cancellation / denied boarding. No extraordinary circumstances defence applies to denied boarding.</p>
+
+      <div class="quantum-grid">
+        <div class="quantum-card">
+          <div class="amount">€250</div>
+          <div class="amount-uk">£220 (UK261)</div>
+          <div class="band">≤1,500 km</div>
+          <div class="trigger">3hr arrival delay</div>
+        </div>
+        <div class="quantum-card">
+          <div class="amount">€400</div>
+          <div class="amount-uk">£350 (UK261)</div>
+          <div class="band">1,500–3,500 km</div>
+          <div class="trigger">3hr arrival delay</div>
+        </div>
+        <div class="quantum-card">
+          <div class="amount">€600</div>
+          <div class="amount-uk">£520 (UK261)</div>
+          <div class="band">&gt;3,500 km</div>
+          <div class="trigger">4hr arrival delay</div>
+        </div>
+      </div>
+
+      <div class="alert amber">
+        <strong>50% reduction:</strong> Available where carrier offers re-routing and passenger arrives within the applicable time window of scheduled arrival. Rarely applicable where flight already arrives 3hrs+ late. Assessed against scheduled, not actual, arrival time of re-routing flight (C-451/20).
+      </div>
+
+      <div class="alert blue">
+        <strong>Sturgeon principle:</strong> A 3-hour arrival delay at final destination triggers the same compensation right as cancellation. <em>Sturgeon v Condor</em> C-402/07 (2009); confirmed Grand Chamber <em>Nelson/TUI Travel</em> C-581/10, C-629/10 (2012).
+      </div>
+    </div>
+
+    <!-- ARTICLE 9 -->
+    <div class="section" id="art9">
+      <div class="section-header">Article 9 — Right to Care</div>
+      <div class="alert green">
+        <strong>McDonagh principle:</strong> Art 9 care (meals, hotel, transport) is absolute — owed even where extraordinary circumstances are proved and Art 7 compensation is not payable. No temporal or monetary limit exists in current law. <em>McDonagh v Ryanair C-12/11 (2013).</em>
+      </div>
+      <table class="principle-table">
+        <thead><tr><th>Obligation</th><th>Current EC261</th><th>Post-Reform (2027+)</th></tr></thead>
+        <tbody>
+          <tr><td>Water</td><td>Upon delay</td><td>Upon any delay</td></tr>
+          <tr><td>Refreshment</td><td>In reasonable relation to waiting time</td><td>Every 2hrs of waiting</td></tr>
+          <tr><td>Meal</td><td>In reasonable relation to waiting time</td><td>After 3hrs, then every 5hrs (max 3/day)</td></tr>
+          <tr><td>Hotel</td><td>Unlimited — McDonagh applies</td><td><strong>Capped at 3 nights</strong> for extraordinary circumstances cases (EU only)</td></tr>
+          <tr><td>Transport hotel/airport</td><td>Required</td><td>Required</td></tr>
+          <tr><td>Communication</td><td>2 phone calls / emails</td><td>2 phone calls / emails</td></tr>
+          <tr><td>Self-arrangement reimbursement</td><td>Where carrier fails to provide</td><td>Carrier must reimburse within 14 days of request</td></tr>
+        </tbody>
+      </table>
+      <div class="alert red">
+        <strong>UK261 divergence:</strong> The 3-night hotel cap (applicable to EU EC261 from 2027) will NOT automatically apply under UK261. UK-departing extraordinary circumstances passengers may continue to claim unlimited hotel under domestic law unless UK261 is amended.
+      </div>
+    </div>
+
+    <!-- LIMITATION -->
+    <div class="section" id="limitation">
+      <div class="section-header">Limitation Periods</div>
+      <p class="section-intro">EC261 sets no limitation period — national procedural law applies. Cuadrench More v KLM C-139/11 (2012). EC261 claims fall outside the Montreal Convention two-year period.</p>
+      <table class="principle-table">
+        <thead><tr><th>Jurisdiction</th><th>Period</th><th>Basis</th></tr></thead>
+        <tbody>
+          <tr><td>England &amp; Wales</td><td class="mono">6 years</td><td>Limitation Act 1980, s.9</td></tr>
+          <tr><td>Scotland</td><td class="mono">5 years</td><td>Prescription &amp; Limitation (Scotland) Act 1973</td></tr>
+          <tr><td>Germany</td><td class="mono">3 years</td><td>BGB §195 (from year-end in which claim arose)</td></tr>
+          <tr><td>France</td><td class="mono">5 years</td><td>Code civil Art 2224</td></tr>
+          <tr><td>Spain</td><td class="mono">5 years</td><td>Civil Code Art 1964</td></tr>
+          <tr><td>Austria</td><td class="mono">3 years</td><td>ABGB §1478</td></tr>
+          <tr><td>Italy</td><td class="mono">2 years</td><td>Codice della navigazione Art 949</td></tr>
+          <tr><td>Netherlands</td><td class="mono">3 years</td><td>BW Art 3:310</td></tr>
+          <tr><td>Sweden</td><td class="mono">10 years</td><td>Preskriptionslag 1981:130</td></tr>
+          <tr><td>Ireland</td><td class="mono">6 years</td><td>Statute of Limitations 1957</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- TECHNICAL DEFECTS -->
+    <div class="section" id="technical">
+      <div class="section-header">Technical Defects — General Rule</div>
+      <div class="alert red"><strong>Default position: NOT extraordinary.</strong> Technical defects are inherent in the normal exercise of airline operations. This position is settled and binding in both EU and UK jurisdictions.</div>
+      <div class="case-grid">
+        <div class="case-card attack">
+          <div class="verdict no-ec">NOT Extraordinary</div>
+          <div class="case-name">Wallentin-Hermann v Alitalia</div>
+          <div class="case-citation">C-549/07 · ECJ · 22 December 2008</div>
+          <div class="case-principle">Complex engine turbine failure not extraordinary. Exception only where hidden manufacturing defect confirmed by OEM or competent authority affecting all aircraft of that type.</div>
+          <div class="case-tags"><span class="tag attack">Technical</span><span class="tag">Leading authority</span></div>
+        </div>
+        <div class="case-card attack">
+          <div class="verdict no-ec">NOT Extraordinary</div>
+          <div class="case-name">Van der Lans v KLM</div>
+          <div class="case-citation">C-257/14 · ECJ · 17 September 2015</div>
+          <div class="case-principle">Engine component failure before average lifetime, undetected at routine maintenance. Still not extraordinary. Unexpected technical faults are inherent unless stem from external event beyond carrier's control.</div>
+          <div class="case-tags"><span class="tag attack">Technical</span></div>
+        </div>
+        <div class="case-card attack">
+          <div class="verdict no-ec">NOT Extraordinary</div>
+          <div class="case-name">Jet2.com v Huzar</div>
+          <div class="case-citation">[2014] EWCA Civ 791</div>
+          <div class="case-principle">UK binding authority. Wiring defect in fuel valve circuit. Even unforeseen, undetectable technical defects are inherent to airline operations. Binding on all UK lower courts.</div>
+          <div class="case-tags"><span class="tag attack">UK binding</span><span class="tag">Technical</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DESIGN DEFECTS 2024 -->
+    <div class="section" id="design-defect">
+      <div class="section-header">Hidden Design Defects — 2024 CJEU Rulings</div>
+      <div class="alert green"><strong>Exception to the technical rule:</strong> Two June 2024 CJEU judgments confirmed that hidden manufacturing design defects can constitute extraordinary circumstances — even where the carrier was aware of the defect before the disruption.</div>
+      <div class="case-grid">
+        <div class="case-card defend">
+          <div class="verdict ec">Extraordinary</div>
+          <div class="case-name">Matkustaja A v Finnair</div>
+          <div class="case-citation">C-385/23 · ECJ · 13 June 2024</div>
+          <div class="case-principle">Fuel gauge design defect in aircraft in service ~5 months. EC established where: (1) unexpected defect in new aircraft model; (2) manufacturer subsequently confirms it is a hidden design defect; (3) affects all aircraft of that type; (4) implicates flight safety.</div>
+          <div class="case-tags"><span class="tag defend">Design defect</span><span class="tag">2024</span></div>
+        </div>
+        <div class="case-card defend">
+          <div class="verdict ec">Extraordinary</div>
+          <div class="case-name">D S.A. v P S.A. (engine defect)</div>
+          <div class="case-citation">C-411/23 · ECJ · 13 June 2024</div>
+          <div class="case-principle">Hidden engine design defect in high-pressure compressor blades. Carrier knew of defect months before. CJEU: timing of awareness is irrelevant. Defect = extraordinary if it existed at time of disruption and was beyond carrier's control. Backup fleet not always required — court must assess whether charter (dry/wet lease) was feasible given carrier's resources.</div>
+          <div class="case-tags"><span class="tag defend">Design defect</span><span class="tag warning">Reasonable measures</span><span class="tag">2024</span></div>
+        </div>
+      </div>
+      <div class="alert amber">
+        <strong>What evidence is required:</strong> OEM or competent authority (EASA/national CAA) confirmation that: the defect is a design issue (not maintenance); affects the aircraft type generally; implicates flight safety. An EASA Emergency Airworthiness Directive is the strongest evidence. A manufacturer service bulletin alone may not suffice.
+      </div>
+    </div>
+
+    <!-- WEATHER -->
+    <div class="section" id="weather">
+      <div class="section-header">Weather</div>
+      <div class="alert amber"><strong>Foreseeability is decisive.</strong> Severe, unforecast weather = extraordinary. Forecast/seasonal conditions the carrier should have anticipated = not extraordinary.</div>
+      <div class="case-grid">
+        <div class="case-card defend">
+          <div class="verdict ec">Extraordinary (if severe/unforecast)</div>
+          <div class="case-name">BGH — Snowstorm</div>
+          <div class="case-citation">BGH X ZR 136/23 · 24 September 2024</div>
+          <div class="case-principle">Snowstorm = extraordinary. Cascade effects on later rotations can be relied on where direct causal link maintained. Carrier exempt from compensation.</div>
+          <div class="case-tags"><span class="tag defend">Weather</span><span class="tag">German BGH 2024</span></div>
+        </div>
+        <div class="case-card neutral">
+          <div class="verdict mixed">Case by Case</div>
+          <div class="case-name">Recital 14 EC261</div>
+          <div class="case-citation">EC261/2004</div>
+          <div class="case-principle">"Meteorological conditions incompatible with the operation of the flight concerned." Evidence required: METAR, TAF, SIGMET, ATC ground stop, ATIS/LVP activation, captain's report citing specific parameters.</div>
+          <div class="case-tags"><span class="tag">Weather</span><span class="tag neutral">Evidence critical</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ATC -->
+    <div class="section" id="atc">
+      <div class="section-header">ATC / Air Traffic Management</div>
+      <div class="alert green"><strong>ATC management decisions = extraordinary</strong> when they concern capacity restrictions or slot allocation beyond the carrier's control. Eurocontrol NMOC data is the gold-standard evidence.</div>
+      <div class="case-grid">
+        <div class="case-card defend">
+          <div class="verdict ec">Extraordinary</div>
+          <div class="case-name">Moens v Ryanair</div>
+          <div class="case-citation">C-159/18 · ECJ · 26 June 2019</div>
+          <div class="case-principle">Third-party fuel spill caused runway closure = extraordinary. External event outside carrier's control.</div>
+          <div class="case-tags"><span class="tag defend">ATC / Airport</span></div>
+        </div>
+        <div class="case-card warning">
+          <div class="verdict mixed">Causal Chain Critical</div>
+          <div class="case-name">NI, HZ v European Air Charter AG</div>
+          <div class="case-citation">T-656/24 · General Court · 4 March 2026</div>
+          <div class="case-principle">Security staff shortage at Cologne-Bonn caused first rotation delay. Carrier VOLUNTARILY waited for delayed passengers. Court: voluntary decision to wait broke the causal chain. Carrier's choice became the determining cause of subsequent delay. Full facts: third flight in the rotation arrived 3hrs+ late; carrier chartered replacement aircraft for rotations 2 and 3. Yet EC defence lost because the initial decision to wait was not obligatory.</div>
+          <div class="case-tags"><span class="tag attack">Causal chain broken</span><span class="tag warning">2026</span></div>
+        </div>
+      </div>
+      <div class="alert red">
+        <strong>The causal chain trap (4 March 2026):</strong> A carrier's voluntary operational decision — even a well-intentioned one — made after the extraordinary circumstance can become the "determining cause" of the subsequent delay, breaking the Art 5(3) defence. Airlines must carefully document whether post-EC decisions were operationally required or discretionary.
+      </div>
+    </div>
+
+    <!-- STRIKES -->
+    <div class="section" id="strikes">
+      <div class="section-header">Strikes — Own Staff vs Third Party</div>
+      <div class="case-grid">
+        <div class="case-card attack">
+          <div class="verdict no-ec">NOT Extraordinary</div>
+          <div class="case-name">SAS / AirHelp</div>
+          <div class="case-citation">C-28/20 · ECJ · 23 March 2021</div>
+          <div class="case-principle">SAS pilots struck for pay/scheduling. Own staff industrial action = inherent. Legitimacy under national law irrelevant.</div>
+          <div class="case-tags"><span class="tag attack">Own staff strike</span><span class="tag">Definitive</span></div>
+        </div>
+        <div class="case-card attack">
+          <div class="verdict no-ec">NOT Extraordinary</div>
+          <div class="case-name">Krüsemann v TUIfly</div>
+          <div class="case-citation">C-195/17 · ECJ · 17 April 2018</div>
+          <div class="case-principle">Wildcat sick-out by TUIfly staff following restructuring. Unauthorised/spontaneous own-staff action = still not extraordinary.</div>
+          <div class="case-tags"><span class="tag attack">Own staff strike</span></div>
+        </div>
+        <div class="case-card defend">
+          <div class="verdict ec">Potentially Extraordinary</div>
+          <div class="case-name">Third-Party Strike (codified 2026)</div>
+          <div class="case-citation">EC261 Reform, 15 June 2026</div>
+          <div class="case-principle">Airport, air navigation or ground handling service provider strikes are now in the non-exhaustive EC list. Two-limb test still applies; the distinction is that the carrier does not employ these workers and cannot control their industrial action.</div>
+          <div class="case-tags"><span class="tag defend">Third-party strike</span><span class="tag neutral">Reform 2026</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CREW ILLNESS -->
+    <div class="section" id="crew">
+      <div class="section-header">Crew Illness</div>
+      <div class="case-card attack" style="max-width:600px; margin-bottom:16px;">
+        <div class="verdict no-ec">NOT Extraordinary — UK Binding</div>
+        <div class="case-name">Lipton v BA CityFlyer</div>
+        <div class="case-citation">[2024] UKSC 24 · 10 July 2024</div>
+        <div class="case-principle">Pilot illness before departure. No replacement. Supreme Court held: staff illness is inherent to carrier operations — part of crew planning and staff working hours. Applies to all crew, not just flight crew. Binding on all UK courts below UKSC level.</div>
+        <div class="case-tags"><span class="tag attack">Crew illness</span><span class="tag attack">UKSC binding</span><span class="tag">2024</span></div>
+      </div>
+      <div class="alert red"><strong>Do not run crew illness as extraordinary circumstances</strong> in any UK proceeding. Lipton is binding and absolute. A future UKSC departure is theoretically possible but gives no current comfort.</div>
+    </div>
+
+    <!-- BIRD STRIKE -->
+    <div class="section" id="bird">
+      <div class="section-header">Bird Strike</div>
+      <div class="case-card defend" style="max-width:600px; margin-bottom:16px;">
+        <div class="verdict ec">Extraordinary</div>
+        <div class="case-name">Pešková v Travel Service</div>
+        <div class="case-citation">C-315/15 · ECJ · 4 May 2017</div>
+        <div class="case-principle">Bird strike = extraordinary regardless of whether actual damage caused. Not inherent; outside carrier's control. BUT: the post-strike timeline must also be justified — each delay node after the bird strike must itself be shown to be unavoidable. Waiting for a second technician without evidence of necessity was not covered.</div>
+        <div class="case-tags"><span class="tag defend">Bird strike</span><span class="tag warning">Timeline scrutiny</span></div>
+      </div>
+      <div class="alert amber"><strong>Lightning strike:</strong> AirHelp v Austrian Airlines C-399/24 (October 2025) — lightning strike potentially extraordinary where it leads to mandatory safety inspection. All reasonable measures still required.</div>
+    </div>
+
+    <!-- SECURITY -->
+    <div class="section" id="security">
+      <div class="section-header">Security Events</div>
+      <table class="principle-table">
+        <thead><tr><th>Event Type</th><th>EC Status</th><th>Evidence Required</th></tr></thead>
+        <tbody>
+          <tr><td>Bomb threat requiring aircraft inspection / evacuation</td><td class="mono">Extraordinary</td><td>Police/authority notification; aircraft inspection records; MOR</td></tr>
+          <tr><td>Government airspace closure (security / political)</td><td class="mono">Extraordinary</td><td>Government NOTAM; airspace restriction notice</td></tr>
+          <tr><td>Credible threat to specific flight / airport</td><td class="mono">Extraordinary</td><td>Security authority incident report; reason for restriction</td></tr>
+          <tr><td>Routine security screening delays</td><td class="mono">NOT Extraordinary</td><td>Inherent to operations; carrier should plan buffer</td></tr>
+          <tr><td>Unexpected total security checkpoint failure</td><td class="mono">Arguable</td><td>See T-656/24 — causal chain risk if carrier takes discretionary action after event</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- DE-ICING -->
+    <div class="section" id="deicing">
+      <div class="section-header">De-icing</div>
+      <div class="case-card attack" style="max-width:600px; margin-bottom:16px;">
+        <div class="verdict no-ec">NOT Extraordinary — BGH Settled</div>
+        <div class="case-name">BGH — De-icing ruling</div>
+        <div class="case-citation">BGH X ZR 146/23 · 2024</div>
+        <div class="case-principle">De-icing of aircraft in winter temperatures = inherent to normal airline operations. Airlines cannot invoke extraordinary circumstances for de-icing delays. Applies to regions where winter temperatures are expected. KLM required to pay €300.</div>
+        <div class="case-tags"><span class="tag attack">De-icing</span><span class="tag">German BGH 2024</span></div>
+      </div>
+      <div class="alert amber">The only possible EC argument for de-icing delays is if an unprecedented weather event creates de-icing queues far beyond any reasonable expectation — at which point the analysis shifts to the weather category, not the de-icing category.</div>
+    </div>
+
+    <!-- UNRULY PASSENGERS -->
+    <div class="section" id="unruly">
+      <div class="section-header">Unruly Passengers</div>
+      <div class="case-card warning" style="max-width:600px; margin-bottom:12px;">
+        <div class="verdict mixed">Extraordinary — but Re-routing Duty Stringent</div>
+        <div class="case-name">LE v TAP Air Portugal</div>
+        <div class="case-citation">C-74/19 · ECJ · 11 June 2020</div>
+        <div class="case-principle">Unruly passenger bit and assaulted others; aircraft diverted. Passenger misconduct not inherent in carrier's normal activity and not under carrier's control = extraordinary. BUT: carrier must demonstrate exhaustive re-routing search. Rebooking on next available own flight without checking third-party alternatives = failure on reasonable measures.</div>
+        <div class="case-tags"><span class="tag defend">EC established</span><span class="tag warning">Re-routing duty onerous</span></div>
+      </div>
+      <div class="alert amber"><strong>Codified in 2026 reform:</strong> Unruly passengers appear in the non-exhaustive extraordinary circumstances list.</div>
+    </div>
+
+    <!-- THIRD-PARTY STAFF -->
+    <div class="section" id="third-party">
+      <div class="section-header">Third-Party Staff Shortages (Airport Operators)</div>
+      <div class="case-grid">
+        <div class="case-card defend">
+          <div class="verdict ec">Extraordinary</div>
+          <div class="case-name">SATA International</div>
+          <div class="case-citation">C-308/21 · ECJ · 2022</div>
+          <div class="case-principle">Airport operator's fuelling system failure = extraordinary. Third-party infrastructure operated by airport authority is not under airline's control.</div>
+          <div class="case-tags"><span class="tag defend">Third-party</span><span class="tag">Airport infrastructure</span></div>
+        </div>
+        <div class="case-card defend">
+          <div class="verdict ec">Extraordinary</div>
+          <div class="case-name">Touristic Aviation Services</div>
+          <div class="case-citation">C-405/23 · ECJ · 2024</div>
+          <div class="case-principle">Staff shortage at airport baggage handling operator = extraordinary. Airlines must proactively seek alternative providers — not merely accept the disruption.</div>
+          <div class="case-tags"><span class="tag defend">Third-party</span><span class="tag warning">Reasonable measures: seek alternatives</span><span class="tag">2024</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CAUSAL CHAIN -->
+    <div class="section" id="causal-chain">
+      <div class="section-header">Causal Chain — Breaking the Defence</div>
+      <p class="section-intro">Even where extraordinary circumstances are established, a carrier's voluntary operational decision made after the event can break the causal chain and expose them to liability on subsequent flights.</p>
+      <div class="alert red">
+        <strong>4 March 2026 rule (T-656/24):</strong> A carrier's autonomous operational decision — including waiting for delayed passengers — can constitute the "determining cause" of a subsequent delay if the carrier was not legally obliged to make that choice. The fact that the original EC was a necessary condition (sine qua non) for the delay is not sufficient if the carrier's own decision intervened as the determining cause.
+      </div>
+      <table class="principle-table">
+        <thead><tr><th>Principle</th><th>Source</th></tr></thead>
+        <tbody>
+          <tr><td>Previous rotation EC can be relied on for current flight if direct causal link maintained</td><td class="mono">Austrian Airlines C-826/19; T-134/25</td></tr>
+          <tr><td>Causal link must be "sufficiently direct" — EC must be the determining cause</td><td class="mono">T-656/24 (4 Mar 2026)</td></tr>
+          <tr><td>Voluntary carrier decision breaking the chain: waiting for pax, commercial re-routing choices</td><td class="mono">T-656/24</td></tr>
+          <tr><td>Each operational decision post-EC must be required, not discretionary</td><td class="mono">DAC Beachcroft analysis, Apr 2026</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- RE-ROUTING -->
+    <div class="section" id="rerout">
+      <div class="section-header">Re-routing Obligations</div>
+      <div class="alert amber"><strong>The most commonly failed element of a successful EC defence.</strong> Carriers who re-book on next own flight without checking third-party alternatives fail the reasonable measures test.</div>
+      <table class="principle-table">
+        <thead><tr><th>Requirement</th><th>Authority</th></tr></thead>
+        <tbody>
+          <tr><td>Must check own network AND third-party carriers for earliest re-routing</td><td class="mono">LE v TAP C-74/19</td></tr>
+          <tr><td>50% reduction assessed against scheduled (not actual) re-routing arrival</td><td class="mono">AirHelp v Austrian C-451/20</td></tr>
+          <tr><td>Final destination delay calculated from original scheduled arrival</td><td class="mono">Folkerts v Air France C-11/11</td></tr>
+          <tr><td>Reform (2027): alternative must be offered within 3hrs of original departure</td><td class="mono">EC261 Reform, Jun 2026</td></tr>
+          <tr><td>Reform (2027): if no alternative in 3hrs, passenger may self-arrange; airline reimburses up to 400% of ticket price</td><td class="mono">EC261 Reform, Jun 2026</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- DOUBLE COMPENSATION -->
+    <div class="section" id="double-comp">
+      <div class="section-header">Double Compensation — Cancellation + Re-routing Delay</div>
+      <div class="case-card neutral" style="max-width:600px; margin-bottom:12px;">
+        <div class="verdict procedural">Cumulative Compensation</div>
+        <div class="case-name">A and Others v Finnair</div>
+        <div class="case-citation">C-832/18 · ECJ · March 2020</div>
+        <div class="case-principle">Passenger compensated for cancellation who agrees to re-routing is entitled to SEPARATE compensation if the re-routing flight itself arrives 3hrs+ late. EC261 does not limit rights of passengers in re-routing situations. Each inconvenience is separately compensable.</div>
+        <div class="case-tags"><span class="tag neutral">Double exposure</span><span class="tag">Re-routing</span></div>
+      </div>
+    </div>
+
+    <!-- CODESHARE -->
+    <div class="section" id="codeshare">
+      <div class="section-header">Codeshare / Wetlease — Operating Carrier Rule</div>
+      <div class="alert blue"><strong>Only the operating carrier is liable under EC261.</strong> The carrier whose name/code is on the ticket is not liable if they did not operate the flight.</div>
+      <table class="principle-table">
+        <thead><tr><th>Structure</th><th>Who is liable</th></tr></thead>
+        <tbody>
+          <tr><td>Codeshare (Carrier A code, Carrier B operates)</td><td>Carrier B (the operating carrier)</td></tr>
+          <tr><td>Wet lease / ACMI</td><td>The ACMI lessor (provides aircraft and crew), unless lease agreement designates otherwise</td></tr>
+          <tr><td>Non-EU carrier on EU-departing flight</td><td>That non-EU carrier — EC261 applies to any carrier on EU departure</td></tr>
+          <tr><td>EU carrier third-country itinerary with EU departure</td><td>EC261 covers; Wegener C-537/17 — third-country stopover doesn't break jurisdiction</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- DENIED BOARDING -->
+    <div class="section" id="denied">
+      <div class="section-header">Denied Boarding</div>
+      <div class="alert red"><strong>No extraordinary circumstances defence is available for denied boarding.</strong> Where the carrier denies boarding against the passenger's will, Art 7 compensation is owed regardless of the reason.</div>
+      <div class="case-card attack" style="max-width:600px; margin-bottom:12px;">
+        <div class="verdict no-ec">Always compensable — no EC defence</div>
+        <div class="case-name">Finnair v Lassooy</div>
+        <div class="case-citation">C-22/11 · ECJ · 19 October 2012</div>
+        <div class="case-principle">Denied boarding concept extends beyond overbooking to any operational decision to deny boarding (aircraft swap, weight/balance, commercial re-prioritisation). Carrier must first call for volunteers (Art 4(1)) before involuntary denial.</div>
+        <div class="case-tags"><span class="tag attack">Denied boarding</span><span class="tag attack">No EC defence</span></div>
+      </div>
+    </div>
+
+    <!-- REFUND SCOPE -->
+    <div class="section" id="refund">
+      <div class="section-header">Refund Scope — Agency Commission</div>
+      <div class="case-card neutral" style="max-width:600px; margin-bottom:12px;">
+        <div class="verdict procedural">2026 Rule</div>
+        <div class="case-name">VKI v KLM</div>
+        <div class="case-citation">C-45/24 · ECJ · 15 January 2026</div>
+        <div class="case-principle">Art 8 refund must include agency/booking commission paid by passenger to OTA intermediary. Airline does not need to know the precise amount. Passengers who booked via Opodo, Expedia, Booking.com etc. are entitled to have commissions refunded. Widespread compliance gap in airline reservation systems.</div>
+        <div class="case-tags"><span class="tag neutral">Refund scope</span><span class="tag">2026</span></div>
+      </div>
+    </div>
+
+    <!-- EC261 REFORM 2026 -->
+    <div class="section" id="reform2026">
+      <div class="section-header">EC261 Reform — Agreed 15 June 2026</div>
+      <p class="section-intro">Political agreement reached in trilogue on 15 June 2026. Formal adoption expected late 2026; entry into force approximately 2027. Does not change compensation amounts or the 3-hour threshold.</p>
+
+      <div class="reform-timeline">
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-date">New deadline</div>
+          <div class="timeline-title">4-day proactive passenger contact</div>
+          <div class="timeline-body">Airline must contact disrupted passengers within 4 days to explain how to claim.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-date">New deadline</div>
+          <div class="timeline-title">30-day Art 7 response</div>
+          <div class="timeline-body">Acknowledge and pay (or refuse with reasons) Art 7 compensation requests within 30 days.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-date">New obligation</div>
+          <div class="timeline-title">3-hour re-routing offer window</div>
+          <div class="timeline-body">Where passenger chooses re-routing, must be offered an alternative within 3hrs of original departure. If not: passenger may self-arrange; airline reimburses reasonable costs (up to 400% of ticket price) within 14 days.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-date">New concept</div>
+          <div class="timeline-title">Tarmac delay rule</div>
+          <div class="timeline-body">After 30 minutes on ground with doors closed: adequate temperature, toilet access, free water. At 2hrs: return to gate and allow disembarkation (subject to safety/security).</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-date">Expanded definition</div>
+          <div class="timeline-title">Cancellation now includes rescheduling 1hr earlier</div>
+          <div class="timeline-body">Rescheduling a flight 1hr+ earlier, aircraft returning to departure airport, and diversions to alternative airports now all treated as cancellations triggering full passenger rights.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-date">Major policy change</div>
+          <div class="timeline-title">Sequential ticketing — no-show</div>
+          <div class="timeline-body">Passengers denied boarding on return flight because they did not take outbound = denied boarding compensation. Sequential ticketing policies no longer enforceable for point-to-point travel.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-date">New requirement</div>
+          <div class="timeline-title">Free personal item (40×30×15cm)</div>
+          <div class="timeline-body">Airlines must permit one personal item free of charge. Advertised fares must include hand baggage. Low-cost carriers' ancillary models directly targeted.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-date">Art 9 change</div>
+          <div class="timeline-title">3-night hotel cap for extraordinary circumstances</div>
+          <div class="timeline-body">Hotel capped at 3 nights where delay caused by extraordinary circumstances. McDonagh's unlimited obligation limited for EC cases in EU. UK261 diverges — no cap applicable in UK unless domestic amendment.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- UK261 -->
+    <div class="section" id="uk261">
+      <div class="section-header">UK261 — Post-Brexit Position</div>
+      <div class="alert blue">
+        <strong>Lipton v BA CityFlyer [2024] UKSC 24:</strong> The 2018 Withdrawal Act is a "Complete Code." Pre-Brexit CJEU case law is binding on UK lower courts. Post-IP completion day CJEU decisions are persuasive only — UK Supreme Court and senior appellate courts may depart. Government shelved §6 REUL Act 2023 — UK261 framework is stable.
+      </div>
+      <table class="principle-table">
+        <thead><tr><th>Issue</th><th>UK261 position</th></tr></thead>
+        <tbody>
+          <tr><td>Compensation amounts</td><td>£220 / £350 / £520 (GBP equivalents at time of amendment)</td></tr>
+          <tr><td>Pre-IP CJEU authority</td><td>Binding on County Court, High Court, Court of Appeal</td></tr>
+          <tr><td>Post-IP CJEU authority</td><td>Persuasive only; courts may follow but are not bound</td></tr>
+          <tr><td>EC261 Reform (2027)</td><td>Does NOT automatically apply — UK261 diverges unless amended</td></tr>
+          <tr><td>Limitation</td><td>6 years (E&amp;W), 5 years (Scotland)</td></tr>
+          <tr><td>Enforcement body</td><td>UK Civil Aviation Authority (CAA)</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- CAA ENFORCEMENT -->
+    <div class="section" id="caa">
+      <div class="section-header">UK CAA Enforcement</div>
+      <div class="alert blue">
+        <strong>UK261 Compliance Programme launched 2 October 2025.</strong> Covers 25 largest airlines by UK passenger volume (90% of UK commercial passengers). Runs at least 18 months. Progress published periodically.
+      </div>
+      <div class="case-card warning" style="max-width:600px; margin-bottom:12px;">
+        <div class="verdict mixed">Enforcement Action — £1.24m</div>
+        <div class="case-name">CAA v Wizz Air</div>
+        <div class="case-citation">CAA enforcement action · July 2023 onwards</div>
+        <div class="case-principle">CAA initiated enforcement against Wizz Air UK and Wizz Air Hungary for systemic failure to pay UK261 claims. Outcome: £1.24 million refunded to passengers. Wizz Air required to reprocess all claims from 18 March 2022. Passengers with earlier claims may request reopening.</div>
+        <div class="case-tags"><span class="tag warning">Enforcement</span><span class="tag">CAA</span><span class="tag">UK261</span></div>
+      </div>
+    </div>
+
+    <!-- GERMAN COURTS -->
+    <div class="section" id="german">
+      <div class="section-header">German Courts — Key Jurisdiction</div>
+      <p class="section-intro">Germany generates more EC261 litigation than any other EU Member State. BGH referrals to CJEU have shaped pan-European law. Airlines defending German claims face high volumes, legally sophisticated opponents, and consumer-protective courts.</p>
+      <table class="principle-table">
+        <thead><tr><th>Case</th><th>Court</th><th>Principle</th></tr></thead>
+        <tbody>
+          <tr><td>BGH X ZR 136/23</td><td class="mono">BGH, Sep 2024</td><td>Snowstorm = extraordinary; cascade to later rotations permitted with direct causal link</td></tr>
+          <tr><td>BGH X ZR 146/23</td><td class="mono">BGH, 2024</td><td>De-icing = NOT extraordinary; compensation owed</td></tr>
+          <tr><td>AG Düsseldorf → T-656/24</td><td class="mono">Feb 2024 referral</td><td>Security staff shortage — referred; led to General Court ruling 4 March 2026</td></tr>
+          <tr><td>AG Hamburg → C-TBC</td><td class="mono">Jan 2025 referral</td><td>OF and NY v Marabu Airlines — pending CJEU</td></tr>
+          <tr><td>AG Königs Wusterhausen</td><td class="mono">Aug 2025 referral</td><td>Delayed departure slot — airspace capacity — pending General Court</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </main>
+</div>
+
+<footer class="site-footer">
+  DEFENDABLE · Legal Reference · Updated July 2026 · EC261/2004 and UK261 — includes EC261 Reform agreed 15 June 2026 · Case law to Q1 2026 ·
+  The system creates the layout. The lawyer makes the judgment.
+</footer>
+
+</body>
+</html>
