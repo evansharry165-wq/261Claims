@@ -5787,6 +5787,13 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
 
       // Extract facts from text (always — used in custom mode for gap display and evidence signals)
       currentFacts = extractFacts(inputText);
+      if (currentFacts) {
+        if (currentFacts.depIata) currentDepIata = currentFacts.depIata;
+        if (currentFacts.arrIata) currentArrIata = currentFacts.arrIata;
+        if (currentFacts.delayText && !currentDelayMins && typeof DefendableIccParse !== 'undefined') {
+          currentDelayMins = DefendableIccParse.parseDelayMins(inputText) || currentDelayMins;
+        }
+      }
 
       // Classify disruption type; fall back to 'unknown' sentinel if nothing matches
       const dt = detectDisruptionType(inputText) || {
