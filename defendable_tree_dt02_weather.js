@@ -89,7 +89,7 @@ var DefendAbleTreeDT02 = (function () {
   function isWeatherOriginOnly(text) {
     var t = text || '';
     return /\blvp\b|\bsnowtam|\brunway closure|\bde-ic\b|\borigin weather\b/i.test(t)
-      && !/\bdiversion\b|\bbelow minima\b|\bthunderstorm\b|\barrival destination\b|\bdestination\b/i.test(t);
+      && !/\bdiversion\b|\bbelow minima\b|\bthunderstorms?\b|\barrival destination\b|\bdestination\b/i.test(t);
   }
 
   function matches(iccText, chainEvents) {
