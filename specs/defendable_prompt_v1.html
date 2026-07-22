@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DefendAble — Structured Disruption Input (Prototype)</title>
+<style>
+  :root {
+    --paper: #faf8f4;
+    --card: #ffffff;
+    --ink: #1a1a18;
+    --ink-2: #44423d;
+    --muted: #8a867d;
+    --rule: #e6e2d8;
+    --accent: #8a6d1f;
+    --accent-bg: #f6efdd;
+    --live: #1f6f43;
+    --live-bg: #e8f3ec;
+    --warn: #a33b2e;
+    --warn-bg: #f9e9e6;
+    --mono: "SF Mono", Menlo, Consolas, monospace;
+    --serif: Georgia, "Times New Roman", serif;
+    --sans: -apple-system, "Segoe UI", Helvetica, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--paper); color: var(--ink); font-family: var(--sans); font-size: 14px; line-height: 1.55; }
+
+  header { border-bottom: 1px solid var(--rule); padding: 18px 28px; display:flex; align-items:baseline; gap:14px; }
+  header .wm { font-family: var(--serif); font-size: 20px; font-weight: 700; }
+  header .sub { font-family: var(--mono); font-size: 10px; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; }
+
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 26px 28px 60px; display: grid; grid-template-columns: 1fr 320px; gap: 26px; }
+
+  h1 { font-family: var(--serif); font-size: 26px; font-weight: 400; margin-bottom: 4px; }
+  .lede { color: var(--muted); font-size: 13px; margin-bottom: 22px; max-width: 640px; }
+
+  .section { background: var(--card); border: 1px solid var(--rule); border-radius: 6px; margin-bottom: 18px; overflow: hidden; }
+  .sec-head { display:flex; align-items:center; gap:10px; padding: 12px 16px 10px; border-bottom: 1px solid var(--rule); }
+  .sec-num { font-family: var(--mono); font-size: 10px; color: var(--card); background: var(--ink); border-radius: 3px; padding: 2px 7px; }
+  .sec-title { font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-2); font-weight: 700; }
+  .sec-sub { font-size: 11px; color: var(--muted); font-style: italic; margin-left: auto; }
+  .meter { display: flex; gap: 3px; margin-left: 10px; }
+  .meter i { width: 14px; height: 4px; border-radius: 2px; background: var(--rule); }
+  .meter i.on { background: var(--live); }
+
+  textarea { width: 100%; border: 0; outline: none; resize: vertical; min-height: 84px; padding: 12px 16px; font-family: var(--serif); font-size: 14px; color: var(--ink); background: transparent; line-height: 1.6; }
+  textarea::placeholder { color: #b8b3a6; font-style: italic; font-size: 13px; }
+
+  .chips { padding: 8px 14px 12px; display: flex; flex-wrap: wrap; gap: 6px; min-height: 34px; border-top: 1px dashed var(--rule); }
+  .chips:empty::after { content: "keyword recognition — chips appear as the system understands your words"; font-family: var(--mono); font-size: 9.5px; color: #c3beb1; padding-top: 4px; }
+  .chip { font-family: var(--mono); font-size: 10px; border-radius: 3px; padding: 3px 8px; display: inline-flex; gap: 6px; align-items: center; animation: pop .18s ease-out; }
+  @keyframes pop { from { transform: scale(.85); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  .chip.rec { background: var(--live-bg); color: var(--live); border: 1px solid #cfe4d6; }
+  .chip.rec b { font-weight: 700; }
+  .chip.rec span { color: #57806a; font-size: 9px; }
+  .chip.warn { background: var(--warn-bg); color: var(--warn); border: 1px solid #eccfc9; }
+  .chip.sugg { background: var(--card); color: var(--accent); border: 1px dashed #d4c391; cursor: pointer; }
+  .chip.sugg:hover { background: var(--accent-bg); }
+  .chip.sugg::before { content: "+ "; }
+
+  .compose-bar { display: flex; gap: 12px; align-items: center; margin-top: 4px; }
+  button.compose { font-family: var(--mono); font-size: 12px; letter-spacing: .06em; background: var(--ink); color: var(--paper); border: 0; border-radius: 4px; padding: 11px 22px; cursor: pointer; }
+  button.compose:hover { background: #33312c; }
+  button.ghost { font-family: var(--mono); font-size: 11px; background: transparent; color: var(--ink-2); border: 1px solid var(--rule); border-radius: 4px; padding: 10px 16px; cursor: pointer; }
+  .copy-ok { font-family: var(--mono); font-size: 10px; color: var(--live); }
+
+  .output { margin-top: 16px; background: var(--card); border: 1px solid var(--rule); border-radius: 6px; padding: 16px; display: none; }
+  .output.show { display: block; }
+  .output h3 { font-family: var(--mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  .output pre { font-family: var(--serif); font-size: 13px; white-space: pre-wrap; color: var(--ink-2); line-height: 1.6; }
+
+  /* rail */
+  .rail { position: sticky; top: 20px; align-self: start; }
+  .rail-card { background: var(--card); border: 1px solid var(--rule); border-radius: 6px; margin-bottom: 14px; }
+  .rail-head { font-family: var(--mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-2); font-weight: 700; padding: 10px 14px; border-bottom: 1px solid var(--rule); }
+  .rail-body { padding: 12px 14px; font-size: 12px; }
+  .rail-body .empty { color: #c3beb1; font-style: italic; font-size: 12px; }
+  .bank { margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px dashed var(--rule); }
+  .bank:last-child { border-bottom: 0; margin-bottom: 0; padding-bottom: 0; }
+  .bank-name { font-family: var(--mono); font-size: 11px; font-weight: 700; color: var(--ink); }
+  .bank-tree { font-family: var(--mono); font-size: 9px; color: var(--card); background: var(--accent); border-radius: 2px; padding: 1px 5px; margin-left: 6px; }
+  .bank-detail { color: var(--muted); font-size: 11px; margin-top: 3px; }
+  .bank-auth { font-family: var(--mono); font-size: 10px; color: var(--accent); margin-top: 3px; }
+  .bank-flag { font-size: 11px; color: var(--warn); background: var(--warn-bg); border-radius: 3px; padding: 5px 8px; margin-top: 5px; }
+  .ev-line { display:flex; gap: 6px; font-size: 11px; margin-top: 2px; }
+  .ev-dot { width: 7px; height: 7px; border-radius: 0; margin-top: 4px; flex: none; }
+  .ev-dot.ref { background: var(--live); }
+  .ev-dot.need { background: var(--rule); border: 1px solid var(--muted); }
+
+  footer { text-align: center; font-family: var(--mono); font-size: 9px; color: var(--muted); padding: 20px; border-top: 1px solid var(--rule); }
+  @media (max-width: 920px){ .wrap { grid-template-columns: 1fr; } .rail { position: static; } }
+</style>
+</head>
+<body>
+
+<header>
+  <span class="wm">DefendAble</span>
+  <span class="sub">Structured Disruption Input · Prototype v1</span>
+</header>
+
+<div class="wrap">
+<main>
+  <h1>Describe the disruption</h1>
+  <p class="lede">Three sections — the shape every good ICC summary already takes. As you type, the system shows you what it recognises and what routes are available. Your words are the key; the chips are the lock opening.</p>
+
+  <!-- SECTION 1 -->
+  <div class="section">
+    <div class="sec-head">
+      <span class="sec-num">1</span>
+      <span class="sec-title">Flight &amp; Line of Flying</span>
+      <span class="sec-sub">what flight, what aircraft, what happened to it</span>
+      <span class="meter" id="m1"><i></i><i></i><i></i></span>
+    </div>
+    <textarea id="s1" placeholder="Flight number(s), date, tail, route. What happened to this aircraft across the day — inbound sectors, inherited delay, swaps, diversions.&#10;e.g. EZY4470 LGW–AMS 21/07, G-EZBX. Aircraft inbound from PMI 45 late. Ground hold LGW, ATD 0941 vs STD 0620. Return EZY4471 ATD AMS 1317."></textarea>
+    <div class="chips" id="c1"></div>
+  </div>
+
+  <!-- SECTION 2 -->
+  <div class="section">
+    <div class="sec-head">
+      <span class="sec-num">2</span>
+      <span class="sec-title">Causation</span>
+      <span class="sec-sub">why it was disrupted, and the consequence chain</span>
+      <span class="meter" id="m2"><i></i><i></i><i></i></span>
+    </div>
+    <textarea id="s2" placeholder="Root cause and what it did to the operation.&#10;e.g. CB activity Amsterdam FIR from 0800. Eurocontrol ATFM weather regulation, CTOT 0920 imposed. No diversion. Arrival delay 194 mins."></textarea>
+    <div class="chips" id="c2"></div>
+  </div>
+
+  <!-- SECTION 3 -->
+  <div class="section">
+    <div class="sec-head">
+      <span class="sec-num">3</span>
+      <span class="sec-title">Reasonable Measures</span>
+      <span class="sec-sub">why the airline could not save the flight on the day</span>
+      <span class="meter" id="m3"><i></i><i></i><i></i></span>
+    </div>
+    <textarea id="s3" placeholder="Standby aircraft/crew, subs considered, network state, re-routing checked, curfew or FDP limits.&#10;e.g. No standby LGW — subs deployed to weather backlog. Re-crew not possible within FDP. Re-routing checked: no earlier arrival own metal or interline."></textarea>
+    <div class="chips" id="c3"></div>
+  </div>
+
+  <div class="compose-bar">
+    <button class="compose" onclick="compose()">Compose ICC summary →</button>
+    <button class="ghost" onclick="copyOut()">Copy</button>
+    <span class="copy-ok" id="copyok"></span>
+  </div>
+
+  <div class="output" id="out">
+    <h3>Canonical summary — paste into the analyser</h3>
+    <pre id="outText"></pre>
+  </div>
+</main>
+
+<!-- RECOGNITION RAIL -->
+<aside class="rail">
+  <div class="rail-card">
+    <div class="rail-head">System recognition</div>
+    <div class="rail-body" id="railBanks"><div class="empty">Nothing engaged yet — start typing.</div></div>
+  </div>
+  <div class="rail-card">
+    <div class="rail-head">Evidence referenced / needed</div>
+    <div class="rail-body" id="railEv"><div class="empty">Populates once a disruption bank engages.</div></div>
+  </div>
+</aside>
+</div>
+
+<footer>DefendAble · Structured input prototype · the system creates the layout — the lawyer makes the judgment</footer>
+
+<script>
+/* ─────────────────────────────────────────────────────────
+   KEYWORD → KNOWLEDGE BANK MAP  (content: Claude · impl: Cursor)
+   Each bank: triggers[], label, tree, detail, auth, flags{}, evidence[], suggestions[]
+   ───────────────────────────────────────────────────────── */
+const BANKS = [
+  {
+    id:"weather", label:"Weather", tree:"DT-02",
+    triggers:["thunderstorm","tsra","cb ","cb activity","convective","snow","blizzard","freezing","fog","lvp","visibility","below minima","crosswind","windshear","gale","storm","hail","wind"],
+    detail:"Meteorological conditions incompatible with the flight — Recital 14. Foreseeability decisive.",
+    auth:"Recital 14 · BGH X ZR 136/23",
+    evidence:["METAR / TAF","SIGMET","Eurocontrol regulation notice","Commanders report"],
+    suggestions:["weather at arrival","weather at departure","ATFM weather regulation","mandatory diversion"],
+    flags:[{on:["de-ice","de-icing","deice"], text:"De-icing itself is NOT extraordinary (BGH X ZR 146/23). Was there an underlying severe weather event?"}]
+  },
+  {
+    id:"atc", label:"ATC / ATFM", tree:"DT-01",
+    triggers:["atc","atfm","ctot","slot","flow control","ground stop","ground hold","regulation","eurocontrol","nmoc","airspace"],
+    detail:"ATM management decision beyond carrier control — EC candidate if evidenced.",
+    auth:"Moens C-159/18 · T-134/25",
+    evidence:["Eurocontrol NMOC log","CTOT assignment","Delay codes 81–89","OCC log"],
+    suggestions:["slot restriction","cascading delay","capacity regulation","staffing regulation"]
+  },
+  {
+    id:"tech", label:"Technical", tree:"DT-03",
+    triggers:["technical","tech fault","defect","engineering","aog","unserviceable","mel","fault"],
+    detail:"Default: NOT extraordinary — inherent to operations.",
+    auth:"Wallentin-Hermann · Huzar · Van der Lans",
+    evidence:["Tech log","Engineering report","OEM confirmation (if design defect)"],
+    suggestions:["hidden design defect (OEM confirmed)","birdstrike damage","routine defect"],
+    flags:[{on:["technical","defect","fault","engineering"], text:"Routine technical ≠ extraordinary. Is there OEM / authority confirmation of a hidden design defect? (C-385/23, C-411/23)"}]
+  },
+  {
+    id:"bird", label:"Bird strike", tree:"DT-04",
+    triggers:["bird","birdstrike","wildlife"],
+    detail:"Extraordinary — but every post-strike delay node must itself be justified.",
+    auth:"Pešková C-315/15",
+    evidence:["Commanders report","Inspection record","MOR"],
+    suggestions:["precautionary inspection","strike with damage"]
+  },
+  {
+    id:"strike", label:"Industrial action", tree:"DT-05",
+    triggers:["strike","industrial action","walkout","sick-out","union","work to rule"],
+    detail:"OWN staff = never EC. Third-party (ATC / handler / airport) = EC candidate.",
+    auth:"SAS C-28/20 · Krüsemann · Reform 2026",
+    evidence:["Strike notice","Handler / airport notification"],
+    suggestions:["third-party ATC strike","ground handler strike","own staff action (not EC)"],
+    flags:[{on:["our crew","own staff","pilots strike","cabin crew strike"], text:"Own-staff industrial action is NEVER extraordinary — SAS C-28/20. Assess as compensation case."}]
+  },
+  {
+    id:"crew", label:"Crew", tree:"DT-06",
+    triggers:["crew sick","crew illness","captain sick","fo sick","crew unavailable","fdp","flight time limit","out of hours","discretion"],
+    detail:"Crew illness NEVER extraordinary in UK — Lipton binding.",
+    auth:"Lipton [2024] UKSC 24",
+    evidence:["Crew roster","FDP calculation","Sickness report"],
+    suggestions:["FDP expiry downstream of other cause","re-crew attempted"],
+    flags:[{on:["crew sick","crew illness","captain sick","fo sick"], text:"Crew illness is never extraordinary (Lipton UKSC 2024, binding). Focus shifts to quantum and Art 9 care."}]
+  },
+  {
+    id:"pax", label:"Passenger event", tree:"DT-07",
+    triggers:["disruptive","unruly","medical emergency","medical diversion","offload","police","deportee","pax removed"],
+    detail:"Unruly pax = EC (LE v TAP) but re-routing duty is stringent.",
+    auth:"LE v TAP C-74/19",
+    evidence:["Commanders report","Police report","Diversion record"],
+    suggestions:["unruly pax diversion","medical diversion","offload + bag identification"]
+  },
+  {
+    id:"security", label:"Security", tree:"DT-08",
+    triggers:["security alert","bomb","evacuation","screening","security breach","suspicious"],
+    detail:"Genuine threat = EC. Discretionary post-event choices can break the chain.",
+    auth:"Recital 14 · T-656/24",
+    evidence:["Authority incident report","MOR","Airport notification"],
+    suggestions:["threat to specific aircraft","airport-wide event","screening system failure"]
+  },
+  {
+    id:"infra", label:"Airport / third party", tree:"DT-09",
+    triggers:["runway closed","runway closure","fuelling","fuel system","baggage system","ground handler","handler","airbridge","power failure","it outage"],
+    detail:"Third-party infrastructure failure = EC candidate; must seek alternatives.",
+    auth:"Moens · SATA C-308/21 · C-405/23",
+    evidence:["Airport operator notice","Handler communication","NOTAM"],
+    suggestions:["runway closure","fuelling system failure","handler staff shortage"]
+  },
+  {
+    id:"cascade", label:"Rotation / cascade", tree:"LOF",
+    triggers:["inbound","rotation","knock-on","previous sector","earlier delay","aircraft swap","positioning","late arrival of aircraft"],
+    detail:"Cascade from earlier EC permitted with direct causal link. Voluntary waits BREAK it.",
+    auth:"Austrian C-826/19 · T-656/24",
+    evidence:["LOF record","OCC log","Prior sector delay attribution"],
+    suggestions:["cascade from earlier EC sector","aircraft swap attempted","voluntary hold (chain risk)"],
+    flags:[{on:["waited for","held for passengers","hold for pax","waited for pax"], text:"Voluntary decision to wait can BREAK the causal chain — T-656/24 (4 Mar 2026). Was the wait operationally required?"}]
+  },
+  {
+    id:"rm", label:"Reasonable measures", tree:"RM",
+    triggers:["standby","sub ","substitute","wet lease","charter","re-crew","reserve crew","re-route","rebook","interline","other carriers","curfew","no options","all deployed"],
+    detail:"Art 5(3) — all resources at the carrier's disposal must be shown deployed.",
+    auth:"Eglītis C-294/10 · LE v TAP C-74/19",
+    evidence:["OCC log","Standby roster","Re-routing search record"],
+    suggestions:["standby unavailable — reason","re-routing searched incl. third party","curfew constraint"]
+  }
+];
+
+const secs = [
+  {ta:"s1", chips:"c1", meter:"m1", needs:[/\b[A-Z]{2,3}\s?\d{2,4}\b/i, /\d{1,2}\/\d{1,2}|\d{4}Z|\b(std|atd|sta|ata)\b/i, /\b[A-Z]{3}\b[–\-—>]+\s?\b[A-Z]{3}\b|\b(lgw|ams|ltn|pmi|bhx)\b/i]},
+  {ta:"s2", chips:"c2", meter:"m2", needs:[/./, /(due|caused|because|following|result)/i, /(delay|cancel|divert|return|hold)/i]},
+  {ta:"s3", chips:"c3", meter:"m3", needs:[/./, /(standby|sub|crew|re-?rout|rebook|interline|curfew|option)/i, /(no |not |unable|could not|unavailable|checked)/i]}
+];
+
+let engaged = {}; // bankId -> {bank, terms:Set, flags:Set}
+
+function scan() {
+  engaged = {};
+  secs.forEach(sec => {
+    const text = document.getElementById(sec.ta).value;
+    const low = " " + text.toLowerCase() + " ";
+    const box = document.getElementById(sec.chips);
+    box.innerHTML = "";
+    BANKS.forEach(b => {
+      const hits = b.triggers.filter(t => low.includes(t));
+      if (hits.length) {
+        if (!engaged[b.id]) engaged[b.id] = {bank:b, terms:new Set(), flags:new Set()};
+        hits.forEach(h => engaged[b.id].terms.add(h.trim()));
+        // recognition chip
+        const chip = document.createElement("span");
+        chip.className = "chip rec";
+        chip.innerHTML = `<b>${hits[0].trim()}</b><span>→ ${b.label} · ${b.tree}</span>`;
+        box.appendChild(chip);
+        // flags
+        (b.flags||[]).forEach(f => {
+          if (f.on.some(t => low.includes(t))) {
+            engaged[b.id].flags.add(f.text);
+            const w = document.createElement("span");
+            w.className = "chip warn"; w.textContent = "⚑ " + f.text.split(".")[0];
+            box.appendChild(w);
+          }
+        });
+        // suggestion chips (max 3)
+        b.suggestions.slice(0,3).forEach(s => {
+          if (!low.includes(s.toLowerCase())) {
+            const g = document.createElement("span");
+            g.className = "chip sugg"; g.textContent = s;
+            g.onclick = () => { insert(sec.ta, s); };
+            box.appendChild(g);
+          }
+        });
+      }
+    });
+    // meter
+    const bars = document.getElementById(sec.meter).children;
+    sec.needs.forEach((re,i) => bars[i].classList.toggle("on", re.test(text)));
+  });
+  renderRail();
+}
+
+function insert(taId, phrase) {
+  const ta = document.getElementById(taId);
+  ta.value = ta.value.replace(/\s*$/, "") + (ta.value ? ". " : "") + phrase;
+  ta.focus(); scan();
+}
+
+function renderRail() {
+  const banksEl = document.getElementById("railBanks");
+  const evEl = document.getElementById("railEv");
+  const list = Object.values(engaged);
+  if (!list.length) {
+    banksEl.innerHTML = '<div class="empty">Nothing engaged yet — start typing.</div>';
+    evEl.innerHTML = '<div class="empty">Populates once a disruption bank engages.</div>';
+    return;
+  }
+  banksEl.innerHTML = list.map(e => `
+    <div class="bank">
+      <span class="bank-name">${e.bank.label}</span><span class="bank-tree">${e.bank.tree}</span>
+      <div class="bank-detail">${e.bank.detail}</div>
+      <div class="bank-auth">${e.bank.auth}</div>
+      ${[...e.flags].map(f => `<div class="bank-flag">⚑ ${f}</div>`).join("")}
+    </div>`).join("");
+
+  const allText = secs.map(s => document.getElementById(s.ta).value).join(" ").toLowerCase();
+  const evMap = {};
+  list.forEach(e => e.bank.evidence.forEach(ev => { evMap[ev] = evMap[ev] || allText.includes(ev.split(" ")[0].toLowerCase()); }));
+  evEl.innerHTML = Object.entries(evMap).map(([ev,ref]) => `
+    <div class="ev-line"><span class="ev-dot ${ref?"ref":"need"}"></span><span>${ev}${ref?"":" — <i style='color:var(--muted)'>not referenced</i>"}</span></div>`).join("");
+}
+
+function compose() {
+  const v = i => document.getElementById("s"+i).value.trim();
+  if (!v(1) && !v(2) && !v(3)) return;
+  const out = ["[FLIGHT] " + (v(1)||"—"), "[CAUSE] " + (v(2)||"—"), "[MEASURES] " + (v(3)||"—")].join("\n\n");
+  document.getElementById("outText").textContent = out;
+  document.getElementById("out").classList.add("show");
+}
+
+function copyOut() {
+  compose();
+  const t = document.getElementById("outText").textContent;
+  if (!t) return;
+  navigator.clipboard.writeText(t).then(() => {
+    const ok = document.getElementById("copyok");
+    ok.textContent = "✓ copied";
+    setTimeout(() => ok.textContent = "", 2000);
+  });
+}
+
+secs.forEach(s => {
+  let deb;
+  document.getElementById(s.ta).addEventListener("input", () => { clearTimeout(deb); deb = setTimeout(scan, 250); });
+});
+</script>
+</body>
+</html>

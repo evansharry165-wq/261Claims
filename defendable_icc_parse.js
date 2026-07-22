@@ -258,7 +258,26 @@
   /**
    * Build editable LOF rows from free-text ICC / ops summary.
    */
+  function textForLof(text) {
+    if (typeof DefendAblePromptBanks !== 'undefined' && DefendAblePromptBanks.sectionBody) {
+      var parts = DefendAblePromptBanks.parseSections(text);
+      if (parts.marked && parts.flight) return parts.flight;
+    }
+    return text;
+  }
+
+  function textForCause(text) {
+    if (typeof DefendAblePromptBanks !== 'undefined' && DefendAblePromptBanks.parseSections) {
+      var parts = DefendAblePromptBanks.parseSections(text);
+      if (parts.marked) {
+        return [parts.cause, parts.measures, parts.flight].filter(Boolean).join('\n');
+      }
+    }
+    return text;
+  }
+
   function parseLOFFromText(text) {
+    text = textForLof(text);
     if (!text) return [];
     var refs = extractFlightRefs(text);
     if (!refs.length) return [];
@@ -502,6 +521,7 @@
    * Returns { weatherBonus, factors[] }.
    */
   function disruptionFactorHints(text) {
+    text = textForCause(text);
     var lower = (text || '').toLowerCase();
     var factors = [];
     var weatherBonus = 0;

@@ -309,6 +309,216 @@
       font-style: italic;
     }
 
+    /* ── Structured prompt (3-section ICC) ───────────────────── */
+    .spi-wrap {
+      display: grid;
+      grid-template-columns: 1fr 280px;
+      gap: 16px;
+      margin-top: 4px;
+    }
+    .spi-lede {
+      font-size: 12px;
+      color: var(--ink-faint);
+      margin: 0 0 12px;
+      line-height: 1.5;
+    }
+    .spi-section {
+      background: var(--surface-page);
+      border: 1px solid var(--ink-rule);
+      border-radius: var(--r-md);
+      margin-bottom: 12px;
+      overflow: hidden;
+    }
+    .spi-sec-head {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 12px 8px;
+      border-bottom: 1px solid var(--ink-rule2);
+      flex-wrap: wrap;
+    }
+    .spi-sec-num {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--paper, #FEFEFE);
+      background: var(--ink-primary);
+      border-radius: 3px;
+      padding: 2px 7px;
+    }
+    .spi-sec-title {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--ink-secondary);
+      font-weight: 700;
+    }
+    .spi-sec-sub {
+      font-size: 11px;
+      color: var(--ink-faint);
+      font-style: italic;
+      margin-left: auto;
+    }
+    .spi-meter { display: flex; gap: 3px; margin-left: 8px; }
+    .spi-meter i {
+      width: 14px; height: 4px; border-radius: 2px;
+      background: var(--ink-rule2); display: block;
+    }
+    .spi-meter i.on { background: var(--defend-mid, #2F6B4F); }
+    .spi-ta {
+      width: 100%;
+      border: 0;
+      outline: none;
+      resize: vertical;
+      min-height: 72px;
+      padding: 10px 12px;
+      font-family: var(--font-spectral, Georgia, serif);
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--ink-primary);
+      background: transparent;
+      box-sizing: border-box;
+    }
+    .spi-ta::placeholder {
+      color: var(--ink-faint);
+      font-style: italic;
+      font-size: 12.5px;
+    }
+    .spi-chips {
+      padding: 8px 12px 10px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      min-height: 32px;
+      border-top: 1px dashed var(--ink-rule2);
+    }
+    .spi-chips:empty::after {
+      content: "keyword recognition — chips appear as the system understands your words";
+      font-family: var(--font-mono);
+      font-size: 9.5px;
+      color: var(--ink-faint);
+      padding-top: 2px;
+    }
+    .spi-chip {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      border-radius: 3px;
+      padding: 3px 8px;
+      display: inline-flex;
+      gap: 6px;
+      align-items: center;
+    }
+    .spi-rec {
+      background: var(--defend-bg, #E4F0E9);
+      color: var(--defend, #2F6B4F);
+      border: 1px solid var(--defend-border, #cfe4d6);
+    }
+    .spi-rec span { opacity: .75; font-size: 9px; }
+    .spi-warn {
+      background: var(--settle-bg, #FBF0F0);
+      color: var(--settle, #8B1A1A);
+      border: 1px solid var(--settle-border, #eccfc9);
+      max-width: 100%;
+    }
+    .spi-sugg {
+      background: var(--surface-raised, #fff);
+      color: var(--conditions, #9A6B1F);
+      border: 1px dashed var(--conditions-border, #d4c391);
+      cursor: pointer;
+    }
+    .spi-sugg::before { content: "+ "; }
+    .spi-sugg:hover { background: var(--conditions-bg, #F5EDD9); }
+    .spi-compose-bar {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin: 4px 0 8px;
+    }
+    .spi-btn-compose {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: .04em;
+      background: var(--ink-primary);
+      color: var(--paper, #FEFEFE);
+      border: 0;
+      border-radius: var(--r-md);
+      padding: 10px 18px;
+      cursor: pointer;
+    }
+    .spi-btn-ghost {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      background: transparent;
+      color: var(--ink-secondary);
+      border: 1px solid var(--ink-rule);
+      border-radius: var(--r-md);
+      padding: 9px 14px;
+      cursor: pointer;
+    }
+    .spi-hint { font-family: var(--font-mono); font-size: 10px; color: var(--defend-mid, #2F6B4F); }
+    .spi-rail { align-self: start; position: sticky; top: 12px; }
+    .spi-rail-card {
+      background: var(--surface-page);
+      border: 1px solid var(--ink-rule);
+      border-radius: var(--r-md);
+      margin-bottom: 12px;
+    }
+    .spi-rail-head {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--ink-secondary);
+      font-weight: 700;
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--ink-rule2);
+    }
+    .spi-rail-body { padding: 10px 12px; font-size: 12px; }
+    .spi-empty { color: var(--ink-faint); font-style: italic; font-size: 12px; }
+    .spi-bank {
+      margin-bottom: 10px;
+      padding-bottom: 8px;
+      border-bottom: 1px dashed var(--ink-rule2);
+    }
+    .spi-bank:last-child { border-bottom: 0; margin-bottom: 0; padding-bottom: 0; }
+    .spi-bank-name { font-family: var(--font-mono); font-size: 11px; font-weight: 700; }
+    .spi-bank-tree {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      color: #fff;
+      background: var(--conditions, #9A6B1F);
+      border-radius: 2px;
+      padding: 1px 5px;
+      margin-left: 6px;
+    }
+    .spi-bank-detail { color: var(--ink-faint); font-size: 11px; margin-top: 3px; }
+    .spi-bank-auth { font-family: var(--font-mono); font-size: 10px; color: var(--conditions, #9A6B1F); margin-top: 3px; }
+    .spi-bank-flag {
+      font-size: 11px;
+      color: var(--settle, #8B1A1A);
+      background: var(--settle-bg, #FBF0F0);
+      border-radius: 3px;
+      padding: 5px 8px;
+      margin-top: 5px;
+    }
+    .spi-ev-line { display: flex; gap: 6px; font-size: 11px; margin-top: 3px; }
+    .spi-ev-dot { width: 7px; height: 7px; margin-top: 4px; flex: none; }
+    .spi-ev-dot.ref { background: var(--defend-mid, #2F6B4F); }
+    .spi-ev-dot.need { background: transparent; border: 1px solid var(--ink-faint); }
+    #iccText.spi-sync-hidden {
+      position: absolute;
+      width: 1px; height: 1px;
+      padding: 0; margin: -1px;
+      overflow: hidden; clip: rect(0,0,0,0);
+      border: 0;
+    }
+    @media (max-width: 920px) {
+      .spi-wrap { grid-template-columns: 1fr; }
+      .spi-rail { position: static; }
+      .spi-sec-sub { margin-left: 0; width: 100%; }
+    }
+
     .chip-row {
       display: flex;
       flex-wrap: wrap;
@@ -3005,14 +3215,16 @@
         </button>
       </div>
 
-      <!-- Mode 1: ICC Text -->
+      <!-- Mode 1: ICC Text — structured 3-section prompt -->
       <div class="mode-panel active" id="panel-icc">
-        <label class="field-label" for="iccText">Disruption Summary — ICC / Network Control Format</label>
+        <label class="field-label">Describe the disruption</label>
+        <div id="structured-prompt-root"></div>
         <textarea
-          class="icc-textarea"
+          class="icc-textarea spi-sync-hidden"
           id="iccText"
-          placeholder="e.g. HC 1184 LTN-BCN 14/03/26. Thunderstorms BCN, approach below minima, mandatory ATC diversion Valencia. Standby LTN could not position, thunderstorms BCN. Passengers cared for Valencia, coach transfer arranged."
-          oninput="currentScenarioKey = ''"
+          aria-hidden="true"
+          tabindex="-1"
+          placeholder=""
         ></textarea>
         <!-- Scenario Browser -->
         <div class="scenario-browser">
@@ -3290,6 +3502,8 @@
   <script src="case_filing.js"></script>
   <script src="case_helpers.js"></script>
   <script src="defendable_icc_parse.js"></script>
+  <script src="defendable_prompt_banks.js"></script>
+  <script src="defendable_structured_prompt.js"></script>
 
   <!-- ============================================================
        SCRIPT — MODE 0: Foundation
@@ -3578,7 +3792,11 @@
       const text = EXAMPLES[key];
       const meta = SCENARIO_META[key];
       if (!text) return;
-      document.getElementById('iccText').value = text;
+      if (typeof DefendAbleStructuredPrompt !== 'undefined' && DefendAbleStructuredPrompt.setCanonical) {
+        DefendAbleStructuredPrompt.setCanonical(text);
+      } else {
+        document.getElementById('iccText').value = text;
+      }
       switchMode('icc');
       if (meta) {
         currentDepIata    = meta.dep    || currentDepIata;
@@ -3598,7 +3816,11 @@
       currentScenarioKey = key;
       const text = EXAMPLES[key];
       if (!text) return;
-      document.getElementById('iccText').value = text;
+      if (typeof DefendAbleStructuredPrompt !== 'undefined' && DefendAbleStructuredPrompt.setCanonical) {
+        DefendAbleStructuredPrompt.setCanonical(text);
+      } else {
+        document.getElementById('iccText').value = text;
+      }
       switchMode('icc');
       if (key === 'demo') {
         currentDepIata    = 'PMI';
@@ -3624,7 +3846,7 @@
       const aiLabel   = liveAiOn && savedApiKey ? 'Live AI active' : 'Demo mode';
       let modeLabel;
       if (currentMode === 'icc') {
-        modeLabel = 'Mode 1 — ICC Text';
+        modeLabel = 'Mode 1 — Structured ICC';
       } else if (retrievedFlightData) {
         modeLabel = 'Mode 2 — Flight retrieved · ready to analyse';
       } else {
@@ -4164,7 +4386,11 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
       /* Gather input text */
       let inputText = '';
       if (currentMode === 'icc') {
-        inputText = (document.getElementById('iccText').value || '').trim();
+        if (typeof DefendAbleStructuredPrompt !== 'undefined' && DefendAbleStructuredPrompt.sync) {
+          inputText = (DefendAbleStructuredPrompt.sync() || '').trim();
+        } else {
+          inputText = (document.getElementById('iccText').value || '').trim();
+        }
         if (!inputText) { alert('Please enter a disruption summary.'); return; }
       } else {
         /* Build context from retrieved data + supplementary text */
@@ -8926,6 +9152,25 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
     document.addEventListener('keydown', e => {
       if (e.key === 'Escape') { closeCaselawModal(); closeBrief(); }
     });
+
+    /* Structured ICC prompt — mount once DOM ready */
+    (function bootStructuredPrompt() {
+      function go() {
+        if (typeof DefendAbleStructuredPrompt === 'undefined') return;
+        DefendAbleStructuredPrompt.mount({
+          root: '#structured-prompt-root',
+          syncEl: '#iccText',
+          onChange: function () {
+            currentScenarioKey = '';
+          }
+        });
+      }
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', go);
+      } else {
+        go();
+      }
+    })();
 
   </script>
 

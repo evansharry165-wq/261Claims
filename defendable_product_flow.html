@@ -309,7 +309,7 @@
       <pre class="mermaid">
 flowchart TB
   subgraph entry [Entry]
-    ICC["ICC / ops disruption prompt<br/>or Flight Lookup"]
+    ICC["Structured 3-section ICC prompt<br/>or Flight Lookup · keyword recognition"]
   end
 
   subgraph part1 [Part 1 — ANALYSE · live]
@@ -364,7 +364,7 @@ flowchart TB
     <div class="panel">
       <pre class="mermaid">
 flowchart TD
-  Prompt["Paste ICC text<br/>or retrieve flight + cause"]
+  Prompt["Structured 3-section prompt<br/>or paste full ICC / retrieve flight"]
   Run["Run Analysis"]
   Z1["Zone 1 — Line of Flying FIRST<br/>editable sectors + story + evidence"]
   Z2["Zone 2 — Provisional classification<br/>Defend / Investigate / Settle scaffold"]
@@ -402,7 +402,8 @@ flowchart TD
         <h3>defendable_analyser_v3</h3>
         <p>Disruption in → factual layout the lawyer can correct.</p>
         <ul>
-          <li>ICC / flight lookup intake</li>
+          <li>Structured 3-section ICC prompt + live keyword recognition</li>
+          <li>ICC / flight lookup intake (compose → canonical summary)</li>
           <li>Editable LOF sector table</li>
           <li>Chronological story + evidence status</li>
           <li>Confirm LOF hard gate</li>
@@ -488,8 +489,10 @@ flowchart LR
   </section>
 
   <p class="footnote">
-    Source of truth: Analyser v3 + Confirm LOF → Decide workspace · Framework map
+    Source of truth: Analyser v3 structured prompt → Confirm LOF → Decide workspace · Framework map
     <a href="defendable_legal_tree.html">defendable_legal_tree.html</a> ·
+    Spec/prototype: <a href="specs/defendable_prompt_spec.md">prompt spec</a> ·
+    <a href="specs/defendable_prompt_v1.html">prompt v1</a> ·
     Legal reference <a href="defendable_legal_reference.html">KB</a> ·
     Manage shell at <a href="index.html">index.html</a>.
     Packets via Case Handoff Pack Confirm: case summary, legal position, evidence index,
