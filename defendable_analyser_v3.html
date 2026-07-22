@@ -309,6 +309,216 @@
       font-style: italic;
     }
 
+    /* ── Structured prompt (3-section ICC) ───────────────────── */
+    .spi-wrap {
+      display: grid;
+      grid-template-columns: 1fr 280px;
+      gap: 16px;
+      margin-top: 4px;
+    }
+    .spi-lede {
+      font-size: 12px;
+      color: var(--ink-faint);
+      margin: 0 0 12px;
+      line-height: 1.5;
+    }
+    .spi-section {
+      background: var(--surface-page);
+      border: 1px solid var(--ink-rule);
+      border-radius: var(--r-md);
+      margin-bottom: 12px;
+      overflow: hidden;
+    }
+    .spi-sec-head {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 12px 8px;
+      border-bottom: 1px solid var(--ink-rule2);
+      flex-wrap: wrap;
+    }
+    .spi-sec-num {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--paper, #FEFEFE);
+      background: var(--ink-primary);
+      border-radius: 3px;
+      padding: 2px 7px;
+    }
+    .spi-sec-title {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--ink-secondary);
+      font-weight: 700;
+    }
+    .spi-sec-sub {
+      font-size: 11px;
+      color: var(--ink-faint);
+      font-style: italic;
+      margin-left: auto;
+    }
+    .spi-meter { display: flex; gap: 3px; margin-left: 8px; }
+    .spi-meter i {
+      width: 14px; height: 4px; border-radius: 2px;
+      background: var(--ink-rule2); display: block;
+    }
+    .spi-meter i.on { background: var(--defend-mid, #2F6B4F); }
+    .spi-ta {
+      width: 100%;
+      border: 0;
+      outline: none;
+      resize: vertical;
+      min-height: 72px;
+      padding: 10px 12px;
+      font-family: var(--font-spectral, Georgia, serif);
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--ink-primary);
+      background: transparent;
+      box-sizing: border-box;
+    }
+    .spi-ta::placeholder {
+      color: var(--ink-faint);
+      font-style: italic;
+      font-size: 12.5px;
+    }
+    .spi-chips {
+      padding: 8px 12px 10px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      min-height: 32px;
+      border-top: 1px dashed var(--ink-rule2);
+    }
+    .spi-chips:empty::after {
+      content: "keyword recognition — chips appear as the system understands your words";
+      font-family: var(--font-mono);
+      font-size: 9.5px;
+      color: var(--ink-faint);
+      padding-top: 2px;
+    }
+    .spi-chip {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      border-radius: 3px;
+      padding: 3px 8px;
+      display: inline-flex;
+      gap: 6px;
+      align-items: center;
+    }
+    .spi-rec {
+      background: var(--defend-bg, #E4F0E9);
+      color: var(--defend, #2F6B4F);
+      border: 1px solid var(--defend-border, #cfe4d6);
+    }
+    .spi-rec span { opacity: .75; font-size: 9px; }
+    .spi-warn {
+      background: var(--settle-bg, #FBF0F0);
+      color: var(--settle, #8B1A1A);
+      border: 1px solid var(--settle-border, #eccfc9);
+      max-width: 100%;
+    }
+    .spi-sugg {
+      background: var(--surface-raised, #fff);
+      color: var(--conditions, #9A6B1F);
+      border: 1px dashed var(--conditions-border, #d4c391);
+      cursor: pointer;
+    }
+    .spi-sugg::before { content: "+ "; }
+    .spi-sugg:hover { background: var(--conditions-bg, #F5EDD9); }
+    .spi-compose-bar {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin: 4px 0 8px;
+    }
+    .spi-btn-compose {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: .04em;
+      background: var(--ink-primary);
+      color: var(--paper, #FEFEFE);
+      border: 0;
+      border-radius: var(--r-md);
+      padding: 10px 18px;
+      cursor: pointer;
+    }
+    .spi-btn-ghost {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      background: transparent;
+      color: var(--ink-secondary);
+      border: 1px solid var(--ink-rule);
+      border-radius: var(--r-md);
+      padding: 9px 14px;
+      cursor: pointer;
+    }
+    .spi-hint { font-family: var(--font-mono); font-size: 10px; color: var(--defend-mid, #2F6B4F); }
+    .spi-rail { align-self: start; position: sticky; top: 12px; }
+    .spi-rail-card {
+      background: var(--surface-page);
+      border: 1px solid var(--ink-rule);
+      border-radius: var(--r-md);
+      margin-bottom: 12px;
+    }
+    .spi-rail-head {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--ink-secondary);
+      font-weight: 700;
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--ink-rule2);
+    }
+    .spi-rail-body { padding: 10px 12px; font-size: 12px; }
+    .spi-empty { color: var(--ink-faint); font-style: italic; font-size: 12px; }
+    .spi-bank {
+      margin-bottom: 10px;
+      padding-bottom: 8px;
+      border-bottom: 1px dashed var(--ink-rule2);
+    }
+    .spi-bank:last-child { border-bottom: 0; margin-bottom: 0; padding-bottom: 0; }
+    .spi-bank-name { font-family: var(--font-mono); font-size: 11px; font-weight: 700; }
+    .spi-bank-tree {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      color: #fff;
+      background: var(--conditions, #9A6B1F);
+      border-radius: 2px;
+      padding: 1px 5px;
+      margin-left: 6px;
+    }
+    .spi-bank-detail { color: var(--ink-faint); font-size: 11px; margin-top: 3px; }
+    .spi-bank-auth { font-family: var(--font-mono); font-size: 10px; color: var(--conditions, #9A6B1F); margin-top: 3px; }
+    .spi-bank-flag {
+      font-size: 11px;
+      color: var(--settle, #8B1A1A);
+      background: var(--settle-bg, #FBF0F0);
+      border-radius: 3px;
+      padding: 5px 8px;
+      margin-top: 5px;
+    }
+    .spi-ev-line { display: flex; gap: 6px; font-size: 11px; margin-top: 3px; }
+    .spi-ev-dot { width: 7px; height: 7px; margin-top: 4px; flex: none; }
+    .spi-ev-dot.ref { background: var(--defend-mid, #2F6B4F); }
+    .spi-ev-dot.need { background: transparent; border: 1px solid var(--ink-faint); }
+    #iccText.spi-sync-hidden {
+      position: absolute;
+      width: 1px; height: 1px;
+      padding: 0; margin: -1px;
+      overflow: hidden; clip: rect(0,0,0,0);
+      border: 0;
+    }
+    @media (max-width: 920px) {
+      .spi-wrap { grid-template-columns: 1fr; }
+      .spi-rail { position: static; }
+      .spi-sec-sub { margin-left: 0; width: 100%; }
+    }
+
     .chip-row {
       display: flex;
       flex-wrap: wrap;
@@ -2144,7 +2354,7 @@
       flex-shrink: 0;
     }
 
-    /* ── Generate Brief Button ───────────────────────────────── */
+    /* ── Case Handoff Pack ───────────────────────────────────── */
     .btn-gen-brief {
       font-family: var(--font-sans);
       font-size: 13px;
@@ -2161,6 +2371,88 @@
     .btn-gen-brief:hover {
       background: var(--ink-secondary);
       border-color: var(--ink-secondary);
+    }
+    .handoff-backdrop {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 9000;
+      display: flex; align-items: flex-start; justify-content: center;
+      padding: 32px 16px; overflow-y: auto;
+    }
+    .handoff-modal {
+      background: var(--surface-raised, #FEFEFE); max-width: 860px; width: 100%;
+      border-radius: var(--r-lg); box-shadow: 0 8px 40px rgba(0,0,0,0.25);
+    }
+    .handoff-hdr { padding: 24px 28px 16px; border-bottom: 2px solid var(--ink-primary); }
+    .handoff-kicker {
+      font-family: var(--font-mono); font-size: 10px; letter-spacing: .1em;
+      text-transform: uppercase; color: var(--ink-faint); margin-bottom: 6px;
+    }
+    .handoff-title { font-family: var(--font-serif); font-size: 22px; color: var(--ink-primary); margin-bottom: 4px; }
+    .handoff-body { padding: 20px 28px; max-height: 62vh; overflow-y: auto; }
+    .handoff-sec { margin-bottom: 28px; }
+    .handoff-sec h3 {
+      font-family: var(--font-serif); font-size: 14px; font-weight: 700;
+      letter-spacing: .04em; text-transform: uppercase; color: var(--ink-secondary);
+      border-bottom: 1px solid var(--ink-rule2); padding-bottom: 6px; margin-bottom: 12px;
+    }
+    .handoff-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+    .handoff-sec label {
+      display: block; font-size: 10px; font-weight: 700; letter-spacing: .06em;
+      text-transform: uppercase; color: var(--ink-faint); margin: 10px 0 4px;
+    }
+    .handoff-sec input[type=text], .handoff-sec textarea, .handoff-sec select {
+      width: 100%; font-family: var(--font-spectral, serif); font-size: 13px;
+      padding: 8px 10px; border: 1px solid var(--ink-rule); border-radius: var(--r-md);
+      background: var(--surface-raised, #fff); color: var(--ink-primary); box-sizing: border-box;
+    }
+    .handoff-ro {
+      font-size: 13px; font-family: var(--font-spectral, serif); color: var(--ink-primary);
+      padding: 8px 10px; background: var(--surface-ui, #EEECEA); border-radius: var(--r-md);
+      border: 1px solid var(--ink-rule2);
+    }
+    .handoff-block { white-space: pre-wrap; line-height: 1.55; }
+    .handoff-muted { font-size: 12px; color: var(--ink-faint); }
+    .handoff-warn { color: var(--settle, #8B1A1A); font-weight: 600; }
+    .handoff-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 8px; }
+    .handoff-table th, .handoff-table td {
+      border: 1px solid var(--ink-rule2); padding: 6px 8px; text-align: left;
+      font-family: var(--font-spectral, serif);
+    }
+    .handoff-table th { background: var(--surface-ui, #EEECEA); font-size: 10px; text-transform: uppercase; }
+    .handoff-pill {
+      display: inline-block; font-family: var(--font-mono); font-size: 10px;
+      padding: 1px 6px; border-radius: 3px; background: var(--ink-faint); color: #fff; margin-right: 4px;
+    }
+    .handoff-available { background: var(--defend, #2F6B4F); }
+    .handoff-requested { background: var(--conditions, #9A6B1F); }
+    .handoff-missing { background: var(--settle, #8B1A1A); }
+    .handoff-marks { list-style: none; padding: 0; margin: 0 0 8px; }
+    .handoff-marks li { padding: 4px 0; font-size: 12px; }
+    .handoff-trail { margin: 0 0 8px 18px; font-size: 12px; font-family: var(--font-spectral, serif); }
+    .handoff-crit { margin-bottom: 8px; font-size: 12px; }
+    .handoff-crit input { margin-top: 4px; }
+    .handoff-auth { margin-bottom: 8px; font-size: 12px; }
+    .handoff-check { display: flex !important; align-items: center; gap: 8px; text-transform: none !important; font-size: 13px !important; letter-spacing: 0 !important; font-weight: 500 !important; color: var(--ink-primary) !important; }
+    .handoff-ftr {
+      padding: 14px 28px; border-top: 1px solid var(--ink-rule2);
+      display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
+      background: var(--surface-ui, #EEECEA);
+    }
+    .handoff-btn {
+      font-family: var(--font-sans); font-size: 12px; font-weight: 600;
+      padding: 8px 16px; border: 1px solid var(--ink-rule); border-radius: var(--r-md);
+      background: var(--surface-raised, #FEFEFE); cursor: pointer; color: var(--ink-primary);
+    }
+    .handoff-btn-primary {
+      background: var(--ink-primary); color: #fff; border-color: var(--ink-primary); margin-left: auto;
+    }
+    .handoff-btn-primary:disabled { opacity: 0.45; cursor: not-allowed; }
+    @media (max-width: 700px) {
+      .handoff-grid { grid-template-columns: 1fr; }
+    }
+    @media print {
+      .handoff-backdrop { position: static; background: none; padding: 0; }
+      .handoff-ftr, .handoff-btn { display: none !important; }
+      .handoff-body { max-height: none; overflow: visible; }
     }
 
 
@@ -2740,6 +3032,127 @@
       background: transparent; color: var(--ink-secondary); cursor: pointer;
       outline: none; padding: 0; width: 100%;
     }
+    .lof-confirm-banner {
+      margin-top: 14px; padding: 14px 16px;
+      border: 1px solid var(--defend-border); border-left: 3px solid var(--defend-mid);
+      background: var(--defend-bg); border-radius: 2px;
+    }
+    .lof-confirm-banner.locked {
+      border-color: var(--ink-rule); border-left-color: var(--ink-secondary); background: var(--surface-page);
+    }
+    .lof-confirm-title { font-family: var(--font-serif); font-size: 14px; color: var(--ink-primary); margin-bottom: 4px; }
+    .lof-confirm-text { font-size: 11.5px; color: var(--ink-secondary); line-height: 1.5; margin-bottom: 10px; }
+    .lof-confirm-btn {
+      font-family: var(--font-mono); font-size: 11px; letter-spacing: .04em;
+      background: var(--defend-mid); color: #fff; border: none; border-radius: 2px;
+      padding: 8px 14px; cursor: pointer; font-weight: 600;
+    }
+    .lof-confirm-btn:hover { filter: brightness(1.05); }
+    .lof-confirm-btn:disabled { background: var(--ink-rule); color: var(--ink-faint); cursor: not-allowed; filter: none; }
+    .lof-prerating {
+      margin-top: 14px; padding: 14px 16px; border-radius: 2px;
+      border: 1px solid var(--ink-rule); border-left: 3px solid var(--ink-rule); display: none;
+    }
+    .lof-prerating.visible { display: block; }
+    .lof-prerating.defendable { border-left-color: var(--defend-mid); background: var(--defend-bg); border-color: var(--defend-border); }
+    .lof-prerating.investigate { border-left-color: var(--conditions-mid); background: var(--conditions-bg); border-color: var(--conditions-border); }
+    .lof-prerating.borderline { border-left-color: var(--judgment-mid); background: var(--judgment-bg); border-color: var(--judgment-border); }
+    .lof-prerating-eyebrow { font-family: var(--font-mono); font-size: 8.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 4px; }
+    .lof-prerating-title { font-family: var(--font-serif); font-size: 15px; color: var(--ink-primary); margin-bottom: 4px; }
+    .lof-prerating-text { font-size: 11.5px; color: var(--ink-secondary); line-height: 1.5; }
+    .zone3-locked {
+      padding: 28px 18px; text-align: center; border: 1px dashed var(--ink-rule2);
+      border-radius: 2px; background: var(--surface-page);
+    }
+    .zone3-locked-title { font-family: var(--font-serif); font-size: 14px; color: var(--ink-primary); margin-bottom: 6px; }
+    .zone3-locked-sub { font-size: 12px; color: var(--ink-secondary); line-height: 1.5; max-width: 280px; margin: 0 auto; }
+    .decide-workspace { font-size: 12px; color: var(--ink-primary); }
+    .decide-hero { margin-bottom: 12px; }
+    .decide-hero-title { font-family: var(--font-serif); font-size: 18px; margin: 2px 0 4px; }
+    .decide-card-kicker { font-family: var(--font-mono); font-size: 9px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 4px; }
+    .decide-card { border: 1px solid var(--ink-rule); border-left: 3px solid var(--ink-rule); padding: 12px 14px; margin: 10px 0; background: var(--surface-raised, #fff); border-radius: 2px; }
+    .decide-card-risk { border-left-color: var(--settle-mid, #B33); background: #FDF6F4; }
+    .decide-card-title { font-weight: 600; margin-bottom: 4px; }
+    .decide-muted { color: var(--ink-secondary); font-size: 11.5px; line-height: 1.45; }
+    .decide-verdict { font-family: var(--font-serif); font-size: 20px; margin: 4px 0; }
+    .decide-position.band-defendable { border-left: 3px solid var(--defend-mid); background: var(--defend-bg); padding: 12px 14px; margin: 10px 0; }
+    .decide-position.band-borderline { border-left: 3px solid var(--judgment-mid); background: var(--judgment-bg); padding: 12px 14px; margin: 10px 0; }
+    .decide-position.band-investigate { border-left: 3px solid var(--conditions-mid); background: var(--conditions-bg); padding: 12px 14px; margin: 10px 0; }
+    .decide-hold-badge { display: inline-block; margin: 6px 0; padding: 3px 8px; font-family: var(--font-mono); font-size: 10px; background: #F5EDD9; border: 1px solid #9A6B1F; color: #6B4A10; }
+    .decide-tree { margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--ink-rule2); }
+    .decide-tree-hdr { font-weight: 600; margin-bottom: 6px; }
+    .decide-tree-id { font-family: var(--font-mono); font-size: 11px; }
+    .decide-gate { padding: 8px 0; border-bottom: 1px solid var(--ink-rule2); }
+    .decide-gate-top { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 4px; }
+    .decide-gate-id { font-family: var(--font-mono); font-size: 10px; color: var(--ink-faint); }
+    .decide-gate-q { font-size: 12px; margin-bottom: 2px; }
+    .decide-gate-auth, .decide-gate-reason { font-size: 11px; color: var(--ink-secondary); }
+    .decide-ans { font-family: var(--font-mono); font-size: 10px; padding: 2px 6px; border-radius: 2px; }
+    .decide-ans-yes { background: #E4F0E9; color: #2F6B4F; }
+    .decide-ans-no { background: #F8E8E5; color: #8B3A2F; }
+    .decide-ans-na { background: #EEE; color: #666; }
+    .decide-gaps { margin: 4px 0 0 16px; padding: 0; font-size: 11px; color: var(--ink-secondary); }
+    .decide-override-row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 6px; }
+    .decide-override-row select, .decide-override-row input, .decide-card textarea, .decide-card input[type=text] {
+      font-size: 11px; padding: 4px 6px; border: 1px solid var(--ink-rule); border-radius: 2px; background: var(--surface-page);
+    }
+    .decide-auth-list { margin: 0; padding-left: 16px; }
+    .decide-auth-list .auth-binding strong::after { content: ''; }
+    .auth-binding { color: var(--ink-primary); }
+    .auth-persuasive { color: var(--ink-secondary); }
+    .decide-btn {
+      font-family: var(--font-mono); font-size: 11px; padding: 7px 12px; border: 1px solid var(--ink-rule);
+      background: var(--surface-page); cursor: pointer; border-radius: 2px; margin-right: 6px; margin-top: 4px;
+    }
+    .decide-btn-primary { background: var(--defend-mid); color: #fff; border-color: var(--defend-mid); }
+    .decide-btn-warn { background: #F5EDD9; border-color: #9A6B1F; color: #6B4A10; }
+    .decide-btn:disabled { opacity: .45; cursor: not-allowed; }
+    .decide-g1-done { padding: 8px 10px; background: var(--defend-bg); border: 1px solid var(--defend-border); font-size: 12px; }
+    .decide-g1-actions { display: flex; flex-wrap: wrap; gap: 4px; }
+    .decide-brief {
+      padding: 16px 16px 14px; margin-bottom: 12px; border-radius: 2px;
+      border: 1px solid var(--ink-rule); border-left: 4px solid var(--ink-rule);
+      background: var(--surface-raised, #fff);
+    }
+    .decide-brief.band-defendable { border-left-color: var(--defend-mid); background: var(--defend-bg); border-color: var(--defend-border); }
+    .decide-brief.band-borderline { border-left-color: var(--judgment-mid); background: var(--judgment-bg); border-color: var(--judgment-border); }
+    .decide-brief.band-investigate { border-left-color: var(--conditions-mid); background: var(--conditions-bg); border-color: var(--conditions-border); }
+    .decide-brief-tag { font-family: var(--font-mono); font-size: 9px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 4px; }
+    .decide-brief-title { font-family: var(--font-serif); font-size: 22px; line-height: 1.2; color: var(--ink-primary); margin-bottom: 4px; }
+    .decide-brief-sub { font-size: 12px; color: var(--ink-secondary); line-height: 1.45; margin-bottom: 8px; }
+    .decide-brief-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+    .decide-chip { font-family: var(--font-mono); font-size: 10px; padding: 2px 8px; border: 1px solid var(--ink-rule); border-radius: 2px; background: var(--surface-page); color: var(--ink-secondary); }
+    .decide-trail-steps { display: flex; flex-direction: column; gap: 8px; }
+    .decide-trail-step { display: flex; gap: 10px; align-items: flex-start; }
+    .decide-trail-dot {
+      flex-shrink: 0; width: 28px; height: 28px; border-radius: 2px;
+      background: var(--ink-primary); color: #fff; font-family: var(--font-mono); font-size: 11px;
+      display: flex; align-items: center; justify-content: center; font-weight: 600;
+    }
+    .decide-trail-step.input .decide-trail-dot { background: var(--ink-secondary); }
+    .decide-trail-step.brk .decide-trail-dot { background: var(--settle-mid, #B33); }
+    .decide-trail-step.verdict .decide-trail-dot { background: var(--defend-mid); }
+    .decide-trail-card { flex: 1; border: 1px solid var(--ink-rule2); border-left: 2px solid var(--ink-rule); padding: 8px 10px; background: var(--surface-page); border-radius: 2px; }
+    .decide-trail-id { font-family: var(--font-mono); font-size: 10px; color: var(--ink-faint); margin-bottom: 2px; }
+    .decide-trail-desc { font-size: 12.5px; color: var(--ink-primary); line-height: 1.4; margin-bottom: 4px; }
+    .decide-trail-meta { display: flex; flex-wrap: wrap; gap: 4px; }
+    .decide-trail-tag { font-family: var(--font-mono); font-size: 9px; letter-spacing: .04em; padding: 2px 6px; border-radius: 2px; border: 1px solid var(--ink-rule); }
+    .decide-trail-tag.lof-third, .decide-trail-tag.ec-y { background: #E4F0E9; color: #2F6B4F; border-color: #A8C9B5; }
+    .decide-trail-tag.lof-own, .decide-trail-tag.ec-n { background: #F8E8E5; color: #8B3A2F; border-color: #E0B0A8; }
+    .decide-trail-tag.ec-st, .decide-trail-tag.dt { background: #E6EEF5; color: #2A4A6B; border-color: #A8BFD4; }
+    .decide-trail-tag.unk { background: #EEE; color: #555; }
+    .decide-conditions-card { border-left-color: #9A6B1F; }
+    .decide-conditions-list { margin: 0 0 0 18px; padding: 0; font-size: 12.5px; color: var(--ink-primary); line-height: 1.5; }
+    .decide-conditions-list li { margin-bottom: 4px; }
+    .decide-actions { display: flex; flex-direction: column; gap: 6px; }
+    .decide-action-row { display: flex; gap: 8px; align-items: flex-start; padding: 6px 0; border-bottom: 1px solid var(--ink-rule2); }
+    .decide-pri { font-family: var(--font-mono); font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 2px; flex-shrink: 0; }
+    .decide-pri.critical { background: #F8E8E5; color: #8B3A2F; }
+    .decide-pri.important { background: #F5EDD9; color: #6B4A10; }
+    .decide-pri.supporting { background: #EEE; color: #555; }
+    .decide-action-text { font-size: 12.5px; color: var(--ink-primary); }
+    .decide-pass3-secondary { margin-top: 16px; padding-top: 12px; border-top: 1px dashed var(--ink-rule2); }
+    .decide-pass3-secondary summary { cursor: pointer; font-family: var(--font-mono); font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-faint); }
 
   </style>
 </head>
@@ -2755,10 +3168,11 @@
     </a>
     <div class="g-nav__divider"></div>
     <ul class="g-nav__links">
-      <li><a href="#" class="active">Analyse</a></li>
-      <li><a href="#">Platform</a></li>
-      <li><a href="#">Law Updates</a></li>
-      <li><a href="#">Case Register</a></li>
+      <li><a href="defendable_analyser_v3.html" class="active">Analyse</a></li>
+      <li><a href="defendable_legal_tree.html">Decide map</a></li>
+      <li><a href="defendable_product_flow.html">Journey</a></li>
+      <li><a href="defendable_legal_reference.html">Law</a></li>
+      <li><a href="index.html">Manage</a></li>
     </ul>
     <span class="g-nav__badge">Intelligence Engine · v3.0</span>
   </nav>
@@ -2801,14 +3215,16 @@
         </button>
       </div>
 
-      <!-- Mode 1: ICC Text -->
+      <!-- Mode 1: ICC Text — structured 3-section prompt -->
       <div class="mode-panel active" id="panel-icc">
-        <label class="field-label" for="iccText">Disruption Summary — ICC / Network Control Format</label>
+        <label class="field-label">Describe the disruption</label>
+        <div id="structured-prompt-root"></div>
         <textarea
-          class="icc-textarea"
+          class="icc-textarea spi-sync-hidden"
           id="iccText"
-          placeholder="e.g. HC 1184 LTN-BCN 14/03/26. Thunderstorms BCN, approach below minima, mandatory ATC diversion Valencia. Standby LTN could not position, thunderstorms BCN. Passengers cared for Valencia, coach transfer arranged."
-          oninput="currentScenarioKey = ''"
+          aria-hidden="true"
+          tabindex="-1"
+          placeholder=""
         ></textarea>
         <!-- Scenario Browser -->
         <div class="scenario-browser">
@@ -3067,6 +3483,28 @@
     <span class="page-footer__nodes">EC261 · UK261 · 20 disruption types · 16 universal legal nodes · 3-pass chain analysis</span>
   </footer>
 
+  <!-- Modular legal engine (trees run post Confirm LOF) -->
+  <script src="defendable_framework.js"></script>
+  <script src="defendable_evidence_manager.js"></script>
+  <script src="defendable_confidence_manager.js"></script>
+  <script src="defendable_registry.js"></script>
+  <script src="defendable_evidence_pack.js"></script>
+  <script src="defendable_tree_engine.js"></script>
+  <script src="defendable_tree_dt01_atc.js"></script>
+  <script src="defendable_tree_dt02_weather.js"></script>
+  <script src="defendable_trees.js"></script>
+  <script src="defendable_pass2.js"></script>
+  <script src="defendable_orchestrator.js"></script>
+  <script src="defendable_type_map.js"></script>
+  <script src="defendable_lof_legal_bridge.js"></script>
+  <script src="defendable_decide_workspace.js"></script>
+  <script src="defendable_case_handoff.js"></script>
+  <script src="case_filing.js"></script>
+  <script src="case_helpers.js"></script>
+  <script src="defendable_icc_parse.js"></script>
+  <script src="defendable_prompt_banks.js"></script>
+  <script src="defendable_structured_prompt.js"></script>
+
   <!-- ============================================================
        SCRIPT — MODE 0: Foundation
   ============================================================ -->
@@ -3091,6 +3529,12 @@
     let currentFlightDate = '';
     let currentDelayMins  = 0;
     let claimants         = 1;
+    let lofConfirmed      = false;
+    let lofPreRating      = null;
+    let lastTreeResults   = [];
+    let confirmedRecord   = null;
+    let lastDecideRun     = null;
+    let lawyerOverrides   = {};
 
     /* ----------------------------------------------------------
        EXAMPLES (Mode 1 chips)
@@ -3348,7 +3792,11 @@
       const text = EXAMPLES[key];
       const meta = SCENARIO_META[key];
       if (!text) return;
-      document.getElementById('iccText').value = text;
+      if (typeof DefendAbleStructuredPrompt !== 'undefined' && DefendAbleStructuredPrompt.setCanonical) {
+        DefendAbleStructuredPrompt.setCanonical(text);
+      } else {
+        document.getElementById('iccText').value = text;
+      }
       switchMode('icc');
       if (meta) {
         currentDepIata    = meta.dep    || currentDepIata;
@@ -3368,7 +3816,11 @@
       currentScenarioKey = key;
       const text = EXAMPLES[key];
       if (!text) return;
-      document.getElementById('iccText').value = text;
+      if (typeof DefendAbleStructuredPrompt !== 'undefined' && DefendAbleStructuredPrompt.setCanonical) {
+        DefendAbleStructuredPrompt.setCanonical(text);
+      } else {
+        document.getElementById('iccText').value = text;
+      }
       switchMode('icc');
       if (key === 'demo') {
         currentDepIata    = 'PMI';
@@ -3394,7 +3846,7 @@
       const aiLabel   = liveAiOn && savedApiKey ? 'Live AI active' : 'Demo mode';
       let modeLabel;
       if (currentMode === 'icc') {
-        modeLabel = 'Mode 1 — ICC Text';
+        modeLabel = 'Mode 1 — Structured ICC';
       } else if (retrievedFlightData) {
         modeLabel = 'Mode 2 — Flight retrieved · ready to analyse';
       } else {
@@ -3934,7 +4386,11 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
       /* Gather input text */
       let inputText = '';
       if (currentMode === 'icc') {
-        inputText = (document.getElementById('iccText').value || '').trim();
+        if (typeof DefendAbleStructuredPrompt !== 'undefined' && DefendAbleStructuredPrompt.sync) {
+          inputText = (DefendAbleStructuredPrompt.sync() || '').trim();
+        } else {
+          inputText = (document.getElementById('iccText').value || '').trim();
+        }
         if (!inputText) { alert('Please enter a disruption summary.'); return; }
       } else {
         /* Build context from retrieved data + supplementary text */
@@ -3948,6 +4404,12 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
       }
 
       currentInputText = inputText;
+      lofConfirmed = false;
+      lofPreRating = null;
+      lastTreeResults = [];
+      confirmedRecord = null;
+      lastDecideRun = null;
+      lawyerOverrides = {};
 
       // Extract route, date, delay for quantum & limitation
       if (currentMode === 'flight' && retrievedFlightData) {
@@ -5319,6 +5781,19 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
       const next = cycle[(cycle.indexOf(cur) + 1) % cycle.length];
       tlEvStatus[key] = next;
 
+      // Mirror into nodeAnnotations shape expected by buildSWPoints (tl-cn-N → index N)
+      const cnMatch = String(nodeId).match(/^tl-cn-(\d+)$/);
+      if (cnMatch) {
+        const idx = cnMatch[1];
+        if (!nodeAnnotations[idx] || typeof nodeAnnotations[idx] === 'string') {
+          const prevText = typeof nodeAnnotations[idx] === 'string' ? nodeAnnotations[idx] : '';
+          nodeAnnotations[idx] = { text: prevText, evidenceStatuses: {} };
+        }
+        if (!nodeAnnotations[idx].evidenceStatuses) nodeAnnotations[idx].evidenceStatuses = {};
+        if (next) nodeAnnotations[idx].evidenceStatuses[evId] = next;
+        else delete nodeAnnotations[idx].evidenceStatuses[evId];
+      }
+
       row.classList.remove('ev-available', 'ev-requested', 'ev-missing');
       const indicatorEl = row.querySelector('.tl-ev-indicator');
       const statusEl    = row.querySelector('.tl-ev-status');
@@ -5333,13 +5808,21 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
         if (statusEl)    statusEl.textContent    = '— unset';
       }
       updateRMStrength();
+      if (lofConfirmed && typeof renderPass3Extended === 'function') renderPass3Extended();
     }
 
     /* ----------------------------------------------------------
        handleTimelineAnnotation — keyword hints on node textarea
     ---------------------------------------------------------- */
     function handleTimelineAnnotation(nodeId, text, signalId) {
-      nodeAnnotations[nodeId] = text;
+      const cnMatch = String(nodeId).match(/^tl-cn-(\d+)$/);
+      const idx = cnMatch ? cnMatch[1] : nodeId;
+      if (!nodeAnnotations[idx] || typeof nodeAnnotations[idx] === 'string') {
+        const prevStatuses = (nodeAnnotations[idx] && nodeAnnotations[idx].evidenceStatuses) || {};
+        nodeAnnotations[idx] = { text: '', evidenceStatuses: prevStatuses };
+      }
+      nodeAnnotations[idx].text = text;
+
       const signal = document.getElementById(signalId);
       if (!signal) return;
       if (!text.trim()) { signal.innerHTML = ''; return; }
@@ -5484,7 +5967,7 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
             { label:'Delay',     value: fields['Delay'] || '—' },
             { label:'Sub A/C',   value: fields['Sub A/C'] || '' },
             { label:'Pax',       value: fields['Pax']   || '' },
-          ].filter(f => f.value && f.value !== '—' || ['Aircraft','Date','STD','ATA'].includes(f.label));
+          ].filter(f => f.value && f.value !== '—');
 
           const gridHtml = `<div class="tl-flight-grid">
             ${gridFields.map(f => `<div class="tl-flight-field">
@@ -5589,6 +6072,19 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
 
       // Extract facts from text (always — used in custom mode for gap display and evidence signals)
       currentFacts = extractFacts(inputText);
+      if (typeof DefendableIccParse !== 'undefined' && DefendableIccParse.enrichFacts) {
+        currentFacts = DefendableIccParse.enrichFacts(currentFacts, inputText) || currentFacts;
+      }
+      if (currentFacts) {
+        if (currentFacts.depIata) currentDepIata = currentFacts.depIata;
+        if (currentFacts.arrIata) currentArrIata = currentFacts.arrIata;
+        if (currentFacts.date) currentFlightDate = currentFacts.date;
+        if (currentFacts.delayMins != null) currentDelayMins = currentFacts.delayMins;
+        else if (currentFacts.delayText && typeof DefendableIccParse !== 'undefined' && DefendableIccParse.parseDelayMins) {
+          const dm = DefendableIccParse.parseDelayMins(currentFacts.delayText);
+          if (dm) currentDelayMins = dm;
+        }
+      }
 
       // Classify disruption type; fall back to 'unknown' sentinel if nothing matches
       const dt = detectDisruptionType(inputText) || {
@@ -5726,27 +6222,34 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
         </div>
         <div class="rm-meter-wrap" style="margin-top:var(--sp-lg)">
           <div class="rm-meter-row">
-            <span>Chain Integrity</span>
-            <span id="rm-position-label">Tap evidence chips above to mark status</span>
+            <span>Documents marked for Manage</span>
+            <span id="rm-position-label">Held / needed / missing — travels with the case when confirmed</span>
           </div>
           <div class="rm-meter-track">
             <div class="rm-meter-fill" id="rm-meter-fill"></div>
           </div>
           <div style="font-size:11px;color:var(--ink-faint);margin-top:4px" id="rm-tally">Mark evidence above to track chain integrity</div>
         </div>
+        <div class="lof-confirm-banner" id="lof-confirm-banner">
+          <div class="lof-confirm-title">Confirm Line of Flying</div>
+          <div class="lof-confirm-text">Locks this factual story and the document checklist. Deterministic legal trees then run against the confirmed LOF — not the raw ICC alone.</div>
+          <button class="lof-confirm-btn" id="lof-confirm-btn" onclick="confirmLineOfFlying()">Confirm Line of Flying →</button>
+        </div>
+        <div class="lof-prerating" id="lof-prerating"></div>
         <div id="gen-brief-wrap" style="display:none;margin-top:var(--sp-lg);text-align:center">
-          <button class="btn-gen-brief" onclick="generateBrief()">⚖ Generate Defence Brief</button>
-          <div style="font-size:11px;color:var(--ink-faint);margin-top:6px">Ready to compile — generate a formal defence brief from your review</div>
+          <button class="btn-gen-brief" onclick="openCaseHandoffPack()">Review handoff → Manage</button>
+          <div style="font-size:11px;color:var(--ink-faint);margin-top:6px">Editable Case Handoff Pack after LOF confirm + G1 — Confirm creates the Manage case</div>
         </div>
       `;
 
       // ─────────────────────────────────────────────────────────────
-      // ZONE 2 — Legal Classification
+      // ZONE 2 — Legal Classification (provisional until LOF confirm)
       // ─────────────────────────────────────────────────────────────
       const legalChar = LEGAL_CHAR[dt.id] || '';
       const rmTips = (RM_SURFACE[dt.id] || []);
       const z2 = document.getElementById('zone2-body');
       z2.innerHTML = `
+        <div style="font-size:10px;font-family:var(--font-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:8px">Provisional — awaiting LOF confirm</div>
         <div class="z2-disruption-type">${dt.label}</div>
         <div class="dt-badge ${dt.limb1Status}" style="display:inline-block">${dir.label}</div>
         <div class="z2-directive ${dir.recClass}">
@@ -5999,32 +6502,77 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
       const weaknesses = [];
       if (!currentDT) return { strengths, weaknesses };
 
-      // Build from node annotations (new system)
+      // Dual-read: structured annotations + timeline chip statuses
+      const byIdx = {};
       Object.entries(nodeAnnotations).forEach(([idx, ann]) => {
         if (!ann) return;
+        if (typeof ann === 'string') {
+          byIdx[idx] = { text: ann, evidenceStatuses: {} };
+        } else {
+          byIdx[idx] = {
+            text: ann.text || '',
+            evidenceStatuses: Object.assign({}, ann.evidenceStatuses || {})
+          };
+        }
+      });
+      Object.entries(tlEvStatus || {}).forEach(([key, status]) => {
+        if (!status) return;
+        const m = key.match(/^tl-cn-(\d+)_(.+)$/);
+        if (!m) return;
+        const idx = m[1];
+        const evId = m[2];
+        if (!byIdx[idx]) byIdx[idx] = { text: '', evidenceStatuses: {} };
+        if (!byIdx[idx].evidenceStatuses[evId]) byIdx[idx].evidenceStatuses[evId] = status;
+      });
+
+      Object.entries(byIdx).forEach(([idx, ann]) => {
         const statuses = ann.evidenceStatuses || {};
         const available = Object.values(statuses).filter(s => s === 'available').length;
         const missing = Object.values(statuses).filter(s => s === 'missing').length;
+        const requested = Object.values(statuses).filter(s => s === 'requested').length;
         const hasText = ann.text && ann.text.trim().length > 0;
-
-        // Get node label
-        const nodeLabel = (typeof causalNodes !== 'undefined' && causalNodes && causalNodes[parseInt(idx)])
+        const nodeLabel = (causalNodes && causalNodes[parseInt(idx)])
           ? causalNodes[parseInt(idx)].label
-          : `Event ${parseInt(idx)+1}`;
+          : `Event ${parseInt(idx) + 1}`;
 
-        if (available > 0 && hasText) {
-          strengths.push(`${nodeLabel} — ${available} evidence item${available!==1?'s':''} confirmed`);
-        } else if (hasText && available === 0) {
+        if (available > 0) {
+          strengths.push(`${nodeLabel} — ${available} evidence item${available !== 1 ? 's' : ''} marked available`);
+        } else if (hasText) {
           weaknesses.push(`${nodeLabel} — annotated but no evidence confirmed yet`);
         }
         if (missing > 0) {
-          weaknesses.push(`${nodeLabel} — ${missing} evidence item${missing!==1?'s':''} marked missing`);
+          weaknesses.push(`${nodeLabel} — ${missing} evidence item${missing !== 1 ? 's' : ''} marked missing`);
+        }
+        if (requested > 0 && available === 0) {
+          weaknesses.push(`${nodeLabel} — ${requested} evidence item${requested !== 1 ? 's' : ''} still requested`);
         }
       });
 
-      // If no node annotations yet, show placeholder
-      if (strengths.length === 0 && weaknesses.length === 0) {
-        weaknesses.push('Complete the event review in Pass II to populate this analysis');
+      // Seed from ICC / classification so first paint is never empty
+      if (strengths.length === 0 && currentDT) {
+        if (currentDT.limb1Status === 'extraordinary') {
+          strengths.push(`${currentDT.label} — Limb 1 extraordinary candidate on ICC classification`);
+        }
+        const text = currentInputText || '';
+        if (/\bctot\b|\batfm\b|\beurocontrol\b|\bgdp\b/i.test(text)) {
+          strengths.push('Network ATFM/CTOT language in ICC — third-party flow control Limb 1 candidate');
+        }
+        if (/\bmetar\b|\btaf\b|\bsigmet\b|\bthunderstorm\b|\bcb\b/i.test(text)) {
+          strengths.push('Weather evidence language in ICC (METAR/TAF/SIGMET/CB) — corroborate with official feed');
+        }
+        if (causalNodes && causalNodes.length > 1) {
+          strengths.push(`Sequential causal chain — ${causalNodes.length} events identified from the summary`);
+        }
+        if ((window._lastDisruptionFactors || []).length > 1) {
+          strengths.push('Multi-factor disruption flagged — primary/secondary trees will apply after Confirm LOF');
+        }
+      }
+
+      if (weaknesses.length === 0) {
+        const chipCount = Object.values(tlEvStatus || {}).filter(Boolean).length;
+        if (chipCount === 0) {
+          weaknesses.push('Evidence chips unset — mark Available / Requested / Missing on story beats to lock RM position');
+        }
       }
 
       return { strengths, weaknesses };
@@ -6036,6 +6584,15 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
     function renderPass3Extended() {
       const p3=document.getElementById('zone3-body');
       if(!p3||!currentDT) return;
+
+      if (!lofConfirmed) {
+        p3.innerHTML = `
+          <div class="zone3-locked">
+            <div class="zone3-locked-title">Legal position locked</div>
+            <div class="zone3-locked-sub">Confirm the Line of Flying first. Deterministic trees and the Decide workspace run only against the locked factual record.</div>
+          </div>`;
+        return;
+      }
 
       const reviewed=Object.keys(rmResponses).length;
 
@@ -6186,18 +6743,228 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
       }
 
       p3.innerHTML=`
-        <div class="verdict-banner ${verdict}" style="margin-bottom:var(--sp-lg)">
-          <div>
-            <div class="verdict-word">${vLabels[verdict]}</div>
-            <div class="verdict-sub">${vSubs[verdict]}</div>
+        <div id="decide-mount"></div>
+        <details class="decide-pass3-secondary">
+          <summary>Supporting detail — strengths · quantum · authorities</summary>
+          <div class="verdict-banner ${verdict}" style="margin:12px 0 var(--sp-lg)">
+            <div>
+              <div class="verdict-word">${vLabels[verdict]}</div>
+              <div class="verdict-sub">${vSubs[verdict]}</div>
+            </div>
+            <div class="verdict-ref">${vRefs[verdict]}</div>
           </div>
-          <div class="verdict-ref">${vRefs[verdict]}</div>
-        </div>
-        ${swHtml}
-        ${quantumHtml}
-        ${limitHtml}
-        ${renderCaselawBundle(currentDT)}
+          ${swHtml}
+          ${quantumHtml}
+          ${limitHtml}
+          ${renderCaselawBundle(currentDT)}
+        </details>
       `;
+      remountDecideWorkspace();
+    }
+
+    function remountDecideWorkspace() {
+      const mount = document.getElementById('decide-mount');
+      if (!mount || typeof DefendAbleDecideWorkspace === 'undefined') return;
+      DefendAbleDecideWorkspace.configure({
+        setGateOverride: function (treeId, gateId, value, note) {
+          const key = treeId + ':' + gateId;
+          lawyerOverrides[key] = lawyerOverrides[key] || {};
+          if (value != null) lawyerOverrides[key].answer = value;
+          if (note != null) lawyerOverrides[key].note = note;
+        },
+        setCausalOverride: function (value) {
+          if (!lastDecideRun || !lastDecideRun.causalCheck) return;
+          lastDecideRun.causalCheck.override = value || null;
+          if (confirmedRecord && typeof DefendAbleLofLegalBridge !== 'undefined') {
+            lastDecideRun.position = DefendAbleLofLegalBridge.mapTreeExitToVerdict(
+              lastDecideRun.treeResults, lastDecideRun.causalCheck, confirmedRecord.limb1Status
+            );
+            lastDecideRun.preRating = lastDecideRun.position;
+            lofPreRating = lastDecideRun.position;
+            remountDecideWorkspace();
+          }
+        },
+        setCausalNote: function (value) {
+          if (lastDecideRun && lastDecideRun.causalCheck) lastDecideRun.causalCheck.note = value || '';
+        },
+        onSignOff: function (action, by, note) {
+          if (!confirmedRecord) return;
+          if (action === 'send_back_evidence') {
+            confirmedRecord.evidenceRequests = confirmedRecord.evidenceRequests || [];
+            confirmedRecord.evidenceRequests.push({
+              id: 'evr-' + Date.now(),
+              at: new Date().toISOString(),
+              by: by || 'Lawyer',
+              note: note || 'Evidence requested — G0 remains frozen',
+              status: 'open'
+            });
+          }
+          confirmedRecord.g1 = {
+            action: action,
+            by: by || 'Lawyer',
+            note: note || '',
+            at: new Date().toISOString()
+          };
+          const briefWrap = document.getElementById('gen-brief-wrap');
+          if (briefWrap) {
+            briefWrap.style.display = 'block';
+            const hint = briefWrap.querySelector('div');
+            if (hint) hint.textContent = 'Editable Case Handoff Pack — Confirm creates the Manage case';
+          }
+          remountDecideWorkspace();
+        },
+        onSendToManage: function () {
+          openCaseHandoffPack();
+        }
+      });
+      DefendAbleDecideWorkspace.render(mount, {
+        record: confirmedRecord,
+        run: lastDecideRun
+      });
+    }
+
+    function confirmLineOfFlying() {
+      if (!currentDT) return;
+      lofConfirmed = true;
+
+      const juris = getJurisdiction();
+      const jurisdiction = juris ? juris.regime : 'UK261';
+      const factorIds = (window._lastDisruptionFactors || []).map(function (f) { return f.id; }).filter(Boolean);
+
+      if (typeof DefendAbleLofLegalBridge !== 'undefined') {
+        confirmedRecord = DefendAbleLofLegalBridge.buildConfirmedRecord({
+          lofRows: _lofRows || [],
+          facts: currentFacts,
+          causalNodes: causalNodes || [],
+          rawText: currentInputText || '',
+          tlEvStatus: tlEvStatus || {},
+          nodeAnnotations: nodeAnnotations || {},
+          dt: currentDT,
+          evidenceDb: typeof EVIDENCE_DB !== 'undefined' ? EVIDENCE_DB : null,
+          factorIds: factorIds,
+          jurisdiction: jurisdiction
+        });
+        try {
+          localStorage.setItem('dfa_confirmed_lof', JSON.stringify(confirmedRecord));
+        } catch (e) { /* ignore quota */ }
+
+        lastDecideRun = DefendAbleLofLegalBridge.runTreesOnConfirmedRecord(confirmedRecord);
+        lastTreeResults = lastDecideRun.treeResults || [];
+        lofPreRating = lastDecideRun.position || lastDecideRun.preRating;
+        confirmedRecord.treeResults = lastTreeResults;
+        confirmedRecord.preRating = lofPreRating;
+        confirmedRecord.typePriority = lastDecideRun.typePriority;
+        confirmedRecord.causalCheck = lastDecideRun.causalCheck;
+        confirmedRecord.authorities = lastDecideRun.authorities;
+      } else {
+        lofPreRating = {
+          band: currentDT.limb1Status === 'extraordinary' ? 'defendable' : 'investigate',
+          title: 'Heuristic pre-rating (trees unavailable)',
+          text: 'Tree modules did not load — classification only.'
+        };
+      }
+
+      const banner = document.getElementById('lof-confirm-banner');
+      if (banner) {
+        banner.classList.add('locked');
+        banner.innerHTML = `
+          <div class="lof-confirm-title">Line of Flying confirmed</div>
+          <div class="lof-confirm-text">Factual record locked · ${(_lofRows || []).filter(r => (r.flight||'').trim()).length} sector(s). Re-run analysis to unlock and edit again.</div>
+          <button class="lof-confirm-btn" disabled>Confirmed</button>`;
+      }
+
+      const pre = document.getElementById('lof-prerating');
+      if (pre && lofPreRating) {
+        pre.className = `lof-prerating visible ${lofPreRating.band || ''}`;
+        pre.innerHTML = `
+          <div class="lof-prerating-eyebrow">Legal pre-rating · tree-driven</div>
+          <div class="lof-prerating-title">${lofPreRating.title || lofPreRating.frameworkLabel || ''}</div>
+          <div class="lof-prerating-text">${lofPreRating.text || ''}</div>`;
+      }
+
+      const z2badge = document.querySelector('#zone2-body > div');
+      if (z2badge && /Provisional/.test(z2badge.textContent || '')) {
+        z2badge.textContent = 'Classification · LOF confirmed · Decide unlocked';
+        z2badge.style.color = 'var(--defend-mid)';
+      }
+
+      renderPass3Extended();
+      if (typeof updateRMStrength === 'function') updateRMStrength();
+
+      // Draft handoff available after trees; Confirm still requires G1
+      const briefWrap = document.getElementById('gen-brief-wrap');
+      if (briefWrap) {
+        briefWrap.style.display = 'block';
+        const hint = briefWrap.querySelector('div');
+        if (hint && !confirmedRecord.g1) {
+          hint.textContent = 'Draft handoff after trees — Confirm into Manage still requires G1 sign-off';
+        }
+      }
+    }
+
+    function openCaseHandoffPack() {
+      if (typeof DefendAbleCaseHandoff === 'undefined') {
+        alert('Handoff module failed to load.');
+        return;
+      }
+      if (!confirmedRecord) {
+        alert('Confirm the Line of Flying before opening the handoff pack.');
+        return;
+      }
+      const statusEl = document.getElementById('decide-send-status');
+      const opts = {};
+      try {
+        const distKm = typeof getRouteDistanceKm === 'function'
+          ? getRouteDistanceKm(currentDepIata, currentArrIata)
+          : null;
+        if (distKm && typeof getQuantumBand === 'function') {
+          opts.quantumBand = getQuantumBand(distKm);
+          opts.claimants = typeof claimants !== 'undefined' ? claimants : 1;
+        }
+        if (typeof calcLimitationDate === 'function' && currentFlightDate) {
+          opts.limitation = calcLimitationDate(currentFlightDate);
+        }
+      } catch (e) { /* optional quantum */ }
+
+      const pack = DefendAbleCaseHandoff.buildPack(confirmedRecord, lastDecideRun || {}, opts);
+      // Allow draft review after trees; Confirm still requires G1
+      if (!pack.decideSection.g1 && confirmedRecord.g1) {
+        pack.decideSection.g1 = confirmedRecord.g1;
+      }
+      DefendAbleCaseHandoff.open(pack, {
+        onConfirm: function (edited) {
+          confirmHandoffIntoManage(edited);
+        }
+      });
+      if (statusEl) statusEl.textContent = 'Review handoff pack…';
+    }
+
+    function confirmHandoffIntoManage(pack) {
+      const statusEl = document.getElementById('decide-send-status');
+      if (!pack || !pack.decideSection || !pack.decideSection.g1) {
+        if (statusEl) statusEl.textContent = 'G1 sign-off required first.';
+        return;
+      }
+      try {
+        const result = typeof CaseFiling !== 'undefined' && CaseFiling.fileFromEngineHandoff
+          ? CaseFiling.fileFromEngineHandoff(pack)
+          : DefendAbleCaseHandoff.fileIntoManage(pack);
+        const ref = result && result.ref;
+        if (statusEl) statusEl.textContent = 'Case ' + ref + ' created.';
+        DefendAbleCaseHandoff.close();
+        try {
+          sessionStorage.setItem('dfa_case', JSON.stringify(result.portfolio));
+        } catch (e) {}
+        window.location.href = 'case.html?ref=' + encodeURIComponent(ref);
+      } catch (err) {
+        if (statusEl) statusEl.textContent = 'Handoff failed: ' + (err && err.message ? err.message : err);
+        alert('Could not create Manage case: ' + (err && err.message ? err.message : err));
+      }
+    }
+
+    /** @deprecated thin packet send — replaced by Case Handoff Pack Confirm */
+    function sendDecidePacketsToManage() {
+      openCaseHandoffPack();
     }
 
     /* ----------------------------------------------------------
@@ -6709,39 +7476,14 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
     let _lofTailIdx   = 0;
 
     /* ----------------------------------------------------------
-       parseLOFFromText — extract sector data from ICC prompt text
+       parseLOFFromText — delegate to DefendableIccParse (bare flight
+       numbers, compact Z-times, claimed-flight preference)
     ---------------------------------------------------------- */
     function parseLOFFromText(text) {
-      if (!text) return [];
-      const rows = [];
-      const seen = new Set();
-
-      // Match flight codes with context
-      const flightExtRe = /\b(EZY|EJU|EZS|EZT|U2|BE|FR|W6|LS|TOM|TCX|BY|DY|VY|LH|BA|AF|KL|IB|AZ|SK|TP|SN|HV|TO|QS|OK|BT|LO|LX|OS|BAW|RYR|IBE|AEA|VLG|HV)\s*(\d{2,4})\b/gi;
-      let m;
-      while ((m = flightExtRe.exec(text)) !== null) {
-        const code = (m[1] + m[2]).toUpperCase().replace(/\s+/g, '');
-        if (seen.has(code)) continue;
-        seen.add(code);
-        const ctx  = text.slice(m.index, m.index + 350);
-        const ctxL = ctx.toLowerCase();
-        // Route
-        const routeM = ctx.match(/\b([A-Z]{3})\s*[-→]\s*([A-Z]{3})\b/) || ctx.match(/\b([A-Z]{3})\s+([A-Z]{3})\b/);
-        const route  = routeM ? `${routeM[1]} → ${routeM[2]}` : '';
-        // Times
-        const times  = [...ctx.matchAll(/\b(\d{2}:\d{2})[Zz]?\b/g)].map(t => t[1]+'Z');
-        const std    = ctxL.match(/std\s+(\d{2}:\d{2})/i)?.[1] ? ctxL.match(/std\s+(\d{2}:\d{2})/i)[1]+'Z' : (times[0] || '');
-        const atd    = ctxL.match(/(?:atd|depart(?:ed|ure at))\s+(\d{2}:\d{2})/i)?.[1] ? ctxL.match(/(?:atd|depart(?:ed|ure at))\s+(\d{2}:\d{2})/i)[1]+'Z' : (times[1] || '');
-        const ata    = ctxL.match(/(?:ata|arriv(?:al|ed)\s+\w+\s+at)\s+(\d{2}:\d{2})/i)?.[1] ? ctxL.match(/(?:ata|arriv(?:al|ed)\s+\w+\s+at)\s+(\d{2}:\d{2})/i)[1]+'Z' : '';
-        // Status
-        const status = /\bcancelled\b|ond\b/.test(ctxL) ? 'Cancelled'
-                     : /\bdelayed\b/.test(ctxL)          ? 'Delayed'
-                     : /\bdiverted?\b/.test(ctxL)        ? 'Diverted'
-                     : /\baog\b/.test(ctxL)              ? 'AOG'
-                     : '';
-        rows.push({ flight: code, route, std, atd, sta: '', ata, status, note: '' });
+      if (typeof DefendableIccParse !== 'undefined' && DefendableIccParse.parseLOFFromText) {
+        return DefendableIccParse.parseLOFFromText(text) || [];
       }
-      return rows;
+      return [];
     }
 
     /* ----------------------------------------------------------
@@ -6815,7 +7557,8 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
     }
 
     function buildLOFCustomEmpty() {
-      const rows = parseLOFFromText(document.getElementById('icc-input')?.value || '');
+      const raw = (document.getElementById('iccText') || document.getElementById('icc-input') || {}).value || currentInputText || '';
+      const rows = parseLOFFromText(raw);
       return buildLOFEditable(rows);
     }
 
@@ -8311,206 +9054,14 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
     }
 
     /* ----------------------------------------------------------
-       DEFENCE BRIEF GENERATOR — Feature 2 (Mode 4)
+       CASE HANDOFF PACK — replaces stale defence-brief print modal
     ---------------------------------------------------------- */
     function generateBrief() {
-      if (!currentDT) return;
-
-      // Derive score from nodeAnnotations (new Pass II system)
-      const total = causalNodesCount || 1;
-      const confirmed = Object.keys(nodeAnnotations).filter(idx => {
-        const ann = nodeAnnotations[idx];
-        if (!ann) return false;
-        return ann.text && ann.text.trim().length > 0 && Object.values(ann.evidenceStatuses||{}).some(s => s === 'available');
-      }).length;
-      const partial = Object.keys(nodeAnnotations).filter(idx => {
-        const ann = nodeAnnotations[idx];
-        if (!ann) return false;
-        const hasText = ann.text && ann.text.trim().length > 0;
-        const hasAny = Object.values(ann.evidenceStatuses||{}).some(Boolean);
-        const hasAvailable = Object.values(ann.evidenceStatuses||{}).some(s => s === 'available');
-        return (hasText || hasAny) && !(hasText && hasAvailable);
-      }).length;
-      const gaps = total - confirmed - partial;
-      const score     = (confirmed + partial * 0.5) / Math.max(total, 1);
-      const verdict   = getVerdict(currentDT.limb1Status, score, gaps);
-      const { strengths, weaknesses } = buildSWPoints();
-
-      const distKm = getRouteDistanceKm(currentDepIata, currentArrIata);
-      const band   = distKm ? getQuantumBand(distKm) : null;
-      const lim    = calcLimitationDate(currentFlightDate);
-
-      const vLabels = { defend:'DEFEND', conditions:'CONDITIONAL DEFENCE', settle:'SETTLE / CONSIDER EARLY RESOLUTION' };
-
-      const now = new Date();
-      const dateStr = now.toLocaleDateString('en-GB', { day:'2-digit', month:'long', year:'numeric' });
-      const timeStr = now.toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' });
-
-      // Build evidence summary from node annotations
-      const _causalNodes = typeof causalNodes !== 'undefined' ? causalNodes : [];
-      const evidenceSummary = Object.entries(nodeAnnotations).map(([idx, ann]) => {
-        const node = (_causalNodes && _causalNodes[parseInt(idx)]) || { label: 'Event ' + idx, icon: '⚡' };
-        const statuses = ann.evidenceStatuses || {};
-        const available = Object.entries(statuses).filter(([,v]) => v === 'available').map(([k]) => k);
-        const missing = Object.entries(statuses).filter(([,v]) => v === 'missing').map(([k]) => k);
-        return { node, annotation: ann.text, available, missing };
-      }).filter(e => e.annotation || e.available.length > 0 || e.missing.length > 0);
-
-      const rmRows = evidenceSummary.length > 0
-        ? evidenceSummary.map(e => `<tr>
-            <td style="padding:8px 12px;font-size:12px;font-family:var(--font-spectral,serif);border-bottom:1px solid var(--ink-rule2);color:var(--ink-secondary);vertical-align:top;width:35%">
-              ${e.node.icon || ''} ${e.node.label}
-            </td>
-            <td style="padding:8px 12px;font-size:12px;font-family:var(--font-spectral,serif);border-bottom:1px solid var(--ink-rule2);color:var(--ink-primary);vertical-align:top;width:40%">
-              ${e.annotation || '<span style="color:var(--ink-faint);font-style:italic">No notes</span>'}
-            </td>
-            <td style="padding:8px 12px;font-size:11px;font-family:var(--font-mono);border-bottom:1px solid var(--ink-rule2);vertical-align:top">
-              ${e.available.length > 0 ? `<span style="color:var(--defend)">${e.available.length} available</span>` : ''}
-              ${e.missing.length > 0 ? `<br><span style="color:var(--settle)">${e.missing.length} missing</span>` : ''}
-            </td>
-          </tr>`).join('')
-        : `<tr><td colspan="3" style="padding:12px;text-align:center;color:var(--ink-faint);font-style:italic;font-size:12px">Complete the event review in Pass II to populate this section</td></tr>`;
-
-      // Key authorities
-      const relevantCases = (typeof CASELAW_DB !== 'undefined')
-        ? CASELAW_DB.filter(c => (currentDT.caselawIds || []).includes(c.id)).slice(0, 5)
-        : [];
-      const authHtml = relevantCases.map(c =>
-        `<div style="margin-bottom:8px">
-          <span style="font-family:var(--font-mono);font-size:10px;background:var(--ink-faint);padding:1px 5px;border-radius:2px;margin-right:6px">${c.citation}</span>
-          <em style="font-family:var(--font-spectral,serif);font-size:12px">${c.ref}</em>
-          <span style="font-size:11px;color:var(--ink-faint);margin-left:4px">(${c.year})</span>
-          <div style="font-size:11px;color:var(--ink-secondary);margin-top:2px;padding-left:4px;border-left:2px solid var(--ink-rule2);font-family:var(--font-spectral,serif)">${c.ratio}</div>
-        </div>`
-      ).join('');
-
-      const limHtml = lim
-        ? `${lim.expiry.toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'})} · ${lim.daysLeft} days remaining`
-        : 'Date not provided';
-
-      const briefHtml = `
-        <div id="brief-modal-backdrop" onclick="closeBrief()" style="position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:9000;display:flex;align-items:flex-start;justify-content:center;padding:40px 20px;overflow-y:auto">
-          <div onclick="event.stopPropagation()" style="background:var(--surface-raised,#FEFEFE);max-width:780px;width:100%;border-radius:var(--r-lg);box-shadow:0 8px 40px rgba(0,0,0,0.25);position:relative">
-
-            <!-- Brief header -->
-            <div style="padding:32px 40px 24px;border-bottom:2px solid var(--ink-primary)">
-              <div style="font-family:var(--font-mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:8px">Defence Brief — Privileged &amp; Confidential</div>
-              <div style="font-family:var(--font-serif);font-size:24px;font-weight:400;color:var(--ink-primary);margin-bottom:4px">EC261 / UK261 Defence Analysis</div>
-              <div style="font-family:var(--font-spectral,serif);font-size:14px;color:var(--ink-secondary)">
-                ${currentDepIata && currentArrIata ? currentDepIata + ' → ' + currentArrIata : 'Route not specified'}
-                ${currentFlightDate ? ' · ' + new Date(currentFlightDate+'T00:00:00Z').toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'}) : ''}
-              </div>
-              <div style="font-family:var(--font-mono);font-size:10px;color:var(--ink-faint);margin-top:8px">Generated: ${dateStr} at ${timeStr} · DefendAble engine</div>
-            </div>
-
-            <!-- Verdict banner -->
-            <div style="padding:20px 40px;background:${verdict==='defend'?'var(--defend-bg)':verdict==='conditions'?'var(--conditions-bg)':'var(--settle-bg)'};border-bottom:1px solid ${verdict==='defend'?'var(--defend-border)':verdict==='conditions'?'var(--conditions-border)':'var(--settle-border)'}">
-              <div style="font-family:var(--font-mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:4px">Recommended Position</div>
-              <div style="font-family:var(--font-serif);font-size:20px;color:${verdict==='defend'?'var(--defend)':verdict==='conditions'?'var(--conditions)':'var(--settle)'}">${vLabels[verdict]}</div>
-              <div style="font-size:12px;color:var(--ink-secondary);margin-top:4px">${confirmed}/${total} RM challenge points confirmed · ${gaps} gap${gaps!==1?'s':''} identified</div>
-            </div>
-
-            <!-- Brief body -->
-            <div style="padding:32px 40px">
-
-              <!-- Section 1: Classification -->
-              <div style="margin-bottom:28px">
-                <div style="font-family:var(--font-serif);font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-secondary);border-bottom:1px solid var(--ink-rule2);padding-bottom:6px;margin-bottom:12px">1. Disruption Classification</div>
-                <div style="font-family:var(--font-spectral,serif);font-size:13px;color:var(--ink-primary);line-height:1.6">
-                  <strong>${currentDT.label}</strong> — ${currentDT.limb1}
-                </div>
-              </div>
-
-              <!-- Section 2: RM Review -->
-              <div style="margin-bottom:28px">
-                <div style="font-family:var(--font-serif);font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-secondary);border-bottom:1px solid var(--ink-rule2);padding-bottom:6px;margin-bottom:12px">2. Reasonable Measures Review</div>
-                <table style="width:100%;border-collapse:collapse;border:1px solid var(--ink-rule2);border-radius:var(--r-md);overflow:hidden">
-                  <thead>
-                    <tr style="background:var(--surface-ui,#EEECEA)">
-                      <th style="padding:8px 12px;font-size:11px;font-weight:700;text-align:left;color:var(--ink-secondary);font-family:var(--font-sans)">Event</th>
-                      <th style="padding:8px 12px;font-size:11px;font-weight:700;text-align:left;color:var(--ink-secondary);font-family:var(--font-sans)">Notes</th>
-                      <th style="padding:8px 12px;font-size:11px;font-weight:700;text-align:left;color:var(--ink-secondary);font-family:var(--font-sans);white-space:nowrap">Evidence</th>
-                    </tr>
-                  </thead>
-                  <tbody>${rmRows}</tbody>
-                </table>
-              </div>
-
-              <!-- Section 3: Evidence Status -->
-              <div style="margin-bottom:28px">
-                <div style="font-family:var(--font-serif);font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-secondary);border-bottom:1px solid var(--ink-rule2);padding-bottom:6px;margin-bottom:4px">3. Evidence Status</div>
-                <div style="font-size:11px;color:var(--ink-faint);font-style:italic;margin-bottom:10px">Populated from evidence chips marked in the timeline above. Mark chips as Available / Requested / Missing to update this section.</div>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
-                  <div style="border:1px solid var(--defend-border);border-radius:var(--r-md);padding:12px;background:var(--defend-bg)">
-                    <div style="font-size:11px;font-weight:700;color:var(--defend);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Evidence Confirmed</div>
-                    ${strengths.length
-                      ? strengths.map(s=>`<div style="font-size:12px;font-family:var(--font-spectral,serif);color:var(--ink-primary);margin-bottom:4px;padding-left:10px;border-left:2px solid var(--defend-border)">• ${s}</div>`).join('')
-                      : '<div style="font-size:11px;color:var(--ink-faint);font-style:italic">Mark evidence chips above as Available to populate</div>'}
-                  </div>
-                  <div style="border:1px solid var(--settle-border);border-radius:var(--r-md);padding:12px;background:var(--settle-bg)">
-                    <div style="font-size:11px;font-weight:700;color:var(--settle);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Evidence Gaps</div>
-                    ${weaknesses.length
-                      ? weaknesses.map(w=>`<div style="font-size:12px;font-family:var(--font-spectral,serif);color:var(--ink-primary);margin-bottom:4px;padding-left:10px;border-left:2px solid var(--settle-border)">• ${w}</div>`).join('')
-                      : '<div style="font-size:11px;color:var(--defend-mid);font-style:italic">No gaps identified</div>'}
-                  </div>
-                </div>
-              </div>
-
-              <!-- Section 4: Quantum -->
-              ${band ? `
-              <div style="margin-bottom:28px">
-                <div style="font-family:var(--font-serif);font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-secondary);border-bottom:1px solid var(--ink-rule2);padding-bottom:6px;margin-bottom:12px">4. Quantum &amp; Exposure</div>
-                <div style="font-family:var(--font-spectral,serif);font-size:13px;color:var(--ink-primary);line-height:1.8">
-                  Route distance: <strong>${distKm.toLocaleString()} km</strong> · Band: ${band.band} (${band.article})<br>
-                  Statutory compensation per passenger: <strong>€${band.eur} / £${band.gbp}</strong><br>
-                  ${claimants > 1 ? `Total exposure (${claimants} claimants): <strong style="color:var(--settle)">€${band.eur*claimants} / £${band.gbp*claimants}</strong><br>` : ''}
-                  Limitation expiry: ${limHtml}
-                </div>
-              </div>` : ''}
-
-              <!-- Section 5: Legal Authorities -->
-              ${relevantCases.length ? `
-              <div style="margin-bottom:28px">
-                <div style="font-family:var(--font-serif);font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-secondary);border-bottom:1px solid var(--ink-rule2);padding-bottom:6px;margin-bottom:12px">5. Key Legal Authorities</div>
-                ${authHtml}
-              </div>` : ''}
-
-              <!-- Signature block -->
-              <div style="border-top:1px solid var(--ink-rule2);padding-top:20px;margin-top:8px">
-                <div style="font-size:11px;color:var(--ink-faint);font-family:var(--font-spectral,serif);margin-bottom:16px">This brief has been generated by the DefendAble engine for review by qualified legal counsel. It does not constitute legal advice and must be reviewed before use in proceedings.</div>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
-                  <div>
-                    <div style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-faint);margin-bottom:4px">Reviewed by</div>
-                    <div style="border-bottom:1px solid var(--ink-rule);height:32px"></div>
-                    <div style="font-size:10px;color:var(--ink-faint);margin-top:4px">Name / Signature</div>
-                  </div>
-                  <div>
-                    <div style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-faint);margin-bottom:4px">Date</div>
-                    <div style="border-bottom:1px solid var(--ink-rule);height:32px"></div>
-                    <div style="font-size:10px;color:var(--ink-faint);margin-top:4px">${dateStr}</div>
-                  </div>
-                </div>
-              </div>
-
-            </div>
-
-            <!-- Brief footer actions -->
-            <div style="padding:16px 40px;border-top:1px solid var(--ink-rule2);display:flex;gap:12px;align-items:center;background:var(--surface-ui,#EEECEA)">
-              <button onclick="window.print()" style="font-family:var(--font-sans);font-size:12px;font-weight:600;padding:8px 20px;border:1px solid var(--ink-rule);border-radius:var(--r-md);background:var(--surface-raised,#FEFEFE);cursor:pointer;color:var(--ink-primary)">Print / Export PDF</button>
-              <button onclick="closeBrief()" style="font-family:var(--font-sans);font-size:12px;font-weight:600;padding:8px 20px;border:1px solid var(--ink-rule);border-radius:var(--r-md);background:transparent;cursor:pointer;color:var(--ink-secondary)">Close</button>
-              <span style="font-size:11px;color:var(--ink-faint);margin-left:auto">Privileged — EC261 Defence · DefendAble</span>
-            </div>
-
-          </div>
-        </div>`;
-
-      // Mount modal
-      const existing = document.getElementById('brief-modal-backdrop');
-      if (existing) existing.remove();
-      document.body.insertAdjacentHTML('beforeend', briefHtml);
+      openCaseHandoffPack();
     }
 
     function closeBrief() {
+      if (typeof DefendAbleCaseHandoff !== 'undefined') DefendAbleCaseHandoff.close();
       const el = document.getElementById('brief-modal-backdrop');
       if (el) el.remove();
     }
@@ -8601,6 +9152,25 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
     document.addEventListener('keydown', e => {
       if (e.key === 'Escape') { closeCaselawModal(); closeBrief(); }
     });
+
+    /* Structured ICC prompt — mount once DOM ready */
+    (function bootStructuredPrompt() {
+      function go() {
+        if (typeof DefendAbleStructuredPrompt === 'undefined') return;
+        DefendAbleStructuredPrompt.mount({
+          root: '#structured-prompt-root',
+          syncEl: '#iccText',
+          onChange: function () {
+            currentScenarioKey = '';
+          }
+        });
+      }
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', go);
+      } else {
+        go();
+      }
+    })();
 
   </script>
 

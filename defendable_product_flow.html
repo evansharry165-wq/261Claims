@@ -275,7 +275,9 @@
     </div>
     <nav class="top-links">
       <a href="defendable_analyser_v3.html">Analyser v3</a>
-      <a href="defendable_reference.html">Legal reference</a>
+      <a href="defendable_legal_tree.html">Decide map</a>
+      <a href="defendable_legal_reference.html">Legal reference</a>
+      <a href="defendable_reference.html">Caselaw library</a>
       <a href="index.html">Manage / Work</a>
       <a href="defendable_phase3_guide.html">Phase 3 guide</a>
     </nav>
@@ -307,7 +309,7 @@
       <pre class="mermaid">
 flowchart TB
   subgraph entry [Entry]
-    ICC["ICC / ops disruption prompt<br/>or Flight Lookup"]
+    ICC["Structured 3-section ICC prompt<br/>or Flight Lookup · keyword recognition"]
   end
 
   subgraph part1 [Part 1 — ANALYSE · live]
@@ -317,42 +319,39 @@ flowchart TB
     Confirm{"Confirm LOF<br/>lawyer locks absolute truth"}
   end
 
-  subgraph part2 [Part 2 — DECIDE]
-    Bridge["confirmedRecord → tree context<br/>lof_legal_bridge"]
-    Trees["Deterministic trees DT-01…20<br/>ATC · weather · birdstrike · …"]
-    Pre["Legal pre-rating<br/>Defendable / Borderline / Investigate"]
-    Pass3["Pass III · quantum · authorities · brief"]
-    Opinion["Lawyer opinion card + sign-off<br/>Gate G1"]
+  subgraph part2 [Part 2 — DECIDE · wired]
+    Bridge["confirmedRecord → type_map priority<br/>lof_legal_bridge"]
+    Trees["DT primary + secondary<br/>framework DT-01…20"]
+    Causal["U-7 / T-656 + thinking trail E1..En<br/>CONDITIONS · CRIT/IMPO"]
+    Pre["Verdict-first brief bar<br/>Defend — subject to evidence"]
+    Opinion["Decide workspace + G1<br/>approve / override / send-back"]
   end
 
-  subgraph packet [Packets]
-    CP["case_packet JSON<br/>facts · LOF · evidence · jurisdiction"]
-    DP["decision_packet JSON<br/>verdict · quantum · gaps · lawyer OK"]
+  subgraph packet [Handoff]
+    Pack["Editable Case Handoff Pack<br/>Facts · Decide · meta · locReady"]
+    CP["case_packet + decision_packet<br/>summary · legal position · evidence index"]
   end
 
-  subgraph part3 [Part 3 — MANAGE · live shell]
-    Case["Case workspace<br/>Work · Cases · Evidence · Docs"]
-    Docs["Holding / defence / settlement drafts"]
+  subgraph part3 [Part 3 — MANAGE · consumes handoff]
+    Case["Live case workspace<br/>overview · evidence · docs"]
+    Loc["LOC arrives → locReady<br/>flag / paste into case"]
+    Docs["Holding / defence drafts · G2+"]
     Res["Resolution<br/>Defended · Settled · Paid"]
   end
 
   ICC --> Parse --> LOF --> Story --> Confirm
   Confirm --> Bridge
-  Bridge --> Trees --> Pre --> Pass3
-  Confirm -.-> CP
-  Pass3 -.-> Opinion
-  Opinion -.-> DP
-  CP -.-> Opinion
-  DP -.-> Case --> Docs --> Res
+  Bridge --> Trees --> Causal --> Pre --> Opinion
+  Opinion --> Pack --> CP --> Case
+  Case --> Loc --> Docs --> Res
 
   classDef built fill:#E4F0E9,stroke:#2F6B4F,color:#1C1A17
   classDef partial fill:#F5EDD9,stroke:#9A6B1F,color:#1C1A17
   classDef planned fill:#EDEAE4,stroke:#6B6560,color:#1C1A17
   classDef pkt fill:#E6EEF5,stroke:#2A4A6B,color:#1C1A17
 
-  class ICC,Parse,LOF,Story,Confirm,Case built
-  class Bridge,Trees,Pre,Pass3 partial
-  class Opinion,Docs,Res,CP,DP planned
+  class ICC,Parse,LOF,Story,Confirm,Bridge,Trees,Causal,Pre,Opinion,Pack,CP,Case,Loc built
+  class Docs,Res partial
       </pre>
     </div>
   </section>
@@ -365,28 +364,29 @@ flowchart TB
     <div class="panel">
       <pre class="mermaid">
 flowchart TD
-  Prompt["Paste ICC text<br/>or retrieve flight + cause"]
+  Prompt["Structured 3-section prompt<br/>or paste full ICC / retrieve flight"]
   Run["Run Analysis"]
   Z1["Zone 1 — Line of Flying FIRST<br/>editable sectors + story + evidence"]
   Z2["Zone 2 — Provisional classification<br/>Defend / Investigate / Settle scaffold"]
   Z3lock["Zone 3 LOCKED<br/>awaiting Confirm LOF"]
   HitL["Lawyer edits LOF rows<br/>marks evidence · adds notes"]
-  Lock["Confirm Line of Flying"]
-  Map["Map locked facts to tree input<br/>iccText · causalChain · evidence seed"]
-  DT["Run primary + secondary trees"]
-  Rate["Pre-rating from tree exit<br/>DEFEND · CONDITIONS · CONCEDE · INVESTIGATE"]
-  Z3["Zone 3 UNLOCKED<br/>verdict · quantum · caselaw · brief"]
+  Lock["Confirm Line of Flying G0"]
+  Map["Type-map priority + bridge<br/>operative-cause primary/secondary"]
+  DT["runAllApplicable DT gates"]
+  Causal["Thinking trail + CONDITIONS + CRIT"]
+  Rate["Verdict-first brief bar"]
+  Z3["Zone 3 Decide · G1"]
+  Hand["Case Handoff Pack<br/>editable → Confirm into Manage"]
 
   Prompt --> Run --> Z1
   Run --> Z2
   Run --> Z3lock
   Z1 --> HitL --> Lock
-  Lock --> Map --> DT --> Rate --> Z3
+  Lock --> Map --> DT --> Causal --> Rate --> Z3 --> Hand
 
   classDef built fill:#E4F0E9,stroke:#2F6B4F,color:#1C1A17
   classDef partial fill:#F5EDD9,stroke:#9A6B1F,color:#1C1A17
-  class Prompt,Run,Z1,Z2,Z3lock,HitL,Lock built
-  class Map,DT,Rate,Z3 partial
+  class Prompt,Run,Z1,Z2,Z3lock,HitL,Lock,Map,DT,Causal,Rate,Z3,Hand built
       </pre>
     </div>
   </section>
@@ -402,37 +402,38 @@ flowchart TD
         <h3>defendable_analyser_v3</h3>
         <p>Disruption in → factual layout the lawyer can correct.</p>
         <ul>
-          <li>ICC / flight lookup intake</li>
+          <li>Structured 3-section ICC prompt + live keyword recognition</li>
+          <li>ICC / flight lookup intake (compose → canonical summary)</li>
           <li>Editable LOF sector table</li>
           <li>Chronological story + evidence status</li>
           <li>Confirm LOF hard gate</li>
           <li>Keyword draft classification (Zone 2)</li>
         </ul>
       </article>
-      <article class="card partial">
-        <span class="badge partial">Part 2 · ~60%</span>
+      <article class="card built">
+        <span class="badge built">Part 2 · Decide live</span>
         <div class="card-kicker">Decide</div>
-        <h3>Trees + legal bridge</h3>
-        <p>Locked facts → deterministic legal direction (PR / branch — merge next).</p>
+        <h3>Trees + framework + G1</h3>
+        <p>Locked facts → deterministic legal direction aligned to the Complete Legal Decision Framework.</p>
         <ul>
-          <li>DT-01…20 decision trees</li>
-          <li>lof_legal_bridge on Confirm</li>
-          <li>Pre-rating + Pass III / brief</li>
-          <li>CASELAW + July 2026 reference KB</li>
-          <li>Still needed: case packet export, lawyer sign-off card</li>
+          <li><a href="defendable_legal_tree.html">Framework map</a> (14 claim types · 20 DTs · 16 U-nodes · 6 verdicts)</li>
+          <li>Confirm LOF → type-map priority → DT gates</li>
+          <li>v2 thinking trail (E1…En) + CONDITIONS BEFORE FINAL RESPONSE</li>
+          <li>CRIT / IMPO evidence priorities · EVIDENCE_HOLD under CONDITIONS</li>
+          <li>G1 sign-off → editable Case Handoff Pack</li>
+          <li>Confirm → Manage case (summary, evidence index, legal position, packets)</li>
         </ul>
       </article>
-      <article class="card planned">
-        <span class="badge planned">Part 3 · shell live</span>
+      <article class="card built">
+        <span class="badge built">Part 3 · handoff closed</span>
         <div class="card-kicker">Manage</div>
         <h3>261Claims platform</h3>
-        <p>Case lifecycle after a signed legal decision.</p>
+        <p>Case lifecycle after Confirm into Manage — engine facts already on the file.</p>
         <ul>
-          <li>Work / Cases / Evidence / Docs exist</li>
-          <li>Not yet fed by Analyse/Decide packets</li>
-          <li>Next: import decision packet</li>
-          <li>Holding / defence / settlement templates</li>
-          <li>Lawyer send gates G2–G4</li>
+          <li>Overview shows verdict, summary, locReady / Awaiting LOC</li>
+          <li>Evidence seeded from handoff marks + CRIT/IMPO</li>
+          <li>Docs in intake / legal_drafts / evidence_index (valid folders)</li>
+          <li>LOC paste/flag on case when claim letter arrives</li>
         </ul>
       </article>
     </div>
@@ -450,7 +451,7 @@ flowchart TD
       </div>
       <div class="gate">
         <strong>G1 · Legal opinion</strong>
-        <span>Approve / override tree recommendation. Next build.</span>
+        <span>Approve / override / send-back-for-evidence in Decide workspace. Built now — does not unfreeze G0.</span>
       </div>
       <div class="gate">
         <strong>G2 · Document send</strong>
@@ -472,28 +473,32 @@ flowchart TD
 flowchart LR
   S1["1 · Paste ICC<br/>LOF + timeline"]
   S2["2 · Confirm LOF<br/>trees + pre-rating"]
-  S3["3 · Lawyer sign-off<br/>opinion card"]
-  S4["4 · Case in Manage<br/>holding response"]
-  S5["5 · Evidence in<br/>defence letter"]
+  S3["3 · Lawyer sign-off<br/>G1 + handoff pack"]
+  S4["4 · Confirm → Manage<br/>summary · evidence · legal"]
+  S5["5 · LOC arrives<br/>flag on case · continue"]
 
   S1 --> S2 --> S3 --> S4 --> S5
 
   classDef built fill:#E4F0E9,stroke:#2F6B4F,color:#1C1A17
   classDef partial fill:#F5EDD9,stroke:#9A6B1F,color:#1C1A17
   classDef planned fill:#EDEAE4,stroke:#6B6560,color:#1C1A17
-  class S1 built
-  class S2 partial
-  class S3,S4,S5 planned
+  class S1,S2,S3,S4,S5 built
       </pre>
     </div>
+    <p class="sec-sub" style="margin-top:12px">Demo smoke: ATC/CTOT-only ICC. Regression: EZY4470/4471 weather+ATFM+fuel for type-map priority.</p>
   </section>
 
   <p class="footnote">
-    Source of truth: Analyser v3 on GitHub Pages · Legal trees on PR
-    <a href="https://github.com/evansharry165-wq/261Claims/pull/45">#45</a>
-    (merge after conflict fix) · Manage shell at
-    <a href="index.html">index.html</a>.
+    Source of truth: Analyser v3 structured prompt → Confirm LOF → Decide workspace · Framework map
+    <a href="defendable_legal_tree.html">defendable_legal_tree.html</a> ·
+    Spec/prototype: <a href="specs/defendable_prompt_spec.md">prompt spec</a> ·
+    <a href="specs/defendable_prompt_v1.html">prompt v1</a> ·
+    Legal reference <a href="defendable_legal_reference.html">KB</a> ·
+    Manage shell at <a href="index.html">index.html</a>.
+    Packets via Case Handoff Pack Confirm: case summary, legal position, evidence index,
+    <code>case_packet</code> + <code>decision_packet</code> (valid folders; locReady default false).
     This page: <code>defendable_product_flow.html</code> — July 2026.
+    Decide primary layer mirrors v2 clarity: verdict → thinking trail → conditions → CRIT/IMPO → gates/G1 → handoff.
   </p>
 </main>
 

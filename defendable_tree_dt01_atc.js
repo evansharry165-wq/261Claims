@@ -185,16 +185,25 @@ var DefendAbleTreeDT01 = (function () {
     var gate = GATES[2];
     var em = ctx.evidenceManager;
     var chain = ctx.causalChain || [];
+    var t = ctx.iccText || '';
     var intervening = chain.some(function (ev) {
-      return ev.chainBreak || /\btechnical\b|\bcrew illness\b|\bordinary\b/i.test(ev.description || '');
+      return ev.chainBreak || /\btechnical\b|\bcrew illness\b|\bordinary\b|\bvoluntar|\bchose to wait|\bwaited for (delayed )?passengers|\bcommercial decision\b/i.test(
+        (ev.description || '') + ' ' + (ev.label || '')
+      );
     });
+    // March 2026 causal-chain principle (T-656/24 / T-134/25 notes): voluntary wait breaks ATC EC chain
+    if (/\bvoluntar(y|ily)\b|\bchose to wait\b|\bwaited for (the )?delayed passengers\b|\bcommercial decision to wait\b/i.test(t)) {
+      intervening = true;
+    }
     var fdpElevated = hasFinding(em, 'aims', 'AIMS_FDP_ELEVATED_BEFORE_DISRUPTION');
     var answer = (intervening || fdpElevated) ? 'no' : 'yes';
     var gaps = gateEvidenceGaps(em, gate.requiredLibKeys);
     var confidence = answer === 'no' ? 'amber' : confidenceFromGaps(gaps, 'yes');
     return {
       gateId: 'DT1-G3', answer: answer, confidence: confidence,
-      reason: answer === 'no' ? 'Intervening or contributing factor — chain may be contested.' : 'Direct ATC causation supported.',
+      reason: answer === 'no'
+        ? 'Intervening factor or voluntary carrier decision — causal chain may be broken (NI/HZ March 2026).'
+        : 'Direct ATC causation supported.',
       conclusion: answer === 'yes' ? gate.yesMeans : gate.noMeans,
       gaps: gaps, skipTo: 'DT1-G4'
     };

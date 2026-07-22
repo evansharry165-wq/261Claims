@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DefendAble EC261 / UK261 — Complete Legal Decision Framework</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #EDE9E1;
+    --surface: #F8F5EF;
+    --surface-2: #FFFcf7;
+    --ink: #16181D;
+    --ink-2: #3A3F4A;
+    --ink-3: #6B7280;
+    --rule: #C9C2B6;
+    --rule-soft: #DDD6CA;
+    --navy: #1A2F45;
+    --navy-mid: #2A4A6B;
+    --claim: #1E4D8C;
+    --claim-bg: #E8F0FA;
+    --claim-border: #8BB0D9;
+    --ec: #1B5C3A;
+    --ec-bg: #E6F3EB;
+    --ec-border: #8FC9A8;
+    --ordinary: #9A5B12;
+    --ordinary-bg: #F8EED9;
+    --ordinary-border: #D4A85A;
+    --judgment: #8A6B00;
+    --judgment-bg: #FFF6D6;
+    --judgment-border: #E0C45A;
+    --universal: #0F6B6B;
+    --universal-bg: #E3F4F4;
+    --universal-border: #7CBEBE;
+    --action: #4A2F6B;
+    --action-bg: #F0EAF6;
+    --action-border: #B39BC9;
+    --cta: #C45C12;
+    --cta-bg: #FBE8D8;
+    --defend: #1B4A32;
+    --settle: #7A1A1A;
+    --serif: 'Libre Baskerville', Georgia, serif;
+    --sans: 'IBM Plex Sans', system-ui, sans-serif;
+    --mono: 'IBM Plex Mono', ui-monospace, monospace;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 14px;
+    line-height: 1.5;
+    background:
+      linear-gradient(180deg, rgba(26,47,69,0.04), transparent 220px),
+      repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent 47px,
+        rgba(26,47,69,0.03) 47px,
+        rgba(26,47,69,0.03) 48px
+      ),
+      var(--bg);
+  }
+
+  .top {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    background: rgba(26,47,69,0.96);
+    border-bottom: 2px solid #0F1C2A;
+    backdrop-filter: blur(8px);
+  }
+  .top-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    flex-wrap: wrap;
+  }
+  .brand {
+    font-family: var(--serif);
+    font-size: 16px;
+    color: #fff;
+    letter-spacing: 0.02em;
+  }
+  .brand span { color: #9EC9B0; }
+  .top-links { margin-left: auto; display: flex; gap: 16px; flex-wrap: wrap; }
+  .top-links a {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.55);
+    text-decoration: none;
+  }
+  .top-links a:hover { color: #fff; }
+
+  main { max-width: 1280px; margin: 0 auto; padding: 28px 24px 72px; }
+
+  .page-head {
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-left: 4px solid var(--navy);
+    padding: 22px 24px 18px;
+    margin-bottom: 18px;
+  }
+  .page-head h1 {
+    margin: 0 0 8px;
+    font-family: var(--serif);
+    font-size: clamp(22px, 3vw, 30px);
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--navy);
+    letter-spacing: -0.01em;
+  }
+  .page-head p {
+    margin: 0;
+    color: var(--ink-2);
+    max-width: 820px;
+    font-size: 14px;
+  }
+
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  @media (max-width: 980px) {
+    .stats { grid-template-columns: repeat(2, 1fr); }
+  }
+  .stat {
+    background: var(--surface-2);
+    border: 1px solid var(--rule-soft);
+    border-left: 3px solid var(--navy-mid);
+    padding: 12px 14px;
+  }
+  .stat .k {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+  .stat .v {
+    font-family: var(--serif);
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--navy);
+    line-height: 1.15;
+    margin: 4px 0 2px;
+  }
+  .stat .s { font-size: 11px; color: var(--ink-3); }
+
+  .controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 14px;
+    align-items: center;
+    margin-bottom: 14px;
+    padding: 12px 14px;
+    background: var(--surface);
+    border: 1px solid var(--rule-soft);
+  }
+  .filters { display: flex; flex-wrap: wrap; gap: 6px; }
+  .filter-btn {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.03em;
+    padding: 7px 11px;
+    border: 1px solid var(--rule);
+    background: var(--surface-2);
+    color: var(--ink-2);
+    cursor: pointer;
+    border-radius: 2px;
+  }
+  .filter-btn:hover { border-color: var(--navy-mid); color: var(--navy); }
+  .filter-btn.active {
+    background: var(--navy);
+    border-color: var(--navy);
+    color: #fff;
+  }
+
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .leg {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.03em;
+    padding: 5px 8px;
+    border: 1px solid var(--rule-soft);
+    background: var(--surface);
+    border-radius: 2px;
+    color: var(--ink-2);
+  }
+  .swatch {
+    width: 10px;
+    height: 10px;
+    border-radius: 1px;
+    flex-shrink: 0;
+  }
+  .swatch.claim { background: var(--claim); }
+  .swatch.ec { background: var(--ec); }
+  .swatch.ordinary { background: var(--ordinary); }
+  .swatch.judgment { background: var(--judgment); }
+  .swatch.universal { background: var(--universal); }
+  .swatch.action { background: var(--action); }
+
+  .hover-note {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin-bottom: 22px;
+  }
+
+  .flow-section {
+    margin-bottom: 28px;
+    scroll-margin-top: 72px;
+  }
+  .flow-section.is-hidden { display: none; }
+
+  .sec-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin-bottom: 8px;
+  }
+  .sec-title {
+    font-family: var(--serif);
+    font-size: 20px;
+    margin: 0 0 6px;
+    color: var(--navy);
+  }
+  .sec-sub {
+    margin: 0 0 14px;
+    color: var(--ink-2);
+    font-size: 13px;
+    max-width: 760px;
+  }
+
+  .banner {
+    background: var(--navy);
+    color: #fff;
+    padding: 18px 20px;
+    border-left: 4px solid #9EC9B0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .banner strong {
+    font-family: var(--serif);
+    font-size: 18px;
+    font-weight: 700;
+  }
+  .banner span {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    color: rgba(255,255,255,0.65);
+  }
+
+  .node-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 8px;
+  }
+  .node-grid.dense {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  }
+  .node-grid.wide {
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  }
+
+  .node {
+    background: var(--surface-2);
+    border: 1px solid var(--rule-soft);
+    border-left-width: 4px;
+    border-radius: 2px;
+    padding: 11px 12px;
+    min-height: 84px;
+    cursor: default;
+    transition: transform 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease;
+    position: relative;
+  }
+  .node:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(22,24,29,0.08);
+    z-index: 2;
+  }
+  .node .id {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .node .name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 4px;
+    line-height: 1.3;
+  }
+  .node .blurb {
+    font-size: 11px;
+    color: var(--ink-3);
+    line-height: 1.4;
+  }
+  .node .tag {
+    display: inline-block;
+    margin-top: 6px;
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 2px 5px;
+    border: 1px solid currentColor;
+    opacity: 0.85;
+  }
+
+  .node.claim { border-left-color: var(--claim); background: var(--claim-bg); }
+  .node.claim .id { color: var(--claim); }
+  .node.ec { border-left-color: var(--ec); background: var(--ec-bg); }
+  .node.ec .id { color: var(--ec); }
+  .node.ordinary { border-left-color: var(--ordinary); background: var(--ordinary-bg); }
+  .node.ordinary .id { color: var(--ordinary); }
+  .node.judgment { border-left-color: var(--judgment); background: var(--judgment-bg); }
+  .node.judgment .id { color: var(--judgment); }
+  .node.universal { border-left-color: var(--universal); background: var(--universal-bg); }
+  .node.universal .id { color: var(--universal); }
+  .node.action { border-left-color: var(--action); background: var(--action-bg); }
+  .node.action .id { color: var(--action); }
+
+  .node[data-detail]:hover::after {
+    content: attr(data-detail);
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: calc(100% + 4px);
+    background: var(--ink);
+    color: #fff;
+    padding: 10px 11px;
+    font-size: 11px;
+    line-height: 1.45;
+    border-radius: 2px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+    z-index: 5;
+    white-space: normal;
+  }
+
+  .cta-band {
+    background: var(--cta);
+    color: #fff;
+    text-align: center;
+    padding: 16px 18px;
+    border-radius: 2px;
+    margin: 8px 0 18px;
+    letter-spacing: 0.04em;
+  }
+  .cta-band strong {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+
+  .branch-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 10px;
+  }
+  .branch {
+    background: var(--surface);
+    border: 1px solid var(--rule-soft);
+    border-left: 4px solid var(--claim);
+    padding: 12px 13px;
+  }
+  .branch .id {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--claim);
+    letter-spacing: 0.05em;
+    font-weight: 600;
+  }
+  .branch h3 {
+    margin: 3px 0 6px;
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .branch p {
+    margin: 0;
+    font-size: 12px;
+    color: var(--ink-2);
+  }
+  .branch .path {
+    margin-top: 8px;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--ink-3);
+    letter-spacing: 0.02em;
+  }
+  .branch.always { border-left-color: var(--ordinary); }
+  .branch.always .id { color: var(--ordinary); }
+  .branch.escalate { border-left-color: var(--action); }
+  .branch.escalate .id { color: var(--action); }
+
+  .gate-box {
+    background: var(--ec-bg);
+    border: 1px solid var(--ec-border);
+    border-left: 4px solid var(--ec);
+    padding: 16px 18px;
+  }
+  .gate-box h3 {
+    margin: 0 0 6px;
+    font-family: var(--serif);
+    font-size: 17px;
+    color: var(--ec);
+  }
+  .gate-box p { margin: 0 0 10px; color: var(--ink-2); font-size: 13px; }
+  .limb-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  @media (max-width: 700px) { .limb-row { grid-template-columns: 1fr; } }
+  .limb {
+    background: var(--surface-2);
+    border: 1px solid var(--ec-border);
+    padding: 10px 12px;
+  }
+  .limb strong {
+    display: block;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    color: var(--ec);
+    margin-bottom: 4px;
+  }
+
+  .verdicts {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+  @media (max-width: 900px) { .verdicts { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 560px) { .verdicts { grid-template-columns: 1fr; } }
+  .verdict {
+    border: 1px solid var(--rule);
+    border-left-width: 4px;
+    background: var(--surface-2);
+    padding: 14px 14px 12px;
+    min-height: 120px;
+  }
+  .verdict .vid {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .verdict p { margin: 0; font-size: 12px; color: var(--ink-2); line-height: 1.45; }
+  .verdict.defend { border-left-color: var(--defend); }
+  .verdict.defend .vid { color: var(--defend); }
+  .verdict.conditions { border-left-color: var(--ordinary); }
+  .verdict.conditions .vid { color: var(--ordinary); }
+  .verdict.settle { border-left-color: var(--settle); }
+  .verdict.settle .vid { color: var(--settle); }
+  .verdict.concede { border-left-color: var(--ordinary); background: var(--ordinary-bg); }
+  .verdict.concede .vid { color: var(--ordinary); }
+  .verdict.judgment { border-left-color: var(--judgment); background: var(--judgment-bg); }
+  .verdict.judgment .vid { color: var(--judgment); }
+  .verdict.escalate { border-left-color: var(--action); background: var(--action-bg); }
+  .verdict.escalate .vid { color: var(--action); }
+
+  .arrow {
+    text-align: center;
+    color: var(--ink-3);
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    margin: 6px 0 18px;
+  }
+
+  footer.page-foot {
+    margin-top: 40px;
+    padding-top: 16px;
+    border-top: 1px solid var(--rule);
+    font-size: 12px;
+    color: var(--ink-3);
+    line-height: 1.55;
+  }
+  footer.page-foot code {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink-2);
+  }
+</style>
+</head>
+<body>
+  <header class="top">
+    <div class="top-inner">
+      <div class="brand">Defend<span>Able</span></div>
+      <nav class="top-links">
+        <a href="defendable_analyser_v3.html">Analyser v3</a>
+        <a href="defendable_product_flow.html">Product flow</a>
+        <a href="defendable_legal_reference.html">Legal reference</a>
+        <a href="index.html">Manage</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="page-head">
+      <h1>DefendAble EC261 / UK261 — Complete Legal Decision Framework</h1>
+      <p>Visual master map of the Decide pathway: universal pre-checks → claim typing → extraordinary-circumstances gate → disruption trees → reasonable measures → verdicts. Executable trees live in JS modules.</p>
+    </div>
+
+    <div class="stats">
+      <div class="stat">
+        <div class="k">Claim types</div>
+        <div class="v">14</div>
+        <div class="s">Compensation &amp; care heads</div>
+      </div>
+      <div class="stat">
+        <div class="k">Disruption trees</div>
+        <div class="v">20</div>
+        <div class="s">DT-1 – DT-20</div>
+      </div>
+      <div class="stat">
+        <div class="k">Universal nodes</div>
+        <div class="v">16</div>
+        <div class="s">U-1 – U-16 every case</div>
+      </div>
+      <div class="stat">
+        <div class="k">Verdicts</div>
+        <div class="v">6</div>
+        <div class="s">DEFEND · CONDITIONS · SETTLE · CONCEDE · JUDGMENT · ESCALATE</div>
+      </div>
+      <div class="stat">
+        <div class="k">Key authorities</div>
+        <div class="v">12+</div>
+        <div class="s">CJEU + UKSC binding</div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <div class="filters" role="tablist" aria-label="Framework filters">
+        <button type="button" class="filter-btn active" data-filter="all">All pathways</button>
+        <button type="button" class="filter-btn" data-filter="claims">Claim types</button>
+        <button type="button" class="filter-btn" data-filter="trees">Disruption trees</button>
+        <button type="button" class="filter-btn" data-filter="universal">Universal nodes</button>
+      </div>
+    </div>
+
+    <div class="legend" aria-label="Node legend">
+      <span class="leg"><span class="swatch claim"></span> Claim type</span>
+      <span class="leg"><span class="swatch ec"></span> EC / Extraordinary</span>
+      <span class="leg"><span class="swatch ordinary"></span> Ordinary / No EC</span>
+      <span class="leg"><span class="swatch judgment"></span> Judgment required</span>
+      <span class="leg"><span class="swatch universal"></span> Universal</span>
+      <span class="leg"><span class="swatch action"></span> Action / outcome</span>
+    </div>
+    <div class="hover-note">Hover nodes for detail</div>
+
+    <!-- 1. CLAIM RECEIVED -->
+    <section class="flow-section" data-pathway="all" id="claim-received">
+      <div class="sec-label">01 · Entry</div>
+      <div class="banner">
+        <strong>CLAIM RECEIVED — EC261 / UK261</strong>
+        <span>Operating carrier · Art 2(b) · UK or EU departure / inbound</span>
+      </div>
+    </section>
+
+    <div class="arrow" data-pathway="all">▼ UNIVERSAL PRE-CHECKS</div>
+
+    <!-- 2. UNIVERSAL PRE-CHECKS -->
+    <section class="flow-section" data-pathway="universal" id="prechecks">
+      <div class="sec-label">02 · Universal pre-checks</div>
+      <h2 class="sec-title">Run before claim typing</h2>
+      <p class="sec-sub">Jurisdiction, limitation, standing, check-in, delay threshold, Art 7 band, Art 9 care, and Montreal screen — applied on every file.</p>
+      <div class="node-grid">
+        <div class="node universal" title="UK261: UK departures + UK/EU inbound. EC261: EU departures. Liability = operating carrier." data-detail="UK261 Reg 4 · EC261 Art 2(b). Operating carrier bears liability. Montreal Art 29 runs concurrently.">
+          <div class="id">U-1</div>
+          <div class="name">Jurisdiction</div>
+          <div class="blurb">UK261 / EC261 engage? Operating vs contractual carrier.</div>
+        </div>
+        <div class="node universal" title="E&amp;W 6yr · Scotland 5yr · FR 2yr · ES 1yr · DE 3yr · Montreal 2yr absolute." data-detail="Check court issue date, not LOC date. UK261 may be in time while Montreal consequential loss is barred.">
+          <div class="id">U-2</div>
+          <div class="name">Limitation</div>
+          <div class="blurb">National bars + Montreal Art 29 concurrent.</div>
+        </div>
+        <div class="node universal" title="Confirmed reservation Art 2(a). Post-PACCAR CMC assignment risk." data-detail="Each passenger on manifest. Flag missing / champertous CMC assignments.">
+          <div class="id">U-3</div>
+          <div class="name">Standing</div>
+          <div class="blurb">Reservation confirmed · assignment valid.</div>
+        </div>
+        <div class="node universal" title="Art 3(2)(a): check-in time or 45 min before STD." data-detail="Late presentation → Regulation does not apply. Pull CMS / DCS check-in timestamps.">
+          <div class="id">U-4</div>
+          <div class="name">Check-in</div>
+          <div class="blurb">Art 3(2)(a) presentation compliance.</div>
+        </div>
+        <div class="node universal" title="Sturgeon: delay at arrival, doors open. Folkerts for connections. Pešková causal offset." data-detail="3+ hours at final destination. OND = STD arrival → actual next-day arrival. Offset ordinary remainder vs EC portion.">
+          <div class="id">U-5</div>
+          <div class="name">Delay threshold</div>
+          <div class="blurb">Sturgeon 3h · Folkerts · Pešková offset.</div>
+        </div>
+        <div class="node universal" title="€250 / €400 / €600 by great-circle distance. Flag CMC overclaims." data-detail="≤1500km €250 · 1500–3500 / intra-EU €400 · &gt;3500 non-intra €600. 50% reductions where applicable.">
+          <div class="id">U-6</div>
+          <div class="name">Art 7 Band</div>
+          <div class="blurb">Distance band &amp; reduction check.</div>
+        </div>
+        <div class="node universal" title="Art 9 applies regardless of EC. 2h+ meals/comms; overnight hotel." data-detail="Same duties at diversion airports (Art 9(2)). Breach succeeds even where EC defence is good.">
+          <div class="id">U-10</div>
+          <div class="name">Art 9 Care</div>
+          <div class="blurb">Meals · comms · HOTAC if overnight.</div>
+        </div>
+        <div class="node universal" title="Montreal Art 19 consequential loss. Art 22 SDR cap ~£4,600. Escalate high value." data-detail="Art 12(1) EC261 deducted from Montreal award. Art 29 2-year absolute bar. Route high-value to ESCALATE.">
+          <div class="id">U-11</div>
+          <div class="name">Montreal</div>
+          <div class="blurb">Art 19/22/29 consequential loss screen.</div>
+        </div>
+      </div>
+    </section>
+
+    <div class="arrow" data-pathway="claims">▼ CLAIM TYPING</div>
+
+    <!-- 3. CTA -->
+    <section class="flow-section" data-pathway="claims" id="claim-cta">
+      <div class="cta-band"><strong>What type of claim is this?</strong></div>
+    </section>
+
+    <!-- 4. 14 CLAIM TYPES -->
+    <section class="flow-section" data-pathway="claims" id="claim-types">
+      <div class="sec-label">03 · Claim types · 14</div>
+      <h2 class="sec-title">Heads of claim &amp; immediate branches</h2>
+      <p class="sec-sub">Type the claim first. Denied boarding and ordinary technical / own-staff paths short-circuit; Montreal consequential loss escalates.</p>
+      <div class="branch-row">
+        <div class="branch" title="Sturgeon delay at final arrival. EC defence available if U-7 + U-8 hold.">
+          <div class="id">CL-01</div>
+          <h3>Delay 3+ hours</h3>
+          <p>Art 7 compensation if arrival delay ≥3h. Measure doors-open at final destination.</p>
+          <div class="path">→ EC available? · U-7 gate · DT trees</div>
+        </div>
+        <div class="branch" title="Art 5(1)(c) cancellation &lt;14 days. Full Art 7 unless EC + RM.">
+          <div class="id">CL-02</div>
+          <h3>Cancellation (&lt;14 days)</h3>
+          <p>Full Art 7 unless extraordinary circumstances + reasonable measures.</p>
+          <div class="path">→ EC available? · DT-16 · notice windows</div>
+        </div>
+        <div class="branch" title="Art 5(1)(c)(iii) 13–7 and &lt;7 day bands; 50% reduction if compliant reroute.">
+          <div class="id">CL-03 / CL-04</div>
+          <h3>Cancellation notice bands</h3>
+          <p>13–7 days and &lt;7 days — strictest rerouting windows; reduced quantum if offered.</p>
+          <div class="path">→ Art 8 offer check · U-9</div>
+        </div>
+        <div class="branch" title="2021 CJEU: moved &gt;1 hour earlier within 14 days = cancellation.">
+          <div class="id">CL-08</div>
+          <h3>Early Departure</h3>
+          <p>Schedule brought forward &gt;1 hour within 14 days treated as cancellation.</p>
+          <div class="path">→ Treat as Art 5 · EC / RM analysis</div>
+        </div>
+        <div class="branch always" title="Art 4 — no EC defence for involuntary denied boarding.">
+          <div class="id">CL-05 · DT-15</div>
+          <h3>Denied Boarding</h3>
+          <p>Involuntary offload / overbooking — carrier always liable.</p>
+          <div class="path">→ ALWAYS LIABLE · CONCEDE · Art 7/8/9</div>
+        </div>
+        <div class="branch" title="Art 10 — 30%/50%/75% refund by distance. Not excused by EC.">
+          <div class="id">CL-06 · U-12</div>
+          <h3>Downgrading</h3>
+          <p>Lower class than booked. Distance-band refund. EC does not excuse.</p>
+          <div class="path">→ Quantum only · no EC screen</div>
+        </div>
+        <div class="branch" title="Folkerts C-11/11 — delay at final destination on through booking.">
+          <div class="id">CL-07 · U-13</div>
+          <h3>Missed Connection</h3>
+          <p>Through booking: delay at final destination; distance from first departure.</p>
+          <div class="path">→ Folkerts · first-leg operating carrier</div>
+        </div>
+        <div class="branch" title="Art 9 standalone — applies even if EC defence succeeds.">
+          <div class="id">CL-10 · U-10</div>
+          <h3>Art 9 Care</h3>
+          <p>Meals, communications, hotel/transport. Independent of EC outcome.</p>
+          <div class="path">→ Care compliance · HOTAC pull</div>
+        </div>
+        <div class="branch" title="Art 8 — reimbursement / earliest / later-date reroute for 5h+.">
+          <div class="id">CL-11 · U-9</div>
+          <h3>Art 8 Rerouting</h3>
+          <p>Three options mandatory for cancellations and 5+ hour delays.</p>
+          <div class="path">→ Offer evidenced? · standalone head</div>
+        </div>
+        <div class="branch escalate" title="Montreal Art 19 consequential loss — escalate above SDR / novel points.">
+          <div class="id">CL-09 · U-11</div>
+          <h3>Montreal Art 19</h3>
+          <p>Consequential / commercial loss. Art 22 SDR cap. Absolute 2-year bar.</p>
+          <div class="path">→ ESCALATE if &gt;SDR / high value</div>
+        </div>
+        <div class="branch" title="EC261 Art 12 — further compensation; EC261 deducted from Montreal.">
+          <div class="id">CL-12</div>
+          <h3>Art 12 Further compensation</h3>
+          <p>National-law further claims; EC261 sums deducted from Montreal awards.</p>
+          <div class="path">→ Quantum interaction · U-11</div>
+        </div>
+        <div class="branch" title="Package Travel Directive / PTR overlay where flight is part of package.">
+          <div class="id">CL-13</div>
+          <h3>PTR / Package Travel</h3>
+          <p>PTD 2015/2302 may govern remedy routing alongside EC261/UK261.</p>
+          <div class="path">→ Dual regime screen</div>
+        </div>
+        <div class="branch" title="Art 13 — carrier recourse against third parties. Separate limitation.">
+          <div class="id">CL-14 · U-14</div>
+          <h3>Art 13 Recourse</h3>
+          <p>Preserve claims against ATC, handlers, OEM, airport. Flag early.</p>
+          <div class="path">→ Limitation risk · U-14</div>
+        </div>
+        <div class="branch" title="ADR vs litigation / Part 36 strategy.">
+          <div class="id">CL-15 · U-15</div>
+          <h3>ADR / Litigation</h3>
+          <p>AviationADR ≤£15k · small claims ≤£10k · Part 36 above.</p>
+          <div class="path">→ Forum &amp; costs strategy</div>
+        </div>
+      </div>
+    </section>
+
+    <div class="arrow" data-pathway="trees">▼ EXTRAORDINARY CIRCUMSTANCES</div>
+
+    <!-- 5. U-7 GATE -->
+    <section class="flow-section" data-pathway="trees" id="u7-gate">
+      <div class="sec-label">04 · U-7 Extraordinary circumstances gate</div>
+      <div class="gate-box">
+        <h3>U-7 — Wallentin-Hermann both limbs (per causal-chain event)</h3>
+        <p>Apply independently to <em>each</em> event in the chain. Failure of either limb defeats EC for that event. Then proceed to U-8 reasonable measures.</p>
+        <div class="limb-row">
+          <div class="limb">
+            <strong>Limb 1 — Inherency</strong>
+            Circumstance not inherent in the normal exercise of the carrier’s activity.
+          </div>
+          <div class="limb">
+            <strong>Limb 2 — Control</strong>
+            Circumstance beyond the carrier’s actual control on the facts of this flight.
+          </div>
+        </div>
+        <p style="margin:12px 0 0;font-family:var(--mono);font-size:11px;color:var(--ec)">Authority: Wallentin-Hermann v Alitalia C-549/07 · Pešková C-315/15 · then → U-8</p>
+      </div>
+    </section>
+
+    <div class="arrow" data-pathway="trees">▼ DISRUPTION TREES DT-1 – DT-20</div>
+
+    <!-- 6. DT GRID -->
+    <section class="flow-section" data-pathway="trees" id="dt-grid">
+      <div class="sec-label">05 · Disruption trees · 20</div>
+      <h2 class="sec-title">Root-cause trees with primary authorities</h2>
+      <p class="sec-sub">Select the matching tree(s) after U-7. Cascade and positioning trees route back to root-cause analysis.</p>
+      <div class="node-grid dense">
+        <div class="node ec" title="Pešková — third-party ATC/ATFM flow control is per se EC." data-detail="CTOT / ATFM / curfew OND. Delay codes 81–89. Causal-offset any ordinary remainder after restriction clears.">
+          <div class="id">DT-1</div>
+          <div class="name">ATC / ATFM</div>
+          <div class="blurb">Pešková — third-party flow control.</div>
+          <span class="tag">EC</span>
+        </div>
+        <div class="node ec" title="Destination weather below minima / diversion." data-detail="METAR below minima · SIGMET · mandatory ATC diversion = Limb 2. Blanche / Wallentin.">
+          <div class="id">DT-2</div>
+          <div class="name">Weather — Destination</div>
+          <div class="blurb">Below minima · diversion EC.</div>
+          <span class="tag">EC</span>
+        </div>
+        <div class="node ec" title="Origin / en-route LVP, SNOWTAM, systemic de-icing." data-detail="Systemic airport closure = EC. Routine turnround de-icing alone = ordinary.">
+          <div class="id">DT-3</div>
+          <div class="name">Weather — Origin</div>
+          <div class="blurb">LVP / SNOWTAM / systemic closure.</div>
+          <span class="tag">EC</span>
+        </div>
+        <div class="node ec" title="Pešková — birdstrike per se EC; dissect post-strike delay." data-detail="Inspection time EC-attributable; ordinary follow-on handling offset under U-5.">
+          <div class="id">DT-4</div>
+          <div class="name">Birdstrike</div>
+          <div class="blurb">Pešková — per se EC.</div>
+          <span class="tag">EC</span>
+        </div>
+        <div class="node ordinary" title="van der Lans — routine / even undetectable ordinary faults NOT EC." data-detail="External cause (lightning / FOD / Pauels) may be EC. Route hidden defect to DT-14.">
+          <div class="id">DT-5</div>
+          <div class="name">Technical</div>
+          <div class="blurb">van der Lans — ORDINARY.</div>
+          <span class="tag">ORDINARY</span>
+        </div>
+        <div class="node ordinary" title="Lipton UKSC 24 — crew illness NOT EC. FTL alone never independent EC." data-detail="Root-cause the FTL exhaustion (ATC/weather/cascade). Illness → CONCEDE on this point.">
+          <div class="id">DT-6</div>
+          <div class="name">Crew / FTL</div>
+          <div class="blurb">Lipton — NOT EC.</div>
+          <span class="tag">NOT EC</span>
+        </div>
+        <div class="node ec" title="Own-staff strike CONCEDE (Krüsemann). Third-party strike EC (Pešková)." data-detail="First node: own staff vs third party. Third-party subject to U-5 offset.">
+          <div class="id">DT-7</div>
+          <div class="name">Industrial action</div>
+          <div class="blurb">Own staff ≠ EC · third party = EC.</div>
+          <span class="tag">BRANCH</span>
+        </div>
+        <div class="node ec" title="Authority-initiated security alert / search = EC." data-detail="Police / airport / government mandated search or re-screen. Codes 91–96.">
+          <div class="id">DT-8</div>
+          <div class="name">Security</div>
+          <div class="blurb">Authority-initiated = EC.</div>
+          <span class="tag">EC</span>
+        </div>
+        <div class="node judgment" title="Ordinary passenger illness — concede (Linwood). Safety/security edge = judgment." data-detail="Default NOT EC. Contagion / security-flagged / aircraft risk → JUDGMENT node.">
+          <div class="id">DT-9</div>
+          <div class="name">Medical</div>
+          <div class="blurb">Default ordinary · narrow judgment.</div>
+          <span class="tag">JUDGMENT</span>
+        </div>
+        <div class="node ec" title="LE v TAP — known before boarding = concede; sudden in-flight = EC." data-detail="Hard line at boarding knowledge. Prior-rotation EC can excuse later flight (LE v TAP).">
+          <div class="id">DT-10</div>
+          <div class="name">Disruptive Pax</div>
+          <div class="blurb">LE v TAP — known vs sudden.</div>
+          <span class="tag">BRANCH</span>
+        </div>
+        <div class="node ec" title="Ash, quake, flood, hurricane, travel ban = EC." data-detail="SIGMET VA / government notice. Foreseeability challenge on prolonged events.">
+          <div class="id">DT-11</div>
+          <div class="name">Natural Disaster</div>
+          <div class="blurb">Government / met event = EC.</div>
+          <span class="tag">EC</span>
+        </div>
+        <div class="node ec" title="NATS / Eurocontrol outage = third-party infrastructure EC." data-detail="Cross-carrier impact corroborates. Official outage statement + NOTAM.">
+          <div class="id">DT-12</div>
+          <div class="name">ATM Failure</div>
+          <div class="blurb">Third-party infrastructure = EC.</div>
+          <span class="tag">EC</span>
+        </div>
+        <div class="node ordinary" title="Cascade itself is NOT EC — root cause at chain start decides." data-detail="Full tail line of flying mandatory. Route root event to matching DT.">
+          <div class="id">DT-13</div>
+          <div class="name">Cascade</div>
+          <div class="blurb">Not EC — root-cause routing.</div>
+          <span class="tag">ROUTE</span>
+        </div>
+        <div class="node ec" title="Matkustaja C-385/23 — hidden manufacturing defect may be EC." data-detail="Unknown failure mode · no prior AD/SB · within service life · maintenance done. OEM search required.">
+          <div class="id">DT-14</div>
+          <div class="name">Hidden Defect</div>
+          <div class="blurb">Matkustaja — narrow EC path.</div>
+          <span class="tag">EC?</span>
+        </div>
+        <div class="node ordinary" title="Art 4 — no EC defence for denied boarding." data-detail="Always liable. Art 7, 8, 9 apply immediately. Do not run EC defence.">
+          <div class="id">DT-15</div>
+          <div class="name">Denied Boarding</div>
+          <div class="blurb">NO EC — always liable.</div>
+          <span class="tag">NO EC</span>
+        </div>
+        <div class="node ec" title="Art 5 cancellation — EC defence available if root cause qualifies." data-detail="Short-notice schedule change / early departure may be treated as cancellation.">
+          <div class="id">DT-16</div>
+          <div class="name">Cancellation</div>
+          <div class="blurb">Art 5 — EC available if rooted.</div>
+          <span class="tag">EC?</span>
+        </div>
+        <div class="node ec" title="Government / political / conflict / drone airspace closure = EC." data-detail="NOTAM or authority notice. Includes pandemic government restrictions and UAS closures.">
+          <div class="id">DT-17</div>
+          <div class="name">Govt / Drone</div>
+          <div class="blurb">Authority-mandated closure = EC.</div>
+          <span class="tag">EC</span>
+        </div>
+        <div class="node universal" title="Positioning disruption — classify via root-cause tree." data-detail="Was positioning necessary for claimant flight? Apply matching DT to root cause.">
+          <div class="id">DT-18</div>
+          <div class="name">Positioning</div>
+          <div class="blurb">Separate event · root-cause DT.</div>
+          <span class="tag">ROUTE</span>
+        </div>
+        <div class="node judgment" title="Intervening cause / but-for between positioning and OOH." data-detail="van der Lans intervening cause. Ambiguous break → JUDGMENT REQUIRED.">
+          <div class="id">DT-19</div>
+          <div class="name">Intervening Cause</div>
+          <div class="blurb">But-for test · chain integrity.</div>
+          <span class="tag">JUDGMENT</span>
+        </div>
+        <div class="node judgment" title="18-hour wake rule — ALWAYS judgment; never auto-resolve." data-detail="Rest start · replacement required time · 18hr gap · EC timing vs carrier sourcing delay.">
+          <div class="id">DT-20</div>
+          <div class="name">18hr Wake</div>
+          <div class="blurb">ALWAYS JUDGMENT node.</div>
+          <span class="tag">JUDGMENT</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="arrow" data-pathway="universal">▼ REASONABLE MEASURES</div>
+
+    <!-- 7. U-8 + IP -->
+    <section class="flow-section" data-pathway="universal" id="u8-rm">
+      <div class="sec-label">06 · U-8 Reasonable measures · Intervention points</div>
+      <h2 class="sec-title">U-8 — mandatory even after EC confirmed</h2>
+      <p class="sec-sub">Wallentin-Hermann para 40 · Eglītis &amp; Ratnieks reserve time. A failed intervention point defeats the defence even where U-7 holds.</p>
+      <div class="node-grid wide">
+        <div class="node universal" title="U-8 — all reasonable measures to avoid / minimise delay." data-detail="Evaluated at every Pass-2 intervention point. Failed IP = RED = defence fails despite EC.">
+          <div class="id">U-8</div>
+          <div class="name">Reasonable Measures Gate</div>
+          <div class="blurb">Standby · slots · reroute · reserve · care — all evidenced.</div>
+        </div>
+        <div class="node action" title="IP-1 Standby aircraft availability and deployment." data-detail="Fleet state / spare tail log. Could substitution have recovered before 3h threshold?">
+          <div class="id">IP-1</div>
+          <div class="name">Standby aircraft</div>
+          <div class="blurb">Availability · positioning · deployment.</div>
+        </div>
+        <div class="node action" title="IP-2 Standby crew / replacement sourcing." data-detail="Crew scheduling standby log. Delay in sourcing replacement may break RM.">
+          <div class="id">IP-2</div>
+          <div class="name">Standby crew</div>
+          <div class="blurb">SBY roster · replacement timing.</div>
+        </div>
+        <div class="node action" title="IP-3 Slot recovery after ATFM / restriction clears." data-detail="Was earliest recoverable slot pursued? Document network recovery attempts.">
+          <div class="id">IP-3</div>
+          <div class="name">Slot recovery</div>
+          <div class="blurb">Post-restriction recovery attempts.</div>
+        </div>
+        <div class="node action" title="IP-4 Reroute / rebooking passengers at earliest opportunity." data-detail="Art 8 options + operational reroute capacity. Failure is both U-8 and U-9 risk.">
+          <div class="id">IP-4</div>
+          <div class="name">Reroute</div>
+          <div class="blurb">Earliest opportunity rebooking.</div>
+        </div>
+        <div class="node action" title="IP-5 Crew timing / schedule reserve (Eglītis C-294/10)." data-detail="Reasonable reserve to recover after foreseeable EC — not intolerable sacrifice.">
+          <div class="id">IP-5</div>
+          <div class="name">Crew timing / reserve</div>
+          <div class="blurb">Eglītis reserve-time test.</div>
+        </div>
+        <div class="node action" title="IP-6 Art 9 care as intervention / compliance evidence." data-detail="Meals, HOTAC, diversion care. Independent liability head AND RM corroboration.">
+          <div class="id">IP-6</div>
+          <div class="name">Art 9 Care</div>
+          <div class="blurb">Care delivered &amp; documented.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 8. Remaining universal → Settle vs Defend -->
+    <section class="flow-section" data-pathway="universal" id="post-rm">
+      <div class="sec-label">07 · Post-tree universal nodes</div>
+      <h2 class="sec-title">U-9 · U-12 · U-13 · U-14 · U-15 · U-16</h2>
+      <p class="sec-sub">Care / quantum / forum nodes after the EC path, closing with settle-vs-defend triage.</p>
+      <div class="node-grid">
+        <div class="node universal" title="Art 8 rerouting / reimbursement for 5h+ and cancellations." data-detail="Three options required. Failure = standalone claim independent of EC.">
+          <div class="id">U-9</div>
+          <div class="name">Art 8</div>
+          <div class="blurb">Reroute / reimburse offer evidenced.</div>
+        </div>
+        <div class="node universal" title="Art 10 downgrading refund bands — not excused by EC." data-detail="30% / 50% / 75% by distance. Quantum-only analysis.">
+          <div class="id">U-12</div>
+          <div class="name">Downgrading</div>
+          <div class="blurb">Art 10 refund · no EC excuse.</div>
+        </div>
+        <div class="node universal" title="Folkerts connecting flights — final destination delay." data-detail="Through booking · distance from first departure · first-leg operating carrier.">
+          <div class="id">U-13</div>
+          <div class="name">Folkerts</div>
+          <div class="blurb">Missed connection / through booking.</div>
+        </div>
+        <div class="node universal" title="Art 13 recourse against third parties — flag early." data-detail="Separate limitation periods frequently lost. ATC / handler / OEM / airport.">
+          <div class="id">U-14</div>
+          <div class="name">Recourse</div>
+          <div class="blurb">Art 13 third-party recovery.</div>
+        </div>
+        <div class="node universal" title="ADR vs litigation · Part 36 · batch strategy." data-detail="AviationADR ≤£15k · small claims ≤£10k no costs · Part 36 above £10k.">
+          <div class="id">U-15</div>
+          <div class="name">ADR / Litigation</div>
+          <div class="blurb">Forum, costs, batch EC decision.</div>
+        </div>
+        <div class="node action" title="Settle vs Defend — evidence completeness &amp; economics." data-detail="Defend if EC clean + evidence complete. Settle on gaps / weak EC / cost &gt; value. Document any concession.">
+          <div class="id">U-16</div>
+          <div class="name">Settle vs Defend</div>
+          <div class="blurb">Triage · Part 36 · precedent risk.</div>
+        </div>
+      </div>
+    </section>
+
+    <div class="arrow" data-pathway="all">▼ VERDICTS</div>
+
+    <!-- 9. SIX VERDICTS -->
+    <section class="flow-section" data-pathway="all" id="verdicts">
+      <div class="sec-label">08 · Six possible verdicts</div>
+      <h2 class="sec-title">Decide outcomes</h2>
+      <p class="sec-sub">Issued only after universal nodes, claim type, U-7/U-8, and evidence completeness are assessed.</p>
+      <div class="verdicts">
+        <div class="verdict defend" title="Clean defence path.">
+          <div class="vid">DEFEND</div>
+          <p>EC established, chain holds, RM satisfied, evidence complete.</p>
+        </div>
+        <div class="verdict conditions" title="Defence viable once conditions met.">
+          <div class="vid">DEFEND WITH CONDITIONS</div>
+          <p>EC established but conditions first — evidence pulls, Art 9/8 gaps, or Pešková offset remainder.</p>
+        </div>
+        <div class="verdict settle" title="Defence not sustainable.">
+          <div class="vid">SETTLE</div>
+          <p>EC fails / chain broken / RM failure / evidence gaps.</p>
+        </div>
+        <div class="verdict concede" title="Clear legal defeat on authority.">
+          <div class="vid">CONCEDE</div>
+          <p>Own-staff strike, crew illness, routine technical, denied boarding.</p>
+        </div>
+        <div class="verdict judgment" title="Human judgment / further evidence required.">
+          <div class="vid">JUDGMENT REQUIRED</div>
+          <p>Ambiguous chain — intervening cause, concurrent causes, or DT-20 wake rule.</p>
+        </div>
+        <div class="verdict escalate" title="Specialist / high-value path.">
+          <div class="vid">ESCALATE</div>
+          <p>Montreal &gt;SDR, novel point, group action.</p>
+        </div>
+      </div>
+    </section>
+
+    <footer class="page-foot">
+      Visual master map of Decide · executable trees live in JS modules · reconstructed for repo from framework v2
+      (Downloads HTML / CloudDocs docx not available in build env).
+      See <code>defendable_trees.js</code>, <code>defendable_framework.js</code>, <code>defendable_engine.js</code>.
+    </footer>
+  </main>
+
+  <script>
+    (function () {
+      var buttons = document.querySelectorAll('.filter-btn');
+      var sections = document.querySelectorAll('.flow-section');
+      var arrows = document.querySelectorAll('.arrow');
+
+      function applyFilter(key) {
+        buttons.forEach(function (b) {
+          b.classList.toggle('active', b.getAttribute('data-filter') === key);
+        });
+        sections.forEach(function (sec) {
+          var pathway = sec.getAttribute('data-pathway') || 'all';
+          var show = key === 'all' || pathway === 'all' || pathway === key;
+          sec.classList.toggle('is-hidden', !show);
+        });
+        arrows.forEach(function (a) {
+          var pathway = a.getAttribute('data-pathway') || 'all';
+          var show = key === 'all' || pathway === 'all' || pathway === key;
+          a.classList.toggle('is-hidden', !show);
+          a.style.display = show ? '' : 'none';
+        });
+      }
+
+      buttons.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          applyFilter(btn.getAttribute('data-filter'));
+        });
+      });
+    })();
+  </script>
+</body>
+</html>
