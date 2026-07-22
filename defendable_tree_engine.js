@@ -1,6 +1,45 @@
 /* DefendAble — shared decision tree engine */
 var DefendAbleTreeEngine = (function () {
 
+  var NEGATOR_RE = /\b(not|no|without|did\s+not|does\s+not|do\s+not|never|unaffected|remained\s+legal|in\s+hours|within\s+(?:hours|limits|ftl)|no\s+need|did\s+not\s+need|need\s+not|weren'?t|wasn'?t|could\s+not\s+need)\b/i;
+  var CREW_POSITIVE_RE = /\b(crew\s+sick|pilot\s+sick|captain\s+(?:went\s+)?sick|fo\s+sick|crew\s+illness|out\s+of\s+hours|ftl\s+(?:exceeded|breach|limit)|fdp\s+(?:exceeded|expired|limit)|timed\s+out|discretion\s+used|could\s+not\s+be\s+replaced|crew\s+replacement\s+required|needed\s+replacing|crew\s+needed\s+replacing|went\s+sick)\b/i;
+  var CREW_NEGATED_EXCLUSION_RE = /\b(within\s+(?:hours|limits|ftl)|operating\s+within\s+hours|did\s+not\s+need\s+replac|no\s+crew\s+issue|crew\s+(?:were|was)\s+(?:legal|ok)|remained\s+legal|in\s+hours)\b/i;
+
+  /** Word-window negation: true if keyword match is negated within ±6 words. */
+  function isNegatedHit(text, matchIndex, matchLen) {
+    if (matchIndex < 0) return false;
+    var t = text || '';
+    var before = t.slice(0, matchIndex);
+    var after = t.slice(matchIndex + (matchLen || 0));
+    var beforeWords = before.trim().split(/\s+/).filter(Boolean).slice(-6).join(' ');
+    var afterWords = after.trim().split(/\s+/).filter(Boolean).slice(0, 6).join(' ');
+    return NEGATOR_RE.test(beforeWords) || NEGATOR_RE.test(afterWords);
+  }
+
+  function findUnnegated(text, pattern) {
+    var t = text || '';
+    var re = pattern.global ? pattern : new RegExp(pattern.source, (pattern.flags || '') + (pattern.flags && pattern.flags.indexOf('g') >= 0 ? '' : 'g'));
+    if (!re.global) re = new RegExp(pattern.source, (pattern.flags || '') + 'g');
+    var m;
+    while ((m = re.exec(t)) !== null) {
+      if (!isNegatedHit(t, m.index, m[0].length)) return m;
+      if (!re.global) break;
+    }
+    return null;
+  }
+
+  /** True when narrative affirmatively asserts a crew/FTL issue (not merely mentions crew). */
+  function crewIssueAsserted(text) {
+    var t = text || '';
+    if (CREW_NEGATED_EXCLUSION_RE.test(t) && !CREW_POSITIVE_RE.test(t)) return false;
+    return !!findUnnegated(t, CREW_POSITIVE_RE);
+  }
+
+  /** True when crew is expressly excluded — note as a strength. */
+  function crewExpresslyExcluded(text) {
+    return CREW_NEGATED_EXCLUSION_RE.test(text || '') && !crewIssueAsserted(text);
+  }
+
   function evidenceIdForLibKey(libKey) {
     if (typeof DefendAbleEvidencePack !== 'undefined') {
       return DefendAbleEvidencePack.libKeyToEvidenceId(libKey);
@@ -141,22 +180,33 @@ var DefendAbleTreeEngine = (function () {
 
     var iccHit = iccMatches(ctx, gate.iccPattern) || chainMatches(ctx, gate.iccPattern);
     var evHit = evidenceHit(ctx, gate);
+    var req = (gate.requiredLibKeys || []).concat(gate.secondaryLibKeys || []);
     var answer = 'no';
     if (gate.type === 'measures') {
       var t = ctx.iccText || '';
       var constrained = /\bno standby\b|\bnot available\b|\bcould not\b/i.test(t);
-      answer = constrained ? 'unknown' : 'yes';
+      answer = constrained ? 'unknown' : (iccHit || evHit ? 'yes' : 'unknown');
     } else if (iccHit || evHit) {
       answer = 'yes';
     } else if (gate.type === 'entry' && gate.allowTopsFallback && hasCollected(ctx.evidenceManager, 'tops')) {
       answer = 'yes';
+    } else if (gate.type === 'entry') {
+      // Entry not established on the narrative → tree does not apply
+      answer = 'no';
+    } else if (req.length) {
+      // Confirm / evidence gates with no ICC hit and no collected proof = UNKNOWN
+      // (missing docs are normal on a fresh case — not an adverse finding)
+      answer = 'unknown';
+    } else {
+      answer = 'no';
     }
 
-    var req = (gate.requiredLibKeys || []).concat(gate.secondaryLibKeys || []);
     var gaps = gateEvidenceGaps(ctx.evidenceManager, req);
     var confidence;
     if (answer === 'no' && gate.type === 'entry') confidence = 'red';
     else if (answer === 'unknown') confidence = 'amber';
+    else if (answer === 'no' && gate.affirmativeAdverse) confidence = 'red';
+    else if (answer === 'no') confidence = 'amber'; // soft no without affirmative adverse evidence
     else confidence = confidenceFromGaps(gaps, answer === 'yes' ? 'yes' : answer);
 
     var skipTo;
@@ -168,8 +218,8 @@ var DefendAbleTreeEngine = (function () {
       gateId: gate.id,
       answer: answer,
       confidence: confidence,
-      reason: gate['reason' + answer] || gate.reason || (answer === 'yes' ? gate.yesMeans : gate.noMeans) || '',
-      conclusion: answer === 'yes' ? (gate.yesMeans || gate.conclusion) : (answer === 'no' ? gate.noMeans : gate.conclusion),
+      reason: gate['reason' + answer] || gate.reason || (answer === 'yes' ? gate.yesMeans : (answer === 'unknown' ? (gate.unknownMeans || 'Evidence pending — not an adverse finding.') : gate.noMeans)) || '',
+      conclusion: answer === 'yes' ? (gate.yesMeans || gate.conclusion) : (answer === 'no' ? gate.noMeans : (gate.unknownMeans || gate.conclusion)),
       gaps: gaps,
       skipTo: skipTo
     };
@@ -200,14 +250,21 @@ var DefendAbleTreeEngine = (function () {
         authority: authority
       };
     }
-    if (gateResults.some(function (g) { return g.confidence === 'red' && g.answer !== 'n/a'; })) {
+
+    // SETTLE only on affirmative adverse findings (ICC proves EC fails / RM fails / chain broken)
+    var affirmativeAdverse = gateResults.some(function (g) {
+      return g.confidence === 'red' && g.answer === 'no' && g.answer !== 'n/a' &&
+        (g.affirmativeAdverse || /fail|break|concede|not clean|voluntar|own.?staff|never extraordinary/i.test(g.reason || g.conclusion || ''));
+    });
+    if (affirmativeAdverse) {
       return {
         verdict: 'SETTLE',
-        conditions: ['Contested gate in ' + treeId + ' — EC chain not clean.'],
+        conditions: ['Affirmative adverse finding in ' + treeId + ' — EC/RM fails on the facts.'],
         authority: authority
       };
     }
 
+    var unknowns = gateResults.filter(function (g) { return g.answer === 'unknown'; });
     var keyGaps = [];
     gateResults.forEach(function (g) {
       (g.gaps || []).forEach(function (gap) {
@@ -219,13 +276,23 @@ var DefendAbleTreeEngine = (function () {
       ? gateResults.find(function (g) { return g.gateId === ecGateId; })
       : gateResults.find(function (g) { return g.answer === 'yes'; });
 
-    if (keyGaps.length) {
+    // Missing evidence / unknown gates ⇒ DEFEND_HOLD (conditions = what to collect)
+    if (unknowns.length || keyGaps.length) {
+      var holdConditions = [];
+      unknowns.forEach(function (g) {
+        holdConditions.push('EVIDENCE_HOLD: ' + (g.name || g.gateId) + ' — proof pending');
+      });
+      keyGaps.forEach(function (n) {
+        holdConditions.push('Collect key evidence: ' + n);
+      });
       return {
-        verdict: 'DEFEND_WITH_CONDITIONS',
-        conditions: keyGaps.map(function (n) { return 'Collect key evidence: ' + n; }),
-        authority: authority
+        verdict: 'DEFEND_HOLD',
+        conditions: holdConditions.length ? holdConditions : ['EVIDENCE_HOLD: collect outstanding proof before final defence.'],
+        authority: authority,
+        conditionType: 'EVIDENCE_HOLD'
       };
     }
+
     if (ecGate && ecGate.answer === 'yes') {
       return { verdict: 'DEFEND', conditions: [], authority: authority };
     }
@@ -243,7 +310,7 @@ var DefendAbleTreeEngine = (function () {
 
   function runDefinition(def, ctx, force) {
     ctx = ctx || {};
-    if (def.customRun) return def.customRun(ctx);
+    if (def.customRun) return def.customRun(ctx, force);
     if (!force && def.matches && !def.matches(ctx.iccText, ctx.causalChain)) {
       return { treeId: def.treeId, applicable: false, gates: [], evidencePack: [], exit: null };
     }
@@ -297,7 +364,11 @@ var DefendAbleTreeEngine = (function () {
     updateGateConclusions: updateGateConclusions,
     evaluateGate: evaluateGate,
     computeExit: computeExit,
-    runDefinition: runDefinition
+    runDefinition: runDefinition,
+    isNegatedHit: isNegatedHit,
+    findUnnegated: findUnnegated,
+    crewIssueAsserted: crewIssueAsserted,
+    crewExpresslyExcluded: crewExpresslyExcluded
   };
 })();
 

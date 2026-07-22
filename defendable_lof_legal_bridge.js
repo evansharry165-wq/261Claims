@@ -182,7 +182,7 @@ var DefendAbleLofLegalBridge = (function () {
   function hasEcEstablished(treeResults) {
     return (treeResults || []).some(function (tr) {
       var v = tr.exit && tr.exit.verdict;
-      return v === 'DEFEND' || v === 'DEFEND_WITH_CONDITIONS';
+      return v === 'DEFEND' || v === 'DEFEND_WITH_CONDITIONS' || v === 'DEFEND_HOLD';
     }) || (treeResults || []).some(function (tr) {
       return (tr.gates || []).some(function (g) {
         return g.answer === 'yes' && /EC|extraordinary|CTOT|weather/i.test((g.conclusion || '') + (g.reason || ''));
@@ -197,7 +197,7 @@ var DefendAbleLofLegalBridge = (function () {
     var text = (record && (record.lockedNarrative || record.rawText)) || '';
     var chain = (record && record.causalChain) || [];
     var autoDecision = chain.some(function (e) { return e.chainBreak; }) ||
-      /\bvoluntar(y|ily)\b|\bchose to wait\b|\bwaited for (the )?delayed (passengers|pax)\b|\bcommercial (decision|choice)\b|\bdiscretionary\b/i.test(text);
+      /\bvoluntar(y|ily)\b|\bchose to wait\b|\bwaited\s+(?:\d+\s*mins?\s+)?for\s+(?:the\s+)?(?:delayed\s+)?(?:connecting\s+)?(?:passengers|pax)\b|\bwaited for (the )?delayed (passengers|pax)\b|\bcommercial (decision|choice)\b|\bdiscretionary\b/i.test(text);
     var required = /\bobligat|\bmandatory\b|\brequired by\b|\bno (legal )?choice\b|\bcommander (order|decision)\b|\batc (instruct|mandat)/i.test(text);
     var risk = autoDecision && !required;
     return {
@@ -230,10 +230,11 @@ var DefendAbleLofLegalBridge = (function () {
     };
   }
 
-  function mapTreeExitToVerdict(treeResults, causalCheck, limb1Status) {
-    var primary = (treeResults || []).find(function (t) { return t && t.applicable !== false && t.exit; }) || (treeResults || [])[0];
+  function mapTreeExitToVerdict(treeResults, causalCheck, limb1Status, typePriority) {
+    var primary = selectHeadlineTree(treeResults, typePriority);
+    var secondaryNotes = collectSecondaryNotes(treeResults, primary && primary.treeId, typePriority);
     var verdict = primary && primary.exit && primary.exit.verdict;
-    var conditions = (primary && primary.exit && primary.exit.conditions) || [];
+    var conditions = ((primary && primary.exit && primary.exit.conditions) || []).concat(secondaryNotes);
     var gaps = evidenceGapCount(treeResults);
     var ecOk = hasEcEstablished(treeResults) || limb1Status === 'extraordinary';
 
@@ -246,6 +247,20 @@ var DefendAbleLofLegalBridge = (function () {
         text: 'Tree path may establish EC, but a discretionary post-EC carrier decision is flagged (T-656/24). Lawyer must confirm chain holds or concede intervening cause.',
         conditionType: null,
         conditions: conditions.concat(['Confirm whether post-EC decision was obligatory or discretionary (T-656/24).']),
+        treeVerdict: verdict,
+        treeId: primary && primary.treeId
+      };
+    }
+
+    if (verdict === 'DEFEND_HOLD') {
+      return {
+        verdict: 'DEFEND_HOLD',
+        frameworkLabel: 'DEFEND HOLD',
+        band: 'borderline',
+        title: 'Defend — evidence hold',
+        text: 'Primary tree ' + (primary && primary.treeId) + ' holds defence pending proof. Missing documents are not an adverse finding.',
+        conditionType: 'EVIDENCE_HOLD',
+        conditions: conditions,
         treeVerdict: verdict,
         treeId: primary && primary.treeId
       };
@@ -352,9 +367,199 @@ var DefendAbleLofLegalBridge = (function () {
     };
   }
 
+  /** PRIMARY tree drives headline; never min() across unrelated trees. */
+  function selectHeadlineTree(treeResults, typePriority) {
+    var results = treeResults || [];
+    var primaryId = typePriority && typePriority.primaryTree;
+    var secondaries = (typePriority && typePriority.secondaryTrees) || [];
+
+    function hasUsableExit(t) {
+      return t && t.applicable !== false && t.exit && t.exit.verdict &&
+        t.gates && t.gates.length > 0 &&
+        t.exit.verdict !== 'INVESTIGATE';
+    }
+
+    if (primaryId) {
+      var primary = results.find(function (t) { return t.treeId === primaryId; });
+      if (hasUsableExit(primary)) return primary;
+      // Primary stub / no gates — fall to type-map secondaries in order
+      for (var i = 0; i < secondaries.length; i++) {
+        var sec = results.find(function (t) { return t.treeId === secondaries[i]; });
+        if (hasUsableExit(sec)) return sec;
+      }
+    }
+
+    // Prefer first result that was sorted as primary / has usable exit
+    var usable = results.find(hasUsableExit);
+    if (usable) return usable;
+    return results.find(function (t) { return t && t.exit; }) || results[0] || null;
+  }
+
+  function collectSecondaryNotes(treeResults, headlineId, typePriority) {
+    var notes = [];
+    var secondaryIds = (typePriority && typePriority.secondaryTrees) || [];
+    (treeResults || []).forEach(function (t) {
+      if (!t || t.treeId === headlineId) return;
+      if (secondaryIds.length && secondaryIds.indexOf(t.treeId) < 0 && t.treeId !== (typePriority && typePriority.primaryTree)) {
+        // Unrelated tree that somehow ran — do not let it drive; note only if DEFEND path
+        if (t.exit && (t.exit.verdict === 'SETTLE' || t.exit.verdict === 'CONCEDE')) {
+          notes.push('Note: ' + t.treeId + ' exited ' + t.exit.verdict + ' — not headline (secondary/unrelated).');
+        }
+        return;
+      }
+      if (t.exit && t.exit.conditions && t.exit.conditions.length) {
+        notes.push('Secondary ' + t.treeId + ': ' + t.exit.verdict + ' — ' + t.exit.conditions.slice(0, 2).join('; '));
+      } else if (t.exit && t.exit.verdict) {
+        notes.push('Secondary ' + t.treeId + ': ' + t.exit.verdict);
+      }
+    });
+    return notes;
+  }
+
+  /** Sturgeon Art 7 pre-gate — per-sector compensability before defence position. */
+  function parseDelayMinutes(str) {
+    if (!str) return null;
+    var s = String(str);
+    var hm = s.match(/(\d+)\s*h(?:ours?)?\s*(?:(\d+)\s*m(?:ins?|inutes?)?)?/i);
+    if (hm) return (parseInt(hm[1], 10) * 60) + (hm[2] ? parseInt(hm[2], 10) : 0);
+    var mOnly = s.match(/(\d+)\s*m(?:ins?|inutes?)\b/i);
+    if (mOnly) return parseInt(mOnly[1], 10);
+    var plainH = s.match(/\b(\d+)\s*hours?\b/i);
+    if (plainH) return parseInt(plainH[1], 10) * 60;
+    var num = s.match(/\b(\d+)\b/);
+    if (num && /delay/i.test(s)) {
+      var n = parseInt(num[1], 10);
+      // Heuristic: values < 10 likely hours when paired with "hours"; else minutes if large
+      if (/hour/i.test(s)) return n * 60;
+      if (n >= 60) return n;
+    }
+    return null;
+  }
+
+  function assessSectorCompensation(record) {
+    var sectors = [];
+    var text = (record && (record.lockedNarrative || record.rawText)) || '';
+    var rows = (record && record.lofRows) || [];
+
+    function delayNearFlight(flight, haystack) {
+      if (!flight || !haystack) return null;
+      var esc = flight.replace(/([.*+?^${}()|[\]\\])/g, '\\$1');
+      // Require the flight code to be the grammatical subject of the delay clause
+      var patterns = [
+        new RegExp(esc + '\\b[^\\n.]{0,40}?had an arrival delay\\s+(?:of\\s+)?(\\d+\\s*h(?:ours?)?(?:\\s*\\d+\\s*m(?:ins?)?)?|\\d+\\s*hours?(?:\\s*\\d+\\s*m(?:ins?)?)?)', 'i'),
+        new RegExp(esc + '\\b[^\\n.]{0,40}?arrival delay\\s+(?:of\\s+)?(\\d+\\s*h(?:ours?)?(?:\\s*\\d+\\s*m(?:ins?)?)?|\\d+\\s*hours?(?:\\s*\\d+\\s*m(?:ins?)?)?)', 'i'),
+        new RegExp(esc + '\\b[^\\n.]{0,30}?(\\d+h\\d{2}m|\\d+\\s*h(?:ours?)?\\s*\\d+\\s*m)\\b', 'i')
+      ];
+      for (var i = 0; i < patterns.length; i++) {
+        var m = haystack.match(patterns[i]);
+        if (!m) continue;
+        // Reject if another flight code sits between this flight and the delay phrase
+        var idx = m.index;
+        var between = haystack.slice(idx + flight.length, idx + m[0].length);
+        if (/(?:EZY|U2|EJU|FR|BA|LS|RK)\s?\d{2,4}/i.test(between)) continue;
+        var mins = parseDelayMinutes(m[1]);
+        if (mins != null) return mins;
+      }
+      return null;
+    }
+
+    if (rows.length) {
+      rows.forEach(function (r) {
+        if (!(r.flight || '').trim()) return;
+        var noteBlob = [r.note, r.status].filter(Boolean).join(' ');
+        var mins = null;
+        // Prefer delay stated on the LOF note for this row
+        if (/arrival delay|delay\s+of|\d+\s*h|\d+h\d/i.test(noteBlob)) {
+          mins = parseDelayMinutes(noteBlob);
+        }
+        if (mins == null) mins = delayNearFlight(r.flight, text);
+        var status;
+        if (mins == null) {
+          status = 'EVIDENCE_HOLD';
+        } else if (mins < 180) {
+          status = 'NOT_COMPENSABLE';
+        } else {
+          status = 'COMPENSABLE';
+        }
+        sectors.push({
+          flight: r.flight,
+          route: r.route || '',
+          delayMinutes: mins,
+          art7Status: status,
+          label: status === 'NOT_COMPENSABLE'
+            ? (r.flight + ' — No compensation due — below Sturgeon 3h threshold')
+            : (status === 'COMPENSABLE'
+              ? (r.flight + ' — Art 7 compensable (≥3h)')
+              : (r.flight + ' — EVIDENCE_HOLD: arrival delay not stated'))
+        });
+      });
+    }
+
+    // Narrative-only delays without LOF rows
+    if (!sectors.length && text) {
+      var reAll = /((?:EZY|U2|EJU|FR|BA|LS|RK)\s?\d{2,4})[^\n.]{0,100}?arrival delay\s+(?:of\s+)?(\d+\s*h(?:ours?)?(?:\s*\d+\s*m(?:ins?)?)?|\d+\s*hours?)/gi;
+      var seen = {};
+      var mm;
+      while ((mm = reAll.exec(text)) !== null) {
+        var fl = (mm[1] || '').replace(/\s+/g, '').toUpperCase();
+        if (seen[fl]) continue;
+        seen[fl] = true;
+        var minsN = parseDelayMinutes(mm[2]);
+        sectors.push({
+          flight: fl,
+          route: '',
+          delayMinutes: minsN,
+          art7Status: minsN != null && minsN < 180 ? 'NOT_COMPENSABLE' : (minsN != null ? 'COMPENSABLE' : 'EVIDENCE_HOLD'),
+          label: minsN != null && minsN < 180
+            ? (fl + ' — No compensation due — below Sturgeon 3h threshold')
+            : (fl + (minsN != null ? ' — Art 7 compensable (≥3h)' : ' — EVIDENCE_HOLD: arrival delay not stated'))
+        });
+      }
+    }
+
+    return sectors;
+  }
+
+  function applySturgeonPreGate(position, sectorAssessments) {
+    if (!sectorAssessments || !sectorAssessments.length) return position;
+    var notComp = sectorAssessments.filter(function (s) { return s.art7Status === 'NOT_COMPENSABLE'; });
+    var hold = sectorAssessments.filter(function (s) { return s.art7Status === 'EVIDENCE_HOLD'; });
+    var comp = sectorAssessments.filter(function (s) { return s.art7Status === 'COMPENSABLE'; });
+    var labels = sectorAssessments.map(function (s) { return s.label; });
+    var next = Object.assign({}, position);
+    next.sectorAssessments = sectorAssessments;
+    next.conditions = (next.conditions || []).concat(labels);
+
+    // All sectors below threshold — defence moot for Art 7
+    if (notComp.length && !comp.length && !hold.length) {
+      next.verdict = 'NOT_COMPENSABLE';
+      next.frameworkLabel = 'NOT COMPENSABLE';
+      next.band = 'defendable';
+      next.title = 'No Art 7 compensation — below Sturgeon threshold';
+      next.text = 'Per-sector delay under 3 hours. Art 7 not engaged; Art 9 care/expenses may still apply.';
+      return next;
+    }
+
+    // Mixed: some not compensable, some need defence — keep defend position but surface flags
+    if (notComp.length) {
+      next.title = (next.title || 'Position') + ' — ' + notComp.map(function (s) { return s.flight; }).join(', ') + ' not compensable';
+    }
+    if (hold.length && (next.verdict === 'DEFEND' || next.verdict === 'DEFEND_WITH_CONDITIONS' || next.verdict === 'DEFEND_HOLD')) {
+      hold.forEach(function (s) {
+        next.conditions.push('EVIDENCE_HOLD: ' + s.flight + ' arrival time — do not assume compensability');
+      });
+      if (next.verdict === 'DEFEND') {
+        next.verdict = 'DEFEND_HOLD';
+        next.frameworkLabel = 'DEFEND HOLD';
+        next.conditionType = 'EVIDENCE_HOLD';
+      }
+    }
+    return next;
+  }
+
   // Back-compat alias used by older tests
   function mapTreeExitToPreRating(treeResults, limb1Status) {
-    var mapped = mapTreeExitToVerdict(treeResults, null, limb1Status);
+    var mapped = mapTreeExitToVerdict(treeResults, null, limb1Status, null);
     return {
       band: mapped.band,
       title: mapped.title,
@@ -436,8 +641,17 @@ var DefendAbleLofLegalBridge = (function () {
       }
     }
 
+    // Negation strengths — crew expressly excluded
+    var strengths = [];
+    if (typeof DefendAbleTreeEngine !== 'undefined' && DefendAbleTreeEngine.crewExpresslyExcluded(iccText)) {
+      strengths.push('Crew within FDP — no crew issue');
+    }
+
     var causalCheck = runCausalChainCheck(record, results);
-    var position = mapTreeExitToVerdict(results, causalCheck, record.limb1Status);
+    var position = mapTreeExitToVerdict(results, causalCheck, record.limb1Status, priority);
+    var sectorAssessments = assessSectorCompensation(record);
+    position = applySturgeonPreGate(position, sectorAssessments);
+    position.strengths = strengths;
     var authorities = collectAuthorities(results, record.jurisdiction);
 
     return {
@@ -448,7 +662,9 @@ var DefendAbleLofLegalBridge = (function () {
       typePriority: priority,
       authorities: authorities,
       lockedNarrative: iccText,
-      causalChain: chain
+      causalChain: chain,
+      sectorAssessments: sectorAssessments,
+      strengths: strengths
     };
   }
 
@@ -547,7 +763,7 @@ var DefendAbleLofLegalBridge = (function () {
     };
   }
 
-  return {
+    return {
     AUTHORITY_JURISDICTION: AUTHORITY_JURISDICTION,
     buildConfirmedRecord: buildConfirmedRecord,
     buildLockedNarrative: buildLockedNarrative,
@@ -556,6 +772,9 @@ var DefendAbleLofLegalBridge = (function () {
     runCausalChainCheck: runCausalChainCheck,
     mapTreeExitToPreRating: mapTreeExitToPreRating,
     mapTreeExitToVerdict: mapTreeExitToVerdict,
+    selectHeadlineTree: selectHeadlineTree,
+    assessSectorCompensation: assessSectorCompensation,
+    parseDelayMinutes: parseDelayMinutes,
     classifyAuthority: classifyAuthority,
     collectAuthorities: collectAuthorities,
     buildCasePacket: buildCasePacket,

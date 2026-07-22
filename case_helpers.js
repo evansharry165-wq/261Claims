@@ -178,7 +178,7 @@ var EVIDENCE_REQUEST_SEED = [
     due: '7d',
     status: 'open',
     requestedBy: 'J. Patel',
-    missing: ['Eurocontrol regulation PDF', 'MAX OPS passenger communications'],
+    missing: ['Eurocontrol regulation PDF', 'Passenger communications log'],
     note: 'ATC delay pack — network outlook still missing.',
     since: '1d ago'
   }

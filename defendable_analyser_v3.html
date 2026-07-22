@@ -5124,8 +5124,13 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
     ---------------------------------------------------------- */
     function detectDisruptionType(text) {
       const lower = text.toLowerCase();
+      // Negation guard for crew banks — "within hours / did not need replacing" must not score crew-fdp
+      const crewExcluded = typeof DefendAbleTreeEngine !== 'undefined'
+        ? DefendAbleTreeEngine.crewExpresslyExcluded(text)
+        : /\bwithin\s+(?:hours|limits)|did\s+not\s+need\s+replac/i.test(text);
       let best = null, bestScore = 0;
       for (const dt of RM_DB) {
+        if (crewExcluded && (dt.id === 'crew-fdp' || dt.id === 'crew-sick')) continue;
         let score = 0;
         for (const kw of dt.keywords) {
           if (lower.includes(kw)) {
@@ -5365,6 +5370,72 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
     }
 
     /* ----------------------------------------------------------
+       Occurrence-first event card — WHAT happened, then why
+    ---------------------------------------------------------- */
+    function formatOccurrenceFirstCard(cn, facts) {
+      const label = (cn && cn.label) || 'Event';
+      const sub = (cn && cn.sub) || '';
+      const flight = (facts && facts.flightNum) || '';
+      const lower = (label + ' ' + sub).toLowerCase();
+
+      let occurrence = label;
+      let detail = '';
+      let cause = '';
+
+      if (/\bdivert/i.test(lower)) {
+        const alt = (sub.match(/\b(?:to|→|->)\s*([A-Z]{3})\b/) || label.match(/\b([A-Z]{3})\b/) || [])[1] || '';
+        const planned = (facts && facts.arrIata) || '';
+        occurrence = `${flight ? flight + ' ' : ''}DIVERTED${alt ? ' → ' + alt : ''}${planned ? ' (planned ' + (facts.depIata || '') + '–' + planned + ')' : ''}`.trim();
+        detail = [
+          planned && alt ? `Planned ${planned}; landed ${alt}.` : '',
+          facts && facts.delayText ? `Arrival delay ${facts.delayText}.` : (/\d+\s*h/.test(sub) ? sub : '')
+        ].filter(Boolean).join(' ');
+        cause = sub && !/planned|landed|arrival delay/i.test(sub) ? sub : (/\bthunder|\bweather|\batc|\bmetar|\bts\b/i.test(sub) ? sub : '');
+        if (!cause && /\bthunder|\bweather|\batc/i.test(label + ' ' + sub)) cause = sub || label;
+      } else if (/\bcancel/i.test(lower)) {
+        occurrence = `${flight ? flight + ' ' : ''}CANCELLED`.trim();
+        detail = sub || '';
+        cause = '';
+      } else if (/\baog\b/i.test(lower)) {
+        occurrence = `${flight ? flight + ' ' : ''}AOG`.trim();
+        detail = sub || '';
+      } else if (/\breturn/i.test(lower)) {
+        occurrence = `${flight ? flight + ' ' : ''}RETURNED`.trim();
+        detail = sub || '';
+      } else if (/\bdelay/i.test(lower) || cn.type === 'cascade' || cn.type === 'operational') {
+        occurrence = `${flight ? flight + ' ' : ''}${label}`.trim();
+        // Split factual delay detail from cause when sub has "due"
+        const dueSplit = sub.split(/\bdue\b/i);
+        if (dueSplit.length > 1) {
+          detail = dueSplit[0].trim().replace(/[—\-–]\s*$/, '');
+          cause = dueSplit.slice(1).join('due').trim();
+        } else {
+          detail = sub;
+        }
+      } else if (cn.type === 'root') {
+        // Root disruption — prefer occurrence framing when diversion/delay language present
+        occurrence = label;
+        const dueSplit = sub.split(/\bdue\b/i);
+        if (dueSplit.length > 1) {
+          detail = dueSplit[0].trim();
+          cause = dueSplit.slice(1).join('due').trim();
+        } else {
+          cause = sub;
+        }
+      } else {
+        occurrence = label;
+        detail = sub;
+      }
+
+      const lines = [];
+      if (detail) lines.push(detail);
+      if (cause) lines.push('Cause: ' + cause);
+      if (!lines.length && sub) lines.push(sub);
+
+      return { title: occurrence, body: lines.join('<br>') };
+    }
+
+    /* ----------------------------------------------------------
        buildChronologicalTimeline — replaces facts panel + causal chain + ev-nodes
     ---------------------------------------------------------- */
     function buildChronologicalTimeline(facts, causalNodes, dt, isScenarioMode) {
@@ -5408,7 +5479,7 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
         });
       }
 
-      // Causal chain nodes → timeline cards
+      // Causal chain nodes → timeline cards (occurrence-first: WHAT, then why)
       if (causalNodes && causalNodes.length > 0) {
         causalNodes.forEach((cn, idx) => {
           const cfg = typeConfig[cn.type] || typeConfig.cascade;
@@ -5443,11 +5514,13 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
             ? 'Add context on the decision — standby position, options considered, passenger comms...'
             : 'Add what you know about this event — evidence you have, issues to flag, LOF amendments...';
 
+          const occurrenceCard = formatOccurrenceFirstCard(cn, facts);
+
           allNodes.push({
             nodeType: cn.type,
-            label: cn.label,
+            label: occurrenceCard.title,
             ref: '',
-            desc: cn.sub || '',
+            desc: occurrenceCard.body,
             icon: cn.icon || '⚡',
             time: cn.time || '',
             evidenceItems: enrichedEv,
@@ -5603,25 +5676,26 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
       causalNodes = parseCausalChain(inputText, dt);
       causalNodesCount = causalNodes ? causalNodes.length : 1;
 
-      // Directive recommendation — wording differs for custom vs scenario mode
+      // Directive recommendation — Zone 2 shows classification ONLY (no position language).
+      // Position lives in Zone 3 / tree aggregate after Defects 2–4.
       const directives = {
         extraordinary: {
           label:   isScenarioMode ? 'Extraordinary'               : 'Classified: Extraordinary',
-          rec:     isScenarioMode ? 'Position: Defend'            : 'Initial Position: Defend',
+          rec:     'Limb 1 characterisation',
           recClass:'defend',
           recSub:  isScenarioMode ? 'Limb 1 established — build Limb 2 evidence'
-                                  : 'Based on classification — confirm with evidence before committing'
+                                  : 'Classification only — position is set by decision trees after evidence review'
         },
         contested: {
           label:   isScenarioMode ? 'Requires Investigation'      : 'Classified: Contested',
-          rec:     isScenarioMode ? 'Position: Investigate'       : 'Initial Position: Investigate',
+          rec:     'Limb 1 characterisation',
           recClass:'conditions',
           recSub:  isScenarioMode ? 'Limb 1 uncertain — gather evidence before committing'
                                   : 'Classification contested — evidence required to determine Limb 1'
         },
         unlikely: {
           label:   isScenarioMode ? 'Non-Extraordinary'           : 'Classified: Non-Extraordinary',
-          rec:     isScenarioMode ? 'Position: Consider Settling' : 'Initial Position: Consider Settling',
+          rec:     'Limb 1 characterisation',
           recClass:'settle',
           recSub:  isScenarioMode ? 'Limb 1 weak — assess exposure before proceeding'
                                   : 'Classification weak — verify before any settlement decision'

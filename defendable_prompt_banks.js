@@ -241,7 +241,11 @@ var DefendAblePromptBanks = (function () {
   function scanText(text) {
     var low = ' ' + String(text || '').toLowerCase() + ' ';
     var engaged = {};
+    var crewExcluded = typeof DefendAbleTreeEngine !== 'undefined'
+      ? DefendAbleTreeEngine.crewExpresslyExcluded(text)
+      : /\bwithin\s+(?:hours|limits)|did\s+not\s+need\s+replac/i.test(text || '');
     BANKS.forEach(function (b) {
+      if (crewExcluded && b.id === 'crew') return;
       var hits = b.triggers.filter(function (t) {
         return low.indexOf(t) >= 0;
       });

@@ -3,18 +3,18 @@ var DefendAbleEvidencePack = (function () {
 
   /* Mirrors module4-evidence-workspace.html LIB + MATRIX — ATC Restrictions first */
   var LIB = {
-    tops: { name: 'Operational delay records system — Operational Evidence Pack', system: 'TOPS', tier: 'K' },
+    tops: { name: 'Operational delay records — Flight Details & Legislation', system: 'ops_delay_records', tier: 'K' },
     disco: { name: 'Disruption data system — Disruption Record', system: 'Disruption data system', tier: 'K' },
-    aims: { name: 'Crew scheduling system — Crew Route & FDP', system: 'AIMS', tier: 'K' },
-    safetynet: { name: 'Safety reporting system Reports', system: 'SafetyNet', tier: 'K' },
+    aims: { name: 'Crew scheduling system — Crew Route & FDP', system: 'Crew scheduling system', tier: 'K' },
+    safetynet: { name: 'Safety reporting system — Event Records', system: 'safety_reports', tier: 'K' },
     eurocontrol: { name: 'Eurocontrol — Oplogs, Flight Data & Regulations', system: 'EUROCONTROL', tier: 'K' },
     notam: { name: 'NOTAM Records', system: 'NOTAM', tier: 'K' },
-    connected: { name: 'Connected Portal — Flight Plans & Scratchpads', system: 'Connected Portal', tier: 'S' },
+    connected: { name: 'Flight planning portal — Flight Plans & Scratchpads', system: 'flight_planning_portal', tier: 'S' },
     network_out: { name: 'Network Outlook Brief', system: 'Eurocontrol NOP', tier: 'S' },
-    lido: { name: 'LIDO — Flight Plans & Fuel Figures', system: 'LIDO', tier: 'S' },
-    hermes: { name: 'Correspondence management system ACARS Messages', system: 'HERMES', tier: 'S' },
-    max_ops: { name: 'MAX OPS — Passenger Communications', system: 'MAX-OPS', tier: 'S' },
-    dpm: { name: 'DPM Notes', system: 'DPM Notes', tier: 'S' },
+    lido: { name: 'Flight planning system — Flight Plans & Fuel Figures', system: 'Flight planning system', tier: 'S' },
+    hermes: { name: 'ACARS / aircraft–ops correspondence log', system: 'acars_log', tier: 'S' },
+    max_ops: { name: 'Passenger communications log (SMS / email)', system: 'pax_comms', tier: 'S' },
+    dpm: { name: 'Duty manager operational notes', system: 'duty_manager_notes', tier: 'S' },
     internal_email: { name: 'Internal Emails — Operations / Crewing', system: 'Internal mailboxes', tier: 'S' },
     flightradar: { name: 'Flightradar24 — Flight Track', system: 'Flightradar24', tier: 'S' },
     flightstats: { name: 'FlightStats — Airport Delay Data', system: 'FlightStats', tier: 'S' },
@@ -219,10 +219,10 @@ var DefendAbleEvidencePack = (function () {
   function isWeatherDestination(text) {
     var t = text || '';
     if (/\blvp\b|\bsnowtam|\brunway closure|\bde-ic\b/i.test(t)
-      && !/\bdiversion\b|\bbelow minima\b|\bthunderstorm\b|\barrival destination\b|\bdestination\b/i.test(t)) {
+      && !/\bdiversion\b|\bbelow minima\b|\bthunderstorms?\b|\barrival destination\b|\bdestination\b/i.test(t)) {
       return false;
     }
-    return /\bthunderstorm\b|\bweather\b|\bbelow minima\b|\bdiversion\b|\bsigmet\b|\bmetar\b|\bmandatory atc diversion\b/i.test(t);
+    return /\bthunderstorms?\b|\bweather\b|\bbelow minima\b|\bdiversion\b|\bsigmet\b|\bmetar\b|\bmandatory atc diversion\b/i.test(t);
   }
 
   function isAtcPrimary(text) {

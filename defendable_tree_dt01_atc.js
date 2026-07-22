@@ -3,13 +3,13 @@ var DefendAbleTreeDT01 = (function () {
 
   var TREE_ID = 'DT-01';
   var DISRUPTION_TYPE = 'ATC Restrictions';
-  var AUTHORITY = 'Pešková C-315/15; Wallentin-Hermann C-549/07';
+  var AUTHORITY = 'Pešková C-315/15; Wallentin-Hermann C-549/07; Moens C-159/18';
 
   var GATES = [
     {
       id: 'DT1-G1',
-      name: 'CTOT assigned',
-      question: 'Was a Eurocontrol CTOT (or equivalent ATFM slot restriction) assigned to this flight?',
+      name: 'ATFM / CTOT restriction',
+      question: 'Was a Eurocontrol CTOT (or equivalent ATFM slot / flow restriction) assigned to this flight?',
       authority: 'Pešková — third-party flow control is per se extraordinary',
       requiredLibKeys: ['eurocontrol', 'tops'],
       conclusionIds: ['DT1_CTOT_CONFIRMED', 'U7_EC_ESTABLISHED'],
@@ -18,52 +18,58 @@ var DefendAbleTreeDT01 = (function () {
     },
     {
       id: 'DT1-G2',
-      name: 'ATC airspace restriction',
-      question: 'Was there an ATC restriction affecting this flight\'s airspace (delay codes 81–89, sector regulation, network ATFM)?',
-      authority: 'Operational delay records system codes 81-89 + Eurocontrol ATFM',
-      requiredLibKeys: ['tops', 'eurocontrol', 'notam'],
+      name: 'Third-party imposition (Moens)',
+      question: 'Was the restriction third-party imposed (network / ANSP), not a carrier-requested slot?',
+      authority: 'Moens C-159/18 — carrier-requested restriction is not EC',
+      requiredLibKeys: ['eurocontrol', 'tops', 'notam'],
       conclusionIds: ['DT1_ATC_CAUSE'],
-      yesMeans: 'ATC extraordinary circumstances candidate — corroborate with Eurocontrol and TOPS.',
-      noNext: 'ROUTE_AWAY'
+      yesMeans: 'Third-party ATFM — Moens EC candidate.',
+      noMeans: 'Carrier-requested restriction — EC fails on Moens.',
+      noNext: 'EXIT'
     },
     {
       id: 'DT1-G3',
-      name: 'Direct ATC cause',
-      question: 'Did the ATC restriction directly cause the passenger delay, without an intervening ordinary operational event?',
-      authority: 'But-for test — van der Lans intervening ordinary event breaks chain',
-      requiredLibKeys: ['tops', 'disco', 'aims'],
-      conclusionIds: ['DT1_ATC_CAUSE', 'DT6_FTL_ROOT_CAUSE_ANALYSIS'],
-      yesMeans: 'Causal chain from ATC to delay holds.',
-      noMeans: 'Intervening cause — multi-tree or chain break analysis required.',
-      noNext: 'DT1-G4'
+      name: 'Upstream weather / strike driver',
+      question: 'Was weather, strike, or staffing the upstream driver of the ATFM regulation?',
+      authority: 'Operative-cause rule — route context to DT-02 / industrial trees as secondary',
+      requiredLibKeys: ['ogimet', 'eurocontrol'],
+      secondaryLibKeys: ['notam'],
+      conclusionIds: ['DT1_UPSTREAM_CONTEXT'],
+      yesMeans: 'Upstream weather/strike noted — keep DT-02 / industrial as secondary; ATFM remains operative delay driver unless diversion/minima is direct EC.',
+      noMeans: 'No upstream weather/strike asserted — pure ATC/ATFM case.'
     },
     {
       id: 'DT1-G4',
-      name: 'Curfew / OND',
-      question: 'Did the ATC delay push the flight past airport curfew causing overnight (OND) operation?',
-      authority: 'Sturgeon — delay measured to next-day actual arrival; Art 9(1)(c) hotel mandatory',
-      requiredLibKeys: ['tops', 'max_ops'],
-      conclusionIds: ['U10_ART9_HOTEL_MET'],
-      conditional: function (ctx) {
-        return /\bond\b|\bovernight\b|\bnext day\b|\bcurfew\b|\bfollowing day\b/i.test(ctx.iccText || '');
-      }
+      name: 'Delay attributable to restriction',
+      question: 'Is the passenger delay attributable to the restriction (delay codes 81–89 / OCC log / ATC narrative)?',
+      authority: 'But-for test — van der Lans intervening ordinary event breaks chain',
+      requiredLibKeys: ['tops', 'disco', 'aims'],
+      conclusionIds: ['DT1_ATC_CAUSE'],
+      yesMeans: 'Causal chain from ATC to delay holds.',
+      noMeans: 'Intervening cause — multi-tree or chain break analysis required.',
+      noNext: 'EXIT'
     },
     {
       id: 'DT1-G5',
       name: 'Reasonable measures',
-      question: 'Were slot recovery, standby aircraft, and network recovery measures attempted and documented?',
+      question: 'Were an earlier slot, aircraft swap, or re-route sought and documented?',
       authority: 'Wallentin-Hermann para 40 — mandatory even after EC confirmed',
       requiredLibKeys: ['dpm', 'tops', 'disco'],
       secondaryLibKeys: ['internal_email', 'ops_review'],
       conclusionIds: ['U8_RM_SLOT_RECOVERY'],
       yesMeans: 'Reasonable measures defence supported.',
-      noMeans: 'Failed intervention — EC may not save defence at U-8.'
+      noMeans: 'Failed intervention — EC may not save defence at U-8.',
+      conditional: function (ctx) {
+        // Curfew / OND is assessed inside RM when overnight language present
+        return true;
+      }
     }
   ];
 
   function matches(iccText, chainEvents) {
     if (typeof DefendAbleEvidencePack !== 'undefined'
       && DefendAbleEvidencePack.isWeatherDestination(iccText)) {
+      // Weather diversion / destination weather is DT-02 primary; DT-01 may still be forced as secondary
       return false;
     }
     var t = (iccText || '').toLowerCase();
@@ -149,18 +155,18 @@ var DefendAbleTreeDT01 = (function () {
     var t = ctx.iccText || '';
     var em = ctx.evidenceManager;
     var gate = GATES[0];
-    var ctotInIcc = /\bctot\b|\batfm\b|\beurocontrol\b|\bnetwork.wide\b|\ball carriers\b/i.test(t);
+    var ctotInIcc = /\bctot\b|\batfm\b|\beurocontrol\b|\bnetwork.wide\b|\ball carriers\b|\batc restriction|\batc delay|\bflow\b/i.test(t);
     var ctotEvidence = hasCollected(em, 'eurocontrol') || hasFinding(em, 'eurocontrol', 'TOPS_CTOT_CONFIRMED');
-    var answer = (ctotInIcc || ctotEvidence) ? 'yes' : 'no';
+    var answer = (ctotInIcc || ctotEvidence) ? 'yes' : 'unknown';
     var gaps = gateEvidenceGaps(em, gate.requiredLibKeys);
-    var confidence = answer === 'yes' ? (gaps.length ? 'amber' : 'green') : 'grey';
+    var confidence = answer === 'yes' ? (gaps.length ? 'amber' : 'green') : 'amber';
     var reason = answer === 'yes'
-      ? (gaps.length ? 'CTOT indicated but key pack items not fully on file.' : 'CTOT/ATFM confirmed — EC at root.')
-      : 'No CTOT indicated — proceed to wider ATC restriction test.';
+      ? (gaps.length ? 'ATFM/CTOT indicated but key pack items not fully on file.' : 'CTOT/ATFM confirmed — EC at root.')
+      : 'ATFM/CTOT not yet evidenced — hold for Eurocontrol regulation record.';
     return {
       gateId: 'DT1-G1', answer: answer, confidence: confidence, reason: reason,
       conclusion: answer === 'yes' ? gate.yesMeans : null, gaps: gaps,
-      skipTo: answer === 'yes' ? 'DT1-G3' : 'DT1-G2'
+      skipTo: answer === 'yes' ? 'DT1-G2' : (answer === 'unknown' ? 'DT1-G2' : 'DT1-G2')
     };
   }
 
@@ -168,21 +174,44 @@ var DefendAbleTreeDT01 = (function () {
     var gate = GATES[1];
     var t = ctx.iccText || '';
     var em = ctx.evidenceManager;
-    var atcInIcc = /\batc\b|\bdelay code|\b81|\b89|\bflow control|\bsector capacity/i.test(t);
-    var topsCollected = hasCollected(em, 'tops');
-    var answer = (atcInIcc || topsCollected) ? 'yes' : 'no';
+    var carrierRequested = /\bcarrier.?requested\b|\bairline.?requested\b|\brequested\s+(a\s+)?slot\b|\bown\s+request\b/i.test(t);
+    var thirdParty = /\batc\b|\batfm\b|\bctot\b|\beurocontrol\b|\bnetwork\b|\bansp\b|\bflow\b|\brestriction/i.test(t);
+    var answer = carrierRequested ? 'no' : (thirdParty ? 'yes' : 'unknown');
     var gaps = gateEvidenceGaps(em, gate.requiredLibKeys);
-    var confidence = answer === 'no' ? 'red' : confidenceFromGaps(gaps, 'yes');
+    var confidence = answer === 'no' ? 'red' : (answer === 'unknown' ? 'amber' : confidenceFromGaps(gaps, 'yes'));
     return {
       gateId: 'DT1-G2', answer: answer, confidence: confidence,
-      reason: answer === 'no' ? 'Not an ATC/ATFM case — re-route to other disruption tree.' : 'ATC restriction indicated.',
-      conclusion: answer === 'yes' ? gate.yesMeans : 'Case does not meet DT-01 entry criteria.',
-      gaps: gaps, skipTo: answer === 'no' ? 'ROUTE_AWAY' : 'DT1-G3'
+      reason: answer === 'no'
+        ? 'Carrier-requested restriction — Moens EC fails.'
+        : (answer === 'yes' ? 'Third-party ATFM/ATC restriction indicated.' : 'Third-party imposition not yet confirmed — evidence pending.'),
+      conclusion: answer === 'yes' ? gate.yesMeans : (answer === 'no' ? gate.noMeans : null),
+      gaps: gaps,
+      skipTo: answer === 'no' ? 'EXIT' : 'DT1-G3',
+      affirmativeAdverse: answer === 'no'
     };
   }
 
   function evaluateGate3(ctx) {
     var gate = GATES[2];
+    var em = ctx.evidenceManager;
+    var t = ctx.iccText || '';
+    var upstream = /\bthunderstorms?\b|\bweather\b|\bsigmet\b|\bmetar\b|\bstrike\b|\bindustrial\b|\bstaffing\b/i.test(t);
+    var gaps = gateEvidenceGaps(em, (gate.requiredLibKeys || []).concat(gate.secondaryLibKeys || []));
+    var answer = upstream ? 'yes' : 'n/a';
+    var confidence = upstream ? confidenceFromGaps(gaps, 'yes') : 'grey';
+    return {
+      gateId: 'DT1-G3', answer: answer, confidence: confidence,
+      reason: upstream
+        ? 'Upstream weather/strike/staffing asserted — record as secondary tree context.'
+        : 'No upstream weather/strike driver asserted.',
+      conclusion: upstream ? gate.yesMeans : gate.noMeans,
+      gaps: upstream ? gaps : [],
+      skipTo: 'DT1-G4'
+    };
+  }
+
+  function evaluateGate4(ctx) {
+    var gate = GATES[3];
     var em = ctx.evidenceManager;
     var chain = ctx.causalChain || [];
     var t = ctx.iccText || '';
@@ -191,37 +220,25 @@ var DefendAbleTreeDT01 = (function () {
         (ev.description || '') + ' ' + (ev.label || '')
       );
     });
-    // March 2026 causal-chain principle (T-656/24 / T-134/25 notes): voluntary wait breaks ATC EC chain
-    if (/\bvoluntar(y|ily)\b|\bchose to wait\b|\bwaited for (the )?delayed passengers\b|\bcommercial decision to wait\b/i.test(t)) {
+    if (/\bvoluntar(y|ily)\b|\bchose to wait\b|\bwaited for (the )?delayed passengers\b|\bcommercial decision to wait\b|\bwaited\s+\d+\s*mins?\s+for\s+connect/i.test(t)) {
       intervening = true;
     }
+    var attributable = /\batc\b|\batfm\b|\bctot\b|\bdelay code|\b81|\b89|\bflow\b|\brestriction/i.test(t);
     var fdpElevated = hasFinding(em, 'aims', 'AIMS_FDP_ELEVATED_BEFORE_DISRUPTION');
-    var answer = (intervening || fdpElevated) ? 'no' : 'yes';
+    var answer;
+    if (intervening || fdpElevated) answer = 'no';
+    else if (attributable) answer = 'yes';
+    else answer = 'unknown';
     var gaps = gateEvidenceGaps(em, gate.requiredLibKeys);
-    var confidence = answer === 'no' ? 'amber' : confidenceFromGaps(gaps, 'yes');
+    var confidence = answer === 'no' ? 'amber' : (answer === 'unknown' ? 'amber' : confidenceFromGaps(gaps, 'yes'));
     return {
-      gateId: 'DT1-G3', answer: answer, confidence: confidence,
+      gateId: 'DT1-G4', answer: answer, confidence: confidence,
       reason: answer === 'no'
-        ? 'Intervening factor or voluntary carrier decision — causal chain may be broken (NI/HZ March 2026).'
-        : 'Direct ATC causation supported.',
-      conclusion: answer === 'yes' ? gate.yesMeans : gate.noMeans,
-      gaps: gaps, skipTo: 'DT1-G4'
-    };
-  }
-
-  function evaluateGate4(ctx) {
-    var gate = GATES[3];
-    if (gate.conditional && !gate.conditional(ctx)) {
-      return { gateId: 'DT1-G4', answer: 'n/a', confidence: 'grey', reason: 'OND/curfew not indicated.', conclusion: null, gaps: [], skipTo: 'DT1-G5' };
-    }
-    var em = ctx.evidenceManager;
-    var gaps = gateEvidenceGaps(em, gate.requiredLibKeys);
-    var confidence = confidenceFromGaps(gaps, 'yes');
-    return {
-      gateId: 'DT1-G4', answer: 'yes', confidence: confidence,
-      reason: gaps.length ? 'OND indicated — hotel/Art 9 evidence gaps remain.' : 'OND delay and passenger care documented.',
-      conclusion: 'Sturgeon delay = scheduled arrival to next-day actual. Art 9 hotel mandatory.',
-      gaps: gaps, skipTo: 'DT1-G5'
+        ? 'Intervening factor or voluntary carrier decision — causal chain may be broken (T-656/24).'
+        : (answer === 'yes' ? 'Delay attributable to ATC restriction supported on narrative.' : 'Attribution pending — obtain delay codes / OCC log.'),
+      conclusion: answer === 'yes' ? gate.yesMeans : (answer === 'no' ? gate.noMeans : null),
+      gaps: gaps, skipTo: 'DT1-G5',
+      affirmativeAdverse: answer === 'no' && intervening
     };
   }
 
@@ -229,14 +246,20 @@ var DefendAbleTreeDT01 = (function () {
     var gate = GATES[4];
     var em = ctx.evidenceManager;
     var t = ctx.iccText || '';
-    var noStandby = /\bno standby\b|\bnot available\b|\bcould not be rescued\b/i.test(t);
+    var noStandby = /\bno standby\b|\bnot available\b|\bcould not be rescued\b|\bno earlier slot\b/i.test(t);
     var req = (gate.requiredLibKeys || []).concat(gate.secondaryLibKeys || []);
     var gaps = gateEvidenceGaps(em, req);
-    var answer = noStandby ? 'unknown' : 'yes';
-    var confidence = noStandby ? 'amber' : confidenceFromGaps(gaps, 'yes');
+    var answer = noStandby ? 'unknown' : 'unknown';
+    // Fresh case: RM almost always UNKNOWN until duty-manager notes / ops records collected
+    if (hasCollected(em, 'dpm') || hasCollected(em, 'disco') || hasCollected(em, 'ops_review')) {
+      answer = noStandby ? 'no' : 'yes';
+    }
+    var confidence = answer === 'unknown' ? 'amber' : confidenceFromGaps(gaps, answer);
     return {
       gateId: 'DT1-G5', answer: answer, confidence: confidence,
-      reason: noStandby ? 'ICC indicates recovery not available — verify DPM and fleet state.' : 'Recovery measures documented.',
+      reason: answer === 'unknown'
+        ? 'Reasonable measures not yet evidenced — hold for duty-manager notes / slot recovery record.'
+        : (noStandby ? 'ICC indicates recovery not available — verify fleet state.' : 'Recovery measures documented.'),
       conclusion: answer === 'yes' ? gate.yesMeans : gate.noMeans,
       gaps: gaps, skipTo: 'EXIT'
     };
@@ -254,9 +277,14 @@ var DefendAbleTreeDT01 = (function () {
     if (gateResults.some(function (g) { return g.skipTo === 'ROUTE_AWAY'; })) {
       return { verdict: 'INVESTIGATE', conditions: ['Re-route to correct disruption tree — DT-01 not established.'], authority: AUTHORITY };
     }
-    if (gateResults.some(function (g) { return g.confidence === 'red'; })) {
-      return { verdict: 'SETTLE', conditions: ['Contested gate in DT-01 — EC chain not clean.'], authority: AUTHORITY };
+    var affirmativeAdverse = gateResults.some(function (g) {
+      return (g.affirmativeAdverse || (g.confidence === 'red' && g.answer === 'no')) &&
+        /fail|break|intervening|voluntar|own.?staff|carrier-requested|moens/i.test(g.reason || g.conclusion || '');
+    });
+    if (affirmativeAdverse) {
+      return { verdict: 'SETTLE', conditions: ['Affirmative adverse finding in DT-01 — EC chain fails on the facts.'], authority: AUTHORITY };
     }
+    var unknowns = gateResults.filter(function (g) { return g.answer === 'unknown'; });
     var keyGaps = [];
     gateResults.forEach(function (g) {
       (g.gaps || []).forEach(function (gap) {
@@ -264,23 +292,30 @@ var DefendAbleTreeDT01 = (function () {
       });
     });
     var g1 = gateResults.find(function (g) { return g.gateId === 'DT1-G1'; });
-    var ecEstablished = g1 && g1.answer === 'yes';
-    if (keyGaps.length) {
+    var g2 = gateResults.find(function (g) { return g.gateId === 'DT1-G2'; });
+    var ecEstablished = (g1 && g1.answer === 'yes') || (g2 && g2.answer === 'yes');
+    if (unknowns.length || keyGaps.length) {
+      var hold = [];
+      unknowns.forEach(function (g) { hold.push('EVIDENCE_HOLD: ' + (g.name || g.gateId) + ' — proof pending'); });
+      keyGaps.forEach(function (n) { hold.push('Collect key evidence: ' + n); });
       return {
-        verdict: 'DEFEND_WITH_CONDITIONS',
-        conditions: keyGaps.map(function (n) { return 'Collect key evidence: ' + n; }),
-        authority: AUTHORITY
+        verdict: 'DEFEND_HOLD',
+        conditions: hold.length ? hold : ['EVIDENCE_HOLD: confirm Eurocontrol / ATFM record on file.'],
+        authority: AUTHORITY,
+        conditionType: 'EVIDENCE_HOLD'
       };
     }
     if (ecEstablished) {
       return { verdict: 'DEFEND', conditions: [], authority: AUTHORITY };
     }
-    return { verdict: 'DEFEND_WITH_CONDITIONS', conditions: ['Confirm Eurocontrol CTOT and TOPS delay record on file.'], authority: AUTHORITY };
+    return { verdict: 'DEFEND_WITH_CONDITIONS', conditions: ['Confirm Eurocontrol CTOT / ATFM restriction on file.'], authority: AUTHORITY };
   }
 
-  function runTree(ctx) {
+  function runTree(ctx, opts) {
+    opts = opts || {};
     ctx = ctx || {};
-    if (!matches(ctx.iccText, ctx.causalChain)) {
+    var forced = !!opts.force;
+    if (!forced && !matches(ctx.iccText, ctx.causalChain)) {
       return { treeId: TREE_ID, applicable: false, gates: [], evidencePack: [], exit: null };
     }
 
@@ -314,7 +349,8 @@ var DefendAbleTreeDT01 = (function () {
       gates: gateResults,
       evidencePack: pack(),
       exit: computeExit(gateResults),
-      authority: AUTHORITY
+      authority: AUTHORITY,
+      forced: forced
     };
   }
 

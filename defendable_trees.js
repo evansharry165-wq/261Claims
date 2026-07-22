@@ -33,12 +33,17 @@ var DefendAbleTrees = (function () {
   }
 
   var DEFINITIONS = [
-    wrapCustom('DT-01', 'ATC Restrictions', 'Pešková C-315/15; Wallentin-Hermann C-549/07', 50,
+    wrapCustom('DT-01', 'ATC Restrictions', 'Pešková C-315/15; Wallentin-Hermann C-549/07; Moens C-159/18', 50,
       function (t, c) { return typeof DefendAbleTreeDT01 !== 'undefined' && DefendAbleTreeDT01.matches(t, c); },
-      function (ctx) { return DefendAbleTreeDT01.runTree(ctx); }),
+      function (ctx, force) { return DefendAbleTreeDT01.runTree(ctx, { force: !!force }); }),
     wrapCustom('DT-02', 'Weather', 'Pešková; Wallentin-Hermann; Blanche v EasyJet', 40,
       function (t, c) { return typeof DefendAbleTreeDT02 !== 'undefined' && DefendAbleTreeDT02.matches(t, c); },
-      function (ctx) { return DefendAbleTreeDT02.runTree(ctx); }),
+      function (ctx, force) {
+        if (typeof DefendAbleTreeDT02.runTree.length >= 1) {
+          return DefendAbleTreeDT02.runTree(ctx, { force: !!force });
+        }
+        return DefendAbleTreeDT02.runTree(ctx);
+      }),
 
     {
       treeId: 'DT-03',
@@ -49,7 +54,7 @@ var DefendAbleTrees = (function () {
       matches: function (t, c) {
         if (typeof DefendAbleTreeDT02 !== 'undefined' && DefendAbleTreeDT02.isWeatherOriginOnly(t)) return true;
         return /\blvp\b|\bsnowtam|\brunway closure|\bde-ic|\borigin weather\b/i.test(t || '')
-          && !/\bdiversion\b|\bbelow minima\b|\bthunderstorm\b|\barrival destination\b/i.test(t || '');
+          && !/\bdiversion\b|\bbelow minima\b|\bthunderstorms?\b|\barrival destination\b/i.test(t || '');
       },
       gates: [
         {
@@ -190,7 +195,14 @@ var DefendAbleTrees = (function () {
         if (/\bmedical|\bcardiac|\bwelfare incident|\bpassenger welfare\b/i.test(t || '')) return false;
         if (/\bpositioning\b/i.test(t || '')) return false;
         if (/\blate inbound|\bcascade|\brotation|\bprior sector\b/i.test(t || '')) return false;
-        return /\bftl\b|\bout of hours\b|\bcrew.*limit|\bcrew hours\b|\bstandby crew\b/i.test(t || '')
+        // Negation guard: "within hours / did not need replacing" must NOT activate crew tree
+        if (typeof DefendAbleTreeEngine !== 'undefined' && DefendAbleTreeEngine.crewExpresslyExcluded(t)) {
+          return false;
+        }
+        if (typeof DefendAbleTreeEngine !== 'undefined') {
+          return DefendAbleTreeEngine.crewIssueAsserted(t);
+        }
+        return /\bftl\b|\bout of hours\b|\bcrew.*limit|\bcrew hours\b/i.test(t || '')
           || /\bcrew illness|\bpilot sick|\bcaptain sick|\bcrew sick\b/i.test(t || '');
       },
       gates: [
@@ -198,7 +210,7 @@ var DefendAbleTrees = (function () {
           id: 'DT6-G1', name: 'Crew illness (Lipton)', type: 'concede',
           question: 'Is crew illness/sickness the root cause?',
           authority: 'Lipton v BA Cityflyer [2024] UKSC 24',
-          conditional: function (ctx) { return /\bcrew illness|\bpilot sick|\bcaptain sick|\bcrew sick\b/i.test(ctx.iccText || ''); },
+          conditional: function (ctx) { return /\bcrew illness|\bpilot sick|\bcaptain\s+(?:went\s+)?sick|\bcrew sick|\bwent sick\b/i.test(ctx.iccText || ''); },
           conclusion: 'Crew illness is NOT extraordinary circumstances — concede.',
           conditions: ['Concede EC on crew illness — assess quantum and Art 8/9 only.']
         },
@@ -216,7 +228,7 @@ var DefendAbleTrees = (function () {
           question: 'Was FTL breach caused by timing of an upstream EC event?',
           requiredLibKeys: ['aims', 'tops', 'disco'],
           conclusionIds: ['DT6_FTL_CAUSED_BY_EC'],
-          iccPattern: /\batc\b|\bweather\b|\bthunderstorm\b|\bctot\b|\bmedical\b|\bsecurity\b/i,
+          iccPattern: /\batc\b|\bweather\b|\bthunderstorms?\b|\bctot\b|\bmedical\b|\bsecurity\b/i,
           yesMeans: 'FTL consequence of EC root — apply upstream disruption tree.',
           onYes: 'EXIT', onNo: 'EXIT'
         }
@@ -450,34 +462,36 @@ var DefendAbleTrees = (function () {
 
     {
       treeId: 'DT-13',
-      disruptionType: 'Crew Hours / Overnight Delay',
+      disruptionType: 'Cascade / Late Inbound Rotation',
       authority: 'Cascade NOT EC — root cause at rotation start',
       priority: 9,
       ecGateId: 'DT13-G2',
       matches: function (t) {
-        return /\bcascade|\blate inbound|\brotation|\bprior sector|\btail line\b/i.test(t || '');
+        // Do not treat "return sector" alone as cascade; require explicit cascade language
+        return /\bcascade|\blate inbound|\bknock-?on|\bprior sector|\btail line of flying|\brotation delay\b/i.test(t || '');
       },
       gates: [
         {
           id: 'DT13-G1', name: 'Cascade identified', type: 'entry',
           question: 'Is this a cascading rotation / late inbound disruption?',
-          iccPattern: /\blate inbound|\bcascade|\brotation|\bprior sector\b/i,
+          iccPattern: /\blate inbound|\bcascade|\bknock-?on|\bprior sector|\brotation delay\b/i,
           requiredLibKeys: ['tops'],
           conclusionIds: ['DT13_CASCADE_ROOT'],
           onYes: 'DT13-G2', onNo: 'ROUTE_AWAY', allowTopsFallback: true
         },
         {
           id: 'DT13-G2', name: 'Full rotation on file', type: 'confirm',
-          question: 'Is TOPS full tail line of flying obtained to identify root cause?',
+          question: 'Is the full tail line of flying obtained to identify root cause?',
           requiredLibKeys: ['tops'],
           findingTypes: { tops: 'TOPS_PRIOR_SECTOR_DELAY' },
           yesMeans: 'Root cause analysis possible — apply tree for upstream event.',
-          onYes: 'DT13-G3', onNo: 'DT13-G3'
+          unknownMeans: 'Rotation record pending — not an adverse finding.',
+          onYes: 'DT13-G3', onNo: 'DT13-G3', onUnknown: 'DT13-G3'
         },
         {
           id: 'DT13-G3', name: 'Root cause tree routing', type: 'confirm',
           question: 'Has root cause at rotation start been classified (weather, ATC, technical)?',
-          iccPattern: /\bweather\b|\batc\b|\btechnical\b|\bctot\b|\bthunderstorm\b/i,
+          iccPattern: /\bweather\b|\batc\b|\btechnical\b|\bctot\b|\bthunderstorms?\b/i,
           conclusion: 'Apply appropriate disruption tree to root cause — cascade itself is not EC.',
           onYes: 'DT13-G4', onNo: 'DT13-G4'
         },
@@ -708,13 +722,16 @@ var DefendAbleTrees = (function () {
   function resolveSecondary(iccText, causalChain, primaryTreeId) {
     var secondary = [];
     var t = iccText || '';
-    if (primaryTreeId !== 'DT-06' && /\bftl\b|\bout of hours\b/i.test(t)) {
+    var crewAsserted = typeof DefendAbleTreeEngine !== 'undefined'
+      ? DefendAbleTreeEngine.crewIssueAsserted(t)
+      : /\bftl\b|\bout of hours\b/i.test(t);
+    if (primaryTreeId !== 'DT-06' && crewAsserted) {
       secondary.push('DT-06');
     }
     if (primaryTreeId !== 'DT-20' && /\b18\s*hour|\bwake rule\b/i.test(t)) {
       secondary.push('DT-20');
     }
-    if (primaryTreeId !== 'DT-13' && /\blate inbound|\bcascade\b/i.test(t) && primaryTreeId !== 'DT-06') {
+    if (primaryTreeId !== 'DT-13' && /\blate inbound|\bcascade\b|\bknock-?on\b/i.test(t) && primaryTreeId !== 'DT-06') {
       secondary.push('DT-13');
     }
     return secondary.filter(function (id, idx, arr) { return arr.indexOf(id) === idx; });

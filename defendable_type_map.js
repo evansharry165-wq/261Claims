@@ -64,9 +64,9 @@ var DefendAbleTypeMap = (function () {
     var factorIds = (opts.factorIds || []).slice();
     var text = opts.iccText || '';
     var hasWeather = factorIds.indexOf('weather') >= 0 || rmId === 'weather' ||
-      /\bmetar\b|\btaf\b|\bsigmet\b|\bthunderstorm\b|\bcb\b|\bts\+?ra\b|\bbelow minima\b|\bweather diversion\b/i.test(text);
+      /\bmetar\b|\btaf\b|\bsigmet\b|\bthunderstorms?\b|\bcb\b|\bts\+?ra\b|\bbelow minima\b|\bweather diversion\b/i.test(text);
     var hasAtfm = factorIds.indexOf('atfm') >= 0 || rmId === 'atfm' ||
-      /\bctot\b|\batfm\b|\bgdp\b|\beurocontrol\b|\bslot (hold|restriction|delay)\b|\bflow (control|regulation)\b/i.test(text);
+      /\bctot\b|\batfm\b|\bgdp\b|\beurocontrol\b|\batc restriction|\bslot (hold|restriction|delay)\b|\bflow (control|regulation)\b/i.test(text);
     var hasFuel = /\bfuel(ling)?\b|\bturnround\b|\brefuel\b/i.test(text);
 
     var primary = null;
@@ -76,7 +76,7 @@ var DefendAbleTypeMap = (function () {
     if (hasWeather && hasAtfm) {
       // Weather-triggered GDP/CTOT: operative cause is usually the ATC restriction
       // unless the narrative centres on destination minima / diversion.
-      var weatherDirect = /\bbelow minima\b|\bweather diversion\b|\bdivert(ed|ion).{0,40}(weather|thunderstorm|metar)\b|\bapproach.{0,20}minima\b/i.test(text);
+      var weatherDirect = /\bbelow minima\b|\bweather diversion\b|\bdivert(ed|ion).{0,80}(weather|thunderstorms?|metar)\b|\b(weather|thunderstorms?).{0,40}divert|\bapproach.{0,20}minima\b/i.test(text);
       if (weatherDirect) {
         primary = 'DT-02';
         secondary = ['DT-01'];

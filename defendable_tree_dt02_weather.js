@@ -95,11 +95,11 @@ var DefendAbleTreeDT02 = (function () {
   function matches(iccText, chainEvents) {
     if (isWeatherOriginOnly(iccText)) return false;
     var t = (iccText || '').toLowerCase();
-    if (/\bthunderstorm\b|\bweather\b|\bbelow minima\b|\bdiversion\b|\bsigmet\b|\bmetar\b|\bmandatory atc diversion\b/i.test(t)) {
+    if (/\bthunderstorms?\b|\bweather\b|\bbelow minima\b|\bdiversion\b|\bsigmet\b|\bmetar\b|\bmandatory atc diversion\b/i.test(t)) {
       return true;
     }
     return (chainEvents || []).some(function (ev) {
-      return /\bweather\b|\bthunderstorm\b|\bbelow minima\b|\bdiversion\b|\bsigmet\b/i.test(ev.description || '');
+      return /\bweather\b|\bthunderstorms?\b|\bbelow minima\b|\bdiversion\b|\bsigmet\b/i.test(ev.description || '');
     });
   }
 
@@ -177,7 +177,7 @@ var DefendAbleTreeDT02 = (function () {
     var gate = GATES[0];
     var t = ctx.iccText || '';
     var em = ctx.evidenceManager;
-    var weatherInIcc = /\bbelow minima\b|\bthunderstorm\b|\bweather\b|\bdiversion\b/i.test(t);
+    var weatherInIcc = /\bbelow minima\b|\bthunderstorms?\b|\bweather\b|\bdiversion\b/i.test(t);
     var metarEvidence = hasCollected(em, 'ogimet') || hasFinding(em, 'ogimet', 'METAR_BELOW_ILS_MINIMA');
     var answer = (weatherInIcc || metarEvidence) ? 'yes' : 'no';
     var gaps = gateEvidenceGaps(em, gate.requiredLibKeys);
@@ -196,7 +196,7 @@ var DefendAbleTreeDT02 = (function () {
     var gate = GATES[1];
     var t = ctx.iccText || '';
     var em = ctx.evidenceManager;
-    var weatherHint = /\bweather\b|\bthunderstorm\b|\bsigmet\b|\bmetar\b/i.test(t);
+    var weatherHint = /\bweather\b|\bthunderstorms?\b|\bsigmet\b|\bmetar\b/i.test(t);
     var topsCollected = hasCollected(em, 'tops');
     var answer = (weatherHint || topsCollected) ? 'yes' : 'no';
     var gaps = gateEvidenceGaps(em, gate.requiredLibKeys);
@@ -309,9 +309,15 @@ var DefendAbleTreeDT02 = (function () {
     if (gateResults.some(function (g) { return g.skipTo === 'ROUTE_AWAY'; })) {
       return { verdict: 'INVESTIGATE', conditions: ['Re-route to correct disruption tree — DT-02 not established.'], authority: AUTHORITY };
     }
-    if (gateResults.some(function (g) { return g.confidence === 'red'; })) {
-      return { verdict: 'SETTLE', conditions: ['Contested gate in DT-02 — weather EC chain not clean.'], authority: AUTHORITY };
+    // SETTLE only on affirmative adverse findings — missing evidence is not adverse
+    var affirmativeAdverse = gateResults.some(function (g) {
+      return g.confidence === 'red' && g.answer === 'no' &&
+        /fail|break|intervening|voluntar|own.?staff|never extraordinary/i.test(g.reason || g.conclusion || '');
+    });
+    if (affirmativeAdverse) {
+      return { verdict: 'SETTLE', conditions: ['Affirmative adverse finding in DT-02 — weather EC chain fails on the facts.'], authority: AUTHORITY };
     }
+    var unknowns = gateResults.filter(function (g) { return g.answer === 'unknown'; });
     var keyGaps = [];
     gateResults.forEach(function (g) {
       (g.gaps || []).forEach(function (gap) {
@@ -320,22 +326,28 @@ var DefendAbleTreeDT02 = (function () {
     });
     var g1 = gateResults.find(function (g) { return g.gateId === 'DT2-G1'; });
     var ecEstablished = g1 && g1.answer === 'yes';
-    if (keyGaps.length) {
+    if (unknowns.length || keyGaps.length) {
+      var hold = [];
+      unknowns.forEach(function (g) { hold.push('EVIDENCE_HOLD: ' + (g.name || g.gateId) + ' — proof pending'); });
+      keyGaps.forEach(function (n) { hold.push('Collect key evidence: ' + n); });
       return {
-        verdict: 'DEFEND_WITH_CONDITIONS',
-        conditions: keyGaps.map(function (n) { return 'Collect key evidence: ' + n; }),
-        authority: AUTHORITY
+        verdict: 'DEFEND_HOLD',
+        conditions: hold.length ? hold : ['EVIDENCE_HOLD: confirm METAR/TAF and diversion record on file.'],
+        authority: AUTHORITY,
+        conditionType: 'EVIDENCE_HOLD'
       };
     }
     if (ecEstablished) {
       return { verdict: 'DEFEND', conditions: [], authority: AUTHORITY };
     }
-    return { verdict: 'DEFEND_WITH_CONDITIONS', conditions: ['Confirm Ogimet METAR/TAF and TOPS diversion record on file.'], authority: AUTHORITY };
+    return { verdict: 'DEFEND_WITH_CONDITIONS', conditions: ['Confirm Ogimet METAR/TAF and operational diversion record on file.'], authority: AUTHORITY };
   }
 
-  function runTree(ctx) {
+  function runTree(ctx, opts) {
+    opts = opts || {};
     ctx = ctx || {};
-    if (!matches(ctx.iccText, ctx.causalChain)) {
+    var forced = !!opts.force;
+    if (!forced && !matches(ctx.iccText, ctx.causalChain)) {
       return { treeId: TREE_ID, applicable: false, gates: [], evidencePack: [], exit: null };
     }
 
