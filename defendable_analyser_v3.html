@@ -2741,6 +2741,168 @@
       outline: none; padding: 0; width: 100%;
     }
 
+    /* ── LOF primary work surface + Confirm gate ─────────────── */
+    .lof-primary {
+      border: 1px solid var(--ink-rule);
+      border-radius: 2px;
+      background: var(--surface-raised);
+      margin-bottom: 18px;
+      overflow: hidden;
+    }
+    .lof-primary-hdr {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--ink-rule2);
+      background: var(--surface-page);
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .lof-primary-eyebrow {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      margin-bottom: 4px;
+    }
+    .lof-primary-title {
+      font-family: var(--font-serif);
+      font-size: 16px;
+      font-weight: 400;
+      color: var(--ink-primary);
+    }
+    .lof-primary-sub {
+      font-size: 11.5px;
+      color: var(--ink-secondary);
+      line-height: 1.45;
+      margin-top: 4px;
+      max-width: 520px;
+    }
+    .lof-primary-body { padding: 12px 16px 14px; }
+    .lof-primary-section-label {
+      font-family: var(--font-mono);
+      font-size: 8.5px;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      margin: 14px 0 8px;
+    }
+    .lof-primary-section-label:first-child { margin-top: 0; }
+    .lof-confirm-banner {
+      margin-top: 14px;
+      padding: 14px 16px;
+      border: 1px solid var(--defend-border);
+      border-left: 3px solid var(--defend-mid);
+      background: var(--defend-bg);
+      border-radius: 2px;
+    }
+    .lof-confirm-banner.locked {
+      border-color: var(--ink-rule);
+      border-left-color: var(--ink-secondary);
+      background: var(--surface-page);
+    }
+    .lof-confirm-title {
+      font-family: var(--font-serif);
+      font-size: 14px;
+      color: var(--ink-primary);
+      margin-bottom: 4px;
+    }
+    .lof-confirm-text {
+      font-size: 11.5px;
+      color: var(--ink-secondary);
+      line-height: 1.5;
+      margin-bottom: 10px;
+    }
+    .lof-confirm-btn {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: .04em;
+      background: var(--defend-mid);
+      color: #fff;
+      border: none;
+      border-radius: 2px;
+      padding: 8px 14px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .lof-confirm-btn:hover { filter: brightness(1.05); }
+    .lof-confirm-btn:disabled {
+      background: var(--ink-rule);
+      color: var(--ink-faint);
+      cursor: not-allowed;
+      filter: none;
+    }
+    .lof-prerating {
+      margin-top: 14px;
+      padding: 14px 16px;
+      border-radius: 2px;
+      border: 1px solid var(--ink-rule);
+      border-left: 3px solid var(--ink-rule);
+      display: none;
+    }
+    .lof-prerating.visible { display: block; }
+    .lof-prerating.defendable {
+      border-left-color: var(--defend-mid);
+      background: var(--defend-bg);
+      border-color: var(--defend-border);
+    }
+    .lof-prerating.investigate {
+      border-left-color: var(--conditions-mid);
+      background: var(--conditions-bg);
+      border-color: var(--conditions-border);
+    }
+    .lof-prerating.borderline {
+      border-left-color: var(--judgment-mid);
+      background: var(--judgment-bg);
+      border-color: var(--judgment-border);
+    }
+    .lof-prerating-eyebrow {
+      font-family: var(--font-mono);
+      font-size: 8.5px;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      margin-bottom: 4px;
+    }
+    .lof-prerating-title {
+      font-family: var(--font-serif);
+      font-size: 15px;
+      color: var(--ink-primary);
+      margin-bottom: 4px;
+    }
+    .lof-prerating-text {
+      font-size: 11.5px;
+      color: var(--ink-secondary);
+      line-height: 1.5;
+    }
+    .zone3-locked {
+      padding: 28px 18px;
+      text-align: center;
+      border: 1px dashed var(--ink-rule2);
+      border-radius: 2px;
+      background: var(--surface-page);
+    }
+    .zone3-locked-title {
+      font-family: var(--font-serif);
+      font-size: 14px;
+      color: var(--ink-primary);
+      margin-bottom: 6px;
+    }
+    .zone3-locked-sub {
+      font-size: 11.5px;
+      color: var(--ink-faint);
+      line-height: 1.5;
+      max-width: 280px;
+      margin: 0 auto;
+    }
+    .story-secondary {
+      margin-top: 6px;
+      border-top: 1px solid var(--ink-rule2);
+      padding-top: 12px;
+    }
+
   </style>
 </head>
 <body>
@@ -3020,11 +3182,11 @@
   ============================================================ -->
   <div class="workspace-grid" id="workspaceGrid">
 
-    <!-- Zone 1: Factual Record -->
+    <!-- Zone 1: Factual Record — LOF first -->
     <div class="zone-1" id="zone1">
       <div class="zone-bar">
-        <span class="zone-bar__label">Factual Record</span>
-        <span class="zone-bar__sub">Causal chain · Line of flying · Evidence</span>
+        <span class="zone-bar__label">Line of Flying</span>
+        <span class="zone-bar__sub">Story · Evidence · Confirm before legal</span>
       </div>
       <div class="zone-body" id="zone1-body"></div>
     </div>
@@ -3068,6 +3230,23 @@
   </footer>
 
   <!-- ============================================================
+       SCRIPT — Modular legal engine (trees run post Confirm LOF)
+  ============================================================ -->
+  <script src="defendable_framework.js"></script>
+  <script src="defendable_evidence_manager.js"></script>
+  <script src="defendable_confidence_manager.js"></script>
+  <script src="defendable_registry.js"></script>
+  <script src="defendable_evidence_pack.js"></script>
+  <script src="defendable_tree_engine.js"></script>
+  <script src="defendable_tree_dt01_atc.js"></script>
+  <script src="defendable_tree_dt02_weather.js"></script>
+  <script src="defendable_trees.js"></script>
+  <script src="defendable_pass2.js"></script>
+  <script src="defendable_orchestrator.js"></script>
+  <script src="defendable_type_map.js"></script>
+  <script src="defendable_lof_legal_bridge.js"></script>
+
+  <!-- ============================================================
        SCRIPT — MODE 0: Foundation
   ============================================================ -->
   <script>
@@ -3091,6 +3270,11 @@
     let currentFlightDate = '';
     let currentDelayMins  = 0;
     let claimants         = 1;
+    let lofConfirmed      = false;   // hard gate: legal unlocks only after Confirm LOF
+    let lofPreRating      = null;    // { band, title, text, treeVerdict, treeId } after confirm
+    let lastAnalysisText  = '';      // ICC/ops text for LOF auto-extract
+    let lastTreeResults   = [];      // deterministic tree exits after Confirm LOF
+    let confirmedRecord   = null;    // locked factual record passed to trees
 
     /* ----------------------------------------------------------
        EXAMPLES (Mode 1 chips)
@@ -4094,9 +4278,10 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
         eurlexUrl: 'https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A62015CJ0315',
         ratio: 'A collision between an aircraft and a bird constitutes an event not inherent in the normal exercise of the activity of the air carrier and beyond its actual control, and may therefore constitute an extraordinary circumstance within Art 5(3) EC261. The mandatory nature of a post-strike inspection under the aircraft maintenance programme means grounding for that purpose is itself a reasonable measure.',
         propositions: [
-          'A wildlife strike is not inherent in the normal exercise of airline activity and is outside the carrier\'s effective control.',
-          'Extraordinary circumstances extend to situations where the carrier could not have avoided the event even if all reasonable measures had been taken.',
-          'Post-strike inspection is a mandated airworthiness requirement; its duration does not negate the extraordinary circumstances defence.'
+          'A wildlife strike is not inherent in the normal exercise of airline activity and is outside the carrier\'s effective control — bird strike is extraordinary regardless of whether damage occurred.',
+          'The delay caused by waiting for a second technician AFTER the bird strike was examined is a NEW and SEPARATE event not automatically covered by the extraordinary circumstances defence.',
+          'The carrier must demonstrate each element of post-strike delay was also unavoidable — courts dissect the timeline node by node (Pešková secondary holding).',
+          'Mandatory post-strike inspection under the maintenance programme is itself a reasonable measure; its required duration does not negate EC, but excess delay beyond that programme must be justified separately.'
         ],
         dtIds: ['birdstrike'],
         nodes: ['U-7', 'U-8'],
@@ -4469,23 +4654,87 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
       {
         id: 'ni-hz-charter',
         ref: 'NI, HZ v European Air Charter AG',
-        citation: 'T-656/24',
+        citation: 'T-656/24 (also cited as T-134/25 in some industry notes)',
         court: 'General Court (EU)',
         date: '2026-03-04',
         year: 2026,
         verified: true,
         eurlexUrl: 'https://curia.europa.eu/juris/liste.jsf?num=T-656/24',
+        aliases: ['T-134/25', 'T-656/24'],
         ratio: 'Where an extraordinary circumstance affects an earlier flight rotation, a carrier may only rely on that circumstance for a subsequent delayed flight if there is a sufficiently direct causal link between the extraordinary event and the later delay. A voluntary operational decision by the carrier — such as choosing to wait for delayed passengers from an earlier rotation — can break that causal link if the decision, and not the original extraordinary event, becomes the determining cause of the later delay. Carriers must exercise caution: well-intentioned operational decisions may expose them to claim liability on subsequent rotations by breaking the Art 5(3) causal chain.',
         propositions: [
           'An extraordinary circumstance on one rotation can only support an Art 5(3) defence for a later rotation if a sufficiently direct causal link exists between the two.',
           'A voluntary carrier decision (e.g. waiting for delayed passengers) can break the causal chain if that decision becomes the determining cause of the subsequent flight\'s delay.',
           'The causal chain analysis is strict: the sine qua non (but-for) test is insufficient — the extraordinary event must be the determining, proximate cause of the delay.',
-          'Airlines facing rotation disruptions must assess whether their operational response choices will break the causal chain — even reasonable, passenger-friendly choices can do so.'
+          'Airlines facing rotation disruptions must assess whether their operational response choices will break the causal chain — even reasonable, passenger-friendly choices can do so.',
+          'ATC management decisions may be extraordinary; previous-rotation reliance is permitted only while the direct causal link remains intact (General Court ATC cascade principles, January–March 2026).'
         ],
         dtIds: ['weather', 'atfm', 'third-party-ia', 'airport-closure', 'crew-fdp'],
         nodes: ['U-7', 'U-8'],
         favoursAirline: false,
         keyQuote: 'A decision taken by the air carrier to wait for passengers of the first flight arose between the extraordinary circumstance and the delay of the flight at issue. That decision is capable of breaking the direct causal link if it constitutes the determining cause for that delay and the carrier was not obliged to take it.'
+      },
+      {
+        id: 'airhelp-swiss',
+        ref: 'Airhelp Ltd v Swiss International Air Lines AG',
+        citation: 'C-28/20',
+        court: 'CJEU',
+        date: '2021-03-23',
+        year: 2021,
+        verified: true,
+        eurlexUrl: 'https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A62020CJ0028',
+        ratio: 'A strike organised by the carrier\'s own staff in pursuit of pay, scheduling or working conditions is inherent in the normal exercise of the air carrier\'s activity and does not constitute extraordinary circumstances under Art 5(3). The legitimacy of the strike under national labour law is irrelevant.',
+        propositions: [
+          'Own-airline staff strikes (including lawful collective action) are NOT extraordinary circumstances.',
+          'The employment relationship and risk of industrial dispute is inherent in running an airline.',
+          'Third-party worker strikes (ATC, ground handlers employed by airport/contractors, security) remain a separate potentially extraordinary category.'
+        ],
+        dtIds: ['own-ia'],
+        nodes: ['U-7'],
+        favoursAirline: false,
+        keyQuote: 'A strike by the staff of an operating air carrier that is intended to assert the claims of those workers is an event inherent in the normal exercise of that carrier\'s activity.'
+      },
+      {
+        id: 'airhelp-lightning',
+        ref: 'AirHelp v Austrian Airlines',
+        citation: 'C-399/24',
+        court: 'CJEU',
+        date: '2025-10-16',
+        year: 2025,
+        verified: true,
+        eurlexUrl: 'https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A62024CJ0399',
+        ratio: 'A lightning strike leading to a mandatory safety inspection may constitute extraordinary circumstances. The carrier must still prove all reasonable measures were taken to minimise the resulting delay.',
+        propositions: [
+          'Lightning strike with mandatory safety inspection is a potential EC path.',
+          'Reasonable measures remain a separate cumulative requirement after EC is established.',
+          'Document inspection scope, duration, and recovery options (standby / re-routing).'
+        ],
+        dtIds: ['weather', 'technical'],
+        nodes: ['U-7', 'U-8'],
+        favoursAirline: true,
+        keyQuote: 'Lightning strike necessitating mandatory safety inspection may fall within extraordinary circumstances, subject to the reasonable measures test.'
+      },
+      {
+        id: 'ec261-reform-2026',
+        ref: 'EC261 Reform 2026 — Trilogue Agreement',
+        citation: 'Agreed 15 June 2026 · expected in force ~2027',
+        court: 'EU co-legislators',
+        date: '2026-06-15',
+        year: 2026,
+        verified: true,
+        eurlexUrl: 'https://data.consilium.europa.eu/doc/document/PE-39-2026-INIT/en/pdf',
+        ratio: 'Reform codifies a non-exhaustive list of extraordinary circumstances (natural disasters, war, adverse weather, unruly passengers, airport/ANS/ground-handling strikes) and adds operational compliance deadlines. Compensation amounts (€250/€400/€600) and the 3-hour Sturgeon trigger are unchanged. UK261 will not automatically follow — divergence risk from ~2027.',
+        propositions: [
+          'Compensation amounts and 3-hour delay trigger unchanged.',
+          'Codified EC list reduces categorisation argument but two-limb test still applies; direct causal link expressly required.',
+          'New airline deadlines: 4-day proactive contact; 30-day Art 7 response; re-routing offer within 3hrs; tarmac delay rules; Art 9 hotel capped at 3 nights for EC cases.',
+          'Sequential ticketing / no-show denial of boarding now compensable — conditions of carriage must be revised.',
+          'UK261 will diverge once reformed EC261 enters force; maintain separate UK/EU compliance frameworks.'
+        ],
+        dtIds: ['weather', 'atfm', 'third-party-ia', 'birdstrike', 'security', 'disruptive-pax', 'natural-disaster', 'political-unrest', 'airport-closure'],
+        nodes: ['U-7', 'U-8', 'U-9', 'U-10'],
+        favoursAirline: false,
+        keyQuote: 'Extraordinary circumstances list is non-exhaustive; the Wallentin-Hermann two-limb test and reasonable measures requirement continue to apply on the specific facts.'
       }
     ];
 
@@ -4604,7 +4853,22 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
       'ni-hz-charter': {
         sourceName: 'CURIA (General Court)',
         sourceUrl:  'https://curia.europa.eu/juris/liste.jsf?num=T-656/24',
-        keyPara:    'Key ratio — a voluntary operational decision by the carrier (such as waiting for delayed passengers from an earlier rotation) can break the direct causal link between an extraordinary circumstance and a subsequent flight\'s delay if that decision becomes the determining cause of the later delay'
+        keyPara:    'Key ratio — a voluntary operational decision by the carrier (such as waiting for delayed passengers from an earlier rotation) can break the direct causal link between an extraordinary circumstance and a subsequent flight\'s delay if that decision becomes the determining cause of the later delay (also cited in industry notes as T-134/25)'
+      },
+      'airhelp-swiss': {
+        sourceName: 'EUR-Lex (CJEU)',
+        sourceUrl:  'https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:62020CJ0028',
+        keyPara:    'Own-staff strike in pursuit of workers\' claims is inherent in carrier activity — not extraordinary (C-28/20)'
+      },
+      'airhelp-lightning': {
+        sourceName: 'EUR-Lex (CJEU)',
+        sourceUrl:  'https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:62024CJ0399',
+        keyPara:    'Lightning strike with mandatory safety inspection may be EC; reasonable measures still required (C-399/24)'
+      },
+      'ec261-reform-2026': {
+        sourceName: 'Council of the EU',
+        sourceUrl:  'https://data.consilium.europa.eu/doc/document/PE-39-2026-INIT/en/pdf',
+        keyPara:    'Trilogue agreement 15 June 2026 — codified EC list, new deadlines, Art 9 hotel cap (3 nights EC), UK261 divergence risk'
       }
     };
 
@@ -4828,7 +5092,7 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
       technical: "Technical defects are presumptively NOT extraordinary circumstances (Wallentin-Hermann C-549/07, Van der Lans C-257/14, Jet2 v Huzar [2014]). A narrow exception exists for latent hidden design defects: the CJEU in Matkustaja A v Finnair (C-385/23) and D. S.A. v P. S.A. (C-411/23) confirmed that a hidden design defect CAN be extraordinary where all four conditions are met — (1) the aircraft manufacturer confirms the failure was caused by a hidden design defect; (2) it was unprecedented (first worldwide occurrence of its kind); (3) it affects all aircraft of the same type; and (4) the carrier had no power to identify or remedy the defect. Even prior knowledge of the defect does not preclude this defence if the carrier was still unable to remedy it (C-411/23). Crucially, carriers are NOT required to maintain a back-up fleet on standby as a reasonable measure. The carrier bears the full burden of proof and must obtain manufacturer confirmation to rely on this exception.",
       'third-party-ia': "Industrial action by third-party workers (ATC, ANSP, airport authority, ground handlers) is generally extraordinary — it is neither inherent to the airline's own activity nor within its control. The proximate cause between the industrial action and the specific delay must be established. The carrier must also demonstrate it took all reasonable measures within the available operational window (Limb 2) — including proactive communication, alternative routing assessment, and Art 9 compliance.",
       'own-ia': "Own-staff industrial action is VERY UNLIKELY to constitute extraordinary circumstances. Krüsemann (C-195/17) held spontaneous wildcat strikes by own cabin crew are NOT extraordinary. Lipton v BA CityFlyer [2024] UKSC 24 extended this logic to crew illness — the Supreme Court held that a pilot's attendance for work is as much part of the carrier's operating system as its aircraft components. TAP Portugal v Flightright (C-156/22–158/22) confirmed even a co-pilot's unexpected death is not extraordinary. The trajectory of the law is firmly against own-staff absence as extraordinary. Any case in this category should be assessed for early settlement. The only possible distinction is own-staff absence directly caused by an identifiable third-party external act (e.g. deliberate food poisoning by a third party), which has not yet been decided.",
-      medical: "Medical diversions are well-established extraordinary circumstances — a passenger medical emergency is an unforeseeable third-party event outside the carrier's control and not inherent to its normal activity. The commander's duty to divert is absolute under the Air Navigation Order / ICAO standards. The legal focus shifts to Limb 2: the care and efficiency of the diversion, the speed of the onward journey arrangement, and Art 9 compliance throughout.",
+      medical: "Ordinary passenger medical emergencies / diversions are NOT extraordinary circumstances under current DefendAble doctrine (DT-09; Lipton reasoning by analogy). Focus on quantum, Art 8 re-routing, and Art 9 care (McDonagh — always owed). A narrow judgment path exists only where a genuine flight-safety or security dimension is distinct from ordinary passenger illness.",
       security: "Security events mandated by an external authority (police, national security) are extraordinary circumstances. The critical distinction is between the security threat (extraordinary) and the security response (which must still constitute reasonable measures). The authority mandate must be documented clearly to establish that the carrier's operational response was not discretionary but directed. Art 9 obligations run regardless of the extraordinary circumstance.",
       'disruptive-pax': "Disruption caused by a passenger's behaviour is generally extraordinary — it is a third-party event not inherent to the carrier's normal activity and not within its reasonable anticipation. The carrier's Limb 2 position depends on the proportionality of its response and the quality of contemporaneous documentation. Art 9 obligations run for all other passengers from the point that delay thresholds are exceeded.",
       'ground-damage': "Ground damage caused by a third-party handler constitutes an extraordinary circumstance — the carrier did not cause the damage and the handler's negligence is not inherent to the airline's own operations. This is one of the cleaner extraordinary circumstance arguments available. The legal focus is on: (1) clear attribution of the damage to the third party, and (2) the speed and reasonableness of the carrier's replacement or repair response.",
@@ -4851,7 +5115,7 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
           { ref: 'Wallentin-Hermann C-549/07', text: 'Reasonable measures must be technically and economically viable; excessive sacrifice not required. Applied to weather: standby deployment is a reasonable measure but its absence does not automatically preclude the defence.' },
           { ref: 'Eglitis C-294/10', text: 'Airline must use all resources available at the relevant time. Failure to deploy available standby may undermine the Limb 2 position even where Limb 1 is established.' }
         ],
-        caselawIds: ['eglitis', 'mcdonagh', 'ni-hz-charter', 'sturgeon', 'nelson'],
+        caselawIds: ['eglitis', 'mcdonagh', 'ni-hz-charter', 'sturgeon', 'nelson', 'airhelp-lightning', 'ec261-reform-2026'],
         challenges: [
           { question: 'Did conditions at the relevant aerodrome reach or exceed the aircraft\'s certified operating limits at the time of the approach or operation?', evidence: 'METAR at the relevant time, certified operating limits for the aircraft type (Aircraft Flight Manual / Ops Specs), approach briefing records', note: null },
           { question: 'Was the disruption decision (diversion, cancellation or significant delay) mandatory under regulatory requirements or the aircraft commander\'s operational authority — not a discretionary commercial decision?', evidence: 'Air safety / occurrence report filed by the commander, applicable Air Navigation Order provisions on commander authority', note: null },
@@ -4907,7 +5171,7 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
         caselaw: [
           { ref: 'Krüsemann C-195/17', text: 'Spontaneous wildcat strike by own cabin crew held NOT to be extraordinary circumstances. Own-staff strikes are generally inherent in the management of airline operations.' }
         ],
-        caselawIds: ['kruesemann', 'lipton-cityflyer', 'tap-flightright', 'sturgeon', 'nelson'],
+        caselawIds: ['kruesemann', 'airhelp-swiss', 'lipton-cityflyer', 'tap-flightright', 'sturgeon', 'nelson'],
         challenges: [
           { question: 'Is the industrial action by the airline\'s own employees (crew, ground staff employed or directly contracted by the airline)?', evidence: 'Identification of the striking body and employment / contracting relationship', note: 'CRITICAL: Krüsemann C-195/17 — own staff strikes are generally NOT extraordinary circumstances. Legal position on Limb 1 is very weak. Consider early advice on settlement.' },
           { question: 'Was the action a spontaneous wildcat strike with no advance notice, as opposed to a pre-announced formal strike?', evidence: 'Timeline of any union notice vs commencement of action; HR and union communications', note: 'Even a wildcat strike failed in Krüsemann. A pre-announced strike with formal notice is even harder to defend as extraordinary.' },
@@ -4926,7 +5190,7 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
           { ref: 'Pešková C-315/15', text: 'Collision with a bird confirmed as not inherent in the normal exercise of the airline\'s activity — extraordinary circumstances potentially available subject to Limb 2 reasonable measures.' },
           { ref: 'Wallentin-Hermann C-549/07', text: 'Grounding for mandatory post-strike inspection is itself a reasonable measure. Standby aircraft deployment must still be evidenced.' }
         ],
-        caselawIds: ['pesekova', 'sturgeon', 'nelson'],
+        caselawIds: ['pesekova', 'sturgeon', 'nelson', 'ni-hz-charter'],
         challenges: [
           { question: 'Is there documentary evidence from the flight crew and maintenance that a wildlife strike occurred?', evidence: 'Air safety / occurrence report filed by the commander, maintenance inspection record confirming strike evidence (feathers, blood, damage consistent with bird ingestion)', note: null },
           { question: 'Did the strike cause damage or contamination requiring mandatory inspection or grounding under the approved maintenance programme?', evidence: 'Maintenance event log, airworthiness engineering assessment, maintenance manual reference confirming the applicable inspection requirement', note: null },
@@ -4958,18 +5222,18 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
         id: 'medical',
         label: 'Medical Emergency',
         keywords: ['medical','medical emergency','ill passenger','passenger unwell','diversion medical','cardiac','health emergency','medical diversion','passenger ill','pax collapsed','passenger collapsed','medevac','medical offload','offloaded on medical grounds','ambulance','seizure','stroke','unconscious','loss of consciousness','in-flight medical','oxygen requested','defibrillator','first responder','doctor on board','ground medical','pan pan','mayday medical','pax deteriorated','passenger deteriorated'],
-        limb1Status: 'extraordinary',
-        limb1: 'In-flight medical emergency requiring diversion — the aircraft commander\'s mandatory duty of care under applicable aviation regulations and international conventions. Diversion to provide urgent medical treatment is a regulatory requirement, not a discretionary commercial act. Limb 1 generally well-established.',
+        limb1Status: 'unlikely',
+        limb1: 'UNLIKELY — Ordinary passenger illness / medical diversion is NOT extraordinary circumstances (aligned with DT-09 and Lipton reasoning by analogy). Passenger medical events are inherent in carrying passengers. A narrow judgment path exists only where a genuine flight-safety/security dimension is distinct from ordinary illness. Focus analysis on quantum, Art 8 re-routing, and Art 9 care (always owed — McDonagh).',
         caselaw: [
-          { ref: 'Wallentin-Hermann C-549/07', text: 'Measures taken must be technically and economically viable — diversion for mandatory medical care satisfies this standard.' },
-          { ref: 'Eglitis C-294/10', text: 'All available resources must be used; delay in resuming service beyond what is medically necessary may undermine Limb 2.' }
+          { ref: 'Lipton [2024] UKSC 24', text: 'By analogy — management of unexpected human medical events in the carriage of persons is inherent in airline operations.' },
+          { ref: 'McDonagh C-12/11', text: 'Art 9 care remains absolute regardless of Art 5(3) outcome.' }
         ],
-        caselawIds: ['sturgeon', 'nelson'],
+        caselawIds: ['lipton-cityflyer', 'mcdonagh', 'sturgeon', 'nelson', 'ec261-reform-2026'],
         challenges: [
           { question: 'Is there documentary evidence of the medical emergency and the commander\'s decision to divert, including the timing and nature of the medical event?', evidence: 'Air safety / occurrence report filed by commander, any available onboard medical assessment record', note: null },
-          { question: 'Was the diversion clinically necessary — i.e., did the passenger\'s condition require immediate medical intervention unavailable on board — as opposed to a precautionary decision?', evidence: 'Commander\'s report detailing the clinical assessment, any record of consultation with medical professional (ground medical advice or onboard doctor)', note: null },
+          { question: 'Does any flight-safety/security dimension go beyond ordinary passenger illness (contagion, crew safety, aircraft safety)?', evidence: 'Commander\'s report; public health / security flags', note: 'Only if yes — consider judgment-node EC path; otherwise concede EC and focus on Art 8/9.' },
           { question: 'Was the nearest aerodrome with appropriate medical facilities used for the diversion?', evidence: 'Flight tracking data showing diversion routing, ATC records confirming diversion clearance', note: null },
-          { question: 'Was the delay in resuming service to the destination limited to the minimum required to address the medical situation?', evidence: 'Flight operations system records: arrival at divert aerodrome, medical handover completion time, departure time for continuation', note: null }
+          { question: 'Was Art 9 care provided throughout and re-routing offered at the earliest opportunity?', evidence: 'Care records, re-booking logs', note: 'Art 9 is always owed — McDonagh.' }
         ]
       },
       {
@@ -5105,7 +5369,7 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
           { ref: 'Wallentin-Hermann C-549/07', text: 'Extraordinary circumstances must be outside the carrier\'s control AND not inherent to its normal activity. Crew sickness fails on inherency.' },
           { ref: 'Van der Lans C-257/14', text: 'Events inherent in the normal exercise of airline activity, even where entirely unforeseeable, do not constitute extraordinary circumstances.' }
         ],
-        caselawIds: ['lipton', 'wallentin', 'van-der-lans', 'sturgeon'],
+        caselawIds: ['lipton-cityflyer', 'wallentin-hermann', 'van-der-lans', 'sturgeon'],
         challenges: [
           { question: 'Was the crew member\'s medical incapacitation properly certified — and is there a contemporaneous OCC / crew control log recording notification time and response?', evidence: 'Medical certificate or sick note, OCC log entry confirming incapacitation notification time, crew planning records', note: 'No Art 5(3) defence available — documentation is needed for Art 9 / Art 14 compliance evidence and quantum.' },
           { question: 'Was the passenger notified of the cancellation at the earliest opportunity — and was written Art 14 notice provided at the point of cancellation?', evidence: 'Passenger communication records (SMS, app, email) with timestamps; check-in desk / airport notification records', note: 'Art 14 written notification obligation applies independently. Failure to notify is a separate exposure.' },
@@ -5587,6 +5851,12 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
       const isScenarioMode = !!(currentScenarioKey && EXAMPLES[currentScenarioKey] &&
         EXAMPLES[currentScenarioKey].trim() === inputText.trim());
 
+      lastAnalysisText = inputText || '';
+      lofConfirmed = false;
+      lofPreRating = null;
+      lastTreeResults = [];
+      confirmedRecord = null;
+
       // Extract facts from text (always — used in custom mode for gap display and evidence signals)
       currentFacts = extractFacts(inputText);
 
@@ -5708,45 +5978,57 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
       const jurisStr = juris ? `${juris.regime} · CJEU authority: ${juris.cjeuAuth} · ${juris.note}` : '';
 
       // ─────────────────────────────────────────────────────────────
-      // ZONE 1 — Chronological Event Record
+      // ZONE 1 — Line of Flying first (story + evidence + confirm gate)
       // ─────────────────────────────────────────────────────────────
       const z1 = document.getElementById('zone1-body');
       z1.innerHTML = `
-        <div style="font-size:10.5px;color:var(--ink-faint);line-height:1.5;margin-bottom:14px;padding:8px 12px;background:var(--surface-ui);border-radius:var(--r-md);border:1px solid var(--ink-rule2)">
-          ${isScenarioMode
-            ? 'Events and evidence extracted from the scenario. Tap each evidence chip to mark its status — the legal position in Zone 3 updates as you confirm.'
-            : 'Events and evidence inferred from the summary. Chips marked <em>↳ Not in summary</em> are gaps to chase. Use the text box on each event to add notes, request evidence, or flag LOF amendments.'}
-        </div>
-        ${buildChronologicalTimeline(currentFacts, causalNodes, dt, isScenarioMode)}
-        <div class="z1-section-label" style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-faint);margin:24px 0 6px">Line of flying</div>
-        ${buildLOFModule(dt)}
-        <div style="margin: 10px 0 14px; padding: 9px 13px; background: var(--surface-ui); border: 1px solid var(--ink-rule2); border-radius: 5px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
-          <div style="font-size: 11px; color: var(--ink-faint); line-height: 1.4;">Multi-tail complex cases — full sector-by-sector verification interface.</div>
-          <a href="defendable_lof_v1.html" target="_blank" style="background: var(--surface-raised); color: var(--ink-secondary); border: 1px solid var(--ink-rule); border-radius: 4px; padding: 5px 11px; font-size: 11px; font-weight: 600; white-space: nowrap; text-decoration: none; flex-shrink: 0;">Full LOF Interface ↗</a>
-        </div>
-        <div class="rm-meter-wrap" style="margin-top:var(--sp-lg)">
-          <div class="rm-meter-row">
-            <span>Chain Integrity</span>
-            <span id="rm-position-label">Tap evidence chips above to mark status</span>
+        <div class="lof-primary" id="lof-primary">
+          <div class="lof-primary-hdr">
+            <div>
+              <div class="lof-primary-eyebrow">Pass II · Stage 1 — Factual record</div>
+              <div class="lof-primary-title">Line of Flying</div>
+              <div class="lof-primary-sub">Edit the sector record and mark evidence until this reflects absolute truth. Legal analysis stays locked until you confirm the LOF.</div>
+            </div>
           </div>
-          <div class="rm-meter-track">
-            <div class="rm-meter-fill" id="rm-meter-fill"></div>
+          <div class="lof-primary-body">
+            <div class="lof-primary-section-label">Editable sector record</div>
+            ${buildLOFModule(dt)}
+            <div class="lof-primary-section-label">Flight story · evidence</div>
+            <div class="story-secondary">
+              ${buildChronologicalTimeline(currentFacts, causalNodes, dt, isScenarioMode)}
+            </div>
+            <div class="rm-meter-wrap" style="margin-top:14px">
+              <div class="rm-meter-row">
+                <span>Evidence position</span>
+                <span id="rm-position-label">Mark evidence status on the story beats above</span>
+              </div>
+              <div class="rm-meter-track">
+                <div class="rm-meter-fill" id="rm-meter-fill"></div>
+              </div>
+              <div style="font-size:11px;color:var(--ink-faint);margin-top:4px" id="rm-tally">Mark evidence to track position strength</div>
+            </div>
+            <div class="lof-confirm-banner" id="lof-confirm-banner">
+              <div class="lof-confirm-title">Confirm Line of Flying</div>
+              <div class="lof-confirm-text">Locks the factual record. A legal pre-rating then unlocks the thorough legal position against this confirmed story — not the raw ICC text alone.</div>
+              <button class="lof-confirm-btn" id="lof-confirm-btn" onclick="confirmLineOfFlying()">Confirm Line of Flying →</button>
+            </div>
+            <div class="lof-prerating" id="lof-prerating"></div>
+            <div id="gen-brief-wrap" style="display:none;margin-top:14px;text-align:center">
+              <button class="btn-gen-brief" onclick="generateBrief()">Generate Defence Brief</button>
+              <div style="font-size:11px;color:var(--ink-faint);margin-top:6px">Available after LOF confirmation</div>
+            </div>
           </div>
-          <div style="font-size:11px;color:var(--ink-faint);margin-top:4px" id="rm-tally">Mark evidence above to track chain integrity</div>
-        </div>
-        <div id="gen-brief-wrap" style="display:none;margin-top:var(--sp-lg);text-align:center">
-          <button class="btn-gen-brief" onclick="generateBrief()">⚖ Generate Defence Brief</button>
-          <div style="font-size:11px;color:var(--ink-faint);margin-top:6px">Ready to compile — generate a formal defence brief from your review</div>
         </div>
       `;
 
       // ─────────────────────────────────────────────────────────────
-      // ZONE 2 — Legal Classification
+      // ZONE 2 — Legal Classification (provisional until LOF confirm)
       // ─────────────────────────────────────────────────────────────
       const legalChar = LEGAL_CHAR[dt.id] || '';
       const rmTips = (RM_SURFACE[dt.id] || []);
       const z2 = document.getElementById('zone2-body');
       z2.innerHTML = `
+        <div style="font-size:10px;font-family:var(--font-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:8px">Provisional — awaiting LOF confirm</div>
         <div class="z2-disruption-type">${dt.label}</div>
         <div class="dt-badge ${dt.limb1Status}" style="display:inline-block">${dir.label}</div>
         <div class="z2-directive ${dir.recClass}">
@@ -5774,7 +6056,7 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
       `;
 
       // ─────────────────────────────────────────────────────────────
-      // ZONE 3 — Legal Position (via renderPass3Extended)
+      // ZONE 3 — Legal Position (gated until Confirm LOF)
       // ─────────────────────────────────────────────────────────────
       renderPass3Extended();
 
@@ -5865,8 +6147,9 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
       if (label) label.textContent = posLabel;
 
       const briefWrap = document.getElementById('gen-brief-wrap');
-      if (briefWrap && total > 0) {
-        briefWrap.style.display = (reviewed === total && missing === 0) ? 'block' : 'none';
+      // Brief only after Confirm LOF — evidence completeness alone does not unlock legal
+      if (briefWrap) {
+        briefWrap.style.display = (lofConfirmed && total > 0 && reviewed === total && missing === 0) ? 'block' : 'none';
       }
 
       renderPass3Extended();
@@ -6037,28 +6320,52 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
       const p3=document.getElementById('zone3-body');
       if(!p3||!currentDT) return;
 
+      if (!lofConfirmed) {
+        p3.innerHTML = `
+          <div class="zone3-locked">
+            <div class="zone3-locked-title">Legal position locked</div>
+            <div class="zone3-locked-sub">Confirm the Line of Flying first. Thorough legal analysis runs only against the locked factual record.</div>
+          </div>`;
+        return;
+      }
+
       const reviewed=Object.keys(rmResponses).length;
 
       const total    =currentDT.challenges.length;
       const confirmed=Object.values(rmResponses).filter(r=>r==='confirmed').length;
       const partial  =Object.values(rmResponses).filter(r=>r==='partial').length;
       const gaps     =Object.values(rmResponses).filter(r=>r==='gap').length;
-      // When no evidence reviewed yet, derive initial position from classification alone
+      // Prefer deterministic tree exit after Confirm LOF; else RM checklist / limb scaffold
       const score    = reviewed > 0 ? (confirmed+partial*0.5)/total : null;
-      const verdict  = score !== null
+      let verdict  = score !== null
         ? getVerdict(currentDT.limb1Status, score, gaps)
         : (currentDT.limb1Status === 'extraordinary' ? 'conditions'
           : currentDT.limb1Status === 'unlikely' ? 'settle' : 'conditions');
 
+      const treeExit = (lastTreeResults && lastTreeResults[0] && lastTreeResults[0].exit) || null;
+      const treeVerdictRaw = treeExit && treeExit.verdict;
+      if (treeVerdictRaw === 'DEFEND') verdict = 'defend';
+      else if (treeVerdictRaw === 'DEFEND_WITH_CONDITIONS' || treeVerdictRaw === 'JUDGMENT_REQUIRED') verdict = 'conditions';
+      else if (treeVerdictRaw === 'SETTLE' || treeVerdictRaw === 'CONCEDE') verdict = 'settle';
+      else if (treeVerdictRaw === 'INVESTIGATE') verdict = 'conditions';
+      else if (lofPreRating) {
+        if (lofPreRating.band === 'defendable') verdict = 'defend';
+        else if (lofPreRating.band === 'investigate') verdict = (currentDT.limb1Status === 'unlikely' ? 'settle' : 'conditions');
+        else if (lofPreRating.band === 'borderline') verdict = 'conditions';
+      }
+
       const vLabels={defend:'Defend',conditions:'Conditional Defence',settle:'Settle — Consider Early Resolution'};
+      const treeNote = treeVerdictRaw
+        ? `Decision tree ${(lastTreeResults[0] && lastTreeResults[0].treeId) || ''} → ${treeVerdictRaw}`
+        : (lofPreRating && lofPreRating.treeId ? `Tree ${lofPreRating.treeId}` : '');
       const vSubs = reviewed > 0 ? {
-        defend:`RM position well-evidenced — ${confirmed}/${total} challenge points confirmed`,
-        conditions:`${confirmed} confirmed · ${partial} partial · ${gaps} gap${gaps!==1?'s':''} — address before hearing`,
-        settle:`Significant exposure — Limb 1 or RM position weak · ${gaps} gap${gaps!==1?'s':''} identified`
+        defend:`RM position well-evidenced — ${confirmed}/${total} challenge points confirmed${treeNote ? ' · ' + treeNote : ''}`,
+        conditions:`${confirmed} confirmed · ${partial} partial · ${gaps} gap${gaps!==1?'s':''} — address before hearing${treeNote ? ' · ' + treeNote : ''}`,
+        settle:`Significant exposure — Limb 1 or RM position weak · ${gaps} gap${gaps!==1?'s':''} identified${treeNote ? ' · ' + treeNote : ''}`
       } : {
-        defend:`Classification: ${currentDT.label} — confirm evidence in Pass II to lock position`,
-        conditions:`Initial classification: ${currentDT.label} — evidence review required before position confirmed`,
-        settle:`Classification: ${currentDT.label} — early settlement recommended · confirm quantum and Art 9 compliance`
+        defend:`${treeNote || 'Classification: ' + currentDT.label} — LOF confirmed; defence posture supported`,
+        conditions:`${treeNote || 'Initial classification: ' + currentDT.label} — conditions / investigation required`,
+        settle:`${treeNote || 'Classification: ' + currentDT.label} — early settlement recommended · confirm quantum and Art 9 compliance`
       };
       const vRefs={defend:'Art 5(3) EC261 / UK261',conditions:'Art 5(3) — evidence gaps',settle:'Wallentin-Hermann risk'};
 
@@ -6814,51 +7121,166 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
       if (wrap) wrap.outerHTML = renderLOFEditableTable();
     }
 
+    function mapLofSectorStatus(status) {
+      return status === 'ok'    ? 'On Time'
+           : status === 'delay' ? 'Delayed'
+           : status === 'div'   ? 'Diverted'
+           : status === 'claim' ? 'Claimed'
+           : status === 'aog'   ? 'AOG'
+           : status === 'canx'  ? 'Cancelled'
+           : status === 'repl'  ? 'On Time'
+           : (status || '');
+    }
+
+    function lofDataToEditableRows(data) {
+      if (!data || !data.tails) return [];
+      const rows = [];
+      data.tails.forEach(tail => {
+        (tail.days || []).forEach(day => {
+          (day.sectors || []).forEach(s => {
+            rows.push({
+              flight: s.flight || '',
+              route:  (s.route || '').replace(/\s*→\s*/g, ' → '),
+              std:    s.sched_out || '',
+              atd:    s.actual_out === '—' ? '' : (s.actual_out || ''),
+              sta:    s.sched_in || '',
+              ata:    s.actual_in === '—' ? '' : (s.actual_in || ''),
+              status: mapLofSectorStatus(s.status),
+              note:   s.note || (day.event && day.event.text) || ''
+            });
+          });
+        });
+      });
+      return rows;
+    }
+
     function buildLOFCustomEmpty() {
-      const rows = parseLOFFromText(document.getElementById('icc-input')?.value || '');
+      const text = lastAnalysisText
+        || document.getElementById('iccText')?.value
+        || document.getElementById('supplementaryText')?.value
+        || '';
+      const rows = parseLOFFromText(text);
       return buildLOFEditable(rows);
     }
 
     function buildLOFModule(dt) {
       if (!dt) return '';
-      // Custom input mode (no scenario selected) — show honest empty state
-      if (!currentScenarioKey) return buildLOFCustomEmpty();
-      const key    = currentScenarioKey;
-      const data   = LOF_DATA[key];
-      if (!data || !data.tails || data.tails.length === 0) return buildLOFEmpty();
+      // Always use editable working table as the primary LOF surface
+      if (currentScenarioKey && LOF_DATA[currentScenarioKey]) {
+        const rows = lofDataToEditableRows(LOF_DATA[currentScenarioKey]);
+        if (rows.length) return buildLOFEditable(rows);
+      }
+      return buildLOFCustomEmpty();
+    }
 
-      const tails  = data.tails;
-      const tailTabsHtml = tails.length > 1
-        ? `<div class="lof-tail-tabs" id="lof-tail-tabs">
-            ${tails.map((t, i) => `<div class="lof-tail-tab${i===0?' active':''}" onclick="selectLOFTail(${i})">${t.label}</div>`).join('')}
-           </div>`
-        : '';
+    function computeLegalPreRating() {
+      // Prefer tree-driven pre-rating after Confirm LOF; fallback to keyword scaffold
+      if (lofPreRating && lofPreRating.treeVerdict) return lofPreRating;
 
-      const badgesHtml = tails.map(t =>
-        `<span class="lof-tail-badge${t.role==='replacement'?' replacement':''}">${t.reg}</span>`
-      ).join(' ');
+      const tlEntries   = Object.entries(tlEvStatus);
+      const tlAvailable = tlEntries.filter(([,v]) => v === 'available').length;
+      const tlRequested = tlEntries.filter(([,v]) => v === 'requested').length;
+      const tlMissing   = tlEntries.filter(([,v]) => v === 'missing').length;
+      const tlReviewed  = tlAvailable + tlRequested + tlMissing;
+      const tlTotal     = tlEntries.length;
+      const completeness = tlTotal > 0 ? (tlAvailable + tlRequested * 0.5) / tlTotal : 0;
+      const limb = (currentDT && currentDT.limb1Status) || 'contested';
+      const sectorsFilled = (_lofRows || []).filter(r => (r.flight || '').trim()).length;
 
-      const bodyHtml = tails.map((t, i) =>
-        `<div class="lof-tail-content" id="lof-tail-${i}" style="${i===0?'':'display:none'}">
-          ${t.days.map(d => buildLOFDay(d)).join('')}
-         </div>`
-      ).join('');
+      if (limb === 'unlikely') {
+        return {
+          band: 'investigate',
+          title: 'Needs further investigation',
+          text: 'Limb 1 looks non-extraordinary on current classification. Confirm quantum exposure and Art 9 compliance before committing resource to a full defence.',
+          treeVerdict: null
+        };
+      }
+      if (tlMissing > 0 || (tlTotal > 0 && completeness < 0.45) || limb === 'contested') {
+        return {
+          band: 'investigate',
+          title: 'Needs further investigation',
+          text: `${tlMissing || 0} evidence item(s) marked missing · ${tlRequested || 0} requested · ${sectorsFilled} sector(s) on the LOF. Chase critical documents before treating the position as locked.`,
+          treeVerdict: null
+        };
+      }
+      if (limb === 'extraordinary' && completeness >= 0.75 && tlMissing === 0) {
+        return {
+          band: 'defendable',
+          title: 'Defendable with current evidence',
+          text: `Limb 1 extraordinary · ${tlAvailable}/${tlTotal || tlReviewed} evidence items available on the record · ${sectorsFilled} sector(s) confirmed in the LOF. Thorough legal pass may proceed.`,
+          treeVerdict: null
+        };
+      }
+      return {
+        band: 'borderline',
+        title: 'Borderline — conditions apply',
+        text: 'Classification supports a defence path, but evidence completeness or Limb 1 certainty still needs lawyer judgment. Use the thorough legal section to stress-test before filing.',
+        treeVerdict: null
+      };
+    }
 
-      return `
-        <div class="lof-module" id="lof-module">
-          <div class="lof-module-hdr" onclick="toggleLOFModule()">
-            <div class="lof-module-hdr-left">
-              <span class="lof-module-hdr-label">Line of Flying</span>
-              ${badgesHtml}
-              ${tails.length > 1 ? '<span style="font-size:10px;color:var(--ink-faint);font-family:var(--font-mono)">· Tail change</span>' : ''}
-            </div>
-            <span class="lof-module-hdr-toggle" id="lof-toggle-label">▶ Expand sector record</span>
-          </div>
-          <div id="lof-module-body" style="display:none">
-            ${tailTabsHtml}
-            ${bodyHtml}
-          </div>
-        </div>`;
+    function confirmLineOfFlying() {
+      if (!currentDT) return;
+      lofConfirmed = true;
+
+      // Build confirmed factual record and run deterministic trees
+      confirmedRecord = (typeof DefendAbleLofLegalBridge !== 'undefined')
+        ? DefendAbleLofLegalBridge.buildConfirmedRecord({
+            lofRows: _lofRows || [],
+            facts: currentFacts,
+            causalNodes: causalNodes || [],
+            rawText: lastAnalysisText || '',
+            tlEvStatus: tlEvStatus,
+            nodeAnnotations: nodeAnnotations,
+            dt: currentDT,
+            evidenceDb: typeof EVIDENCE_DB !== 'undefined' ? EVIDENCE_DB : null
+          })
+        : { lofRows: _lofRows || [], rawText: lastAnalysisText || '', dtId: currentDT.id };
+
+      lastTreeResults = [];
+      if (typeof DefendAbleLofLegalBridge !== 'undefined') {
+        const run = DefendAbleLofLegalBridge.runTreesOnConfirmedRecord(confirmedRecord);
+        lastTreeResults = run.treeResults || [];
+        lofPreRating = run.preRating || computeLegalPreRating();
+        confirmedRecord.treeResults = lastTreeResults;
+        confirmedRecord.preRating = lofPreRating;
+      } else {
+        lofPreRating = computeLegalPreRating();
+      }
+
+      const banner = document.getElementById('lof-confirm-banner');
+      if (banner) {
+        banner.classList.add('locked');
+        const treeBit = lofPreRating && lofPreRating.treeId
+          ? ` · tree ${lofPreRating.treeId} → ${lofPreRating.treeVerdict || '—'}`
+          : '';
+        banner.innerHTML = `
+          <div class="lof-confirm-title">Line of Flying confirmed</div>
+          <div class="lof-confirm-text">Factual record locked · ${(_lofRows || []).filter(r => (r.flight||'').trim()).length} sector(s)${treeBit}. Legal pre-rating issued below. Re-run analysis to unlock and edit again.</div>
+          <button class="lof-confirm-btn" disabled>Confirmed</button>`;
+      }
+
+      const pre = document.getElementById('lof-prerating');
+      if (pre && lofPreRating) {
+        pre.className = `lof-prerating visible ${lofPreRating.band}`;
+        const condHtml = (lofPreRating.conditions && lofPreRating.conditions.length)
+          ? `<div class="lof-prerating-text" style="margin-top:6px">${lofPreRating.conditions.slice(0, 3).map(c => '• ' + c).join('<br>')}</div>`
+          : '';
+        pre.innerHTML = `
+          <div class="lof-prerating-eyebrow">Legal pre-rating${lofPreRating.treeId ? ' · ' + lofPreRating.treeId : ''}</div>
+          <div class="lof-prerating-title">${lofPreRating.title}</div>
+          <div class="lof-prerating-text">${lofPreRating.text}</div>
+          ${condHtml}`;
+      }
+
+      const z2badge = document.querySelector('#zone2-body > div');
+      if (z2badge && z2badge.textContent && /Provisional/.test(z2badge.textContent)) {
+        z2badge.textContent = 'Classification · LOF confirmed · trees run';
+        z2badge.style.color = 'var(--defend-mid)';
+      }
+
+      renderPass3Extended();
+      updateRMStrength();
     }
 
     function buildLOFDay(day) {
@@ -8315,6 +8737,10 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
     ---------------------------------------------------------- */
     function generateBrief() {
       if (!currentDT) return;
+      if (!lofConfirmed) {
+        alert('Confirm the Line of Flying before generating a defence brief.');
+        return;
+      }
 
       // Derive score from nodeAnnotations (new Pass II system)
       const total = causalNodesCount || 1;
