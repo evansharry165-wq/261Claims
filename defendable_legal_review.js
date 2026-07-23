@@ -187,9 +187,24 @@ var DefendAbleLegalReview = (function () {
   /* ── Primary/secondary disruption identification (from tree exit) ── */
   function plainPrimarySecondary(state) {
     var priority = state.typePriority || {};
-    var primary = plainDisruption(priority.primaryDtId || (state.facts && state.facts.disruption && state.facts.disruption.dtypeId) || null);
-    var secondaries = (priority.secondaryDtIds || []).map(plainDisruption);
-    return { primary: primary || plainDisruption((state.facts && state.facts.rootCause && state.facts.rootCause.dtypeId)), secondaries: secondaries };
+    var primaryId = priority.primaryDtId || priority.primary
+      || (state.facts && state.facts.disruption && state.facts.disruption.dtypeId)
+      || (state.facts && state.facts.dtId)
+      || null;
+    // Data-bank fallback: mass event → dt id
+    if (!primaryId && state.facts && state.facts.mass && state.facts.mass.code) {
+      if (state.facts.mass.code === 'W401') primaryId = 'weather';
+      else if (state.facts.mass.code === 'S502') primaryId = 'third-party-ia';
+    }
+    // Global fallback: read currentDT if available
+    if (!primaryId) {
+      try { if (typeof window !== 'undefined' && window.currentDT && window.currentDT.id) primaryId = window.currentDT.id; } catch(e){}
+    }
+    var secondaryIds = priority.secondaryDtIds || priority.secondary || [];
+    return {
+      primary: primaryId ? plainDisruption(primaryId) : 'Disruption',
+      secondaries: secondaryIds.map(plainDisruption)
+    };
   }
 
   /* ── STYLES ── */
@@ -221,9 +236,9 @@ var DefendAbleLegalReview = (function () {
       '.lrv-chip.done .num{font-size:0}',
       '.lrv-chip-sep{color:rgba(255,255,255,.2)}',
       /* stage — viewport window */
-      '.lrv-stage{flex:1;overflow:hidden;position:relative;margin:0 40px;background:var(--surface,#F8F5EF);border-radius:10px 10px 0 0;box-shadow:0 -12px 40px rgba(0,0,0,.24)}',
+      '.lrv-stage{flex:1;overflow:hidden;position:relative;margin:0 40px;background:var(--surface,#F8F5EF);border-radius:10px 10px 0 0;box-shadow:0 -12px 40px rgba(0,0,0,.24);isolation:isolate}',
       '.lrv-track{display:flex;height:100%;width:300%;transition:transform 320ms cubic-bezier(.4,0,.2,1);will-change:transform}',
-      '.lrv-page{width:calc(100% / 3);height:100%;overflow-y:auto;padding:34px 48px 40px}',
+      '.lrv-page{width:calc(100% / 3);min-width:calc(100% / 3);max-width:calc(100% / 3);flex:0 0 auto;height:100%;overflow-y:auto;padding:34px 48px 40px;box-sizing:border-box}',
       /* page shared */
       '.lrv-page-title{font-family:var(--serif,Georgia,serif);font-size:24px;color:var(--ink,#16181D);margin:0 0 4px}',
       '.lrv-page-sub{font-family:var(--sans,sans-serif);font-size:13px;color:var(--ink-3,#6B7280);margin-bottom:26px}',
