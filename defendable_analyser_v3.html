@@ -1061,7 +1061,7 @@
     ============================================================ */
     .workspace-grid {
       display: none;
-      grid-template-columns: 1fr 420px;
+      grid-template-columns: 1fr;
       align-items: start;
       border-top: 1px solid var(--ink-rule);
     }
@@ -1072,6 +1072,7 @@
     }
 
     .zone-right-rail {
+      display: none;
       position: sticky;
       top: 52px;
       height: calc(100vh - 52px);
@@ -3507,6 +3508,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <script src="defendable_databank.js"></script>
   <script src="defendable_databank_ui.js"></script>
+  <script src="defendable_legal_review.js"></script>
   <script src="case_filing.js"></script>
   <script src="case_helpers.js"></script>
   <script src="defendable_icc_parse.js"></script>
@@ -6502,8 +6504,8 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
         </div>
         <div class="lof-prerating" id="lof-prerating"></div>
         <div id="gen-brief-wrap" style="display:none;margin-top:var(--sp-lg);text-align:center">
-          <button class="btn-gen-brief" onclick="openCaseHandoffPack()">Review handoff → Manage</button>
-          <div style="font-size:11px;color:var(--ink-faint);margin-top:6px">Editable Case Handoff Pack after LOF confirm + G1 — Confirm creates the Manage case</div>
+          <button class="btn-gen-brief" id="reviewLegalBtn" onclick="openLegalReview()">Review legal position →</button>
+          <div style="font-size:11px;color:var(--ink-faint);margin-top:6px">Opens the full legal review — verdict, evidence pack, authorities and sign-off in one focused screen.</div>
         </div>
       `;
 
@@ -7086,6 +7088,18 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
         record: confirmedRecord,
         run: lastDecideRun
       });
+    }
+
+    function openLegalReview() {
+      if (typeof DefendAbleLegalReview === 'undefined') return;
+      const state = DefendAbleLegalReview.stateFromContext({
+        facts: currentFacts,
+        record: confirmedRecord,
+        run: lastDecideRun,
+        narrative: (document.getElementById('iccText') || {}).value || '',
+        caseRef: (confirmedRecord && confirmedRecord.caseRef) || ''
+      });
+      DefendAbleLegalReview.open(state);
     }
 
     function confirmLineOfFlying() {
