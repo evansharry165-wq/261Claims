@@ -1,0 +1,81 @@
+/**
+ * DefendAble — unified site theme (source of truth: Decide Map aesthetic)
+ * Libre Baskerville (serif/legal) · IBM Plex Sans · IBM Plex Mono
+ * Warm paper #EDE9E1 · navy chrome #1A2F45. Linked LAST in <head> so its
+ * variable overrides win the cascade on every page.
+ */
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+:root {
+  /* ── canonical tokens (Decide Map) ── */
+  --bg: #EDE9E1;
+  --surface: #F8F5EF;
+  --surface-2: #FFFCF7;
+  --ink: #16181D;
+  --ink-2: #3A3F4A;
+  --ink-3: #6B7280;
+  --rule: #C9C2B6;
+  --rule-soft: #DDD6CA;
+  --navy: #1A2F45;
+  --navy-mid: #2A4A6B;
+  --claim: #1E4D8C;   --claim-bg: #E8F0FA;   --claim-border: #8BB0D9;
+  --ec: #1B5C3A;      --ec-bg: #E6F3EB;      --ec-border: #8FC9A8;
+  --judgment: #8A6B00; --judgment-bg: #FFF6D6; --judgment-border: #E0C45A;
+  --cta: #C45C12;     --cta-bg: #FBE8D8;
+  --defend: #1B4A32;  --settle: #7A1A1A;
+  --serif: 'Libre Baskerville', Georgia, serif;
+  --sans: 'IBM Plex Sans', system-ui, sans-serif;
+  --mono: 'IBM Plex Mono', ui-monospace, monospace;
+
+  /* ── remap: analyser v3 local names ── */
+  --surface-page:   var(--bg);
+  --surface-doc:    var(--surface-2);
+  --surface-ui:     var(--surface);
+  --surface-raised: var(--surface-2);
+  --surface-card:   var(--surface-2);
+  --ink-primary:    var(--ink);
+  --ink-secondary:  var(--ink-2);
+  --ink-tertiary:   var(--ink-3);
+  --ink-faint:      #9AA0AA;
+  --ink-rule:       var(--rule);
+  --ink-rule2:      var(--rule-soft);
+  --font-mono:      var(--mono);
+  --font-sans:      var(--sans);
+  --font-serif:     var(--serif);
+
+  /* ── remap: legal reference local names ── */
+  --ink-muted:      var(--ink-3);
+  --accent:         var(--claim);
+  --accent-light:   var(--claim-bg);
+  --warn:           var(--settle);
+  --green:          var(--ec);
+
+  /* ── remap: product flow local names ── */
+  --green-bg:       var(--ec-bg);
+  --amber:          var(--judgment);
+  --amber-bg:       var(--judgment-bg);
+  --blue:           var(--navy-mid);
+  --blue-bg:        var(--claim-bg);
+  --grey:           var(--ink-3);
+  --grey-bg:        var(--rule-soft);
+}
+
+/* base typography — the legal register */
+body {
+  background: var(--bg) !important;
+  font-family: var(--sans);
+  color: var(--ink);
+}
+h1, h2, .brand, .wordmark, .g-nav__brand, .page-title-bar h1 {
+  font-family: var(--serif) !important;
+  font-weight: 400;
+}
+
+/* chrome: every page's top bar becomes the navy book-spine */
+.g-nav, .site-header, .top, header.site-header {
+  background: rgba(26, 47, 69, 0.96) !important;
+  border-bottom: 2px solid #0F1C2A !important;
+}
+.g-nav a, .site-header a, .top-links a {
+  font-family: var(--mono);
+}
