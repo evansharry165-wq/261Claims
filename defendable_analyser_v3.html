@@ -6379,8 +6379,8 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
         else if (/technical|defect|aog/.test(rootReason + ' ' + dtypeText)) seedDtId = 'technical';
         // ONLY use crew-sick if the seed root itself says crew illness, not FDP-cascade language
         else if (/crew (sick|illness)|captain (sick|unwell)/.test(rootReason + ' ' + dtypeText)) seedDtId = 'crew-sick';
-        if (seedDtId && typeof DISRUPTION_TYPES !== 'undefined') {
-          const seedDt = (DISRUPTION_TYPES || []).find(function(x){ return x.id === seedDtId; });
+        if (seedDtId && typeof RM_DB !== 'undefined') {
+          const seedDt = (RM_DB || []).find(function(x){ return x.id === seedDtId; });
           if (seedDt) {
             dt = seedDt;
           }
