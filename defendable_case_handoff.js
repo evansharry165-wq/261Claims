@@ -689,6 +689,23 @@ var DefendAbleCaseHandoff = (function () {
       uploadedByName: by
     });
 
+    // ── Verdict-driven legal document drafts (G2 approval required in Manage) ──
+    if (typeof DefendAbleDocTemplates !== 'undefined' && DefendAbleDocTemplates.draftsForPack) {
+      DefendAbleDocTemplates.draftsForPack(pack).forEach(function (doc) {
+        CaseFiling.addDocument(ref, {
+          name: doc.name,
+          folderId: doc.folderId,
+          docKey: doc.docKey,
+          filename: doc.filename,
+          content: doc.content,
+          status: 'draft',
+          source: 'Legal Engine',
+          uploadedByName: by
+        });
+      });
+      CaseFiling.addActivity(ref, 'Response documents drafted — awaiting G2 lawyer approval', 'legal', by);
+    }
+
     CaseFiling.addActivity(
       ref,
       'Received from Legal Engine — G1 ' + ((decide.g1 && decide.g1.action) || ''),
