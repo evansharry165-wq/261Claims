@@ -3215,6 +3215,9 @@
         </button>
       </div>
 
+      <!-- Week in Aviation — live data bank (demo data source) -->
+      <div id="databank-root"></div>
+
       <!-- Mode 1: ICC Text — structured 3-section prompt -->
       <div class="mode-panel active" id="panel-icc">
         <label class="field-label">Describe the disruption</label>
@@ -3500,6 +3503,8 @@
   <script src="defendable_decide_workspace.js"></script>
   <script src="defendable_case_handoff.js"></script>
   <script src="defendable_doc_templates.js"></script>
+  <script src="defendable_databank.js"></script>
+  <script src="defendable_databank_ui.js"></script>
   <script src="case_filing.js"></script>
   <script src="case_helpers.js"></script>
   <script src="defendable_icc_parse.js"></script>
@@ -9245,6 +9250,33 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
           syncEl: '#iccText',
           onChange: function () {
             currentScenarioKey = '';
+          }
+        });
+      }
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', go);
+      } else {
+        go();
+      }
+    })();
+
+    /* Week in Aviation data bank — the demo's data-first source */
+    (function bootDataBank() {
+      function go() {
+        if (typeof DefendAbleDataBankUI === 'undefined' || typeof DefendAbleDataBank === 'undefined') return;
+        DefendAbleDataBankUI.mount({
+          root: '#databank-root',
+          onSelect: function (narrative, d) {
+            currentScenarioKey = '';
+            if (typeof DefendAbleStructuredPrompt !== 'undefined') {
+              DefendAbleStructuredPrompt.setCanonical(narrative);
+            } else {
+              var ta = document.getElementById('iccText');
+              if (ta) ta.value = narrative;
+            }
+            var btn = document.getElementById('analyseBtn');
+            if (btn) btn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            if (typeof runAnalysis === 'function') runAnalysis();
           }
         });
       }
