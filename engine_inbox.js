@@ -13,8 +13,10 @@ var EngineInbox = (function () {
 
   function inbox() {
     if (typeof CaseFiling === 'undefined') return [];
+    // stage='inbox' is the source of truth — assignedTo may default to 'SB' from
+    // CaseFiling's ensureCaseFile fallback, so we don't rely on it here.
     return CaseFiling.listCases().filter(function (c) {
-      return c && c.stage === STAGE && (!c.assignedTo || c.assignedTo === '' || c.assignedTo === null);
+      return c && c.stage === STAGE;
     }).sort(function (a, b) {
       return String(b.createdAt || '').localeCompare(String(a.createdAt || ''));
     });
