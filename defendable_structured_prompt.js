@@ -1,6 +1,8 @@
 /**
- * DefendAble — Structured 3-section ICC prompt UI
- * Mounts into analyser (or standalone). Composes to canonical ICC text.
+ * DefendAble — Structured ICC prompt UI (single-box, live-highlight)
+ * One text box. Ghost placeholder teaches the 3-part structure.
+ * Recognised keywords highlight IN the box as you type (backdrop overlay).
+ * Composes canonical text into a hidden sync element for the analyser.
  */
 var DefendAbleStructuredPrompt = (function () {
   'use strict';
@@ -9,27 +11,42 @@ var DefendAbleStructuredPrompt = (function () {
   var _syncEl = null;
   var _onChange = null;
   var _debounce = null;
+  var _ta = null;
+  var _backdrop = null;
+  var _triggerRe = null;
 
   function banks() {
     return typeof DefendAblePromptBanks !== 'undefined' ? DefendAblePromptBanks : null;
   }
 
-  function sectionValues() {
-    if (!_root) return { flight: '', cause: '', measures: '' };
-    return {
-      flight: (_root.querySelector('[data-spi="flight"]') || {}).value || '',
-      cause: (_root.querySelector('[data-spi="cause"]') || {}).value || '',
-      measures: (_root.querySelector('[data-spi="measures"]') || {}).value || ''
-    };
+  /* ── trigger regex built once from every bank's trigger lexicon ── */
+  function triggerRegex() {
+    if (_triggerRe) return _triggerRe;
+    var B = banks();
+    if (!B || !B.BANKS) return null;
+    var terms = [];
+    B.BANKS.forEach(function (b) {
+      (b.triggers || []).forEach(function (t) {
+        var clean = String(t).trim();
+        if (clean) terms.push(clean.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/\s+/g, '\\s+'));
+      });
+    });
+    terms.sort(function (a, b) { return b.length - a.length; });
+    _triggerRe = new RegExp('(^|[^A-Za-z0-9])(' + terms.join('|') + ')(?=$|[^A-Za-z0-9])', 'gi');
+    return _triggerRe;
+  }
+
+  function escHtml(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
+  function getText() {
+    return _ta ? _ta.value : '';
   }
 
   function compose() {
-    var B = banks();
-    if (!B) {
-      var s = sectionValues();
-      return [s.flight, s.cause, s.measures].filter(Boolean).join('\n\n');
-    }
-    return B.composeSections(sectionValues());
+    return getText();
   }
 
   function syncHidden() {
@@ -40,38 +57,74 @@ var DefendAbleStructuredPrompt = (function () {
 
   function setCanonical(text) {
     var B = banks();
-    var parts = B ? B.parseSections(text) : { flight: text || '', cause: '', measures: '' };
-    if (!_root) {
-      if (_syncEl) _syncEl.value = text || '';
-      return;
+    var body = text || '';
+    if (B && B.stripMarkers && /\[(FLIGHT|CAUSE|MEASURES)\]/.test(body)) {
+      // Flatten marked canonical text into readable single-box prose
+      body = body.replace(/\s*\[(FLIGHT|CAUSE|MEASURES)\]\s*/g, function (m, k, off) {
+        return off === 0 ? '' : '\n\n';
+      });
     }
-    var f = _root.querySelector('[data-spi="flight"]');
-    var c = _root.querySelector('[data-spi="cause"]');
-    var m = _root.querySelector('[data-spi="measures"]');
-    if (f) f.value = parts.flight || '';
-    if (c) c.value = parts.cause || '';
-    if (m) m.value = parts.measures || '';
+    if (_ta) { _ta.value = body; }
+    if (_syncEl) _syncEl.value = text || '';
     scan();
-    syncHidden();
   }
 
-  function insertPhrase(secId, phrase) {
-    var ta = _root && _root.querySelector('[data-spi="' + secId + '"]');
-    if (!ta) return;
-    ta.value = ta.value.replace(/\s*$/, '') + (ta.value ? '. ' : '') + phrase;
-    ta.focus();
-    scan();
-    syncHidden();
-    if (_onChange) _onChange(compose());
-  }
-
-  function renderChips(secId, text) {
+  function getSections() {
     var B = banks();
-    var box = _root.querySelector('[data-spi-chips="' + secId + '"]');
+    var text = getText();
+    if (B && B.parseSections) {
+      var p = B.parseSections(text);
+      if (p.cause || p.measures) return p;
+      return { flight: text, cause: '', measures: '' };
+    }
+    return { flight: text, cause: '', measures: '' };
+  }
+
+  /* ── live in-box highlight ── */
+  function renderBackdrop() {
+    if (!_backdrop) return;
+    var re = triggerRegex();
+    var html = escHtml(getText());
+    if (re) {
+      re.lastIndex = 0;
+      html = html.replace(re, function (m, pre, term) {
+        return pre + '<mark class="spi-mark">' + term + '</mark>';
+      });
+    }
+    _backdrop.innerHTML = html + '\n';
+    _backdrop.scrollTop = _ta.scrollTop;
+  }
+
+  /* ── structure meter: three steps light as narrative satisfies each section ── */
+  function renderStructureGuide() {
+    var B = banks();
+    if (!B || !_root) return;
+    var text = getText();
+    B.SECTION_DEFS.forEach(function (def) {
+      var step = _root.querySelector('[data-spi-step="' + def.id + '"]');
+      if (!step) return;
+      var score = B.meterScore(text, def.needs);
+      var max = def.needs.length;
+      step.classList.toggle('done', score >= max);
+      step.classList.toggle('part', score > 0 && score < max);
+      var meter = step.querySelector('.spi-step-meter');
+      if (meter) {
+        Array.prototype.forEach.call(meter.children, function (bar, i) {
+          bar.classList.toggle('on', i < score);
+        });
+      }
+    });
+  }
+
+  /* ── recognition strip: chips + warnings + insertable suggestions ── */
+  function renderChips() {
+    var B = banks();
+    var box = _root.querySelector('[data-spi-chips="main"]');
     if (!box || !B) return;
     box.innerHTML = '';
+    var text = getText();
     var engaged = B.scanText(text);
-    var low = ' ' + String(text || '').toLowerCase() + ' ';
+    var low = ' ' + text.toLowerCase() + ' ';
     var seenSugg = {};
 
     Object.keys(engaged).forEach(function (id) {
@@ -99,31 +152,25 @@ var DefendAbleStructuredPrompt = (function () {
         var g = document.createElement('span');
         g.className = 'spi-chip spi-sugg';
         g.textContent = s;
-        g.onclick = function () { insertPhrase(secId, s); };
+        g.onclick = function () { insertPhrase(s); };
         box.appendChild(g);
       });
     });
   }
 
-  function renderMeters() {
-    var B = banks();
-    if (!B || !_root) return;
-    var vals = sectionValues();
-    B.SECTION_DEFS.forEach(function (def) {
-      var meter = _root.querySelector('[data-spi-meter="' + def.id + '"]');
-      if (!meter) return;
-      var score = B.meterScore(vals[def.id], def.needs);
-      Array.prototype.forEach.call(meter.children, function (bar, i) {
-        bar.classList.toggle('on', i < score);
-      });
-    });
+  function insertPhrase(phrase) {
+    if (!_ta) return;
+    _ta.value = _ta.value.replace(/\s*$/, '') + (_ta.value ? '. ' : '') + phrase;
+    _ta.focus();
+    scan();
+    syncHidden();
+    if (_onChange) _onChange(compose());
   }
 
   function renderRail() {
     var B = banks();
     if (!B || !_root) return;
-    var vals = sectionValues();
-    var allText = [vals.flight, vals.cause, vals.measures].join('\n');
+    var allText = getText();
     var engaged = B.scanText(allText);
     var list = Object.keys(engaged).map(function (k) { return engaged[k]; });
     var banksEl = _root.querySelector('#spi-rail-banks');
@@ -158,11 +205,10 @@ var DefendAbleStructuredPrompt = (function () {
         evMap[ev] = evMap[ev] || (token && low.indexOf(token) >= 0);
       });
     });
-    // RM gap nudge
-    if (engaged.rm || vals.measures) {
-      /* ok */
-    } else if (list.some(function (e) { return e.bank.tree.indexOf('DT-') === 0; })) {
-      evMap['Re-routing / standby narrative (Section 3)'] = false;
+    var B2 = banks();
+    var measuresTouched = B2.meterScore(allText, B2.SECTION_DEFS[2].needs) > 1;
+    if (!measuresTouched && list.some(function (e) { return String(e.bank.tree).indexOf('DT-') === 0; })) {
+      evMap['Reasonable measures narrative — standby / re-routing / network state'] = false;
     }
 
     evEl.innerHTML = Object.keys(evMap).map(function (ev) {
@@ -179,21 +225,50 @@ var DefendAbleStructuredPrompt = (function () {
 
   function scan() {
     if (!_root) return;
-    var vals = sectionValues();
-    Object.keys(vals).forEach(function (id) {
-      renderChips(id, vals[id]);
-    });
-    renderMeters();
+    renderBackdrop();
+    renderStructureGuide();
+    renderChips();
     renderRail();
   }
 
   function scheduleScan() {
     clearTimeout(_debounce);
+    renderBackdrop(); // instant — highlight must feel live
     _debounce = setTimeout(function () {
       scan();
       syncHidden();
       if (_onChange) _onChange(compose());
-    }, 250);
+    }, 220);
+  }
+
+  var GHOST =
+    'Tell the disruption in three parts —\n' +
+    '1 · THE FLIGHT — number(s), date, tail, route; what happened to the aircraft across the day (inbound sectors, inherited delay, swaps, diversions)\n' +
+    '2 · THE CAUSE — why it was disrupted and the consequence chain (weather, ATC, technical, pax… → what it did to the operation)\n' +
+    '3 · THE MEASURES — why the airline could not save it on the day (standby, re-crew, re-routing checked, network state, curfew, FDP)\n\n' +
+    'e.g. EZY4470 LGW–AMS 21/07, G-EZBX. Ground hold LGW, ATD 0941 vs STD 0620, arrival delay 194 mins. CB activity Amsterdam FIR, Eurocontrol ATFM regulation, CTOT 0920. No standby available LGW — subs deployed. Re-routing checked: no earlier arrival.';
+
+  function injectStyles() {
+    if (document.getElementById('spi-singlebox-style')) return;
+    var st = document.createElement('style');
+    st.id = 'spi-singlebox-style';
+    st.textContent =
+      '.spi-hlwrap{position:relative;border:1px solid var(--rule,#e6e2d8);border-radius:6px;background:var(--surface-card,#fff);overflow:hidden}' +
+      '.spi-hlwrap:focus-within{border-color:var(--ink-secondary,#8a6d1f)}' +
+      '.spi-backdrop,.spi-ta-main{font-family:Georgia,\'Times New Roman\',serif;font-size:14px;line-height:1.65;padding:14px 16px;margin:0;border:0;width:100%;box-sizing:border-box;white-space:pre-wrap;word-wrap:break-word;overflow-wrap:break-word;}' +
+      '.spi-backdrop{position:absolute;inset:0;color:transparent;pointer-events:none;overflow:hidden;z-index:0}' +
+      '.spi-backdrop .spi-mark{color:transparent;background:rgba(138,109,31,.18);border-bottom:2px solid rgba(138,109,31,.55);border-radius:2px}' +
+      '.spi-ta-main{position:relative;z-index:1;background:transparent;display:block;resize:vertical;min-height:170px;outline:none;color:var(--ink,#1a1a18)}' +
+      '.spi-ta-main::placeholder{color:#b8b3a6;font-style:italic;font-size:12.5px;line-height:1.6}' +
+      '.spi-structure{display:flex;gap:8px;margin:0 0 8px;flex-wrap:wrap}' +
+      '.spi-step{display:inline-flex;align-items:center;gap:7px;font-family:var(--font-mono,monospace);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:#8a867d;border:1px solid var(--rule,#e6e2d8);border-radius:3px;padding:4px 9px;background:var(--surface-card,#fff)}' +
+      '.spi-step .spi-step-meter{display:inline-flex;gap:2px}' +
+      '.spi-step .spi-step-meter i{width:9px;height:3px;border-radius:1px;background:var(--rule,#e6e2d8)}' +
+      '.spi-step .spi-step-meter i.on{background:#1f6f43}' +
+      '.spi-step.part{color:#5c584e}' +
+      '.spi-step.done{color:#1f6f43;border-color:#cfe4d6}' +
+      '.spi-hint-line{font-family:var(--font-mono,monospace);font-size:9px;letter-spacing:.06em;color:#a9a396;margin-top:6px}';
+    document.head.appendChild(st);
   }
 
   function mount(opts) {
@@ -203,37 +278,32 @@ var DefendAbleStructuredPrompt = (function () {
     _onChange = opts.onChange || null;
     if (!_root) return null;
 
+    injectStyles();
     var B = banks();
     var defs = (B && B.SECTION_DEFS) || [];
-    var sectionsHtml = defs.map(function (def) {
+
+    var stepsHtml = defs.map(function (def, i) {
       return (
-        '<div class="spi-section" data-spi-sec="' + def.id + '">' +
-          '<div class="spi-sec-head">' +
-            '<span class="spi-sec-num">' +
-            (def.id === 'flight' ? '1' : def.id === 'cause' ? '2' : '3') +
-            '</span>' +
-            '<span class="spi-sec-title">' + (B ? B.esc(def.title) : def.title) + '</span>' +
-            '<span class="spi-sec-sub">' + (B ? B.esc(def.sub) : def.sub) + '</span>' +
-            '<span class="spi-meter" data-spi-meter="' + def.id + '"><i></i><i></i><i></i></span>' +
-          '</div>' +
-          '<textarea class="spi-ta" data-spi="' + def.id + '" rows="3" placeholder="' +
-          (B ? B.esc(def.placeholder) : '') + '"></textarea>' +
-          '<div class="spi-chips" data-spi-chips="' + def.id + '"></div>' +
-        '</div>'
+        '<span class="spi-step" data-spi-step="' + def.id + '">' +
+          '<b>' + (i + 1) + '</b> ' + (B ? B.esc(def.title) : def.title) +
+          '<span class="spi-step-meter">' +
+            def.needs.map(function () { return '<i></i>'; }).join('') +
+          '</span>' +
+        '</span>'
       );
     }).join('');
 
     _root.innerHTML =
       '<div class="spi-wrap">' +
         '<div class="spi-main">' +
-          '<p class="spi-lede">Three sections — the shape every good ICC summary already takes. ' +
-          'As you type, chips show what the system recognises. Compose feeds the existing analyser unchanged.</p>' +
-          sectionsHtml +
-          '<div class="spi-compose-bar">' +
-            '<button type="button" class="spi-btn-compose" id="spi-compose-btn">Compose ICC summary</button>' +
-            '<button type="button" class="spi-btn-ghost" id="spi-paste-btn">Paste full ICC into Flight…</button>' +
-            '<span class="spi-hint" id="spi-compose-hint"></span>' +
+          '<div class="spi-structure">' + stepsHtml + '</div>' +
+          '<div class="spi-hlwrap">' +
+            '<div class="spi-backdrop" aria-hidden="true"></div>' +
+            '<textarea class="spi-ta-main" data-spi="main" rows="8" spellcheck="false" placeholder="' +
+            (B ? B.esc(GHOST) : '') + '"></textarea>' +
           '</div>' +
+          '<div class="spi-hint-line">Recognised terms highlight as you type — each one connects the narrative to a disruption tree, its evidence set and its authorities.</div>' +
+          '<div class="spi-chips" data-spi-chips="main"></div>' +
         '</div>' +
         '<aside class="spi-rail">' +
           '<div class="spi-rail-card">' +
@@ -247,39 +317,15 @@ var DefendAbleStructuredPrompt = (function () {
         '</aside>' +
       '</div>';
 
-    Array.prototype.forEach.call(_root.querySelectorAll('.spi-ta'), function (ta) {
-      ta.addEventListener('input', function () {
-        if (typeof currentScenarioKey !== 'undefined') currentScenarioKey = '';
-        scheduleScan();
-      });
-      ta.addEventListener('paste', function () {
-        setTimeout(scheduleScan, 0);
-      });
+    _ta = _root.querySelector('.spi-ta-main');
+    _backdrop = _root.querySelector('.spi-backdrop');
+
+    _ta.addEventListener('input', function () {
+      if (typeof currentScenarioKey !== 'undefined') currentScenarioKey = '';
+      scheduleScan();
     });
-
-    var composeBtn = _root.querySelector('#spi-compose-btn');
-    if (composeBtn) {
-      composeBtn.addEventListener('click', function () {
-        var text = syncHidden();
-        var hint = _root.querySelector('#spi-compose-hint');
-        if (hint) {
-          hint.textContent = text
-            ? (text.indexOf('[FLIGHT]') >= 0 ? 'Canonical summary ready · markers attached' : 'Summary ready · unmarked (single-section)')
-            : 'Add text in at least one section';
-        }
-        if (_onChange) _onChange(text);
-      });
-    }
-
-    var pasteBtn = _root.querySelector('#spi-paste-btn');
-    if (pasteBtn) {
-      pasteBtn.addEventListener('click', function () {
-        var raw = window.prompt('Paste a full ICC / ops summary. It will fill the Flight section (unmarked compose — existing parser path).');
-        if (raw == null) return;
-        setCanonical(raw);
-        if (_onChange) _onChange(compose());
-      });
-    }
+    _ta.addEventListener('paste', function () { setTimeout(scheduleScan, 0); });
+    _ta.addEventListener('scroll', function () { _backdrop.scrollTop = _ta.scrollTop; });
 
     if (_syncEl && _syncEl.value) setCanonical(_syncEl.value);
     else scan();
@@ -289,7 +335,7 @@ var DefendAbleStructuredPrompt = (function () {
       sync: syncHidden,
       setCanonical: setCanonical,
       scan: scan,
-      getSections: sectionValues
+      getSections: getSections
     };
   }
 
@@ -298,7 +344,7 @@ var DefendAbleStructuredPrompt = (function () {
     compose: compose,
     sync: syncHidden,
     setCanonical: setCanonical,
-    getSections: sectionValues
+    getSections: getSections
   };
 })();
 
