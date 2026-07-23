@@ -145,9 +145,23 @@ var DefendAbleDataBankUI = (function () {
         var bankFlight = B2.findFlight(f.fno, f.date);
         var d = B2.disruptionFor(bankFlight || f);
         var narrative = bankFlight ? B2.buildNarrative(d) : fallbackNarrative(f);
+        var seed = null;
+        if (bankFlight) {
+          var rotation = B2.flightsFor(bankFlight.reg, bankFlight.date);
+          var root = B2.rootOf(bankFlight);
+          seed = {
+            source: 'databank',
+            claimed: bankFlight,
+            rotation: rotation,
+            root: (root && root.fno !== bankFlight.fno) ? root : null,
+            disruption: d,
+            mass: bankFlight.mass ? { code: bankFlight.mass, note: (B2.MASS && B2.MASS[bankFlight.mass]) || '' } : null
+          };
+          try { window.__DEFENDABLE_SEED__ = seed; } catch(e) {}
+        }
         _worked[f.fno + '|' + f.date] = true;
         renderQueue();
-        if (_onSelect) _onSelect(narrative, d);
+        if (_onSelect) _onSelect(narrative, d, seed);
       };
     });
   }

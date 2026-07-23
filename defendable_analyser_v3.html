@@ -5937,8 +5937,158 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
     /* ----------------------------------------------------------
        buildChronologicalTimeline — replaces facts panel + causal chain + ev-nodes
     ---------------------------------------------------------- */
+    /* ── Seed-driven timeline: authoritative, ordered, complete ─────────
+       Predecessor cards → root-cause card → claimed-flight card → correct outcome.
+       Zero regex. Used whenever the databank supplied the seed.               */
+    function buildSeededTimeline(facts) {
+      tlEvStatus = {};
+      const claimed = facts;
+      const rotation = (facts.rotation || []).slice()
+        .sort(function(a,b){return String(a.std).localeCompare(String(b.std));});
+      const claimedIdx = rotation.findIndex(function(s){ return s.fno === claimed.flightNum; });
+      const nodes = [];
+      const nodeIdBase = 'tl-cn-';
+      let nodeCounter = 0;
+      function mkId(){ return nodeIdBase + (nodeCounter++); }
+
+      // 1. Predecessor rotation cards (in chronological order, before claimed)
+      const predecessors = claimedIdx > 0 ? rotation.slice(0, claimedIdx) : [];
+      predecessors.forEach(function(s){
+        const cardStatus = s.status === 'ON TIME' ? 'operated on time'
+                         : s.status === 'CANCELLED' ? 'was cancelled'
+                         : s.status === 'DIVERTED' ? 'diverted to ' + (s.divTo || 'alternate')
+                         : s.status === 'DELAYED' ? ('was delayed — arrived +' + (s.arrDelay||0) + ' mins')
+                         : 'operated';
+        const body = [];
+        body.push('Sector ' + s.frm + ' → ' + s.to + '. STD ' + s.std + (s.atd ? ' · ATD ' + s.atd : '') +
+                  ' · STA ' + s.sta + (s.ata ? ' · ATA ' + s.ata : '') + '.');
+        if (s.reason) body.push(s.reason + '.');
+        if (s.causedBy) body.push('Knock-on from ' + s.causedBy + ' (IATA 93).');
+        nodes.push({
+          nodeType: (s.status === 'ON TIME' ? 'impact' : 'cascade'),
+          label: s.fno + ' ' + cardStatus,
+          desc: body.join('<br>'),
+          icon: (s.status === 'ON TIME' ? '✓' : s.status === 'CANCELLED' ? '✕' : '↷'),
+          time: s.std,
+          evidenceItems: [], showAnnotation: false, nodeId: mkId(),
+          cfg: (s.status === 'ON TIME'
+                ? { cardClass:'tl-recovery', dotClass:'tl-dot-green', badgeClass:'tl-badge-recovery', badgeText:'prior sector — clean' }
+                : { cardClass:'tl-cascade',  dotClass:'tl-dot-blue',  badgeClass:'tl-badge-cascade',  badgeText:'prior sector — disrupted' }),
+        });
+      });
+
+      // 2. Root-cause card (only when a distinct root is upstream in the rotation)
+      const root = facts.rootCause;
+      if (root && root.fno !== claimed.flightNum) {
+        const causeSummary = root.reason || 'Prior sector event';
+        const massTag = (facts.mass && facts.mass.code) ? ' · Mass event ' + facts.mass.code +
+                        (facts.mass.note ? ' — ' + facts.mass.note : '') : '';
+        nodes.push({
+          nodeType: 'root',
+          label: 'Root cause on ' + root.fno + ' (' + root.frm + ' → ' + root.to + ')',
+          desc: causeSummary + '.' + massTag +
+                (root.notes ? '<br>' + root.notes + '.' : '') +
+                '<br>Propagated to ' + claimed.flightNum + ' via late inbound aircraft (IATA 93).',
+          icon: '⚡', time: root.std, evidenceItems: [], showAnnotation: false, nodeId: mkId(),
+          cfg: { cardClass:'tl-disruption', dotClass:'tl-dot-amber', badgeClass:'tl-badge-disruption', badgeText:'extraordinary circumstance — root' },
+        });
+      } else if (facts.disruption && facts.disruption.dtype && (!root || root.fno === claimed.flightNum)) {
+        // Direct disruption on the claimed flight itself
+        const massTag = (facts.mass && facts.mass.code) ? ' · Mass event ' + facts.mass.code +
+                        (facts.mass.note ? ' — ' + facts.mass.note : '') : '';
+        nodes.push({
+          nodeType: 'root',
+          label: 'Root cause: ' + facts.disruption.dtype,
+          desc: (claimed.status === 'DELAYED' && claimed.reason ? claimed.reason + '.' : (facts.disruption.dtype + '.')) + massTag,
+          icon: '⚡', time: claimed.depTime,
+          evidenceItems: [], showAnnotation: false, nodeId: mkId(),
+          cfg: { cardClass:'tl-disruption', dotClass:'tl-dot-amber', badgeClass:'tl-badge-disruption', badgeText:'extraordinary circumstance' },
+        });
+      }
+
+      // 3. Claimed-flight departure card — the fact-sheet row
+      const routeStr = (claimed.depIata && claimed.arrIata) ? claimed.depIata + ' → ' + claimed.arrIata : '';
+      const descParts = [
+        claimed.date        ? 'Date: ' + claimed.date : '',
+        claimed.aircraftReg ? 'A/C: ' + claimed.aircraftReg : '',
+        claimed.paxCount    ? 'Pax: ' + claimed.paxCount : '',
+        claimed.depTime     ? 'STD: ' + claimed.depTime : '',
+        claimed.atdTime     ? 'ATD: ' + claimed.atdTime : '',
+        claimed.staTime     ? 'STA: ' + claimed.staTime : '',
+        claimed.ataTime     ? 'ATA: ' + claimed.ataTime : '',
+        claimed.delayText   ? 'Delay: ' + claimed.delayText : '',
+      ].filter(Boolean);
+      nodes.push({
+        nodeType: 'flight-dep',
+        label: claimed.flightNum + (routeStr ? ' — ' + routeStr : ''),
+        desc: descParts.join(' · '),
+        icon: '✈', time: claimed.depTime,
+        evidenceItems: [], showAnnotation: false, nodeId: mkId(),
+        cfg: { cardClass:'tl-flight-hdr', dotClass:'tl-dot-blue', badgeClass:'tl-badge-cascade', badgeText:'claimed flight' },
+      });
+
+      // 4. Correct outcome card — cancellation / diversion / arrival delay
+      if (claimed.isCancelled) {
+        nodes.push({
+          nodeType: 'outcome',
+          label: claimed.flightNum + ' cancelled — ' + (claimed.depIata||'') + ' → ' + (claimed.arrIata||''),
+          desc: (claimed.paxCount ? claimed.paxCount + ' passengers affected. ' : '') +
+                'Reprotection required. Art 5 rights engage in full (compensation, refund/reroute, care).',
+          icon: '✕', time: claimed.depTime,
+          evidenceItems: [], showAnnotation: false, nodeId: mkId(),
+          cfg: { cardClass:'tl-decision', dotClass:'tl-dot-red', badgeClass:'tl-badge-decision', badgeText:'outcome — cancellation' },
+        });
+      } else if (claimed.isDiverted) {
+        nodes.push({
+          nodeType: 'outcome',
+          label: claimed.flightNum + ' diverted to ' + (claimed.divertedTo || 'alternate') + ' — planned ' + (claimed.depIata||'') + ' → ' + (claimed.arrIata||''),
+          desc: (claimed.delayText ? 'Arrival delay ' + claimed.delayText + '. ' : '') +
+                'Passenger onward transport arranged; care provided at diversion airport.',
+          icon: '↳', time: claimed.ataTime || claimed.staTime,
+          evidenceItems: [], showAnnotation: false, nodeId: mkId(),
+          cfg: { cardClass:'tl-decision', dotClass:'tl-dot-blue', badgeClass:'tl-badge-decision', badgeText:'outcome — diversion' },
+        });
+      } else if (claimed.delayMins != null && claimed.delayMins > 0) {
+        const dest = claimed.arrIata || '';
+        nodes.push({
+          nodeType: 'outcome',
+          label: claimed.flightNum + ' suffered an arrival delay of ' + claimed.delayText + (dest ? ' at ' + dest : ''),
+          desc: 'Passengers reached destination — delay quantum ' + claimed.delayText +
+                (claimed.delayMins >= 180 ? '. Sturgeon 3h threshold met — Art 7 compensation engages subject to defence.'
+                                          : '. Below 3h threshold — Art 7 compensation not engaged; Art 9 care applies.'),
+          icon: '⏱', time: claimed.ataTime,
+          evidenceItems: [], showAnnotation: false, nodeId: mkId(),
+          cfg: { cardClass:'tl-decision', dotClass:'tl-dot-red', badgeClass:'tl-badge-decision', badgeText:'outcome — delay' },
+        });
+      }
+      return nodes;
+    }
+
     function buildChronologicalTimeline(facts, causalNodes, dt, isScenarioMode) {
       tlEvStatus = {};
+      // ── Seed-driven path (databank cases) ─────────────────────────────
+      if (facts && facts.seedSource === 'databank') {
+        const seedNodes = buildSeededTimeline(facts);
+        return '<div class="tl-spine">' + seedNodes.map(function(n, i){
+          const isLast = i === seedNodes.length - 1;
+          return '<div class="tl-item">' +
+                   '<div class="tl-marker">' +
+                     '<div class="tl-dot ' + n.cfg.dotClass + '"></div>' +
+                     (isLast ? '' : '<div class="tl-connector"></div>') +
+                   '</div>' +
+                   '<div class="tl-card ' + n.cfg.cardClass + '">' +
+                     '<div class="tl-node-type ' + n.cfg.badgeClass + '">' + n.cfg.badgeText + '</div>' +
+                     '<div class="tl-head">' +
+                       '<span class="tl-label">' + n.label + '</span>' +
+                       (n.time ? '<span class="tl-time">' + n.time + '</span>' : '') +
+                     '</div>' +
+                     '<div class="tl-desc">' + n.desc + '</div>' +
+                   '</div>' +
+                 '</div>';
+        }).join('') + '</div>';
+      }
+      // ── Legacy path (typed / uploaded free-text) ──────────────────────
+      // (original body below, unchanged)
 
       const typeConfig = {
         root:        { cardClass:'tl-disruption', dotClass:'tl-dot-amber', badgeClass:'tl-badge-disruption', badgeText:'extraordinary circumstance' },
@@ -7647,6 +7797,27 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
     }
 
     function buildLOFCustomEmpty() {
+      // Databank seed wins — authoritative rotation, correct order and statuses
+      const seed = (typeof window !== 'undefined' && window.__DEFENDABLE_SEED__) || null;
+      if (seed && seed.rotation && seed.rotation.length) {
+        const rows = seed.rotation.slice()
+          .sort(function(a,b){return String(a.std).localeCompare(String(b.std));})
+          .map(function(s){
+            const status = (s.status === 'ON TIME' ? 'On Time'
+                           : s.status === 'CANCELLED' ? 'Cancelled'
+                           : s.status === 'DIVERTED' ? 'Diverted'
+                           : s.status === 'DELAYED' ? 'Delayed' : '');
+            const note = [];
+            if (s.reason) note.push(s.reason);
+            if (s.divTo) note.push('→ ' + s.divTo);
+            if (s.arrDelay) note.push('+' + s.arrDelay + 'm');
+            if (s.causedBy) note.push('↳ ' + s.causedBy);
+            return { flight: s.fno, route: s.frm + ' → ' + s.to,
+                     std: s.std, atd: s.atd || '', sta: s.sta, ata: s.ata || '',
+                     status: status, note: note.join(' · ') };
+          });
+        return buildLOFEditable(rows);
+      }
       const raw = (document.getElementById('iccText') || document.getElementById('icc-input') || {}).value || currentInputText || '';
       const rows = parseLOFFromText(raw);
       return buildLOFEditable(rows);
