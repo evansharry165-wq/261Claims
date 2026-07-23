@@ -6,7 +6,7 @@
   'use strict';
 
   var CARRIER_PREFIXES = [
-    'EZY', 'EJU', 'EZS', 'EZT', 'U2', 'BAW', 'RYR', 'IBE', 'AEA', 'VLG',
+    'EZY', 'EJU', 'EZS', 'EZT', 'U2', 'E2', 'H2', 'BAW', 'RYR', 'IBE', 'AEA', 'VLG',
     'TOM', 'TCX', 'BE', 'FR', 'W6', 'LS', 'BY', 'DY', 'VY', 'LH', 'BA',
     'AF', 'KL', 'IB', 'AZ', 'SK', 'TP', 'SN', 'HV', 'TO', 'QS', 'OK',
     'BT', 'LO', 'LX', 'OS'
@@ -133,6 +133,13 @@
         num = m[3];
         if (!lastCarrier) continue;
         if (looksLikePaxCount(text, m.index)) continue;
+        // Never adopt a number that directly follows a time label (STD 0615, ATA 1129...)
+        var timeLbl = text.slice(Math.max(0, m.index - 7), m.index);
+        if (/(?:STD|ATD|STA|ATA|ETA|ETD|CTOT|dep|arr)\s*$/i.test(timeLbl)) continue;
+        // Never adopt date components (15/07/2026) or counts (Pax 157, 186 seats)
+        if (text.charAt(m.index - 1) === '/') continue;
+        if (/(?:pax|seats?)\s*$/i.test(timeLbl)) continue;
+        if (/^\s*(?:pax|seats?|mins?|minutes)\b/i.test(text.slice(m.index + num.length, m.index + num.length + 9))) continue;
         // Bare number — only adopt if nearby ops language suggests a flight
         var window = text.slice(Math.max(0, m.index - 40), m.index + 80).toLowerCase();
         var looksLikeFlight = /\b(flight|flt|sched|scheduled|dep|depart|arr|inbound|outbound|pirep|rotation|sector|doors?|boarded|held|claim|ezy|eju)\b/.test(window)

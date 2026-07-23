@@ -8785,7 +8785,7 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
 
       // ── Multi-sector cascade: extract all subsequent flight references ────────
       // Build ordered list of unique flight codes mentioned in text
-      const flightExtRe = /\b(EZY|EJU|EZS|EZT|U2|BE|FR|W6|LS|TOM|TCX|BY|DY|VY|LH|BA|AF|KL|IB|AZ|SK|TP|SN|HV|TO|QS|OK|BT|LO|LX|OS|BAW|RYR|IBE|AEA|VLG|HV)\s*(\d{2,4})\b/gi;
+      const flightExtRe = /\b(EZY|EJU|EZS|EZT|U2|E2|H2|BE|FR|W6|LS|TOM|TCX|BY|DY|VY|LH|BA|AF|KL|IB|AZ|SK|TP|SN|HV|TO|QS|OK|BT|LO|LX|OS|BAW|RYR|IBE|AEA|VLG|HV)\s*(\d{2,4})\b/gi;
       const seenFltCodes = new Set();
       const flightSeq    = [];
       let fxm;
