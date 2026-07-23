@@ -3450,29 +3450,13 @@
       <div class="zone-body" id="zone1-body"></div>
     </div>
 
-    <!-- Right rail: Classification + Legal Output -->
-    <div class="zone-right-rail" id="zoneRightRail">
-
-      <!-- Zone 2: Legal Classification -->
-      <div class="zone-2" id="zone2">
-        <div class="zone-bar">
-          <span class="zone-bar__label">02 · Legal Classification — what the law makes of it</span>
-          <span class="zone-bar__sub">Disruption type · Art 5(3) two-limb test · why this route was taken</span>
-        </div>
-        <div class="zone-body" id="zone2-body"></div>
-      </div>
-
-      <!-- Zone 3: Legal Position -->
-      <div class="zone-3" id="zone3">
-        <div class="zone-bar">
-          <span class="zone-bar__label">03 · Legal Position — where the airline stands</span>
-          <span class="zone-bar__sub">Verdict · quantum · authorities · lawyer sign-off before Manage</span>
-        </div>
-        <div class="zone-body" id="zone3-body"></div>
-      </div>
-
+    <!-- Legacy Zone 2 / Zone 3 legal panels removed — the Legal Review slideshow
+         modal (defendable_legal_review.js) is the sole legal surface. Hidden anchor
+         divs preserved so any lingering write attempts don't throw. -->
+    <div id="zoneRightRail" style="display:none">
+      <div id="zone2"><div id="zone2-body"></div></div>
+      <div id="zone3"><div id="zone3-body"></div></div>
     </div>
-    <!-- / zone-right-rail -->
 
   </div>
   <!-- / workspace-grid -->
