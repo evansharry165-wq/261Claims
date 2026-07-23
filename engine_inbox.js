@@ -87,7 +87,8 @@ var EngineInbox = (function () {
     var caseObj = CaseFiling.getCase(caseRef);
     if (!caseObj) return null;
     var targetStage = caseObj.stage === STAGE
-      ? (caseObj.classification && /HOLD|CONDITIONS/i.test(caseObj.classification) ? 'evidence' : 'triage')
+      ? (caseObj.suggestedStage
+         || (caseObj.classification && /HOLD|CONDITIONS/i.test(caseObj.classification) ? 'evidence' : 'triage'))
       : caseObj.stage;
     CaseFiling.updateCaseMeta(caseRef, {
       assignedTo: userId,
