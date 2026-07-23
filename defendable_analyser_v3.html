@@ -6314,6 +6314,31 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
       if (typeof DefendableIccParse !== 'undefined' && DefendableIccParse.enrichFacts) {
         currentFacts = DefendableIccParse.enrichFacts(currentFacts, inputText) || currentFacts;
       }
+      // ── SEED OVERRIDE — when the databank supplied structured facts, they are
+      //    authoritative. The typed-text parsers are silenced for this case.
+      const __seed = (typeof window !== 'undefined' && window.__DEFENDABLE_SEED__) || null;
+      if (__seed && __seed.claimed) {
+        const cf = __seed.claimed;
+        currentFacts = Object.assign({}, currentFacts || {}, {
+          flightNum: cf.fno,
+          depIata: cf.frm, arrIata: cf.to,
+          date: cf.date, aircraftReg: cf.reg,
+          paxCount: cf.pax,
+          depTime: cf.std, atdTime: cf.atd || '',
+          staTime: cf.sta, ataTime: cf.ata || '',
+          delayText: (cf.arrDelay != null ? cf.arrDelay + ' mins' : ''),
+          delayMins: (cf.arrDelay != null ? cf.arrDelay : null),
+          status: cf.status,
+          divertedTo: cf.divTo || '',
+          rotation: __seed.rotation || [],
+          rootCause: __seed.root || null,
+          disruption: __seed.disruption || null,
+          mass: __seed.mass || null,
+          isCancelled: cf.status === 'CANCELLED',
+          isDiverted: cf.status === 'DIVERTED',
+          seedSource: 'databank'
+        });
+      }
       if (currentFacts) {
         if (currentFacts.depIata) currentDepIata = currentFacts.depIata;
         if (currentFacts.arrIata) currentArrIata = currentFacts.arrIata;
