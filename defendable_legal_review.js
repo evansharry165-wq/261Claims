@@ -550,17 +550,37 @@ var DefendAbleLegalReview = (function () {
           DefendAbleDecideWorkspace.signOff('approve', { by: by, note: '' });
         }
       } catch (e) {}
-      toast('Approved by ' + by + ' — sending to case management…');
+      toast('Approved by ' + by + ' — filing into Engine Inbox…');
+      // Direct file — build pack, mark G1, file into Manage. No secondary modal.
       setTimeout(function () {
+        var filedRef = null;
         try {
-          if (typeof DefendAbleDecideWorkspace !== 'undefined' && DefendAbleDecideWorkspace.sendToManage) {
-            DefendAbleDecideWorkspace.sendToManage();
-          } else if (typeof openCaseHandoffPack === 'function') {
-            openCaseHandoffPack();
+          var record = (typeof confirmedRecord !== 'undefined') ? confirmedRecord : null;
+          var run = (typeof lastDecideRun !== 'undefined') ? lastDecideRun : null;
+          if (record && !record.g1) {
+            record.g1 = { action: 'approve', by: by, at: new Date().toISOString(), note: '' };
           }
-        } catch (e) {}
+          if (typeof DefendAbleCaseHandoff !== 'undefined' && DefendAbleCaseHandoff.buildPack) {
+            var pack = DefendAbleCaseHandoff.buildPack(record || {}, run || {}, {});
+            // Synthesise a claimant name if none present (unlike LOC path, engine cases start without one)
+            var f = state.facts || {};
+            pack.meta.claimant = pack.meta.claimant || ('Claimant TBC — ' + (f.flightNum || 'flight') + ' ' + (f.date || ''));
+            pack.meta.stage = 'inbox';           // ensure the inbox routing lands
+            pack.meta.assignedTo = null;
+            pack.meta.source = 'engine';
+            filedRef = pack.meta.caseRef;
+            DefendAbleCaseHandoff.fileIntoManage(pack);
+          }
+        } catch (e) { console.error('Engine Inbox file failed', e); }
         close();
-      }, 900);
+        if (filedRef) {
+          var t = document.createElement('div');
+          t.className = 'lrv-toast show';
+          t.innerHTML = 'Filed to Engine Inbox as <b style="color:#fff">' + esc(filedRef) + '</b> — <a href="cases.html?filter=inbox" style="color:#8FC9A8;text-decoration:underline">open inbox →</a>';
+          document.body.appendChild(t);
+          setTimeout(function(){ t.classList.remove('show'); setTimeout(function(){t.remove();},400); }, 5000);
+        }
+      }, 700);
     };
     sendbackBtn.onclick = function () {
       var by = (byInput && byInput.value.trim()) || (window.prompt('Your initials for the send-back record:') || '').trim();
