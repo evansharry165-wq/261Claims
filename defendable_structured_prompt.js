@@ -32,7 +32,7 @@ var DefendAbleStructuredPrompt = (function () {
       });
     });
     terms.sort(function (a, b) { return b.length - a.length; });
-    _triggerRe = new RegExp('(^|[^A-Za-z0-9])(' + terms.join('|') + ')(?=$|[^A-Za-z0-9])', 'gi');
+    _triggerRe = new RegExp('(^|[^A-Za-z0-9])(' + terms.join('|') + ')(s?)(?=$|[^A-Za-z0-9])', 'gi');
     return _triggerRe;
   }
 
@@ -87,8 +87,8 @@ var DefendAbleStructuredPrompt = (function () {
     var html = escHtml(getText());
     if (re) {
       re.lastIndex = 0;
-      html = html.replace(re, function (m, pre, term) {
-        return pre + '<mark class="spi-mark">' + term + '</mark>';
+      html = html.replace(re, function (m, pre, term, plural) {
+        return pre + '<mark class="spi-mark">' + term + (plural || '') + '</mark>';
       });
     }
     _backdrop.innerHTML = html + '\n';
