@@ -561,6 +561,13 @@ var DefendAbleCaseHandoff = (function () {
     var decide = pack.decideSection || {};
     var record = (pack.source && pack.source.record) || {};
     var run = (pack.source && pack.source.run) || {};
+    // ── Engine Inbox routing — cases from the engine land unassigned in the inbox
+    //    S. Booth (or a lead) assigns them out from cases.html. The suggested
+    //    stage becomes the case's post-assignment stage, stored for later.
+    meta.suggestedStage = meta.stage || 'triage';
+    meta.stage = 'inbox';
+    meta.assignedTo = null;
+    meta.source = 'engine';
     var ref = meta.caseRef || suggestRef(facts, facts.lofRows);
     var juris = facts.jurisdiction === 'UK261' || facts.jurisdiction === 'england-wales'
       ? 'england-wales'

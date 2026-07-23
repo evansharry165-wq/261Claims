@@ -73,6 +73,8 @@ tr.row-urgent .td-name{font-weight:600}
 </head>
 <body>
 <script src="shared_data.js"></script>
+<script src="case_filing.js"></script>
+<script src="engine_inbox.js"></script>
 <script src="shared_theme.js"></script>
 <script src="case_helpers.js"></script>
 <script src="case_filing.js"></script>
@@ -95,6 +97,7 @@ tr.row-urgent .td-name{font-weight:600}
       <div class="page-title" id="hdr-title">Cases</div>
       <div class="page-sub" id="hdr-sub"></div>
     </div>
+    <div id="engine-inbox-mount" style="margin:0 24px 0"></div>
     <div class="search-row">
       <div class="search-wrap">
         <i class="ti ti-search"></i>
@@ -136,6 +139,19 @@ var activeFilter = 'all';
 
 function escapeHtml(v){return String(v==null?'':v).replace(/[&<>"']/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch];});}
 
+function mergedCases(){
+  var base=typeof ALL_CASES!=='undefined'?ALL_CASES.slice():[];
+  if(typeof CaseFiling==='undefined')return base;
+  var refs={}; base.forEach(function(c){refs[c.ref]=1;});
+  try{
+    CaseFiling.listCases().forEach(function(c){
+      if(!c||c.stage==='inbox')return; // inbox is its own panel
+      if(refs[c.ref])return;
+      base.push(c);
+    });
+  }catch(e){}
+  return base;
+}
 function isDIO(){
   var uid=typeof getActiveUser==='function'?getActiveUser():'';
   return typeof USERS!=='undefined'&&USERS[uid]&&USERS[uid].team==='dio';
@@ -148,7 +164,7 @@ function getDIOJurisdiction(){
 
 function renderDIOCases(){
   var jur=getDIOJurisdiction();
-  var cases=typeof ALL_CASES!=='undefined'?ALL_CASES:[];
+  var cases=mergedCases();
   var jurCases=cases.filter(function(c){
     return c.jurisdiction===jur&&c.stage!=='resolve';
   }).sort(function(a,b){return (a.cprDaysLeft||99)-(b.cprDaysLeft||99);});
@@ -267,6 +283,11 @@ function renderCases(){
     return;
   }
   resetDIOView();
+  // Engine Inbox — mount above the case grid so it's the first thing S. Booth sees
+  if(typeof EngineInbox!=='undefined'){
+    var mnt=document.getElementById('engine-inbox-mount');
+    if(mnt) EngineInbox.renderPanel(mnt);
+  }
   var uid=getActiveUser();
   var params=getParams();
   var searchEl=document.getElementById('search');
@@ -334,6 +355,14 @@ function switchUser(id){
   if(typeof renderGlobalNav==='function')renderGlobalNav();
 }
 
+function handleInboxHash(){
+  var p=new URLSearchParams(window.location.search);
+  if(p.get('filter')==='inbox'){
+    var el=document.getElementById('engine-inbox-mount');
+    if(el && el.scrollIntoView) el.scrollIntoView({behavior:'smooth',block:'start'});
+  }
+}
+window.addEventListener('load',function(){setTimeout(handleInboxHash,300);});
 window.addEventListener('load', function(){
   ensureCaseListChrome();
   var attempts = 0;
