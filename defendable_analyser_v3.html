@@ -6353,12 +6353,39 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
       }
 
       // Classify disruption type; fall back to 'unknown' sentinel if nothing matches
-      const dt = detectDisruptionType(inputText) || {
+      let dt = detectDisruptionType(inputText) || {
         id: 'unknown', label: 'Unclassified', limb1Status: 'contested',
         limb1: 'Disruption type could not be determined from the summary text. Review the summary and identify the root cause event before proceeding.',
         keywords: [], challenges: [], caselaw: [], caselawIds: [],
         primaryKeywords: []
       };
+      // ── Seed-authoritative classifier override ───────────────────────
+      //    When the databank supplied the disruption, its type is authoritative.
+      //    Mass event wins (W401 → weather, S502 → third-party ATC strike);
+      //    otherwise map the root/claimed disruption type onto our dt catalogue.
+      if (__seed && __seed.claimed) {
+        const massCode = (__seed.mass && __seed.mass.code) || (__seed.claimed && __seed.claimed.mass) || '';
+        const rootReason = ((__seed.root && __seed.root.reason) || (__seed.claimed && __seed.claimed.reason) || '').toLowerCase();
+        const dtypeText = ((__seed.disruption && __seed.disruption.dtype) || '').toLowerCase();
+        let seedDtId = null;
+        if (massCode === 'W401' || /thunderstorm|weather|snow|storm|fog|lightning|ts\b|cb\b|metar|taf/.test(rootReason + ' ' + dtypeText)) seedDtId = 'weather';
+        else if (massCode === 'S502' || /atc strike|third[- ]party (strike|ia)|handler strike|airport strike/.test(rootReason + ' ' + dtypeText)) seedDtId = 'third-party-ia';
+        else if (/bird\s?strike/.test(rootReason + ' ' + dtypeText)) seedDtId = 'birdstrike';
+        else if (/medical/.test(rootReason + ' ' + dtypeText)) seedDtId = 'medical';
+        else if (/security|bomb|evacuation/.test(rootReason + ' ' + dtypeText)) seedDtId = 'security';
+        else if (/disruptive|unruly/.test(rootReason + ' ' + dtypeText)) seedDtId = 'disruptive-pax';
+        else if (/atfm|ctot|slot|eurocontrol/.test(rootReason + ' ' + dtypeText)) seedDtId = 'atfm';
+        else if (/fuelling|runway|handler|airport/.test(rootReason + ' ' + dtypeText)) seedDtId = 'airport-closure';
+        else if (/technical|defect|aog/.test(rootReason + ' ' + dtypeText)) seedDtId = 'technical';
+        // ONLY use crew-sick if the seed root itself says crew illness, not FDP-cascade language
+        else if (/crew (sick|illness)|captain (sick|unwell)/.test(rootReason + ' ' + dtypeText)) seedDtId = 'crew-sick';
+        if (seedDtId && typeof DISRUPTION_TYPES !== 'undefined') {
+          const seedDt = (DISRUPTION_TYPES || []).find(function(x){ return x.id === seedDtId; });
+          if (seedDt) {
+            dt = seedDt;
+          }
+        }
+      }
       currentDT = dt;
       rmResponses = {};
       nodeAnnotations = {};

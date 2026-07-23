@@ -35,7 +35,14 @@ var DefendAbleLegalReview = (function () {
         ? rootReason + mass + ' — extraordinary circumstance under ' + art53
         : 'Extraordinary circumstance under ' + art53;
       if (v === 'DEFEND') return head + '. All measures deployed.';
-      if (conditions.length) return head + ' — subject to: ' + conditions.slice(0, 3).join(' · ') + '.';
+      var cleanConds = (conditions || []).map(function(c){
+        return String(c).replace(/^(EVIDENCE_HOLD|DEFEND_HOLD|SETTLE|DEFEND|JUDGMENT_REQUIRED)\s*[:\-—]\s*/i, '')
+                       .replace(/^Collect key evidence:\s*/i, '')
+                       .replace(/\s+—\s+proof pending$/i, '')
+                       .replace(/\s+—\s+Flight Details & Legislation$/i, '')
+                       .trim();
+      }).filter(function(c){ return c && c.length > 3; }).slice(0, 3);
+      if (cleanConds.length) return head + ' — subject to: ' + cleanConds.join(' · ') + '.';
       return head + '.';
     }
     if (v === 'SETTLE') {
