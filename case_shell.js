@@ -225,14 +225,82 @@ var CaseShell = (function () {
     }).join('');
   }
 
+/* ── Case-page helpers (engine-integrated) ───────────────────────────── */
+  function _packet(refKey) {
+    if (typeof CaseFiling === 'undefined') return null;
+    var doc = CaseFiling.findByDocKey && CaseFiling.findByDocKey(state.ref, refKey);
+    if (!doc) return null;
+    try { return JSON.parse(doc.content || 'null'); } catch (e) { return null; }
+  }
+
+  function _lofRows() {
+    // Prefer the case_packet's stored LOF (from the engine); fall back to any decision_packet points
+    var pk = _packet('case_packet');
+    if (pk && pk.factsSection && Array.isArray(pk.factsSection.lofRows) && pk.factsSection.lofRows.length) {
+      return pk.factsSection.lofRows;
+    }
+    return [];
+  }
+
+  function _defensibilityLine(c) {
+    // "This case is defendable on the basis of X" style, plain English, one sentence
+    var primary = (c.disruptionType || '').replace(/[-_]/g,' ').replace(/\b\w/g,function(x){return x.toUpperCase();});
+    var secondary = (c.secondaryType || '').replace(/[-_]/g,' ').replace(/\b\w/g,function(x){return x.toUpperCase();});
+    var v = String(c.classification || '').toUpperCase();
+    var head;
+    if (v.indexOf('DEFEND_WITH_CONDITIONS') >= 0 || v.indexOf('CONDITIONS') >= 0) head = 'This case is defendable, subject to evidence.';
+    else if (v.indexOf('DEFEND_HOLD') >= 0 || v.indexOf('HOLD') >= 0) head = 'This case can be defended — evidence pending.';
+    else if (v.indexOf('DEFEND') >= 0) head = 'This case is defendable.';
+    else if (v.indexOf('SETTLE') >= 0 || v.indexOf('CONCEDE') >= 0) head = 'This case is not defensible on the confirmed facts — consider early settlement.';
+    else if (v.indexOf('JUDGMENT') >= 0) head = 'The facts and the law give conflicting signals for this case — a senior judgment is required.';
+    else head = 'Legal position pending.';
+    var basis = primary ? ('The primary disruption is <b>' + escapeHtml(primary) + '</b>' + (secondary ? ' with contributing <b>' + escapeHtml(secondary) + '</b>' : '') + '.') : '';
+    return head + (basis ? ' ' + basis : '');
+  }
+
+  function _evidenceList() {
+    // Derive from case_packet.factsSection.evidenceMarks OR from decision_packet points
+    var pk = _packet('case_packet');
+    var out = [];
+    if (pk && pk.factsSection && Array.isArray(pk.factsSection.evidenceMarks)) {
+      pk.factsSection.evidenceMarks.forEach(function (m) {
+        out.push({ text: m.name || m.key || 'Evidence item', held: (m.status === 'available' || m.status === 'on_file' || m.status === 'held') });
+      });
+    }
+    if (!out.length) {
+      var c = state.caseData || {};
+      (c.points || []).forEach(function (pt) {
+        out.push({ text: pt.evidenceDoc || pt.claim || 'Evidence point', held: pt.evidenceStatus === 'green' });
+      });
+    }
+    return out.slice(0, 12);
+  }
+
+  function _totalDelayLabel(c) {
+    var pk = _packet('case_packet');
+    if (pk && pk.factsSection) {
+      var d = pk.factsSection.delay;
+      if (d) return String(d);
+    }
+    if (c.delay) return c.delay;
+    return '—';
+  }
+
+  function _timesLine(c) {
+    var pk = _packet('case_packet');
+    var f = (pk && pk.factsSection) || {};
+    var route = f.route || (c.dep && c.arr ? c.dep + ' → ' + c.arr : '');
+    var date = f.flightDate || c.flightDate || '';
+    var flight = f.flightNum || c.flightNum || '';
+    return [flight, route, date].filter(Boolean).join(' · ');
+  }
+
   function renderOverview() {
+    _injectCEStyles();
     var c = state.caseData;
     if (!c) return;
     var action = typeof getNextAction === 'function' ? getNextAction(c) : { text: 'Review case', tab: 'overview' };
     var J = typeof getJurisdiction === 'function' ? getJurisdiction(c.jurisdiction) : {};
-    var similar = ALL_CASES.filter(function (s) {
-      return s.ref !== c.ref && (s.disruptionType === c.disruptionType || s.jurisdiction === c.jurisdiction);
-    }).slice(0, 2);
 
     var stages = [
       { id: 'intake', label: 'Intake', tab: null },
@@ -247,142 +315,126 @@ var CaseShell = (function () {
       return s.id === c.stage || (c.stage === 'defence' && s.id === 'drafting');
     });
 
-    var enginePanel = '';
     var isEngine = c.origin === 'legal_engine' || (typeof CaseFiling !== 'undefined' && CaseFiling.findByDocKey && CaseFiling.findByDocKey(c.ref, 'decision_packet'));
-    if (isEngine) {
-      var docs = typeof CaseFiling !== 'undefined' ? CaseFiling.getDocuments(c.ref) : [];
-      var legalDoc = docs.filter(function (d) { return d.docKey === 'legal_position'; })[0];
-      var summaryDoc = docs.filter(function (d) { return d.docKey === 'case_summary'; })[0];
-      var locBadge = c.locReady
-        ? '<span class="case-bar-pill" style="background:var(--confirm-faint);color:var(--confirm)">LOC on file</span>'
-        : '<span class="case-bar-pill" style="background:var(--caution-faint);color:var(--caution)">Awaiting LOC</span>';
-      enginePanel =
-        '<div class="panel-card" style="grid-column:1/-1">' +
-        '<div class="pc-label">Legal Engine handoff</div>' +
-        '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">' +
-        '<span class="case-bar-pill" style="background:var(--accent-faint);color:var(--accent)">Engine origin</span>' +
-        locBadge +
-        (c.classification
-          ? '<span class="case-bar-pill" style="background:var(--surface3);color:var(--ink2)">' +
-            escapeHtml(c.classification) +
-            '</span>'
-          : '') +
-        '</div>' +
-        (c.verdictTitle
-          ? '<div class="pc-title" style="font-size:15px;margin-bottom:6px">' + escapeHtml(c.verdictTitle) + '</div>'
-          : '') +
-        (c.verdictSub
-          ? '<div style="font-size:12px;color:var(--text2);margin-bottom:10px">' + escapeHtml(c.verdictSub) + '</div>'
-          : '') +
-        (c.caseSummary
-          ? '<div style="font-size:12px;line-height:1.55;white-space:pre-wrap;margin-bottom:12px;color:var(--text)">' +
-            escapeHtml(String(c.caseSummary).slice(0, 800)) +
-            '</div>'
-          : '') +
-        ((c.conditions || []).length
-          ? '<div style="font-size:11px;margin-bottom:10px"><strong>Conditions:</strong> ' +
-            escapeHtml((c.conditions || []).join('; ')) +
-            '</div>'
-          : '') +
-        '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">' +
-        (legalDoc
-          ? '<button class="btn-primary" type="button" onclick="CaseShell.openFilingDoc(\'legal_position\')">Open legal position</button>'
-          : '') +
-        (summaryDoc
-          ? '<button class="btn-primary" type="button" style="background:var(--ink2)" onclick="CaseShell.openFilingDoc(\'case_summary\')">Open case summary</button>'
-          : '') +
-        '<button class="btn-primary" type="button" style="background:var(--ink2)" onclick="CaseShell.switchTab(\'evidence\')">Evidence list</button>' +
-        '<a class="btn-primary" style="text-decoration:none;background:var(--ink2)" href="repository.html?ref=' +
-        encodeURIComponent(c.ref) +
-        '">All filing docs</a>' +
-        '</div>';
+    var lof = _lofRows();
+    var evidence = _evidenceList();
+    var defLine = _defensibilityLine(c);
 
-      if (!c.locReady) {
-        enginePanel +=
-          '<div style="border-top:1px solid var(--border);padding-top:12px;margin-top:4px">' +
-          '<div class="pc-label">Awaiting Letter of Claim</div>' +
-          '<div style="font-size:12px;color:var(--text2);margin-bottom:8px">Case details from the engine are ready. Paste or drop the LOC when it arrives — no re-keying of facts.</div>' +
-          '<textarea id="shell-loc-paste" rows="4" placeholder="Paste LOC text or note…" style="width:100%;font-size:12px;padding:8px;border:1px solid var(--border);border-radius:var(--r);font-family:var(--font);margin-bottom:8px"></textarea>' +
-          '<button class="btn-primary" type="button" onclick="CaseShell.receiveLoc()">Mark LOC received</button>' +
-          '</div>';
-      }
-      enginePanel += '</div>';
+    // ── Engine intelligence card (full width, top)
+    var enginePanel = '';
+    if (isEngine) {
+      var vClass = 'ce-v-neutral';
+      var v = String(c.classification || '').toUpperCase();
+      if (v.indexOf('DEFEND_WITH_CONDITIONS') >= 0 || v.indexOf('CONDITIONS') >= 0) vClass = 'ce-v-defend-c';
+      else if (v.indexOf('DEFEND_HOLD') >= 0 || v.indexOf('HOLD') >= 0) vClass = 'ce-v-hold';
+      else if (v.indexOf('DEFEND') >= 0) vClass = 'ce-v-defend';
+      else if (v.indexOf('SETTLE') >= 0) vClass = 'ce-v-settle';
+      enginePanel =
+        '<div class="ce-engine ' + vClass + '">' +
+          '<div class="ce-eng-kicker">From the Legal Engine</div>' +
+          '<div class="ce-eng-verdict">' + escapeHtml((v || 'Position pending').replace(/_/g,' ').replace(/\b\w/g,function(x){return x.toUpperCase();})) + '</div>' +
+          '<div class="ce-eng-defence">' + defLine + '</div>' +
+          '<div class="ce-eng-actions">' +
+            '<button class="btn-primary" type="button" onclick="CaseShell.openFilingDoc(\'legal_position\')">Open legal position</button>' +
+            '<button class="btn-primary" type="button" style="background:var(--ink2)" onclick="CaseShell.openFilingDoc(\'case_summary\')">Open case summary</button>' +
+            '<button class="btn-primary" type="button" style="background:var(--surface3);color:var(--ink)" onclick="CaseShell.switchTab(\'evidence\')">Evidence workspace</button>' +
+            '<a class="btn-primary" style="text-decoration:none;background:var(--surface3);color:var(--ink)" href="repository.html?ref=' + encodeURIComponent(c.ref) + '">All filing docs</a>' +
+          '</div>' +
+        '</div>';
     }
+
+    // ── LOF at a glance
+    var lofPanel =
+      '<div class="panel-card ce-lof-card">' +
+        '<div class="pc-label">Line of Flying — at a glance</div>' +
+        '<div class="ce-lof-head">' +
+          '<div><span class="ce-lof-lbl">Flight</span><span class="ce-lof-val">' + escapeHtml(c.flightNum || c.flight || '—') + '</span></div>' +
+          '<div><span class="ce-lof-lbl">Route</span><span class="ce-lof-val">' + escapeHtml((c.dep && c.arr) ? c.dep + '→' + c.arr : '—') + '</span></div>' +
+          '<div><span class="ce-lof-lbl">Date</span><span class="ce-lof-val">' + escapeHtml(c.flightDate || '—') + '</span></div>' +
+          '<div><span class="ce-lof-lbl">Overall delay</span><span class="ce-lof-val" style="color:var(--alert)">' + escapeHtml(_totalDelayLabel(c)) + '</span></div>' +
+        '</div>' +
+        (lof.length
+          ? '<table class="ce-lof-table"><thead><tr><th>Flight</th><th>Route</th><th>Status</th><th>Note</th></tr></thead><tbody>' +
+              lof.map(function (r) {
+                var st = (r.status || '').toUpperCase();
+                var cls = st.indexOf('CANCEL') >= 0 ? 'st-canx' : st.indexOf('DIVERT') >= 0 ? 'st-div' : st.indexOf('DELAY') >= 0 ? 'st-del' : 'st-on';
+                return '<tr><td class="mono">' + escapeHtml(r.flight || '—') + '</td>' +
+                       '<td class="mono">' + escapeHtml(r.route || '—') + '</td>' +
+                       '<td><span class="ce-st ' + cls + '">' + escapeHtml(r.status || 'On Time') + '</span></td>' +
+                       '<td>' + escapeHtml(r.note || '') + '</td></tr>';
+              }).join('') +
+            '</tbody></table>'
+          : '<div class="empty-note" style="margin-top:8px">Line of flying not on file — check the case packet.</div>') +
+      '</div>';
+
+    // ── Evidence checklist (replaces Similar Cases)
+    var heldN = evidence.filter(function (e) { return e.held; }).length;
+    var missN = evidence.length - heldN;
+    var evPanel =
+      '<div class="panel-card ce-ev-card">' +
+        '<div class="pc-label">Evidence checklist</div>' +
+        '<div class="ce-ev-head"><span class="ce-ev-count held">' + heldN + ' on file</span> · <span class="ce-ev-count miss">' + missN + ' outstanding</span></div>' +
+        (evidence.length
+          ? '<ul class="ce-ev-list">' + evidence.map(function (e) {
+              return '<li class="' + (e.held ? 'held' : 'miss') + '"><span class="ce-ev-dot"></span>' + escapeHtml(e.text) + '</li>';
+            }).join('') + '</ul>'
+          : '<div class="empty-note" style="margin-top:8px">No checklist available.</div>') +
+        (missN ? '<div class="ce-ev-cta"><a href="repository.html?ref=' + encodeURIComponent(c.ref) + '">Repository →</a> · <a href="#" onclick="CaseShell.switchTab(\'evidence\');return false">Evidence workspace →</a></div>' : '') +
+      '</div>';
+
+    // ── LOC dropzone (only when not received)
+    var locPanel = '';
+    if (isEngine && !c.locReady) {
+      locPanel =
+        '<div class="panel-card ce-loc-card" style="grid-column:1/-1">' +
+          '<div class="pc-label">Awaiting Letter of Claim</div>' +
+          '<div class="ce-loc-hint">Drop the LOC below (PDF or DOCX) or paste its text. Case facts are pre-populated from the engine — no re-keying.</div>' +
+          '<div class="ce-loc-drop" id="ce-loc-drop" ondragover="event.preventDefault();this.classList.add(\'over\')" ondragleave="this.classList.remove(\'over\')" ondrop="CaseShell.dropLoc(event)">' +
+            '<i class="ti ti-cloud-upload"></i>' +
+            '<div><b>Drop LOC file here</b> or <a href="#" onclick="document.getElementById(\'ce-loc-file\').click();return false">browse</a></div>' +
+            '<input type="file" id="ce-loc-file" accept=".pdf,.docx" style="display:none" onchange="CaseShell.pickLoc(event)">' +
+          '</div>' +
+          '<textarea id="shell-loc-paste" rows="3" placeholder="…or paste LOC text / note here" class="ce-loc-paste"></textarea>' +
+          '<div style="text-align:right"><button class="btn-primary" type="button" onclick="CaseShell.receiveLoc()">Mark LOC received</button></div>' +
+        '</div>';
+    }
+
+    // ── Pipeline (unchanged — still useful)
+    var pipelinePanel =
+      '<div class="panel-card">' +
+        '<div class="pc-label">Pipeline</div>' +
+        '<div class="mini-pipeline">' +
+          stages.map(function (s, i) {
+            var cls = i < stageIdx ? 'done' : i === stageIdx ? 'current' : '';
+            var click = s.tab ? 'onclick="CaseShell.switchTab(\'' + s.tab + '\')"' : '';
+            return '<div class="mp-step ' + cls + '" ' + click + '><div class="mp-dot"></div><div class="mp-label">' + escapeHtml(s.label) + '</div></div>';
+          }).join('') +
+        '</div>' +
+        (J.important ? '<div class="alert-box">' + escapeHtml(J.important) + '</div>' : '') +
+      '</div>';
+
+    // ── Case-info card (claimant/solicitor/assigned — compact)
+    var infoPanel =
+      '<div class="panel-card">' +
+        '<div class="pc-label">Case reference</div>' +
+        '<div class="kv"><span>Claimant</span><span>' + escapeHtml(c.claimant || '—') + '</span></div>' +
+        '<div class="kv"><span>Solicitor</span><span>' + escapeHtml(c.solicitor || '—') + '</span></div>' +
+        '<div class="kv"><span>Exposure</span><span>' + escapeHtml(c.value || '—') + '</span></div>' +
+        '<div class="kv"><span>Stage</span><span>' + escapeHtml(typeof t === 'function' ? t('stage_' + c.stage) || c.stage : c.stage) + '</span></div>' +
+        '<div class="kv"><span>Assigned to</span><span>' + escapeHtml(((typeof USERS !== 'undefined' && USERS[c.assignedTo]) ? USERS[c.assignedTo].full : (c.assignedTo || 'Unassigned'))) + '</span></div>' +
+      '</div>';
 
     document.getElementById('tab-panel').innerHTML =
       '<div class="tab-panel-inner"><div class="overview-grid">' +
       enginePanel +
-      '<div class="panel-card highlight">' +
-      '<div class="pc-label">Next action</div>' +
-      '<div class="pc-title">' +
-      escapeHtml(action.text) +
-      '</div>' +
-      '<button class="btn-primary" onclick="CaseShell.switchTab(\'' +
-      escapeHtml(action.tab) +
-      '\')">Continue <i class="ti ti-arrow-right"></i></button>' +
-      '</div>' +
-      '<div class="panel-card">' +
-      '<div class="pc-label">Case summary</div>' +
-      '<div class="kv"><span>Claimant</span><span>' +
-      escapeHtml(c.claimant) +
-      '</span></div>' +
-      '<div class="kv"><span>Solicitor</span><span>' +
-      escapeHtml(c.solicitor) +
-      '</span></div>' +
-      '<div class="kv"><span>Flight</span><span>' +
-      escapeHtml(c.flight) +
-      '</span></div>' +
-      '<div class="kv"><span>Disruption</span><span>' +
-      escapeHtml(c.disruptionType || '—') +
-      '</span></div>' +
-      '<div class="kv"><span>Classification</span><span>' +
-      escapeHtml(c.classification || '—') +
-      '</span></div>' +
-      '<div class="kv"><span>Evidence</span><span>' +
-      escapeHtml(String(c.evidencePct || 0)) +
-      '%</span></div>' +
-      '<div class="kv"><span>Stage</span><span>' +
-      escapeHtml(typeof t === 'function' ? t('stage_' + c.stage) || c.stage : c.stage) +
-      '</span></div>' +
-      '</div>' +
-      '<div class="panel-card">' +
-      '<div class="pc-label">Pipeline</div>' +
-      '<div class="mini-pipeline">' +
-      stages
-        .map(function (s, i) {
-          var cls = i < stageIdx ? 'done' : i === stageIdx ? 'current' : '';
-          var click = s.tab ? 'onclick="CaseShell.switchTab(\'' + s.tab + '\')"' : '';
-          return '<div class="mp-step ' + cls + '" ' + click + '><div class="mp-dot"></div><div class="mp-label">' + escapeHtml(s.label) + '</div></div>';
-        })
-        .join('') +
-      '</div>' +
-      (J.important
-        ? '<div class="alert-box">' + escapeHtml(J.important) + '</div>'
-        : '') +
-      '</div>' +
-      '<div class="panel-card">' +
-      '<div class="pc-label">Similar cases</div>' +
-      (similar.length
-        ? similar
-            .map(function (s) {
-              return (
-                '<div class="similar-row" onclick="openCase(\'' +
-                escapeHtml(s.ref) +
-                '\')"><div class="sim-ref">' +
-                escapeHtml(s.ref) +
-                '</div><div class="sim-name">' +
-                escapeHtml(s.claimant) +
-                '</div><div class="sim-meta">' +
-                escapeHtml(s.disruptionType) +
-                ' · ' +
-                escapeHtml(typeof t === 'function' ? t('stage_' + s.stage) || s.stage : s.stage) +
-                '</div></div>'
-              );
-            })
-            .join('')
-        : '<div class="empty-note">No similar cases in demo data.</div>') +
-      '</div></div></div>';
+      locPanel +
+      lofPanel +
+      evPanel +
+      infoPanel +
+      pipelinePanel +
+      '</div></div>';
   }
+
 
   function openFilingDoc(docKey) {
     if (typeof CaseFiling === 'undefined' || !state.ref) return;
@@ -392,16 +444,77 @@ var CaseShell = (function () {
       doc = all.filter(function (d) { return d.docKey === docKey; })[0];
     }
     if (!doc) return;
-    var w = window.open('', '_blank');
-    if (!w) return;
-    w.document.write(
-      '<pre style="font-family:Georgia,serif;font-size:14px;white-space:pre-wrap;padding:24px;max-width:720px;margin:0 auto">' +
-      escapeHtml(doc.content || '') +
-      '</pre>'
+    var c = state.caseData || {};
+    var isLegal = docKey === 'legal_position';
+    var title = isLegal ? 'Legal Position' : 'Case Summary';
+    var kicker = isLegal ? 'Legal Engine · lawyer view' : 'Legal Engine · plain-English brief';
+    var body = escapeHtml(doc.content || '');
+    // For case_summary, split at first blank line into "what happened" + "what you need"
+    var summaryHtml = '';
+    if (!isLegal) {
+      var chunks = String(doc.content || '').split(/\n\n+/);
+      summaryHtml =
+        '<h3>What happened</h3>' +
+        '<p>' + escapeHtml(chunks[0] || '(no summary text)') + '</p>' +
+        (chunks[1] ? '<h3>Evidence you need to collect</h3><p>' + escapeHtml(chunks.slice(1).join('\n\n')) + '</p>' : '') +
+        '<div class="fdoc-cta"><a href="repository.html?ref=' + encodeURIComponent(state.ref) + '">Repository →</a> · <a href="case.html?ref=' + encodeURIComponent(state.ref) + '&tab=evidence">Evidence workspace →</a></div>';
+    }
+    var win = window.open('', '_blank');
+    if (!win) return;
+    win.document.write(
+      '<!doctype html><html><head><meta charset="utf-8"><title>' + escapeHtml(title) + ' — ' + escapeHtml(c.ref || '') + '</title>' +
+      '<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">' +
+      '<style>' +
+      '*{box-sizing:border-box}body{margin:0;background:#EDE9E1;font-family:"IBM Plex Sans",system-ui,sans-serif;color:#16181D;line-height:1.55}' +
+      '.fdoc-frame{max-width:820px;margin:32px auto;background:#F8F5EF;border:1px solid #C9C2B6;border-radius:8px;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,.1)}' +
+      '.fdoc-hdr{background:#1A2F45;color:#fff;padding:18px 28px}' +
+      '.fdoc-hdr .kicker{font-family:"IBM Plex Mono",monospace;font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.55)}' +
+      '.fdoc-hdr .title{font-family:"Libre Baskerville",Georgia,serif;font-size:22px;margin-top:4px}' +
+      '.fdoc-hdr .caseref{font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:rgba(255,255,255,.6);margin-top:6px;letter-spacing:.03em}' +
+      '.fdoc-body{padding:26px 32px 36px}' +
+      '.fdoc-body h3{font-family:"Libre Baskerville",Georgia,serif;font-size:15px;font-weight:700;color:#1A2F45;margin:22px 0 8px;padding-bottom:6px;border-bottom:1px solid #C9C2B6}' +
+      '.fdoc-body h3:first-child{margin-top:0}' +
+      '.fdoc-body p{font-size:13.5px;margin:0 0 12px;color:#3A3F4A;white-space:pre-wrap}' +
+      '.fdoc-body pre{font-family:"Libre Baskerville",Georgia,serif;font-size:13.5px;white-space:pre-wrap;color:#3A3F4A;margin:0}' +
+      '.fdoc-cta{margin-top:22px;padding-top:14px;border-top:1px solid #DDD6CA;font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.02em}' +
+      '.fdoc-cta a{color:#1E4D8C;text-decoration:none;margin-right:14px}' +
+      '.fdoc-cta a:hover{text-decoration:underline}' +
+      '.fdoc-foot{padding:14px 32px;background:#F1EBDF;font-family:"IBM Plex Mono",monospace;font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;color:#6B7280;border-top:1px solid #DDD6CA}' +
+      '</style></head><body>' +
+      '<div class="fdoc-frame">' +
+        '<div class="fdoc-hdr"><div class="kicker">' + escapeHtml(kicker) + '</div>' +
+        '<div class="title">' + escapeHtml(title) + '</div>' +
+        '<div class="caseref">Case ' + escapeHtml(c.ref || '') + (c.claimant ? ' · ' + escapeHtml(c.claimant) : '') + '</div></div>' +
+        '<div class="fdoc-body">' + (isLegal ? '<pre>' + body + '</pre>' : summaryHtml) + '</div>' +
+        '<div class="fdoc-foot">DefendAble · from case file · non-editable snapshot</div>' +
+      '</div></body></html>'
     );
-    w.document.close();
+    win.document.close();
   }
 
+
+  function _loadFile(file) {
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function (e) {
+      var text = '';
+      try { text = String(e.target.result || ''); } catch (er) {}
+      var paste = document.getElementById('shell-loc-paste');
+      if (paste) paste.value = 'LOC file received: ' + file.name + ' (' + Math.round(file.size / 1024) + ' KB). Content preview: ' + text.slice(0, 400).replace(/[^\x20-\x7E\n]/g, ' ');
+      receiveLoc();
+    };
+    reader.readAsText(file);
+  }
+  function dropLoc(ev) {
+    ev.preventDefault();
+    var dz = document.getElementById('ce-loc-drop'); if (dz) dz.classList.remove('over');
+    var f = ev.dataTransfer && ev.dataTransfer.files && ev.dataTransfer.files[0];
+    _loadFile(f);
+  }
+  function pickLoc(ev) {
+    var f = ev.target && ev.target.files && ev.target.files[0];
+    _loadFile(f);
+  }
   function receiveLoc() {
     var paste = document.getElementById('shell-loc-paste');
     var text = paste ? paste.value.trim() : '';

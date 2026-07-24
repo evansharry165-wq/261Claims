@@ -92,9 +92,12 @@ var EngineInbox = (function () {
       ? (caseObj.suggestedStage
          || (caseObj.classification && /HOLD|CONDITIONS/i.test(caseObj.classification) ? 'evidence' : 'triage'))
       : caseObj.stage;
+    // Move case OUT of inbox: force stage to targetStage (defaults to 'triage' via suggestedStage
+    // or classification-derived fallback). This is what removes it from the Engine Inbox filter.
+    var moveStage = (targetStage === STAGE) ? 'triage' : targetStage;
     CaseFiling.updateCaseMeta(caseRef, {
       assignedTo: userId,
-      stage: targetStage,
+      stage: moveStage,
       inboxAssignedAt: new Date().toISOString(),
       inboxAssignedBy: (typeof getActiveUser === 'function' ? getActiveUser() : 'SB')
     });
