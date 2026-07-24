@@ -135,7 +135,7 @@ var DefendAbleDemoV2 = (function () {
     { re: /\bcascade|\brotation|\blate inbound|\binbound aircraft/i, phrase: 'cascade', tree: 'DT-13: Cascade', eventMatch: /cascade|late inbound|rotation/i, triggers: [
       { system: 'Operational delay records system', document: 'Inbound/rotation record', purpose: 'Root cause at chain start' }
     ]},
-    { re: /\bpositioning\b/i, phrase: 'positioning', tree: 'DT-18: Positioning', eventMatch: /positioning/i, triggers: [
+    { re: /\bpositioning\b/i, phrase: 'positioning', tree: 'DT-19: Positioning', eventMatch: /positioning/i, triggers: [
       { system: 'Operational delay records system', document: 'Positioning line of flying', purpose: 'Separate causal event' }
     ]},
     { re: /\b18\s*hour|\bwake rule/i, phrase: '18 hour wake rule', tree: 'DT-20: Wake rule', eventMatch: /18.hour|wake rule|fatigue/i, triggers: [
@@ -245,7 +245,7 @@ var DefendAbleDemoV2 = (function () {
           ev('E5', 'No standby crew available', { lof: 'OWN_OPERATION', ecCandidate: false, ecReason: 'Reasonable measures — Crew scheduling system standby log required.', delay: 'none — recovery failure', link: 'FINAL_EVENT', linkReason: 'Final operational outcome.' })
         ],
         keywords: [
-          { phrase: 'positioning', tree: 'DT-18: Positioning flight', chainEventRef: 'E1', triggers: [{ system: 'Operational delay records system', document: 'Line of flying — positioning sector', purpose: 'Confirm positioning tail and delay' }] },
+          { phrase: 'positioning', tree: 'DT-19: Positioning flight', chainEventRef: 'E1', triggers: [{ system: 'Operational delay records system', document: 'Line of flying — positioning sector', purpose: 'Confirm positioning tail and delay' }] },
           { phrase: 'fuel leak', tree: 'DT-5: Technical', chainEventRef: 'E2', triggers: [{ system: 'Maintenance records system', document: 'Fuel leak AOG record', purpose: 'Category and MEL assessment' }] },
           { phrase: '18 hour wake rule', tree: 'DT-20: 18-hour wake rule', chainEventRef: 'E4', triggers: [{ system: 'Crew scheduling system', document: 'FDP and rest audit', purpose: 'When 18-hour window started' }] }
         ],
@@ -337,7 +337,7 @@ var DefendAbleDemoV2 = (function () {
           { pointId: 'IP1', chainEventRef: 'E3', description: 'Alternative aircraft deployment before 3-hour threshold', evidenceRequired: 'Operational delay records system fleet state', evidenceStatus: 'UNKNOWN', outcome: 'UNKNOWN', legalConsequence: 'Failure to deploy spare aircraft defeats EC even if root cause is EC', riskLevel: 'amber' }
         ],
         verdict: 'DEFEND_WITH_CONDITIONS',
-        verdictConditions: ['Disruption data system confirms CDG handler action is third-party (not own staff)', 'Operational delay records system confirms no recoverable spare aircraft was available (not merely und deployed)', 'Art 9 HOTAC evidenced for OND', 'Art 8 offer evidenced in MAX-OPS'],
+        verdictConditions: ['Disruption data system confirms CDG handler action is third-party (not own staff)', 'Operational delay records system confirms no recoverable spare aircraft was available (not merely undeployed)', 'Art 9 HOTAC evidenced for OND', 'Art 8 offer evidenced in MAX-OPS'],
         verdictSub: 'Strong EC candidates at E1 (ATC) and E2 (third-party handler strike). Network recovery and crew FTL are downstream. Confirm handler is third-party not Krüsemann own-staff, and reasonable measures on spare aircraft before final DEFEND.',
         verdictFlags: [
           { type: 'action', text: 'Disruption data system classification — handler strike must be third-party' },
@@ -451,8 +451,8 @@ var DefendAbleDemoV2 = (function () {
           ev('E3', 'No standby crew available', { lof: 'OWN_OPERATION', ecCandidate: false, ecReason: 'Reasonable measures — Crew scheduling system standby log.', delay: '4h 20m total delay', link: 'FINAL_EVENT', linkReason: 'Final delay at destination.' })
         ],
         keywords: [
-          { phrase: 'late inbound', tree: 'DT-16: Cascading delay', chainEventRef: 'E1', triggers: [{ system: 'Operational delay records system', document: 'Inbound delay record', purpose: 'Root cause at chain start' }] },
-          { phrase: 'FTL', tree: 'DT-19: Crew FTL', chainEventRef: 'E2', triggers: [{ system: 'Crew scheduling system', document: 'FDP record', purpose: 'Crew limits breach time' }] }
+          { phrase: 'late inbound', tree: 'DT-13: Cascading delay', chainEventRef: 'E1', triggers: [{ system: 'Operational delay records system', document: 'Inbound delay record', purpose: 'Root cause at chain start' }] },
+          { phrase: 'FTL', tree: 'DT-06: Crew FTL', chainEventRef: 'E2', triggers: [{ system: 'Crew scheduling system', document: 'FDP record', purpose: 'Crew limits breach time' }] }
         ],
         judgmentNodes: [
           { nodeId: 'J1', chainEventRef: 'E1', question: 'What was the root cause of the late inbound — and is THAT event EC?', factsFor: 'Weather on inbound sector may be EC at root.', factsAgainst: 'If root is ordinary operational delay, cascade does not create EC.', additionalEvidenceNeeded: 'Operational delay records system delay codes for inbound sector; Disruption data system root cause', consequenceIfChainHolds: 'EC at root may defend entire cascade.', consequenceIfChainBreaks: 'SETTLE — cascade from ordinary cause.' }
@@ -557,7 +557,7 @@ var DefendAbleDemoV2 = (function () {
   function fullResult(text, cfg) {
     var chain = cfg.chain || [];
     chain.forEach(function (e, i) {
-      if (!e.ecStatus && e.preliminaryECCandidate === true) { e.ecStatus = 'ESTABLISHED'; e.ecLimb1 = 'SATISFIED'; e.ecLimb2 = 'SATISFIED'; }
+      if (!e.ecStatus && e.preliminaryECCandidate === true) { e.ecStatus = 'PRELIMINARY'; e.ecLimb1 = 'PENDING'; e.ecLimb2 = 'PENDING'; }
       if (e.preliminaryECCandidate === false && !e.ecStatus) e.ecStatus = 'ORDINARY';
     });
     var evidencePack = cfg.evidencePack || buildEvidenceFromChain(chain, cfg.keywords || []);
@@ -637,7 +637,9 @@ var DefendAbleDemoV2 = (function () {
     'DT-15': /drone|uas/i,
     'DT-16': /covid|pandemic|quarantine/i,
     'DT-17': /sabotage|terror|bomb threat/i,
-    'DT-18': /illness|sick/i
+    'DT-18': /illness|sick/i,
+    'DT-19': /positioning/i,
+    'DT-20': /18\s*hour|wake rule/i
   };
 
   function buildDefaultNodes(text, chain) {

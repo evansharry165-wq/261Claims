@@ -42,32 +42,66 @@ function routeForStage(stage) {
 
 function getStoredEvidencePct(ref) {
   try {
-    var st = JSON.parse(sessionStorage.getItem('dfa_evidence_' + ref) || 'null');
+    var key = typeof evidenceStorageKey === 'function' ? evidenceStorageKey(ref) : 'dfa_evidence_' + ref;
+    var st = JSON.parse(sessionStorage.getItem(key) || 'null');
     if (st && typeof st.evidencePct === 'number') return st.evidencePct;
   } catch (e) {}
   return null;
 }
 
+function advanceCaseStage(ref, stage, activityText) {
+  ref = typeof normaliseCaseRef === 'function' ? normaliseCaseRef(ref) : ref;
+  var c = typeof getCase === 'function' ? getCase(ref) : null;
+  if (!c) return;
+  c.stage = stage;
+  if (activityText) {
+    c.activity = (c.activity || []).concat([{ text: activityText, time: 'Just now', type: 'stage' }]);
+  }
+  try {
+    var stored = JSON.parse(sessionStorage.getItem('dfa_case') || 'null');
+    if (stored && normaliseCaseRef(stored.ref) === ref) {
+      stored.stage = stage;
+      sessionStorage.setItem('dfa_case', JSON.stringify(stored));
+    }
+    var aero = JSON.parse(sessionStorage.getItem('aeroCaseData') || 'null');
+    if (aero && normaliseCaseRef(aero.ref) === ref) {
+      aero.stage = stage;
+      sessionStorage.setItem('aeroCaseData', JSON.stringify(aero));
+    }
+  } catch (e) {}
+  if (typeof CaseFiling !== 'undefined' && CaseFiling.updateCaseMeta) {
+    CaseFiling.updateCaseMeta(ref, { stage: stage });
+  }
+  try {
+    var portfolio = JSON.parse(localStorage.getItem('dfa_portfolio_cases') || '[]');
+    var touched = false;
+    portfolio.forEach(function (p) {
+      if (normaliseCaseRef(p.ref) === ref) {
+        p.stage = stage;
+        touched = true;
+      }
+    });
+    if (touched) localStorage.setItem('dfa_portfolio_cases', JSON.stringify(portfolio));
+  } catch (e) {}
+}
+
 function syncCaseEvidencePct(ref, pct, readyForDrafting) {
+  ref = typeof normaliseCaseRef === 'function' ? normaliseCaseRef(ref) : ref;
   var c = typeof getCase === 'function' ? getCase(ref) : null;
   if (!c) return;
   c.evidencePct = pct;
   if (readyForDrafting) {
     c.evidenceReady = true;
-    c.classification = 'DRAFTING';
   }
   try {
     var stored = JSON.parse(sessionStorage.getItem('dfa_case') || 'null');
-    if (stored && stored.ref === ref) {
+    if (stored && normaliseCaseRef(stored.ref) === ref) {
       stored.evidencePct = pct;
-      if (readyForDrafting) {
-        stored.evidenceReady = true;
-        stored.classification = 'DRAFTING';
-      }
+      if (readyForDrafting) stored.evidenceReady = true;
       sessionStorage.setItem('dfa_case', JSON.stringify(stored));
     }
     var aero = JSON.parse(sessionStorage.getItem('aeroCaseData') || 'null');
-    if (aero && aero.ref === ref) {
+    if (aero && normaliseCaseRef(aero.ref) === ref) {
       aero.evidencePct = pct;
       sessionStorage.setItem('aeroCaseData', JSON.stringify(aero));
     }
@@ -154,7 +188,7 @@ function getNextAction(c) {
 var EVIDENCE_REQUEST_SEED = [
   {
     id: 'REQ-001',
-    ref: 'AC-2026-0089',
+    ref: 'DEF-2026-EW-0089',
     claimant: 'Daniel Hartley',
     flight: 'HC 1184 — LTN → BCN',
     pack: 'Gold',
@@ -170,7 +204,7 @@ var EVIDENCE_REQUEST_SEED = [
   },
   {
     id: 'REQ-002',
-    ref: 'AC-2026-0091',
+    ref: 'DEF-2026-EW-0091',
     claimant: 'Rebecca Walsh',
     flight: 'HC 307 — MAN → AMS',
     pack: 'Gold',
@@ -383,11 +417,40 @@ function getEvidenceRequests() {
 }
 
 function getWaitingOn(c) {
-  return [];
+  if (!c || !c.ref) return [];
+  var blockers = [];
+  var ref = typeof normaliseCaseRef === 'function' ? normaliseCaseRef(c.ref) : c.ref;
+  var evPct = getEffectiveEvidencePct(c);
+  if (c.stage === 'evidence' && evPct < 100) {
+    blockers.push({ who: 'Evidence team', what: 'Gold evidence pack', urgency: c.cprDaysLeft <= 7 ? 'high' : 'normal' });
+  }
+  if (c.stage === 'cpr' && (!c.loaStatus || c.loaStatus === '')) {
+    blockers.push({ who: 'Legal', what: 'Letter of acknowledgement', urgency: 'high' });
+  }
+  try {
+    var evKey = typeof evidenceStorageKey === 'function' ? evidenceStorageKey(ref) : 'dfa_evidence_' + ref;
+    var ws = JSON.parse(sessionStorage.getItem(evKey) || 'null');
+    if (ws && ws.evidenceRequests) {
+      Object.keys(ws.evidenceRequests).forEach(function (id) {
+        var req = ws.evidenceRequests[id];
+        if (req && req.status === 'pending') {
+          blockers.push({ who: 'Evidence team', what: req.name || req.label || 'Outstanding evidence request', urgency: 'normal' });
+        }
+      });
+    }
+  } catch (e) {}
+  getEvidenceRequests().forEach(function (req) {
+    if (normaliseCaseRef(req.ref) === ref && req.status !== 'complete' && req.status !== 'received') {
+      blockers.push({ who: 'Evidence team', what: req.requestType || 'Evidence request', urgency: req.priority === 'Urgent' ? 'high' : 'normal' });
+    }
+  });
+  return blockers;
 }
 
 function getWaitingOnSummary(c) {
-  return '';
+  var items = getWaitingOn(c);
+  if (!items.length) return '';
+  return items.map(function (b) { return b.who + ' — ' + b.what; }).join('; ');
 }
 
 function getActiveEvidenceRequest(ref) {
@@ -398,13 +461,15 @@ function getActiveEvidenceRequest(ref) {
 
 function saveEvidenceWorkspaceState(ref, state) {
   try {
-    sessionStorage.setItem('dfa_evidence_' + ref, JSON.stringify(state));
+    var key = typeof evidenceStorageKey === 'function' ? evidenceStorageKey(ref) : 'dfa_evidence_' + ref;
+    sessionStorage.setItem(key, JSON.stringify(state));
   } catch (e) {}
 }
 
 function loadEvidenceWorkspaceState(ref) {
   try {
-    return JSON.parse(sessionStorage.getItem('dfa_evidence_' + ref) || 'null');
+    var key = typeof evidenceStorageKey === 'function' ? evidenceStorageKey(ref) : 'dfa_evidence_' + ref;
+    return JSON.parse(sessionStorage.getItem(key) || 'null');
   } catch (e) {
     return null;
   }
