@@ -246,12 +246,12 @@ var DefendAbleDecideWorkspace = (function () {
     return (
       '<div class="decide-card">' +
         '<div class="decide-card-kicker">Evidence priorities</div>' +
-        '<div class="decide-card-title">CRIT / IMPO / SUPP</div>' +
+        '<div class="decide-card-title">Evidence priorities</div>' +
         '<div class="decide-muted" style="margin-bottom:8px">Critical items block a clean DEFEND. Important items strengthen Limb 2 / RM.</div>' +
         '<div class="decide-actions">' +
           actions.map(function (a) {
             var pri = a.priority || 'important';
-            var badge = a.badge || (pri === 'critical' ? 'CRIT' : (pri === 'supporting' ? 'SUPP' : 'IMPO'));
+            var badge = a.badge === 'CRIT' ? 'Critical' : a.badge === 'IMPO' ? 'Important' : a.badge === 'SUPP' ? 'Supporting' : (pri === 'critical' ? 'Critical' : (pri === 'supporting' ? 'Supporting' : 'Important'));
             return (
               '<div class="decide-action-row">' +
                 '<span class="decide-pri ' + esc(pri) + '">' + esc(badge) + '</span>' +

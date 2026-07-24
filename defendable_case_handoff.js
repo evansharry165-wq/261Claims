@@ -153,7 +153,7 @@ var DefendAbleCaseHandoff = (function () {
     if (pos && pos.conditionType) bits.push(pos.conditionType);
     if (pos && pos.conditions && pos.conditions.length) bits.push(pos.conditions.join('; '));
     (critNotes || []).slice(0, 4).forEach(function (c) {
-      if (c.badge === 'CRIT' && c.text) bits.push('CRIT: ' + c.text);
+      if (c.badge === 'CRIT' && c.text) bits.push('Critical: ' + c.text);
     });
     return bits.join(' · ');
   }
@@ -423,7 +423,7 @@ var DefendAbleCaseHandoff = (function () {
       lines.push('• [' + String(m.status).toUpperCase() + '] ' + m.key + (m.note ? ' — ' + m.note : ''));
     });
     lines.push('');
-    lines.push('CRIT / IMPO');
+    lines.push('EVIDENCE PRIORITIES');
     (pack.decideSection.critNotes || []).forEach(function (c) {
       lines.push('• [' + (c.badge || '') + '] ' + c.text);
     });
@@ -600,7 +600,7 @@ var DefendAbleCaseHandoff = (function () {
       '<label>CONDITIONS BEFORE FINAL RESPONSE (one per line)</label>' +
       '<textarea data-field="conditions" rows="4">' +
       esc((pack.decideSection.conditions || []).join('\n')) + '</textarea>' +
-      '<label>CRIT / IMPO status notes</label>' +
+      '<label>Evidence priority notes</label>' +
       (crit.length
         ? crit.map(function (c, i) {
           return (
@@ -610,7 +610,7 @@ var DefendAbleCaseHandoff = (function () {
             esc(c.statusNote || '') + '" /></div>'
           );
         }).join('')
-        : '<div class="handoff-muted">No CRIT/IMPO items</div>') +
+        : '<div class="handoff-muted">No priority items</div>') +
       '<label>Authorities</label>' + renderAuthorities(pack.decideSection.authorities) +
       '<label>G1 sign-off</label><div class="handoff-ro">' +
       (pack.decideSection.g1

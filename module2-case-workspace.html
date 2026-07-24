@@ -497,11 +497,28 @@ function renderMain(){
     +'<div style="font-size:11px;color:var(--text3)">Send case details · Operational delay records system request · Ops team brief</div></div>'
     +'<button onclick="sendTriageEmail()" style="font-size:11px;padding:5px 12px;border:1px solid var(--border);background:var(--surface);color:var(--text2);cursor:pointer;font-family:var(--font);white-space:nowrap;flex-shrink:0"><i class="ti ti-send"></i> Email team</button>'
     +'</div>';
-  var triageNoteBlock='<div style="margin-bottom:14px">'
-    +'<div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.09em;color:var(--text3);margin-bottom:6px">Defence assessment</div>'
-    +'<textarea id="triage-note" rows="4" style="width:100%;padding:9px 11px;border:1px solid var(--border);font-family:var(--font);font-size:12px;color:var(--text);line-height:1.6;resize:vertical;background:var(--surface);box-sizing:border-box">'+escapeHtml(C.triageNote||'')+'</textarea>'
-    +'<button onclick="saveTriageNote()" style="margin-top:6px;font-size:11px;padding:5px 12px;border:1px solid var(--border);background:var(--surface);color:var(--text2);cursor:pointer;font-family:var(--font)">Save assessment</button>'
-    +'</div>';
+  /* Defence assessment — pulled from the engine's case summary (read-only). No free-text box;
+     the summary already exists in CaseFiling as a doc; a link opens the full legal position. */
+  var _engineSummary = '';
+  try {
+    var _cf = window.parent && window.parent.CaseFiling ? window.parent.CaseFiling : (typeof CaseFiling !== 'undefined' ? CaseFiling : null);
+    if (_cf && _cf.findByDocKey) {
+      var _d = _cf.findByDocKey(C.ref, 'case_summary');
+      if (_d && _d.content) _engineSummary = _d.content;
+    }
+  } catch(e) {}
+  var _openLegal = 'try{(window.parent&&window.parent.CaseShell&&window.parent.CaseShell.openFilingDoc)?window.parent.CaseShell.openFilingDoc(\'legal_position\'):(typeof CaseShell!==\'undefined\'&&CaseShell.openFilingDoc&&CaseShell.openFilingDoc(\'legal_position\'));}catch(e){}';
+  var triageNoteBlock = _engineSummary
+    ? ('<div style="margin-bottom:14px;background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent2);border-radius:var(--r2);padding:14px 16px">'
+        +'<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px">'
+          +'<div style="font-family:var(--mono);font-size:9.5px;font-weight:600;text-transform:uppercase;letter-spacing:.14em;color:var(--accent)">Defence assessment · from the Legal Engine</div>'
+          +'<a href="#" onclick="'+_openLegal+';return false" style="font-size:11px;color:var(--accent2);text-decoration:none">Open legal position →</a>'
+        +'</div>'
+        +'<div style="font-size:12.5px;line-height:1.6;color:var(--text);white-space:pre-wrap">'+escapeHtml(_engineSummary)+'</div>'
+      +'</div>')
+    : ('<div style="margin-bottom:14px;background:var(--surface2);border:1px dashed var(--border);border-radius:var(--r2);padding:14px 16px;font-size:12px;color:var(--text3);text-align:center">'
+        +'No engine assessment on this case. Add a manual note in the Documents tab.'
+      +'</div>');
   document.getElementById('main').innerHTML=stageRail()
     +'<div class="case-hdr"><div><div class="ch-ref">'+escapeHtml(C.ref)+'</div><div class="ch-name">'+escapeHtml(C.name)+' v. [Airline]</div><div class="ch-meta"><span><i class="ti ti-plane"></i>'+escapeHtml(C.flight)+'</span><span><i class="ti ti-cash"></i>'+escapeHtml(C.value)+'</span><span><i class="ti ti-world"></i>'+J.flag+' '+escapeHtml(J.name)+'</span><span><i class="ti ti-calendar"></i>LOC received '+escapeHtml(C.date)+'</span></div></div><span class="ch-badge" style="background:'+stageBg('triage')+';color:'+stageColor('triage')+'"><i class="ti ti-search"></i>Triage</span></div>'
     +(J.important?'<div class="stage-card"><div class="sc-header" style="border-left-color:var(--red)"><div class="sc-label" style="color:var(--red)">Jurisdiction alert</div><div class="sc-title">'+escapeHtml(J.name)+' procedure</div></div><div class="sc-body" style="font-size:12px;line-height:1.6;color:var(--text2)">'+escapeHtml(J.important)+'</div></div>':'')
