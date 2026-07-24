@@ -99,6 +99,31 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 
 /* evidence tier */
 .ev-tier{margin-bottom:22px}
+.engine-story{background:linear-gradient(135deg,#F1EBDF 0,#FFFCF7 100%);border:1px solid var(--border);border-left:4px solid var(--navy);border-radius:var(--r3);padding:16px 18px;margin-bottom:16px}
+.engine-story .es-hdr{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
+.engine-story .es-kicker{font-family:var(--mono);font-size:9.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--navy)}
+.engine-story .es-outcome{font-family:var(--font-serif);font-size:15px;color:var(--navy);font-weight:500}
+.engine-story .es-flight-line{font-family:var(--mono);font-size:12px;color:var(--text);margin-bottom:10px;letter-spacing:.02em}
+.engine-story .es-flight-line b{font-weight:600;color:var(--navy)}
+.engine-story .es-root{font-size:12px;color:var(--text2);background:var(--surface);border:1px solid var(--border2);border-radius:var(--r);padding:9px 12px;margin-bottom:8px;line-height:1.55}
+.engine-story .es-root .es-lbl{font-family:var(--mono);font-size:9.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--text3);margin-right:5px}
+.engine-story .es-mass{font-size:11.5px;color:var(--amber);background:var(--amber-faint);border:1px solid #FDE68A;border-radius:var(--r);padding:7px 11px;margin-bottom:10px;display:flex;align-items:center;gap:7px}
+.engine-story .es-mass i{font-size:14px}
+.engine-story .es-rot-head{font-family:var(--mono);font-size:9.5px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--text3);margin:6px 0 6px}
+.engine-story .es-rot{list-style:none;padding:0;margin:0;background:var(--surface);border:1px solid var(--border2);border-radius:var(--r2);overflow:hidden}
+.engine-story .es-row{display:grid;grid-template-columns:70px 100px 130px 1fr;gap:12px;align-items:center;padding:8px 12px;border-bottom:1px dashed var(--border2);font-size:12px}
+.engine-story .es-row:last-child{border-bottom:none}
+.engine-story .es-row.claim{background:var(--accent-faint)}
+.engine-story .es-fno{font-family:var(--mono);font-weight:600;color:var(--text)}
+.engine-story .es-route{font-family:var(--mono);color:var(--text2);font-size:11px}
+.engine-story .es-times{font-family:var(--mono);color:var(--text3);font-size:10.5px}
+.engine-story .es-status{color:var(--text)}
+.engine-story .es-row.st-canx .es-status{color:var(--red);font-weight:500}
+.engine-story .es-row.st-div  .es-status{color:var(--blue);font-weight:500}
+.engine-story .es-row.st-del  .es-status{color:var(--amber);font-weight:500}
+.engine-story .es-row.st-on   .es-status{color:var(--green)}
+.engine-story .es-claim-tag{font-family:var(--mono);font-size:9px;letter-spacing:.09em;text-transform:uppercase;background:var(--navy);color:#fff;padding:2px 6px;border-radius:10px;margin-left:6px}
+
 .ev-tier-divider{
   display:flex;align-items:center;gap:10px;
   margin:0 0 10px;padding:10px 14px;
@@ -759,6 +784,40 @@ var D={
   primaryCause:'',secondaryCause:'',summary:'',classification:'DEFEND'
 };
 
+/* ── Engine case packet — read from parent-frame CaseFiling (evidence tab is iframed) ── */
+function _cfHost(){ try { return (window.parent && window.parent.CaseFiling) ? window.parent.CaseFiling : (typeof CaseFiling !== 'undefined' ? CaseFiling : null); } catch(e){ return null; } }
+function _packet(refKey){
+  var cf = _cfHost(); if(!cf || !cf.findByDocKey) return null;
+  var doc = cf.findByDocKey(C.ref, refKey); if(!doc) return null;
+  try { return JSON.parse(doc.content || 'null'); } catch(e){ return null; }
+}
+var enginePacket = _packet('case_packet');
+
+/* Pre-populate D from packet where the seed regex left fields blank — engine facts are authoritative */
+(function preFillFromPacket(){
+  if(!enginePacket || !enginePacket.facts) return;
+  var f = enginePacket.facts;
+  if(!D.flightNum) D.flightNum = f.flightNum || '';
+  if(!D.dep) D.dep = f.depIata || '';
+  if(!D.arr) D.arr = f.arrIata || '';
+  if(!D.std) D.std = f.depTime || '';
+  if(!D.sta) D.sta = f.staTime || '';
+  if(!D.atd) D.atd = f.atdTime || '';
+  if(!D.ata) D.ata = f.ataTime || '';
+  if(!D.acReg) D.acReg = f.aircraftReg || '';
+  if(!D.primaryCause){
+    D.primaryCause = (f.rootCause && f.rootCause.reason)
+      || (f.disruption && f.disruption.dtype)
+      || (f.mass && f.mass.note)
+      || '';
+  }
+  if(!D.secondaryCause && enginePacket.disruptionType && enginePacket.disruptionType.secondaryDtIds){
+    D.secondaryCause = enginePacket.disruptionType.secondaryDtIds.join(', ');
+  }
+  if(!D.classification) D.classification = String(C.classification || 'DEFEND').replace(/_/g,' ');
+})();
+
+
 function ts(){return new Date().toLocaleString('en-GB',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});}
 function escapeHtml(v){return String(v==null?'':v).replace(/[&<>"']/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch];});}
 function log(t,type){audit.push({t:t,type:type||'action',time:ts(),by:C.user});renderAudit();}
@@ -836,6 +895,59 @@ function getVerdict(){
 }
 
 /* ── Render ── */
+/* ── Engine story panel: read-only linear disruption chain from the case packet ── */
+function _rotationRows(){
+  if(!enginePacket || !enginePacket.facts) return [];
+  return (enginePacket.facts.rotation || []).slice().sort(function(a,b){return String(a.std||'').localeCompare(String(b.std||''));});
+}
+function _statusLabel(r){
+  if(r.status==='ON TIME') return 'operated on time';
+  if(r.status==='CANCELLED') return 'CANCELLED';
+  if(r.status==='DIVERTED') return 'DIVERTED to '+(r.divTo||'alternate');
+  if(r.status==='DELAYED') return 'DELAYED by '+(r.arrDelay||0)+' min';
+  return 'operated';
+}
+function _statusCls(r){
+  if(r.status==='CANCELLED') return 'st-canx';
+  if(r.status==='DIVERTED') return 'st-div';
+  if(r.status==='DELAYED') return 'st-del';
+  return 'st-on';
+}
+function _renderEngineStoryPanel(){
+  if(!enginePacket || !enginePacket.facts) return '';
+  var f = enginePacket.facts;
+  var rot = _rotationRows();
+  var outcome = f.isCancelled ? 'Cancelled' : f.isDiverted ? ('Diverted to '+(f.divertedTo||'alternate')) : (f.delayMins!=null&&f.delayMins>0) ? (f.delayMins+' min arrival delay') : 'Operated';
+  var root = (f.rootCause && f.rootCause.fno && f.rootCause.fno !== f.flightNum)
+    ? '<div class="es-root"><span class="es-lbl">Root cause</span> <b>'+escapeHtml(f.rootCause.fno)+'</b> ('+escapeHtml(f.rootCause.frm||'')+'→'+escapeHtml(f.rootCause.to||'')+') — '+escapeHtml(String(f.rootCause.reason||'').toLowerCase())+'. Propagated to this sector via late inbound aircraft.</div>'
+    : '';
+  var mass = (f.mass && f.mass.code)
+    ? '<div class="es-mass"><i class="ti ti-alert-triangle"></i> Part of mass event <b>'+escapeHtml(f.mass.code)+'</b>'+(f.mass.note?' — '+escapeHtml(f.mass.note):'')+'.</div>'
+    : '';
+  var rotHtml = rot.length
+    ? '<div class="es-rot-head">Timeline of the aircraft\'s day</div>'
+      +'<ol class="es-rot">'
+      + rot.map(function(r){
+          var isClaim = r.fno === f.flightNum;
+          return '<li class="es-row '+_statusCls(r)+(isClaim?' claim':'')+'">'
+            +'<span class="es-fno">'+escapeHtml(r.fno)+'</span>'
+            +'<span class="es-route">'+escapeHtml(r.frm||'')+' → '+escapeHtml(r.to||'')+'</span>'
+            +'<span class="es-times">'+escapeHtml(r.std||'')+(r.atd?' → '+escapeHtml(r.atd):'')+'</span>'
+            +'<span class="es-status">'+escapeHtml(_statusLabel(r))+(isClaim?' <span class="es-claim-tag">the claim</span>':'')+'</span>'
+            +'</li>';
+        }).join('')
+      +'</ol>'
+    : '';
+  return '<div class="engine-story">'
+    +'<div class="es-hdr"><div class="es-kicker">From the Legal Engine — confirmed facts</div>'
+    +'<div class="es-outcome">'+escapeHtml(outcome)+'</div></div>'
+    +'<div class="es-flight-line"><b>'+escapeHtml(f.flightNum||'')+'</b> '+escapeHtml((f.depIata||'')+' → '+(f.arrIata||''))+' · '+escapeHtml(f.date||'')+' · '+escapeHtml(f.aircraftReg||'')+(f.paxCount?' · '+escapeHtml(String(f.paxCount))+' pax':'')+'</div>'
+    +root
+    +mass
+    +rotHtml
+    +'</div>';
+}
+
 function render(){try{renderMain();}catch(e){/* render fallback */}renderAudit();if(typeof renderGlobalNav==='function')renderGlobalNav();}
 
 function renderMain(){
@@ -879,7 +991,7 @@ function renderMain(){
     +'<i class="ti ti-chevron-down card-chevron'+(summaryOpen?' open':'')+'"></i>'
     +'</div>'
     +'<div class="card-body'+(summaryOpen?' open':'')+'">'
-
+    + _renderEngineStoryPanel()
     +'<div class="form-sec">Flight information <span class="ai-tag">AI pre-filled where available</span></div>'
     +'<div class="fg4">'
     +'<div><div class="fl">Flight number</div><input class="fi'+(D.flightNum?' ai':'')+'" value="'+D.flightNum+'" placeholder="HC 307" onchange="D.flightNum=this.value"></div>'
