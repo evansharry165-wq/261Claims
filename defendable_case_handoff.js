@@ -64,15 +64,88 @@ var DefendAbleCaseHandoff = (function () {
     return 'DA-' + flight + '-' + String(Date.now()).slice(-6);
   }
 
+  /* ── Plain-English case summary — for the case-page viewer.
+     Structure: (1) one-paragraph what-happened for a first-time reader,
+     (2) linear numbered timeline of the tail's day (one line per sector),
+     (3) blank line separator, (4) evidence-you-need-to-collect list.
+     The blank line is what lets the case-page viewer split the doc into
+     'What happened' + 'Evidence you need to collect' sections cleanly. */
   function buildCaseSummary(record, run, brief) {
-    var parts = [];
-    if (brief && brief.title) parts.push(brief.title + (brief.sub ? ' — ' + brief.sub : ''));
-    if (record && record.lockedNarrative) parts.push(record.lockedNarrative);
+    var facts = (record && record.facts) || {};
+    var rotation = (facts.rotation || []).slice().sort(function (a, b) {
+      return String(a.std || '').localeCompare(String(b.std || ''));
+    });
+    var claimed = rotation.find(function (r) { return r.fno === facts.flightNum; }) || facts;
+    var root = facts.rootCause || null;
     var pos = (run && (run.position || run.preRating)) || {};
-    if (pos.conditions && pos.conditions.length) {
-      parts.push('Conditions: ' + pos.conditions.join('; '));
+    var lines = [];
+
+    // Paragraph 1 — plain what-happened, 2-3 sentences
+    var story = '';
+    var routeStr = (facts.depIata && facts.arrIata) ? (facts.depIata + '–' + facts.arrIata) : '';
+    var date = facts.date || facts.flightDate || '';
+    var whatHappened =
+      claimed.isCancelled || claimed.status === 'CANCELLED'
+        ? ('flight ' + facts.flightNum + ' (' + routeStr + ', ' + date + ') was cancelled')
+      : claimed.isDiverted || claimed.status === 'DIVERTED'
+        ? ('flight ' + facts.flightNum + ' (' + routeStr + ', ' + date + ') was diverted to ' + (facts.divertedTo || 'an alternate airport'))
+      : (facts.delayMins != null && facts.delayMins > 0)
+        ? ('flight ' + facts.flightNum + ' (' + routeStr + ', ' + date + ') arrived ' + facts.delayMins + ' minutes late at ' + facts.arrIata)
+        : ('flight ' + facts.flightNum + ' (' + routeStr + ', ' + date + ') was disrupted');
+    var claimedSector = 'On the day in question, ' + whatHappened + '.';
+    var rootSector = '';
+    if (root && root.fno && root.fno !== facts.flightNum) {
+      rootSector = ' The event began earlier in the day on the same aircraft: ' + root.fno + ' (' + (root.frm || '') + '–' + (root.to || '') + ') suffered ' + (String(root.reason || 'a disruption').toLowerCase()) + ', which propagated to the claimed sector.';
     }
-    return parts.join('\n\n');
+    var mass = facts.mass && facts.mass.code
+      ? ' This forms part of a wider disruption event (' + facts.mass.code + (facts.mass.note ? ' — ' + facts.mass.note : '') + ').'
+      : '';
+    lines.push(claimedSector + rootSector + mass);
+
+    // Numbered linear timeline
+    if (rotation.length) {
+      lines.push('');
+      lines.push('Timeline of the aircraft\'s day:');
+      rotation.forEach(function (r, i) {
+        var st = r.status === 'ON TIME' ? 'operated on time'
+          : r.status === 'CANCELLED' ? 'CANCELLED'
+          : r.status === 'DIVERTED' ? ('DIVERTED to ' + (r.divTo || 'alternate'))
+          : r.status === 'DELAYED' ? ('DELAYED by ' + (r.arrDelay || 0) + ' minutes')
+          : 'operated';
+        var flag = (r.fno === facts.flightNum) ? '  ← the claim' : '';
+        lines.push('  ' + (i + 1) + '. ' + r.fno + '  ' + (r.frm || '') + ' → ' + (r.to || '') + '  ·  ' + st + flag);
+      });
+    }
+
+    // Blank line separator — case-page viewer uses this to split into two sections
+    lines.push('');
+
+    // Evidence-you-need-to-collect paragraph
+    var evStr = 'The evidence you need to gather to defend this claim is set out below.';
+    var missing = [];
+    (record.evidenceMarks || []).forEach(function (m) {
+      var held = (m.status === 'available' || m.status === 'on_file' || m.status === 'held');
+      if (!held) missing.push(m.name || m.label || m.key);
+    });
+    // Add tree-gate gaps if any
+    ((run && run.treeResults) || []).forEach(function (t) {
+      (t.gates || []).forEach(function (g) {
+        (g.gaps || []).forEach(function (gap) {
+          var lbl = String(gap.label || gap.name || gap || '').trim();
+          if (!lbl) return;
+          if (missing.indexOf(lbl) < 0) missing.push(lbl);
+        });
+      });
+    });
+    if (missing.length) {
+      evStr += ' The following documents are outstanding and should be requested via the Evidence workspace: ' + missing.slice(0, 6).join('; ') + '.';
+    } else {
+      evStr += ' All essential documents already appear on file.';
+    }
+    evStr += ' Once the evidence pack is complete, the defence letter can be drafted in the Documents workspace.';
+    lines.push(evStr);
+
+    return lines.join('\n');
   }
 
   function buildTriageNote(pos, critNotes) {
@@ -218,58 +291,128 @@ var DefendAbleCaseHandoff = (function () {
   }
 
   function legalPositionText(pack) {
-    var d = pack.decideSection;
+    // Plain-English legal position — the professional lawyer's document that
+    // sits in the case file. Structured so a lawyer new to the case can pick
+    // it up and know: what happened, why we can (or can't) defend it, what
+    // evidence proves that, and what to do next.
+    var d = pack.decideSection || {};
+    var m = pack.meta || {};
+    var f = pack.factsSection || {};
     var lines = [];
-    lines.push('LEGAL POSITION — DefendAble Engine Handoff');
-    lines.push('═══════════════════════════════════════');
+
+    // Header
+    lines.push('LEGAL POSITION');
+    lines.push('Case ' + (m.caseRef || '') + (m.claimant ? ' — ' + m.claimant : ''));
+    lines.push('Flight ' + (f.flightNum || '') + '  ·  ' + (f.route || '') + '  ·  ' + (f.flightDate || ''));
     lines.push('');
-    lines.push('Verdict: ' + (d.verdictTitle || d.frameworkLabel || ''));
-    if (d.verdictSub) lines.push(d.verdictSub);
-    lines.push('Framework: ' + (d.frameworkLabel || d.verdict || ''));
-    if (d.conditionType) lines.push('Condition type: ' + d.conditionType);
+    lines.push('----------------------------------------');
     lines.push('');
-    if (d.conditions && d.conditions.length) {
-      lines.push('CONDITIONS BEFORE FINAL RESPONSE');
-      d.conditions.forEach(function (c, i) {
-        lines.push((i + 1) + '. ' + c);
-      });
-      lines.push('');
+
+    // Plain verdict + one-line rationale
+    var v = String(d.verdict || d.frameworkLabel || 'JUDGMENT REQUIRED').toUpperCase();
+    var word = v.indexOf('DEFEND_WITH_CONDITIONS') >= 0 || v.indexOf('CONDITIONS') >= 0 ? 'Defendable — subject to evidence'
+             : v.indexOf('DEFEND_HOLD') >= 0 || v.indexOf('HOLD') >= 0 ? 'Defendable — pending evidence'
+             : v.indexOf('DEFEND') >= 0 ? 'Defendable'
+             : v.indexOf('SETTLE') >= 0 || v.indexOf('CONCEDE') >= 0 ? 'Consider settling'
+             : 'Judgment call needed';
+    lines.push('POSITION');
+    lines.push(word + '.');
+    lines.push('');
+
+    // 1. What we are facing
+    lines.push('1. WHAT WE ARE FACING');
+    var factsPara = '';
+    var causal = (f.causalLabels || []).slice();
+    if (causal.length) {
+      factsPara = 'The claim arises from the following sequence of events: ' + causal.map(function (c, i) { return (i + 1) + ') ' + c; }).join('; ') + '.';
+    } else {
+      factsPara = 'The claim arises from the disruption to flight ' + (f.flightNum || 'in question') + ' on ' + (f.flightDate || 'the date claimed') + '.';
     }
-    if (d.critNotes && d.critNotes.length) {
-      lines.push('CRIT / IMPO PRIORITIES');
-      d.critNotes.forEach(function (c) {
-        lines.push('[' + (c.badge || '') + '] ' + c.text + (c.statusNote ? ' — ' + c.statusNote : ''));
-      });
+    if (m.value) factsPara += ' The passenger claim exposure on this sector is ' + m.value + '.';
+    lines.push(factsPara);
+    lines.push('');
+
+    // 2. Why this is defendable (or not)
+    lines.push('2. WHY THIS IS ' + (word.toUpperCase().indexOf('SETTLING') >= 0 ? 'NOT ' : '') + 'DEFENDABLE');
+    var dtype = String(m.disruptionType || '').toLowerCase();
+    var basisMap = {
+      weather: 'Adverse meteorological conditions incompatible with the safe operation of the flight are within the Recital 14 examples of extraordinary circumstances (Wallentin-Hermann C-549/07). This is capable of engaging the Article 5(3) defence.',
+      atfm: 'Air traffic management restrictions imposed by Eurocontrol or a national ATC provider are third-party decisions beyond the carrier\'s control (Moens v Ryanair C-159/18; Recital 15).',
+      'third-party-ia': 'Industrial action by third parties — ATC, ANSP, airport authority, ground handlers — is generally extraordinary. Reasonable measures must show alternative providers were sought (Touristic Aviation Services C-405/23).',
+      'own-ia': 'Own-staff industrial action is NOT extraordinary (Airhelp v SAS C-28/20; Krüsemann C-195/17). Compensation is payable.',
+      birdstrike: 'A bird strike is extraordinary regardless of whether damage results (Pešková v Travel Service C-315/15). Every post-strike delay node must nonetheless be shown to be reasonable.',
+      technical: 'Technical defects are inherent to airline operation and NOT extraordinary (Wallentin-Hermann C-549/07; Van der Lans C-257/14; Huzar [2014] EWCA Civ 791). The narrow exception is a hidden design defect confirmed by the OEM or by EASA/CAA (C-385/23 Finnair; C-411/23 D.S.A.) — this requires the airworthiness directive as evidence.',
+      medical: 'A passenger medical emergency requiring the commander to divert is not inherent in airline operations and is beyond the carrier\'s control. The position follows a fortiori from LE v Transportes Aéreos Portugueses (C-74/19).',
+      security: 'Security events genuinely mandated by authority — bomb threats, evacuations, government-imposed airspace restrictions — are within Recital 14. Routine screening delays are not.',
+      'disruptive-pax': 'Unruly passenger conduct requiring diversion is extraordinary (LE v Transportes Aéreos Portugueses C-74/19). The reasonable measures test is strict: rerouting via third-party carriers must be shown.',
+      'ground-damage': 'Where the damage originates from a third party (ground handler, airport vehicle, FOD), the defence may hold by analogy to Moens (C-159/18). Damage from the carrier\'s own operation is not extraordinary.',
+      'airport-closure': 'Airport or infrastructure closure imposed by the operator or a competent authority is extraordinary (Moens C-159/18; SATA International C-308/21).',
+      'natural-disaster': 'Natural disasters fall within Recital 14 (McDonagh v Ryanair C-12/11 for volcanic ash). Note: Article 9 care obligations are absolute and remain owed regardless.',
+      'political-unrest': 'Airspace closures, sanctions and armed conflict fall within the Recital 14 "political instability" example. In the modern Ukraine/Russia context, EASA CZIB 2022-01 is the regulatory anchor.',
+      'crew-fdp': 'A crew Flight Duty Period breach is not independently extraordinary — the analysis attaches to the upstream event that consumed the duty period (Eglītis v Latvia C-294/10 requires the carrier to have provided reserve time and adequate standby cover).',
+      'crew-sick': 'Crew illness is NOT extraordinary. Lipton v BA CityFlyer [2024] UKSC 24 (UK Supreme Court) is binding on this point.'
+    };
+    lines.push(basisMap[dtype] || 'The extraordinary-circumstances position for this disruption type turns on the specific facts and the two-limb Wallentin-Hermann test (C-549/07): the event must not be inherent to airline operation, and must be beyond the carrier\'s control.');
+    lines.push('');
+
+    // 3. What we need to prove it (evidence gaps in plain language)
+    lines.push('3. WHAT WE NEED TO PROVE IT');
+    var missing = [];
+    (d.conditions || []).forEach(function (c) {
+      var clean = String(c || '').replace(/^(EVIDENCE_HOLD|DEFEND_HOLD|SETTLE|DEFEND)\s*[:\-—]\s*/i, '')
+                                 .replace(/^Collect key evidence:\s*/i, '')
+                                 .replace(/\s+—\s+proof pending$/i, '')
+                                 .replace(/\s+—\s+Flight Details.*$/i, '')
+                                 .trim();
+      if (clean && clean.length > 3 && missing.indexOf(clean) < 0) missing.push(clean);
+    });
+    ((f.evidenceMarks || [])).forEach(function (mk) {
+      var held = (mk.status === 'available' || mk.status === 'on_file' || mk.status === 'held');
+      if (!held) {
+        var lbl = mk.name || mk.label || mk.key;
+        if (lbl && missing.indexOf(lbl) < 0) missing.push(lbl);
+      }
+    });
+    if (missing.length) {
+      lines.push('To hold the position above, the case file needs the following evidence. Request these through the Evidence workspace; the Documentary Intelligence Officer will pursue them via the repository.');
       lines.push('');
+      missing.slice(0, 8).forEach(function (item, i) { lines.push('   ' + (i + 1) + '. ' + item); });
+    } else {
+      lines.push('All essential evidence for the defence is on file. The case is ready to proceed to Documents for drafting.');
     }
-    if (d.thinkingTrail && d.thinkingTrail.steps && d.thinkingTrail.steps.length) {
-      lines.push('THINKING TRAIL');
-      d.thinkingTrail.steps.forEach(function (s) {
-        lines.push((s.id || '') + ' · ' + (s.label || '') + (s.description ? ' — ' + String(s.description).slice(0, 160) : ''));
+    lines.push('');
+
+    // 4. Authorities engaged
+    lines.push('4. AUTHORITIES ENGAGED');
+    var auths = d.authorities || [];
+    if (auths.length) {
+      auths.slice(0, 6).forEach(function (a) {
+        var weight = String(a.weight || 'persuasive').toUpperCase();
+        var name = a.citation || a.ref || a.name || String(a);
+        lines.push('   ' + weight + ' — ' + name);
       });
-      lines.push('');
+    } else if (auths.binding || auths.persuasive) {
+      (auths.binding || []).forEach(function (a) { lines.push('   BINDING — ' + (a.citation || a.ref || a.name || String(a))); });
+      (auths.persuasive || []).forEach(function (a) { lines.push('   PERSUASIVE — ' + (a.citation || a.ref || a.name || String(a))); });
+    } else {
+      lines.push('   (No specific authorities engaged — the two-limb Wallentin-Hermann test governs.)');
     }
-    if (d.authorities && d.authorities.length) {
-      lines.push('AUTHORITIES');
-      d.authorities.forEach(function (a) {
-        lines.push((a.weight || 'persuasive').toUpperCase() + ': ' + (a.citation || a.ref || a.name || JSON.stringify(a)) +
-          (a.note ? ' — ' + a.note : ''));
-      });
-      lines.push('');
-    } else if (d.authorities && (d.authorities.binding || d.authorities.persuasive)) {
-      lines.push('AUTHORITIES');
-      (d.authorities.binding || []).forEach(function (a) {
-        lines.push('Binding: ' + (a.citation || a.ref || a.name || JSON.stringify(a)));
-      });
-      (d.authorities.persuasive || []).forEach(function (a) {
-        lines.push('Persuasive: ' + (a.citation || a.ref || a.name || JSON.stringify(a)));
-      });
-      lines.push('');
+    lines.push('');
+
+    // 5. What to do next
+    lines.push('5. WHAT TO DO NEXT');
+    if (missing.length) {
+      lines.push('   1. Open the Evidence workspace and mark the outstanding items above as requested.');
+      lines.push('   2. Once the pack is complete, review the position again and confirm the defence.');
+      lines.push('   3. Draft the Letter of Response in the Documents workspace, citing the authorities above.');
+    } else {
+      lines.push('   1. Confirm the position is still correct against the facts on file.');
+      lines.push('   2. Open the Documents workspace and draft the Letter of Response, citing the authorities above.');
+      lines.push('   3. Route through Terminal for final review and signature before sending to the claimant.');
     }
+    lines.push('');
     if (d.g1) {
-      lines.push('G1 SIGN-OFF');
-      lines.push('Action: ' + d.g1.action + ' · By: ' + (d.g1.by || '') + ' · At: ' + (d.g1.at || ''));
-      if (d.g1.note) lines.push('Note: ' + d.g1.note);
+      lines.push('Approved by ' + (d.g1.by || 'lawyer') + ' on ' + (d.g1.at || '') + '.');
     }
     return lines.join('\n');
   }

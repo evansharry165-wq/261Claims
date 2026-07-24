@@ -486,8 +486,7 @@ var CaseShell = (function () {
             '<div><b>Drop LOC file here</b> or <a href="#" onclick="document.getElementById(\'ce-loc-file\').click();return false">browse</a></div>' +
             '<input type="file" id="ce-loc-file" accept=".pdf,.docx" style="display:none" onchange="CaseShell.pickLoc(event)">' +
           '</div>' +
-          '<textarea id="shell-loc-paste" rows="3" placeholder="…or paste LOC text / note here" class="ce-loc-paste"></textarea>' +
-          '<div style="text-align:right"><button class="btn-primary" type="button" onclick="CaseShell.receiveLoc()">Mark LOC received</button></div>' +
+          '<textarea id="shell-loc-paste" rows="3" placeholder="…or paste LOC text / note here — the case will accept it automatically" class="ce-loc-paste" onblur="CaseShell._autoLocFromPaste()"></textarea>' +
         '</div>';
     }
 
