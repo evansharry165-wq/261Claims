@@ -225,7 +225,61 @@ var CaseShell = (function () {
     }).join('');
   }
 
-/* ── Case-page helpers (engine-integrated) ───────────────────────────── */
+  /* Case-page ('CE') stylesheet — injected once */
+  function _injectCEStyles() {
+    if (document.getElementById('ce-shell-style')) return;
+    var st = document.createElement('style');
+    st.id = 'ce-shell-style';
+    st.textContent = [
+      '.ce-engine{grid-column:1/-1;border-radius:8px;padding:20px 24px;color:#fff;background:#1A2F45;box-shadow:0 4px 14px rgba(26,47,69,.14);margin-bottom:2px}',
+      '.ce-engine.ce-v-defend{background:linear-gradient(135deg,#1A2F45 0,#1B5C3A 140%)}',
+      '.ce-engine.ce-v-defend-c{background:linear-gradient(135deg,#1A2F45 0,#2F6B4F 140%)}',
+      '.ce-engine.ce-v-hold{background:linear-gradient(135deg,#1A2F45 0,#8A6B00 140%)}',
+      '.ce-engine.ce-v-settle{background:linear-gradient(135deg,#1A2F45 0,#7A1A1A 140%)}',
+      '.ce-eng-kicker{font-family:"IBM Plex Mono",monospace;font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.55)}',
+      '.ce-eng-verdict{font-family:"Libre Baskerville",Georgia,serif;font-size:24px;margin-top:4px;color:#fff}',
+      '.ce-eng-defence{font-size:13.5px;line-height:1.55;margin-top:10px;color:rgba(255,255,255,.9);max-width:820px}',
+      '.ce-eng-defence b{color:#fff;font-weight:600}',
+      '.ce-eng-actions{margin-top:16px;display:flex;flex-wrap:wrap;gap:8px}',
+      '.ce-eng-actions button, .ce-eng-actions a{font-size:11px;padding:8px 14px}',
+      '.ce-lof-card{grid-column:1/-1}',
+      '.ce-lof-head{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin:10px 0 14px;padding:12px 14px;background:var(--surface2,#F7F7F9);border-radius:5px;border:1px solid var(--border,#D8D8E0)}',
+      '.ce-lof-lbl{display:block;font-family:"IBM Plex Mono",monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--text3,#6B6B80);margin-bottom:2px}',
+      '.ce-lof-val{font-family:"Libre Baskerville",Georgia,serif;font-size:15px;color:var(--ink,#16181D)}',
+      '.ce-lof-table{width:100%;border-collapse:collapse;font-size:12px;margin-top:6px}',
+      '.ce-lof-table th{text-align:left;font-size:9.5px;font-weight:500;text-transform:uppercase;letter-spacing:.09em;color:var(--text3,#6B6B80);padding:8px 10px;border-bottom:1px solid var(--border,#D8D8E0);background:#FBFBFC}',
+      '.ce-lof-table td{padding:9px 10px;border-bottom:1px solid var(--rule2,#EBEBF0);vertical-align:middle}',
+      '.ce-lof-table tr:last-child td{border-bottom:none}',
+      '.ce-lof-table td.mono{font-family:"IBM Plex Mono",monospace;font-size:11px}',
+      '.ce-st{font-family:"IBM Plex Mono",monospace;font-size:9.5px;letter-spacing:.05em;padding:2px 8px;border-radius:12px;text-transform:uppercase}',
+      '.ce-st.st-on{background:#EEF7F2;color:#1A5C3A}',
+      '.ce-st.st-del{background:#FDF4E3;color:#7A4E00}',
+      '.ce-st.st-canx{background:#FBF0F0;color:#8B1A1A}',
+      '.ce-st.st-div{background:#E8F0FA;color:#1E4D8C}',
+      '.ce-ev-head{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.06em;margin:6px 0 10px}',
+      '.ce-ev-count.held{color:#1A5C3A}',
+      '.ce-ev-count.miss{color:#8B1A1A}',
+      '.ce-ev-list{list-style:none;padding:0;margin:0}',
+      '.ce-ev-list li{position:relative;padding:6px 8px 6px 24px;font-size:12.5px;color:var(--text2,#2D2D44);border-bottom:1px dashed var(--rule2,#EBEBF0)}',
+      '.ce-ev-list li:last-child{border-bottom:none}',
+      '.ce-ev-dot{position:absolute;left:6px;top:9px;width:10px;height:10px;border-radius:50%}',
+      '.ce-ev-list li.held .ce-ev-dot{background:#1A5C3A}',
+      '.ce-ev-list li.miss .ce-ev-dot{background:#8B1A1A}',
+      '.ce-ev-cta{margin-top:10px;padding-top:8px;border-top:1px solid var(--rule2,#EBEBF0);font-family:"IBM Plex Mono",monospace;font-size:10px}',
+      '.ce-ev-cta a{color:#1E4D8C;text-decoration:none;margin-right:12px}',
+      '.ce-ev-cta a:hover{text-decoration:underline}',
+      '.ce-loc-card{grid-column:1/-1;border-left:3px solid #C45C12}',
+      '.ce-loc-hint{font-size:12px;color:var(--text2,#3A3F4A);margin:6px 0 12px}',
+      '.ce-loc-drop{border:2px dashed var(--border,#D8D8E0);border-radius:6px;padding:26px 20px;text-align:center;background:var(--surface2,#F7F7F9);cursor:default;transition:border-color .15s,background .15s;margin-bottom:10px}',
+      '.ce-loc-drop.over{border-color:#1E4D8C;background:#E8F0FA}',
+      '.ce-loc-drop i{font-size:28px;color:var(--text3,#6B6B80);display:block;margin-bottom:8px}',
+      '.ce-loc-drop a{color:#1E4D8C;text-decoration:underline}',
+      '.ce-loc-paste{width:100%;font-size:12px;padding:8px;border:1px solid var(--border,#D8D8E0);border-radius:4px;font-family:"IBM Plex Sans",sans-serif;margin-bottom:10px;resize:vertical}'
+    ].join('\n');
+    document.head.appendChild(st);
+  }
+
+  /* ── Case-page helpers (engine-integrated) ───────────────────────────── */
   function _packet(refKey) {
     if (typeof CaseFiling === 'undefined') return null;
     var doc = CaseFiling.findByDocKey && CaseFiling.findByDocKey(state.ref, refKey);

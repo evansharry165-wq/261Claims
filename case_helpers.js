@@ -22,6 +22,8 @@ var LEGACY_WORKSPACE_ROUTES = {
 
 function getPrimaryTab(c) {
   if (!c) return 'overview';
+  // Engine-filed cases open on Overview so the reworked LOF/evidence/LOC/verdict panels are the entry point.
+  if (c && (c.origin === 'legal_engine' || c.source === 'engine')) return 'overview';
   return STAGE_TAB_MAP[c.stage] || 'overview';
 }
 
