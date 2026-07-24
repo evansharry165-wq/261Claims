@@ -416,6 +416,7 @@
       <span class="sidebar-label">Disruption Types</span>
       <a href="#technical">Technical Defects</a>
       <a href="#design-defect">Design Defects (2024)</a>
+      <a href="#fume-events">Fume Events (smelly sock)</a>
       <a href="#weather">Weather</a>
       <a href="#atc">ATC / Slots</a>
       <a href="#strikes">Strikes</a>
@@ -606,6 +607,71 @@
       </div>
       <div class="alert amber">
         <strong>What evidence is required:</strong> OEM or competent authority (EASA/national CAA) confirmation that: the defect is a design issue (not maintenance); affects the aircraft type generally; implicates flight safety. An EASA Emergency Airworthiness Directive is the strongest evidence. A manufacturer service bulletin alone may not suffice.
+      </div>
+    </div>
+
+    <!-- FUME EVENTS (SMELLY-SOCK / BLEED AIR) -->
+    <div class="section" id="fume-events">
+      <div class="section-header">Fume Events — bleed-air contamination ("smelly sock" events)</div>
+      <div class="alert red">
+        <strong>Default position: NOT extraordinary.</strong> A fume event — oil-contaminated bleed air entering the cabin, typically smelling of dirty socks, hot lubricant or musty air — is a technical event. Under the settled Wallentin-Hermann / Van der Lans line, technical faults are inherent to airline operations and the carrier must show more than "unexpected component failure" to escape compensation.
+      </div>
+
+      <div class="alert amber">
+        <strong>Why this area is a graveyard for airline defences.</strong> Most reported fume events stem from oil-seal deterioration, hydraulic leaks, bleed-valve wear or improper maintenance — all of which the CJEU has repeatedly held are inside the carrier's risk sphere. Defence attempts framed as "unforeseen technical event" have been routinely rejected in UK county courts and German Amtsgerichten. The airline loses the compensation claim (Art 7) even where the flight was correctly and safely handled.
+      </div>
+
+      <div class="case-grid">
+        <div class="case-card attack">
+          <div class="verdict no-ec">NOT Extraordinary — Default</div>
+          <div class="case-name">Van der Lans v KLM (applied by analogy)</div>
+          <div class="case-citation">C-257/14 · ECJ · 17 September 2015</div>
+          <div class="case-principle">Premature failure of an aircraft component — even undetected during routine maintenance and even where a replacement part is unavailable at the airport — is inherent to airline operations. Applied to bleed-air components (valves, seals, HP check valves) this means: a fume event caused by wear, seal deterioration or leak is NOT extraordinary in itself.</div>
+          <div class="case-tags"><span class="tag attack">Technical fault</span><span class="tag">Applies to most fume events</span></div>
+        </div>
+        <div class="case-card defend">
+          <div class="verdict ec">Extraordinary — Narrow Exception</div>
+          <div class="case-name">C-385/23 Finnair · C-411/23 D.S.A. v P.S.A.</div>
+          <div class="case-citation">ECJ · 13 June 2024 (both)</div>
+          <div class="case-principle">Where the fume event stems from a <b>hidden design defect confirmed by the OEM or by EASA/CAA</b>, and the defect affects the aircraft type generally and implicates flight safety, the extraordinary circumstances defence CAN apply. Timing of the carrier's awareness is irrelevant (C-411/23).</div>
+          <div class="case-tags"><span class="tag defend">Design defect route</span><span class="tag warning">OEM/EASA confirmation required</span></div>
+        </div>
+      </div>
+
+      <div class="alert blue">
+        <strong>The only defensible route for a fume-event case.</strong> Reframe from "technical fault" to <b>"design defect in the bleed-air system"</b>, and evidence it as such:
+        <br>&nbsp;
+        <br>&nbsp;<strong>1.</strong> Identify the specific component that leaked (bleed-air valve, engine oil seal, HP check valve, precooler seal). Tie it to a documented service bulletin, MOR (mandatory occurrence report) or maintenance finding on the specific tail.
+        <br>&nbsp;<strong>2.</strong> Obtain <b>OEM or EASA written confirmation</b> that the fault is a design/manufacturing issue affecting the aircraft type — not a maintenance failure. This is the decisive evidence under C-385/23 and C-411/23. An <b>Emergency Airworthiness Directive</b> is the gold standard (e.g. FAA/EASA ADs on Boeing 737 5th-stage bleed check valves; EASA A320neo HP valve butterfly seal retention clip AD 2026-0134; A330neo HP valve leaks post-Aug 2022).
+        <br>&nbsp;<strong>3.</strong> Show the defect implicates flight safety — for bleed-air contamination this is automatic (crew fume exposure, cabin air quality, potential incapacitation).
+        <br>&nbsp;<strong>4.</strong> Reasonable measures — file the MOR, document the post-event engineering inspection, justify the timeline of any diversion / return / hold, and log Art 9 care.
+      </div>
+
+      <div class="alert amber">
+        <strong>What will NOT hold as a defence.</strong>
+        <br>• Bare assertion that the fault was "unexpected" — Van der Lans forecloses this.
+        <br>• "Component reached end of life sooner than predicted" — component life is the carrier's maintenance risk.
+        <br>• Reference to a service bulletin without proof the specific fault stemmed from the identified design issue.
+        <br>• Reliance on manufacturer confirmation that arrives <em>after</em> the response deadline — obtain it before rejecting the claim (though its late arrival does not extinguish the defence per C-411/23).
+      </div>
+
+      <div class="alert red">
+        <strong>Wider litigation context — DO NOT confuse.</strong> A live UK collective action (High Court, ~220 pilots and cabin crew from BA, easyJet, Jet2 and Virgin Atlantic; lead trials 2025–26) alleges long-term crew injury from bleed-air contamination — "aerotoxic syndrome". This is a <strong>personal injury / employer liability action, not an EC261 defence</strong>. It should not be cited in a passenger claim response. But the existence of a coordinated toxic-fume tort action means any airline correspondence must be handled with reputational and disclosure awareness — nothing in a passenger LOR should undermine the airline's position in the parallel PI proceedings.
+      </div>
+
+      <table class="principle-table">
+        <thead><tr><th>Fact pattern</th><th>Likely outcome</th></tr></thead>
+        <tbody>
+          <tr><td>Cabin fumes reported, engineering finds worn oil seal; no OEM statement</td><td class="mono">Pay — settle</td></tr>
+          <tr><td>Cabin fumes, MOR filed, OEM confirms specific defect in that component design</td><td class="mono">Defend — subject to EASA/CAA confirmation on file</td></tr>
+          <tr><td>Cabin fumes on aircraft type subject to active EASA Emergency AD for that system</td><td class="mono">Defend — cite the AD as the evidence pack anchor</td></tr>
+          <tr><td>Diversion following fume event where cause is not yet identified</td><td class="mono">Judgment call — hold classification pending engineering root cause; file Art 9 care regardless</td></tr>
+          <tr><td>Fume event on new aircraft (in-service &lt;12 months) with fleet-wide occurrence</td><td class="mono">Defend — C-385/23 line applies most cleanly</td></tr>
+        </tbody>
+      </table>
+
+      <div class="alert blue">
+        <strong>Bottom line for the practitioner.</strong> Assume a fume-event Art 7 claim is payable unless the airline has (a) identified the specific bleed-air component that failed, (b) a written OEM or EASA statement that the failure is a design issue affecting the type, and (c) a clean reasonable-measures record (MOR, inspection, timeline, care). Without those three, the CJEU case law makes the defence unwinnable — this is a category where airlines lose more Art 7 claims than any other technical category because they run "unexpected technical fault" arguments the Court has expressly rejected.
       </div>
     </div>
 
