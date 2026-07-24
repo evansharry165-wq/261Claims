@@ -288,10 +288,26 @@ var CaseShell = (function () {
   }
 
   function _lofRows() {
-    // Prefer the case_packet's stored LOF (from the engine); fall back to any decision_packet points
+    // Prefer the case_packet's stored LOF (top-level lofRows); fall back to facts.rotation from the seed
     var pk = _packet('case_packet');
-    if (pk && pk.factsSection && Array.isArray(pk.factsSection.lofRows) && pk.factsSection.lofRows.length) {
-      return pk.factsSection.lofRows;
+    if (pk) {
+      if (Array.isArray(pk.lofRows) && pk.lofRows.length) return pk.lofRows;
+      if (pk.facts && Array.isArray(pk.facts.rotation) && pk.facts.rotation.length) {
+        // Seed rotation shape → LOF-render shape
+        return pk.facts.rotation.map(function (r) {
+          return {
+            flight: r.fno || r.flight || '',
+            route: (r.frm && r.to) ? (r.frm + '→' + r.to) : (r.route || ''),
+            status: (r.status || 'ON TIME').replace(/^ON TIME$/, 'On Time').replace(/^CANCELLED$/, 'Cancelled').replace(/^DIVERTED$/, 'Diverted').replace(/^DELAYED$/, 'Delayed'),
+            note: [
+              r.reason,
+              r.divTo ? ('→ ' + r.divTo) : '',
+              r.arrDelay ? ('+' + r.arrDelay + 'm') : '',
+              r.causedBy ? ('↳ ' + r.causedBy) : ''
+            ].filter(Boolean).join(' · ')
+          };
+        });
+      }
     }
     return [];
   }
@@ -313,18 +329,39 @@ var CaseShell = (function () {
   }
 
   function _evidenceList() {
-    // Derive from case_packet.factsSection.evidenceMarks OR from decision_packet points
+    // Prefer case_packet.evidenceMarks (top-level). Fall back to seed disruption.evidence and case.points.
     var pk = _packet('case_packet');
     var out = [];
-    if (pk && pk.factsSection && Array.isArray(pk.factsSection.evidenceMarks)) {
-      pk.factsSection.evidenceMarks.forEach(function (m) {
-        out.push({ text: m.name || m.key || 'Evidence item', held: (m.status === 'available' || m.status === 'on_file' || m.status === 'held') });
+    var seen = {};
+    function add(text, held) {
+      var k = String(text || '').trim().toLowerCase();
+      if (!k || seen[k]) return;
+      seen[k] = 1;
+      out.push({ text: String(text).trim(), held: !!held });
+    }
+    if (pk && Array.isArray(pk.evidenceMarks)) {
+      pk.evidenceMarks.forEach(function (m) {
+        add(m.name || m.label || m.key || 'Evidence item', (m.status === 'available' || m.status === 'on_file' || m.status === 'held'));
       });
     }
+    // Seed disruption 'evidence' string — held items listed
+    if (pk && pk.facts && pk.facts.disruption && pk.facts.disruption.evidence) {
+      String(pk.facts.disruption.evidence).split(/;|·/).forEach(function (it) {
+        var t = it.replace(/^\s*Evidence held:\s*/i, '').trim().replace(/\.$/, '');
+        if (t && t.length > 2) add(t, true);
+      });
+    }
+    // LOF sectors on record — always held once G0 signed
+    if (pk && Array.isArray(pk.lofRows) && pk.lofRows.length) {
+      add('Line of Flying records (' + pk.lofRows.length + ' sectors)', true);
+    } else if (pk && pk.facts && Array.isArray(pk.facts.rotation) && pk.facts.rotation.length) {
+      add('Line of Flying records (' + pk.facts.rotation.length + ' sectors)', true);
+    }
+    // Fall back to case.points if nothing else
     if (!out.length) {
       var c = state.caseData || {};
       (c.points || []).forEach(function (pt) {
-        out.push({ text: pt.evidenceDoc || pt.claim || 'Evidence point', held: pt.evidenceStatus === 'green' });
+        add(pt.evidenceDoc || pt.claim || 'Evidence point', pt.evidenceStatus === 'green');
       });
     }
     return out.slice(0, 12);
@@ -332,9 +369,10 @@ var CaseShell = (function () {
 
   function _totalDelayLabel(c) {
     var pk = _packet('case_packet');
-    if (pk && pk.factsSection) {
-      var d = pk.factsSection.delay;
-      if (d) return String(d);
+    if (pk && pk.facts) {
+      if (pk.facts.isCancelled) return 'Cancelled';
+      if (pk.facts.delayText) return String(pk.facts.delayText);
+      if (pk.facts.delayMins != null) return pk.facts.delayMins + ' minutes';
     }
     if (c.delay) return c.delay;
     return '—';
@@ -342,9 +380,9 @@ var CaseShell = (function () {
 
   function _timesLine(c) {
     var pk = _packet('case_packet');
-    var f = (pk && pk.factsSection) || {};
-    var route = f.route || (c.dep && c.arr ? c.dep + ' → ' + c.arr : '');
-    var date = f.flightDate || c.flightDate || '';
+    var f = (pk && pk.facts) || {};
+    var route = (f.depIata && f.arrIata) ? (f.depIata + ' → ' + f.arrIata) : ((c.dep && c.arr) ? (c.dep + ' → ' + c.arr) : '');
+    var date = f.date || c.flightDate || '';
     var flight = f.flightNum || c.flightNum || '';
     return [flight, route, date].filter(Boolean).join(' · ');
   }
