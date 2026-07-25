@@ -57,6 +57,13 @@
       '.cer-item-btn:hover{background:var(--accent,#1B3A6B);color:#fff}',
       '.cer-item-btn.done{background:var(--confirm,#1A5C3A);color:#fff;border-color:var(--confirm,#1A5C3A);cursor:default}',
       '.cer-item-none{padding:14px 0;color:var(--text3,#6B6B80);font-size:11px;font-style:italic;text-align:center}',
+      '.cer-spinner{display:inline-block;width:12px;height:12px;border:2px solid var(--rule,#D8D8E0);border-top-color:var(--accent2,#254E91);border-radius:50%;animation:cerspin 0.7s linear infinite;vertical-align:middle;margin-right:6px}',
+      '.cer-spinner-lg{display:inline-block;width:20px;height:20px;border:2.5px solid var(--rule,#D8D8E0);border-top-color:var(--accent2,#254E91);border-radius:50%;animation:cerspin 0.7s linear infinite;vertical-align:middle;margin-right:8px}',
+      '@keyframes cerspin{to{transform:rotate(360deg)}}',
+      '.cer-loading{padding:20px 18px;color:var(--text3,#6B6B80);font-size:11.5px;text-align:center;display:flex;align-items:center;justify-content:center;gap:8px}',
+      '.cer-loading-attached{padding:36px 18px;background:var(--surface2,#F7F7F9);border:1px dashed var(--rule,#D8D8E0);border-radius:3px;color:var(--text3,#6B6B80);font-size:12px;text-align:center;display:flex;align-items:center;justify-content:center;gap:10px}',
+      '.cer-src-chip.chip-loading{background:var(--accent-faint,#EEF2F8);color:var(--accent,#1B3A6B);position:relative;padding-left:20px}',
+      '.cer-src-chip.chip-loading::before{content:"";position:absolute;left:6px;top:50%;transform:translateY(-50%);width:9px;height:9px;border:1.5px solid rgba(27,58,107,0.25);border-top-color:var(--accent,#1B3A6B);border-radius:50%;animation:cerspin 0.7s linear infinite}',
       '.cer-actions-strip{background:var(--surface,#fff);border:1px solid var(--border,#D8D8E0);border-radius:3px;padding:12px 16px;margin-top:20px;display:flex;justify-content:space-between;align-items:center;gap:12px}',
       '.cer-btn-primary{font-size:12px;padding:8px 16px;background:var(--ink,#1A1A2E);color:#fff;border:none;border-radius:3px;cursor:pointer;font-weight:500;font-family:var(--font,Helvetica Neue,Arial,sans-serif);display:inline-flex;align-items:center;gap:6px}',
       '.cer-btn-primary:hover{background:var(--ink2,#2D2D44)}',
@@ -101,8 +108,8 @@
     var panelId = 'cer-src-' + source.id;
     var html = '<div class="cer-src" id="'+panelId+'">'+
       '<div class="cer-src-hdr"><div><div class="cer-src-name">'+esc(source.id)+'</div><div class="cer-src-provider">'+esc(source.provider)+' · '+esc(source.category)+'</div></div>'+
-      '<span class="cer-src-chip chip-loading" data-chip="'+source.id+'">loading…</span></div>'+
-      '<div class="cer-src-body" data-body="'+source.id+'"><div class="cer-item-none">Fetching…</div></div>'+
+      '<span class="cer-src-chip chip-loading" data-chip="'+source.id+'">checking</span></div>'+
+      '<div class="cer-src-body" data-body="'+source.id+'"><div class="cer-loading"><span class="cer-spinner"></span>Checking source for case-relevant items…</div></div>'+
     '</div>';
     itemsPromise.then(function(items){
       var chip = document.querySelector('[data-chip="'+source.id+'"]');
@@ -146,6 +153,13 @@
     var el = typeof target === 'string' ? document.querySelector(target) : target;
     if (!el) return;
     el.id = 'cer-root';
+    // Show an initial loading state immediately so user knows the panel is working
+    el.innerHTML = '<div class="cer-wrap"><div class="cer-loading-attached"><span class="cer-spinner-lg"></span>Loading Evidence Repository — reading case facts and querying '+ ((global.EvidenceCollection && global.EvidenceCollection.SOURCES) || []).length +' evidence sources…</div></div>';
+    // Yield to browser so the loading state paints before we do the heavier synchronous work
+    setTimeout(function(){ actualRender(caseRef, el); }, 0);
+  }
+
+  function actualRender(caseRef, el){
     var facts = global.CaseEvidenceRepository.getCaseFacts(caseRef);
     if (!facts){ el.innerHTML = '<div class="cer-wrap"><div class="cer-empty">Could not load case facts. Open the case again after case_packet is generated.</div></div>'; return; }
     var attached = global.CaseEvidenceRepository.listAttached(caseRef);

@@ -68,7 +68,7 @@
   function mount(target) {
     var el = typeof target === 'string' ? document.querySelector(target) : target;
     if (!el) return;
-    el.innerHTML = '<div style="padding:12px;font-size:11px;color:#666">Loading evidence-collection status…</div>';
+    el.innerHTML = '<div style="padding:14px;font-size:11px;color:#666;display:flex;align-items:center;gap:8px"><span style="display:inline-block;width:12px;height:12px;border:2px solid #d8d8e0;border-top-color:#254E91;border-radius:50%;animation:esw-spin 0.7s linear infinite"></span>Loading evidence-collection status…</div><style>@keyframes esw-spin{to{transform:rotate(360deg)}}</style>';
     global.EvidenceCollection.status().then(function (s) { render(el, s); });
   }
 
