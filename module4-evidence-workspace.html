@@ -1098,7 +1098,7 @@ function renderMain(){
   if(primaryType){
     opsPanel='<div class="card"><div class="card-body open">'
       +'<div style="border:1px solid #FDE68A;background:#FFFBEB;border-radius:var(--r2);padding:14px 16px;margin-bottom:12px"><div style="font-size:13px;font-weight:500;margin-bottom:4px;display:flex;align-items:center;gap:6px"><i class="ti ti-certificate" style="color:var(--amber)"></i> Gold evidence pack</div><div style="font-size:28px;font-weight:500;color:var(--amber);margin-bottom:4px">'+pack.gold+'%</div><div style="font-size:11px;color:var(--text2);line-height:1.55">DefendAble targets the gold pack on every case — the most complete aviation defence. Higher collection demand, but the strongest position for legal.</div><div style="font-size:10px;color:var(--text3);margin-top:6px">'+pack.goldDone+' of '+pack.goldTotal+' key & secondary documents on file</div></div>'
-      +'<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn-primary" onclick="pullFromRepository()"><i class="ti ti-download"></i> Pull from repository</button><button class="btn-secondary" onclick="requestAllOutstanding()"><i class="ti ti-send"></i> Request outstanding</button><button class="btn-secondary" onclick="window.location.href=\'repository.html\'"><i class="ti ti-database"></i> Evidence repository</button>'
+      +'<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn-primary" id="btn-pull-repo" onclick="pullFromRepository(event)"><i class="ti ti-download"></i> Pull from repository</button><button class="btn-secondary" id="btn-request-outstanding" onclick="requestAllOutstanding(event)"><i class="ti ti-send"></i> Request outstanding</button><button class="btn-secondary" onclick="window.location.href=\'repository.html\'"><i class="ti ti-database"></i> Evidence repository</button>'
       +(pack.gold>=100
         ?'<button class="btn-sm btn-navy" onclick="moveToDrafting()" style="background:var(--purple);border-color:var(--purple)"><i class="ti ti-file-pencil"></i> Move to drafting</button>'
         :'<button class="btn-sm" disabled title="Complete the key evidence items to advance" style="opacity:0.5;cursor:not-allowed;background:var(--surface3);color:var(--text3);border-color:var(--border)"><i class="ti ti-file-pencil"></i> Move to drafting</button>')
@@ -1273,6 +1273,41 @@ function getRepositoryMatch(id){
   var matches=EvidenceFiling.findFilesForCase(C.flightNum,C.flightDate,id);
   return matches.length?matches[0]:null;
 }
+// ── Loading-state helpers for evidence pull buttons ──
+(function(){
+  if (document.getElementById('evws-spinner-css')) return;
+  var st = document.createElement('style'); st.id = 'evws-spinner-css';
+  st.textContent = '@keyframes evws-spin{to{transform:rotate(360deg)}} .evws-spinner{display:inline-block;width:12px;height:12px;border:2px solid rgba(255,255,255,0.35);border-top-color:#fff;border-radius:50%;animation:evws-spin 0.7s linear infinite;vertical-align:middle;margin-right:6px} .evws-spinner.dark{border-color:rgba(0,0,0,0.15);border-top-color:#254E91} .evws-toast{position:fixed;bottom:20px;right:20px;background:#1A1A2E;color:#fff;padding:12px 18px;border-radius:4px;box-shadow:0 8px 24px rgba(0,0,0,0.3);z-index:1000;font-size:12px;max-width:400px;line-height:1.5;font-family:Helvetica Neue,Arial,sans-serif;transition:opacity .4s}';
+  document.head.appendChild(st);
+})();
+
+function showToast(msg){
+  var el = document.createElement('div');
+  el.className = 'evws-toast';
+  el.textContent = msg;
+  document.body.appendChild(el);
+  setTimeout(function(){ el.style.opacity = '0'; }, 3800);
+  setTimeout(function(){ el.remove(); }, 4400);
+}
+
+function withPullLoading(evOrBtnId, workFn, label){
+  var btn = null;
+  if (evOrBtnId && evOrBtnId.currentTarget) btn = evOrBtnId.currentTarget;
+  else if (typeof evOrBtnId === 'string') btn = document.getElementById(evOrBtnId);
+  if (!btn) { workFn(); return; }
+  var originalHtml = btn.innerHTML;
+  var isPrimary = btn.className && btn.className.indexOf('btn-primary') >= 0;
+  var spinnerCls = isPrimary ? 'evws-spinner' : 'evws-spinner dark';
+  btn.disabled = true;
+  btn.innerHTML = '<span class="' + spinnerCls + '"></span>' + (label || 'Working…');
+  setTimeout(function(){
+    try { workFn(); } finally {
+      btn.disabled = false;
+      btn.innerHTML = originalHtml;
+    }
+  }, 400);
+}
+
 function pullFromRepository(){
   if(typeof EvidenceFiling==='undefined'){alert('Filing system not loaded.');return;}
   var ids=allEvidenceIds();
@@ -1324,7 +1359,10 @@ function requestEvidenceCompletion(){
 
 function triggerUpload(id,name){pendingUpload={id:id,name:name};document.getElementById('file-input').click();}
 
-function pullFromRepository(){
+function pullFromRepository(ev){
+  withPullLoading(ev, function(){ _doPullFromRepository(); }, 'Pulling from repository…');
+}
+function _doPullFromRepository(){
   // Pull all evidence that is already available in the repository or via API
   // These are items the solicitor can retrieve themselves without DIO involvement
   var REPO_AVAILABLE=[
@@ -1361,7 +1399,10 @@ function pullFromRepository(){
   render();
 }
 
-function requestAllOutstanding(){
+function requestAllOutstanding(ev){
+  withPullLoading(ev, function(){ _doRequestAllOutstanding(); }, 'Requesting outstanding…');
+}
+function _doRequestAllOutstanding(){
   // Raise DIO requests for items NOT resolved by the repository pull
   // Only the Montreal Convention third-party contract requires DIO involvement
   var AUTO_RESOLVE=[
