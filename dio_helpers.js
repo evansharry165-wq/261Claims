@@ -55,9 +55,15 @@
     });
   }
 
+  function evidenceKey(ref) {
+    if (typeof evidenceStorageKey === 'function') return evidenceStorageKey(ref);
+    if (typeof normaliseCaseRef === 'function') ref = normaliseCaseRef(ref);
+    return 'dfa_evidence_' + ref;
+  }
+
   function getEvidenceState(ref) {
     try {
-      return JSON.parse(sessionStorage.getItem('dfa_evidence_' + ref) || 'null') || {};
+      return JSON.parse(sessionStorage.getItem(evidenceKey(ref)) || 'null') || {};
     } catch (e) {
       return {};
     }
@@ -65,7 +71,7 @@
 
   function saveEvidenceState(ref, state) {
     try {
-      sessionStorage.setItem('dfa_evidence_' + ref, JSON.stringify(state));
+      sessionStorage.setItem(evidenceKey(ref), JSON.stringify(state));
     } catch (e) {}
   }
 

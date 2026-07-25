@@ -1,3 +1,4 @@
+/* DefendAble Intelligence Engine v1 — DEPRECATED: not loaded by any page. Use defendable_demo_v2.js + defendable_analyser.html instead. */
 /* DefendAble Intelligence Engine — client-side demo + optional live AI */
 var DefendAbleEngine = (function () {
   var KEYWORD_RULES = [

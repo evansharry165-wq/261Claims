@@ -3,7 +3,7 @@
 # Applies IP-safe aliases over real internal system names.
 # Run from repo root: bash scripts/apply_aliases.sh
 set -e
-FILES=$(grep -rl --include="*.js" --include="*.html" \
+FILES=$(grep -rl --include="*.js" --include="*.html" --include="*.csv" --include="*.md" \
   "TOPS\|AIMS\|DISCO\|SafetyNet\|HERMES\|AMOS\|DocuNet" . \
   --exclude-dir=scripts 2>/dev/null || true)
 if [ -z "$FILES" ]; then echo "No files with real names found."; exit 0; fi

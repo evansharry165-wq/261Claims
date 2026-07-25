@@ -545,7 +545,7 @@ function renderIntelEntries(entries, filter){
     if(e.disruptionTypes&&e.disruptionTypes.length){
       e.disruptionTypes.forEach(function(dt){
         if(dt!=='all') applyLinks.push(
-          '<a href="module4-evidence-workspace.html'+(activeCaseQuery()?activeCaseQuery():'')+'" '
+          '<a href="case.html?tab=evidence'+(activeCaseQuery()?('&'+activeCaseQuery().slice(1)):'')+'" '
           +'style="font-size:10px;color:var(--accent);text-decoration:none;margin-right:8px">'
           +'Apply to '+dt+' evidence ↗</a>'
         );

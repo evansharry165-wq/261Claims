@@ -23,7 +23,7 @@ Navigation: **Work · Cases · Repository · Insights** (Evidence team sees **Re
 
 ## Demo path
 
-1. **Sarah Booth** → Work → open AC-2026-0089 from the demo banner
+1. **Sarah Booth** → Work → open **DEF-2026-EW-0089** from the demo banner
 2. Use case shell tabs or Continue CTA through triage → deadlines → evidence
 3. Switch to **Emma Hughes** → complete evidence requests in Repository
 
