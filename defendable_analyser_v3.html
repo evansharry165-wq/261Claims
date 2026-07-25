@@ -3490,7 +3490,7 @@
   <script src="defendable_case_handoff.js?v=p1a"></script>
   <script src="defendable_doc_templates.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-  <script src="defendable_databank.js?v=p1a"></script>
+  <script src="defendable_databank.js?v=p25"></script>
   <script src="defendable_databank_ui.js"></script>
   <script src="defendable_legal_review.js?v=p1a"></script>
   <script src="case_filing.js"></script>
@@ -5923,8 +5923,49 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
     /* ----------------------------------------------------------
        buildChronologicalTimeline — replaces facts panel + causal chain + ev-nodes
     ---------------------------------------------------------- */
+    /* ── Flight-code convention detector (Phase 2.5) ───────────────────
+       Recognises easyJet-style suffix/OND flight codes and returns a
+       plain-English annotation. Returns null when nothing matches.        */
+    function describeFlightCode(fno){
+      if (!fno) return null;
+      var s = String(fno).trim().toUpperCase();
+      var m = s.match(/^([A-Z]{1,3})?\s*(\d{2,4})([RD])?$/);
+      if (!m) return null;
+      var num = m[2], suffix = m[3] || '';
+      if (suffix === 'R') return { kind:'return-to-stand', note:'Return-to-stand event — aircraft pushed back then returned to stand before re-dispatch. Sturgeon clock does not begin until the successful departure.' };
+      if (suffix === 'D') return { kind:'diversion-midflight', note:'Mid-flight diversion event — flight was diverted en route then continued to planned destination.' };
+      if (num && num.length === 4) {
+        var d1 = num[0], d3 = num[2], d4 = num[3];
+        if (d3 === '9' && d4 === '9' && d1 !== '9') return { kind:'ond-level-2', note:'Overnight-delayed carry-over (repeat OND) — flight number\'s 3rd + 4th digits shifted to 9-9 indicating second-day carry-over from prior disruption.' };
+        if (d4 === '9' && d1 !== '9') return { kind:'ond-level-1', note:'Overnight-delayed carry-over — flight number\'s 4th digit shifted to 9 indicating carry-over from prior day\'s disruption.' };
+      }
+      return null;
+    }
+
+    /* ── Sturgeon doors-open effective delay (Phase 2.5) ──────────────
+       If an R-suffix companion of the claimed flight appears in the
+       rotation, its ATD→next-ATD gap is the doors-open block that
+       must be subtracted from arrival delay before Sturgeon 3h test.    */
+    function computeSturgeonReturnMins(claimedFno, rotation){
+      if (!claimedFno || !rotation) return 0;
+      var base = String(claimedFno).toUpperCase().replace(/[RD]$/, '');
+      var R = null, next = null;
+      for (var i=0;i<rotation.length;i++){
+        var r = rotation[i];
+        if (!r || !r.fno) continue;
+        var f = String(r.fno).toUpperCase();
+        if (f === base + 'R') R = r;
+        else if (R && f === base) { next = r; break; }
+      }
+      if (!R || !next || !R.atd || !next.atd) return 0;
+      function toMin(t){ t = String(t||'').replace(/[^\d]/g,''); if (t.length<3) return 0; var h=parseInt(t.slice(0,-2),10), m=parseInt(t.slice(-2),10); return h*60+m; }
+      var gap = toMin(next.atd) - toMin(R.atd);
+      return gap > 0 && gap < 600 ? gap : 0;
+    }
+
     /* ── Seed-driven timeline: authoritative, ordered, complete ─────────
-       Predecessor cards → root-cause card → claimed-flight card → correct outcome.
+       Predecessor cards → root-cause card → claimed-flight card → correct outcome
+       (+ onward-sector cards for the rest of the tail's day).
        Zero regex. Used whenever the databank supplied the seed.               */
     function buildSeededTimeline(facts) {
       tlEvStatus = {};
@@ -5950,6 +5991,8 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
                   ' · STA ' + s.sta + (s.ata ? ' · ATA ' + s.ata : '') + '.');
         if (s.reason) body.push(s.reason + '.');
         if (s.causedBy) body.push('Knock-on from ' + s.causedBy + ' (IATA 93).');
+        var fc = describeFlightCode(s.fno);
+        if (fc) body.push('<em>Flight-code convention:</em> ' + fc.note);
         nodes.push({
           nodeType: (s.status === 'ON TIME' ? 'impact' : 'cascade'),
           label: s.fno + ' ' + cardStatus,
@@ -6004,10 +6047,13 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
         claimed.ataTime     ? 'ATA: ' + claimed.ataTime : '',
         claimed.delayText   ? 'Delay: ' + claimed.delayText : '',
       ].filter(Boolean);
+      const claimedFc = describeFlightCode(claimed.flightNum);
+      const claimedDescHtml = descParts.join(' · ') +
+        (claimedFc ? '<br><em>Flight-code convention:</em> ' + claimedFc.note : '');
       nodes.push({
         nodeType: 'flight-dep',
         label: claimed.flightNum + (routeStr ? ' — ' + routeStr : ''),
-        desc: descParts.join(' · '),
+        desc: claimedDescHtml,
         icon: '✈', time: claimed.depTime,
         evidenceItems: [], showAnnotation: false, nodeId: mkId(),
         cfg: { cardClass:'tl-flight-hdr', dotClass:'tl-dot-blue', badgeClass:'tl-badge-cascade', badgeText:'claimed flight' },
@@ -6036,17 +6082,52 @@ Begin: ${ogimetBase}0000 · End: ${ogimetBase}2359</div>
         });
       } else if (claimed.delayMins != null && claimed.delayMins > 0) {
         const dest = claimed.arrIata || '';
+        const returnMins = computeSturgeonReturnMins(claimed.flightNum, rotation);
+        const effectiveDelay = Math.max(0, claimed.delayMins - returnMins);
+        const sturgeonNote = returnMins > 0
+          ? '. Sturgeon doors-open subtraction applies: raw arrival delay ' + claimed.delayMins + ' min minus ' + returnMins + ' min return-to-stand block = effective compensable delay ' + effectiveDelay + ' min.'
+          : '';
+        const engaged = (returnMins > 0 ? effectiveDelay : claimed.delayMins) >= 180;
         nodes.push({
           nodeType: 'outcome',
           label: claimed.flightNum + ' suffered an arrival delay of ' + claimed.delayText + (dest ? ' at ' + dest : ''),
-          desc: 'Passengers reached destination — delay quantum ' + claimed.delayText +
-                (claimed.delayMins >= 180 ? '. Sturgeon 3h threshold met — Art 7 compensation engages subject to defence.'
-                                          : '. Below 3h threshold — Art 7 compensation not engaged; Art 9 care applies.'),
+          desc: 'Passengers reached destination — delay quantum ' + claimed.delayText + sturgeonNote +
+                (engaged ? ' Sturgeon 3h threshold met — Art 7 compensation engages subject to defence.'
+                         : ' Below 3h threshold — Art 7 compensation not engaged; Art 9 care applies.'),
           icon: '⏱', time: claimed.ataTime,
           evidenceItems: [], showAnnotation: false, nodeId: mkId(),
           cfg: { cardClass:'tl-decision', dotClass:'tl-dot-red', badgeClass:'tl-badge-decision', badgeText:'outcome — delay' },
         });
       }
+
+      // 5. Onward-sector cards — sectors flown after the claim on the same tail
+      const onward = claimedIdx >= 0 ? rotation.slice(claimedIdx + 1) : [];
+      onward.forEach(function(s){
+        const cardStatus = s.status === 'ON TIME' ? 'operated on time'
+                         : s.status === 'CANCELLED' ? 'was cancelled'
+                         : s.status === 'DIVERTED' ? 'diverted to ' + (s.divTo || 'alternate')
+                         : s.status === 'DELAYED' ? ('was delayed — arrived +' + (s.arrDelay||0) + ' mins')
+                         : 'operated';
+        const body = [];
+        body.push('Sector ' + s.frm + ' → ' + s.to + '. STD ' + s.std + (s.atd ? ' · ATD ' + s.atd : '') +
+                  ' · STA ' + s.sta + (s.ata ? ' · ATA ' + s.ata : '') + '.');
+        if (s.reason) body.push(s.reason + '.');
+        if (s.causedBy) body.push('Knock-on from ' + s.causedBy + ' (IATA 93).');
+        var fc = describeFlightCode(s.fno);
+        if (fc) body.push('<em>Flight-code convention:</em> ' + fc.note);
+        nodes.push({
+          nodeType: (s.status === 'ON TIME' ? 'impact' : 'cascade'),
+          label: s.fno + ' ' + cardStatus + ' — later that day',
+          desc: body.join('<br>'),
+          icon: (s.status === 'ON TIME' ? '↺' : s.status === 'CANCELLED' ? '✕' : '↷'),
+          time: s.std,
+          evidenceItems: [], showAnnotation: false, nodeId: mkId(),
+          cfg: (s.status === 'ON TIME'
+                ? { cardClass:'tl-recovery', dotClass:'tl-dot-green', badgeClass:'tl-badge-recovery', badgeText:'later that day — clean' }
+                : { cardClass:'tl-cascade',  dotClass:'tl-dot-blue',  badgeClass:'tl-badge-cascade',  badgeText:'later that day — disrupted' }),
+        });
+      });
+
       return nodes;
     }
 
