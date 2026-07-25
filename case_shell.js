@@ -5,6 +5,7 @@ var CaseShell = (function () {
     { id: 'triage', label: 'Triage', icon: 'ti-search', frame: 'module2-case-workspace.html' },
     { id: 'deadlines', label: 'Deadlines', icon: 'ti-calendar-due', frame: 'module3-cpr-workspace.html' },
     { id: 'evidence', label: 'Evidence', icon: 'ti-folder-open', frame: 'module4-evidence-workspace.html' },
+    { id: 'repo', label: 'Repository', icon: 'ti-database', frame: false },
     { id: 'documents', label: 'Documents', icon: 'ti-file-pencil', frame: 'module5-drafting-workspace.html' },
     { id: 'activity', label: 'Activity', icon: 'ti-activity', frame: false }
   ];
@@ -842,6 +843,13 @@ var CaseShell = (function () {
     } else if (state.tab === 'activity') {
       panel.innerHTML = '';
       renderActivity();
+    } else if (state.tab === 'repo') {
+      panel.innerHTML = '<div id="cer-mount"></div>';
+      if (window.CaseEvidenceRepoUI && state.ref) {
+        window.CaseEvidenceRepoUI.render(state.ref, document.getElementById('cer-mount'));
+      } else {
+        panel.innerHTML = '<div style="padding:24px;color:var(--text3);font-size:12px">Evidence repository module not loaded.</div>';
+      }
     } else if (FRAME_MAP[state.tab]) {
       renderFrame(state.tab);
     }
