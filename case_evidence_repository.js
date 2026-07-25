@@ -211,14 +211,59 @@
     return [];
   }
 
+  /* On-demand source IDs mirror daily-source IDs with "-on-demand" suffix.
+     Reader prefers targeted fetch when present. */
+  function targetedSourceId(daily){ return daily + '-on-demand'; }
+
+  function hasTargetedFetch(caseRef, sourceId){
+    if (!global.EvidenceCollection || !global.EvidenceCollection.getCaseFetch) return Promise.resolve(false);
+    var targetedSid = targetedSourceId(sourceId);
+    return global.EvidenceCollection.getCaseFetch(caseRef, targetedSid).then(function(x){ return !!x; });
+  }
+
   function fetchRelevantSlice(caseRef, sourceId){
     var facts = getCaseFacts(caseRef);
     if (!facts) return Promise.resolve([]);
     if (!global.EvidenceCollection) return Promise.resolve([]);
-    return global.EvidenceCollection.get(sourceId).then(function(snap){
-      if (!snap) return [];
-      return filterSnapshot(sourceId, snap, facts);
+    // Try targeted case-fetch first — if present, always prefer it
+    var targetedSid = targetedSourceId(sourceId);
+    return global.EvidenceCollection.getCaseFetch(caseRef, targetedSid).then(function(targeted){
+      if (targeted && targeted.data){
+        var items = filterOnDemandSnapshot(sourceId, targeted, facts);
+        // Tag every item so UI can badge them as targeted
+        items.forEach(function(it){ it._fetchKind = 'targeted'; it._pulled_at = targeted.pulled_at; });
+        return items;
+      }
+      // Fall back to daily snapshot
+      return global.EvidenceCollection.get(sourceId).then(function(snap){
+        if (!snap) return [];
+        var items = filterSnapshot(sourceId, snap, facts);
+        items.forEach(function(it){ it._fetchKind = 'snapshot'; it._pulled_at = snap.pulled_at; });
+        return items;
+      });
     }).catch(function(){ return []; });
+  }
+
+  /* On-demand snapshots have a slightly different shape (per_airport keyed on ICAO
+     for weather, etc.). Convert to items[] the same way filterSnapshot does. */
+  function filterOnDemandSnapshot(sourceId, snap, facts){
+    var data = snap.data || {};
+    if (sourceId === 'aviationweather-metar-taf'){
+      var out = [];
+      var perAp = data.per_airport || {};
+      Object.keys(perAp).forEach(function(icao){
+        var block = perAp[icao] || {};
+        (block.metar || []).forEach(function(m, i){
+          out.push({ _kind:'metar', _key:'metar-'+icao+'-'+(m.reportTime||m.obsTime||i), station:icao, raw: m.rawOb || m.raw || m.rawText || '', obs: m });
+        });
+        (block.taf || []).forEach(function(t, i){
+          out.push({ _kind:'taf', _key:'taf-'+icao+'-'+i, station:icao, raw: t.rawTAF || t.raw || t.rawText || '', obs: t });
+        });
+      });
+      return out;
+    }
+    // For other on-demand sources, fall back to the daily filter (they inherit the same shape)
+    return filterSnapshot(sourceId, snap, facts);
   }
 
   /* ── Persistence ── */
@@ -310,6 +355,8 @@
   global.CaseEvidenceRepository = {
     getCaseFacts:       getCaseFacts,
     fetchRelevantSlice: fetchRelevantSlice,
+    hasTargetedFetch:   hasTargetedFetch,
+    targetedSourceId:   targetedSourceId,
     listAttached:       listAttached,
     attachItem:         attachItem,
     removeAttached:     removeAttached,

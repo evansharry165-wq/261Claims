@@ -89,6 +89,19 @@
     }).catch(function () { return null; });
   }
 
+  var CASE_FETCH_BASE = 'https://raw.githubusercontent.com/evansharry165-wq/evidence-collection/main/data/case-fetches/';
+
+  function getCaseFetch(caseRef, sourceId){
+    if (!caseRef || !sourceId) return Promise.resolve(null);
+    var key = 'ec.fetch.' + caseRef + '.' + sourceId;
+    var cached = readCache(key, SNAPSHOT_TTL_MS);
+    if (cached) return Promise.resolve(cached);
+    return fetchJson(CASE_FETCH_BASE + encodeURIComponent(caseRef) + '/' + sourceId + '.json').then(function (payload) {
+      writeCache(key, payload);
+      return payload;
+    }).catch(function () { return null; });
+  }
+
   function status() {
     var cached = readCache(statusCacheKey(), STATUS_TTL_MS);
     if (cached) return Promise.resolve(cached);
@@ -113,7 +126,9 @@
     SOURCES: SOURCES,
     SOURCE_MAP: SOURCE_MAP,
     BASE_URL: BASE,
+    CASE_FETCH_BASE_URL: CASE_FETCH_BASE,
     get: get,
+    getCaseFetch: getCaseFetch,
     status: status,
     sourcesForEvidence: evidenceRowToSources,
   };

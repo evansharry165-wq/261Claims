@@ -17,6 +17,7 @@
     s.textContent = [
       '.cer-wrap{padding:16px 22px;font-family:var(--font,Helvetica Neue,Arial,sans-serif);color:var(--text,#1A1A2E);font-size:14px}',
       '.cer-hero{background:var(--surface,#fff);border:1px solid var(--border,#D8D8E0);border-radius:3px;padding:14px 18px;margin-bottom:16px;display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center}',
+      '.cer-hero-stats{align-items:center}',
       '.cer-hero-info h3{font-family:var(--font-serif,Georgia,serif);font-size:16px;font-weight:400;margin:0 0 4px}',
       '.cer-hero-info p{margin:0;font-size:12px;color:var(--text3,#6B6B80);line-height:1.5}',
       '.cer-hero-stats{display:flex;gap:20px;text-align:right}',
@@ -172,6 +173,7 @@
           '<div class="cer-hero-stats">'+
             '<div class="cer-hero-stat"><div class="n">'+attached.length+'</div><div class="l">Attached</div></div>'+
             '<div class="cer-hero-stat"><div class="n">'+sources.length+'</div><div class="l">Sources</div></div>'+
+            '<div class="cer-hero-stat"><div id="cer-fetch-slot"></div></div>'+
           '</div>'+
         '</div>'+
         factsRow +
@@ -194,6 +196,14 @@
         render(caseRef, el);
       };
     });
+    // Mount the Fetch fresh evidence button
+    var fetchSlot = document.getElementById('cer-fetch-slot');
+    if (fetchSlot && global.CaseEvidenceFetchUI){
+      global.CaseEvidenceFetchUI.mountButton(fetchSlot, caseRef, function(){
+        // On fetch complete, re-render the whole panel to pick up new targeted data
+        render(caseRef, el);
+      });
+    }
     var exportBtn = document.getElementById('cer-export');
     if (exportBtn){
       exportBtn.onclick = function(){
