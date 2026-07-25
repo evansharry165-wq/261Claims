@@ -176,6 +176,8 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 <script src="case_helpers.js"></script>
 <script src="case_filing.js"></script>
 <script src="work_dashboard.js"></script>
+<script src="defendable_evidence_reader.js?v=p2a"></script>
+<script src="defendable_evidence_status_widget.js?v=p2a"></script>
 <script src="terminal_health.js"></script>
 <script src="demo_studies.js"></script>
 
@@ -515,7 +517,7 @@ function renderLegalWork(uid,u,cases){
   var greeting=(new Date().getHours()<12?t('goodMorning'):new Date().getHours()<18?t('goodAfternoon'):t('goodEvening'));
 
   document.getElementById('page').innerHTML=
-    '<div class="page-header"><div><div class="greeting">'+greeting+', '+escapeHtml(u.full.split(' ')[0])+'</div><div class="greeting-sub">'+escapeHtml(u.role)+' — your work queue, updates and CPR calendar</div><div id="engine-inbox-tile" style="margin-top:14px;max-width:520px"></div></div>'
+    '<div class="page-header"><div><div class="greeting">'+greeting+', '+escapeHtml(u.full.split(' ')[0])+'</div><div class="greeting-sub">'+escapeHtml(u.role)+' — your work queue, updates and CPR calendar</div><div id="engine-inbox-tile" style="margin-top:14px;max-width:520px"></div><div id="evidence-status-tile" style="margin-top:14px;max-width:820px"></div></div>'
     +'<div class="stat-bar">'
     +(summary.urgent?'<span class="stat-chip urgent"><i class="ti ti-alert-circle"></i> '+summary.urgent+' urgent</span>':'')
     +(summary.updates?'<span class="stat-chip new"><i class="ti ti-calendar"></i> '+summary.updates+' new this week</span>':'')
@@ -773,6 +775,6 @@ document.addEventListener('click',function(e){
 });
 </script>
 
-<script>window.addEventListener("load",function(){setTimeout(function(){if(typeof EngineInbox!=="undefined"){var m=document.getElementById("engine-inbox-tile");if(m)EngineInbox.renderTile(m);}},100);});</script>
+<script>window.addEventListener("load",function(){setTimeout(function(){if(typeof EngineInbox!=="undefined"){var m=document.getElementById("engine-inbox-tile");if(m)EngineInbox.renderTile(m);}if(typeof EvidenceStatusWidget!=="undefined"){var e=document.getElementById("evidence-status-tile");if(e)EvidenceStatusWidget.mount(e);}},100);});</script>
 </body>
 </html>
