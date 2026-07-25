@@ -4,6 +4,7 @@
   var NAV_LINKS = [
     {key:'work',       icon:'ti-layout-dashboard', href:'index.html'},
     {key:'cases',      icon:'ti-briefcase',        href:'cases.html'},
+    {key:'evidence',   icon:'ti-file-search',      href:'evidence.html'},
     {key:'repository', icon:'ti-database',         href:'repository.html'},
     {key:'insights',   icon:'ti-chart-dots',       href:'insights.html'},
   ];
@@ -25,6 +26,7 @@
     if(p.indexOf('module3-cpr-workspace')>=0) return 'cpr';
     if(p.indexOf('module4-evidence.html')>=0) return 'evidence';
     if(p.indexOf('module4-evidence-workspace')>=0) return 'evidence';
+    if(p==='evidence.html' || p.indexOf('evidence-')===0) return 'evidence';
     if(p.indexOf('module5-drafting.html')>=0) return 'drafting';
     if(p.indexOf('module5-drafting-workspace')>=0) return 'drafting';
     if(p.indexOf('module6')>=0) return 'mi';

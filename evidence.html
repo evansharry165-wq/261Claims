@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>DefendAble — Evidence</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--ink:#1A1A2E;--ink2:#2D2D44;--ink3:#6B6B80;--ink4:#9B9BAA;--rule:#D8D8E0;--rule2:#EBEBF0;--surface:#FFFFFF;--surface2:#F7F7F9;--surface3:#EFEFF2;--accent:#1B3A6B;--accent2:#254E91;--accent-faint:#EEF2F8;--confirm:#1A5C3A;--confirm-faint:#EEF7F2;--caution:#7A4E00;--caution-faint:#FDF4E3;--alert:#8B1A1A;--alert-faint:#FBF0F0;--navy:var(--ink);--blue:var(--accent2);--blue-faint:var(--accent-faint);--green:var(--confirm);--green-faint:var(--confirm-faint);--amber:var(--caution);--amber-faint:var(--caution-faint);--red:var(--alert);--red-faint:var(--alert-faint);--border:var(--rule);--text:var(--ink);--text2:var(--ink2);--text3:var(--ink3);--font:'Helvetica Neue','Arial',sans-serif;--font-serif:'Georgia','Times New Roman',serif;--mono:'Courier New','Courier',monospace;--r:3px}
+html,body{height:100%;font-family:var(--font);background:var(--surface2);color:var(--text);font-size:14px}
+.global-nav{background:var(--navy);height:48px;display:flex;align-items:center;padding:0 20px}
+.gn-logo{display:flex;align-items:center;gap:8px;text-decoration:none;margin-right:20px}
+.gn-mark{width:28px;height:28px;background:var(--blue);border-radius:4px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px}
+.gn-name{font-size:14px;font-weight:500;color:#fff}
+.gn-links{display:flex;align-items:center;gap:2px;flex:1;min-width:0;overflow:hidden}
+.gn-link{display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r);font-size:12px;font-weight:500;color:rgba(255,255,255,0.5);text-decoration:none;transition:all 0.15s;white-space:nowrap}
+.gn-link:hover{background:rgba(255,255,255,0.08);color:#fff}
+.gn-link.active{background:rgba(42,111,219,0.35);color:#fff}
+.gn-right{display:flex;align-items:center;gap:8px;margin-left:8px}
+.gn-user-btn{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:20px;padding:3px 10px 3px 4px;cursor:pointer}
+.gn-av{width:24px;height:24px;border-radius:50%;background:#1C2E44;color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500}
+.gn-user{font-size:11px;font-weight:500;color:rgba(255,255,255,0.85)}
+
+.page-hdr{background:var(--surface);border-bottom:1px solid var(--border);padding:18px 32px}
+.page-title{font-family:var(--font-serif);font-size:26px;font-weight:400;color:var(--text);letter-spacing:-0.01em}
+.page-sub{font-size:13px;color:var(--text3);margin-top:4px}
+
+.hero-band{background:linear-gradient(180deg,var(--surface) 0%,var(--surface2) 100%);padding:24px 32px 8px;border-bottom:1px solid var(--rule2)}
+.hero-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;max-width:1400px}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px 18px;position:relative}
+.stat-card::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:var(--blue);border-radius:var(--r) 0 0 var(--r)}
+.stat-card.ok::before{background:var(--green)}
+.stat-card.warn::before{background:var(--amber)}
+.stat-card.bad::before{background:var(--red)}
+.stat-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text3)}
+.stat-value{font-family:var(--font-serif);font-size:32px;font-weight:400;color:var(--text);margin-top:6px;line-height:1}
+.stat-sub{font-size:11px;color:var(--text3);margin-top:6px}
+
+.content{padding:24px 32px 48px;max-width:1400px}
+.section-hdr{display:flex;align-items:baseline;justify-content:space-between;margin:8px 0 14px}
+.section-hdr h2{font-family:var(--font-serif);font-size:18px;font-weight:400;color:var(--text)}
+.section-hdr .hint{font-size:11px;color:var(--text3)}
+
+.cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px}
+.cat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:0;overflow:hidden;text-decoration:none;color:inherit;display:flex;flex-direction:column;transition:transform .12s,box-shadow .12s;cursor:pointer}
+.cat-card:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(26,26,46,0.08)}
+.cat-card-hdr{padding:16px 18px 12px;border-bottom:1px solid var(--rule2);display:flex;align-items:flex-start;gap:12px}
+.cat-icon{width:38px;height:38px;border-radius:var(--r);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.cat-icon.weather{background:#EEF2F8;color:#254E91}
+.cat-icon.notams{background:#FDF4E3;color:#7A4E00}
+.cat-icon.news{background:#EEF7F2;color:#1A5C3A}
+.cat-icon.flights{background:#F3F0FA;color:#4338CA}
+.cat-icon.global{background:#FBF0F0;color:#8B1A1A}
+.cat-icon.strikes{background:#F0EEFC;color:#5B4A9F}
+.cat-icon.ash{background:#EDEAE3;color:#5C4A2E}
+.cat-icon.atfm{background:#E4EEF2;color:#1F5C68}
+.cat-name{font-family:var(--font-serif);font-size:16px;font-weight:400;color:var(--text);letter-spacing:-0.005em}
+.cat-desc{font-size:11px;color:var(--text3);margin-top:3px;line-height:1.4}
+.cat-card-body{padding:12px 18px 14px;flex:1}
+.cat-source-line{display:flex;justify-content:space-between;align-items:center;padding:5px 0;font-size:11px;border-top:1px dashed var(--rule2)}
+.cat-source-line:first-child{border-top:0}
+.cat-source-name{font-family:var(--mono);font-size:10px;color:var(--text2)}
+.cat-source-chip{display:inline-block;padding:1px 7px;border-radius:8px;font-family:var(--mono);font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.chip-live{background:var(--green-faint);color:var(--green)}
+.chip-planned{background:var(--amber-faint);color:var(--amber)}
+.chip-failed{background:var(--red-faint);color:var(--red)}
+.chip-no{background:var(--surface3);color:var(--text3)}
+.cat-card-ftr{padding:8px 18px 12px;background:var(--surface2);border-top:1px solid var(--rule2);display:flex;justify-content:space-between;align-items:center}
+.cat-open{font-size:11px;font-weight:500;color:var(--blue);display:flex;align-items:center;gap:4px}
+.cat-open i{font-size:12px}
+.cat-count{font-size:10px;color:var(--text3);font-family:var(--mono)}
+
+.pipeline-strip{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px 18px;margin-bottom:24px}
+.pipeline-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.pipeline-hdr h3{font-family:var(--font-serif);font-size:14px;font-weight:400}
+.pipeline-hdr a{font-size:11px;color:var(--blue);text-decoration:none}
+.pipeline-row{display:grid;grid-template-columns:1fr 100px 90px 140px 60px;gap:12px;padding:6px 0;border-top:1px solid var(--rule2);align-items:center}
+.pipeline-row:first-of-type{border-top:0}
+.pipeline-source{font-family:var(--mono);font-size:10.5px;color:var(--text)}
+.pipeline-provider{font-size:10.5px;color:var(--text3)}
+.pipeline-time{font-family:var(--mono);font-size:10px;color:var(--text3)}
+.pipeline-rows{font-family:var(--mono);font-size:10px;color:var(--text3);text-align:right}
+.pipeline-view{font-size:10.5px;color:var(--blue);text-decoration:none;text-align:right}
+
+.empty-hint{color:var(--text3);font-size:12px;padding:12px 18px;background:var(--surface2);border-radius:var(--r);border:1px dashed var(--rule)}
+</style>
+</head>
+<body>
+
+<nav class="global-nav">
+  <a href="index.html" class="gn-logo"><div class="gn-mark"><i class="ti ti-lock"></i></div><span class="gn-name">DefendAble</span></a>
+  <div class="gn-links" id="gn-links"></div>
+  <div class="gn-right">
+    <div class="gn-user-btn" id="gn-user-btn"><div class="gn-av" id="gn-av">SB</div><span class="gn-user" id="gn-username">S. Booth</span></div>
+    <div id="user-dropdown" class="user-dropdown"></div>
+  </div>
+</nav>
+
+<div class="page-hdr">
+  <div class="page-title">Evidence collection</div>
+  <div class="page-sub">Nightly-refreshed feeds from every free aviation-defence data source we can reach. Browse per category or drill into individual sources.</div>
+</div>
+
+<div class="hero-band">
+  <div class="hero-stats" id="hero-stats">
+    <div class="stat-card"><div class="stat-label">Sources total</div><div class="stat-value">—</div><div class="stat-sub">Loading…</div></div>
+    <div class="stat-card ok"><div class="stat-label">Live now</div><div class="stat-value">—</div><div class="stat-sub"></div></div>
+    <div class="stat-card warn"><div class="stat-label">Planned / pending</div><div class="stat-value">—</div><div class="stat-sub"></div></div>
+    <div class="stat-card bad"><div class="stat-label">Failed last run</div><div class="stat-value">—</div><div class="stat-sub"></div></div>
+  </div>
+</div>
+
+<div class="content">
+  <div class="section-hdr"><h2>Categories</h2><span class="hint">Click a category to browse its sources in detail.</span></div>
+  <div class="cat-grid" id="cat-grid"></div>
+
+  <div class="section-hdr" style="margin-top:32px"><h2>Pipeline status by source</h2><span class="hint">Live status pulled from the nightly runner's audit log.</span></div>
+  <div class="pipeline-strip" id="pipeline-strip"></div>
+</div>
+
+<script src="shared_data.js"></script>
+<script src="shared_theme.js"></script>
+<script src="defendable_evidence_reader.js?v=p2b"></script>
+<script src="nav.js"></script>
+
+<script>
+(function(){
+  var CATEGORIES = [
+    { id:'Weather',           icon:'ti-cloud-storm',  iconCls:'weather', page:'evidence-weather.html', desc:'METAR observations and TAF forecasts for the DefendAble airport list. Direct evidence for weather-defence cases.' },
+    { id:'NOTAMs',            icon:'ti-file-text',    iconCls:'notams',  page:'evidence-notams.html', desc:'Notices to Airmen — runway closures, airspace restrictions, navaid outages. Coming soon: full NOTAM browser.' },
+    { id:'News',              icon:'ti-news',         iconCls:'news',    page:'evidence-news.html', desc:'Aviation Herald incident feed + Simple Flying broader news, auto-tagged by category.' },
+    { id:'Flight tracks',     icon:'ti-plane',        iconCls:'flights', page:'evidence-flights.html', desc:'OpenSky Network anonymous state-vector snapshots for European airspace.' },
+    { id:'Natural disaster',  icon:'ti-flame',        iconCls:'global',  page:'evidence-global.html', desc:'Wildfires (NASA FIRMS + Copernicus EFFIS), volcanic activity, global emergency activations.' },
+    { id:'Industrial action', icon:'ti-hand-stop',    iconCls:'strikes', page:'evidence-strikes.html', desc:'French DGAC + Italian ENAC strike notices. Third-party industrial-action evidence.' },
+    { id:'ATFM',              icon:'ti-traffic-cone', iconCls:'atfm',    page:'evidence-atfm.html', desc:'Eurocontrol Network Manager operational status. Full B2B feed once cert lands.' },
+    { id:'Volcanic ash',      icon:'ti-mountain',     iconCls:'ash',     page:'evidence-ash.html', desc:'Met Office VAAC London QVA — pending onboarding email to QVA@metoffice.gov.uk.' },
+  ];
+
+  function chip(status){
+    var cls = status === 'live' ? 'chip-live' : status === 'failed' ? 'chip-failed' : status === 'planned' ? 'chip-planned' : 'chip-no';
+    return '<span class="cat-source-chip '+cls+'">'+(status || 'no-data')+'</span>';
+  }
+
+  function fmtTime(iso){
+    if (!iso) return '—';
+    try { return new Date(iso).toISOString().slice(0,16).replace('T',' ') + 'Z'; }
+    catch(e){ return iso; }
+  }
+
+  function renderHero(statuses){
+    var live = statuses.filter(function(r){return r.status==='live';}).length;
+    var planned = statuses.filter(function(r){return r.status==='planned';}).length;
+    var failed = statuses.filter(function(r){return r.status==='failed';}).length;
+    var total = window.EvidenceCollection.SOURCES.length;
+    var mostRecent = statuses.reduce(function(acc,r){
+      if (!r.pulled_at) return acc;
+      return (!acc || r.pulled_at > acc) ? r.pulled_at : acc;
+    }, null);
+    var el = document.getElementById('hero-stats');
+    el.innerHTML =
+      '<div class="stat-card"><div class="stat-label">Sources total</div><div class="stat-value">'+total+'</div><div class="stat-sub">Across '+(new Set(window.EvidenceCollection.SOURCES.map(function(s){return s.category;}))).size+' evidence categories</div></div>'+
+      '<div class="stat-card ok"><div class="stat-label">Live now</div><div class="stat-value">'+live+'</div><div class="stat-sub">'+(mostRecent ? 'Freshest pull '+fmtTime(mostRecent) : 'No completed runs yet')+'</div></div>'+
+      '<div class="stat-card warn"><div class="stat-label">Planned / pending</div><div class="stat-value">'+planned+'</div><div class="stat-sub">Awaiting first successful pull</div></div>'+
+      '<div class="stat-card bad"><div class="stat-label">Failed last run</div><div class="stat-value">'+failed+'</div><div class="stat-sub">'+(failed ? 'Check manifest notes' : 'All implemented sources healthy')+'</div></div>';
+  }
+
+  function renderCategoryGrid(statuses){
+    var statusById = {}; statuses.forEach(function(r){ statusById[r.source_id] = r; });
+    var byCategory = {};
+    window.EvidenceCollection.SOURCES.forEach(function(s){
+      byCategory[s.category] = byCategory[s.category] || [];
+      byCategory[s.category].push(s);
+    });
+    var html = CATEGORIES.map(function(cat){
+      var sources = byCategory[cat.id] || [];
+      var lineItems = sources.slice(0,4).map(function(s){
+        var st = statusById[s.id] || { status:'no-data' };
+        return '<div class="cat-source-line"><span class="cat-source-name">'+s.id+'</span>'+chip(st.status)+'</div>';
+      }).join('');
+      if (!lineItems) lineItems = '<div class="cat-source-line"><span class="cat-source-name" style="color:var(--text3);font-style:italic">no sources yet in this category</span></div>';
+      var liveCount = sources.filter(function(s){ var st = statusById[s.id]; return st && st.status==='live'; }).length;
+      return ''+
+        '<a class="cat-card" href="'+cat.page+'">'+
+          '<div class="cat-card-hdr">'+
+            '<div class="cat-icon '+cat.iconCls+'"><i class="ti '+cat.icon+'"></i></div>'+
+            '<div><div class="cat-name">'+cat.id+'</div><div class="cat-desc">'+cat.desc+'</div></div>'+
+          '</div>'+
+          '<div class="cat-card-body">'+lineItems+'</div>'+
+          '<div class="cat-card-ftr">'+
+            '<span class="cat-count">'+liveCount+' / '+sources.length+' live</span>'+
+            '<span class="cat-open">Open '+cat.id.toLowerCase()+' <i class="ti ti-arrow-right"></i></span>'+
+          '</div>'+
+        '</a>';
+    }).join('');
+    document.getElementById('cat-grid').innerHTML = html;
+  }
+
+  function renderPipelineStrip(statuses){
+    var statusById = {}; statuses.forEach(function(r){ statusById[r.source_id] = r; });
+    var rows = window.EvidenceCollection.SOURCES.map(function(s){
+      var st = statusById[s.id] || { status:'no-data', pulled_at:'', rows:0, live_url: window.EvidenceCollection.BASE_URL + s.id + '.json' };
+      return '<div class="pipeline-row">'+
+        '<div><div class="pipeline-source">'+s.id+'</div><div class="pipeline-provider">'+s.provider+' · '+s.category+'</div></div>'+
+        '<div>'+chip(st.status)+'</div>'+
+        '<div class="pipeline-time">'+fmtTime(st.pulled_at)+'</div>'+
+        '<div class="pipeline-rows">'+(st.rows||0)+' rows</div>'+
+        '<a class="pipeline-view" href="'+st.live_url+'" target="_blank" rel="noopener">view →</a>'+
+      '</div>';
+    }).join('');
+    document.getElementById('pipeline-strip').innerHTML =
+      '<div class="pipeline-hdr"><h3>All sources</h3><a href="https://github.com/evansharry165-wq/evidence-collection" target="_blank" rel="noopener">Repository ↗</a></div>'+
+      rows;
+  }
+
+  window.EvidenceCollection.status().then(function(statuses){
+    renderHero(statuses);
+    renderCategoryGrid(statuses);
+    renderPipelineStrip(statuses);
+  });
+})();
+</script>
+
+</body>
+</html>
