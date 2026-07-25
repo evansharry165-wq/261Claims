@@ -285,6 +285,7 @@ var DefendAbleLegalReview = (function () {
       '.lrv-auth[data-ratio]:hover::after{content:attr(data-ratio);position:absolute;bottom:calc(100% + 8px);left:0;background:var(--ink,#16181D);color:#fff;padding:8px 10px;border-radius:4px;font-size:10.5px;line-height:1.45;width:280px;z-index:5;box-shadow:0 6px 14px rgba(0,0,0,.25);font-family:var(--sans,sans-serif)}',
       '.lrv-causal{margin-top:8px;padding:12px 16px;border-radius:6px;font-size:12.5px;line-height:1.5;background:var(--ec-bg,#E6F3EB);color:var(--ec,#1B5C3A);border:1px solid var(--ec-border,#8FC9A8)}',
       '.lrv-causal.bad{background:#FBECEC;color:var(--settle,#7A1A1A);border-color:#EDBFBF}',
+      '.lrv-14day{margin-top:6px;padding:14px 16px;border-radius:6px;background:var(--claim-bg,#E8F0FA);color:var(--ink-2,#3A3F4A);border:1px solid var(--claim-border,#8BB0D9);font-size:12.5px;line-height:1.55}',
       /* CONFIRM page */
       '.lrv-verdict{padding:28px 30px;border-radius:10px;background:var(--surface-2,#FFFCF7);border:1px solid var(--rule,#C9C2B6);text-align:left}',
       '.lrv-verdict .word{font-family:var(--serif,Georgia,serif);font-size:38px;line-height:1;letter-spacing:-.005em}',
@@ -345,9 +346,11 @@ var DefendAbleLegalReview = (function () {
       });
     });
     var factsWithBand = Object.assign({}, facts, { __seedBand: seedBand });
+    var _cancellationCase = !!(facts && facts.isCancelled);
     return {
       verdictKey: verdictKey(pos),
       facts: factsWithBand,
+      isCancellation: _cancellationCase,
       narrative: ctx.narrative || (document.getElementById('iccText') ? document.getElementById('iccText').value : ''),
       jurisdiction: record.jurisdiction || facts.jurisdiction || 'UK261',
       conditions: (pos.conditions || []).map(function (c) { return c.text || c.label || String(c); }),
@@ -426,7 +429,7 @@ var DefendAbleLegalReview = (function () {
         '<div class="lrv-evfoot">Missing items will be requested through the CM platform after you confirm this position.</div>' +
         '<div class="lrv-sec-kicker">Authorities engaged</div>' +
         '<div class="lrv-auths">' + authsHtml + '</div>' +
-        '<div class="lrv-sec-kicker">Was this the airline\'s own choice?</div>' +
+        (state.isCancellation ? '<div class="lrv-sec-kicker">14-day proactive-notice defence · cancellations only</div>' +'<div class="lrv-14day">If the airline notified the passenger of the cancellation at least <b>14 days</b> before scheduled departure — SMS or email delivery evidence — Article 7 compensation is NOT owed. This is a complete defence to Article 7, independent of the extraordinary-circumstances test. Check delivery evidence (Twilio / SendGrid / airline messaging platform) before confirming this case as compensable.</div>' : '') + '<div class="lrv-sec-kicker">Was this the airline\'s own choice?</div>' +
         '<div class="lrv-causal' + (causal.good ? '' : ' bad') + '">' + esc(causal.txt) + '</div>' +
       '</div>';
 

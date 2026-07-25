@@ -43,6 +43,26 @@ function buildNarrative(d){
   return L.join(" ");
 }
 /* Claim-liability extraction — the engine's sort of a jumbled ICC file */
+/* Sturgeon clock-stop rule — Article 7 delay counts from the moment doors reopen
+ * at the destination, not from touchdown. In practice we approximate this by using
+ * the recorded arrival delay unchanged. For return-to-stand events (U2456R), the
+ * compensable clock starts from the second successful push — so the effective
+ * arrival delay is the recorded delay MINUS the time consumed by the aborted first
+ * push. If the aircraft did not actually reach a compensable delay, the case is
+ * marked "not compensable — Sturgeon". */
+function sturgeonEffectiveDelayMins(flight, priorReturnMins){
+  var rec = (flight && flight.arrDelay != null) ? Number(flight.arrDelay) : null;
+  if (rec == null) return null;
+  if (priorReturnMins && priorReturnMins > 0) rec = rec - priorReturnMins;
+  return rec < 0 ? 0 : rec;
+}
+function sturgeonCompensable(flight, priorReturnMins){
+  var eff = sturgeonEffectiveDelayMins(flight, priorReturnMins);
+  if (eff == null) return { compensable: false, reason: 'no arrival delay recorded', effective: null };
+  if (eff >= 180) return { compensable: true, reason: 'arrival delay ≥ 3h — Sturgeon threshold met', effective: eff };
+  return { compensable: false, reason: 'arrival delay ' + eff + ' min — below 3h Sturgeon threshold', effective: eff };
+}
+
 function extractLiable(flightRows){
   var rows = flightRows || FLIGHTS;
   var out = [];
@@ -66,6 +86,7 @@ function disruptionFor(f){
 }
 return { FLIGHTS: FLIGHTS, DISRUPTIONS: DISRUPTIONS, MASS: MASS,
   flightsFor: flightsFor, findFlight: findFlight, rootOf: rootOf,
-  buildNarrative: buildNarrative, extractLiable: extractLiable, disruptionFor: disruptionFor };
+  buildNarrative: buildNarrative, extractLiable: extractLiable, disruptionFor: disruptionFor,
+  sturgeonEffectiveDelayMins: sturgeonEffectiveDelayMins, sturgeonCompensable: sturgeonCompensable };
 })();
 if (typeof module !== "undefined" && module.exports) { module.exports = DefendAbleDataBank; }

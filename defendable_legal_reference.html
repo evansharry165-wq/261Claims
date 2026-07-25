@@ -441,6 +441,7 @@
       <a href="#double-comp">Double Compensation</a>
       <a href="#codeshare">Codeshare / Wetlease</a>
       <a href="#denied">Denied Boarding</a>
+      <a href="#proactive-notice">14-day Notice</a>
       <a href="#refund">Refund Scope</a>
     </div>
     <div class="sidebar-section">
@@ -482,7 +483,11 @@
           <tr><td class="mono">Recital 14 EC261</td><td>Non-exhaustive examples: political instability, meteorological conditions incompatible with the flight, security risks, unexpected flight safety shortcomings, strikes affecting the carrier.</td></tr>
         </tbody>
       </table>
-    </div>
+
+      <div class="alert blue" id="commander-authority" style="margin-top:14px">
+        <strong>Commander responsibility as a reasonable-measures argument.</strong> Where a specific disruption decision (diversion, hold, refusal to depart, discretion extension of FDP) was taken by the commander in exercise of professional judgement, the CJEU has held (Pešková C-315/15; LE v TAP C-74/19) that the airline is not required to override that decision, and the reasonable-measures inquiry attaches to what the airline did <em>afterwards</em> — not to the commander's decision itself. Statutory basis: ICAO Annex 6 Part I §4.5; EU Regulation 965/2012 ORO.GEN.110(b) and CAT.GEN.MPA.105; UK ANO 2016 Article 88. Pilot-union authority on FDP extension: ECA Spot-on 1.3 (ORO.FTL.205(f)).
+      </div>
+        </div>
 
     <!-- QUANTUM -->
     <div class="section" id="quantum">
@@ -1080,6 +1085,35 @@
         <div class="case-citation">C-22/11 · ECJ · 19 October 2012</div>
         <div class="case-principle">Denied boarding concept extends beyond overbooking to any operational decision to deny boarding (aircraft swap, weight/balance, commercial re-prioritisation). Carrier must first call for volunteers (Art 4(1)) before involuntary denial.</div>
         <div class="case-tags"><span class="tag attack">Denied boarding</span><span class="tag attack">No EC defence</span></div>
+      </div>
+    </div>
+
+    <!-- 14-DAY PROACTIVE-NOTICE DEFENCE -->
+    <div class="section" id="proactive-notice">
+      <div class="section-header">14-day Proactive-Notice Defence · cancellations</div>
+      <div class="alert green">
+        <strong>Complete Art 7 defence on cancellations only.</strong> Article 5(1)(c) EC261/UK261 — if the operating carrier informs the passenger of the cancellation at least <b>14 days</b> before the scheduled time of departure, no Article 7 compensation is owed. This is <em>independent</em> of the extraordinary-circumstances test — it stands alone.
+      </div>
+      <div class="alert amber">
+        <strong>Two shorter thresholds also matter:</strong>
+        <br>• Notice <b>7–13 days</b> before departure — no compensation IF the carrier offers re-routing that arrives ≤4 hours after the original scheduled arrival (Art 5(1)(c)(ii)).
+        <br>• Notice <b>&lt;7 days</b> before departure — no compensation IF the carrier offers re-routing that arrives ≤2 hours after the original scheduled arrival (Art 5(1)(c)(iii)).
+      </div>
+      <table class="principle-table">
+        <thead><tr><th>Notice period</th><th>Re-routing offered</th><th>Art 7 compensation</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">≥ 14 days</td><td>Any offer sufficient</td><td class="mono">Not owed</td></tr>
+          <tr><td class="mono">7–13 days</td><td>Arrival within 4 hours</td><td class="mono">Not owed</td></tr>
+          <tr><td class="mono">7–13 days</td><td>Later arrival</td><td class="mono">Owed</td></tr>
+          <tr><td class="mono">&lt; 7 days</td><td>Arrival within 2 hours</td><td class="mono">Not owed</td></tr>
+          <tr><td class="mono">&lt; 7 days</td><td>Later arrival</td><td class="mono">Owed</td></tr>
+        </tbody>
+      </table>
+      <div class="alert blue">
+        <strong>Evidence pack.</strong> Delivery-timestamp evidence is the material item — SMS delivery receipt, email delivery event, or airline messaging-platform log. Content of the message is <em>not</em> required (and is a data-protection risk to store — UK GDPR Art 5(1)(c) minimisation). Sources: Twilio Message Logs / SendGrid Event Webhook / airline internal messaging platform delivery events.
+      </div>
+      <div class="alert amber">
+        <strong>Burden of proof.</strong> The operating carrier bears the burden of proving notice was given (Art 5(4) EC261/UK261). Delivery receipts must show the timestamp AND identify the recipient sufficiently to prove the specific passenger received the notice.
       </div>
     </div>
 

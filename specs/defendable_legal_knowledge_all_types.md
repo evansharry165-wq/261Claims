@@ -401,6 +401,30 @@ Political agreement reached in trilogue on 15 June 2026. Key changes (per DLA Pi
 
 ---
 
+
+### 14-day proactive-notice defence — Art 5(1)(c)
+
+Independent of the extraordinary-circumstances test. Applies to cancellations only.
+
+- **≥ 14 days notice before scheduled departure** — no Art 7 compensation owed.
+- **7–13 days notice + re-routing arriving ≤ 4 hours after original scheduled arrival** — no Art 7 compensation.
+- **< 7 days notice + re-routing arriving ≤ 2 hours after original scheduled arrival** — no Art 7 compensation.
+
+The operating carrier bears the burden of proof (Art 5(4) EC261/UK261). Delivery-timestamp evidence — SMS delivery receipt, email delivery event, or messaging-platform log — is the material evidence. Content of the message is not required and should not be stored (UK GDPR Art 5(1)(c) minimisation).
+
+### Commander responsibility — reasonable-measures argument
+
+Where a specific disruption decision (diversion, hold, refusal to depart, discretion extension of FDP) was taken by the commander in exercise of professional judgement, the CJEU treats that decision as within the reasonable-measures test; the airline is not required to override the commander (Pešková C-315/15; LE v TAP C-74/19). Reasonable-measures inquiry attaches to what the airline did afterwards. Statutory basis: ICAO Annex 6 Part I §4.5; EU Regulation 965/2012 ORO.GEN.110(b) and CAT.GEN.MPA.105; UK ANO 2016 Article 88. Pilot-union authority on FDP extension: ECA Spot-on 1.3 (ORO.FTL.205(f)).
+
+### Flight-code convention (airline-specific, easyJet example)
+
+- **U2456R LGW LGW** — return to stand: pushed back, returned to stand, then re-dispatched.
+- **U2456D BCN MXP** — mid-flight diversion.
+- **U2956 MXP LGW** — overnight-delayed carry-over (4th digit becomes 9).
+- **U2996 MXP LGW** — repeat overnight delay (2nd carry-over).
+
+Sturgeon clock-stop rule: the 3-hour arrival-delay threshold counts from the moment cabin doors reopen at destination (Germanwings C-452/13). Where a flight returned to stand and re-dispatched, the compensable delay counts from the second successful push — not the first.
+
 ## PART D — AUTHORITIES TABLE
 
 | Case / Instrument | Court · Date | UK weight | EU weight | Proposition |

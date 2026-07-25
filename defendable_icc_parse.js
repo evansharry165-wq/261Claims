@@ -117,7 +117,7 @@
     var refs = [];
     var seen = {};
     var lastCarrier = null;
-    var re = new RegExp('\\b(' + carrierAlt() + ')\\s*(\\d{2,4})\\b|\\b(\\d{3,4})\\b', 'gi');
+    var re = new RegExp('\\b(' + carrierAlt() + ')\\s*(\\d{2,4})([RD])?\\b|\\b(\\d{3,4})([RD])?\\b', 'gi');
     var m;
     while ((m = re.exec(text)) !== null) {
       var code;
@@ -130,7 +130,7 @@
         lastCarrier = carrier;
         code = carrier + num;
       } else {
-        num = m[3];
+        num = m[4];
         if (!lastCarrier) continue;
         if (looksLikePaxCount(text, m.index)) continue;
         // Never adopt a number that directly follows a time label (STD 0615, ATA 1129...)
@@ -165,7 +165,20 @@
       }
       if (seen[code]) continue;
       seen[code] = 1;
-      refs.push({ code: code, carrier: lastCarrier, num: num, index: m.index });
+      var suffix = (m[3] || m[5] || '').toUpperCase();
+      // OND convention: 4th digit becomes 9 to mark overnight carry-over.
+      // If the first digit of the flight number pool (per carrier) is normally NOT 9 and
+      // the operating fleet uses a 4-digit numbering that starts non-9, then a 9 in the
+      // 4th position denotes OND. We conservatively flag any 4-digit number whose 4th
+      // char is '9' but whose 1st char is not '9' as *possibly* OND — the databank layer
+      // makes the authoritative call from the schedule pattern.
+      var isOND = false, ondLevel = 0;
+      if (num && num.length === 4 && num.charAt(0) !== '9') {
+        if (num.charAt(3) === '9' && num.charAt(2) !== '9') { isOND = true; ondLevel = 1; }
+        else if (num.charAt(2) === '9' && num.charAt(3) === '9') { isOND = true; ondLevel = 2; }
+      }
+      if (suffix) code = code + suffix;
+      refs.push({ code: code, carrier: lastCarrier, num: num, index: m.index, suffix: suffix, isOND: isOND, ondLevel: ondLevel });
     }
     return refs;
   }
