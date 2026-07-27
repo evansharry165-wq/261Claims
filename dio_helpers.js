@@ -312,7 +312,113 @@
     return st;
   }
 
-  global.DIO = {
+
+  /* ── Territory model — Session 1 addition ─────────────────────────
+     Each DIO owns a territory (airports + airspace + countries). Their live
+     evidence feed filters to this territory automatically. Evidence requests
+     from solicitors are pooled communally — visible to ALL DIOs regardless
+     of jurisdiction, so workload can flex across the team. */
+
+  var TERRITORY_MAP = {
+    EH: {
+      label: 'United Kingdom + Ireland',
+      short_label: 'UK + IE',
+      airports_icao: ['EGLL','EGKK','EGSS','EGGW','EGLC','EGCC','EGPH','EGPF','EGGD','EGBB','EGAA','EGNX','EIDW'],
+      airports_iata: ['LHR','LGW','STN','LTN','LCY','MAN','EDI','GLA','BRS','BHX','BFS','EMA','DUB'],
+      countries_iso: ['GB','IE'],
+      countries_name: ['United Kingdom','Ireland'],
+      firs: ['EGTT','EGPX','EISN'],
+      keywords: ['UK','British','England','Wales','Scotland','Northern Ireland','Ireland','Britain','easyJet','British Airways','Jet2','Ryanair UK','Wizz Air UK'],
+    },
+    FD: {
+      label: 'France',
+      short_label: 'FR',
+      airports_icao: ['LFPG','LFPO','LFMN','LFML','LFLL','LFBO','LFBD'],
+      airports_iata: ['CDG','ORY','NCE','MRS','LYS','TLS','BOD'],
+      countries_iso: ['FR'],
+      countries_name: ['France'],
+      firs: ['LFFF','LFMM','LFBB','LFRR','LFEE'],
+      keywords: ['France','French','DGAC','Air France','Transavia France'],
+    },
+    SR: {
+      label: 'España',
+      short_label: 'ES',
+      airports_icao: ['LEMD','LEBL','LEPA','LEAL','LEIB','LEMG','GCLP','GCTS','LPPT','LPPR'],
+      airports_iata: ['MAD','BCN','PMI','ALC','IBZ','AGP','LPA','TFS','LIS','OPO'],
+      countries_iso: ['ES','PT'],
+      countries_name: ['Spain','Portugal'],
+      firs: ['LECM','LECB','LECS','GCCC','LPPC'],
+      keywords: ['Spain','España','Portugal','Portuguese','Vueling','Iberia','TAP','ENAIRE','AENA'],
+    },
+  };
+
+  function getTerritory(uid) {
+    uid = uid || (typeof getActiveUser === 'function' ? getActiveUser() : 'EH');
+    return TERRITORY_MAP[uid] || TERRITORY_MAP.EH;
+  }
+
+  function matchIncidentToTerritory(item, territory) {
+    if (!item || !territory) return false;
+    var hay = ((item.title || '') + ' ' + (item.description || '') + ' ' +
+               (item.name || '') + ' ' + (item.country || '') + ' ' + (item.iso3 || '')).toUpperCase();
+    if (!hay.trim()) return false;
+    var airportHit = territory.airports_icao.some(function(a){ return hay.indexOf(a) >= 0; }) ||
+                     territory.airports_iata.some(function(a){ return hay.indexOf(' '+a+' ') >= 0 || hay.indexOf(a+',') >= 0 || hay.indexOf(a+')') >= 0; });
+    if (airportHit) return true;
+    var countryHit = territory.countries_iso.some(function(c){ return hay.indexOf(c) >= 0; }) ||
+                     territory.countries_name.some(function(c){ return hay.indexOf(c.toUpperCase()) >= 0; });
+    if (countryHit) return true;
+    var kwHit = (territory.keywords || []).some(function(k){ return hay.indexOf(k.toUpperCase()) >= 0; });
+    return kwHit;
+  }
+
+  function collectCommunalRequests() {
+    var all = [];
+    var cases = (typeof ALL_CASES !== 'undefined' ? ALL_CASES : []);
+    cases.forEach(function (c) {
+      if (c.stage === 'resolve') return;
+      var st = getEvidenceState(c.ref);
+      if (!st.evidenceRequests) return;
+      Object.keys(st.evidenceRequests).forEach(function (k) {
+        var r = st.evidenceRequests[k];
+        if (r.status !== 'pending' && r.status !== 'received') return;
+        var reqMs = r.requestedAtMs || Date.parse(r.requestedAt) || Date.now();
+        var daysAgo = Math.max(0, Math.floor((Date.now() - reqMs) / 86400000));
+        all.push({
+          id: r.id || k, name: r.name || 'Evidence request', status: r.status,
+          caseRef: c.ref, claimantName: c.name, flight: c.flightNum || c.flight,
+          jurisdiction: c.jurisdiction, cprDaysLeft: c.cprDaysLeft || 21,
+          requestedBy: r.requestedBy || 'Legal', daysAgo: daysAgo,
+          overdue: daysAgo > (r.slaDays || 3),
+        });
+      });
+    });
+    all.sort(function (a, b) {
+      if (a.overdue && !b.overdue) return -1;
+      if (!a.overdue && b.overdue) return 1;
+      return (b.daysAgo || 0) - (a.daysAgo || 0);
+    });
+    return all;
+  }
+
+  function caseCountByAirport(territory) {
+    var counts = {};
+    territory.airports_icao.forEach(function(a){ counts[a] = 0; });
+    var cases = (typeof ALL_CASES !== 'undefined' ? ALL_CASES : []);
+    cases.forEach(function (c) {
+      if (c.stage === 'resolve') return;
+      var origin = (c.origin || '').toUpperCase();
+      var dest = (c.destination || '').toUpperCase();
+      territory.airports_iata.forEach(function(iata, i){
+        if (origin === iata || dest === iata) {
+          counts[territory.airports_icao[i]] = (counts[territory.airports_icao[i]] || 0) + 1;
+        }
+      });
+    });
+    return counts;
+  }
+
+    global.DIO = {
     JUR_LABELS: JUR_LABELS,
     isDIOUser: isDIOUser,
     getDIOProfile: getDIOProfile,
@@ -334,5 +440,10 @@
     ensureDemoEvidenceRequests: ensureDemoEvidenceRequests,
     findRequestForPoint: findRequestForPoint,
     notifyEvidenceFilingComplete: notifyEvidenceFilingComplete,
+    TERRITORY_MAP: TERRITORY_MAP,
+    getTerritory: getTerritory,
+    matchIncidentToTerritory: matchIncidentToTerritory,
+    collectCommunalRequests: collectCommunalRequests,
+    caseCountByAirport: caseCountByAirport,
   };
 })(typeof window !== 'undefined' ? window : this);

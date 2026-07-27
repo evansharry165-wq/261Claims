@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DefendAble — DIO Today</title>
+<title>DefendAble — DIO hub</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -11,17 +11,17 @@
   --ink:#1A1A2E;--ink2:#2D2D44;--ink3:#6B6B80;--ink4:#9B9BAA;
   --rule:#D8D8E0;--rule2:#EBEBF0;
   --surface:#FFFFFF;--surface2:#F7F7F9;--surface3:#F0F0F4;
-  --accent:#1B3A6B;--accent-faint:#EEF2F8;
+  --accent:#1B3A6B;--accent2:#254E91;--accent-faint:#EEF2F8;
   --confirm:#1A5C3A;--confirm-faint:#EEF7F2;
   --caution:#7A4E00;--caution-faint:#FDF4E3;
   --alert:#8B1A1A;--alert-faint:#FBF0F0;
   --teal:#0D6B5E;--teal-faint:#F0FAF8;
-  --navy:var(--ink);--blue:var(--accent);
+  --navy:var(--ink);--blue:var(--accent2);
   --red:var(--alert);--red-faint:var(--alert-faint);
   --amber:var(--caution);--amber-faint:var(--caution-faint);
   --green:var(--confirm);--green-faint:var(--confirm-faint);
   --blue-text:var(--accent);--blue-faint:var(--accent-faint);
-  --border:var(--rule);--border2:#C8C8D8;--text:var(--ink);--text2:var(--ink2);--text3:var(--ink3);
+  --border:var(--rule);--text:var(--ink);--text2:var(--ink2);--text3:var(--ink3);
   --font:'Helvetica Neue','Arial',sans-serif;
   --font-serif:'Georgia','Times New Roman',serif;
   --mono:'Courier New',monospace;
@@ -43,127 +43,114 @@ html,body{min-height:100%;font-family:var(--font);background:var(--surface2);col
 .gn-av{width:24px;height:24px;border-radius:50%;background:#164E63;color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500}
 .gn-user{font-size:11px;color:rgba(255,255,255,0.85)}
 
-/* ── Page Shell ── */
-.page{height:calc(100vh - 48px);overflow-y:auto;padding:20px 24px 40px;max-width:1140px;margin:0 auto}
+/* ── Page Shell — unified max-width ── */
+.page{max-width:1240px;margin:0 auto;padding:20px 24px 40px}
 
 /* ── Page Header ── */
-.page-header{margin-bottom:16px;display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap}
-.greeting{font-size:22px;font-weight:400;color:var(--text);letter-spacing:-0.02em;margin-bottom:3px;font-family:var(--font-serif)}
-.greeting-sub{font-size:12px;color:var(--text3);line-height:1.5}
-.stat-bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.page-header{display:grid;grid-template-columns:1fr auto;gap:20px;margin-bottom:14px;align-items:flex-start}
+.greeting{font-size:24px;font-weight:400;color:var(--text);letter-spacing:-0.02em;margin-bottom:3px;font-family:var(--font-serif)}
+.greeting-sub{font-size:12px;color:var(--text3);line-height:1.55}
+.territory-badge{display:inline-flex;align-items:center;gap:6px;background:var(--teal-faint);color:var(--teal);padding:5px 11px;border-radius:20px;font-size:11px;font-weight:500;margin-top:8px}
+.stat-bar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;justify-content:flex-end}
 .stat-chip{font-size:11px;font-weight:500;padding:5px 11px;border-radius:3px;border:1px solid var(--rule);background:var(--surface);color:var(--text2);display:inline-flex;align-items:center;gap:5px}
 .stat-chip.urgent{background:var(--red-faint);border-color:#FECACA;color:var(--red)}
 .stat-chip.warn{background:var(--amber-faint);border-color:#FDE68A;color:var(--amber)}
 .stat-chip.new{background:var(--blue-faint);border-color:#BFDBFE;color:var(--blue-text)}
 .stat-chip.active{background:var(--green-faint);border-color:#BBF7D0;color:var(--green)}
+.stat-chip.teal{background:var(--teal-faint);border-color:#B7E4D8;color:var(--teal)}
 
-/* ── Quick tiles ── */
-.quick-actions{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
-@media(max-width:620px){.quick-actions{grid-template-columns:1fr}}
-.quick-tile{background:var(--surface);border:1px solid var(--border);padding:14px 16px;cursor:pointer;display:flex;align-items:flex-start;gap:12px;text-decoration:none;transition:background .12s}
-.quick-tile:hover{background:var(--surface2)}
-.quick-tile.accent{border-left:3px solid var(--accent)}
-.quick-tile.teal{border-left:3px solid var(--teal)}
-.quick-tile.amber{border-left:3px solid var(--amber)}
-.quick-tile-icon{width:28px;height:28px;border-radius:var(--r);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:14px}
-.quick-tile-icon.accent{background:var(--accent-faint);color:var(--accent)}
-.quick-tile-icon.teal{background:var(--teal-faint);color:var(--teal)}
-.quick-tile-icon.amber{background:var(--amber-faint);color:var(--amber)}
-.quick-tile-label{font-size:12px;font-weight:500;color:var(--text);margin-bottom:2px}
-.quick-tile-sub{font-size:11px;color:var(--text3);line-height:1.4}
-
-/* ── Zone / Panel (matches index.html exactly) ── */
-.work-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
-@media(max-width:860px){.work-grid{grid-template-columns:1fr}}
-.zone{margin-bottom:14px}
-.zone-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;gap:8px}
-.zone-title{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.09em;color:var(--text3);font-family:var(--font);display:flex;align-items:center;gap:6px}
-.zone-link{font-size:11px;color:var(--blue-text);text-decoration:none;cursor:pointer;background:none;border:none;font-family:var(--font)}
+/* ── Zone / Panel ── */
+.zone{margin-bottom:20px}
+.zone-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:8px}
+.zone-title{font-size:13px;font-weight:500;color:var(--text);display:flex;align-items:center;gap:7px;font-family:var(--font-serif);font-size:15px;font-weight:400}
+.zone-title i{color:var(--accent);font-size:16px}
+.zone-link{font-size:11px;color:var(--accent);text-decoration:none;display:inline-flex;align-items:center;gap:4px;cursor:pointer;background:none;border:none;font-family:var(--font)}
 .zone-link:hover{text-decoration:underline}
-.panel{background:var(--surface);border:1px solid var(--rule);border-radius:4px;overflow:hidden}
+.zone-link .spin{display:inline-block;width:11px;height:11px;border:1.5px solid var(--accent-faint);border-top-color:var(--accent);border-radius:50%;animation:dio-spin 0.7s linear infinite;vertical-align:middle}
+@keyframes dio-spin{to{transform:rotate(360deg)}}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--r3);overflow:hidden}
 
-/* ── Priority rows (request/gap cards) ── */
-.priority-row{display:flex;align-items:flex-start;gap:10px;padding:11px 14px;border-bottom:1px solid var(--rule);cursor:pointer;border-left:3px solid var(--border)}
-.priority-row:last-child{border-bottom:none}
-.priority-row:hover{background:var(--surface2)}
-.priority-row.urgent-red{border-left-color:var(--red)}
-.priority-row.urgent-amber{border-left-color:var(--amber)}
-.priority-row.urgent-green{border-left-color:var(--green)}
-.priority-body{flex:1;min-width:0}
-.priority-action{font-size:12px;font-weight:500;color:var(--text);line-height:1.35;margin-bottom:2px}
-.priority-ref{font-size:10px;font-family:var(--mono);color:var(--text3);margin-top:2px}
-.priority-meta{font-size:10px;color:var(--text3);white-space:nowrap;text-align:right;flex-shrink:0;line-height:1.6}
-.priority-cta{display:inline-flex;align-items:center;gap:4px;margin-top:6px;font-size:10px;font-weight:500;padding:4px 9px;border-radius:var(--r);border:1px solid var(--accent);background:var(--accent-faint);color:var(--accent);cursor:pointer;text-decoration:none;white-space:nowrap}
-.priority-cta:hover{opacity:.9}
-.priority-cta.amber{border-color:var(--amber);background:var(--amber-faint);color:var(--amber)}
-.priority-cta.done{border-color:var(--green);background:var(--green-faint);color:var(--green);cursor:default}
+/* ── Territory panel ── */
+.territory-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;padding:14px 16px}
+.airport-chip{background:var(--surface2);border:1px solid var(--rule);border-radius:var(--r);padding:10px 12px;display:flex;flex-direction:column;gap:2px;cursor:pointer;transition:background .12s,border-color .12s;position:relative}
+.airport-chip:hover{background:var(--accent-faint);border-color:var(--accent)}
+.airport-chip .icao{font-family:var(--mono);font-size:14px;font-weight:600;color:var(--text)}
+.airport-chip .name{font-size:11px;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.airport-chip .case-badge{position:absolute;top:8px;right:8px;background:var(--accent);color:#fff;font-size:9.5px;font-weight:600;padding:1px 6px;border-radius:8px;font-family:var(--mono)}
+.airport-chip .case-badge.zero{background:var(--rule2);color:var(--text3)}
+.airport-chip.hot{border-color:var(--red);background:#FDF4F4}
+.airport-chip.hot .case-badge{background:var(--red)}
+.territory-meta{padding:10px 16px;background:var(--surface2);border-top:1px solid var(--rule2);font-size:11px;color:var(--text3);display:flex;justify-content:space-between;align-items:center}
+.territory-meta strong{color:var(--text2);font-family:var(--mono)}
 
-/* ── Event rows ── */
-.event-row{display:flex;align-items:flex-start;gap:12px;padding:11px 14px;border-bottom:1px solid var(--rule);border-left:3px solid var(--border)}
-.event-row:last-child{border-bottom:none}
-.event-row:hover{background:var(--surface2)}
-.event-row.risk-high{border-left-color:var(--red)}
-.event-row.risk-medium{border-left-color:var(--amber)}
-.event-row.risk-low{border-left-color:var(--green)}
-.event-body{flex:1;min-width:0}
-.event-flight{font-size:12px;font-weight:500;color:var(--text);margin-bottom:2px}
-.event-meta{font-size:11px;color:var(--text3);line-height:1.4}
-.event-live{font-size:11px;color:var(--teal);margin-top:3px;display:flex;align-items:center;gap:4px}
-.event-side{text-align:right;flex-shrink:0}
+/* ── Live incident feed ── */
+.feed-list{max-height:520px;overflow-y:auto}
+.feed-item{padding:12px 16px;border-bottom:1px solid var(--rule2);border-left:3px solid var(--border);display:grid;grid-template-columns:1fr auto;gap:12px;align-items:flex-start;transition:background .1s}
+.feed-item:last-child{border-bottom:none}
+.feed-item:hover{background:var(--surface2)}
+.feed-item.severity-accident{border-left-color:var(--red)}
+.feed-item.severity-incident{border-left-color:var(--amber)}
+.feed-item.severity-event,.feed-item.severity-alert{border-left-color:var(--accent)}
+.feed-title{font-family:var(--font-serif);font-size:14px;font-weight:400;color:var(--text);line-height:1.35}
+.feed-title a{color:inherit;text-decoration:none}
+.feed-title a:hover{color:var(--accent)}
+.feed-meta{font-size:10.5px;color:var(--text3);margin-top:4px;display:flex;flex-wrap:wrap;gap:10px}
+.feed-src-chip{display:inline-block;padding:1px 7px;border-radius:8px;font-family:var(--mono);font-size:9.5px;font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.feed-src-herald{background:#F7EFDD;color:#7A4E00}
+.feed-src-simple{background:#EDEEF8;color:#4A4F87}
+.feed-src-gdacs{background:var(--red-faint);color:var(--red)}
+.feed-src-copernicus{background:var(--amber-faint);color:var(--amber)}
+.feed-desc{font-size:11.5px;color:var(--text2);margin-top:6px;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.feed-actions{display:flex;flex-direction:column;gap:5px;align-items:flex-end;flex-shrink:0}
+.feed-match-count{font-size:10px;color:var(--accent);font-weight:600;background:var(--accent-faint);padding:2px 7px;border-radius:8px;white-space:nowrap;font-family:var(--mono)}
+.feed-match-count.match-hit{background:var(--red-faint);color:var(--red)}
+.feed-fetch-btn{font-size:10.5px;padding:5px 10px;background:var(--surface);border:1px solid var(--accent);color:var(--accent);border-radius:var(--r);cursor:pointer;font-family:var(--font);font-weight:500;white-space:nowrap;display:inline-flex;align-items:center;gap:4px}
+.feed-fetch-btn:hover{background:var(--accent);color:#fff}
+.feed-fetch-btn:disabled{opacity:.5;cursor:not-allowed}
+.feed-empty{padding:36px 20px;text-align:center;color:var(--text3);font-size:12px}
+.feed-empty i{display:block;font-size:26px;color:var(--rule);margin-bottom:10px}
+.feed-loading{padding:24px;text-align:center;color:var(--text3);font-size:12px;display:flex;align-items:center;justify-content:center;gap:8px}
 
-/* ── Intel rows ── */
-.intel-row{padding:12px 14px;border-bottom:1px solid var(--rule);border-left:3px solid var(--border)}
-.intel-row:last-child{border-bottom:none}
-.intel-row:hover{background:var(--surface2)}
-.intel-row.impact-high{border-left-color:var(--red)}
-.intel-row.impact-medium{border-left-color:var(--amber)}
-.intel-row.impact-low{border-left-color:var(--green)}
-.intel-title-text{font-family:var(--font-serif);font-size:13px;font-weight:400;color:var(--text);margin-bottom:3px}
-.intel-action-note{font-size:11px;color:var(--amber);margin-bottom:4px}
-.intel-foot{font-size:10px;color:var(--text3);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.intel-foot a{color:var(--accent);text-decoration:none}
-.intel-foot a:hover{text-decoration:underline}
+/* ── Communal request queue ── */
+.req-table{width:100%;border-collapse:collapse;font-size:11.5px}
+.req-table thead th{background:var(--surface2);text-align:left;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);padding:9px 14px;border-bottom:1px solid var(--rule)}
+.req-table tbody td{padding:11px 14px;border-bottom:1px solid var(--rule2);vertical-align:middle}
+.req-table tbody tr{cursor:pointer;transition:background .1s}
+.req-table tbody tr:hover{background:var(--surface2)}
+.req-table tbody tr.overdue td:first-child{border-left:3px solid var(--red)}
+.req-table tbody tr.warn td:first-child{border-left:3px solid var(--amber)}
+.req-name{font-weight:500;color:var(--text)}
+.req-caseref{font-family:var(--mono);font-size:10px;color:var(--text3);margin-top:2px}
+.req-jur-chip{font-size:9.5px;font-weight:600;padding:2px 7px;border-radius:8px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.04em;display:inline-block}
+.req-jur-uk{background:#E4EEF2;color:#1F5C68}
+.req-jur-fr{background:#F0EEFC;color:#5B4A9F}
+.req-jur-es{background:#FDF4E3;color:#7A4E00}
+.req-age{font-family:var(--mono);font-size:10.5px;color:var(--text3);text-align:right;white-space:nowrap}
+.req-age.warn{color:var(--amber);font-weight:600}
+.req-age.overdue{color:var(--red);font-weight:600}
+.req-cpr{font-family:var(--mono);font-size:10.5px}
+.req-cpr.tight{color:var(--red);font-weight:600}
+.req-cpr.warn{color:var(--amber);font-weight:600}
+.req-cta{font-size:10.5px;padding:5px 12px;border-radius:var(--r);border:1px solid var(--accent);background:var(--surface);color:var(--accent);cursor:pointer;font-family:var(--font);font-weight:500;text-decoration:none;display:inline-flex;align-items:center;gap:4px}
+.req-cta:hover{background:var(--accent);color:#fff}
 
-/* ── Badges ── */
-.badge{font-size:10px;font-weight:500;padding:2px 7px;border-radius:20px;font-family:var(--mono);display:inline-block}
-.badge-high{background:var(--alert-faint);color:var(--alert);border:1px solid #E8B4B4}
-.badge-medium{background:var(--caution-faint);color:var(--caution);border:1px solid #E8D4A8}
-.badge-low{background:var(--surface2);color:var(--ink3);border:1px solid var(--rule)}
-.badge-neutral{background:var(--surface2);color:var(--text3);border:1px solid var(--rule)}
-
-/* ── Age pills ── */
-.age-pill{font-size:10px;font-weight:500;padding:2px 7px;border-radius:20px;white-space:nowrap;display:inline-block}
-.age-pill.overdue{background:var(--red-faint);color:var(--red);border:1px solid #FECACA}
-.age-pill.warn{background:var(--amber-faint);color:var(--amber);border:1px solid #FDE68A}
-.age-pill.ok{background:var(--surface2);color:var(--text3);border:1px solid var(--rule)}
-
-/* ── CPR pill ── */
-.cpr-pill{font-size:10px;font-weight:500;padding:2px 7px;border-radius:20px;white-space:nowrap;font-family:var(--mono)}
-.cpr-urgent{background:var(--red-faint);color:var(--red)}
-.cpr-warn{background:var(--amber-faint);color:var(--amber)}
-.cpr-ok{background:var(--green-faint);color:var(--green)}
-
-/* ── Empty state ── */
-.empty{padding:20px 16px;font-size:12px;color:var(--text3);text-align:center}
-.empty i{font-size:20px;display:block;margin-bottom:6px;opacity:.4}
+/* ── Section placeholders ── */
+.placeholder-card{background:var(--surface);border:1px dashed var(--rule);border-radius:var(--r3);padding:24px;text-align:center;color:var(--text3);font-size:12px;line-height:1.55}
+.placeholder-card i{display:block;font-size:24px;color:var(--rule);margin-bottom:10px}
+.placeholder-card strong{color:var(--text2);display:block;margin-bottom:4px}
 
 /* ── User switcher modal ── */
 .user-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.3);z-index:500;justify-content:flex-end;padding:52px 20px 0}
 .user-modal.open{display:flex}
-.user-dropdown{background:var(--surface);border:1px solid var(--rule);border-radius:var(--r3);width:240px;overflow:hidden}
-.ud-header{padding:10px 14px;border-bottom:1px solid var(--rule);font-size:10px;text-transform:uppercase;color:var(--ink3)}
-.ud-section{padding:4px 14px 2px;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.06em;color:var(--text3)}
-.ud-divider{height:1px;background:var(--border);margin:4px 0}
+.user-dropdown{background:var(--surface);border:1px solid var(--rule);border-radius:var(--r3);width:240px;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,0.1)}
+.ud-header{padding:10px 14px;border-bottom:1px solid var(--rule);font-size:10px;text-transform:uppercase;color:var(--text3)}
 .ud-item{display:flex;align-items:center;gap:10px;padding:9px 14px;cursor:pointer}
 .ud-item:hover,.ud-item.current{background:var(--accent-faint)}
-.ud-av{width:28px;height:28px;border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500}
+.ud-av{width:28px;height:28px;border-radius:50%;background:#164E63;color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px}
 .ud-name{font-size:12px;font-weight:500}
-.ud-role{font-size:10px;color:var(--ink3)}
+.ud-role{font-size:10px;color:var(--text3)}
 .ud-tick{margin-left:auto;color:var(--confirm);display:none}
 .ud-item.current .ud-tick{display:block}
-
-/* ── Typography resets ── */
-.greeting,.page-title,h1{font-family:var(--font-serif)!important;font-weight:400}
 </style>
 </head>
 <body>
@@ -171,253 +158,286 @@ html,body{min-height:100%;font-family:var(--font);background:var(--surface2);col
 <script src="shared_theme.js"></script>
 <script src="case_helpers.js"></script>
 <script src="work_dashboard.js"></script>
-<script src="dio_helpers.js"></script>
+<script src="dio_helpers.js?v=s1"></script>
+<script src="defendable_evidence_reader.js?v=p2c"></script>
 <script src="flight_data.js"></script>
 
 <nav class="global-nav">
-  <a href="dio.html" class="gn-logo">
-    <div class="gn-mark"><i class="ti ti-archive"></i></div>
-    <span class="gn-name">DefendAble DIO</span>
-  </a>
+  <a href="dio.html" class="gn-logo"><div class="gn-mark"><i class="ti ti-archive"></i></div><span class="gn-name">DefendAble DIO</span></a>
   <div class="gn-links" id="gn-links"></div>
-  <div class="gn-right">
-    <div class="gn-user-btn" onclick="toggleUserMenu()">
-      <div class="gn-av" id="nav-av">EH</div>
-      <span class="gn-user" id="nav-user">E. Hughes</span>
-    </div>
-  </div>
+  <div class="gn-right"><div class="gn-user-btn" id="gn-user-btn"><div class="gn-av" id="gn-av">EH</div><span class="gn-user" id="gn-username">E. Hughes</span></div></div>
 </nav>
 
 <div class="page" id="page"></div>
 
+<div class="user-modal" id="user-modal" onclick="closeUserMenu(event)"><div class="user-dropdown" id="user-dropdown" onclick="event.stopPropagation()"></div></div>
+
 <script src="shared_nav.js"></script>
 <script src="shared_user_switch.js"></script>
+
 <script>
+function escapeHtml(v){return String(v==null?'':v).replace(/[&<>"']/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch];});}
 
-function archiveEvent(id) {
-  DIO.saveDisruptionEventPatch(id, {archived: true, archivedAt: new Date().toISOString()});
-  try {
-    var audit = JSON.parse(sessionStorage.getItem('dfa_dio_audit') || '[]');
-    audit.unshift({t: 'Disruption event archived: ' + id, time: new Date().toLocaleString('en-GB')});
-    sessionStorage.setItem('dfa_dio_audit', JSON.stringify(audit.slice(0, 30)));
-  } catch(e) {}
-  render();
+function toggleUserMenu(){
+  var m=document.getElementById('user-modal');
+  if(m)m.classList.toggle('open');
 }
+function closeUserMenu(e){if(e.target.id==='user-modal')document.getElementById('user-modal').classList.remove('open');}
 
-function refreshLiveFlights() {
-  if (typeof FlightData === 'undefined') { render(); return; }
-  var profile = DIO.getDIOProfile();
-  var events = DIO.loadDisruptionEvents(profile.jurisdiction);
-  var btn = document.getElementById('live-flight-btn');
-  if (btn) { btn.disabled = true; btn.innerHTML = '<i class="ti ti-loader-2"></i> Checking…'; }
-  FlightData.refreshDigest(events).then(function() {
-    if (btn) { btn.disabled = false; btn.innerHTML = '<i class="ti ti-radar"></i> Refresh'; }
-    render();
+/* Fetch snapshot from evidence-collection reader — supports 4 news/incident sources */
+function loadTerritoryFeed(territory, refreshBtn) {
+  if (refreshBtn) refreshBtn.innerHTML = '<span class="spin"></span> Refreshing…';
+  var promises = [];
+  var srcs = ['aviation-herald-news', 'simple-flying-news', 'gdacs-global-disasters', 'copernicus-effis'];
+  srcs.forEach(function (sid) {
+    if (window.EvidenceCollection && window.EvidenceCollection.get) {
+      promises.push(window.EvidenceCollection.get(sid).then(function (snap) {
+        return { sid: sid, snap: snap };
+      }).catch(function () { return { sid: sid, snap: null }; }));
+    }
+  });
+  return Promise.all(promises).then(function (results) {
+    var items = [];
+    results.forEach(function (r) {
+      if (!r.snap || !r.snap.data) return;
+      var srcKey = r.sid === 'aviation-herald-news' ? 'herald'
+                 : r.sid === 'simple-flying-news' ? 'simple'
+                 : r.sid === 'gdacs-global-disasters' ? 'gdacs'
+                 : 'copernicus';
+      if (r.sid === 'aviation-herald-news' || r.sid === 'simple-flying-news') {
+        (r.snap.data.items || []).forEach(function (it) {
+          items.push({
+            source: srcKey, title: it.title, description: it.description, link: it.link,
+            pub_date: it.pub_date, severity: it.severity, raw: it,
+          });
+        });
+      } else if (r.sid === 'gdacs-global-disasters') {
+        (r.snap.data.events || []).forEach(function (e) {
+          items.push({
+            source: 'gdacs', title: (e.name || e.type_name || 'GDACS event'),
+            description: (e.type_name || '') + (e.country ? ' — ' + e.country : ''),
+            link: e.url, pub_date: e.from_date,
+            severity: e.alert_level === 'Red' ? 'accident' : e.alert_level === 'Orange' ? 'incident' : 'event',
+            country: e.country, iso3: e.iso3, raw: e,
+          });
+        });
+      } else if (r.sid === 'copernicus-effis') {
+        (r.snap.data.fire_activations || []).forEach(function (a) {
+          items.push({
+            source: 'copernicus', title: a.title, description: a.description,
+            link: a.link, pub_date: a.pub_date, severity: 'event', raw: a,
+          });
+        });
+      }
+    });
+    // Filter to territory
+    if (window.DIO && window.DIO.matchIncidentToTerritory) {
+      items = items.filter(function (it) { return window.DIO.matchIncidentToTerritory(it, territory); });
+    }
+    // Sort by pub date desc
+    items.sort(function (a, b) {
+      var da = new Date(a.pub_date || 0).getTime();
+      var db = new Date(b.pub_date || 0).getTime();
+      return db - da;
+    });
+    return items.slice(0, 40);
   });
 }
 
-function cprCls(d) {
-  return d <= 3 ? 'cpr-urgent' : d <= 7 ? 'cpr-warn' : 'cpr-ok';
+function fmtDate(iso) {
+  if (!iso) return '—';
+  try {
+    var d = new Date(iso);
+    var now = Date.now();
+    var diffH = Math.floor((now - d.getTime()) / 3600000);
+    if (diffH < 24) return diffH + 'h ago';
+    if (diffH < 72) return Math.floor(diffH / 24) + 'd ago';
+    return d.toISOString().slice(0, 10);
+  } catch (e) { return iso; }
+}
+
+function jurChip(jur) {
+  var map = { 'england-wales': ['req-jur-uk', 'UK'], 'france': ['req-jur-fr', 'FR'], 'spain': ['req-jur-es', 'ES'] };
+  var pair = map[jur] || ['req-jur-uk', jur || '?'];
+  return '<span class="req-jur-chip ' + pair[0] + '">' + pair[1] + '</span>';
+}
+
+function renderFeed(items, feedEl) {
+  if (!items.length) {
+    feedEl.innerHTML = '<div class="feed-empty"><i class="ti ti-radar"></i>No live incidents in your territory right now. Daily cron next fires 03:00 UTC.</div>';
+    return;
+  }
+  feedEl.innerHTML = items.map(function (it) {
+    var srcCls = 'feed-src-' + it.source;
+    var srcLbl = it.source === 'herald' ? 'Aviation Herald' : it.source === 'simple' ? 'Simple Flying' : it.source === 'gdacs' ? 'GDACS' : 'Copernicus';
+    var sevCls = 'severity-' + (it.severity || 'event');
+    return '<div class="feed-item ' + sevCls + '">'
+      + '<div>'
+      +   '<div class="feed-title">' + (it.link ? '<a href="' + escapeHtml(it.link) + '" target="_blank" rel="noopener">' + escapeHtml(it.title) + '</a>' : escapeHtml(it.title)) + '</div>'
+      +   '<div class="feed-meta">'
+      +     '<span class="feed-src-chip ' + srcCls + '">' + srcLbl + '</span>'
+      +     '<span>' + fmtDate(it.pub_date) + '</span>'
+      +   '</div>'
+      +   (it.description ? '<div class="feed-desc">' + escapeHtml(it.description) + '</div>' : '')
+      + '</div>'
+      + '<div class="feed-actions">'
+      +   '<span class="feed-match-count match-hit" title="Approximate match count against your open cases">match ✓</span>'
+      +   '<button class="feed-fetch-btn" title="Bulk-fetch coming in Session 2" disabled><i class="ti ti-cloud-download"></i>Fetch (S2)</button>'
+      + '</div>'
+      + '</div>';
+  }).join('');
+}
+
+function renderCommunalRequests(reqs, tbodyEl) {
+  if (!reqs.length) {
+    tbodyEl.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--text3)"><i class="ti ti-circle-check"></i> No outstanding evidence requests across the team.</td></tr>';
+    return;
+  }
+  tbodyEl.innerHTML = reqs.map(function (r) {
+    var rowCls = r.overdue ? 'overdue' : r.daysAgo >= 2 ? 'warn' : '';
+    var ageCls = r.overdue ? 'overdue' : r.daysAgo >= 2 ? 'warn' : '';
+    var ageTxt = r.daysAgo + 'd' + (r.overdue ? ' — overdue' : ' ago');
+    var cprCls = r.cprDaysLeft <= 3 ? 'tight' : r.cprDaysLeft <= 7 ? 'warn' : '';
+    return '<tr class="' + rowCls + '" onclick="location.href=\'' + DIO.dioCaseUrl(r.caseRef) + '\'">'
+      + '<td><div class="req-name">' + escapeHtml(r.name) + '</div><div class="req-caseref">' + escapeHtml(r.caseRef) + ' · ' + escapeHtml(r.claimantName || '') + '</div></td>'
+      + '<td>' + jurChip(r.jurisdiction) + '</td>'
+      + '<td class="req-cpr ' + cprCls + '">CPR ' + r.cprDaysLeft + 'd</td>'
+      + '<td class="req-age ' + ageCls + '">' + ageTxt + '</td>'
+      + '<td style="color:var(--text3);font-size:10.5px">' + escapeHtml(r.requestedBy) + '</td>'
+      + '<td><a class="req-cta" href="' + DIO.dioCaseUrl(r.caseRef) + '" onclick="event.stopPropagation()"><i class="ti ti-upload"></i> File evidence</a></td>'
+      + '</tr>';
+  }).join('');
 }
 
 function render() {
   if (!DIO.ensureDIOAccess()) return;
-  DIO.ensureDemoEvidenceRequests();
+  var uid = getActiveUser();
   var profile = DIO.getDIOProfile();
-  var jur = profile.jurisdiction;
-  var requests = DIO.collectEvidenceRequests(jur);
-  var gaps = DIO.collectEvidenceGaps(jur);
-  var events = DIO.loadDisruptionEvents(jur);
-  var overdueCount = requests.filter(function(r) { return r.overdue; }).length;
-  var activeEvents = events.filter(function(e) { return !e.archived; }).length;
+  var territory = DIO.getTerritory(uid);
+  var communalRequests = DIO.collectCommunalRequests();
+  var airportCounts = DIO.caseCountByAirport(territory);
 
-  /* ── Stat chips ── */
-  var chipClass = overdueCount ? 'urgent' : requests.length ? 'warn' : 'active';
-  var reqChip = '<span class="stat-chip ' + chipClass + '"><i class="ti ti-inbox"></i> '
-    + requests.length + ' open request' + (requests.length === 1 ? '' : 's')
-    + (overdueCount ? ' · ' + overdueCount + ' overdue' : '')
-    + '</span>';
-  var gapChip = gaps.length
-    ? '<span class="stat-chip warn"><i class="ti ti-file-search"></i> ' + gaps.length + ' case' + (gaps.length === 1 ? '' : 's') + ' need evidence</span>'
-    : '<span class="stat-chip active"><i class="ti ti-circle-check"></i> Evidence complete</span>';
-  var evtChip = activeEvents
-    ? '<span class="stat-chip new"><i class="ti ti-radar"></i> ' + activeEvents + ' active event' + (activeEvents === 1 ? '' : 's') + '</span>'
-    : '';
+  // Only THIS DIO's territory-scoped requests for the header chip
+  var mineCount = communalRequests.filter(function (r) { return r.jurisdiction === profile.jurisdiction; }).length;
+  var mineOverdue = communalRequests.filter(function (r) { return r.jurisdiction === profile.jurisdiction && r.overdue; }).length;
+  var totalCases = Object.values(airportCounts).reduce(function (a, b) { return a + b; }, 0);
 
-  /* ── Quick tiles ── */
-  var quickHtml = '<div class="quick-actions">'
-    + '<a href="requests.html" class="quick-tile accent">'
-      + '<div class="quick-tile-icon accent"><i class="ti ti-upload"></i></div>'
-      + '<div><div class="quick-tile-label">File evidence</div><div class="quick-tile-sub">Upload documents to an open request</div></div>'
-    + '</a>'
-    + '<a href="dio-knowledge.html" class="quick-tile teal">'
-      + '<div class="quick-tile-icon teal"><i class="ti ti-book-2"></i></div>'
-      + '<div><div class="quick-tile-label">Knowledge hub</div><div class="quick-tile-sub">Legal intelligence and case law updates</div></div>'
-    + '</a>'
-    + '<a href="cases.html" class="quick-tile amber">'
-      + '<div class="quick-tile-icon amber"><i class="ti ti-file-search"></i></div>'
-      + '<div><div class="quick-tile-label">All cases</div><div class="quick-tile-sub">Browse and filter the ' + escapeHtml(profile.label) + ' case register</div></div>'
-    + '</a>'
-  + '</div>';
-
-  /* ── Evidence requests ── */
-  var reqRows = requests.length ? requests.map(function(r) {
-    var urgCls = r.overdue ? 'urgent-red' : 'urgent-amber';
-    var ageCls = r.overdue ? 'overdue' : 'warn';
-    var ageText = r.overdue ? r.daysAgo + 'd — overdue' : r.daysAgo + 'd ago';
-    return '<div class="priority-row ' + urgCls + '" onclick="location.href=\'' + DIO.dioCaseUrl(r.caseRef) + '\'">'
-      + '<div class="priority-body">'
-        + '<div class="priority-action">' + escapeHtml(r.name) + '</div>'
-        + '<div class="priority-ref">' + escapeHtml(r.caseRef) + ' · ' + escapeHtml(r.claimantName || '') + '</div>'
-        + '<div style="font-size:10px;color:var(--text3);margin-top:1px">Requested by ' + escapeHtml(r.requestedBy || 'Legal') + '</div>'
-      + '</div>'
-      + '<div class="priority-meta">'
-        + '<span class="age-pill ' + ageCls + '">' + ageText + '</span><br>'
-        + '<span class="cpr-pill ' + cprCls(r.cprDaysLeft || 21) + '" style="margin-top:4px;display:inline-block">CPR ' + (r.cprDaysLeft || '?') + 'd</span><br>'
-        + '<a class="priority-cta" href="' + DIO.dioCaseUrl(r.caseRef) + '" onclick="event.stopPropagation()"><i class="ti ti-upload"></i> File evidence</a>'
-      + '</div>'
-    + '</div>';
-  }).join('') : '<div class="empty"><i class="ti ti-circle-check"></i>No outstanding evidence requests for ' + escapeHtml(profile.label) + '</div>';
-
-  /* ── Evidence gaps ── */
-  var gapRows = gaps.length ? gaps.map(function(g) {
-    var urgCls = g.cprDaysLeft <= 3 ? 'urgent-red' : g.cprDaysLeft <= 7 ? 'urgent-amber' : 'urgent-green';
-    return '<div class="priority-row ' + urgCls + '" onclick="location.href=\'' + DIO.dioCaseUrl(g.ref) + '\'">'
-      + '<div class="priority-body">'
-        + '<div class="priority-action">' + escapeHtml(g.claimant) + '</div>'
-        + '<div class="priority-ref">' + escapeHtml(g.ref) + '</div>'
-        + '<div style="font-size:10px;color:var(--text3);margin-top:1px">' + g.missingCount + ' item' + (g.missingCount === 1 ? '' : 's') + ' missing · ' + g.evidencePct + '% on file</div>'
-      + '</div>'
-      + '<div class="priority-meta">'
-        + '<span class="cpr-pill ' + cprCls(g.cprDaysLeft || 21) + '">CPR ' + (g.cprDaysLeft || '?') + 'd</span><br>'
-        + '<a class="priority-cta" href="' + DIO.dioCaseUrl(g.ref) + '" onclick="event.stopPropagation()">View gaps →</a>'
-      + '</div>'
-    + '</div>';
-  }).join('') : '<div class="empty"><i class="ti ti-circle-check"></i>No evidence gaps without open requests</div>';
-
-  /* ── Disruption events ── */
-  var evtRows = events.length ? events.map(function(e) {
-    var riskCls = e.risk === 'high' ? 'risk-high' : e.risk === 'medium' ? 'risk-medium' : 'risk-low';
-    var badgeCls = e.risk === 'high' ? 'badge-high' : e.risk === 'medium' ? 'badge-medium' : 'badge-low';
-    var when = e.date === '2026-06-12' ? 'Today ' + e.time : (e.date === '2026-06-11' ? 'Yesterday ' + e.time : e.date + ' ' + e.time);
-    var live = e.liveStatus;
-    var liveHtml = live ? '<div class="event-live"><i class="ti ti-' + (live.source === 'opensky' ? 'antenna' : 'database') + '"></i>' + escapeHtml(live.summary) + '</div>' : '';
-    return '<div class="event-row ' + riskCls + '">'
-      + '<div class="event-body">'
-        + '<div class="event-flight">' + escapeHtml(e.flight) + ' · ' + escapeHtml(e.route) + '</div>'
-        + '<div class="event-meta">' + escapeHtml(when) + ' · Delay ' + e.delay + 'min · ' + escapeHtml(e.type) + '</div>'
-        + liveHtml
-      + '</div>'
-      + '<div class="event-side">'
-        + '<span class="badge ' + badgeCls + '">' + escapeHtml(e.risk) + '</span><br>'
-        + (e.archived
-          ? '<span class="priority-cta done" style="margin-top:6px"><i class="ti ti-check"></i> Archived</span>'
-          : '<button class="priority-cta amber" style="margin-top:6px" onclick="archiveEvent(\'' + e.id + '\')"><i class="ti ti-archive"></i> Archive</button>')
-      + '</div>'
-    + '</div>';
-  }).join('') : '<div class="empty"><i class="ti ti-radar"></i>No disruption events in the last 48h</div>';
-
-  /* ── Render page ── */
-  document.getElementById('page').innerHTML =
+  var page = document.getElementById('page');
+  page.innerHTML =
     /* Header */
     '<div class="page-header">'
-      + '<div>'
-        + '<div class="greeting">' + escapeHtml(profile.label) + ' — ' + escapeHtml(profile.user.full) + '</div>'
-        + '<div class="greeting-sub">Documentary Intelligence Officer · evidence, legal intelligence &amp; knowledge</div>'
-      + '</div>'
-      + '<div class="stat-bar">' + reqChip + gapChip + evtChip + '</div>'
+    +   '<div>'
+    +     '<div class="greeting">Good ' + (new Date().getHours() < 12 ? 'morning' : new Date().getHours() < 18 ? 'afternoon' : 'evening') + ', ' + escapeHtml(profile.user.full.split(' ')[0]) + '</div>'
+    +     '<div class="greeting-sub">Documentary Intelligence Officer · evidence intelligence hub</div>'
+    +     '<div class="territory-badge"><i class="ti ti-map-pin"></i> Territory: ' + escapeHtml(territory.label) + '</div>'
+    +   '</div>'
+    +   '<div class="stat-bar">'
+    +     '<span class="stat-chip teal"><i class="ti ti-planet"></i> ' + territory.airports_icao.length + ' airports in territory</span>'
+    +     '<span class="stat-chip active"><i class="ti ti-briefcase"></i> ' + totalCases + ' cases in territory</span>'
+    +     (mineOverdue > 0
+        ? '<span class="stat-chip urgent"><i class="ti ti-clock-exclamation"></i> ' + mineOverdue + ' overdue in your area</span>'
+        : mineCount > 0
+        ? '<span class="stat-chip warn"><i class="ti ti-inbox"></i> ' + mineCount + ' open in your area</span>'
+        : '<span class="stat-chip active"><i class="ti ti-circle-check"></i> Territory clear</span>')
+    +     '<span class="stat-chip new"><i class="ti ti-users"></i> ' + communalRequests.length + ' team-wide requests</span>'
+    +   '</div>'
     + '</div>'
 
-    /* Quick tiles */
-    + quickHtml
-
-    /* Two-column grid: requests | gaps */
-    + '<div class="work-grid">'
-      + '<div class="zone">'
-        + '<div class="zone-hdr"><div class="zone-title"><i class="ti ti-clock-exclamation"></i> Evidence requests</div>'
-          + (requests.length ? '<a class="zone-link" href="requests.html">View all</a>' : '')
-        + '</div>'
-        + '<div class="panel">' + reqRows + '</div>'
-      + '</div>'
-      + '<div class="zone">'
-        + '<div class="zone-hdr"><div class="zone-title"><i class="ti ti-file-search"></i> Evidence gaps</div></div>'
-        + '<div class="panel">' + gapRows + '</div>'
-      + '</div>'
-    + '</div>'
-
-    /* Full-width: disruption events */
+    /* Territory panel */
     + '<div class="zone">'
-      + '<div class="zone-hdr"><div class="zone-title"><i class="ti ti-radar"></i> Disruption events — last 48h</div>'
-        + '<button type="button" class="zone-link" id="live-flight-btn" onclick="refreshLiveFlights()"><i class="ti ti-refresh"></i> Refresh live status</button>'
-      + '</div>'
-      + '<div class="panel">' + evtRows + '</div>'
+    +   '<div class="zone-hdr">'
+    +     '<div class="zone-title"><i class="ti ti-map-2"></i> Your territory · ' + escapeHtml(territory.short_label) + '</div>'
+    +     '<span style="font-size:11px;color:var(--text3)">Click an airport for its case detail (Session 2)</span>'
+    +   '</div>'
+    +   '<div class="panel">'
+    +     '<div class="territory-grid" id="territory-grid"></div>'
+    +     '<div class="territory-meta">'
+    +       '<span><strong>' + territory.airports_icao.length + '</strong> airports · <strong>' + territory.firs.length + '</strong> FIRs · <strong>' + territory.countries_name.join(', ') + '</strong></span>'
+    +       '<span>Live incident feed below filters to this territory</span>'
+    +     '</div>'
+    +   '</div>'
     + '</div>'
 
-    /* Full-width: legal intelligence */
+    /* Live incident feed */
     + '<div class="zone">'
-      + '<div class="zone-hdr"><div class="zone-title"><i class="ti ti-gavel"></i> Legal intelligence — ' + escapeHtml(profile.label) + '</div>'
-        + '<a class="zone-link" href="dio-knowledge.html">Knowledge hub</a>'
-      + '</div>'
-      + '<div class="panel" id="intel-panel"><div class="empty">Loading intelligence…</div></div>'
+    +   '<div class="zone-hdr">'
+    +     '<div class="zone-title"><i class="ti ti-radar"></i> Live incident feed · your territory</div>'
+    +     '<button type="button" class="zone-link" id="refresh-feed-btn" onclick="reloadFeed()"><i class="ti ti-refresh"></i> Refresh</button>'
+    +   '</div>'
+    +   '<div class="panel">'
+    +     '<div class="feed-list" id="feed-list"><div class="feed-loading"><span class="spin" style="display:inline-block;width:12px;height:12px;border:2px solid var(--rule);border-top-color:var(--accent);border-radius:50%;animation:dio-spin 0.7s linear infinite"></span> Loading incidents from evidence-collection…</div></div>'
+    +   '</div>'
+    + '</div>'
+
+    /* Communal evidence requests */
+    + '<div class="zone">'
+    +   '<div class="zone-hdr">'
+    +     '<div class="zone-title"><i class="ti ti-inbox"></i> Evidence requests · communal queue</div>'
+    +     '<span style="font-size:11px;color:var(--text3)">All jurisdictions · any DIO can pick up</span>'
+    +   '</div>'
+    +   '<div class="panel">'
+    +     '<table class="req-table"><thead><tr>'
+    +       '<th>Request</th><th>Territory</th><th>CPR</th><th>Age</th><th>Requested by</th><th></th>'
+    +     '</tr></thead><tbody id="req-tbody"></tbody></table>'
+    +   '</div>'
+    + '</div>'
+
+    /* Session 2 + 3 placeholders — signals what's coming */
+    + '<div class="zone">'
+    +   '<div class="zone-hdr"><div class="zone-title"><i class="ti ti-chart-dots"></i> Portfolio evidence health <span style="font-size:10px;color:var(--text3);font-weight:400;font-family:var(--font)">— Session 2</span></div></div>'
+    +   '<div class="placeholder-card"><i class="ti ti-tools"></i><strong>Portfolio health matrix</strong>Case-by-case evidence hit-count chips arriving Session 2. Will show which of your ' + totalCases + ' territory cases are evidence-rich vs evidence-thin.</div>'
+    + '</div>'
+
+    + '<div class="zone">'
+    +   '<div class="zone-hdr"><div class="zone-title"><i class="ti ti-cloud-download"></i> Actionable pull queue <span style="font-size:10px;color:var(--text3);font-weight:400;font-family:var(--font)">— Session 2</span></div></div>'
+    +   '<div class="placeholder-card"><i class="ti ti-tools"></i><strong>Bulk fetch by airport + incident</strong>Click any airport chip above or any live-incident item to bulk-trigger evidence-collection fetches across matching cases. Session 2.</div>'
+    + '</div>'
+
+    + '<div class="zone">'
+    +   '<div class="zone-hdr"><div class="zone-title"><i class="ti ti-bell"></i> Reminders + stale evidence <span style="font-size:10px;color:var(--text3);font-weight:400;font-family:var(--font)">— Session 3</span></div></div>'
+    +   '<div class="placeholder-card"><i class="ti ti-tools"></i><strong>Reminders panel</strong>CPR deadlines, stale Repository attachments (>7d), unanswered requests. Session 3.</div>'
     + '</div>';
 
-  /* ── Async: intelligence feed ── */
-  fetch('knowledge_store.json?t=' + Date.now())
-    .then(function(r) { return r.json(); })
-    .then(function(store) {
-      var panel = document.getElementById('intel-panel');
-      if (!panel) return;
-      var pending = DIO.loadPendingKnowledge().filter(function(e) {
-        return (e.jurisdiction || []).indexOf(jur) >= 0 || (e.jurisdiction || []).indexOf('all') >= 0;
-      });
-      var entries = (store.entries || []).filter(function(e) {
-        return e.jurisdiction.indexOf(jur) >= 0 || e.jurisdiction.indexOf('all') >= 0;
-      }).sort(function(a, b) {
-        if (a.actionRequired && !b.actionRequired) return -1;
-        if (!a.actionRequired && b.actionRequired) return 1;
-        return new Date(b.date) - new Date(a.date);
-      }).slice(0, 3);
-      var all = pending.concat(entries);
-      if (!all.length) {
-        panel.innerHTML = '<div class="empty"><i class="ti ti-book-2"></i>No intelligence updates for ' + escapeHtml(profile.label) + '</div>';
-        return;
-      }
-      panel.innerHTML = all.slice(0, 3).map(function(e) {
-        var imp = e.impact || 'medium';
-        var impCls = 'impact-' + imp;
-        var badgeCls = imp === 'high' ? 'badge-high' : imp === 'medium' ? 'badge-medium' : 'badge-low';
-        return '<div class="intel-row ' + impCls + '">'
-          + '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:4px">'
-            + '<div class="intel-title-text">' + escapeHtml(e.title) + (e.pending ? ' <span style="font-size:10px;color:var(--green)">(pending)</span>' : '') + '</div>'
-            + '<span class="badge ' + badgeCls + '">' + escapeHtml(imp.toUpperCase()) + '</span>'
-          + '</div>'
-          + (e.actionRequired ? '<div class="intel-action-note"><i class="ti ti-alert-triangle"></i> ' + escapeHtml(e.actionNote || '') + '</div>' : '')
-          + '<div class="intel-foot">'
-            + '<span>' + escapeHtml(e.source || '') + '</span>'
-            + '<span>' + new Date(e.date).toLocaleDateString('en-GB', {day: 'numeric', month: 'short', year: 'numeric'}) + '</span>'
-            + '<a href="dio-knowledge.html?prefill=' + encodeURIComponent(e.title || '') + '">Add to knowledge base</a>'
-          + '</div>'
-        + '</div>';
-      }).join('');
-    })
-    .catch(function() {
-      var panel = document.getElementById('intel-panel');
-      if (panel) panel.innerHTML = '<div class="empty">Intelligence feed unavailable</div>';
-    });
+  /* Territory grid — airport chips */
+  var grid = document.getElementById('territory-grid');
+  grid.innerHTML = territory.airports_icao.map(function (icao, i) {
+    var iata = territory.airports_iata[i];
+    var count = airportCounts[icao] || 0;
+    var cls = count >= 3 ? ' hot' : '';
+    var badgeCls = count === 0 ? ' zero' : '';
+    return '<div class="airport-chip' + cls + '" title="' + icao + ' · ' + count + ' open cases">'
+      +   '<div class="icao">' + icao + '</div>'
+      +   '<div class="name">' + iata + ' · click for detail</div>'
+      +   '<span class="case-badge' + badgeCls + '">' + count + '</span>'
+      + '</div>';
+  }).join('');
+
+  /* Communal requests table */
+  renderCommunalRequests(communalRequests, document.getElementById('req-tbody'));
+
+  /* Live incident feed */
+  reloadFeed();
 
   if (typeof renderGlobalNav === 'function') renderGlobalNav();
 }
 
-function escapeHtml(v) {
-  return String(v == null ? '' : v).replace(/[&<>"']/g, function(ch) {
-    return {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[ch];
+function reloadFeed() {
+  var btn = document.getElementById('refresh-feed-btn');
+  var originalBtn = btn ? btn.innerHTML : '';
+  if (btn) btn.innerHTML = '<span class="spin"></span> Refreshing…';
+  var uid = getActiveUser();
+  var territory = DIO.getTerritory(uid);
+  loadTerritoryFeed(territory, btn).then(function (items) {
+    renderFeed(items, document.getElementById('feed-list'));
+    if (btn) btn.innerHTML = '<i class="ti ti-refresh"></i> Refresh';
+  }).catch(function () {
+    if (btn) btn.innerHTML = '<i class="ti ti-refresh"></i> Refresh';
+    document.getElementById('feed-list').innerHTML = '<div class="feed-empty"><i class="ti ti-cloud-off"></i>Could not reach evidence-collection repository. Retry in a moment.</div>';
   });
 }
+
+window.addEventListener('load', render);
 </script>
 
-<div id="user-modal" class="user-modal" onclick="if(event.target===this)closeMenu()">
-  <div class="user-dropdown"></div>
-</div>
-<script>window.addEventListener('load', render);</script>
 </body>
 </html>
