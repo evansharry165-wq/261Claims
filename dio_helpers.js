@@ -499,6 +499,101 @@
   }
 
 
+  
+  /* ── Session 2 accessors ─────────────────────────────────────────
+     casesInTerritory   — full list of open cases involving any territory airport
+     casesByAirport     — subset filtered to a single airport (ICAO or IATA)
+     staleAttachDays    — days since last case_packet.evidenceRepository attach
+     collectPortfolioMatrix — one row per case with stage / evidence% / CPR / repo-count
+  */
+
+  function _allActiveCases() {
+    var seen = {};
+    var out = [];
+    function push(c) {
+      if (!c || c.stage === 'resolve' || seen[c.ref]) return;
+      seen[c.ref] = true;
+      out.push(c);
+    }
+    if (typeof CaseFiling !== 'undefined' && CaseFiling.listCases) {
+      CaseFiling.listCases({}).forEach(push);
+    }
+    (typeof ALL_CASES !== 'undefined' ? ALL_CASES : []).forEach(push);
+    return out;
+  }
+
+  function casesInTerritory(uid) {
+    var territory = getTerritory(uid);
+    var iatas = territory.airports_iata.map(function(x){ return x.toUpperCase(); });
+    return _allActiveCases().filter(function(c) {
+      var dep = (c.dep || '').toUpperCase();
+      var arr = (c.arr || '').toUpperCase();
+      return iatas.indexOf(dep) >= 0 || iatas.indexOf(arr) >= 0;
+    });
+  }
+
+  function casesByAirport(iata_or_icao, territory) {
+    territory = territory || getTerritory();
+    var iatas = territory.airports_iata;
+    var icaos = territory.airports_icao;
+    var target = String(iata_or_icao || '').toUpperCase();
+    var idx = icaos.indexOf(target);
+    var iataMatch = idx >= 0 ? iatas[idx] : target;
+    return _allActiveCases().filter(function(c) {
+      var dep = (c.dep || '').toUpperCase();
+      var arr = (c.arr || '').toUpperCase();
+      return dep === iataMatch || arr === iataMatch;
+    });
+  }
+
+  function staleAttachDays(caseRef) {
+    if (typeof CaseFiling === 'undefined' || !CaseFiling.getCase) return null;
+    var c = CaseFiling.getCase(caseRef);
+    if (!c || !c.meta) return null;
+    var repo = c.meta.evidenceRepository;
+    if (!repo || !repo.items || !repo.items.length) return null;
+    var latest = repo.items.reduce(function(acc, it) {
+      var t = Date.parse(it.attachedAt || 0) || 0;
+      return t > acc ? t : acc;
+    }, 0);
+    if (!latest) return null;
+    return Math.floor((Date.now() - latest) / 86400000);
+  }
+
+  /* Portfolio matrix — one summary row per territory case. Synchronous, cheap.
+     Per-source hit chips are populated async by the UI (see portfolio.js). */
+  function collectPortfolioMatrix(uid) {
+    var cases = casesInTerritory(uid);
+    return cases.map(function(c) {
+      var attachCount = 0;
+      var lastAttach = staleAttachDays(c.ref);
+      if (typeof CaseFiling !== 'undefined' && CaseFiling.getCase) {
+        var cf = CaseFiling.getCase(c.ref);
+        var repo = cf && cf.meta && cf.meta.evidenceRepository;
+        attachCount = (repo && repo.items) ? repo.items.length : 0;
+      }
+      var pointsTotal = (c.points || []).length;
+      var pointsRed = (c.points || []).filter(function(p){ return (p.evidenceStatus || 'red') === 'red'; }).length;
+      var pointsAmber = (c.points || []).filter(function(p){ return p.evidenceStatus === 'amber'; }).length;
+      return {
+        ref: c.ref, claimant: c.claimant, flightNum: c.flightNum || c.flight, dep: c.dep, arr: c.arr,
+        flightDate: c.flightDate || '', stage: c.stage, evidencePct: c.evidencePct || 0,
+        cprDaysLeft: c.cprDaysLeft || 21, disruptionType: c.disruptionType || '',
+        classification: c.classification || '', triageNote: c.triageNote || '',
+        source: c.source || c.origin || 'seed',
+        attachCount: attachCount, staleDays: lastAttach,
+        pointsTotal: pointsTotal, pointsRed: pointsRed, pointsAmber: pointsAmber,
+        gapScore: (pointsRed * 3) + pointsAmber + (attachCount === 0 ? 5 : 0)
+      };
+    }).sort(function(a, b) {
+      // High gap-score + tight CPR first
+      var aScore = a.gapScore + (a.cprDaysLeft <= 7 ? 10 : a.cprDaysLeft <= 14 ? 5 : 0);
+      var bScore = b.gapScore + (b.cprDaysLeft <= 7 ? 10 : b.cprDaysLeft <= 14 ? 5 : 0);
+      return bScore - aScore;
+    });
+  }
+
+
     global.DIO = {
     JUR_LABELS: JUR_LABELS,
     isDIOUser: isDIOUser,
@@ -529,5 +624,9 @@
     dioFriendlyPointLabel: dioFriendlyPointLabel,
     ensureCaseSummary: ensureCaseSummary,
     LABEL_MAP: LABEL_MAP,
+    casesInTerritory: casesInTerritory,
+    casesByAirport: casesByAirport,
+    staleAttachDays: staleAttachDays,
+    collectPortfolioMatrix: collectPortfolioMatrix,
   };
 })(typeof window !== 'undefined' ? window : this);
