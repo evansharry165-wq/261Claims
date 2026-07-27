@@ -226,14 +226,27 @@
       ) {
         return req;
       }
-      if (
-        doc.indexOf(name.slice(0, 8)) >= 0 ||
-        name.indexOf('metar') >= 0 && doc.indexOf('metar') >= 0 ||
-        name.indexOf('eurocontrol') >= 0 && doc.indexOf('eurocontrol') >= 0 ||
-        name.indexOf('crew') >= 0 && doc.indexOf('crew') >= 0 ||
-        name.indexOf('css') >= 0 && doc.indexOf('crew') >= 0 ||
-        name.indexOf('ords') >= 0 && doc.indexOf('ords') >= 0
-      ) {
+      /* Extended keyword table — covers seed + engine + evidence-collection vocab.
+         Each entry: [name-substring, doc-substring] — either match direction OK. */
+      var kwPairs = [
+        ['metar','metar'], ['taf','taf'], ['sigmet','sigmet'],
+        ['eurocontrol','eurocontrol'], ['atfm','atfm'], ['crco','crco'], ['coda','coda'], ['nm','network manager'],
+        ['crew','crew'], ['css','crew'], ['fdp','crew'], ['ords','ords'],
+        ['notam','notam'], ['nots','notam'],
+        ['montreal','montreal'], ['third-party','third-party'], ['third party','third party'],
+        ['wildfire','fire'], ['firms','fire'], ['gdacs','disaster'], ['copernicus','ems'],
+        ['strike','strike'], ['ia notice','industrial'], ['dgac','strike'], ['enac','strike'],
+        ['ash','volcanic'], ['vaac','volcanic'], ['volcano','volcanic'],
+        ['chart','chart'], ['synoptic','pressure'], ['met office','met office'],
+        ['track','track'], ['opensky','track'], ['adsb','track'],
+        ['aviation herald','incident'], ['news','news'],
+        ['dpm','dpm'], ['max ops','max ops'], ['flight ops','ops'], ['ops review','ops'],
+        ['airport','airport'], ['runway','runway'], ['ground','ground'],
+      ];
+      var kwHit = kwPairs.some(function(pair){
+        return name.indexOf(pair[0]) >= 0 && doc.indexOf(pair[1]) >= 0;
+      });
+      if (doc.indexOf(name.slice(0, 8)) >= 0 || kwHit) {
         return req;
       }
     }
@@ -402,21 +415,89 @@
   }
 
   function caseCountByAirport(territory) {
+    /* Read from CaseFiling live store first (covers engine-filed cases),
+       fall back to ALL_CASES for anything not yet in the live store.
+       Use dep/arr (correct airport fields) — c.origin is a source marker
+       ('legal_engine') on engine cases and empty on seed cases. */
     var counts = {};
     territory.airports_icao.forEach(function(a){ counts[a] = 0; });
-    var cases = (typeof ALL_CASES !== 'undefined' ? ALL_CASES : []);
-    cases.forEach(function (c) {
-      if (c.stage === 'resolve') return;
-      var origin = (c.origin || '').toUpperCase();
-      var dest = (c.destination || '').toUpperCase();
+    var seen = {};
+    function tally(c) {
+      if (!c || c.stage === 'resolve' || seen[c.ref]) return;
+      seen[c.ref] = true;
+      var dep = (c.dep || '').toUpperCase();
+      var arr = (c.arr || '').toUpperCase();
       territory.airports_iata.forEach(function(iata, i){
-        if (origin === iata || dest === iata) {
+        if (dep === iata || arr === iata) {
           counts[territory.airports_icao[i]] = (counts[territory.airports_icao[i]] || 0) + 1;
         }
       });
-    });
+    }
+    if (typeof CaseFiling !== 'undefined' && CaseFiling.listCases) {
+      CaseFiling.listCases({}).forEach(tally);
+    }
+    (typeof ALL_CASES !== 'undefined' ? ALL_CASES : []).forEach(tally);
     return counts;
   }
+
+  
+  /* dioFriendlyPointLabel — translate engine raw claim/evidenceDoc into a
+     DIO-actionable label. Engine points from decideSection.critNotes come
+     in like "CRIT — foo bar" or "IMPO — baz"; evidenceMarks come in with
+     raw keys ("notam", "eurocontrol"). Seed cases already have human labels.
+     Called at render time in dio-case.html; no schema change needed. */
+  var LABEL_MAP = {
+    metar: 'METAR / weather observation records',
+    taf: 'TAF / weather forecast records',
+    notam: 'NOTAM notices (airport / airspace)',
+    eurocontrol: 'Eurocontrol ATFM / CRCO records',
+    coda: 'Eurocontrol CODA delay analysis',
+    dpm: 'Daily Performance Metrics report',
+    max_ops: 'MAX OPS operational log',
+    ops_review: 'Daily Operations Review',
+    crew: 'Crew duty / FDP records',
+    css: 'Crew Scheduling System export',
+    fdp: 'Flight Duty Period breakdown',
+    montreal_conv: 'Montreal Convention third-party contract documentation',
+    ash: 'Volcanic ash advisory (VAAC)',
+    fire: 'Wildfire proximity data (NASA FIRMS)',
+    strike: 'Third-party industrial-action notice',
+    chart: 'Met Office synoptic / SIGWX charts',
+    track: 'Flight track data (OpenSky / ADS-B)',
+    news: 'Aviation Herald / press incident report',
+  };
+  function dioFriendlyPointLabel(point) {
+    if (!point) return { claim: '', evidenceDoc: '' };
+    var claim = String(point.claim || '');
+    var doc = String(point.evidenceDoc || '');
+    // Strip legacy CRIT/IMPO/SUPP prefixes
+    var cleaned = claim.replace(/^(CRIT|IMPO|SUPP)\s*[—-]\s*/i, '');
+    // If claim is a bare key from evidenceMarks, look up friendly label
+    var keyLookup = LABEL_MAP[cleaned.toLowerCase().replace(/[^a-z0-9_]/g,'_')];
+    if (keyLookup) cleaned = keyLookup;
+    // Fallback evidence doc
+    if (!doc || doc === 'Marked requested' || doc === 'Marked missing' || doc === 'Engine priority' || doc === 'Condition before final response') {
+      doc = 'Provide the source document / record that evidences this point';
+    }
+    return { claim: cleaned, evidenceDoc: doc };
+  }
+
+  /* ensureCaseSummary — fallback so DIO surfaces never render empty caseSummary.
+     Uses triageNote if caseSummary missing; falls back to a short auto-summary
+     built from route + disruption type. Called by DIO surfaces on read. */
+  function ensureCaseSummary(c) {
+    if (!c) return '';
+    if (c.caseSummary && c.caseSummary.trim()) return c.caseSummary;
+    if (c.triageNote && c.triageNote.trim()) return c.triageNote;
+    var parts = [];
+    if (c.flightNum) parts.push(c.flightNum);
+    if (c.dep && c.arr) parts.push(c.dep + ' → ' + c.arr);
+    if (c.flightDate) parts.push('on ' + c.flightDate);
+    if (c.disruptionType) parts.push('· ' + c.disruptionType);
+    if (c.classification) parts.push('(' + c.classification + ')');
+    return parts.join(' ') || 'Case awaiting summary';
+  }
+
 
     global.DIO = {
     JUR_LABELS: JUR_LABELS,
@@ -445,5 +526,8 @@
     matchIncidentToTerritory: matchIncidentToTerritory,
     collectCommunalRequests: collectCommunalRequests,
     caseCountByAirport: caseCountByAirport,
+    dioFriendlyPointLabel: dioFriendlyPointLabel,
+    ensureCaseSummary: ensureCaseSummary,
+    LABEL_MAP: LABEL_MAP,
   };
 })(typeof window !== 'undefined' ? window : this);
