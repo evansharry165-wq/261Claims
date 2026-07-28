@@ -89,7 +89,7 @@ textarea{min-height:56px;resize:vertical}
 <div class="toast" id="toast"></div>
 
 <script>
-var CASE_REF='', CASE_DATA=null, pendingPointId=null;
+var CASE_REF='', CASE_DATA=null, pendingPointId=null, FOCUSED_REQUEST='';
 
 function escapeHtml(v){return String(v==null?'':v).replace(/[&<>"']/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch];});}
 
@@ -266,6 +266,7 @@ function render(){
   DIO.ensureDemoEvidenceRequests();
   CASE_REF=new URLSearchParams(window.location.search).get('ref')||'';
   CASE_REF=typeof normaliseCaseRef==='function'?normaliseCaseRef(CASE_REF):CASE_REF;
+  FOCUSED_REQUEST=new URLSearchParams(window.location.search).get('request')||'';
   CASE_DATA=typeof getCase==='function'?getCase(CASE_REF):null;
   if(!CASE_DATA){
     document.getElementById('app').innerHTML='<p style="padding:24px;color:var(--ink3)">Case not found.</p>';
@@ -315,6 +316,13 @@ function render(){
 
   document.getElementById('app').innerHTML=
     '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:12px;flex-wrap:wrap"><a href="dio.html" class="back-link"><i class="ti ti-arrow-left"></i> Return to dashboard</a><a href="evidence-workspace.html?case='+encodeURIComponent(CASE_REF)+'" class="back-link" style="background:var(--accent);color:#fff;padding:6px 12px;border-radius:var(--r);text-decoration:none;font-size:11px;font-weight:500"><i class="ti ti-arrows-maximize"></i> Open evidence workspace</a></div>'
+    + (FOCUSED_REQUEST ? (function(){
+        var st=DIO.getEvidenceState(CASE_REF);
+        var req=(st.evidenceRequests||{})[FOCUSED_REQUEST];
+        if(!req)return '';
+        return '<div style="background:#FFF9E7;border:1px solid #F5E6A8;border-left:4px solid var(--caution);padding:12px 16px;margin-bottom:12px;border-radius:var(--r)"><div style="font-size:9.5px;font-weight:700;color:var(--caution);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">Focused request from Legal</div><div style="font-size:13.5px;font-weight:500;color:var(--text);margin-bottom:4px">'+escapeHtml(req.name||'Evidence request')+'</div><div style="font-size:11px;color:var(--text2)">Requested by <strong>'+escapeHtml(req.requestedBy||'Legal')+'</strong> · '+escapeHtml(req.requestedAt||'')+' · this is the item to prioritise first</div></div>';
+      })() : '')
+    + '<div style="background:var(--accent-faint);border:1px solid var(--rule);border-radius:var(--r);padding:14px 18px;margin-bottom:14px;display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center"><div><div style="font-size:9.5px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px">Two ways to add evidence to this case</div><div style="font-size:12px;color:var(--text2);line-height:1.55"><strong>1. Upload a file</strong> you already have via the drop-zone below (traditional).<br><strong>2. Grab from the platform</strong> — open the evidence workspace to pull directly from weather, NOTAMs, news, tracks, disasters, ATFM etc. into this case. Every attached item lands in the case Repository <em>and</em> the case Documents tab automatically.</div></div><a href="evidence-workspace.html?case='+encodeURIComponent(CASE_REF)+(FOCUSED_REQUEST?'&request='+encodeURIComponent(FOCUSED_REQUEST):'')+'" style="background:var(--accent);color:#fff;padding:12px 20px;border-radius:var(--r);text-decoration:none;font-size:12.5px;font-weight:500;display:inline-flex;align-items:center;gap:6px;white-space:nowrap"><i class="ti ti-arrows-maximize"></i>Open evidence workspace</a></div>'
     +'<div class="case-summary-strip" style="background:var(--surface2);border:1px solid var(--rule2);border-left:3px solid var(--accent);border-radius:var(--r);padding:12px 16px;margin-bottom:12px;font-size:12.5px;color:var(--text2);line-height:1.55">'
       +'<div style="font-size:9.5px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-bottom:4px">Case summary</div>'
       +escapeHtml(DIO.ensureCaseSummary ? DIO.ensureCaseSummary(CASE_DATA) : (CASE_DATA.caseSummary||CASE_DATA.triageNote||''))
