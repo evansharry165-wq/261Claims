@@ -594,6 +594,41 @@
   }
 
 
+  
+  /* ── Engine intake collector — surfaces new engine-filed cases needing DIO review.
+     Engine cases land with source='engine' + stage='inbox' via defendable_case_handoff.
+     Session 3 addition — critical for DIO to catch new work coming from the engine. */
+  function collectEngineIntake() {
+    if (typeof CaseFiling === 'undefined' || !CaseFiling.listCases) return [];
+    return CaseFiling.listCases({}).filter(function (c) {
+      var isEngine = c.source === 'engine' || c.origin === 'legal_engine';
+      var needsReview = c.stage === 'inbox' || c.stage === 'triage';
+      return isEngine && needsReview;
+    }).sort(function (a, b) {
+      return (a.cprDaysLeft || 99) - (b.cprDaysLeft || 99);
+    });
+  }
+
+  /* ── Recent activity collector — pulls activity across territory cases,
+     de-dupes and sorts by time desc. */
+  function collectRecentActivity(uid, limit) {
+    limit = limit || 8;
+    var territory = getTerritory(uid);
+    var cases = casesInTerritory(uid).slice(0, 30);
+    var acts = [];
+    cases.forEach(function (c) {
+      if (typeof CaseFiling === 'undefined' || !CaseFiling.getCase) return;
+      var cf = CaseFiling.getCase(c.ref);
+      if (!cf || !cf.activity) return;
+      cf.activity.slice(-4).forEach(function (a) {
+        acts.push({ text: a.text, time: a.time, type: a.type, by: a.by, ref: c.ref, claimant: c.claimant });
+      });
+    });
+    acts.sort(function (a, b) { return String(b.time || '').localeCompare(String(a.time || '')); });
+    return acts.slice(0, limit);
+  }
+
+
     global.DIO = {
     JUR_LABELS: JUR_LABELS,
     isDIOUser: isDIOUser,
@@ -628,5 +663,7 @@
     casesByAirport: casesByAirport,
     staleAttachDays: staleAttachDays,
     collectPortfolioMatrix: collectPortfolioMatrix,
+    collectEngineIntake: collectEngineIntake,
+    collectRecentActivity: collectRecentActivity,
   };
 })(typeof window !== 'undefined' ? window : this);
