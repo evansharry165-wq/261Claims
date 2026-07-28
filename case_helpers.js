@@ -822,13 +822,19 @@ function buildCaseFromRow(row, confirmedAssigneeId, parsedDateReceived) {
 }
 
 (function guardDIOFromSolicitorModules() {
-  if (typeof window === 'undefined' || typeof USERS === 'undefined') return;
-  var uid = typeof getActiveUser === 'function' ? getActiveUser() : '';
+  if (typeof window === "undefined") return;
+  if (window.DIOCore && typeof window.DIOCore.guardModuleAccess === "function") {
+    window.DIOCore.guardModuleAccess();
+    return;
+  }
+  /* Fallback for pages that load case_helpers before dio_core */
+  if (typeof USERS === "undefined") return;
+  var uid = typeof getActiveUser === "function" ? getActiveUser() : "";
   var u = USERS[uid];
-  if (!u || u.team !== 'dio') return;
-  var p = window.location.pathname.split('/').pop() || '';
-  if (/^module[2345]/.test(p) || p === 'case.html') {
-    var ref = new URLSearchParams(window.location.search).get('ref');
-    window.location.replace(ref ? 'dio-case.html?ref=' + encodeURIComponent(ref) : 'dio.html');
+  if (!u || u.team !== "dio") return;
+  var p = window.location.pathname.split("/").pop() || "";
+  if (/^module[2345]/.test(p) || p === "case.html") {
+    var ref = new URLSearchParams(window.location.search).get("ref");
+    window.location.replace(ref ? "dio-case.html?ref=" + encodeURIComponent(ref) : "dio.html");
   }
 })();
