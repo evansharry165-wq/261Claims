@@ -316,6 +316,7 @@ function escapeHtml(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c
 function toggleUserMenu(){var m=document.getElementById('user-modal');if(m)m.classList.toggle('open');}
 function closeUserMenu(e){if(e.target.id==='user-modal')document.getElementById('user-modal').classList.remove('open');}
 function scrollToZone(id){var el=document.getElementById(id);if(el)el.scrollIntoView({behavior:'smooth',block:'start'});}
+function dismissOnboarding(){try{sessionStorage.setItem('dfa_dio_onboarded','1');}catch(e){}var el=document.getElementById('w-onboarding');if(el)el.remove();}
 
 function toast(msg, kind){
   var el = document.createElement('div');
@@ -649,6 +650,24 @@ function render(){
 
     /* Widget grid */
     + '<div class="widget-grid">'
+
+    /* Onboarding widget — shown once per session, dismissible */
+    + (sessionStorage.getItem('dfa_dio_onboarded') ? '' :
+        '<section class="widget w-12" id="w-onboarding" style="background:linear-gradient(135deg,var(--accent-faint) 0%,#F8FAFC 100%);border:1px solid #C7D8EC">'
+        + '<div class="widget-hdr" style="border-bottom:none;padding-bottom:6px">'
+        +   '<div class="widget-title"><i class="ti ti-compass"></i>Welcome to your DIO command centre, '+escapeHtml((profile.user&&(profile.user.first||profile.user.name.split(" ")[0]))||"there")+'</div>'
+        +   '<button class="btn-mini" onclick="dismissOnboarding()" style="border:none;background:transparent;color:var(--text3);cursor:pointer"><i class="ti ti-x"></i> Dismiss</button>'
+        + '</div>'
+        + '<div class="widget-body" style="padding:4px 20px 18px">'
+        +   '<div style="font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:14px">Everything you own for <strong>'+escapeHtml(territory.label)+'</strong> lives on one page. Four things to know:</div>'
+        +   '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px">'
+        +     '<div style="display:flex;gap:10px"><div style="width:28px;height:28px;background:var(--accent);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0">1</div><div><div style="font-size:12px;font-weight:600;margin-bottom:2px">Priority alerts + Engine intake</div><div style="font-size:11px;color:var(--text3);line-height:1.45">Top-left widgets tell you what needs action today.</div></div></div>'
+        +     '<div style="display:flex;gap:10px"><div style="width:28px;height:28px;background:var(--accent);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0">2</div><div><div style="font-size:12px;font-weight:600;margin-bottom:2px">DIO tools launcher</div><div style="font-size:11px;color:var(--text3);line-height:1.45">Right side — jump to Repository, Evidence workspaces, Knowledge.</div></div></div>'
+        +     '<div style="display:flex;gap:10px"><div style="width:28px;height:28px;background:var(--accent);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0">3</div><div><div style="font-size:12px;font-weight:600;margin-bottom:2px">Communal request queue</div><div style="font-size:11px;color:var(--text3);line-height:1.45">Pool of asks from every solicitor — grab what fits your territory.</div></div></div>'
+        +     '<div style="display:flex;gap:10px"><div style="width:28px;height:28px;background:var(--accent);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0">4</div><div><div style="font-size:12px;font-weight:600;margin-bottom:2px">Portfolio matrix</div><div style="font-size:11px;color:var(--text3);line-height:1.45">Every active case at a glance — evidence pct, gaps, CPR days left.</div></div></div>'
+        +   '</div>'
+        + '</div>'
+        + '</section>')
 
     /* Row 1 — three widgets: Priority · Engine · Territory pulse */
     +   '<section class="widget w-4" id="w-priority">'

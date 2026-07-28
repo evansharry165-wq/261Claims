@@ -83,6 +83,16 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 <script src="dio_data.js?v=s4a"></script>
 <script src="dio_helpers.js?v=s4a"></script>
 <script src="evidence_filing.js"></script>
+<script>
+/* Session 2 · dedupe — send DIO users to their dashboard, where the same Communal Requests widget lives. */
+(function redirectDIOsToDashboard(){
+  try{
+    var uid = typeof getActiveUser === "function" ? getActiveUser() : "";
+    var u = typeof USERS !== "undefined" ? USERS[uid] : null;
+    if (u && u.team === "dio") window.location.replace("dio.html#w-requests");
+  }catch(e){}
+})();
+</script>
 
 <nav class="global-nav">
   <a href="index.html" class="gn-logo"><div class="gn-mark"><i class="ti ti-lock"></i></div><span class="gn-name">DefendAble</span></a>

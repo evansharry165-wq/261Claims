@@ -21,8 +21,29 @@ html,body{min-height:100%;font-family:var(--font);background:var(--surface2);col
 .gn-user-btn{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:20px;padding:3px 10px 3px 4px;cursor:pointer}
 .gn-av{width:24px;height:24px;border-radius:50%;background:#164E63;color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px}
 .gn-user{font-size:11px;color:rgba(255,255,255,0.85)}
-.layout{display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:1100px;margin:0 auto;padding:24px 20px 48px}
+.layout{display:grid;grid-template-columns:1.35fr 1fr;gap:20px;max-width:1360px;margin:0 auto;padding:24px 20px 48px}
 @media(max-width:900px){.layout{grid-template-columns:1fr}}
+.left-col{display:flex;flex-direction:column;gap:20px;min-width:0}
+.news-panel .panel-hdr{background:var(--accent-faint);color:var(--accent);font-weight:600}
+.news-item{padding:12px 14px;border-bottom:1px solid var(--rule2);font-size:12px}
+.news-item:last-child{border-bottom:none}
+.news-item-hdr{display:flex;justify-content:space-between;gap:8px;align-items:flex-start;margin-bottom:4px}
+.news-title{font-family:var(--font-serif);font-size:13px;font-weight:500;line-height:1.35}
+.news-title a{color:var(--ink);text-decoration:none}
+.news-title a:hover{color:var(--accent);text-decoration:underline}
+.news-meta{font-size:10px;color:var(--ink4);margin-bottom:6px;text-transform:uppercase;letter-spacing:.04em}
+.news-src{font-weight:600;color:var(--accent)}
+.news-desc{font-size:11.5px;color:var(--ink2);line-height:1.55;margin-bottom:6px}
+.news-rel{font-size:11px;color:var(--caution);background:var(--caution-faint);padding:6px 8px;border-radius:var(--r);margin-bottom:8px;line-height:1.45}
+.news-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.news-tag{font-size:10px;padding:2px 7px;border-radius:20px;background:var(--surface2);color:var(--ink3);border:1px solid var(--rule)}
+.news-actions{display:flex;gap:6px;flex-wrap:wrap}
+.btn-mini{font-size:11px;padding:6px 10px;border-radius:var(--r);border:1px solid var(--rule);background:var(--surface);cursor:pointer;font-family:var(--font);color:var(--ink2);text-decoration:none;display:inline-flex;align-items:center;gap:4px}
+.btn-mini.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn-mini:hover{opacity:.9}
+.sev-accident{background:var(--alert-faint);color:var(--alert)}
+.sev-incident{background:var(--caution-faint);color:var(--caution)}
+.sev-event{background:var(--accent-faint);color:var(--accent)}
 .page-title{font-family:var(--font-serif);font-size:22px;font-weight:400;margin-bottom:20px;grid-column:1/-1}
 .panel{background:var(--surface);border:1px solid var(--rule);border-radius:var(--r3)}
 .panel-hdr{padding:10px 14px;border-bottom:1px solid var(--rule2);font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.09em;color:var(--ink3)}
@@ -71,6 +92,7 @@ textarea{min-height:90px;resize:vertical}
 <script src="dio_territory.js?v=s4a"></script>
 <script src="dio_data.js?v=s4a"></script>
 <script src="dio_helpers.js?v=s4a"></script>
+<script src="dio_news_seed.js?v=s4a"></script>
 
 <nav class="global-nav">
   <a href="dio.html" class="gn-logo"><div class="gn-mark"><i class="ti ti-archive"></i></div><span class="gn-name">DefendAble DIO</span></a>
@@ -80,7 +102,10 @@ textarea{min-height:90px;resize:vertical}
 
 <div class="layout" id="layout">
   <h1 class="page-title" id="page-title">Knowledge</h1>
-  <div class="panel"><div class="panel-hdr">Live intelligence</div><div id="intel-list"><div class="empty">Loading…</div></div></div>
+  <div class="left-col">
+    <div class="panel news-panel"><div class="panel-hdr"><i class="ti ti-news" style="margin-right:6px"></i>Aviation news · your radar</div><div id="news-list"><div class="empty">Loading news…</div></div></div>
+    <div class="panel"><div class="panel-hdr">Live intelligence · knowledge store</div><div id="intel-list"><div class="empty">Loading…</div></div></div>
+  </div>
   <div class="panel"><div class="panel-hdr">Publish update</div><div class="form" id="publish-form"></div></div>
 </div>
 
@@ -161,9 +186,11 @@ function publishUpdate(){
   document.getElementById('k-risk').value='';
 }
 
-function prefillForm(title){
-  document.getElementById('k-title').value=title||'';
-  document.getElementById('k-title').focus();
+function prefillForm(title, summary, risk){
+  var t=document.getElementById('k-title'); if(t){t.value=title||'';}
+  var s=document.getElementById('k-summary'); if(s && summary){s.value=summary;}
+  var r=document.getElementById('k-risk'); if(r && risk){r.value=risk;}
+  if(t){t.scrollIntoView({behavior:'smooth',block:'start'}); t.focus();}
 }
 
 function renderIntel(){
@@ -200,10 +227,43 @@ function renderIntel(){
   });
 }
 
+function renderNews(){
+  if(typeof DIONewsSeed==='undefined'){document.getElementById('news-list').innerHTML='<div class="empty">News feed unavailable</div>';return;}
+  var profile=DIO.getDIOProfile();
+  var items=DIONewsSeed.forJurisdiction(profile.jurisdiction).sort(function(a,b){return new Date(b.date)-new Date(a.date);});
+  var el=document.getElementById('news-list');
+  if(!items.length){el.innerHTML='<div class="empty">No aviation news matches your territory this week.</div>';return;}
+  el.innerHTML=items.map(function(n){
+    var sev=n.severity||'event';
+    var sevCls='sev-'+sev;
+    var dateStr=new Date(n.date).toLocaleDateString('en-GB',{day:'numeric',month:'short'});
+    var jurTags=(n.jurisdiction||[]).map(function(j){return '<span class="news-tag">'+escapeHtml(JUR_LABELS[j]||j)+'</span>';}).join('');
+    var distTags=(n.disruptionTypes||[]).map(function(d){return '<span class="news-tag">'+escapeHtml(d)+'</span>';}).join('');
+    var publishBtn=n.suggestPublish
+      ? '<button class="btn-mini primary" onclick="prefillForm(\''+escapeHtml(n.title).replace(/\'/g,'&#39;')+'\', \''+escapeHtml(n.description).slice(0,400)+'\', \''+escapeHtml(n.relevance||'')+'\')"><i class="ti ti-writing"></i> Draft as knowledge</button>'
+      : '<button class="btn-mini" onclick="prefillForm(\''+escapeHtml(n.title).replace(/\'/g,'&#39;')+'\', \''+escapeHtml(n.description).slice(0,400)+'\', \''+escapeHtml(n.relevance||'')+'\')"><i class="ti ti-writing"></i> Draft</button>';
+    return '<div class="news-item">'
+      + '<div class="news-item-hdr">'
+      +   '<div class="news-title"><a href="'+escapeHtml(n.link)+'" target="_blank" rel="noopener">'+escapeHtml(n.title)+'</a></div>'
+      +   '<span class="news-tag '+sevCls+'">'+escapeHtml(sev.toUpperCase())+'</span>'
+      + '</div>'
+      + '<div class="news-meta"><span class="news-src">'+escapeHtml(n.source)+'</span> · '+dateStr+'</div>'
+      + '<div class="news-desc">'+escapeHtml(n.description)+'</div>'
+      + (n.relevance?'<div class="news-rel"><strong>Why it matters:</strong> '+escapeHtml(n.relevance)+'</div>':'')
+      + '<div class="news-tags">'+jurTags+distTags+'</div>'
+      + '<div class="news-actions">'
+      +   '<a href="'+escapeHtml(n.link)+'" class="btn-mini" target="_blank" rel="noopener"><i class="ti ti-external-link"></i> Read source</a>'
+      +   publishBtn
+      + '</div>'
+      + '</div>';
+  }).join('');
+}
+
 function init(){
   if(!DIO.ensureDIOAccess())return;
   var prefill=new URLSearchParams(window.location.search).get('prefill')||'';
   renderForm(prefill);
+  renderNews();
   renderIntel();
   if(typeof renderGlobalNav==='function')renderGlobalNav();
 }

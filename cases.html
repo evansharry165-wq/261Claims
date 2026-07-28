@@ -82,6 +82,16 @@ tr.row-urgent .td-name{font-weight:600}
 <script src="dio_territory.js?v=s4a"></script>
 <script src="dio_data.js?v=s4a"></script>
 <script src="dio_helpers.js?v=s4a"></script>
+<script>
+/* Session 2 · dedupe — DIO users get the Portfolio Matrix on dio.html; no need to double-maintain cases.html renderDIOCases. */
+(function redirectDIOsToDashboard(){
+  try{
+    var uid = typeof getActiveUser === "function" ? getActiveUser() : "";
+    var u = typeof USERS !== "undefined" ? USERS[uid] : null;
+    if (u && u.team === "dio") window.location.replace("dio.html#w-portfolio");
+  }catch(e){}
+})();
+</script>
 
 <nav class="global-nav">
   <a href="index.html" class="gn-logo"><div class="gn-mark"><i class="ti ti-lock"></i></div><span class="gn-name">DefendAble</span></a>
