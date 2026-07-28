@@ -308,6 +308,28 @@
     if (global.CaseFiling.addActivity){
       global.CaseFiling.addActivity(caseRef, 'Evidence attached · ' + attachment.summary + ' (' + attachment.sourceProvider + ')', 'evidence', user);
     }
+    /* Also add a lightweight document reference so attached evidence appears in the case's Documents tab —
+       this closes the loop Harry described: "grab it, save it, upload it into the repository where it joins the cases documents". */
+    if (global.CaseFiling.addDocument){
+      try {
+        global.CaseFiling.addDocument(caseRef, {
+          id: 'evidence-' + attachment.id,
+          name: attachment.summary || 'Evidence item',
+          folderId: 'evidence',
+          docKey: 'evidence_' + attachment.sourceId,
+          filename: (attachment.summary || 'evidence').slice(0, 80).replace(/[^a-z0-9_\-. ]/gi, '') + '.json',
+          content: JSON.stringify(attachment.snapshot || attachment, null, 2),
+          mimeType: 'application/json',
+          size: JSON.stringify(attachment).length,
+          status: 'on_file',
+          source: attachment.sourceProvider || 'evidence-collection',
+          uploadedBy: user,
+          uploadedByName: user,
+          uploadedAt: attachment.attachedAt,
+          note: attachment.note || null,
+        });
+      } catch(e) { if (global.console) console.debug('addDocument failed for evidence attach:', e); }
+    }
     return attachment;
   }
   function removeAttached(caseRef, itemId){

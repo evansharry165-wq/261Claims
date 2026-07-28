@@ -186,7 +186,7 @@ function buildEvidenceRequestSection(){
     var badgeCls=req.overdue?'overdue':'pending';
     var badgeText=req.overdue?req.daysAgo+'d overdue':'Pending · '+req.daysAgo+'d';
     var caseHref=isDio
-      ?'dio-case.html?ref='+encodeURIComponent(req.caseRef)
+      ?'dio-case.html?ref='+encodeURIComponent(req.caseRef)+'&request='+encodeURIComponent(req.id||'')
       :'module4-evidence-workspace.html?ref='+encodeURIComponent(req.caseRef);
     var linkLabel=isDio?'File evidence':'Open workspace';
     return '<div class="sol-req-row">'
