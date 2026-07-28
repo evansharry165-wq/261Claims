@@ -184,7 +184,7 @@
       '<div class="cer-wrap">'+
         '<div class="cer-hero">'+
           '<div class="cer-hero-info"><h3>Evidence repository</h3><p>Case-specific slice of the DefendAble evidence-collection pipeline. Attach any item to lock it into this case permanently — it survives the 90-day retention window on the raw source.</p></div>'+
-          '<div class="cer-hero-stats">'+
+          '<div class="cer-hero-stats" style="align-items:center"><a href="evidence-workspace.html?case='+encodeURIComponent(caseRef)+'" class="cer-btn-primary" style="text-decoration:none;margin-right:12px" title="Open full-screen evidence workspace for this case"><i class="ti ti-arrows-maximize"></i>Open workspace</a>'+
             '<div class="cer-hero-stat"><div class="n">'+attached.length+'</div><div class="l">Attached</div></div>'+
             '<div class="cer-hero-stat"><div class="n">'+sources.length+'</div><div class="l">Sources</div></div>'+
             '<div class="cer-hero-stat"><div id="cer-fetch-slot"></div></div>'+

@@ -502,7 +502,7 @@ function renderMatrix(){
     var route = (r.dep||'?')+' → '+(r.arr||'?');
     // Source chip cells will lazy-populate — start as loading
     return '<tr onclick="location.href=\''+DIO.dioCaseUrl(r.ref)+'\'">'+
-      '<td class="mono">'+escapeHtml(r.ref)+'</td>'+
+      '<td class="mono">'+escapeHtml(r.ref)+' <a href="evidence-workspace.html?case='+encodeURIComponent(r.ref)+'" style="color:var(--accent);text-decoration:none;font-size:10px;margin-left:4px" onclick="event.stopPropagation()" title="Open evidence workspace"><i class="ti ti-arrows-maximize"></i></a></td>'+
       '<td>'+escapeHtml(r.claimant||'—')+'</td>'+
       '<td class="route">'+escapeHtml(route)+'</td>'+
       '<td><span class="matrix-stage-chip '+stageCls+'">'+escapeHtml(r.stage)+'</span></td>'+
@@ -538,7 +538,7 @@ function renderMatrix(){
     pullBody.innerHTML = pullQueue.map(function(r){
       var urgency = r.cprDaysLeft <= 3 ? 'high' : r.cprDaysLeft <= 7 ? 'medium' : 'low';
       return '<tr onclick="location.href=\''+DIO.dioCaseUrl(r.ref)+'\'">'+
-        '<td class="mono">'+escapeHtml(r.ref)+'</td>'+
+        '<td class="mono">'+escapeHtml(r.ref)+' <a href="evidence-workspace.html?case='+encodeURIComponent(r.ref)+'" style="color:var(--accent);text-decoration:none;font-size:10px;margin-left:4px" onclick="event.stopPropagation()" title="Open evidence workspace"><i class="ti ti-arrows-maximize"></i></a></td>'+
         '<td><div class="req-name">'+escapeHtml(r.claimant||'—')+'</div><div class="req-caseref">'+escapeHtml((r.dep||'?')+' → '+(r.arr||'?'))+' · '+escapeHtml(r.flightNum||'')+'</div></td>'+
         '<td><span class="gap-badge '+urgency+'">CPR '+r.cprDaysLeft+'d</span></td>'+
         '<td><button class="req-cta" onclick="event.stopPropagation();bulkFetchCase(\''+escapeHtml(r.ref)+'\')"><i class="ti ti-cloud-download"></i> Fetch</button></td>'+
