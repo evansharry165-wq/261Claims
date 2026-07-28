@@ -273,7 +273,9 @@ function render(){
     return;
   }
   var profile=DIO.getDIOProfile();
-  if(CASE_DATA.jurisdiction!==profile.jurisdiction){
+  var isShellEngineCase = (CASE_DATA.source==='engine' || CASE_DATA.origin==='legal_engine') && CASE_DATA.locReady===false;
+  var caseJurisdiction = CASE_DATA.jurisdiction || 'england-wales';
+  if(caseJurisdiction!==profile.jurisdiction && !isShellEngineCase){
     document.getElementById('app').innerHTML='<p style="padding:24px;color:var(--alert)">This case is outside your jurisdiction.</p>';
     return;
   }
@@ -315,7 +317,8 @@ function render(){
   var bulkName=st.pendingBulkFile||'';
 
   document.getElementById('app').innerHTML=
-    '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:12px;flex-wrap:wrap"><a href="dio.html" class="back-link"><i class="ti ti-arrow-left"></i> Return to dashboard</a><a href="evidence-workspace.html?case='+encodeURIComponent(CASE_REF)+'" class="back-link" style="background:var(--accent);color:#fff;padding:6px 12px;border-radius:var(--r);text-decoration:none;font-size:11px;font-weight:500"><i class="ti ti-arrows-maximize"></i> Open evidence workspace</a></div>'
+    (isShellEngineCase ? '<div style="background:linear-gradient(135deg,#F0EEFC 0%,#EEF2F8 100%);border:1px solid #D6CDF4;border-left:4px solid var(--purple,#5B4A9F);padding:14px 18px;margin-bottom:14px;border-radius:var(--r)"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><i class="ti ti-cpu" style="color:var(--purple,#5B4A9F);font-size:16px"></i><span style="font-size:10px;font-weight:700;color:var(--purple,#5B4A9F);text-transform:uppercase;letter-spacing:.08em">Engine shell case · no LOC yet</span></div><div style="font-size:13px;color:var(--text);line-height:1.55;margin-bottom:8px">The engine detected this disruption from operational data <strong>before</strong> any Letter of Claim arrived. Use this window to <strong>proactively build the evidence pack</strong> so the airline can respond within hours of the claim landing rather than days.</div><div style="font-size:11.5px;color:var(--text2);line-height:1.55"><strong>Engine assessment:</strong> '+escapeHtml(CASE_DATA.verdictTitle||CASE_DATA.classification||'Position pending')+(CASE_DATA.verdictSub?'<br><strong>Reasoning:</strong> '+escapeHtml(CASE_DATA.verdictSub):'')+'</div></div>' : '')
+    +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:12px;flex-wrap:wrap"><a href="dio.html" class="back-link"><i class="ti ti-arrow-left"></i> Return to dashboard</a><a href="evidence-workspace.html?case='+encodeURIComponent(CASE_REF)+'" class="back-link" style="background:var(--accent);color:#fff;padding:6px 12px;border-radius:var(--r);text-decoration:none;font-size:11px;font-weight:500"><i class="ti ti-arrows-maximize"></i> Open evidence workspace</a></div>'
     + (FOCUSED_REQUEST ? (function(){
         var st=DIO.getEvidenceState(CASE_REF);
         var req=(st.evidenceRequests||{})[FOCUSED_REQUEST];
