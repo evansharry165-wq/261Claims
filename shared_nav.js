@@ -8,7 +8,8 @@
     education: 'Education',
     knowledge: 'Knowledge',
     terminal: 'Terminal',
-    requests: 'Requests'
+    requests: 'Requests',
+    metrics: 'Metrics'
   };
 
   var LEGAL_NAV = [
@@ -25,6 +26,7 @@
     { key: 'requests', icon: 'ti-inbox', href: 'requests.html' },
     { key: 'cases', icon: 'ti-file-search', href: 'cases.html' },
     { key: 'knowledge', icon: 'ti-book-2', href: 'dio-knowledge.html' },
+    { key: 'metrics', icon: 'ti-chart-histogram', href: 'dio-metrics.html' },
     { key: 'repository', icon: 'ti-database', href: 'repository.html' }
   ];
 
@@ -41,6 +43,7 @@
     if (p === 'dio.html') return 'work';
     if (p === 'dio-knowledge.html') return 'knowledge';
     if (p === 'dio-case.html') return 'cases';
+    if (p === 'dio-metrics.html') return 'metrics';
     if (p === 'index.html' || p === '') return 'work';
     if (p === 'case.html' || p === 'cases.html') return 'cases';
     if (p === 'terminal.html' || p.indexOf('module8') >= 0) return 'terminal';

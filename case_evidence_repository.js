@@ -308,6 +308,26 @@
     if (global.CaseFiling.addActivity){
       global.CaseFiling.addActivity(caseRef, 'Evidence attached · ' + attachment.summary + ' (' + attachment.sourceProvider + ')', 'evidence', user);
     }
+    /* Signal-back to the case's assigned lawyer — one notification per attach.
+       Session 3 · Option B: close the DIO→lawyer loop so solicitors see evidence land on their side. */
+    try {
+      if (typeof global.pushNotification === 'function' && global.CaseFiling.getCase){
+        var c = global.CaseFiling.getCase(caseRef);
+        var uName = (global.USERS && global.USERS[user] && (global.USERS[user].name || user)) || user;
+        if (c && c.assignedTo && c.assignedTo !== user){
+          global.pushNotification({
+            to: c.assignedTo,
+            type: 'evidence-attached',
+            ref: caseRef,
+            title: 'Evidence attached by DIO',
+            body: uName + ' attached ' + (attachment.summary || 'an evidence item') + ' from ' + (attachment.sourceProvider || 'evidence source') + ' — ' + (c.claimant || caseRef),
+            time: new Date().toLocaleString('en-GB'),
+            read: false,
+            tab: 'evidence',
+          });
+        }
+      }
+    } catch(e){ if (global.console) console.debug('signal-back pushNotification failed:', e); }
     /* Also add a lightweight document reference so attached evidence appears in the case's Documents tab —
        this closes the loop Harry described: "grab it, save it, upload it into the repository where it joins the cases documents". */
     if (global.CaseFiling.addDocument){

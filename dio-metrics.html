@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DefendAble — DIO Metrics</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#1A1A2E;--ink2:#2D2D44;--ink3:#6B6B80;--ink4:#9B9BAA;
+  --rule:#D8D8E0;--rule2:#EBEBF0;
+  --surface:#FFFFFF;--surface2:#F7F7F9;--surface3:#EFEFF2;
+  --accent:#1B3A6B;--accent2:#254E91;--accent-faint:#EEF2F8;
+  --confirm:#1A5C3A;--confirm-faint:#EEF7F2;
+  --caution:#7A4E00;--caution-faint:#FDF4E3;
+  --alert:#8B1A1A;--alert-faint:#FBF0F0;
+  --navy:var(--ink);--blue:var(--accent2);--blue-faint:var(--accent-faint);
+  --green:var(--confirm);--green-faint:var(--confirm-faint);
+  --amber:var(--caution);--amber-faint:var(--caution-faint);
+  --red:var(--alert);--red-faint:var(--alert-faint);
+  --border:var(--rule);--text:var(--ink);--text2:var(--ink2);--text3:var(--ink3);
+  --purple:#4338CA;--purple-faint:#EEECFA;
+  --font:'Helvetica Neue','Arial',sans-serif;
+  --font-serif:'Georgia','Times New Roman',serif;
+  --mono:'Courier New',monospace;
+  --r:3px;--r2:4px;--r3:5px;
+}
+html,body{min-height:100%;font-family:var(--font);background:var(--surface2);color:var(--text);font-size:14px}
+
+/* Global nav (matches dio.html) */
+.global-nav{background:var(--navy);height:48px;display:flex;align-items:center;padding:0 20px}
+.gn-logo{display:flex;align-items:center;gap:8px;text-decoration:none;margin-right:20px}
+.gn-mark{width:28px;height:28px;background:var(--blue);border-radius:4px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px}
+.gn-name{font-size:14px;font-weight:500;color:#fff}
+.gn-links{display:flex;gap:2px;flex:1}
+.gn-link{display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r);font-size:12px;font-weight:500;color:rgba(255,255,255,0.5);text-decoration:none}
+.gn-link:hover{background:rgba(255,255,255,0.08);color:#fff}
+.gn-link.active{background:rgba(42,111,219,0.35);color:#fff}
+.gn-right{margin-left:8px}
+.gn-user-btn{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:20px;padding:3px 10px 3px 4px;cursor:pointer}
+.gn-av{width:24px;height:24px;border-radius:50%;background:#164E63;color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px}
+.gn-user{font-size:11px;color:rgba(255,255,255,0.85)}
+
+.page{max-width:1360px;margin:0 auto;padding:20px 24px 40px}
+.page-hdr{margin-bottom:20px}
+.page-hdr h1{font-family:var(--font-serif);font-size:22px;font-weight:400;margin-bottom:6px}
+.page-hdr p{font-size:12px;color:var(--text3);line-height:1.55}
+.page-hdr .filter-row{display:flex;gap:10px;margin-top:12px;align-items:center}
+.chip{font-size:11px;padding:5px 12px;border-radius:20px;background:var(--surface);border:1px solid var(--border);color:var(--text2);cursor:pointer;font-family:var(--font)}
+.chip.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+
+/* Widget grid (matches dio.html) */
+.widget-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}
+.widget{background:var(--surface);border:1px solid var(--border);border-radius:var(--r3);overflow:hidden}
+.widget.w-6{grid-column:span 6}
+.widget.w-12{grid-column:span 12}
+.widget-hdr{padding:12px 18px 10px;border-bottom:1px solid var(--rule2);display:flex;justify-content:space-between;align-items:center;gap:10px}
+.widget-title{font-family:var(--font-serif);font-size:15px;font-weight:400;color:var(--text);display:flex;align-items:center;gap:8px}
+.widget-title i{color:var(--accent);font-size:16px}
+.widget-title .badge{font-size:10px;font-weight:600;padding:2px 8px;border-radius:10px;background:var(--accent);color:#fff;font-family:var(--mono)}
+.widget-body{padding:14px 20px 18px}
+.widget-hint{font-size:11px;color:var(--text3);line-height:1.5}
+
+/* KPI blocks */
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:var(--r3);padding:14px 16px}
+.kpi-label{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:6px}
+.kpi-val{font-size:26px;font-weight:500;color:var(--text);font-family:var(--font-serif);line-height:1}
+.kpi-delta{font-size:11px;margin-top:6px;color:var(--text3)}
+.kpi-delta.up{color:var(--green)}
+.kpi-delta.down{color:var(--red)}
+
+/* Metric bars */
+.bar-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;font-size:12px}
+.bar-label{flex:0 0 160px;color:var(--text2)}
+.bar-track{flex:1;height:10px;background:var(--surface3);border-radius:6px;overflow:hidden}
+.bar-fill{height:100%;background:var(--accent);border-radius:6px}
+.bar-fill.warn{background:var(--amber)}
+.bar-fill.alert{background:var(--alert)}
+.bar-fill.good{background:var(--confirm)}
+.bar-val{flex:0 0 60px;text-align:right;font-family:var(--mono);font-size:11px;color:var(--text3)}
+
+/* Heatmap */
+.heat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px}
+.heat-cell{padding:10px 12px;border-radius:var(--r2);border:1px solid var(--border);background:var(--surface);cursor:pointer;transition:transform .1s}
+.heat-cell:hover{transform:translateY(-1px);box-shadow:0 3px 8px rgba(0,0,0,0.05)}
+.heat-icao{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.05em}
+.heat-iata{font-size:15px;font-weight:600;color:var(--text);margin:2px 0 4px}
+.heat-count{font-size:11px;color:var(--text2)}
+.heat-cell.hot{background:var(--red-faint);border-color:#F5B7B1}
+.heat-cell.warm{background:var(--amber-faint);border-color:#F0E1B1}
+.heat-cell.cold{background:var(--surface2)}
+
+/* Sparkline strip */
+.spark{display:flex;align-items:flex-end;gap:4px;height:80px;margin-top:10px;padding:0 6px}
+.spark-bar{flex:1;background:var(--accent);border-radius:2px 2px 0 0;min-height:2px;position:relative}
+.spark-bar span{position:absolute;top:-14px;left:50%;transform:translateX(-50%);font-size:9px;color:var(--text3);font-family:var(--mono)}
+.spark-days{display:flex;gap:4px;padding:6px 6px 0}
+.spark-day{flex:1;text-align:center;font-size:9px;color:var(--text4);font-family:var(--mono)}
+
+/* Disruption breakdown */
+.dist-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--rule2);font-size:12px}
+.dist-row:last-child{border-bottom:none}
+.dist-name{display:flex;align-items:center;gap:8px}
+.dist-swatch{width:10px;height:10px;border-radius:2px;background:var(--accent)}
+.dist-count{color:var(--text3);font-family:var(--mono);font-size:11px}
+.dist-pct{font-weight:600;color:var(--text);font-family:var(--mono);font-size:11px}
+
+.empty-panel{padding:24px 16px;text-align:center;color:var(--text4);font-size:12px;background:var(--surface2);border-radius:var(--r2)}
+
+.footer-note{margin-top:20px;padding:12px 16px;background:var(--accent-faint);border:1px solid #C7D8EC;border-radius:var(--r3);font-size:11px;color:var(--accent);line-height:1.55}
+
+/* User modal (matches dio.html) */
+.user-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.3);z-index:500;justify-content:flex-end;padding:52px 20px 0}
+.user-modal.open{display:flex}
+.user-dropdown{background:var(--surface);border:1px solid var(--rule);border-radius:var(--r3);width:240px;overflow:hidden}
+.ud-header{padding:10px 14px;border-bottom:1px solid var(--rule);font-size:10px;text-transform:uppercase;color:var(--ink3)}
+.ud-item{display:flex;align-items:center;gap:10px;padding:9px 14px;cursor:pointer}
+.ud-item:hover,.ud-item.current{background:var(--accent-faint)}
+.ud-av{width:28px;height:28px;border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px}
+.ud-name{font-size:12px;font-weight:500}
+.ud-role{font-size:10px;color:var(--ink3)}
+.ud-tick{margin-left:auto;color:var(--green);display:none}
+.ud-item.current .ud-tick{display:block}
+</style>
+</head>
+<body>
+<script src="shared_data.js"></script>
+<script src="shared_theme.js"></script>
+<script src="case_filing.js"></script>
+<script src="case_helpers.js"></script>
+<script src="dio_core.js?v=s5a"></script>
+<script src="dio_territory.js?v=s5a"></script>
+<script src="dio_data.js?v=s5a"></script>
+<script src="dio_helpers.js?v=s5a"></script>
+
+<nav class="global-nav">
+  <a href="dio.html" class="gn-logo"><div class="gn-mark"><i class="ti ti-chart-histogram"></i></div><span class="gn-name">DefendAble DIO</span></a>
+  <div class="gn-links" id="gn-links"></div>
+  <div class="gn-right"><div class="gn-user-btn" onclick="toggleUserMenu()"><div class="gn-av" id="nav-av">EH</div><span class="gn-user" id="nav-user">E. Hughes</span></div></div>
+</nav>
+
+<div class="page" id="page"></div>
+
+<div id="user-modal" class="user-modal" onclick="if(event.target===this)closeMenu()">
+  <div class="user-dropdown">
+    <div class="ud-header">Switch user — demo</div>
+    <div class="ud-item" id="ud-EH" onclick="switchUser('EH')"><div class="ud-av" style="background:#164E63">EH</div><div><div class="ud-name">Emma Hughes</div><div class="ud-role">DIO — England & Wales</div></div><i class="ti ti-check ud-tick"></i></div>
+    <div class="ud-item" id="ud-FD" onclick="switchUser('FD')"><div class="ud-av" style="background:#4A3728">FD</div><div><div class="ud-name">Françoise Durand</div><div class="ud-role">DIO — France</div></div><i class="ti ti-check ud-tick"></i></div>
+    <div class="ud-item" id="ud-SR" onclick="switchUser('SR')"><div class="ud-av" style="background:#2D4A3E">SR</div><div><div class="ud-name">Sofia Ramos</div><div class="ud-role">DIO — España</div></div><i class="ti ti-check ud-tick"></i></div>
+  </div>
+</div>
+
+<script src="shared_nav.js"></script>
+<script src="shared_user_switch.js"></script>
+
+<script>
+function escapeHtml(v){return String(v==null?'':v).replace(/[&<>"']/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch];});}
+function toggleUserMenu(){document.getElementById('user-modal').classList.toggle('open');}
+function closeMenu(){document.getElementById('user-modal').classList.remove('open');}
+
+/* ── Metric collectors — all pure, read from CaseFiling + DIOData ── */
+
+/* 1. Evidence throughput — attachments last 30 days by territory */
+function collectThroughput(uid){
+  var cases = DIOTerritory.casesInTerritory(uid);
+  var days = 30;
+  var buckets = new Array(days).fill(0);
+  var totalItems = 0;
+  var uniqueCases = {};
+  cases.forEach(function(c){
+    if(typeof CaseFiling==='undefined' || !CaseFiling.getCase) return;
+    var cf = CaseFiling.getCase(c.ref);
+    if(!cf || !cf.meta || !cf.meta.evidenceRepository) return;
+    (cf.meta.evidenceRepository.items||[]).forEach(function(it){
+      var t = Date.parse(it.attachedAt||0) || 0;
+      if(!t) return;
+      var age = Math.floor((Date.now() - t) / 86400000);
+      if(age < 0 || age >= days) return;
+      buckets[days - 1 - age] += 1;
+      totalItems += 1;
+      uniqueCases[c.ref] = true;
+    });
+  });
+  return {
+    buckets: buckets,
+    total: totalItems,
+    cases: Object.keys(uniqueCases).length,
+    avgPerDay: (totalItems / days).toFixed(1),
+    activeCases: cases.length,
+  };
+}
+
+/* 2. Request SLA — communal request pool restricted to this territory */
+function collectSLA(uid){
+  var profile = DIOCore.getDIOProfile(uid);
+  var all = DIOData.collectCommunalRequests();
+  var mine = all.filter(function(r){return r.jurisdiction === profile.jurisdiction;});
+  var overdue = mine.filter(function(r){return r.overdue;}).length;
+  var open = mine.length;
+  var avgDaysOpen = mine.length
+    ? Math.round(mine.reduce(function(a,r){return a + (r.daysAgo||0);}, 0) / mine.length)
+    : 0;
+  // Received but pending file — the "in flight" bucket
+  var inFlight = mine.filter(function(r){return r.status === 'received';}).length;
+  var pending = mine.filter(function(r){return r.status === 'pending';}).length;
+  return {
+    open: open,
+    overdue: overdue,
+    inFlight: inFlight,
+    pending: pending,
+    avgDaysOpen: avgDaysOpen,
+    slaHitRate: open ? Math.round(((open - overdue) / open) * 100) : 100,
+    all: all.length,
+  };
+}
+
+/* 3. Territory heatmap — cases per airport, color by evidence-gap density */
+function collectHeatmap(uid){
+  var territory = DIOTerritory.getTerritory(uid);
+  var counts = DIOTerritory.caseCountByAirport(territory);
+  return territory.airports_icao.map(function(icao, i){
+    var iata = territory.airports_iata[i];
+    var count = counts[icao] || 0;
+    var casesHere = DIOTerritory.casesByAirport(iata, territory);
+    var gapCases = casesHere.filter(function(c){
+      return (c.points||[]).some(function(p){return (p.evidenceStatus||'red') === 'red';});
+    }).length;
+    var heat = count === 0 ? 'cold' : (gapCases >= 2 ? 'hot' : gapCases >= 1 ? 'warm' : 'cold');
+    return { icao: icao, iata: iata, count: count, gaps: gapCases, heat: heat };
+  }).sort(function(a,b){return b.count - a.count;});
+}
+
+/* 4. Cases closed / evidence health — disruption-type breakdown */
+function collectHealth(uid){
+  var cases = DIOTerritory.casesInTerritory(uid);
+  var byDisruption = {};
+  var closed = 0, active = 0;
+  var pctSum = 0, pctN = 0;
+  cases.forEach(function(c){
+    var dt = c.disruptionType || 'Unclassified';
+    byDisruption[dt] = byDisruption[dt] || { name: dt, count: 0, closed: 0, evPct: 0, evN: 0 };
+    byDisruption[dt].count += 1;
+    if(c.stage === 'resolve'){ closed += 1; byDisruption[dt].closed += 1; }
+    else active += 1;
+    if(c.evidencePct != null){
+      pctSum += c.evidencePct;
+      pctN += 1;
+      byDisruption[dt].evPct += c.evidencePct;
+      byDisruption[dt].evN += 1;
+    }
+  });
+  Object.keys(byDisruption).forEach(function(k){
+    var d = byDisruption[k];
+    d.avgEvPct = d.evN ? Math.round(d.evPct / d.evN) : 0;
+    d.pct = cases.length ? Math.round((d.count / cases.length) * 100) : 0;
+  });
+  return {
+    total: cases.length,
+    closed: closed,
+    active: active,
+    avgEvPct: pctN ? Math.round(pctSum / pctN) : 0,
+    byDisruption: Object.values(byDisruption).sort(function(a,b){return b.count - a.count;}),
+  };
+}
+
+/* ── Render ─────────────────────────────────────────────────────── */
+function render(){
+  if(!DIOCore.ensureDIOAccess()) return;
+  var profile = DIOCore.getDIOProfile();
+  var territory = DIOTerritory.getTerritory(profile.uid);
+
+  var thr = collectThroughput(profile.uid);
+  var sla = collectSLA(profile.uid);
+  var heat = collectHeatmap(profile.uid);
+  var health = collectHealth(profile.uid);
+
+  var page = document.getElementById('page');
+
+  var kpiRow =
+    '<div class="kpi-row">'
+    + '<div class="kpi"><div class="kpi-label">Active cases · '+escapeHtml(territory.short_label)+'</div><div class="kpi-val">'+health.total+'</div><div class="kpi-delta">'+health.active+' active · '+health.closed+' resolved</div></div>'
+    + '<div class="kpi"><div class="kpi-label">Attachments · last 30d</div><div class="kpi-val">'+thr.total+'</div><div class="kpi-delta">'+thr.avgPerDay+' per day avg · '+thr.cases+' cases touched</div></div>'
+    + '<div class="kpi"><div class="kpi-label">Request SLA hit rate</div><div class="kpi-val" style="color:'+(sla.slaHitRate>=80?'var(--green)':sla.slaHitRate>=50?'var(--amber)':'var(--red)')+'">'+sla.slaHitRate+'%</div><div class="kpi-delta">'+sla.overdue+' overdue of '+sla.open+' open</div></div>'
+    + '<div class="kpi"><div class="kpi-label">Avg evidence completeness</div><div class="kpi-val">'+health.avgEvPct+'%</div><div class="kpi-delta">across all active cases in territory</div></div>'
+    + '</div>';
+
+  /* Throughput sparkline */
+  var maxBar = Math.max.apply(null, thr.buckets.concat([1]));
+  var spark =
+    '<div class="spark">'
+    + thr.buckets.map(function(v, i){
+        var h = Math.max(2, Math.round((v / maxBar) * 70));
+        var label = v > 0 && (i === thr.buckets.length - 1 || v === maxBar) ? '<span>'+v+'</span>' : '';
+        return '<div class="spark-bar" style="height:'+h+'px" title="Day -'+((thr.buckets.length - 1 - i))+': '+v+' attachments">'+label+'</div>';
+      }).join('')
+    + '</div>'
+    + '<div class="spark-days"><span class="spark-day">-30d</span><span style="flex:1"></span><span class="spark-day">-15d</span><span style="flex:1"></span><span class="spark-day">today</span></div>';
+
+  var throughputWidget =
+    '<section class="widget w-6">'
+    + '<div class="widget-hdr">'
+    +   '<div class="widget-title"><i class="ti ti-upload"></i>Evidence throughput <span class="badge">30d</span></div>'
+    +   '<div class="widget-hint">Attachments per day, all cases in '+escapeHtml(territory.short_label)+'</div>'
+    + '</div>'
+    + '<div class="widget-body">'
+    + spark
+    + '</div>'
+    + '</section>';
+
+  /* SLA widget */
+  var slaWidget =
+    '<section class="widget w-6">'
+    + '<div class="widget-hdr">'
+    +   '<div class="widget-title"><i class="ti ti-clock-hour-4"></i>Request SLA <span class="badge '+(sla.overdue>0?'':'')+'" style="background:'+(sla.overdue>0?'var(--red)':'var(--green)')+'">'+sla.overdue+' overdue</span></div>'
+    +   '<div class="widget-hint">Communal pool restricted to '+escapeHtml(profile.label)+'</div>'
+    + '</div>'
+    + '<div class="widget-body">'
+    +   (sla.open === 0
+        ? '<div class="empty-panel"><i class="ti ti-circle-check"></i> No open requests in your territory. Queue is clear.</div>'
+        : (
+            '<div class="bar-row"><div class="bar-label">Pending</div><div class="bar-track"><div class="bar-fill" style="width:'+Math.min(100, sla.pending*10)+'%"></div></div><div class="bar-val">'+sla.pending+'</div></div>'
+            + '<div class="bar-row"><div class="bar-label">In flight</div><div class="bar-track"><div class="bar-fill good" style="width:'+Math.min(100, sla.inFlight*10)+'%"></div></div><div class="bar-val">'+sla.inFlight+'</div></div>'
+            + '<div class="bar-row"><div class="bar-label">Overdue</div><div class="bar-track"><div class="bar-fill alert" style="width:'+Math.min(100, sla.overdue*15)+'%"></div></div><div class="bar-val">'+sla.overdue+'</div></div>'
+            + '<div style="margin-top:14px;font-size:11px;color:var(--text3);line-height:1.5">Average time open: <strong style="color:var(--text2)">'+sla.avgDaysOpen+' days</strong>. Communal pool total across all territories: '+sla.all+'.</div>'
+            + '<div style="margin-top:12px"><a href="dio.html#w-requests" class="chip"><i class="ti ti-arrow-right"></i> Open queue</a></div>'
+          ))
+    + '</div>'
+    + '</section>';
+
+  /* Heatmap widget */
+  var heatmapWidget =
+    '<section class="widget w-6">'
+    + '<div class="widget-hdr">'
+    +   '<div class="widget-title"><i class="ti ti-map-2"></i>Territory heatmap</div>'
+    +   '<div class="widget-hint">Case load by airport, coloured by evidence-gap density</div>'
+    + '</div>'
+    + '<div class="widget-body">'
+    +   '<div class="heat-grid">'
+    +   heat.map(function(h){
+          return '<a class="heat-cell '+h.heat+'" href="dio.html#w-territory" title="'+h.iata+' · '+h.count+' cases · '+h.gaps+' with gaps">'
+            + '<div class="heat-icao">'+h.icao+'</div>'
+            + '<div class="heat-iata">'+h.iata+'</div>'
+            + '<div class="heat-count">'+h.count+' case'+(h.count===1?'':'s')+(h.gaps>0?' · '+h.gaps+' gap':'')+'</div>'
+            + '</a>';
+        }).join('')
+    +   '</div>'
+    +   '<div style="margin-top:12px;font-size:11px;color:var(--text3);display:flex;gap:16px"><span><span class="dist-swatch" style="background:var(--red-faint);border:1px solid #F5B7B1;display:inline-block"></span> 2+ gaps</span><span><span class="dist-swatch" style="background:var(--amber-faint);border:1px solid #F0E1B1;display:inline-block"></span> 1 gap</span><span><span class="dist-swatch" style="background:var(--surface2);border:1px solid var(--border);display:inline-block"></span> Clear or empty</span></div>'
+    + '</div>'
+    + '</section>';
+
+  /* Disruption breakdown widget */
+  var swatches = ['var(--accent)','var(--amber)','var(--confirm)','var(--purple)','var(--red)','var(--text3)'];
+  var distWidget =
+    '<section class="widget w-6">'
+    + '<div class="widget-hdr">'
+    +   '<div class="widget-title"><i class="ti ti-chart-donut"></i>Case mix · disruption type</div>'
+    +   '<div class="widget-hint">Active + resolved combined; avg evidence % per type</div>'
+    + '</div>'
+    + '<div class="widget-body">'
+    +   (health.byDisruption.length === 0
+        ? '<div class="empty-panel">No cases in territory yet.</div>'
+        : health.byDisruption.map(function(d, i){
+            var sw = swatches[i % swatches.length];
+            return '<div class="dist-row">'
+              + '<div class="dist-name"><span class="dist-swatch" style="background:'+sw+'"></span>'+escapeHtml(d.name)+'</div>'
+              + '<div style="display:flex;align-items:center;gap:14px">'
+              +   '<span class="dist-count">'+d.count+' case'+(d.count===1?'':'s')+' · '+d.avgEvPct+'% ev</span>'
+              +   '<span class="dist-pct">'+d.pct+'%</span>'
+              + '</div>'
+              + '</div>';
+          }).join(''))
+    + '</div>'
+    + '</section>';
+
+  page.innerHTML =
+    '<div class="page-hdr">'
+    + '<h1>Metrics · '+escapeHtml(profile.label)+'</h1>'
+    + '<p>How your evidence work is landing — throughput, SLA, and where the pressure is.</p>'
+    + '</div>'
+    + kpiRow
+    + '<div class="widget-grid">'
+    +   throughputWidget
+    +   slaWidget
+    +   heatmapWidget
+    +   distWidget
+    + '</div>'
+    + '<div class="footer-note">'
+    +   '<strong>How this is computed —</strong> All numbers derive live from CaseFiling + DIOData; nothing is cached. Throughput reads attachedAt timestamps from case evidence repositories. SLA reads pending/received evidenceRequests session state. Heatmap counts cases per airport in your territory and flags those with at least one red evidence point. Disruption breakdown is field-based on case.disruptionType.'
+    + '</div>';
+
+  if(typeof renderGlobalNav==='function') renderGlobalNav();
+}
+
+function switchUser(id){
+  setActiveUser(id);
+  var u = USERS[id];
+  if(!u || u.team !== 'dio'){ window.location.href = 'index.html'; return; }
+  document.getElementById('nav-av').textContent = u.initials;
+  document.getElementById('nav-user').textContent = u.name;
+  ['EH','FD','SR'].forEach(function(uid){
+    var el = document.getElementById('ud-'+uid);
+    if(el) el.classList.toggle('current', uid === id);
+  });
+  closeMenu();
+  render();
+}
+
+window.addEventListener('load', render);
+</script>
+
+</body>
+</html>
