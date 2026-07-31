@@ -105,6 +105,7 @@ eval(fs.readFileSync(__dirname + '/defendable_tree_engine.js', 'utf8'));
 eval(fs.readFileSync(__dirname + '/defendable_tree_dt01_atc.js', 'utf8'));
 eval(fs.readFileSync(__dirname + '/defendable_tree_dt02_weather.js', 'utf8'));
 eval(fs.readFileSync(__dirname + '/defendable_trees.js', 'utf8'));
+eval(fs.readFileSync(__dirname + '/defendable_case_bridge.js', 'utf8'));
 eval(fs.readFileSync(__dirname + '/defendable_orchestrator.js', 'utf8'));
 
 var orchPassed = 0;
@@ -458,6 +459,30 @@ allDtTest('positioning runs DT-19 with JUDGMENT_REQUIRED overlay', function () {
   if (ids.indexOf('DT-19') < 0) throw new Error('expected DT-19 primary, got ' + ids.join(','));
   var wake = results.find(function (r) { return r.treeId === 'DT-20'; });
   if (!wake || wake.exit.verdict !== 'JUDGMENT_REQUIRED') throw new Error('expected DT-20 judgment overlay');
+});
+
+allDtTest('cascade DT-13 chains to weather root DT-02', function () {
+  var text = EXAMPLES.cascade;
+  var ctx = {
+    iccText: text,
+    causalChain: [],
+    evidenceManager: DefendAbleEvidence.createEvidenceManager(),
+    confidenceManager: DefendAbleConfidence.createConfidenceManager()
+  };
+  var results = DefendAbleTrees.runAllApplicable(ctx);
+  var ids = results.map(function (r) { return r.treeId; });
+  if (ids.indexOf('DT-13') < 0) throw new Error('expected DT-13, got ' + ids.join(','));
+  if (ids.indexOf('DT-02') < 0) throw new Error('expected DT-02 root chain, got ' + ids.join(','));
+});
+
+allDtTest('case bridge ICC template for ATC disruption', function () {
+  var icc = DefendAbleCaseBridge.iccTextForCase({ disruptionType: 'ATC Restrictions' });
+  if (!/CTOT|Eurocontrol/i.test(icc)) throw new Error('ATC ICC template missing CTOT');
+});
+
+allDtTest('resolveRootCauseTreeId picks weather before ATC', function () {
+  var id = DefendAbleTrees.resolveRootCauseTreeId(EXAMPLES.weatherCtot, []);
+  if (id !== 'DT-02') throw new Error('expected DT-02 for weather+CTOT, got ' + id);
 });
 
 console.log('\n' + '='.repeat(50));
