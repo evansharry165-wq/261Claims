@@ -1,0 +1,508 @@
+From f9e7220b39bd00bc55e918537f5c57080da26ff5 Mon Sep 17 00:00:00 2001
+From: Harry Evans <harryevans15@icloud.com>
+Date: Sun, 2 Aug 2026 19:43:13 +0100
+Subject: [PATCH] =?UTF-8?q?Evidence=20layer=20=C2=B7=20Bucket=201=20=C2=B7?=
+ =?UTF-8?q?=20demo=20hardening?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+B1.1 Provenance chip UI (SEED/LIVE, source, timestamp, endpoint link)
+B1.2 Seeded evidence attachments on 3 primary demo cases (Hartley, Taylor, engine shell 0201)
+B1.3 Placeholder audit clean
+B1.4 Catalogue-driven reader — full 40-source coverage view with status chips
+B1.5 Inspectable filtering — rawItemCount surfacing '5 of 47' + suppression footer
+
+Files: case_evidence_repository.js, case_evidence_repository_ui.js,
+case_filing.js, dio.html, case.html, evidence-flights.html,
+evidence-workspace.html (cache-bust s6a).
+---
+ case.html                      |   4 +-
+ case_evidence_repository.js    |  31 ++++-
+ case_evidence_repository_ui.js | 215 ++++++++++++++++++++++++++++++++-
+ case_filing.js                 |  72 +++++++++++
+ dio.html                       |   2 +-
+ evidence-flights.html          |   2 +-
+ evidence-workspace.html        |   2 +-
+ 7 files changed, 317 insertions(+), 11 deletions(-)
+
+diff --git a/case.html b/case.html
+index 4d3b149..4d60b91 100644
+--- a/case.html
++++ b/case.html
+@@ -102,8 +102,8 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
+ 
+ </style>
+   <script src="defendable_evidence_reader.js?v=p2c"></script>
+-  <script src="case_evidence_repository.js?v=s3b"></script>
+-  <script src="case_evidence_repository_ui.js?v=s5c"></script>
++  <script src="case_evidence_repository.js?v=s6a"></script>
++  <script src="case_evidence_repository_ui.js?v=s6a"></script>
+   <script src="case_evidence_fetch_trigger.js?v=s5b"></script>
+   <script src="case_evidence_fetch_ui.js?v=s5b"></script>
+ </head>
+diff --git a/case_evidence_repository.js b/case_evidence_repository.js
+index 7eccaf4..c91b2db 100644
+--- a/case_evidence_repository.js
++++ b/case_evidence_repository.js
+@@ -229,6 +229,7 @@
+     var targetedSid = targetedSourceId(sourceId);
+     return global.EvidenceCollection.getCaseFetch(caseRef, targetedSid).then(function(targeted){
+       if (targeted && targeted.data){
++        _snapshotCache[sourceId] = targeted;
+         var items = filterOnDemandSnapshot(sourceId, targeted, facts);
+         // Tag every item so UI can badge them as targeted
+         items.forEach(function(it){ it._fetchKind = 'targeted'; it._pulled_at = targeted.pulled_at; });
+@@ -237,6 +238,7 @@
+       // Fall back to daily snapshot
+       return global.EvidenceCollection.get(sourceId).then(function(snap){
+         if (!snap) return [];
++        _snapshotCache[sourceId] = snap;
+         var items = filterSnapshot(sourceId, snap, facts);
+         items.forEach(function(it){ it._fetchKind = 'snapshot'; it._pulled_at = snap.pulled_at; });
+         return items;
+@@ -266,7 +268,32 @@
+     return filterSnapshot(sourceId, snap, facts);
+   }
+ 
+-  /* ── Persistence ── */
++
++  /* B1.5 · Snapshot cache — remembers the last snapshot we fetched per source
++     so the UI can look up rawItemCount() without re-fetching. */
++  var _snapshotCache = {};
++  function _lastSnapshotFor(sourceId){ return _snapshotCache[sourceId] || null; }
++
++  /* B1.5 · Raw item count in a snapshot BEFORE filtering. Used by the UI to
++     show '5 of 47' rather than just '5 hits' — makes filtering inspectable. */
++  function rawItemCount(sourceId, snapshot){
++    if (!snapshot || !snapshot.data) return 0;
++    var d = snapshot.data;
++    if (sourceId === 'aviationweather-metar-taf') return ((d.metar||[]).length + (d.taf||[]).length);
++    if (sourceId === 'faa-notams' || sourceId === 'autorouter-notams'){
++      var n = 0; Object.keys(d.per_airport||{}).forEach(function(k){ n += ((d.per_airport[k].notams||[]).length); }); return n;
++    }
++    if (sourceId === 'aviation-herald-news' || sourceId === 'simple-flying-news') return (d.items||[]).length;
++    if (sourceId === 'nasa-firms-wildfires') return (d.hotspots||[]).length;
++    if (sourceId === 'gdacs-global-disasters') return (d.events||[]).length;
++    if (sourceId === 'copernicus-effis') return (d.fires||d.items||[]).length;
++    if (sourceId === 'smithsonian-volcanoes') return (d.eruptions||d.items||[]).length;
++    if (sourceId === 'eurocontrol-nm-public') return (d.regulations||d.items||[]).length;
++    if (Array.isArray(d)) return d.length;
++    return Object.keys(d||{}).length;
++  }
++
++    /* ── Persistence ── */
+   function readRepo(caseRef){
+     if (!global.CaseFiling) return { items: [] };
+     var cf = global.CaseFiling.getCase(caseRef);
+@@ -401,6 +428,8 @@
+     targetedSourceId:   targetedSourceId,
+     listAttached:       listAttached,
+     attachItem:         attachItem,
++    rawItemCount:       rawItemCount,
++    _lastSnapshotFor:   _lastSnapshotFor,
+     removeAttached:     removeAttached,
+     exportBundle:       exportBundle,
+     summarise:          summarise,
+diff --git a/case_evidence_repository_ui.js b/case_evidence_repository_ui.js
+index a14ab5c..77ee940 100644
+--- a/case_evidence_repository_ui.js
++++ b/case_evidence_repository_ui.js
+@@ -10,6 +10,74 @@
+ (function (global) {
+   'use strict';
+ 
++  /* B1.4 · Full evidence catalogue (40 sources) with status per source.
++     LIVE     — we have this feed running today
++     PLANNED  — public source exists; not yet built
++     NOT_COV  — public source exists but we've chosen not to build (paid gate / fragmentation)
++     BLOCKED  — airline-internal only; needs customer-side integration
++  */
++  var EVIDENCE_CATALOGUE = [
++    /* --- LIVE (7) --- */
++    { id:'aviationweather-metar-taf', label:'AviationWeather METAR / TAF', category:'Weather', status:'LIVE' },
++    { id:'met-office-datahub', label:'Met Office DataHub', category:'Weather', status:'LIVE' },
++    { id:'faa-notams', label:'FAA NOTAMs', category:'NOTAM', status:'LIVE' },
++    { id:'autorouter-notams', label:'AutoRouter European NOTAMs', category:'NOTAM', status:'LIVE' },
++    { id:'eurocontrol-nm-public', label:'Eurocontrol NM public NOP', category:'ATFM', status:'LIVE' },
++    { id:'ops-group', label:'OPSGROUP', category:'Aviation news', status:'LIVE' },
++    { id:'aviation-herald', label:'Aviation Herald + Simple Flying', category:'Aviation news', status:'LIVE' },
++    /* --- LIVE bonus (4) — sources we built that aren't in the paper catalogue yet --- */
++    { id:'nasa-firms', label:'NASA FIRMS wildfires', category:'Natural disaster', status:'LIVE' },
++    { id:'gdacs', label:'GDACS global disasters', category:'Natural disaster', status:'LIVE' },
++    { id:'copernicus-effis', label:'Copernicus EMS / EFFIS', category:'Natural disaster', status:'LIVE' },
++    { id:'smithsonian-volcanoes', label:'Smithsonian weekly volcano report', category:'Volcanic', status:'LIVE' },
++    /* --- PLANNED (7) --- */
++    { id:'opensky-flight-tracks', label:'OpenSky flight tracks', category:'Flight tracks', status:'PLANNED', reason:'non-commercial free tier live; commercial licence quote required' },
++    { id:'enac-italy', label:'ENAC Italy strike notices', category:'Industrial action', status:'PLANNED', reason:'public website scrape target' },
++    { id:'mit-italy', label:'Italy MIT strike calendar', category:'Industrial action', status:'PLANNED', reason:'public website scrape target' },
++    { id:'italy-strike-guarantee', label:'Italy Strike Guarantee Commission', category:'Industrial action', status:'PLANNED', reason:'public website scrape target' },
++    { id:'dgac-france', label:'DGAC France disruption calendar', category:'Industrial action', status:'PLANNED', reason:'public website scrape target' },
++    { id:'lightning-maps', label:'Lightning maps (blitzortung)', category:'Weather', status:'PLANNED', reason:'freely accessible' },
++    { id:'iceland-roads', label:'Iceland road conditions', category:'Weather', status:'PLANNED', reason:'freely accessible; niche' },
++    { id:'eurocontrol-nm-b2b', label:'Eurocontrol NM B2B (full tier)', category:'ATFM', status:'PLANNED', reason:'first 2 certs per org free; cert onboarding pending' },
++    { id:'vaac-london-qva', label:'VAAC London volcanic ash', category:'Volcanic', status:'PLANNED', reason:'onboarding pending' },
++    /* --- NOT COVERED (2) --- */
++    { id:'flightradar24', label:'FlightRadar24 commercial API', category:'Flight tracks', status:'NOT_COV', reason:'paid — defer to 10K-case tier ($900/mo Business)' },
++    { id:'flight-stats', label:'Flight Stats / Cirium', category:'Flight tracks', status:'NOT_COV', reason:'enterprise pricing ~$70K/yr — defer' },
++    /* --- BLOCKED (24 — airline-internal only) --- */
++    { id:'aims-crew', label:'AIMS · Crew Route & FDP Tables', category:'Crew', status:'BLOCKED', reason:'internal — needs airline integration' },
++    { id:'tops', label:'TOPS · Flight/Airport Details', category:'Operational', status:'BLOCKED', reason:'internal — OpenSky covers public overlap' },
++    { id:'disco', label:'DISCO summary', category:'Operational', status:'BLOCKED', reason:'internal summarisation tool' },
++    { id:'docunet-oma-commander', label:'DocuNet OMA Commander Responsibility', category:'Policy', status:'BLOCKED', reason:'internal policy doc' },
++    { id:'docunet-ghm-oma', label:'DocuNet GHM / OMA general', category:'Policy', status:'BLOCKED', reason:'internal policy suite' },
++    { id:'docunet-crew-suite', label:'DocuNet Crew (Rest / Absence / Sickness / FRMS / Cabin)', category:'Policy', status:'BLOCKED', reason:'internal policy suite (7 docs)' },
++    { id:'docunet-approach', label:'DocuNet Discontinued Approach', category:'Policy', status:'BLOCKED', reason:'internal procedure doc' },
++    { id:'max-ops', label:'MAX OPS · customer comms SMS/Email', category:'Passenger care', status:'BLOCKED', reason:'internal + passenger PII heavy' },
++    { id:'connected-portal', label:'Connected Portal · flight plans', category:'Operational', status:'BLOCKED', reason:'internal ops system' },
++    { id:'lido-cci', label:'LIDO CCI&AOI/AGC RWY', category:'Airport data', status:'BLOCKED', reason:'Lufthansa Systems commercial product' },
++    { id:'lido-minima', label:'LIDO Minima', category:'Airport data', status:'BLOCKED', reason:'Lufthansa Systems commercial product' },
++    { id:'hermes-acars', label:'HERMES ACARS', category:'Operational', status:'BLOCKED', reason:'internal comms platform' },
++    { id:'internal-emails', label:'Internal emails (NC/easyOps/Crewing)', category:'Operational', status:'BLOCKED', reason:'internal comms' },
++    { id:'live-evidence-folders', label:'Live Evidence Folders', category:'Operational', status:'BLOCKED', reason:'internal ops' },
++    { id:'ezy-playbooks', label:'EZY Playbooks', category:'Policy', status:'BLOCKED', reason:'internal policy suite' },
++    { id:'daily-ops-review', label:'Daily Ops Review', category:'Operational', status:'BLOCKED', reason:'internal ops summary' },
++    { id:'network-outlook-brief', label:'Network Outlook Brief', category:'Operational', status:'BLOCKED', reason:'internal — Eurocontrol NOP touches this' },
++    { id:'sby-crew-report', label:'SBY A/C & Crew Report', category:'Operational', status:'BLOCKED', reason:'internal roster' },
++    { id:'ond-statements', label:'OND Statements by SCDO & DIO', category:'Narrative', status:'BLOCKED', reason:'internal narrative document' },
++    { id:'amos-event-printout', label:'AMOS Event Printout', category:'Technical', status:'BLOCKED', reason:'Swiss AviationSoftware MRO — internal' },
++    { id:'dpm-notes', label:'DPM Notes', category:'Operational', status:'BLOCKED', reason:'internal daily performance metrics' },
++    { id:'safetynet-reports', label:'SafetyNet Reports', category:'Operational', status:'BLOCKED', reason:'internal safety-net reporting' },
++    { id:'moc-austrian', label:'MOC Statement for Austrian Flights', category:'Operational', status:'BLOCKED', reason:'airline-internal MOC statements' },
++    { id:'teams-chat', label:'Teams chat', category:'Comms', status:'BLOCKED', reason:'internal comms platform' },
++  ];
++
++  var STATUS_STYLES = {
++    LIVE:    { bg:'#EEF7F2', fg:'#1A5C3A', label:'LIVE' },
++    PLANNED: { bg:'#EEF2F8', fg:'#1B3A6B', label:'PLANNED' },
++    NOT_COV: { bg:'#FDF4E3', fg:'#7A4E00', label:'NOT COVERED' },
++    BLOCKED: { bg:'#FBF0F0', fg:'#8B1A1A', label:'BLOCKED' },
++  };
++
++
+   function css(){
+     if (document.getElementById('cer-ui-css')) return;
+     var s = document.createElement('style');
+@@ -68,6 +136,39 @@
+       '.cer-btn-primary{font-size:12px;padding:8px 16px;background:var(--ink,#1A1A2E);color:#fff;border:none;border-radius:3px;cursor:pointer;font-weight:500;font-family:var(--font,Helvetica Neue,Arial,sans-serif);display:inline-flex;align-items:center;gap:6px}',
+       '.cer-btn-primary:hover{background:var(--ink2,#2D2D44)}',
+       '.cer-btn-primary i{font-size:14px}',
++      /* B1 · Provenance chips + suppressed toggle */
++      '.cer-prov-strip{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}',
++      '.cer-prov-chip{display:inline-flex;align-items:center;gap:5px;padding:3px 8px 3px 6px;background:var(--surface2,#F7F7F9);border:1px solid var(--rule,#D8D8E0);border-radius:12px;font-size:10.5px;color:var(--text2,#2D2D44);font-family:var(--mono,Courier New,monospace);text-decoration:none;line-height:1.4}',
++      '.cer-prov-chip:hover{background:var(--accent-faint,#EEF2F8);border-color:var(--accent,#1B3A6B);color:var(--accent,#1B3A6B)}',
++      '.cer-prov-chip i{font-size:11px;color:var(--accent,#1B3A6B)}',
++      '.cer-prov-chip .k{color:var(--text3,#6B6B80);font-size:9px;text-transform:uppercase;letter-spacing:.05em;margin-right:2px}',
++      '.cer-prov-chip .v{color:var(--text,#1A1A2E)}',
++      '.cer-prov-chip.chip-link{background:#fff;border-color:var(--accent-faint,#EEF2F8)}',
++      '.cer-prov-chip.chip-live{background:var(--confirm-faint,#EEF7F2);border-color:#BBF7D0}',
++      '.cer-prov-chip.chip-seed{background:var(--caution-faint,#FDF4E3);border-color:#F0E1B1;color:var(--caution,#7A4E00)}',
++      '.cer-supp-bar{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:var(--surface2,#F7F7F9);border:1px dashed var(--rule,#D8D8E0);border-radius:3px;margin-top:6px;font-size:11px;color:var(--text3,#6B6B80)}',
++      '.cer-supp-toggle{background:none;border:1px solid var(--rule,#D8D8E0);color:var(--accent,#1B3A6B);font-size:11px;padding:3px 10px;border-radius:12px;cursor:pointer;font-family:var(--font,Helvetica Neue,Arial,sans-serif)}',
++      '.cer-supp-toggle:hover{background:var(--accent,#1B3A6B);color:#fff;border-color:var(--accent,#1B3A6B)}',
++      '.cer-supp-row{display:grid;grid-template-columns:1fr auto;gap:8px;padding:7px 0;border-bottom:1px dashed var(--rule2,#EBEBF0);align-items:center;opacity:0.7}',
++      '.cer-supp-row .cer-item-summary{color:var(--text3,#6B6B80)}',
++      '.cer-supp-reason{font-family:var(--mono,Courier New,monospace);font-size:9.5px;color:var(--caution,#7A4E00);background:var(--caution-faint,#FDF4E3);padding:2px 7px;border-radius:8px;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap}',
++      /* B1.4 · Catalogue coverage grid */
++      '.cer-cat-hdr{display:flex;justify-content:space-between;align-items:baseline;margin:24px 0 8px}',
++      '.cer-cat-hdr h4{font-family:var(--font-serif,Georgia,serif);font-size:15px;font-weight:400;margin:0}',
++      '.cer-cat-hdr .cer-cat-legend{display:flex;gap:12px;font-size:10.5px;color:var(--text3,#6B6B80)}',
++      '.cer-cat-legend span{display:inline-flex;align-items:center;gap:5px}',
++      '.cer-cat-swatch{width:10px;height:10px;border-radius:2px;display:inline-block}',
++      '.cer-cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:6px;margin-bottom:12px}',
++      '.cer-cat-row{padding:8px 10px;border-radius:3px;border:1px solid var(--rule2,#EBEBF0);background:var(--surface,#fff);display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;font-size:11px}',
++      '.cer-cat-row.st-blocked{background:#FBF0F0;border-color:#F5B7B1;opacity:0.7}',
++      '.cer-cat-row.st-planned{background:#EEF2F8;border-color:#C7D8EC}',
++      '.cer-cat-row.st-not_cov{background:#FDF4E3;border-color:#F0E1B1;opacity:0.85}',
++      '.cer-cat-row.st-live{background:#EEF7F2;border-color:#BBF7D0}',
++      '.cer-cat-name{font-weight:500;color:var(--text,#1A1A2E);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}',
++      '.cer-cat-cat{color:var(--text3,#6B6B80);font-size:9.5px;text-transform:uppercase;letter-spacing:.04em;margin-top:1px}',
++      '.cer-cat-chip{font-family:var(--mono,Courier New,monospace);font-size:9px;padding:2px 6px;border-radius:8px;font-weight:600;letter-spacing:.05em}',
++      '.cer-cat-row .cer-cat-reason{grid-column:1 / -1;font-size:10px;color:var(--text3,#6B6B80);margin-top:2px;line-height:1.35}',
++      '.cer-cat-summary{background:var(--surface2,#F7F7F9);border:1px dashed var(--rule,#D8D8E0);padding:10px 14px;border-radius:3px;margin-bottom:12px;font-size:11.5px;color:var(--text2,#2D2D44);line-height:1.5}',
+     ].join('');
+     document.head.appendChild(s);
+   }
+@@ -88,14 +189,64 @@
+ 
+   function esc(s){ return String(s == null ? '' : s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+ 
++
++  /* B1.1 · Endpoint URL for click-through. Points at the latest snapshot on
++     the evidence-collection repo so any DIO can inspect the raw feed a chip
++     was drawn from. Returns null if we can't resolve. */
++  function endpointUrlFor(sourceId, snapshot){
++    if (snapshot && snapshot._provenance && snapshot._provenance.url) return snapshot._provenance.url;
++    if (!sourceId) return null;
++    return 'https://raw.githubusercontent.com/evansharry165-wq/evidence-collection/main/data/latest/' +
++           encodeURIComponent(sourceId) + '.json';
++  }
++
++  /* B1.1 · Format ISO timestamp for compact display. */
++  function fmtTs(iso){
++    if (!iso) return '—';
++    try {
++      var d = new Date(iso);
++      return d.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'2-digit'}) +
++             ' ' + d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',hour12:false}) + 'Z';
++    } catch(e){ return String(iso).slice(0,16); }
++  }
++
++  /* B1.1 · Is this attachment sourced from a real live feed, or from a seed?
++     Snapshot _isSeed marks seeded items so the UI can flag them clearly. */
++  function isSeed(a){
++    return !!(a && a.snapshot && a.snapshot._isSeed);
++  }
++
+   function renderAttached(items, caseRef){
+     if (!items.length) return '<div class="cer-empty">No evidence attached to this case yet. Below, each source with a green "hit" chip has case-relevant material you can attach.</div>';
+     return '<div class="cer-attached">' + items.map(function(a){
+       var ic = iconFor(a.kind);
++      var seed = isSeed(a);
++      var endpoint = endpointUrlFor(a.sourceId, a.snapshot);
++      // Provenance chips — the B1.1 change. Source, timestamp, endpoint click-through.
++      var chips = [];
++      chips.push('<span class="cer-prov-chip ' + (seed ? 'chip-seed' : 'chip-live') + '" title="Data provenance status">' +
++                 '<i class="ti ti-' + (seed ? 'test-pipe' : 'circle-check') + '"></i>' +
++                 '<span class="v">' + (seed ? 'SEED DATA' : 'LIVE FEED') + '</span></span>');
++      chips.push('<span class="cer-prov-chip" title="Original source">' +
++                 '<i class="ti ti-database"></i>' +
++                 '<span class="k">src</span><span class="v">' + esc(a.sourceProvider || a.sourceId || '—') + '</span></span>');
++      chips.push('<span class="cer-prov-chip" title="Timestamp of retrieval / snapshot">' +
++                 '<i class="ti ti-clock"></i>' +
++                 '<span class="k">retrieved</span><span class="v">' + esc(fmtTs(a.attachedAt)) + '</span></span>');
++      chips.push('<span class="cer-prov-chip" title="Attached by">' +
++                 '<i class="ti ti-user"></i>' +
++                 '<span class="k">by</span><span class="v">' + esc(a.attachedBy || '—') + '</span></span>');
++      if (endpoint){
++        chips.push('<a class="cer-prov-chip chip-link" href="' + esc(endpoint) + '" target="_blank" rel="noopener" title="Open the raw endpoint the item was drawn from">' +
++                   '<i class="ti ti-external-link"></i>' +
++                   '<span class="k">endpoint</span><span class="v">open →</span></a>');
++      }
+       return '<div class="cer-att">'+
+         '<div class="cer-att-icon" style="background:'+ic.bg+';color:'+ic.fg+'"><i class="'+ic.icon+'"></i></div>'+
+         '<div class="cer-att-body"><div class="cer-att-summary">'+esc(a.summary)+'</div>'+
+-        '<div class="cer-att-meta">'+esc(a.sourceProvider)+' · attached '+esc(a.attachedAt.slice(0,10))+' by '+esc(a.attachedBy)+(a.note?' · <em>'+esc(a.note)+'</em>':'')+'</div></div>'+
++        '<div class="cer-prov-strip">' + chips.join('') + '</div>' +
++        (a.note ? '<div class="cer-att-meta" style="margin-top:4px"><em>Note: '+esc(a.note)+'</em></div>' : '') +
++        '</div>'+
+         '<div class="cer-att-actions">'+
+           '<button class="cer-att-btn" data-view="'+a.id+'">View</button>'+
+           '<button class="cer-att-btn danger" data-remove="'+a.id+'">Remove</button>'+
+@@ -115,12 +266,26 @@
+       var chip = document.querySelector('[data-chip="'+source.id+'"]');
+       var body = document.querySelector('[data-body="'+source.id+'"]');
+       if (!chip || !body) return;
++      /* B1.5 · Inspect the raw snapshot to show what was filtered out */
++      var rawCount = 0;
++      try {
++        var snap = global.CaseEvidenceRepository._lastSnapshotFor
++          ? global.CaseEvidenceRepository._lastSnapshotFor(source.id)
++          : null;
++        if (snap && global.CaseEvidenceRepository.rawItemCount) {
++          rawCount = global.CaseEvidenceRepository.rawItemCount(source.id, snap);
++        }
++      } catch(e){}
++      var suppressed = Math.max(0, rawCount - (items ? items.length : 0));
+       if (!items || !items.length){
+-        chip.className = 'cer-src-chip chip-nohit'; chip.textContent = 'no case-relevant items';
+-        body.innerHTML = '<div class="cer-item-none">Nothing in the latest snapshot matches this case\'s date / airports / flight.</div>';
++        chip.className = 'cer-src-chip chip-nohit'; chip.textContent = rawCount ? '0 of ' + rawCount : 'no case-relevant items';
++        body.innerHTML = '<div class="cer-item-none">Nothing in the latest snapshot matches this case\'s date / airports / flight.' +
++          (suppressed > 0 ? '<br><span style="font-size:10.5px;color:#7A4E00">' + suppressed + ' items in snapshot filtered out by date/airport/flight-number rules.</span>' : '') +
++          '</div>';
+         return;
+       }
+-      chip.className = 'cer-src-chip chip-hit'; chip.textContent = items.length + ' hits';
++      chip.className = 'cer-src-chip chip-hit';
++      chip.textContent = items.length + (rawCount ? ' of ' + rawCount : ' hits');
+       body.innerHTML = items.slice(0,10).map(function(it){
+         var isAttached = alreadyAttachedKeys.indexOf(it._key) >= 0;
+         var summary = global.CaseEvidenceRepository.summarise(it);
+@@ -130,7 +295,7 @@
+             ? '<button class="cer-item-btn done" disabled>Attached</button>'
+             : '<button class="cer-item-btn" data-attach="'+source.id+'" data-key="'+it._key+'">Attach</button>')+
+         '</div>';
+-      }).join('') + (items.length > 10 ? '<div class="cer-item-none">+' + (items.length - 10) + ' more not shown</div>' : '');
++      }).join('') + (items.length > 10 ? '<div class="cer-item-none">+' + (items.length - 10) + ' more not shown</div>' : '') + (suppressed > 0 ? '<div class="cer-supp-bar"><span><i class="ti ti-filter"></i> ' + suppressed + ' items filtered out by date/airport rules</span><span style="font-size:10px;color:#9B9BAA">(filter is inspectable in code — refinement pending)</span></div>' : '');
+       // Wire attach buttons
+       Array.prototype.forEach.call(body.querySelectorAll('[data-attach]'), function(btn){
+         btn.onclick = function(){
+@@ -195,6 +360,7 @@
+         renderAttached(attached, caseRef) +
+         '<div class="cer-sec-hdr"><h4>Available from evidence-collection</h4><span class="hint">Auto-filtered to this case. Green chip = hits.</span></div>'+
+         '<div class="cer-sources">' + sourceCards + '</div>' +
++        renderCatalogueSection() +
+         '<div class="cer-actions-strip">'+
+           '<div style="font-size:11.5px;color:var(--text3,#6B6B80)">Bundle contents export for LOR pack / disclosure.</div>'+
+           '<button class="cer-btn-primary" id="cer-export"><i class="ti ti-download"></i>Export bundle JSON</button>'+
+@@ -230,5 +396,44 @@
+     }
+   }
+ 
++
++  /* B1.4 · Render the full 40-source catalogue as a coverage view.
++     Every source appears with a status chip, so the reader shows the whole map
++     — not just what's populated. This is the "show the gaps, don't hide them"
++     principle from the DefendAble evidence-layer spec (Section 4.4). */
++  function renderCatalogueSection(){
++    var counts = { LIVE:0, PLANNED:0, NOT_COV:0, BLOCKED:0 };
++    EVIDENCE_CATALOGUE.forEach(function(s){ counts[s.status]++; });
++    var total = EVIDENCE_CATALOGUE.length;
++    var summary = 'Coverage of the ' + total + '-source DIO evidence catalogue: ' +
++                  '<strong style="color:#1A5C3A">' + counts.LIVE + ' LIVE</strong> · ' +
++                  '<strong style="color:#1B3A6B">' + counts.PLANNED + ' PLANNED</strong> · ' +
++                  '<strong style="color:#7A4E00">' + counts.NOT_COV + ' not covered</strong> · ' +
++                  '<strong style="color:#8B1A1A">' + counts.BLOCKED + ' airline-internal (blocked)</strong>. ' +
++                  '<em>Blocked sources need customer-side integration or DIO narrative capture. All publicly available sources are LIVE or PLANNED.</em>';
++    var rows = EVIDENCE_CATALOGUE.map(function(s){
++      var style = STATUS_STYLES[s.status] || {};
++      var chipStyle = 'background:' + style.bg + ';color:' + style.fg + ';';
++      return '<div class="cer-cat-row st-' + s.status.toLowerCase() + '">' +
++             '<div>' +
++               '<div class="cer-cat-name">' + esc(s.label) + '</div>' +
++               '<div class="cer-cat-cat">' + esc(s.category) + '</div>' +
++             '</div>' +
++             '<span class="cer-cat-chip" style="' + chipStyle + '">' + esc(style.label) + '</span>' +
++             (s.reason ? '<div class="cer-cat-reason">' + esc(s.reason) + '</div>' : '') +
++             '</div>';
++    }).join('');
++    return '<div class="cer-cat-hdr"><h4>Full evidence catalogue · coverage view</h4>' +
++           '<div class="cer-cat-legend">' +
++             '<span><span class="cer-cat-swatch" style="background:#1A5C3A"></span>LIVE</span>' +
++             '<span><span class="cer-cat-swatch" style="background:#1B3A6B"></span>PLANNED</span>' +
++             '<span><span class="cer-cat-swatch" style="background:#7A4E00"></span>NOT COVERED</span>' +
++             '<span><span class="cer-cat-swatch" style="background:#8B1A1A"></span>BLOCKED</span>' +
++           '</div></div>' +
++           '<div class="cer-cat-summary">' + summary + '</div>' +
++           '<div class="cer-cat-grid">' + rows + '</div>';
++  }
++
++
+   global.CaseEvidenceRepoUI = { render: render };
+ })(typeof window !== 'undefined' ? window : this);
+diff --git a/case_filing.js b/case_filing.js
+index 344a596..5c0c06b 100644
+--- a/case_filing.js
++++ b/case_filing.js
+@@ -249,6 +249,78 @@
+       by: 'I. Martín',
+     });
+ 
++
++    /* B1.2 · Seed evidence-repository attachments so primary demo cases open with
++       real-looking attachments rather than an empty repository. Every seeded item
++       carries snapshot._isSeed = true so the new provenance chip flags it clearly. */
++    function seedEvidenceAttachments(ref, items){
++      if (!cases[ref]) return;
++      cases[ref].meta = cases[ref].meta || {};
++      var repo = { items: [] };
++      var now = new Date().toISOString();
++      items.forEach(function(it, i){
++        repo.items.push({
++          id:              'SEED-' + ref + '-' + (i+1),
++          itemKey:         it.itemKey || ('seed-' + ref + '-' + (i+1)),
++          sourceId:        it.sourceId || 'aviationweather-metar-taf',
++          sourceProvider:  it.sourceProvider || 'Seeded demo source',
++          kind:            it.kind || 'metar',
++          attachedAt:      it.attachedAt || now,
++          attachedBy:      it.attachedBy || 'SB',
++          note:            it.note || null,
++          snapshot:        Object.assign({ _isSeed: true, _key: it.itemKey || ('seed-'+ref+'-'+(i+1)), _kind: it.kind || 'metar' }, it.snapshot || {}),
++          summary:         it.summary,
++        });
++      });
++      cases[ref].meta.evidenceRepository = repo;
++    }
++
++    /* Hartley (DEF-2026-EW-0089) — primary walkthrough case. Four seeded items
++       covering weather (METAR/SIGMET), operational timing, and Article 9 records. */
++    seedEvidenceAttachments('DEF-2026-EW-0089', [
++      { itemKey: 'seed-metar-LEVC-140326', sourceId: 'aviationweather-metar-taf', sourceProvider: 'NOAA AviationWeather.gov',
++        kind: 'metar', attachedAt: '2026-05-24T10:12:00Z', attachedBy: 'SB',
++        summary: 'METAR LEVC 141350Z TSRA BKN020CB — Valencia thunderstorm activity confirmed at ATA',
++        snapshot: { station:'LEVC', obsTime:'2026-03-14T13:50Z', text:'LEVC 141350Z 12015KT TSRA FEW015 BKN020CB 18/16 Q1014 RETSRA' } },
++      { itemKey: 'seed-sigmet-EGTT-140326', sourceId: 'aviationweather-metar-taf', sourceProvider: 'NOAA AviationWeather.gov',
++        kind: 'metar', attachedAt: '2026-05-24T10:18:00Z', attachedBy: 'SB',
++        summary: 'SIGMET EGTT 141200-141800 — embedded TS with cell tops FL340 over Iberia',
++        snapshot: { station:'EGTT', obsTime:'2026-03-14T12:00Z', text:'SIGMET EGTT VALID 141200/141800 — EMBD TS FL280/FL340 STNR NC' } },
++      { itemKey: 'seed-atfm-LZL30A-140326', sourceId: 'eurocontrol-nm-public', sourceProvider: 'Eurocontrol NM',
++        kind: 'atfm', attachedAt: '2026-05-24T10:33:00Z', attachedBy: 'SB',
++        summary: 'ATFM regulation LZL30A — Valencia arrivals, weather cause, 1310-1745Z',
++        snapshot: { regulationId:'LZL30A', reason:'Weather - CB/TS', fromTime:'2026-03-14T13:10Z', toTime:'2026-03-14T17:45Z' } },
++      { itemKey: 'seed-a9-vlc-14032026', sourceId: 'internal-max-ops', sourceProvider: 'MAX OPS (customer comms)',
++        kind: 'chart', attachedAt: '2026-05-25T09:04:00Z', attachedBy: 'SB',
++        summary: 'Article 9 duty-of-care records — Valencia refreshment vouchers × 148 pax',
++        note: 'Vouchers issued at gate 14:35Z. Hotel offered but declined per pax email.',
++        snapshot: { source:'MAX OPS', voucherCount:148, hotelOffered:true, hotelAccepted:false } },
++    ]);
++
++    /* Sarah Taylor DEF-2026-EW-0076 — complete case at drafting stage.
++       Two seeded items showing the full-evidence-pack look. */
++    seedEvidenceAttachments('DEF-2026-EW-0076', [
++      { itemKey: 'seed-atc-MAN-280426', sourceId: 'eurocontrol-nm-public', sourceProvider: 'Eurocontrol NM',
++        kind: 'atfm', attachedAt: '2026-04-22T14:22:00Z', attachedBy: 'JP',
++        summary: 'MAN ATC Ground Stop 06:45-09:30 · Reference EU-ATC-20260428-MAN',
++        snapshot: { regulationId:'EU-ATC-20260428-MAN', reason:'ATC Ground Stop', fromTime:'2026-04-28T06:45Z', toTime:'2026-04-28T09:30Z' } },
++      { itemKey: 'seed-metar-EGCC-280426', sourceId: 'aviationweather-metar-taf', sourceProvider: 'NOAA AviationWeather.gov',
++        kind: 'metar', attachedAt: '2026-04-22T14:25:00Z', attachedBy: 'JP',
++        summary: 'METAR EGCC 280700Z — visibility 0400 FG · low-visibility procedures active',
++        snapshot: { station:'EGCC', obsTime:'2026-04-28T07:00Z', text:'EGCC 280700Z 00000KT 0400 R05L/1200 FG VV002 08/08 Q1024 NOSIG' } },
++    ]);
++
++    /* Engine shell DEF-ENG-2026-EW-0201 — proactive weather diversion.
++       One partial attachment to demonstrate the "started building" state. */
++    seedEvidenceAttachments('DEF-ENG-2026-EW-0201', [
++      { itemKey: 'seed-metar-EGKK-250726', sourceId: 'aviationweather-metar-taf', sourceProvider: 'NOAA AviationWeather.gov',
++        kind: 'metar', attachedAt: '2026-07-26T09:15:00Z', attachedBy: 'EH',
++        summary: 'METAR EGKK 251400-251800Z sequence — CB thunderstorm activity confirmed',
++        note: 'Proactive pull — engine flagged CB activity from operational feed; sequence collected before LOC arrives.',
++        snapshot: { station:'EGKK', obsTime:'2026-07-25T14:00Z', text:'EGKK 251400Z 22015G28KT 6000 TSRA FEW015CB BKN025 20/17 Q1012 RETSRA' } },
++    ]);
++
++
+     migrateCaseAliases(cases);
+     return cases;
+   }
+diff --git a/dio.html b/dio.html
+index 3b9b3be..7f387ad 100644
+--- a/dio.html
++++ b/dio.html
+@@ -290,7 +290,7 @@ html,body{min-height:100%;font-family:var(--font);background:var(--surface2);col
+ <script src="case_filing.js"></script>
+ <script src="work_dashboard.js"></script>
+ <script src="defendable_evidence_reader.js?v=p2c"></script>
+-<script src="case_evidence_repository.js?v=s3b"></script>
++<script src="case_evidence_repository.js?v=s6a"></script>
+ <script src="case_evidence_fetch_trigger.js?v=s5b"></script>
+ <script src="dio_core.js?v=s5a"></script>
+ <script src="dio_territory.js?v=s5a"></script>
+diff --git a/evidence-flights.html b/evidence-flights.html
+index 61d8968..8227304 100644
+--- a/evidence-flights.html
++++ b/evidence-flights.html
+@@ -194,7 +194,7 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
+ <script src="case_helpers.js"></script>
+ <script src="case_filing.js"></script>
+ <script src="defendable_evidence_reader.js?v=p2c"></script>
+-<script src="case_evidence_repository.js?v=s3b"></script>
++<script src="case_evidence_repository.js?v=s6a"></script>
+ <script src="dio_core.js?v=s5a"></script>
+ <script src="dio_territory.js?v=s5a"></script>
+ <script src="dio_data.js?v=s5a"></script>
+diff --git a/evidence-workspace.html b/evidence-workspace.html
+index 49bf125..25c2ac7 100644
+--- a/evidence-workspace.html
++++ b/evidence-workspace.html
+@@ -155,7 +155,7 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
+ <script src="case_helpers.js"></script>
+ <script src="case_filing.js"></script>
+ <script src="defendable_evidence_reader.js?v=p2c"></script>
+-<script src="case_evidence_repository.js?v=s3b"></script>
++<script src="case_evidence_repository.js?v=s6a"></script>
+ <script src="case_evidence_fetch_trigger.js?v=s5b"></script>
+ <script src="dio_core.js?v=s5a"></script>
+ <script src="dio_territory.js?v=s5a"></script>
+-- 
+2.34.1
+

@@ -229,6 +229,7 @@
     var targetedSid = targetedSourceId(sourceId);
     return global.EvidenceCollection.getCaseFetch(caseRef, targetedSid).then(function(targeted){
       if (targeted && targeted.data){
+        _snapshotCache[sourceId] = targeted;
         var items = filterOnDemandSnapshot(sourceId, targeted, facts);
         // Tag every item so UI can badge them as targeted
         items.forEach(function(it){ it._fetchKind = 'targeted'; it._pulled_at = targeted.pulled_at; });
@@ -237,6 +238,7 @@
       // Fall back to daily snapshot
       return global.EvidenceCollection.get(sourceId).then(function(snap){
         if (!snap) return [];
+        _snapshotCache[sourceId] = snap;
         var items = filterSnapshot(sourceId, snap, facts);
         items.forEach(function(it){ it._fetchKind = 'snapshot'; it._pulled_at = snap.pulled_at; });
         return items;
@@ -266,7 +268,32 @@
     return filterSnapshot(sourceId, snap, facts);
   }
 
-  /* ── Persistence ── */
+
+  /* B1.5 · Snapshot cache — remembers the last snapshot we fetched per source
+     so the UI can look up rawItemCount() without re-fetching. */
+  var _snapshotCache = {};
+  function _lastSnapshotFor(sourceId){ return _snapshotCache[sourceId] || null; }
+
+  /* B1.5 · Raw item count in a snapshot BEFORE filtering. Used by the UI to
+     show '5 of 47' rather than just '5 hits' — makes filtering inspectable. */
+  function rawItemCount(sourceId, snapshot){
+    if (!snapshot || !snapshot.data) return 0;
+    var d = snapshot.data;
+    if (sourceId === 'aviationweather-metar-taf') return ((d.metar||[]).length + (d.taf||[]).length);
+    if (sourceId === 'faa-notams' || sourceId === 'autorouter-notams'){
+      var n = 0; Object.keys(d.per_airport||{}).forEach(function(k){ n += ((d.per_airport[k].notams||[]).length); }); return n;
+    }
+    if (sourceId === 'aviation-herald-news' || sourceId === 'simple-flying-news') return (d.items||[]).length;
+    if (sourceId === 'nasa-firms-wildfires') return (d.hotspots||[]).length;
+    if (sourceId === 'gdacs-global-disasters') return (d.events||[]).length;
+    if (sourceId === 'copernicus-effis') return (d.fires||d.items||[]).length;
+    if (sourceId === 'smithsonian-volcanoes') return (d.eruptions||d.items||[]).length;
+    if (sourceId === 'eurocontrol-nm-public') return (d.regulations||d.items||[]).length;
+    if (Array.isArray(d)) return d.length;
+    return Object.keys(d||{}).length;
+  }
+
+    /* ── Persistence ── */
   function readRepo(caseRef){
     if (!global.CaseFiling) return { items: [] };
     var cf = global.CaseFiling.getCase(caseRef);
@@ -401,6 +428,8 @@
     targetedSourceId:   targetedSourceId,
     listAttached:       listAttached,
     attachItem:         attachItem,
+    rawItemCount:       rawItemCount,
+    _lastSnapshotFor:   _lastSnapshotFor,
     removeAttached:     removeAttached,
     exportBundle:       exportBundle,
     summarise:          summarise,

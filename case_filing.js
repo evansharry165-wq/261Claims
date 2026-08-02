@@ -249,6 +249,78 @@
       by: 'I. Martín',
     });
 
+
+    /* B1.2 · Seed evidence-repository attachments so primary demo cases open with
+       real-looking attachments rather than an empty repository. Every seeded item
+       carries snapshot._isSeed = true so the new provenance chip flags it clearly. */
+    function seedEvidenceAttachments(ref, items){
+      if (!cases[ref]) return;
+      cases[ref].meta = cases[ref].meta || {};
+      var repo = { items: [] };
+      var now = new Date().toISOString();
+      items.forEach(function(it, i){
+        repo.items.push({
+          id:              'SEED-' + ref + '-' + (i+1),
+          itemKey:         it.itemKey || ('seed-' + ref + '-' + (i+1)),
+          sourceId:        it.sourceId || 'aviationweather-metar-taf',
+          sourceProvider:  it.sourceProvider || 'Seeded demo source',
+          kind:            it.kind || 'metar',
+          attachedAt:      it.attachedAt || now,
+          attachedBy:      it.attachedBy || 'SB',
+          note:            it.note || null,
+          snapshot:        Object.assign({ _isSeed: true, _key: it.itemKey || ('seed-'+ref+'-'+(i+1)), _kind: it.kind || 'metar' }, it.snapshot || {}),
+          summary:         it.summary,
+        });
+      });
+      cases[ref].meta.evidenceRepository = repo;
+    }
+
+    /* Hartley (DEF-2026-EW-0089) — primary walkthrough case. Four seeded items
+       covering weather (METAR/SIGMET), operational timing, and Article 9 records. */
+    seedEvidenceAttachments('DEF-2026-EW-0089', [
+      { itemKey: 'seed-metar-LEVC-140326', sourceId: 'aviationweather-metar-taf', sourceProvider: 'NOAA AviationWeather.gov',
+        kind: 'metar', attachedAt: '2026-05-24T10:12:00Z', attachedBy: 'SB',
+        summary: 'METAR LEVC 141350Z TSRA BKN020CB — Valencia thunderstorm activity confirmed at ATA',
+        snapshot: { station:'LEVC', obsTime:'2026-03-14T13:50Z', text:'LEVC 141350Z 12015KT TSRA FEW015 BKN020CB 18/16 Q1014 RETSRA' } },
+      { itemKey: 'seed-sigmet-EGTT-140326', sourceId: 'aviationweather-metar-taf', sourceProvider: 'NOAA AviationWeather.gov',
+        kind: 'metar', attachedAt: '2026-05-24T10:18:00Z', attachedBy: 'SB',
+        summary: 'SIGMET EGTT 141200-141800 — embedded TS with cell tops FL340 over Iberia',
+        snapshot: { station:'EGTT', obsTime:'2026-03-14T12:00Z', text:'SIGMET EGTT VALID 141200/141800 — EMBD TS FL280/FL340 STNR NC' } },
+      { itemKey: 'seed-atfm-LZL30A-140326', sourceId: 'eurocontrol-nm-public', sourceProvider: 'Eurocontrol NM',
+        kind: 'atfm', attachedAt: '2026-05-24T10:33:00Z', attachedBy: 'SB',
+        summary: 'ATFM regulation LZL30A — Valencia arrivals, weather cause, 1310-1745Z',
+        snapshot: { regulationId:'LZL30A', reason:'Weather - CB/TS', fromTime:'2026-03-14T13:10Z', toTime:'2026-03-14T17:45Z' } },
+      { itemKey: 'seed-a9-vlc-14032026', sourceId: 'internal-max-ops', sourceProvider: 'MAX OPS (customer comms)',
+        kind: 'chart', attachedAt: '2026-05-25T09:04:00Z', attachedBy: 'SB',
+        summary: 'Article 9 duty-of-care records — Valencia refreshment vouchers × 148 pax',
+        note: 'Vouchers issued at gate 14:35Z. Hotel offered but declined per pax email.',
+        snapshot: { source:'MAX OPS', voucherCount:148, hotelOffered:true, hotelAccepted:false } },
+    ]);
+
+    /* Sarah Taylor DEF-2026-EW-0076 — complete case at drafting stage.
+       Two seeded items showing the full-evidence-pack look. */
+    seedEvidenceAttachments('DEF-2026-EW-0076', [
+      { itemKey: 'seed-atc-MAN-280426', sourceId: 'eurocontrol-nm-public', sourceProvider: 'Eurocontrol NM',
+        kind: 'atfm', attachedAt: '2026-04-22T14:22:00Z', attachedBy: 'JP',
+        summary: 'MAN ATC Ground Stop 06:45-09:30 · Reference EU-ATC-20260428-MAN',
+        snapshot: { regulationId:'EU-ATC-20260428-MAN', reason:'ATC Ground Stop', fromTime:'2026-04-28T06:45Z', toTime:'2026-04-28T09:30Z' } },
+      { itemKey: 'seed-metar-EGCC-280426', sourceId: 'aviationweather-metar-taf', sourceProvider: 'NOAA AviationWeather.gov',
+        kind: 'metar', attachedAt: '2026-04-22T14:25:00Z', attachedBy: 'JP',
+        summary: 'METAR EGCC 280700Z — visibility 0400 FG · low-visibility procedures active',
+        snapshot: { station:'EGCC', obsTime:'2026-04-28T07:00Z', text:'EGCC 280700Z 00000KT 0400 R05L/1200 FG VV002 08/08 Q1024 NOSIG' } },
+    ]);
+
+    /* Engine shell DEF-ENG-2026-EW-0201 — proactive weather diversion.
+       One partial attachment to demonstrate the "started building" state. */
+    seedEvidenceAttachments('DEF-ENG-2026-EW-0201', [
+      { itemKey: 'seed-metar-EGKK-250726', sourceId: 'aviationweather-metar-taf', sourceProvider: 'NOAA AviationWeather.gov',
+        kind: 'metar', attachedAt: '2026-07-26T09:15:00Z', attachedBy: 'EH',
+        summary: 'METAR EGKK 251400-251800Z sequence — CB thunderstorm activity confirmed',
+        note: 'Proactive pull — engine flagged CB activity from operational feed; sequence collected before LOC arrives.',
+        snapshot: { station:'EGKK', obsTime:'2026-07-25T14:00Z', text:'EGKK 251400Z 22015G28KT 6000 TSRA FEW015CB BKN025 20/17 Q1012 RETSRA' } },
+    ]);
+
+
     migrateCaseAliases(cases);
     return cases;
   }
