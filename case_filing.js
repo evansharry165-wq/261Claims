@@ -321,6 +321,34 @@
     ]);
 
 
+
+
+    /* P3 · Sam-prep · Pre-computed hash-chained audit trail for the same seeded
+       attachments above.  Hashes were computed at build time with the exact same
+       payload construction the runtime uses (see case_audit_trail.js _doAppend),
+       so "Verify chain" passes on first open with no runtime rehashing needed. */
+    function seedAuditChain(ref, entries){
+      if (!cases[ref]) return;
+      cases[ref].meta = cases[ref].meta || {};
+      cases[ref].meta.evidenceAuditTrail = entries;
+    }
+
+    seedAuditChain('DEF-2026-EW-0089', [
+      {"seq":1,"ts":"2026-05-24T10:12:00Z","actor":"SB","action":"attach","itemKey":"seed-metar-LEVC-140326","itemId":"SEED-DEF-2026-EW-0089-1","sourceId":"aviationweather-metar-taf","summary":"METAR LEVC 141350Z TSRA BKN020CB — Valencia thunderstorm activity confirmed at ATA","note":null,"prevHash":"0000000000000000000000000000000000000000000000000000000000000000","hash":"91952d1ecc040ecc955b9f419505739d7569ab560b70f5120ad47a87cf1fd4ff"},
+      {"seq":2,"ts":"2026-05-24T10:18:00Z","actor":"SB","action":"attach","itemKey":"seed-sigmet-EGTT-140326","itemId":"SEED-DEF-2026-EW-0089-2","sourceId":"aviationweather-metar-taf","summary":"SIGMET EGTT 141200-141800 — embedded TS with cell tops FL340 over Iberia","note":null,"prevHash":"91952d1ecc040ecc955b9f419505739d7569ab560b70f5120ad47a87cf1fd4ff","hash":"b00ed21e8278e95dc2126e2b700211a6cfd20260ff101d96738168d64c35b4db"},
+      {"seq":3,"ts":"2026-05-24T10:33:00Z","actor":"SB","action":"attach","itemKey":"seed-atfm-LZL30A-140326","itemId":"SEED-DEF-2026-EW-0089-3","sourceId":"eurocontrol-nm-public","summary":"ATFM regulation LZL30A — Valencia arrivals, weather cause, 1310-1745Z","note":null,"prevHash":"b00ed21e8278e95dc2126e2b700211a6cfd20260ff101d96738168d64c35b4db","hash":"71eaf28935e0a8e4cd6d0d4927fcf4b30dbd3a4bb46ed0facfa5098810bbe616"},
+      {"seq":4,"ts":"2026-05-25T09:04:00Z","actor":"SB","action":"attach","itemKey":"seed-a9-vlc-14032026","itemId":"SEED-DEF-2026-EW-0089-4","sourceId":"internal-max-ops","summary":"Article 9 duty-of-care records — Valencia refreshment vouchers × 148 pax","note":null,"prevHash":"71eaf28935e0a8e4cd6d0d4927fcf4b30dbd3a4bb46ed0facfa5098810bbe616","hash":"7e9b403258f5dd21a1c20b3b4ec483f2242abb369738ad4a2554c8231a2d4ff4"}
+    ]);
+
+    seedAuditChain('DEF-2026-EW-0076', [
+      {"seq":1,"ts":"2026-04-22T14:22:00Z","actor":"JP","action":"attach","itemKey":"seed-atc-MAN-280426","itemId":"SEED-DEF-2026-EW-0076-1","sourceId":"eurocontrol-nm-public","summary":"MAN ATC Ground Stop 06:45-09:30 · Reference EU-ATC-20260428-MAN","note":null,"prevHash":"0000000000000000000000000000000000000000000000000000000000000000","hash":"85d18ac35577465f026809ef4b5126a5371e6d972ab1c812d86d8c9e04c65991"},
+      {"seq":2,"ts":"2026-04-22T14:25:00Z","actor":"JP","action":"attach","itemKey":"seed-metar-EGCC-280426","itemId":"SEED-DEF-2026-EW-0076-2","sourceId":"aviationweather-metar-taf","summary":"METAR EGCC 280700Z — visibility 0400 FG · low-visibility procedures active","note":null,"prevHash":"85d18ac35577465f026809ef4b5126a5371e6d972ab1c812d86d8c9e04c65991","hash":"d8e7d38b661c844dba58955ab42915830297f61b92c718f36f58ae1770fbe753"}
+    ]);
+
+    seedAuditChain('DEF-ENG-2026-EW-0201', [
+      {"seq":1,"ts":"2026-07-26T09:15:00Z","actor":"EH","action":"attach","itemKey":"seed-metar-EGKK-250726","itemId":"SEED-DEF-ENG-2026-EW-0201-1","sourceId":"aviationweather-metar-taf","summary":"METAR EGKK 251400-251800Z sequence — CB thunderstorm activity confirmed","note":"Proactive pull — engine flagged CB activity from operational feed; sequence collected before LOC arrives.","prevHash":"0000000000000000000000000000000000000000000000000000000000000000","hash":"cf6b831ec339701c09398f0ff2af0542a53d7768f4f2b7a0e1c6b66df15877f8"}
+    ]);
+
     migrateCaseAliases(cases);
     return cases;
   }

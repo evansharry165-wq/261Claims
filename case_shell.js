@@ -275,7 +275,14 @@ var CaseShell = (function () {
       '.ce-loc-drop.over{border-color:#1E4D8C;background:#E8F0FA}',
       '.ce-loc-drop i{font-size:28px;color:var(--text3,#6B6B80);display:block;margin-bottom:8px}',
       '.ce-loc-drop a{color:#1E4D8C;text-decoration:underline}',
-      '.ce-loc-paste{width:100%;font-size:12px;padding:8px;border:1px solid var(--border,#D8D8E0);border-radius:4px;font-family:"IBM Plex Sans",sans-serif;margin-bottom:10px;resize:vertical}'
+      '.ce-loc-paste{width:100%;font-size:12px;padding:8px;border:1px solid var(--border,#D8D8E0);border-radius:4px;font-family:"IBM Plex Sans",sans-serif;margin-bottom:10px;resize:vertical}',
+      /* P1 · Evidence-tab cross-link banner (B2A.7 · was declared but unstyled) */
+      '.ce-crosslink{background:linear-gradient(90deg,#EEF2F8 0%,#F7F7F9 100%);border:1px solid #C7D8EC;border-radius:3px;padding:10px 16px;margin-bottom:12px;display:flex;align-items:center;gap:10px;font-size:12px;color:#2D2D44;flex-wrap:wrap}',
+      '.ce-crosslink i{color:#1B3A6B;font-size:14px}',
+      '.ce-crosslink strong{color:#1A1A2E;font-weight:600}',
+      '.ce-crosslink a{color:#1B3A6B;font-weight:600;text-decoration:none;margin-left:2px}',
+      '.ce-crosslink a:hover{text-decoration:underline}',
+      '.ce-crosslink-hint{color:#6B6B80;font-size:11px;margin-left:auto;font-style:italic}'
     ].join('\n');
     document.head.appendChild(st);
   }

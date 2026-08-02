@@ -64,7 +64,14 @@
   }
 
   /* ── append ──────────────────────────────────────────────────────── */
-  function append(caseRef, event){
+  /* P2 · Per-case promise-lock — serialises concurrent appends so rapid attaches
+     can't produce two entries that both compute prevHash=GENESIS (which would
+     cause the second write to clobber the first via the whole-meta overwrite in
+     writeChain). Each caseRef gets its own promise chain; new appends wait for
+     any in-flight append on the same case to finish before reading the chain. */
+  var _lockChains = {};
+
+  function _doAppend(caseRef, event){
     var chain = readChain(caseRef);
     var prevHash = chain.length ? chain[chain.length - 1].hash : GENESIS;
     var actor = (global.getActiveUser && global.getActiveUser()) || 'unknown';
@@ -91,6 +98,14 @@
       writeChain(caseRef, chain);
       return entry;
     });
+  }
+
+  function append(caseRef, event){
+    var prior = _lockChains[caseRef] || Promise.resolve();
+    var next = prior.then(function(){ return _doAppend(caseRef, event); });
+    // Keep the lock alive even if this append rejects — don't break the chain.
+    _lockChains[caseRef] = next.catch(function(){});
+    return next;
   }
 
   /* ── verify ──────────────────────────────────────────────────────── */

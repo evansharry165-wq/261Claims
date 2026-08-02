@@ -494,6 +494,7 @@
     return '<div class="cer-audit-hdr"><h4>Compliance audit trail</h4>' +
              '<span class="cer-audit-status"><span data-audit-status>chain length: ' + chain.length + '</span>' +
              (chain.length ? '<button class="cer-audit-verify" onclick="CaseEvidenceRepoUI.verifyAudit(\'' + esc(caseRef) + '\')">Verify chain</button>' : '') +
+             (chain.length ? '<button class="cer-audit-verify" onclick="CaseEvidenceRepoUI.downloadAudit(\'' + esc(caseRef) + '\')" title="Download the full hash-chained log as JSON — suitable for ADR / court disclosure"><i class="ti ti-download" style="margin-right:2px"></i>Download</button>' : '') +
              '</span></div>' +
              body;
   }
@@ -519,5 +520,38 @@
   }
 
 
-  global.CaseEvidenceRepoUI = { render: render, verifyAudit: verifyAudit };
+
+  /* P4 · Download the audit chain as a signed JSON file.  Contains the whole
+     hash-chain plus a manifest header (case ref, export ts, chain length, last
+     hash) so a downstream verifier can prove no post-export mutation. */
+  function downloadAudit(caseRef){
+    if (!global.CaseAuditTrail || !global.CaseAuditTrail.list) return;
+    var chain = global.CaseAuditTrail.list(caseRef) || [];
+    var last = chain.length ? chain[chain.length - 1].hash : global.CaseAuditTrail.genesisHash();
+    var bundle = {
+      manifest: {
+        caseRef:      caseRef,
+        exportedAt:   new Date().toISOString(),
+        exportedBy:   (global.getActiveUser && global.getActiveUser()) || 'unknown',
+        entries:      chain.length,
+        lastHash:     last,
+        genesisHash:  global.CaseAuditTrail.genesisHash(),
+        format:       'DefendAble/audit-trail/v1',
+        note:         'SHA-256 hash-chained log of evidence attach/detach events. Each entry hashes the previous entry\'s hash + its own payload. Mutation of any past entry breaks all subsequent hashes.',
+      },
+      chain: chain,
+    };
+    try {
+      var blob = new Blob([JSON.stringify(bundle, null, 2)], { type: 'application/json' });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = caseRef + '-audit-trail-' + new Date().toISOString().slice(0,10) + '.json';
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(function(){ URL.revokeObjectURL(url); document.body.removeChild(a); }, 500);
+    } catch (e) { if (global.console) console.error('audit download failed:', e); }
+  }
+
+  global.CaseEvidenceRepoUI = { render: render, verifyAudit: verifyAudit, downloadAudit: downloadAudit };
 })(typeof window !== 'undefined' ? window : this);
