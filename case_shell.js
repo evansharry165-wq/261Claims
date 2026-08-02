@@ -818,7 +818,22 @@ var CaseShell = (function () {
       var params = new URLSearchParams(window.location.search);
       if (params.get('request')) extra += '&request=' + encodeURIComponent(params.get('request'));
     } catch (e) {}
+    /* B2A.7 · Cross-link banner — when on Evidence tab, show attached-item count
+       in the sibling Repository tab so the DIO knows it's not empty. */
+    var crossLink = '';
+    if (tab === 'evidence' && window.CaseEvidenceRepository && state.ref){
+      try {
+        var attached = window.CaseEvidenceRepository.listAttached(state.ref) || [];
+        crossLink = '<div class="ce-crosslink">' +
+          '<i class="ti ti-database"></i>' +
+          '<span><strong>' + attached.length + '</strong> item' + (attached.length === 1 ? '' : 's') + ' attached to this case in the ' +
+          '<a href="#" onclick="CaseShell.switchTab(\'repo\');return false">Evidence Repository →</a></span>' +
+          '<span class="ce-crosslink-hint">Attached items survive raw-snapshot rotation and are cited in the defence letter.</span>' +
+          '</div>';
+      } catch (e) {}
+    }
     document.getElementById('tab-panel').innerHTML =
+      crossLink +
       '<iframe id="case-frame" class="case-frame" src="' +
       src +
       '?ref=' +

@@ -1,0 +1,477 @@
+From 783e9f60578933e2366c818fc67f2507294d381b Mon Sep 17 00:00:00 2001
+From: Harry Evans <harryevans15@icloud.com>
+Date: Sun, 2 Aug 2026 20:14:36 +0100
+Subject: [PATCH] =?UTF-8?q?Evidence=20layer=20=C2=B7=20B2A=20loop-closing?=
+ =?UTF-8?q?=20(signal=20polish=20+=20cross-link=20+=20hash-chained=20audit?=
+ =?UTF-8?q?=20trail)?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+B2A.6 · Signal-back-to-lawyer notification polish
+- attachItem's pushNotification now leads with sourceProvider + claimant
+  in the title and includes retrieval timestamp + itemId in the body.
+  Deep-links in the solicitor Work dashboard remain unchanged; case
+  page can highlight the new item via itemId in a future pass.
+
+B2A.7 · Evidence tab <-> Repository tab cross-link
+- case_shell.js renderFrame() now prepends a banner above the Evidence
+  iframe reading '<N> items attached in the Evidence Repository ->' with
+  a live count from listAttached(). Reciprocal Repo->workspace link
+  already exists via the 'Open workspace' button.
+
+B2A.11 · Hash-chained compliance audit trail (SHA-256, tamper-evident)
+- NEW case_audit_trail.js: append(caseRef, event) + verify(caseRef) +
+  list + lastHash. Chain persists in case.meta.evidenceAuditTrail[].
+  Uses crypto.subtle.digest('SHA-256') in the browser; falls back to a
+  deterministic hex hash in non-browser contexts (Node smoke tests pass).
+- attachItem + removeAttached now append 'attach' / 'detach' entries.
+- Repository UI gains a 'Compliance audit trail' section with per-entry
+  seq/timestamp/action/summary/short-hash rows, colour-coded by action.
+  'Verify chain' button recomputes hashes and marks entries green
+  (verified) or red (broken).
+
+PRE-EXISTING FIX (surfaced by B1.2 seeded attachments)
+- writeRepo() wrote patches to case.<top-level> but readRepo() reads
+  case.meta.<key>. Live attachments were silently lost after the first
+  reload. Both writeRepo and writeChain now correctly persist under
+  case.meta via updateCaseMeta({meta: newMeta}).
+
+Cache-bust: s7a across case.html / dio.html / evidence-flights.html /
+evidence-workspace.html. case_audit_trail.js now loaded before
+case_evidence_repository.js in the script chain.
+---
+ case.html                      |   5 +-
+ case_audit_trail.js            | 136 +++++++++++++++++++++++++++++++++
+ case_evidence_repository.js    |  48 ++++++++++--
+ case_evidence_repository_ui.js |  86 ++++++++++++++++++++-
+ case_shell.js                  |  15 ++++
+ dio.html                       |   3 +-
+ evidence-flights.html          |   3 +-
+ evidence-workspace.html        |   3 +-
+ 8 files changed, 287 insertions(+), 12 deletions(-)
+ create mode 100644 case_audit_trail.js
+
+diff --git a/case.html b/case.html
+index 4d60b91..85e488a 100644
+--- a/case.html
++++ b/case.html
+@@ -102,8 +102,9 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
+ 
+ </style>
+   <script src="defendable_evidence_reader.js?v=p2c"></script>
+-  <script src="case_evidence_repository.js?v=s6a"></script>
+-  <script src="case_evidence_repository_ui.js?v=s6a"></script>
++  <script src="case_audit_trail.js?v=s7a"></script>
++<script src="case_evidence_repository.js?v=s7a"></script>
++  <script src="case_evidence_repository_ui.js?v=s7a"></script>
+   <script src="case_evidence_fetch_trigger.js?v=s5b"></script>
+   <script src="case_evidence_fetch_ui.js?v=s5b"></script>
+ </head>
+diff --git a/case_audit_trail.js b/case_audit_trail.js
+new file mode 100644
+index 0000000..a2728e9
+--- /dev/null
++++ b/case_audit_trail.js
+@@ -0,0 +1,136 @@
++/* case_audit_trail.js — B2A.11 · Hash-chained tamper-evident log of evidence
++   attach / detach events per case.  Uses crypto.subtle (SHA-256) so the chain
++   is cryptographically verifiable — every entry hashes the previous entry's
++   hash + its own payload.  Persists inside case.meta.evidenceAuditTrail[].
++
++   Public API (attached to window.CaseAuditTrail):
++     .append(caseRef, event)        → Promise<entry>   – add + persist
++     .list(caseRef)                 → array of entries – read
++     .verify(caseRef)               → Promise<{ok, breaks[]}> – recompute chain
++     .lastHash(caseRef)             → string | null
++     .genesisHash()                 → string           – hash of the empty chain
++*/
++(function (global) {
++  'use strict';
++
++  var STORAGE_META_KEY = 'evidenceAuditTrail';
++  var GENESIS = '0000000000000000000000000000000000000000000000000000000000000000';
++
++  /* ── crypto ───────────────────────────────────────────────────────── */
++  function sha256(text){
++    try {
++      if (global.crypto && global.crypto.subtle && global.crypto.subtle.digest){
++        var buf = new TextEncoder().encode(text);
++        return global.crypto.subtle.digest('SHA-256', buf).then(function(hashBuf){
++          return Array.prototype.map.call(new Uint8Array(hashBuf), function(b){
++            return b.toString(16).padStart(2, '0');
++          }).join('');
++        });
++      }
++    } catch (e){}
++    /* Fallback for non-browser environments — FNV-1a 64-bit hex.
++       Not cryptographic, but chain integrity is still deterministic. */
++    var h1 = 0x811c9dc5, h2 = 0x84222325;
++    for (var i = 0; i < text.length; i++){
++      var c = text.charCodeAt(i);
++      h1 = Math.imul(h1 ^ c, 0x01000193) >>> 0;
++      h2 = Math.imul(h2 ^ c, 0x01000193) >>> 0;
++    }
++    var hex = h1.toString(16).padStart(8, '0') + h2.toString(16).padStart(8, '0');
++    while (hex.length < 64) hex += hex;
++    return Promise.resolve(hex.slice(0, 64));
++  }
++
++  /* ── persistence ─────────────────────────────────────────────────── */
++  function readChain(caseRef){
++    if (!global.CaseFiling || !global.CaseFiling.getCase) return [];
++    var c = global.CaseFiling.getCase(caseRef);
++    if (!c || !c.meta) return [];
++    var chain = c.meta[STORAGE_META_KEY];
++    return Array.isArray(chain) ? chain : [];
++  }
++  function writeChain(caseRef, chain){
++    if (!global.CaseFiling || !global.CaseFiling.updateCaseMeta || !global.CaseFiling.getCase) return;
++    var c = global.CaseFiling.getCase(caseRef);
++    var existingMeta = (c && c.meta) ? c.meta : {};
++    var newMeta = Object.assign({}, existingMeta);
++    newMeta[STORAGE_META_KEY] = chain;
++    global.CaseFiling.updateCaseMeta(caseRef, { meta: newMeta });
++  }
++
++  function lastHash(caseRef){
++    var chain = readChain(caseRef);
++    return chain.length ? chain[chain.length - 1].hash : GENESIS;
++  }
++
++  /* ── append ──────────────────────────────────────────────────────── */
++  function append(caseRef, event){
++    var chain = readChain(caseRef);
++    var prevHash = chain.length ? chain[chain.length - 1].hash : GENESIS;
++    var actor = (global.getActiveUser && global.getActiveUser()) || 'unknown';
++    var entry = {
++      seq:        chain.length + 1,
++      ts:         new Date().toISOString(),
++      actor:      actor,
++      action:     event.action || 'unknown',
++      itemKey:    event.itemKey || null,
++      itemId:     event.itemId || null,
++      sourceId:   event.sourceId || null,
++      summary:    event.summary || null,
++      note:       event.note || null,
++      prevHash:   prevHash,
++    };
++    var payload = JSON.stringify({
++      seq: entry.seq, ts: entry.ts, actor: entry.actor, action: entry.action,
++      itemKey: entry.itemKey, itemId: entry.itemId, sourceId: entry.sourceId,
++      summary: entry.summary, note: entry.note, prevHash: entry.prevHash,
++    });
++    return sha256(payload).then(function(hash){
++      entry.hash = hash;
++      chain.push(entry);
++      writeChain(caseRef, chain);
++      return entry;
++    });
++  }
++
++  /* ── verify ──────────────────────────────────────────────────────── */
++  function verify(caseRef){
++    var chain = readChain(caseRef);
++    if (!chain.length) return Promise.resolve({ ok: true, entries: 0, breaks: [] });
++    var breaks = [];
++    var prevExpected = GENESIS;
++    var i = 0;
++    function next(){
++      if (i >= chain.length) return { ok: breaks.length === 0, entries: chain.length, breaks: breaks };
++      var entry = chain[i];
++      if (entry.prevHash !== prevExpected){
++        breaks.push({ seq: entry.seq, reason: 'prevHash mismatch', expected: prevExpected, actual: entry.prevHash });
++      }
++      var payload = JSON.stringify({
++        seq: entry.seq, ts: entry.ts, actor: entry.actor, action: entry.action,
++        itemKey: entry.itemKey, itemId: entry.itemId, sourceId: entry.sourceId,
++        summary: entry.summary, note: entry.note, prevHash: entry.prevHash,
++      });
++      return sha256(payload).then(function(hash){
++        if (hash !== entry.hash){
++          breaks.push({ seq: entry.seq, reason: 'hash mismatch', expected: hash, actual: entry.hash });
++        }
++        prevExpected = entry.hash;
++        i += 1;
++        return next();
++      });
++    }
++    return Promise.resolve().then(next);
++  }
++
++  function list(caseRef){ return readChain(caseRef); }
++  function genesisHash(){ return GENESIS; }
++
++  global.CaseAuditTrail = {
++    append:      append,
++    list:        list,
++    verify:      verify,
++    lastHash:    lastHash,
++    genesisHash: genesisHash,
++  };
++})(typeof window !== 'undefined' ? window : this);
+diff --git a/case_evidence_repository.js b/case_evidence_repository.js
+index c91b2db..8c02992 100644
+--- a/case_evidence_repository.js
++++ b/case_evidence_repository.js
+@@ -304,10 +304,15 @@
+       : { items: [] };
+   }
+   function writeRepo(caseRef, repo){
+-    if (!global.CaseFiling) return;
+-    var patch = {};
+-    patch[STORAGE_META_KEY] = repo;
+-    global.CaseFiling.updateCaseMeta(caseRef, patch);
++    if (!global.CaseFiling || !global.CaseFiling.updateCaseMeta || !global.CaseFiling.getCase) return;
++    /* B2A · Fix: write under case.meta so readRepo (which reads meta[STORAGE_META_KEY])
++       actually finds it. Previously wrote top-level; only worked via reference sharing
++       into seeded meta objects — first live attach on an unseeded case was lost. */
++    var c = global.CaseFiling.getCase(caseRef);
++    var existingMeta = (c && c.meta) ? c.meta : {};
++    var newMeta = Object.assign({}, existingMeta);
++    newMeta[STORAGE_META_KEY] = repo;
++    global.CaseFiling.updateCaseMeta(caseRef, { meta: newMeta });
+   }
+   function listAttached(caseRef){ return readRepo(caseRef).items; }
+   function attachItem(caseRef, sourceId, item, note){
+@@ -332,6 +337,20 @@
+     };
+     repo.items.push(attachment);
+     writeRepo(caseRef, repo);
++    /* B2A.11 · Append tamper-evident audit-trail entry */
++    try {
++      if (global.CaseAuditTrail && global.CaseAuditTrail.append){
++        global.CaseAuditTrail.append(caseRef, {
++          action:   'attach',
++          itemKey:  attachment.itemKey,
++          itemId:   attachment.id,
++          sourceId: attachment.sourceId,
++          summary:  attachment.summary,
++          note:     attachment.note || null,
++        });
++      }
++    } catch (e){ if (global.console) console.debug('audit-trail append failed:', e); }
++
+     if (global.CaseFiling.addActivity){
+       global.CaseFiling.addActivity(caseRef, 'Evidence attached · ' + attachment.summary + ' (' + attachment.sourceProvider + ')', 'evidence', user);
+     }
+@@ -342,12 +361,17 @@
+         var c = global.CaseFiling.getCase(caseRef);
+         var uName = (global.USERS && global.USERS[user] && (global.USERS[user].name || user)) || user;
+         if (c && c.assignedTo && c.assignedTo !== user){
++          /* B2A.6 · Richer notification body: source name front, timestamp compact,
++             itemId included so case page can deep-link + highlight the new item. */
++          var attTs = '';
++          try { attTs = new Date(attachment.attachedAt).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',hour12:false}); } catch(e){}
+           global.pushNotification({
+             to: c.assignedTo,
+             type: 'evidence-attached',
+             ref: caseRef,
+-            title: 'Evidence attached by DIO',
+-            body: uName + ' attached ' + (attachment.summary || 'an evidence item') + ' from ' + (attachment.sourceProvider || 'evidence source') + ' — ' + (c.claimant || caseRef),
++            itemId: attachment.id,
++            title: (attachment.sourceProvider || 'Evidence') + ' attached · ' + (c.claimant || caseRef),
++            body: uName + ' attached ' + (attachment.summary || 'an evidence item') + (attTs ? ' at ' + attTs : ''),
+             time: new Date().toLocaleString('en-GB'),
+             read: false,
+             tab: 'evidence',
+@@ -385,6 +409,18 @@
+     if (i < 0) return false;
+     var removed = repo.items.splice(i, 1)[0];
+     writeRepo(caseRef, repo);
++    try {
++      if (global.CaseAuditTrail && global.CaseAuditTrail.append){
++        global.CaseAuditTrail.append(caseRef, {
++          action:   'detach',
++          itemKey:  removed.itemKey,
++          itemId:   removed.id,
++          sourceId: removed.sourceId,
++          summary:  removed.summary,
++        });
++      }
++    } catch (e){ if (global.console) console.debug('audit-trail append (detach) failed:', e); }
++
+     if (global.CaseFiling.addActivity){
+       var user = (global.getActiveUser && global.getActiveUser()) || 'SB';
+       global.CaseFiling.addActivity(caseRef, 'Evidence removed · ' + (removed.summary || itemId), 'evidence', user);
+diff --git a/case_evidence_repository_ui.js b/case_evidence_repository_ui.js
+index 77ee940..980a8d0 100644
+--- a/case_evidence_repository_ui.js
++++ b/case_evidence_repository_ui.js
+@@ -169,6 +169,32 @@
+       '.cer-cat-chip{font-family:var(--mono,Courier New,monospace);font-size:9px;padding:2px 6px;border-radius:8px;font-weight:600;letter-spacing:.05em}',
+       '.cer-cat-row .cer-cat-reason{grid-column:1 / -1;font-size:10px;color:var(--text3,#6B6B80);margin-top:2px;line-height:1.35}',
+       '.cer-cat-summary{background:var(--surface2,#F7F7F9);border:1px dashed var(--rule,#D8D8E0);padding:10px 14px;border-radius:3px;margin-bottom:12px;font-size:11.5px;color:var(--text2,#2D2D44);line-height:1.5}',
++      /* B2A.11 · Audit-trail panel */
++      '.cer-audit-hdr{display:flex;justify-content:space-between;align-items:baseline;margin:24px 0 8px}',
++      '.cer-audit-hdr h4{font-family:var(--font-serif,Georgia,serif);font-size:15px;font-weight:400;margin:0}',
++      '.cer-audit-hdr .cer-audit-status{font-size:10.5px;color:var(--text3,#6B6B80);font-family:var(--mono,Courier New,monospace)}',
++      '.cer-audit-status .verified{color:var(--confirm,#1A5C3A);font-weight:600}',
++      '.cer-audit-status .broken{color:var(--alert,#8B1A1A);font-weight:600}',
++      '.cer-audit-status .checking{color:var(--accent,#1B3A6B)}',
++      '.cer-audit-verify{background:var(--surface,#fff);border:1px solid var(--rule,#D8D8E0);color:var(--text2,#2D2D44);font-size:10.5px;padding:4px 12px;border-radius:12px;cursor:pointer;font-family:var(--font,Helvetica Neue,Arial,sans-serif);margin-left:8px}',
++      '.cer-audit-verify:hover{background:var(--accent,#1B3A6B);color:#fff;border-color:var(--accent,#1B3A6B)}',
++      '.cer-audit-empty{padding:12px 14px;background:var(--surface2,#F7F7F9);border:1px dashed var(--rule,#D8D8E0);border-radius:3px;font-size:11px;color:var(--text3,#6B6B80);font-style:italic}',
++      '.cer-audit-list{background:var(--surface,#fff);border:1px solid var(--rule,#D8D8E0);border-radius:3px;overflow:hidden;font-family:var(--mono,Courier New,monospace);font-size:10.5px}',
++      '.cer-audit-row{display:grid;grid-template-columns:32px 100px 60px 1fr 90px;gap:10px;padding:7px 12px;border-bottom:1px solid var(--rule2,#EBEBF0);align-items:center}',
++      '.cer-audit-row:last-child{border-bottom:none}',
++      '.cer-audit-row.attach{background:#F5FBF7}',
++      '.cer-audit-row.detach{background:#FDF7F7}',
++      '.cer-audit-seq{color:var(--text3,#6B6B80);font-weight:600}',
++      '.cer-audit-ts{color:var(--text2,#2D2D44)}',
++      '.cer-audit-act{font-weight:600;text-transform:uppercase;font-size:9.5px;letter-spacing:.05em}',
++      '.cer-audit-act.attach{color:var(--confirm,#1A5C3A)}',
++      '.cer-audit-act.detach{color:var(--alert,#8B1A1A)}',
++      '.cer-audit-summary-cell{color:var(--text,#1A1A2E);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-family:var(--font,Helvetica Neue,Arial,sans-serif);font-size:11px}',
++      '.cer-audit-hash{color:var(--text3,#6B6B80);font-size:9px}',
++      '.cer-audit-hash-verified{color:var(--confirm,#1A5C3A)}',
++      '.cer-audit-hash-broken{color:var(--alert,#8B1A1A)}',
++      '.cer-audit-genesis{color:var(--text4,#9B9BAA);font-size:9px;padding:4px 12px 0}',
++      '.cer-audit-info{padding:8px 14px;background:var(--surface2,#F7F7F9);border-top:1px solid var(--rule2,#EBEBF0);font-family:var(--font,Helvetica Neue,Arial,sans-serif);font-size:10.5px;color:var(--text3,#6B6B80);line-height:1.5}',
+     ].join('');
+     document.head.appendChild(s);
+   }
+@@ -361,6 +387,7 @@
+         '<div class="cer-sec-hdr"><h4>Available from evidence-collection</h4><span class="hint">Auto-filtered to this case. Green chip = hits.</span></div>'+
+         '<div class="cer-sources">' + sourceCards + '</div>' +
+         renderCatalogueSection() +
++        renderAuditTrailSection(caseRef) +
+         '<div class="cer-actions-strip">'+
+           '<div style="font-size:11.5px;color:var(--text3,#6B6B80)">Bundle contents export for LOR pack / disclosure.</div>'+
+           '<button class="cer-btn-primary" id="cer-export"><i class="ti ti-download"></i>Export bundle JSON</button>'+
+@@ -435,5 +462,62 @@
+   }
+ 
+ 
+-  global.CaseEvidenceRepoUI = { render: render };
++
++  /* B2A.11 · Render the hash-chained compliance audit trail for the case. */
++  function renderAuditTrailSection(caseRef){
++    if (!global.CaseAuditTrail) return '';
++    var chain = global.CaseAuditTrail.list(caseRef) || [];
++    var body;
++    if (!chain.length){
++      body = '<div class="cer-audit-empty">No audit-trail entries yet. Each attach or detach will be recorded here with a SHA-256 hash chained to the previous entry — tamper-evident.</div>';
++    } else {
++      var rows = chain.map(function(e){
++        var ts = '';
++        try {
++          var d = new Date(e.ts);
++          ts = d.toLocaleDateString('en-GB',{day:'2-digit',month:'short'}) + ' ' + d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',hour12:false});
++        } catch(_){ ts = String(e.ts||'').slice(0,16); }
++        return '<div class="cer-audit-row ' + esc(e.action) + '">' +
++          '<span class="cer-audit-seq">#' + e.seq + '</span>' +
++          '<span class="cer-audit-ts">' + esc(ts) + '</span>' +
++          '<span class="cer-audit-act ' + esc(e.action) + '">' + esc(e.action) + '</span>' +
++          '<span class="cer-audit-summary-cell" title="' + esc(e.summary || '') + '">' + esc(e.summary || e.itemKey || '(no summary)') + '</span>' +
++          '<span class="cer-audit-hash" data-hash-cell="' + e.seq + '" title="' + esc(e.hash) + '">' + esc((e.hash||'').slice(0,8)) + '…</span>' +
++          '</div>';
++      }).join('');
++      body = '<div class="cer-audit-list">' +
++        '<div class="cer-audit-genesis">genesis: ' + esc(global.CaseAuditTrail.genesisHash().slice(0,16)) + '…</div>' +
++        rows +
++        '<div class="cer-audit-info">The chain is stored on the case (meta.evidenceAuditTrail[]). Every entry is a SHA-256 of its own payload + the previous entry\'s hash — mutation of any past entry breaks all subsequent hashes. Click <strong>Verify chain</strong> to recompute.</div>' +
++        '</div>';
++    }
++    return '<div class="cer-audit-hdr"><h4>Compliance audit trail</h4>' +
++             '<span class="cer-audit-status"><span data-audit-status>chain length: ' + chain.length + '</span>' +
++             (chain.length ? '<button class="cer-audit-verify" onclick="CaseEvidenceRepoUI.verifyAudit(\'' + esc(caseRef) + '\')">Verify chain</button>' : '') +
++             '</span></div>' +
++             body;
++  }
++
++  /* Called from Verify button */
++  function verifyAudit(caseRef){
++    if (!global.CaseAuditTrail || !global.CaseAuditTrail.verify) return;
++    var statusEl = document.querySelector('[data-audit-status]');
++    if (statusEl) statusEl.innerHTML = '<span class="checking">verifying…</span>';
++    global.CaseAuditTrail.verify(caseRef).then(function(res){
++      if (!statusEl) return;
++      if (res.ok){
++        statusEl.innerHTML = '<span class="verified">✓ ' + res.entries + ' entries verified · chain intact</span>';
++        document.querySelectorAll('[data-hash-cell]').forEach(function(el){ el.classList.add('cer-audit-hash-verified'); });
++      } else {
++        statusEl.innerHTML = '<span class="broken">✗ ' + res.breaks.length + ' break(s) at seq ' + res.breaks.map(function(b){return b.seq;}).join(', ') + '</span>';
++        res.breaks.forEach(function(b){
++          var el = document.querySelector('[data-hash-cell="' + b.seq + '"]');
++          if (el) el.classList.add('cer-audit-hash-broken');
++        });
++      }
++    });
++  }
++
++
++  global.CaseEvidenceRepoUI = { render: render, verifyAudit: verifyAudit };
+ })(typeof window !== 'undefined' ? window : this);
+diff --git a/case_shell.js b/case_shell.js
+index b534975..c0b32b9 100644
+--- a/case_shell.js
++++ b/case_shell.js
+@@ -818,7 +818,22 @@ var CaseShell = (function () {
+       var params = new URLSearchParams(window.location.search);
+       if (params.get('request')) extra += '&request=' + encodeURIComponent(params.get('request'));
+     } catch (e) {}
++    /* B2A.7 · Cross-link banner — when on Evidence tab, show attached-item count
++       in the sibling Repository tab so the DIO knows it's not empty. */
++    var crossLink = '';
++    if (tab === 'evidence' && window.CaseEvidenceRepository && state.ref){
++      try {
++        var attached = window.CaseEvidenceRepository.listAttached(state.ref) || [];
++        crossLink = '<div class="ce-crosslink">' +
++          '<i class="ti ti-database"></i>' +
++          '<span><strong>' + attached.length + '</strong> item' + (attached.length === 1 ? '' : 's') + ' attached to this case in the ' +
++          '<a href="#" onclick="CaseShell.switchTab(\'repo\');return false">Evidence Repository →</a></span>' +
++          '<span class="ce-crosslink-hint">Attached items survive raw-snapshot rotation and are cited in the defence letter.</span>' +
++          '</div>';
++      } catch (e) {}
++    }
+     document.getElementById('tab-panel').innerHTML =
++      crossLink +
+       '<iframe id="case-frame" class="case-frame" src="' +
+       src +
+       '?ref=' +
+diff --git a/dio.html b/dio.html
+index 7f387ad..f6ef7eb 100644
+--- a/dio.html
++++ b/dio.html
+@@ -290,7 +290,8 @@ html,body{min-height:100%;font-family:var(--font);background:var(--surface2);col
+ <script src="case_filing.js"></script>
+ <script src="work_dashboard.js"></script>
+ <script src="defendable_evidence_reader.js?v=p2c"></script>
+-<script src="case_evidence_repository.js?v=s6a"></script>
++<script src="case_audit_trail.js?v=s7a"></script>
++<script src="case_evidence_repository.js?v=s7a"></script>
+ <script src="case_evidence_fetch_trigger.js?v=s5b"></script>
+ <script src="dio_core.js?v=s5a"></script>
+ <script src="dio_territory.js?v=s5a"></script>
+diff --git a/evidence-flights.html b/evidence-flights.html
+index 8227304..180b1f3 100644
+--- a/evidence-flights.html
++++ b/evidence-flights.html
+@@ -194,7 +194,8 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
+ <script src="case_helpers.js"></script>
+ <script src="case_filing.js"></script>
+ <script src="defendable_evidence_reader.js?v=p2c"></script>
+-<script src="case_evidence_repository.js?v=s6a"></script>
++<script src="case_audit_trail.js?v=s7a"></script>
++<script src="case_evidence_repository.js?v=s7a"></script>
+ <script src="dio_core.js?v=s5a"></script>
+ <script src="dio_territory.js?v=s5a"></script>
+ <script src="dio_data.js?v=s5a"></script>
+diff --git a/evidence-workspace.html b/evidence-workspace.html
+index 25c2ac7..9a872e6 100644
+--- a/evidence-workspace.html
++++ b/evidence-workspace.html
+@@ -155,7 +155,8 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
+ <script src="case_helpers.js"></script>
+ <script src="case_filing.js"></script>
+ <script src="defendable_evidence_reader.js?v=p2c"></script>
+-<script src="case_evidence_repository.js?v=s6a"></script>
++<script src="case_audit_trail.js?v=s7a"></script>
++<script src="case_evidence_repository.js?v=s7a"></script>
+ <script src="case_evidence_fetch_trigger.js?v=s5b"></script>
+ <script src="dio_core.js?v=s5a"></script>
+ <script src="dio_territory.js?v=s5a"></script>
+-- 
+2.34.1
+

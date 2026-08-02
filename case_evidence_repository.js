@@ -304,10 +304,15 @@
       : { items: [] };
   }
   function writeRepo(caseRef, repo){
-    if (!global.CaseFiling) return;
-    var patch = {};
-    patch[STORAGE_META_KEY] = repo;
-    global.CaseFiling.updateCaseMeta(caseRef, patch);
+    if (!global.CaseFiling || !global.CaseFiling.updateCaseMeta || !global.CaseFiling.getCase) return;
+    /* B2A · Fix: write under case.meta so readRepo (which reads meta[STORAGE_META_KEY])
+       actually finds it. Previously wrote top-level; only worked via reference sharing
+       into seeded meta objects — first live attach on an unseeded case was lost. */
+    var c = global.CaseFiling.getCase(caseRef);
+    var existingMeta = (c && c.meta) ? c.meta : {};
+    var newMeta = Object.assign({}, existingMeta);
+    newMeta[STORAGE_META_KEY] = repo;
+    global.CaseFiling.updateCaseMeta(caseRef, { meta: newMeta });
   }
   function listAttached(caseRef){ return readRepo(caseRef).items; }
   function attachItem(caseRef, sourceId, item, note){
@@ -332,6 +337,20 @@
     };
     repo.items.push(attachment);
     writeRepo(caseRef, repo);
+    /* B2A.11 · Append tamper-evident audit-trail entry */
+    try {
+      if (global.CaseAuditTrail && global.CaseAuditTrail.append){
+        global.CaseAuditTrail.append(caseRef, {
+          action:   'attach',
+          itemKey:  attachment.itemKey,
+          itemId:   attachment.id,
+          sourceId: attachment.sourceId,
+          summary:  attachment.summary,
+          note:     attachment.note || null,
+        });
+      }
+    } catch (e){ if (global.console) console.debug('audit-trail append failed:', e); }
+
     if (global.CaseFiling.addActivity){
       global.CaseFiling.addActivity(caseRef, 'Evidence attached · ' + attachment.summary + ' (' + attachment.sourceProvider + ')', 'evidence', user);
     }
@@ -342,12 +361,17 @@
         var c = global.CaseFiling.getCase(caseRef);
         var uName = (global.USERS && global.USERS[user] && (global.USERS[user].name || user)) || user;
         if (c && c.assignedTo && c.assignedTo !== user){
+          /* B2A.6 · Richer notification body: source name front, timestamp compact,
+             itemId included so case page can deep-link + highlight the new item. */
+          var attTs = '';
+          try { attTs = new Date(attachment.attachedAt).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',hour12:false}); } catch(e){}
           global.pushNotification({
             to: c.assignedTo,
             type: 'evidence-attached',
             ref: caseRef,
-            title: 'Evidence attached by DIO',
-            body: uName + ' attached ' + (attachment.summary || 'an evidence item') + ' from ' + (attachment.sourceProvider || 'evidence source') + ' — ' + (c.claimant || caseRef),
+            itemId: attachment.id,
+            title: (attachment.sourceProvider || 'Evidence') + ' attached · ' + (c.claimant || caseRef),
+            body: uName + ' attached ' + (attachment.summary || 'an evidence item') + (attTs ? ' at ' + attTs : ''),
             time: new Date().toLocaleString('en-GB'),
             read: false,
             tab: 'evidence',
@@ -385,6 +409,18 @@
     if (i < 0) return false;
     var removed = repo.items.splice(i, 1)[0];
     writeRepo(caseRef, repo);
+    try {
+      if (global.CaseAuditTrail && global.CaseAuditTrail.append){
+        global.CaseAuditTrail.append(caseRef, {
+          action:   'detach',
+          itemKey:  removed.itemKey,
+          itemId:   removed.id,
+          sourceId: removed.sourceId,
+          summary:  removed.summary,
+        });
+      }
+    } catch (e){ if (global.console) console.debug('audit-trail append (detach) failed:', e); }
+
     if (global.CaseFiling.addActivity){
       var user = (global.getActiveUser && global.getActiveUser()) || 'SB';
       global.CaseFiling.addActivity(caseRef, 'Evidence removed · ' + (removed.summary || itemId), 'evidence', user);

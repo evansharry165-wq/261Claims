@@ -169,6 +169,32 @@
       '.cer-cat-chip{font-family:var(--mono,Courier New,monospace);font-size:9px;padding:2px 6px;border-radius:8px;font-weight:600;letter-spacing:.05em}',
       '.cer-cat-row .cer-cat-reason{grid-column:1 / -1;font-size:10px;color:var(--text3,#6B6B80);margin-top:2px;line-height:1.35}',
       '.cer-cat-summary{background:var(--surface2,#F7F7F9);border:1px dashed var(--rule,#D8D8E0);padding:10px 14px;border-radius:3px;margin-bottom:12px;font-size:11.5px;color:var(--text2,#2D2D44);line-height:1.5}',
+      /* B2A.11 · Audit-trail panel */
+      '.cer-audit-hdr{display:flex;justify-content:space-between;align-items:baseline;margin:24px 0 8px}',
+      '.cer-audit-hdr h4{font-family:var(--font-serif,Georgia,serif);font-size:15px;font-weight:400;margin:0}',
+      '.cer-audit-hdr .cer-audit-status{font-size:10.5px;color:var(--text3,#6B6B80);font-family:var(--mono,Courier New,monospace)}',
+      '.cer-audit-status .verified{color:var(--confirm,#1A5C3A);font-weight:600}',
+      '.cer-audit-status .broken{color:var(--alert,#8B1A1A);font-weight:600}',
+      '.cer-audit-status .checking{color:var(--accent,#1B3A6B)}',
+      '.cer-audit-verify{background:var(--surface,#fff);border:1px solid var(--rule,#D8D8E0);color:var(--text2,#2D2D44);font-size:10.5px;padding:4px 12px;border-radius:12px;cursor:pointer;font-family:var(--font,Helvetica Neue,Arial,sans-serif);margin-left:8px}',
+      '.cer-audit-verify:hover{background:var(--accent,#1B3A6B);color:#fff;border-color:var(--accent,#1B3A6B)}',
+      '.cer-audit-empty{padding:12px 14px;background:var(--surface2,#F7F7F9);border:1px dashed var(--rule,#D8D8E0);border-radius:3px;font-size:11px;color:var(--text3,#6B6B80);font-style:italic}',
+      '.cer-audit-list{background:var(--surface,#fff);border:1px solid var(--rule,#D8D8E0);border-radius:3px;overflow:hidden;font-family:var(--mono,Courier New,monospace);font-size:10.5px}',
+      '.cer-audit-row{display:grid;grid-template-columns:32px 100px 60px 1fr 90px;gap:10px;padding:7px 12px;border-bottom:1px solid var(--rule2,#EBEBF0);align-items:center}',
+      '.cer-audit-row:last-child{border-bottom:none}',
+      '.cer-audit-row.attach{background:#F5FBF7}',
+      '.cer-audit-row.detach{background:#FDF7F7}',
+      '.cer-audit-seq{color:var(--text3,#6B6B80);font-weight:600}',
+      '.cer-audit-ts{color:var(--text2,#2D2D44)}',
+      '.cer-audit-act{font-weight:600;text-transform:uppercase;font-size:9.5px;letter-spacing:.05em}',
+      '.cer-audit-act.attach{color:var(--confirm,#1A5C3A)}',
+      '.cer-audit-act.detach{color:var(--alert,#8B1A1A)}',
+      '.cer-audit-summary-cell{color:var(--text,#1A1A2E);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-family:var(--font,Helvetica Neue,Arial,sans-serif);font-size:11px}',
+      '.cer-audit-hash{color:var(--text3,#6B6B80);font-size:9px}',
+      '.cer-audit-hash-verified{color:var(--confirm,#1A5C3A)}',
+      '.cer-audit-hash-broken{color:var(--alert,#8B1A1A)}',
+      '.cer-audit-genesis{color:var(--text4,#9B9BAA);font-size:9px;padding:4px 12px 0}',
+      '.cer-audit-info{padding:8px 14px;background:var(--surface2,#F7F7F9);border-top:1px solid var(--rule2,#EBEBF0);font-family:var(--font,Helvetica Neue,Arial,sans-serif);font-size:10.5px;color:var(--text3,#6B6B80);line-height:1.5}',
     ].join('');
     document.head.appendChild(s);
   }
@@ -361,6 +387,7 @@
         '<div class="cer-sec-hdr"><h4>Available from evidence-collection</h4><span class="hint">Auto-filtered to this case. Green chip = hits.</span></div>'+
         '<div class="cer-sources">' + sourceCards + '</div>' +
         renderCatalogueSection() +
+        renderAuditTrailSection(caseRef) +
         '<div class="cer-actions-strip">'+
           '<div style="font-size:11.5px;color:var(--text3,#6B6B80)">Bundle contents export for LOR pack / disclosure.</div>'+
           '<button class="cer-btn-primary" id="cer-export"><i class="ti ti-download"></i>Export bundle JSON</button>'+
@@ -435,5 +462,62 @@
   }
 
 
-  global.CaseEvidenceRepoUI = { render: render };
+
+  /* B2A.11 · Render the hash-chained compliance audit trail for the case. */
+  function renderAuditTrailSection(caseRef){
+    if (!global.CaseAuditTrail) return '';
+    var chain = global.CaseAuditTrail.list(caseRef) || [];
+    var body;
+    if (!chain.length){
+      body = '<div class="cer-audit-empty">No audit-trail entries yet. Each attach or detach will be recorded here with a SHA-256 hash chained to the previous entry — tamper-evident.</div>';
+    } else {
+      var rows = chain.map(function(e){
+        var ts = '';
+        try {
+          var d = new Date(e.ts);
+          ts = d.toLocaleDateString('en-GB',{day:'2-digit',month:'short'}) + ' ' + d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',hour12:false});
+        } catch(_){ ts = String(e.ts||'').slice(0,16); }
+        return '<div class="cer-audit-row ' + esc(e.action) + '">' +
+          '<span class="cer-audit-seq">#' + e.seq + '</span>' +
+          '<span class="cer-audit-ts">' + esc(ts) + '</span>' +
+          '<span class="cer-audit-act ' + esc(e.action) + '">' + esc(e.action) + '</span>' +
+          '<span class="cer-audit-summary-cell" title="' + esc(e.summary || '') + '">' + esc(e.summary || e.itemKey || '(no summary)') + '</span>' +
+          '<span class="cer-audit-hash" data-hash-cell="' + e.seq + '" title="' + esc(e.hash) + '">' + esc((e.hash||'').slice(0,8)) + '…</span>' +
+          '</div>';
+      }).join('');
+      body = '<div class="cer-audit-list">' +
+        '<div class="cer-audit-genesis">genesis: ' + esc(global.CaseAuditTrail.genesisHash().slice(0,16)) + '…</div>' +
+        rows +
+        '<div class="cer-audit-info">The chain is stored on the case (meta.evidenceAuditTrail[]). Every entry is a SHA-256 of its own payload + the previous entry\'s hash — mutation of any past entry breaks all subsequent hashes. Click <strong>Verify chain</strong> to recompute.</div>' +
+        '</div>';
+    }
+    return '<div class="cer-audit-hdr"><h4>Compliance audit trail</h4>' +
+             '<span class="cer-audit-status"><span data-audit-status>chain length: ' + chain.length + '</span>' +
+             (chain.length ? '<button class="cer-audit-verify" onclick="CaseEvidenceRepoUI.verifyAudit(\'' + esc(caseRef) + '\')">Verify chain</button>' : '') +
+             '</span></div>' +
+             body;
+  }
+
+  /* Called from Verify button */
+  function verifyAudit(caseRef){
+    if (!global.CaseAuditTrail || !global.CaseAuditTrail.verify) return;
+    var statusEl = document.querySelector('[data-audit-status]');
+    if (statusEl) statusEl.innerHTML = '<span class="checking">verifying…</span>';
+    global.CaseAuditTrail.verify(caseRef).then(function(res){
+      if (!statusEl) return;
+      if (res.ok){
+        statusEl.innerHTML = '<span class="verified">✓ ' + res.entries + ' entries verified · chain intact</span>';
+        document.querySelectorAll('[data-hash-cell]').forEach(function(el){ el.classList.add('cer-audit-hash-verified'); });
+      } else {
+        statusEl.innerHTML = '<span class="broken">✗ ' + res.breaks.length + ' break(s) at seq ' + res.breaks.map(function(b){return b.seq;}).join(', ') + '</span>';
+        res.breaks.forEach(function(b){
+          var el = document.querySelector('[data-hash-cell="' + b.seq + '"]');
+          if (el) el.classList.add('cer-audit-hash-broken');
+        });
+      }
+    });
+  }
+
+
+  global.CaseEvidenceRepoUI = { render: render, verifyAudit: verifyAudit };
 })(typeof window !== 'undefined' ? window : this);
