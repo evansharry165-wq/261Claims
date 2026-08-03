@@ -74,7 +74,7 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
   <div class="crumb"><a href="evidence.html">Evidence</a><i class="ti ti-chevron-right"></i><span>ATFM</span></div>
   <div>
     <div class="page-title">ATFM — Air Traffic Flow Management</div>
-    <div class="page-sub">Eurocontrol NM public portal (live operational status) + CODA (retrospective delay analysis).</div>
+    <div class="page-sub">Storage destination for everything DefendAble has pulled from Eurocontrol NM public NOP + CODA retrospective. Original live source is <a href="https://www.public.nm.eurocontrol.int/PUBPORTAL/gateway/spec/index.html" target="_blank" rel="noopener" style="color:var(--accent);font-weight:600;text-decoration:none">eurocontrol.int public portal &rarr;</a></div>
   </div>
 </div>
 
@@ -82,17 +82,24 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 
 <div class="content">
   <div class="note-card"><strong>Layer 1 interim.</strong> The authoritative live ATFM feed is Eurocontrol NM B2B (first two certificates per organisation are free). Once the cert lands, these two panels are replaced with the full SOAP feed — same UI surface, materially richer payload. Until then this page shows the public-portal index links.</div>
+  <div style="background:linear-gradient(90deg,#EEF2F8 0%,#F7F7F9 100%);border:1px solid #C7D8EC;border-radius:4px;padding:14px 18px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap">
+    <div style="flex:1;min-width:280px">
+      <div style="font-family:var(--font-serif);font-size:14px;font-weight:500;color:var(--text);margin-bottom:2px">Eurocontrol NM public portal</div>
+      <div style="font-size:11.5px;color:var(--text3);line-height:1.5">Two panels below are DefendAble's own storage of the details we've pulled from Eurocontrol. For the live authoritative view (with real-time regulation feed, network briefings, operational alerts), open the portal directly on eurocontrol.int.</div>
+    </div>
+    <a href="https://www.public.nm.eurocontrol.int/PUBPORTAL/gateway/spec/index.html" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;padding:9px 16px;background:var(--accent);color:#fff;border-radius:4px;text-decoration:none;font-size:12px;font-weight:600;white-space:nowrap"><i class="ti ti-external-link"></i>Open live portal</a>
+  </div>
   <div class="two-col">
     <div class="col" id="col-nm">
       <div class="col-hdr">
-        <div class="col-hdr-left"><h3>Eurocontrol NM · live operations</h3><p>Public portal index — regulations, network status, traffic.</p></div>
+        <div class="col-hdr-left"><h3>NM · live operations (our snapshot)</h3><p>Latest details we've pulled from Eurocontrol NM. For the authoritative live view, use the portal button above.</p></div>
         <div class="col-hdr-count" id="c-nm">—</div>
       </div>
       <div class="col-body" id="body-nm"><div class="loading"><span class="spinner"></span>Loading…</div></div>
     </div>
     <div class="col" id="col-coda">
       <div class="col-hdr">
-        <div class="col-hdr-left"><h3>Eurocontrol CODA · retrospective</h3><p>Delay analysis publications, monthly digests, punctuality briefs.</p></div>
+        <div class="col-hdr-left"><h3>CODA · retrospective (our archive)</h3><p>Delay analysis publications, monthly digests, punctuality briefs — cached by DefendAble's daily cron.</p></div>
         <div class="col-hdr-count" id="c-coda">—</div>
       </div>
       <div class="col-body" id="body-coda"><div class="loading"><span class="spinner"></span>Loading…</div></div>

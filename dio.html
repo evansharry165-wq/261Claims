@@ -62,6 +62,26 @@ html,body{min-height:100%;font-family:var(--font);background:var(--surface2);col
 
 /* ── Widget grid ── */
 .widget-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}
+/* B1 · Disruption map · filter bar + chips + marker colours */
+.map-filter-bar{display:flex;flex-wrap:wrap;gap:6px;padding:10px 14px 12px;border-bottom:1px solid var(--rule2)}
+.map-chip{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:14px;border:1px solid var(--rule);background:var(--surface);color:var(--text2);font-size:11px;cursor:pointer;font-family:var(--font);font-weight:500;user-select:none;transition:opacity .12s,background .12s}
+.map-chip .map-chip-count{font-family:var(--mono);font-size:10px;font-weight:600;padding:1px 5px;border-radius:10px;background:var(--surface2);color:var(--text3)}
+.map-chip.on{background:var(--accent-faint);border-color:var(--accent);color:var(--accent)}
+.map-chip.on .map-chip-count{background:var(--accent);color:#fff}
+.map-chip.off{opacity:0.45}
+.map-chip .dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+.map-chip.weather .dot{background:#254E91}
+.map-chip.notam .dot{background:#7A4E00}
+.map-chip.atfm .dot{background:#1F5C68}
+.map-chip.strike .dot{background:#5B4A9F}
+.map-chip.wildfire .dot{background:#8B1A1A}
+.map-chip.disaster .dot{background:#4338CA}
+.map-chip.volcanic .dot{background:#7A4E00}
+.map-chip.news .dot{background:#1A5C3A}
+.leaflet-popup-content{font-family:var(--font);font-size:12px;line-height:1.45}
+.leaflet-popup-content .lp-kind{font-family:var(--mono);font-size:9.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--text3);margin-bottom:3px}
+.leaflet-popup-content .lp-title{font-weight:600;color:var(--text);margin-bottom:3px}
+.leaflet-popup-content .lp-meta{font-size:10.5px;color:var(--text3);font-family:var(--mono)}
 .widget{grid-column:span 12;background:var(--surface);border:1px solid var(--border);border-radius:var(--r3);overflow:hidden;display:flex;flex-direction:column;scroll-margin-top:70px}
 .widget.w-4{grid-column:span 12}
 .widget.w-6{grid-column:span 12}
@@ -293,10 +313,10 @@ html,body{min-height:100%;font-family:var(--font);background:var(--surface2);col
 <script src="case_audit_trail.js?v=s9a"></script>
 <script src="case_evidence_repository.js?v=s9a"></script>
 <script src="case_evidence_fetch_trigger.js?v=s9a"></script>
-<script src="dio_core.js?v=s9a"></script>
-<script src="dio_territory.js?v=s9a"></script>
-<script src="dio_data.js?v=s9a"></script>
-<script src="dio_helpers.js?v=s9a"></script>
+<script src="dio_core.js?v=s11a"></script>
+<script src="dio_territory.js?v=s11a"></script>
+<script src="dio_data.js?v=s11a"></script>
+<script src="dio_helpers.js?v=s11a"></script>
 <script src="flight_data.js"></script>
 
 <nav class="global-nav">
@@ -317,6 +337,120 @@ function escapeHtml(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c
 function toggleUserMenu(){var m=document.getElementById('user-modal');if(m)m.classList.toggle('open');}
 function closeUserMenu(e){if(e.target.id==='user-modal')document.getElementById('user-modal').classList.remove('open');}
 function scrollToZone(id){var el=document.getElementById(id);if(el)el.scrollIntoView({behavior:'smooth',block:'start'});}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   B1 · Live disruption map — seeded with realistic Europe-wide events.
+   Filter chips toggle per-kind layers.  Territory-zoomed to active DIO.
+   Live-feed integration is a follow-up (B3 daily folders + B4 hourly cron).
+   ═══════════════════════════════════════════════════════════════════════ */
+var DISRUPTION_SEED = [
+  {kind:'weather',  lat:51.47, lon:-0.46, title:'CB thunderstorm activity · LGW', meta:'METAR 251400Z TSRA · Aviation Weather', when:'today 14:00Z'},
+  {kind:'weather',  lat:39.55, lon:-0.47, title:'Embedded TSRA over LEVC', meta:'SIGMET UK EGTT · cell tops FL340', when:'today 13:40Z'},
+  {kind:'weather',  lat:53.35, lon:-2.28, title:'Low visibility procedures · MAN', meta:'METAR EGCC 0400 FG · Aviation Weather', when:'today 07:00Z'},
+  {kind:'weather',  lat:50.03, lon:8.56,  title:'Windshear reports · FRA', meta:'AIRMET · Aviation Weather', when:'today 11:00Z'},
+  {kind:'notam',    lat:41.30, lon:2.08,  title:'Runway 07L closed · BCN', meta:'NOTAM A1245/26 · valid 08:00-14:00Z', when:'today'},
+  {kind:'notam',    lat:52.31, lon:4.76,  title:'Taxiway B closed for works · AMS', meta:'NOTAM A0876/26 · until 05 Aug', when:'today'},
+  {kind:'notam',    lat:53.42, lon:-6.27, title:'ILS 10R out of service · DUB', meta:'NOTAM A0432/26', when:'today'},
+  {kind:'atfm',     lat:41.80, lon:12.25, title:'ATFM regulation · Rome FIR', meta:'Reference LIRR30A · weather cause', when:'today 12:00-18:00Z'},
+  {kind:'atfm',     lat:48.72, lon:2.38,  title:'Slot restrictions · Paris TMA', meta:'Reference LFPR20A · staffing cause', when:'today 15:00-19:00Z'},
+  {kind:'strike',   lat:41.29, lon:2.08,  title:'Vueling cabin-crew strike day 1', meta:'SEPLA/USO · DGAC min-services pending', when:'01-05 Aug 2026'},
+  {kind:'strike',   lat:45.63, lon:8.72,  title:'Italian ATC 4-hour strike', meta:'ENAC bulletin · 12:00-16:00Z', when:'today'},
+  {kind:'wildfire', lat:37.63, lon:14.02, title:'Etna region wildfire', meta:'NASA FIRMS · confidence high · 8km cluster', when:'today'},
+  {kind:'wildfire', lat:40.65, lon:22.94, title:'Wildfire near LGTS', meta:'Copernicus EFFIS · active', when:'today'},
+  {kind:'disaster', lat:38.72, lon:-9.14, title:'Flash floods · Lisbon region', meta:'GDACS · orange alert', when:'today'},
+  {kind:'volcanic', lat:37.75, lon:15.00, title:'Etna VAAC advisory', meta:'Toulouse VAAC · ash to FL180', when:'today'},
+  {kind:'volcanic', lat:63.63, lon:-19.05, title:'Katla precursor activity', meta:'London VAAC · advisory monitoring', when:'today'},
+  {kind:'news',     lat:51.15, lon:-0.19, title:'Aviation Herald · LGW ground stop', meta:'avherald.com · 45 min hold', when:'today 09:30Z'},
+];
+
+var DISRUPTION_KINDS = [
+  {id:'weather',  label:'Weather',     colour:'#254E91'},
+  {id:'notam',    label:'NOTAMs',      colour:'#7A4E00'},
+  {id:'atfm',     label:'ATFM',        colour:'#1F5C68'},
+  {id:'strike',   label:'Strikes',     colour:'#5B4A9F'},
+  {id:'wildfire', label:'Wildfires',   colour:'#8B1A1A'},
+  {id:'disaster', label:'Disasters',   colour:'#4338CA'},
+  {id:'volcanic', label:'Volcanic',    colour:'#7A4E00'},
+  {id:'news',     label:'Incidents',   colour:'#1A5C3A'},
+];
+
+var mapState = { map:null, layersByKind:{}, activeKinds:{} };
+
+function initDisruptionMap(){
+  if (mapState.map) return;
+  if (typeof L === 'undefined') return;
+
+  var profile = DIOCore.getDIOProfile();
+  var territory = DIOTerritory.getTerritory(profile.uid);
+  var centre = territory.short_label === 'UK + IE' ? [54.5,-3.5]
+             : territory.short_label === 'FR'      ? [46.5, 2.5]
+             : territory.short_label === 'ES'      ? [40.0,-3.5]
+             : [48, 5];
+  var zoom = 5;
+
+  mapState.map = L.map('disruption-map', {zoomControl:true, worldCopyJump:true, minZoom:3, maxZoom:10}).setView(centre, zoom);
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution:'&copy; OpenStreetMap',
+    maxZoom:19
+  }).addTo(mapState.map);
+
+  // Group items by kind, count, and create a layer per kind
+  var byKind = {};
+  DISRUPTION_KINDS.forEach(function(k){ byKind[k.id] = []; mapState.activeKinds[k.id] = true; });
+  DISRUPTION_SEED.forEach(function(e){
+    if (byKind[e.kind]) byKind[e.kind].push(e);
+  });
+
+  DISRUPTION_KINDS.forEach(function(k){
+    var lg = L.layerGroup();
+    byKind[k.id].forEach(function(e){
+      var marker = L.circleMarker([e.lat, e.lon], {
+        radius: 8,
+        color: '#fff',
+        weight: 2,
+        fillColor: k.colour,
+        fillOpacity: 0.85
+      });
+      marker.bindPopup(
+        '<div class="lp-kind">'+escapeHtml(k.label)+'</div>'+
+        '<div class="lp-title">'+escapeHtml(e.title)+'</div>'+
+        '<div>'+escapeHtml(e.meta)+'</div>'+
+        '<div class="lp-meta">'+escapeHtml(e.when)+'</div>'
+      );
+      lg.addLayer(marker);
+    });
+    lg.addTo(mapState.map);
+    mapState.layersByKind[k.id] = lg;
+  });
+
+  // Render filter chips with counts
+  var bar = document.getElementById('map-filter-bar');
+  if (bar){
+    bar.innerHTML = DISRUPTION_KINDS.map(function(k){
+      var count = byKind[k.id].length;
+      return '<button class="map-chip on '+k.id+'" data-kind="'+k.id+'" onclick="toggleMapKind(\''+k.id+'\')">'+
+             '<span class="dot"></span>'+
+             '<span>'+k.label+'</span>'+
+             '<span class="map-chip-count">'+count+'</span>'+
+             '</button>';
+    }).join('');
+  }
+}
+
+function toggleMapKind(kindId){
+  if (!mapState.map || !mapState.layersByKind[kindId]) return;
+  mapState.activeKinds[kindId] = !mapState.activeKinds[kindId];
+  if (mapState.activeKinds[kindId]) {
+    mapState.layersByKind[kindId].addTo(mapState.map);
+  } else {
+    mapState.map.removeLayer(mapState.layersByKind[kindId]);
+  }
+  var chip = document.querySelector('.map-chip[data-kind="'+kindId+'"]');
+  if (chip) {
+    chip.classList.toggle('on', mapState.activeKinds[kindId]);
+    chip.classList.toggle('off', !mapState.activeKinds[kindId]);
+  }
+}
 function dismissOnboarding(){try{sessionStorage.setItem('dfa_dio_onboarded','1');}catch(e){}var el=document.getElementById('w-onboarding');if(el)el.remove();}
 
 function toast(msg, kind){
@@ -742,6 +876,18 @@ function render(){
     +   '</section>'
 
     /* Row 3 — Territory airports (w-12) */
+    /* B1 · Live disruption map — territory-zoomed with per-type filter chips */
+    +   '<section class="widget w-12" id="w-map">'
+    +     '<div class="widget-hdr">'
+    +       '<div class="widget-title"><i class="ti ti-map-pin"></i>Live disruption map · '+escapeHtml(territory.short_label)+'</div>'
+    +       '<span style="font-size:11px;color:var(--text3)">Click a chip to toggle a layer · marker for on-map detail</span>'
+    +     '</div>'
+    +     '<div class="widget-body p0">'
+    +       '<div class="map-filter-bar" id="map-filter-bar"></div>'
+    +       '<div id="disruption-map" style="height:420px;width:100%;position:relative;z-index:0"></div>'
+    +     '</div>'
+    +   '</section>'
+
     +   '<section class="widget w-12" id="w-territory">'
     +     '<div class="widget-hdr">'
     +       '<div class="widget-title"><i class="ti ti-map-2"></i>Your territory · '+escapeHtml(territory.short_label)+' · '+territory.airports_icao.length+' airports</div>'
@@ -854,6 +1000,8 @@ function reloadFeed(){
 
 window.addEventListener('load', function(){
   render();
+  /* B1 · Init disruption map after DOM has render()-ed the widget shell */
+  setTimeout(function(){ try { initDisruptionMap(); } catch(e){ if(console) console.warn('map init failed:',e); } }, 60);
   /* Q3 · If we arrived via a hash (e.g. cases/requests redirect), scroll to it after render. */
   if (window.location.hash) {
     setTimeout(function(){
