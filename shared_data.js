@@ -1,15 +1,15 @@
 // ALL DATA AND HELPERS — embedded in every page
 const USERS={
-  SB:{id:'SB',name:'S. Booth',full:'Sarah Booth',role:'Head of Legal Ops',initials:'SB',lang:'en'},
-  JP:{id:'JP',name:'J. Patel',full:'James Patel',role:'Senior Solicitor',initials:'JP',lang:'en'},
-  KR:{id:'KR',name:'K. Rahman',full:'Kiran Rahman',role:'Solicitor',initials:'KR',lang:'en'},
-  MD:{id:'MD',name:'M. Dupont',full:'Marie Dupont',role:'Juriste senior',initials:'MD',lang:'fr'},
-  PL:{id:'PL',name:'P. Laurent',full:'Pierre Laurent',role:'Juriste',initials:'PL',lang:'fr'},
-  CG:{id:'CG',name:'C. García',full:'Carlos García',role:'Abogado senior',initials:'CG',lang:'es'},
-  IM:{id:'IM',name:'I. Martín',full:'Isabel Martín',role:'Abogada',initials:'IM',lang:'es'},
-  EH:{id:'EH',name:'E. Hughes',full:'Emma Hughes',role:'DIO — England & Wales',initials:'EH',lang:'en',team:'dio',jurisdiction:'england-wales'},
-  FD:{id:'FD',name:'F. Durand',full:'Françoise Durand',role:'DIO — France',initials:'FD',lang:'fr',team:'dio',jurisdiction:'france'},
-  SR:{id:'SR',name:'S. Ramos',full:'Sofia Ramos',role:'DIO — España',initials:'SR',lang:'es',team:'dio',jurisdiction:'spain'},
+  SB:{id:'SB',name:'Sarah Booth',full:'Sarah Booth',role:'Head of Legal Ops',initials:'SB',lang:'en'},
+  JP:{id:'JP',name:'James Patel',full:'James Patel',role:'Senior Solicitor',initials:'JP',lang:'en'},
+  KR:{id:'KR',name:'Kiran Rahman',full:'Kiran Rahman',role:'Solicitor',initials:'KR',lang:'en'},
+  MD:{id:'MD',name:'Marie Dupont',full:'Marie Dupont',role:'Juriste senior',initials:'MD',lang:'fr'},
+  PL:{id:'PL',name:'Pierre Laurent',full:'Pierre Laurent',role:'Juriste',initials:'PL',lang:'fr'},
+  CG:{id:'CG',name:'Carlos García',full:'Carlos García',role:'Abogado senior',initials:'CG',lang:'es'},
+  IM:{id:'IM',name:'Isabella Martín',full:'Isabel Martín',role:'Abogada',initials:'IM',lang:'es'},
+  EH:{id:'EH',name:'Emma Hughes',full:'Emma Hughes',role:'DIO — England & Wales',initials:'EH',lang:'en',team:'dio',jurisdiction:'england-wales'},
+  FD:{id:'FD',name:'Françoise Durand',full:'Françoise Durand',role:'DIO — France',initials:'FD',lang:'fr',team:'dio',jurisdiction:'france'},
+  SR:{id:'SR',name:'Sofia Ramos',full:'Sofia Ramos',role:'DIO — España',initials:'SR',lang:'es',team:'dio',jurisdiction:'spain'},
 };
 const JURISDICTIONS={
   'england-wales':{name:'England & Wales',flag:'🇬🇧',lang:'en',limitationYears:6,limitationNote:'6 years — Limitation Act 1980',court:'County Court',procedureNote:'CPR Pre-Action Protocol. 21-day acknowledgement.',responseWindow:21,mediation:'optional',mediationNote:'ADR available but not mandatory.',keyDates:[{label:'Acknowledge LOC',days:21,urgency:'critical',note:'CPR Pre-Action Protocol'},{label:'Letter of Response',days:91,urgency:'important',note:'3 months from acknowledgement'},{label:'Limitation review',days:120,urgency:'watch',note:'6-year limitation'}],documents:{acknowledgement:'Letter of Acknowledgement',response:'Letter of Response',defence:'Defence (CPR Part 16)',witness:'Witness Statement (CPR Part 32)'},important:null},

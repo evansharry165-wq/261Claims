@@ -123,20 +123,20 @@
     var team = u && u.team ? u.team : 'legal';
 
     if (isDioPage() && team !== 'dio') {
-      window.location.href = homeForUser(uid);
+      window.location.assign(homeForUser(uid));
       return;
     }
     if (team === 'dio' && SOLICITOR_ONLY.indexOf(page) >= 0) {
-      window.location.href = 'dio.html';
+      window.location.assign('dio.html');
       return;
     }
     if (page.indexOf('module') >= 0 && team === 'dio') {
       var ref = new URLSearchParams(window.location.search).get('ref');
-      window.location.href = ref ? 'dio-case.html?ref=' + encodeURIComponent(ref) : 'dio.html';
+      window.location.assign(ref ? 'dio-case.html?ref=' + encodeURIComponent(ref) : 'dio.html');
       return;
     }
     if (page === 'requests.html' && team !== 'dio' && team !== 'evidence') {
-      window.location.href = homeForUser(uid);
+      window.location.assign(homeForUser(uid));
       return;
     }
 
@@ -148,7 +148,13 @@
 
   function toggleMenu() {
     var m = document.getElementById('user-modal');
-    if (m) m.classList.toggle('open');
+    if (!m) return;
+    /* Q2 · Defensive re-mount before toggling open — guarantees dropdown is populated
+       even if the initial mount ran before USERS was defined or the modal was in DOM. */
+    if (!m.classList.contains('open')) {
+      try { mountDropdown(true); } catch (e) { if (global.console) console.warn('mountDropdown failed:', e); }
+    }
+    m.classList.toggle('open');
   }
 
   function closeMenu() {
@@ -156,9 +162,10 @@
     if (m) m.classList.remove('open');
   }
 
-  function mountDropdown() {
+  function mountDropdown(force) {
     var dd = document.querySelector('#user-modal .user-dropdown');
-    if (!dd || dd.getAttribute('data-full-menu') === '1') return;
+    if (!dd) return;
+    if (dd.getAttribute('data-full-menu') === '1' && !force) return;
     dd.innerHTML = dropdownHtml();
     dd.setAttribute('data-full-menu', '1');
     var uid = typeof getActiveUser === 'function' ? getActiveUser() : 'SB';

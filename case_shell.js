@@ -479,7 +479,7 @@ var CaseShell = (function () {
               return '<li class="' + (e.held ? 'held' : 'miss') + '"><span class="ce-ev-dot"></span>' + escapeHtml(e.text) + '</li>';
             }).join('') + '</ul>'
           : '<div class="empty-note" style="margin-top:8px">No checklist available.</div>') +
-        (missN ? '<div class="ce-ev-cta"><a href="repository.html?ref=' + encodeURIComponent(c.ref) + '">Repository →</a> · <a href="#" onclick="CaseShell.switchTab(\'evidence\');return false">Evidence workspace →</a></div>' : '') +
+        (missN ? '<div class="ce-ev-cta"><a href="repository.html?ref=' + encodeURIComponent(c.ref) + '">Open documents repository</a> · <a href="#" onclick="CaseShell.switchTab(\'evidence\');return false">Evidence workspace →</a></div>' : '') +
       '</div>';
 
     // ── LOC dropzone (only when not received)
@@ -556,7 +556,7 @@ var CaseShell = (function () {
         '<h3>What happened</h3>' +
         '<p>' + escapeHtml(chunks[0] || '(no summary text)') + '</p>' +
         (chunks[1] ? '<h3>Evidence you need to collect</h3><p>' + escapeHtml(chunks.slice(1).join('\n\n')) + '</p>' : '') +
-        '<div class="fdoc-cta"><a href="repository.html?ref=' + encodeURIComponent(state.ref) + '">Repository →</a> · <a href="case.html?ref=' + encodeURIComponent(state.ref) + '&tab=evidence">Evidence workspace →</a></div>';
+        '<div class="fdoc-cta"><a href="repository.html?ref=' + encodeURIComponent(state.ref) + '">Open documents repository</a> · <a href="case.html?ref=' + encodeURIComponent(state.ref) + '&tab=evidence">Evidence workspace →</a></div>';
     }
     var win = window.open('', '_blank');
     if (!win) return;
@@ -834,7 +834,7 @@ var CaseShell = (function () {
         crossLink = '<div class="ce-crosslink">' +
           '<i class="ti ti-database"></i>' +
           '<span><strong>' + attached.length + '</strong> item' + (attached.length === 1 ? '' : 's') + ' attached to this case in the ' +
-          '<a href="#" onclick="CaseShell.switchTab(\'repo\');return false">Evidence Repository →</a></span>' +
+          '<a href="#" onclick="CaseShell.switchTab(\'repo\');return false">View attached evidence</a></span>' +
           '<span class="ce-crosslink-hint">Attached items survive raw-snapshot rotation and are cited in the defence letter.</span>' +
           '</div>';
       } catch (e) {}

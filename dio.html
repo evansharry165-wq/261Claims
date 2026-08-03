@@ -852,7 +852,17 @@ function reloadFeed(){
   });
 }
 
-window.addEventListener('load', render);
+window.addEventListener('load', function(){
+  render();
+  /* Q3 · If we arrived via a hash (e.g. cases/requests redirect), scroll to it after render. */
+  if (window.location.hash) {
+    setTimeout(function(){
+      var id = window.location.hash.slice(1);
+      var el = document.getElementById(id);
+      if (el) el.scrollIntoView({behavior:'smooth',block:'start'});
+    }, 120);
+  }
+});
 </script>
 
 </body>

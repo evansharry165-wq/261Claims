@@ -1,0 +1,514 @@
+From 07dad5a2e29e62b8117fd6bc8d828eba46317530 Mon Sep 17 00:00:00 2001
+From: Harry Evans <harryevans15@icloud.com>
+Date: Mon, 3 Aug 2026 20:24:06 +0100
+Subject: [PATCH] =?UTF-8?q?Tier=201=20=C2=B7=20seven=20quick-win=20polish?=
+ =?UTF-8?q?=20fixes=20for=20the=20DIO=20walkthrough?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Q1 · Full names replace initials in USERS.name (10 users)
+     'E. Hughes' -> 'Emma Hughes' etc. Cascades to every nav-user chip
+     and greeting across the app.
+
+Q2 · User-switch stability + defensive re-mount
+     shared_user_switch.js toggleMenu now re-mounts the dropdown on open
+     (with a force flag) so users are never stuck if the initial mount
+     ran before USERS was defined. Navigation now uses location.assign()
+     for hard redirects.
+
+Q3 · DIO 'Requests' & 'Cases' top-nav tabs land on their widgets
+     dio.html load-handler now honours window.location.hash after
+     render so /dio.html#w-requests + #w-portfolio scroll to their
+     widgets. Fixes the 'nothing happens' feel when Emma clicks the
+     Requests or Cases tabs.
+
+Q4 · Weather-page airports default to Tier 1 (capital-city hubs)
+     evidence-weather.html gains a Show filter: default 'Capitals only'
+     (Tier 1) makes the list recognisable at first glance; user can
+     toggle to 'All 63 airports' for full view. Page-sub copy updated.
+
+Q5 · Evidence-page corner user chip now dynamic (was hardcoded SB)
+     Injected a small sync script into 8 evidence-*.html pages that
+     reads active user on load and updates gn-av + gn-username.
+
+Q6 · Removed 'evidence collection pipeline health' widget from Sarah
+     Booth's dashboard (defendable_evidence_status_widget) — unclear
+     which team it addressed and mixed DIO/solicitor concerns.
+
+Q7 · Confusing 'Repository ->' / 'Evidence Repository ->' cross-links
+     rewritten to plain wording ('Open documents repository',
+     'View attached evidence') in case_shell.js.
+
+Cache-bust: shared_data.js / shared_user_switch.js / case_shell.js
+promoted to s10a across every affected HTML.
+---
+ case.html             |  2 +-
+ case_shell.js         |  6 +++---
+ dio.html              | 12 +++++++++++-
+ evidence-ash.html     | 16 ++++++++++++++++
+ evidence-atfm.html    | 16 ++++++++++++++++
+ evidence-flights.html | 16 ++++++++++++++++
+ evidence-global.html  | 16 ++++++++++++++++
+ evidence-news.html    | 16 ++++++++++++++++
+ evidence-notams.html  | 16 ++++++++++++++++
+ evidence-strikes.html | 16 ++++++++++++++++
+ evidence-weather.html | 28 +++++++++++++++++++++++++++-
+ index.html            |  5 ++---
+ shared_data.js        | 20 ++++++++++----------
+ shared_user_switch.js | 21 ++++++++++++++-------
+ 14 files changed, 180 insertions(+), 26 deletions(-)
+
+diff --git a/case.html b/case.html
+index 7ccf278..32a08da 100644
+--- a/case.html
++++ b/case.html
+@@ -116,7 +116,7 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
+ <script src="terminal_health.js"></script>
+ <script src="work_dashboard.js"></script>
+ <script src="demo_studies.js"></script>
+-<script src="case_shell.js?v=s9a"></script>
++<script src="case_shell.js?v=s10a"></script>
+ 
+ <nav class="global-nav">
+   <a href="index.html" class="gn-logo"><div class="gn-mark"><i class="ti ti-lock"></i></div><span class="gn-name">DefendAble</span></a>
+diff --git a/case_shell.js b/case_shell.js
+index e420d9d..3533ecc 100644
+--- a/case_shell.js
++++ b/case_shell.js
+@@ -479,7 +479,7 @@ var CaseShell = (function () {
+               return '<li class="' + (e.held ? 'held' : 'miss') + '"><span class="ce-ev-dot"></span>' + escapeHtml(e.text) + '</li>';
+             }).join('') + '</ul>'
+           : '<div class="empty-note" style="margin-top:8px">No checklist available.</div>') +
+-        (missN ? '<div class="ce-ev-cta"><a href="repository.html?ref=' + encodeURIComponent(c.ref) + '">Repository →</a> · <a href="#" onclick="CaseShell.switchTab(\'evidence\');return false">Evidence workspace →</a></div>' : '') +
++        (missN ? '<div class="ce-ev-cta"><a href="repository.html?ref=' + encodeURIComponent(c.ref) + '">Open documents repository</a> · <a href="#" onclick="CaseShell.switchTab(\'evidence\');return false">Evidence workspace →</a></div>' : '') +
+       '</div>';
+ 
+     // ── LOC dropzone (only when not received)
+@@ -556,7 +556,7 @@ var CaseShell = (function () {
+         '<h3>What happened</h3>' +
+         '<p>' + escapeHtml(chunks[0] || '(no summary text)') + '</p>' +
+         (chunks[1] ? '<h3>Evidence you need to collect</h3><p>' + escapeHtml(chunks.slice(1).join('\n\n')) + '</p>' : '') +
+-        '<div class="fdoc-cta"><a href="repository.html?ref=' + encodeURIComponent(state.ref) + '">Repository →</a> · <a href="case.html?ref=' + encodeURIComponent(state.ref) + '&tab=evidence">Evidence workspace →</a></div>';
++        '<div class="fdoc-cta"><a href="repository.html?ref=' + encodeURIComponent(state.ref) + '">Open documents repository</a> · <a href="case.html?ref=' + encodeURIComponent(state.ref) + '&tab=evidence">Evidence workspace →</a></div>';
+     }
+     var win = window.open('', '_blank');
+     if (!win) return;
+@@ -834,7 +834,7 @@ var CaseShell = (function () {
+         crossLink = '<div class="ce-crosslink">' +
+           '<i class="ti ti-database"></i>' +
+           '<span><strong>' + attached.length + '</strong> item' + (attached.length === 1 ? '' : 's') + ' attached to this case in the ' +
+-          '<a href="#" onclick="CaseShell.switchTab(\'repo\');return false">Evidence Repository →</a></span>' +
++          '<a href="#" onclick="CaseShell.switchTab(\'repo\');return false">View attached evidence</a></span>' +
+           '<span class="ce-crosslink-hint">Attached items survive raw-snapshot rotation and are cited in the defence letter.</span>' +
+           '</div>';
+       } catch (e) {}
+diff --git a/dio.html b/dio.html
+index 46a3b7b..c4d037c 100644
+--- a/dio.html
++++ b/dio.html
+@@ -852,7 +852,17 @@ function reloadFeed(){
+   });
+ }
+ 
+-window.addEventListener('load', render);
++window.addEventListener('load', function(){
++  render();
++  /* Q3 · If we arrived via a hash (e.g. cases/requests redirect), scroll to it after render. */
++  if (window.location.hash) {
++    setTimeout(function(){
++      var id = window.location.hash.slice(1);
++      var el = document.getElementById(id);
++      if (el) el.scrollIntoView({behavior:'smooth',block:'start'});
++    }, 120);
++  }
++});
+ </script>
+ 
+ </body>
+diff --git a/evidence-ash.html b/evidence-ash.html
+index 0da75c0..54d8b4d 100644
+--- a/evidence-ash.html
++++ b/evidence-ash.html
+@@ -149,5 +149,21 @@ Organisation website: (add when available)</div>
+   });
+ })();
+ </script>
++<script>
++/* Q5 · Sync corner user chip to active user (was hardcoded SB). */
++(function(){
++  function sync(){
++    try {
++      var uid = typeof getActiveUser === 'function' ? getActiveUser() : 'SB';
++      var u = (typeof USERS !== 'undefined') ? USERS[uid] : null;
++      if (!u) return;
++      var av = document.getElementById('gn-av'); if (av) av.textContent = u.initials;
++      var un = document.getElementById('gn-username'); if (un) un.textContent = u.name;
++    } catch(e){}
++  }
++  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', sync);
++  else sync();
++})();
++</script>
+ </body>
+ </html>
+diff --git a/evidence-atfm.html b/evidence-atfm.html
+index ae44b65..e1cd16b 100644
+--- a/evidence-atfm.html
++++ b/evidence-atfm.html
+@@ -154,5 +154,21 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
+   });
+ })();
+ </script>
++<script>
++/* Q5 · Sync corner user chip to active user (was hardcoded SB). */
++(function(){
++  function sync(){
++    try {
++      var uid = typeof getActiveUser === 'function' ? getActiveUser() : 'SB';
++      var u = (typeof USERS !== 'undefined') ? USERS[uid] : null;
++      if (!u) return;
++      var av = document.getElementById('gn-av'); if (av) av.textContent = u.initials;
++      var un = document.getElementById('gn-username'); if (un) un.textContent = u.name;
++    } catch(e){}
++  }
++  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', sync);
++  else sync();
++})();
++</script>
+ </body>
+ </html>
+diff --git a/evidence-flights.html b/evidence-flights.html
+index 4b739ef..8ef9cfb 100644
+--- a/evidence-flights.html
++++ b/evidence-flights.html
+@@ -540,5 +540,21 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
+   });
+ })();
+ </script>
++<script>
++/* Q5 · Sync corner user chip to active user (was hardcoded SB). */
++(function(){
++  function sync(){
++    try {
++      var uid = typeof getActiveUser === 'function' ? getActiveUser() : 'SB';
++      var u = (typeof USERS !== 'undefined') ? USERS[uid] : null;
++      if (!u) return;
++      var av = document.getElementById('gn-av'); if (av) av.textContent = u.initials;
++      var un = document.getElementById('gn-username'); if (un) un.textContent = u.name;
++    } catch(e){}
++  }
++  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', sync);
++  else sync();
++})();
++</script>
+ </body>
+ </html>
+diff --git a/evidence-global.html b/evidence-global.html
+index 0c63c05..8253cc1 100644
+--- a/evidence-global.html
++++ b/evidence-global.html
+@@ -343,5 +343,21 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
+ })();
+ </script>
+ 
++<script>
++/* Q5 · Sync corner user chip to active user (was hardcoded SB). */
++(function(){
++  function sync(){
++    try {
++      var uid = typeof getActiveUser === 'function' ? getActiveUser() : 'SB';
++      var u = (typeof USERS !== 'undefined') ? USERS[uid] : null;
++      if (!u) return;
++      var av = document.getElementById('gn-av'); if (av) av.textContent = u.initials;
++      var un = document.getElementById('gn-username'); if (un) un.textContent = u.name;
++    } catch(e){}
++  }
++  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', sync);
++  else sync();
++})();
++</script>
+ </body>
+ </html>
+diff --git a/evidence-news.html b/evidence-news.html
+index 69bb6d8..1e93142 100644
+--- a/evidence-news.html
++++ b/evidence-news.html
+@@ -257,5 +257,21 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
+ })();
+ </script>
+ 
++<script>
++/* Q5 · Sync corner user chip to active user (was hardcoded SB). */
++(function(){
++  function sync(){
++    try {
++      var uid = typeof getActiveUser === 'function' ? getActiveUser() : 'SB';
++      var u = (typeof USERS !== 'undefined') ? USERS[uid] : null;
++      if (!u) return;
++      var av = document.getElementById('gn-av'); if (av) av.textContent = u.initials;
++      var un = document.getElementById('gn-username'); if (un) un.textContent = u.name;
++    } catch(e){}
++  }
++  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', sync);
++  else sync();
++})();
++</script>
+ </body>
+ </html>
+diff --git a/evidence-notams.html b/evidence-notams.html
+index e299f82..9e9b3f9 100644
+--- a/evidence-notams.html
++++ b/evidence-notams.html
+@@ -328,5 +328,21 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
+ })();
+ </script>
+ 
++<script>
++/* Q5 · Sync corner user chip to active user (was hardcoded SB). */
++(function(){
++  function sync(){
++    try {
++      var uid = typeof getActiveUser === 'function' ? getActiveUser() : 'SB';
++      var u = (typeof USERS !== 'undefined') ? USERS[uid] : null;
++      if (!u) return;
++      var av = document.getElementById('gn-av'); if (av) av.textContent = u.initials;
++      var un = document.getElementById('gn-username'); if (un) un.textContent = u.name;
++    } catch(e){}
++  }
++  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', sync);
++  else sync();
++})();
++</script>
+ </body>
+ </html>
+diff --git a/evidence-strikes.html b/evidence-strikes.html
+index 93288fa..31b0638 100644
+--- a/evidence-strikes.html
++++ b/evidence-strikes.html
+@@ -193,5 +193,21 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
+   });
+ })();
+ </script>
++<script>
++/* Q5 · Sync corner user chip to active user (was hardcoded SB). */
++(function(){
++  function sync(){
++    try {
++      var uid = typeof getActiveUser === 'function' ? getActiveUser() : 'SB';
++      var u = (typeof USERS !== 'undefined') ? USERS[uid] : null;
++      if (!u) return;
++      var av = document.getElementById('gn-av'); if (av) av.textContent = u.initials;
++      var un = document.getElementById('gn-username'); if (un) un.textContent = u.name;
++    } catch(e){}
++  }
++  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', sync);
++  else sync();
++})();
++</script>
+ </body>
+ </html>
+diff --git a/evidence-weather.html b/evidence-weather.html
+index 5946fec..aa5b57e 100644
+--- a/evidence-weather.html
++++ b/evidence-weather.html
+@@ -137,7 +137,7 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
+   <div class="hdr-flex">
+     <div>
+       <div class="page-title">Weather</div>
+-      <div class="page-sub">METAR observations and TAF forecasts across 63 European airports · source <span style="font-family:var(--mono)">aviationweather-metar-taf</span></div>
++      <div class="page-sub">METAR observations and TAF forecasts across 63 European airports · showing capital-city hubs by default · source <span style="font-family:var(--mono)">aviationweather-metar-taf</span></div>
+     </div>
+     <div class="hdr-meta" id="hdr-meta">
+       <div><strong id="m-airports">—</strong> airports</div>
+@@ -156,6 +156,10 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
+       <div class="sb-title">Search</div>
+       <input class="sb-input" id="search" placeholder="ICAO, IATA, city…" oninput="renderList()">
+     </div>
++    <div class="sb-section">
++      <div class="sb-title">Show</div>
++      <div class="sb-btn-group" id="tier-filters"></div>
++    </div>
+     <div class="sb-section">
+       <div class="sb-title">Condition</div>
+       <div class="sb-btn-group" id="cond-filters"></div>
+@@ -203,11 +207,14 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
+ 
+   var CONDITIONS = [ {id:'all',label:'All'}, {id:'vmc',label:'VMC'}, {id:'mvfr',label:'MVFR'}, {id:'ifr',label:'IFR'}, {id:'lifr',label:'LIFR'} ];
+   var AIRLINES = [ {id:'all',label:'All'}, {id:'U2',label:'easyJet'}, {id:'FR',label:'Ryanair'}, {id:'LX',label:'Swiss'}, {id:'W6',label:'Wizz'}, {id:'BA',label:'BA'}, {id:'LH',label:'Lufthansa'}, {id:'VY',label:'Vueling'} ];
++  /* Q4 · Tier filter — default to Tier 1 (capital-city hubs) so the initial view shows the recognisable airports first. */
++  var TIERS = [ {id:'1',label:'Capitals only'}, {id:'all',label:'All 63 airports'} ];
+ 
+   var state = {
+     search: '',
+     conditionFilter: 'all',
+     airlineFilter: 'all',
++    tierFilter: '1',
+     activeIcao: null,
+     metarByIcao: {},
+     tafByIcao: {},
+@@ -321,6 +328,7 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
+         if (hay.indexOf(search) < 0) return;
+       }
+       var cond = classifyMetar(state.metarByIcao[a.icao]);
++      if (state.tierFilter !== 'all' && String(a.tier) !== state.tierFilter) return;
+       if (state.conditionFilter !== 'all' && cond !== state.conditionFilter) return;
+       if (state.airlineFilter !== 'all' && (a.airlines || []).indexOf(state.airlineFilter) < 0) return;
+       groups[a.region] = groups[a.region] || [];
+@@ -357,6 +365,7 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
+         if (hay.indexOf(search) < 0) return false;
+       }
+       var cond = classifyMetar(state.metarByIcao[a.icao]);
++      if (state.tierFilter !== 'all' && String(a.tier) !== state.tierFilter) return false;
+       if (state.conditionFilter !== 'all' && cond !== state.conditionFilter) return false;
+       if (state.airlineFilter !== 'all' && (a.airlines || []).indexOf(state.airlineFilter) < 0) return false;
+       return true;
+@@ -507,6 +516,7 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
+     {icao:'LMML',iata:'MLA',name:'Malta International',city:'Luqa',country:'Malta',country_iso:'MT',region:'Mediterranean',airlines:['U2','FR'],tier:2},
+   ];
+ 
++  chipRow(TIERS, state.tierFilter, 'tier-filters', function(k){ state.tierFilter = k; chipRow(TIERS, k, 'tier-filters', arguments.callee); renderList(); });
+   chipRow(CONDITIONS, state.conditionFilter, 'cond-filters', function(k){ state.conditionFilter = k; chipRow(CONDITIONS, k, 'cond-filters', arguments.callee); renderList(); });
+   chipRow(AIRLINES,   state.airlineFilter,   'airline-filters', function(k){ state.airlineFilter = k; chipRow(AIRLINES, k, 'airline-filters', arguments.callee); renderList(); });
+   document.getElementById('search').oninput = function(e){ state.search = e.target.value.trim(); renderList(); };
+@@ -533,5 +543,21 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
+ })();
+ </script>
+ 
++<script>
++/* Q5 · Sync corner user chip to active user (was hardcoded SB). */
++(function(){
++  function sync(){
++    try {
++      var uid = typeof getActiveUser === 'function' ? getActiveUser() : 'SB';
++      var u = (typeof USERS !== 'undefined') ? USERS[uid] : null;
++      if (!u) return;
++      var av = document.getElementById('gn-av'); if (av) av.textContent = u.initials;
++      var un = document.getElementById('gn-username'); if (un) un.textContent = u.name;
++    } catch(e){}
++  }
++  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', sync);
++  else sync();
++})();
++</script>
+ </body>
+ </html>
+diff --git a/index.html b/index.html
+index e4990a1..becc50b 100644
+--- a/index.html
++++ b/index.html
+@@ -177,7 +177,6 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
+ <script src="case_filing.js"></script>
+ <script src="work_dashboard.js"></script>
+ <script src="defendable_evidence_reader.js?v=s9a"></script>
+-<script src="defendable_evidence_status_widget.js?v=s9a"></script>
+ <script src="terminal_health.js"></script>
+ <script src="demo_studies.js"></script>
+ 
+@@ -517,7 +516,7 @@ function renderLegalWork(uid,u,cases){
+   var greeting=(new Date().getHours()<12?t('goodMorning'):new Date().getHours()<18?t('goodAfternoon'):t('goodEvening'));
+ 
+   document.getElementById('page').innerHTML=
+-    '<div class="page-header"><div><div class="greeting">'+greeting+', '+escapeHtml(u.full.split(' ')[0])+'</div><div class="greeting-sub">'+escapeHtml(u.role)+' — your work queue, updates and CPR calendar</div><div id="engine-inbox-tile" style="margin-top:14px;max-width:520px"></div><div id="evidence-status-tile" style="margin-top:14px;max-width:820px"></div></div>'
++    '<div class="page-header"><div><div class="greeting">'+greeting+', '+escapeHtml(u.full.split(' ')[0])+'</div><div class="greeting-sub">'+escapeHtml(u.role)+' — your work queue, updates and CPR calendar</div><div id="engine-inbox-tile" style="margin-top:14px;max-width:520px"></div></div>'
+     +'<div class="stat-bar">'
+     +(summary.urgent?'<span class="stat-chip urgent"><i class="ti ti-alert-circle"></i> '+summary.urgent+' urgent</span>':'')
+     +(summary.updates?'<span class="stat-chip new"><i class="ti ti-calendar"></i> '+summary.updates+' new this week</span>':'')
+@@ -775,6 +774,6 @@ document.addEventListener('click',function(e){
+ });
+ </script>
+ 
+-<script>window.addEventListener("load",function(){setTimeout(function(){if(typeof EngineInbox!=="undefined"){var m=document.getElementById("engine-inbox-tile");if(m)EngineInbox.renderTile(m);}if(typeof EvidenceStatusWidget!=="undefined"){var e=document.getElementById("evidence-status-tile");if(e)EvidenceStatusWidget.mount(e);}},100);});</script>
++<script>window.addEventListener("load",function(){setTimeout(function(){if(typeof EngineInbox!=="undefined"){var m=document.getElementById("engine-inbox-tile");if(m)EngineInbox.renderTile(m);}/* Q6 · EvidenceStatusWidget removed */},100);});</script>
+ </body>
+ </html>
+diff --git a/shared_data.js b/shared_data.js
+index 2327dcc..0698cc1 100644
+--- a/shared_data.js
++++ b/shared_data.js
+@@ -1,15 +1,15 @@
+ // ALL DATA AND HELPERS — embedded in every page
+ const USERS={
+-  SB:{id:'SB',name:'S. Booth',full:'Sarah Booth',role:'Head of Legal Ops',initials:'SB',lang:'en'},
+-  JP:{id:'JP',name:'J. Patel',full:'James Patel',role:'Senior Solicitor',initials:'JP',lang:'en'},
+-  KR:{id:'KR',name:'K. Rahman',full:'Kiran Rahman',role:'Solicitor',initials:'KR',lang:'en'},
+-  MD:{id:'MD',name:'M. Dupont',full:'Marie Dupont',role:'Juriste senior',initials:'MD',lang:'fr'},
+-  PL:{id:'PL',name:'P. Laurent',full:'Pierre Laurent',role:'Juriste',initials:'PL',lang:'fr'},
+-  CG:{id:'CG',name:'C. García',full:'Carlos García',role:'Abogado senior',initials:'CG',lang:'es'},
+-  IM:{id:'IM',name:'I. Martín',full:'Isabel Martín',role:'Abogada',initials:'IM',lang:'es'},
+-  EH:{id:'EH',name:'E. Hughes',full:'Emma Hughes',role:'DIO — England & Wales',initials:'EH',lang:'en',team:'dio',jurisdiction:'england-wales'},
+-  FD:{id:'FD',name:'F. Durand',full:'Françoise Durand',role:'DIO — France',initials:'FD',lang:'fr',team:'dio',jurisdiction:'france'},
+-  SR:{id:'SR',name:'S. Ramos',full:'Sofia Ramos',role:'DIO — España',initials:'SR',lang:'es',team:'dio',jurisdiction:'spain'},
++  SB:{id:'SB',name:'Sarah Booth',full:'Sarah Booth',role:'Head of Legal Ops',initials:'SB',lang:'en'},
++  JP:{id:'JP',name:'James Patel',full:'James Patel',role:'Senior Solicitor',initials:'JP',lang:'en'},
++  KR:{id:'KR',name:'Kiran Rahman',full:'Kiran Rahman',role:'Solicitor',initials:'KR',lang:'en'},
++  MD:{id:'MD',name:'Marie Dupont',full:'Marie Dupont',role:'Juriste senior',initials:'MD',lang:'fr'},
++  PL:{id:'PL',name:'Pierre Laurent',full:'Pierre Laurent',role:'Juriste',initials:'PL',lang:'fr'},
++  CG:{id:'CG',name:'Carlos García',full:'Carlos García',role:'Abogado senior',initials:'CG',lang:'es'},
++  IM:{id:'IM',name:'Isabella Martín',full:'Isabel Martín',role:'Abogada',initials:'IM',lang:'es'},
++  EH:{id:'EH',name:'Emma Hughes',full:'Emma Hughes',role:'DIO — England & Wales',initials:'EH',lang:'en',team:'dio',jurisdiction:'england-wales'},
++  FD:{id:'FD',name:'Françoise Durand',full:'Françoise Durand',role:'DIO — France',initials:'FD',lang:'fr',team:'dio',jurisdiction:'france'},
++  SR:{id:'SR',name:'Sofia Ramos',full:'Sofia Ramos',role:'DIO — España',initials:'SR',lang:'es',team:'dio',jurisdiction:'spain'},
+ };
+ const JURISDICTIONS={
+   'england-wales':{name:'England & Wales',flag:'🇬🇧',lang:'en',limitationYears:6,limitationNote:'6 years — Limitation Act 1980',court:'County Court',procedureNote:'CPR Pre-Action Protocol. 21-day acknowledgement.',responseWindow:21,mediation:'optional',mediationNote:'ADR available but not mandatory.',keyDates:[{label:'Acknowledge LOC',days:21,urgency:'critical',note:'CPR Pre-Action Protocol'},{label:'Letter of Response',days:91,urgency:'important',note:'3 months from acknowledgement'},{label:'Limitation review',days:120,urgency:'watch',note:'6-year limitation'}],documents:{acknowledgement:'Letter of Acknowledgement',response:'Letter of Response',defence:'Defence (CPR Part 16)',witness:'Witness Statement (CPR Part 32)'},important:null},
+diff --git a/shared_user_switch.js b/shared_user_switch.js
+index 33d959d..d1b53e4 100644
+--- a/shared_user_switch.js
++++ b/shared_user_switch.js
+@@ -123,20 +123,20 @@
+     var team = u && u.team ? u.team : 'legal';
+ 
+     if (isDioPage() && team !== 'dio') {
+-      window.location.href = homeForUser(uid);
++      window.location.assign(homeForUser(uid));
+       return;
+     }
+     if (team === 'dio' && SOLICITOR_ONLY.indexOf(page) >= 0) {
+-      window.location.href = 'dio.html';
++      window.location.assign('dio.html');
+       return;
+     }
+     if (page.indexOf('module') >= 0 && team === 'dio') {
+       var ref = new URLSearchParams(window.location.search).get('ref');
+-      window.location.href = ref ? 'dio-case.html?ref=' + encodeURIComponent(ref) : 'dio.html';
++      window.location.assign(ref ? 'dio-case.html?ref=' + encodeURIComponent(ref) : 'dio.html');
+       return;
+     }
+     if (page === 'requests.html' && team !== 'dio' && team !== 'evidence') {
+-      window.location.href = homeForUser(uid);
++      window.location.assign(homeForUser(uid));
+       return;
+     }
+ 
+@@ -148,7 +148,13 @@
+ 
+   function toggleMenu() {
+     var m = document.getElementById('user-modal');
+-    if (m) m.classList.toggle('open');
++    if (!m) return;
++    /* Q2 · Defensive re-mount before toggling open — guarantees dropdown is populated
++       even if the initial mount ran before USERS was defined or the modal was in DOM. */
++    if (!m.classList.contains('open')) {
++      try { mountDropdown(true); } catch (e) { if (global.console) console.warn('mountDropdown failed:', e); }
++    }
++    m.classList.toggle('open');
+   }
+ 
+   function closeMenu() {
+@@ -156,9 +162,10 @@
+     if (m) m.classList.remove('open');
+   }
+ 
+-  function mountDropdown() {
++  function mountDropdown(force) {
+     var dd = document.querySelector('#user-modal .user-dropdown');
+-    if (!dd || dd.getAttribute('data-full-menu') === '1') return;
++    if (!dd) return;
++    if (dd.getAttribute('data-full-menu') === '1' && !force) return;
+     dd.innerHTML = dropdownHtml();
+     dd.setAttribute('data-full-menu', '1');
+     var uid = typeof getActiveUser === 'function' ? getActiveUser() : 'SB';
+-- 
+2.34.1
+

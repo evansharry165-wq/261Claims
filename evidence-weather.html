@@ -137,7 +137,7 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
   <div class="hdr-flex">
     <div>
       <div class="page-title">Weather</div>
-      <div class="page-sub">METAR observations and TAF forecasts across 63 European airports · source <span style="font-family:var(--mono)">aviationweather-metar-taf</span></div>
+      <div class="page-sub">METAR observations and TAF forecasts across 63 European airports · showing capital-city hubs by default · source <span style="font-family:var(--mono)">aviationweather-metar-taf</span></div>
     </div>
     <div class="hdr-meta" id="hdr-meta">
       <div><strong id="m-airports">—</strong> airports</div>
@@ -155,6 +155,10 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
     <div class="sb-section">
       <div class="sb-title">Search</div>
       <input class="sb-input" id="search" placeholder="ICAO, IATA, city…" oninput="renderList()">
+    </div>
+    <div class="sb-section">
+      <div class="sb-title">Show</div>
+      <div class="sb-btn-group" id="tier-filters"></div>
     </div>
     <div class="sb-section">
       <div class="sb-title">Condition</div>
@@ -203,11 +207,14 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 
   var CONDITIONS = [ {id:'all',label:'All'}, {id:'vmc',label:'VMC'}, {id:'mvfr',label:'MVFR'}, {id:'ifr',label:'IFR'}, {id:'lifr',label:'LIFR'} ];
   var AIRLINES = [ {id:'all',label:'All'}, {id:'U2',label:'easyJet'}, {id:'FR',label:'Ryanair'}, {id:'LX',label:'Swiss'}, {id:'W6',label:'Wizz'}, {id:'BA',label:'BA'}, {id:'LH',label:'Lufthansa'}, {id:'VY',label:'Vueling'} ];
+  /* Q4 · Tier filter — default to Tier 1 (capital-city hubs) so the initial view shows the recognisable airports first. */
+  var TIERS = [ {id:'1',label:'Capitals only'}, {id:'all',label:'All 63 airports'} ];
 
   var state = {
     search: '',
     conditionFilter: 'all',
     airlineFilter: 'all',
+    tierFilter: '1',
     activeIcao: null,
     metarByIcao: {},
     tafByIcao: {},
@@ -321,6 +328,7 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
         if (hay.indexOf(search) < 0) return;
       }
       var cond = classifyMetar(state.metarByIcao[a.icao]);
+      if (state.tierFilter !== 'all' && String(a.tier) !== state.tierFilter) return;
       if (state.conditionFilter !== 'all' && cond !== state.conditionFilter) return;
       if (state.airlineFilter !== 'all' && (a.airlines || []).indexOf(state.airlineFilter) < 0) return;
       groups[a.region] = groups[a.region] || [];
@@ -357,6 +365,7 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
         if (hay.indexOf(search) < 0) return false;
       }
       var cond = classifyMetar(state.metarByIcao[a.icao]);
+      if (state.tierFilter !== 'all' && String(a.tier) !== state.tierFilter) return false;
       if (state.conditionFilter !== 'all' && cond !== state.conditionFilter) return false;
       if (state.airlineFilter !== 'all' && (a.airlines || []).indexOf(state.airlineFilter) < 0) return false;
       return true;
@@ -507,6 +516,7 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
     {icao:'LMML',iata:'MLA',name:'Malta International',city:'Luqa',country:'Malta',country_iso:'MT',region:'Mediterranean',airlines:['U2','FR'],tier:2},
   ];
 
+  chipRow(TIERS, state.tierFilter, 'tier-filters', function(k){ state.tierFilter = k; chipRow(TIERS, k, 'tier-filters', arguments.callee); renderList(); });
   chipRow(CONDITIONS, state.conditionFilter, 'cond-filters', function(k){ state.conditionFilter = k; chipRow(CONDITIONS, k, 'cond-filters', arguments.callee); renderList(); });
   chipRow(AIRLINES,   state.airlineFilter,   'airline-filters', function(k){ state.airlineFilter = k; chipRow(AIRLINES, k, 'airline-filters', arguments.callee); renderList(); });
   document.getElementById('search').oninput = function(e){ state.search = e.target.value.trim(); renderList(); };
@@ -533,5 +543,21 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 })();
 </script>
 
+<script>
+/* Q5 · Sync corner user chip to active user (was hardcoded SB). */
+(function(){
+  function sync(){
+    try {
+      var uid = typeof getActiveUser === 'function' ? getActiveUser() : 'SB';
+      var u = (typeof USERS !== 'undefined') ? USERS[uid] : null;
+      if (!u) return;
+      var av = document.getElementById('gn-av'); if (av) av.textContent = u.initials;
+      var un = document.getElementById('gn-username'); if (un) un.textContent = u.name;
+    } catch(e){}
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', sync);
+  else sync();
+})();
+</script>
 </body>
 </html>

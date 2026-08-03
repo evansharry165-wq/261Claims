@@ -328,5 +328,21 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 })();
 </script>
 
+<script>
+/* Q5 · Sync corner user chip to active user (was hardcoded SB). */
+(function(){
+  function sync(){
+    try {
+      var uid = typeof getActiveUser === 'function' ? getActiveUser() : 'SB';
+      var u = (typeof USERS !== 'undefined') ? USERS[uid] : null;
+      if (!u) return;
+      var av = document.getElementById('gn-av'); if (av) av.textContent = u.initials;
+      var un = document.getElementById('gn-username'); if (un) un.textContent = u.name;
+    } catch(e){}
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', sync);
+  else sync();
+})();
+</script>
 </body>
 </html>
