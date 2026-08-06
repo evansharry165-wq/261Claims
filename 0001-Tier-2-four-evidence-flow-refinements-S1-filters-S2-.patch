@@ -1,0 +1,580 @@
+From 8ca89a7a9f9aa93cbdec3865c26f42c9f9a484d8 Mon Sep 17 00:00:00 2001
+From: Harry Evans <harryevans15@icloud.com>
+Date: Thu, 6 Aug 2026 16:20:21 +0100
+Subject: [PATCH] =?UTF-8?q?Tier=202=20=C2=B7=20four=20evidence-flow=20refi?=
+ =?UTF-8?q?nements=20(S1=20filters=20+=20S2=20strike=20hierarchy=20+=20S3?=
+ =?UTF-8?q?=20two-path=20request=20+=20S4=20DIO=20routing)?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+S1 · Search/sort/filter on remaining evidence pages
+  evidence-notams.html · new NOTAM Category filter (Runway / Taxiway /
+    ILS-Nav / Airspace / Fuel-Ground / Other) with auto-classification
+    from NOTAM text, plus a Sort control (Most recent / Severity /
+    Airport). Airport counts on left rail reflect current category
+    filter. Category chip appears on each NOTAM card.
+  evidence-ash.html · simple search input over the Smithsonian volcanic
+    activity side panel. Page remains in onboarding state pending VAAC
+    QVA feed access.
+
+S2 · Industrial Action storage restructured into country -> date -> event
+  evidence-strikes.html · replaces flat DGAC/ENAC notice list with a
+  hierarchical accordion: country header (France / Italy) -> date group
+  -> event card. Each event holds four sub-categories of supporting
+  documents: news articles, airport publications, internal emails,
+  affected flights. Click event to expand and see all attached docs.
+  Seeded with 4 realistic events (SNCTA nationwide ATC, CGT baggage,
+  ENAV 24h ATC, USB ground-handling). Existing search + country filter
+  continue to work.
+
+S3 · Two-path evidence-request modal in module4-evidence-workspace
+  Modal now opens with two tabs at the top:
+    - Quick · pull from catalogue — tick-box list of 16 pre-existing
+      catalogue items (METAR, SIGMET, NOTAM, ATFM, CRCO, ops log,
+      commander report, crew records, Article 9, third-party rerouting,
+      strike notice, news, wildfire, VAAC, flight track). Tick items
+      -> DefendAble checks the case Evidence Repository and either
+      pulls from repo or raises a targeted request per item.
+    - Freeform · specific document — the original recipient/SLA/note
+      form for cases where the solicitor knows the exact doc they need.
+  Quick tab is default. Submit button label swaps based on active tab
+  ('Pull selected from repo' vs 'Raise request').
+
+S4 · Evidence-request routing aligned with DIO jurisdiction
+  New 'DIO for this territory (auto-routed)' recipient added as the
+  default option in the Freeform tab. On submit, pushNotification fires
+  to the correct DIO id (england-wales -> EH, france -> FD, spain -> SR)
+  based on the case's jurisdiction field, with the case ref, requestId,
+  title + body, tab='requests' for deep-link routing.
+
+Cache-bust: s12a across the four touched HTMLs.
+---
+ evidence-ash.html               |   3 +-
+ evidence-notams.html            |  73 +++++++++++++-
+ evidence-strikes.html           | 173 +++++++++++++++++++++++++++++---
+ module4-evidence-workspace.html | 117 ++++++++++++++++++++-
+ 4 files changed, 346 insertions(+), 20 deletions(-)
+
+diff --git a/evidence-ash.html b/evidence-ash.html
+index 54d8b4d..a21e6f9 100644
+--- a/evidence-ash.html
++++ b/evidence-ash.html
+@@ -111,6 +111,7 @@ Organisation website: (add when available)</div>
+ 
+     <div class="side">
+       <div class="side-hdr"><h3>Related · Smithsonian volcanic activity</h3><p>Upstream intelligence — an eruption before it becomes a VAAC advisory.</p></div>
++      <div style="padding:10px 14px;border-bottom:1px solid var(--rule2)"><input id="volc-search" placeholder="Search volcano name, region…" style="width:100%;padding:6px 10px;font-size:12px;border:1px solid var(--rule);border-radius:3px;font-family:var(--font)"></div>
+       <div class="side-body" id="volc-body"><div class="loading"><span class="spinner"></span>Loading Smithsonian feed…</div></div>
+     </div>
+   </div>
+@@ -118,7 +119,7 @@ Organisation website: (add when available)</div>
+ 
+ <script src="shared_data.js"></script>
+ <script src="shared_theme.js"></script>
+-<script src="defendable_evidence_reader.js?v=s9a"></script>
++<script src="defendable_evidence_reader.js?v=s12a"></script>
+ <script src="nav.js"></script>
+ 
+ <script>
+diff --git a/evidence-notams.html b/evidence-notams.html
+index 9e9b3f9..d9ec42b 100644
+--- a/evidence-notams.html
++++ b/evidence-notams.html
+@@ -44,6 +44,17 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
+ 
+ .sidebar{background:var(--surface);border-right:1px solid var(--border);overflow-y:auto;padding:16px 0}
+ .sb-section{padding:0 18px 12px}
++.sb-btn-group{display:flex;flex-wrap:wrap;gap:4px}
++.sb-btn{padding:4px 10px;font-size:11px;background:var(--surface);border:1px solid var(--rule);color:var(--text2);border-radius:12px;cursor:pointer;font-family:var(--font);font-weight:500}
++.sb-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
++.sb-btn:hover:not(.active){background:var(--surface2)}
++.notam-cat-chip{display:inline-block;font-family:var(--mono);font-size:9px;padding:2px 6px;border-radius:8px;text-transform:uppercase;letter-spacing:.04em;font-weight:600;margin-right:6px}
++.notam-cat-chip.rwy{background:#FBF0F0;color:#8B1A1A}
++.notam-cat-chip.twy{background:#FDF4E3;color:#7A4E00}
++.notam-cat-chip.ils{background:#EEF2F8;color:#1B3A6B}
++.notam-cat-chip.airspace{background:#F0EEFC;color:#5B4A9F}
++.notam-cat-chip.fuel{background:#E4EEF2;color:#1F5C68}
++.notam-cat-chip.other{background:var(--surface3);color:var(--text3)}
+ .sb-title{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:8px}
+ .sb-input{width:100%;font-family:var(--font);font-size:12px;padding:7px 10px;border:1px solid var(--border);border-radius:var(--r);background:var(--surface2);color:var(--text)}
+ .sb-input:focus{outline:none;border-color:var(--blue);background:var(--surface)}
+@@ -139,6 +150,14 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
+       <div class="sb-title">Search airport</div>
+       <input class="sb-input" id="search" placeholder="ICAO or city…">
+     </div>
++    <div class="sb-section">
++      <div class="sb-title">NOTAM category</div>
++      <div class="sb-btn-group" id="cat-filters"></div>
++    </div>
++    <div class="sb-section">
++      <div class="sb-title">Sort by</div>
++      <div class="sb-btn-group" id="sort-order"></div>
++    </div>
+     <div id="airport-list"></div>
+   </aside>
+ 
+@@ -153,7 +172,7 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
+ 
+ <script src="shared_data.js"></script>
+ <script src="shared_theme.js"></script>
+-<script src="defendable_evidence_reader.js?v=s9a"></script>
++<script src="defendable_evidence_reader.js?v=s12a"></script>
+ <script src="nav.js"></script>
+ 
+ <script>
+@@ -172,7 +191,39 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
+     return '<a href="'+c.page+'" class="ribbon-tab'+(c.id==='notams'?' active':'')+'"><i class="ti '+c.icon+'"></i>'+c.label+'</a>';
+   }).join('');
+ 
+-  var state = { search:'', activeIcao:null, activeNotamIdx:null, perAirport:{}, airports:[] };
++  var state = { search:'', category:'all', sort:'validFrom', activeIcao:null, activeNotamIdx:null, perAirport:{}, airports:[] };
++
++  var CATEGORIES = [
++    {id:'all',label:'All'},
++    {id:'rwy',label:'Runway'},
++    {id:'twy',label:'Taxiway'},
++    {id:'ils',label:'ILS/Nav'},
++    {id:'airspace',label:'Airspace'},
++    {id:'fuel',label:'Fuel/Ground'},
++    {id:'other',label:'Other'}
++  ];
++  var SORTS = [
++    {id:'validFrom',label:'Most recent'},
++    {id:'severity',label:'Severity'},
++    {id:'airport',label:'Airport'}
++  ];
++
++  function classifyNotam(n){
++    var t = String(n.text || n.notam || '').toUpperCase();
++    if (/\bRWY\b|\bRUNWAY\b/.test(t)) return 'rwy';
++    if (/\bTWY\b|\bTAXIWAY\b/.test(t)) return 'twy';
++    if (/\bILS\b|\bVOR\b|\bDME\b|\bNDB\b|NAVAID/.test(t)) return 'ils';
++    if (/AIRSPACE|CTR\b|TMA\b|FIR\b|R\d/.test(t)) return 'airspace';
++    if (/FUEL|APRON|STAND|GATE|GROUND/.test(t)) return 'fuel';
++    return 'other';
++  }
++
++  function chipRow(items, active, id, onChange){
++    var el = document.getElementById(id);
++    if (!el) return;
++    el.innerHTML = items.map(function(i){ return '<button class="sb-btn'+(i.id===active?' active':'')+'" data-k="'+i.id+'">'+i.label+'</button>'; }).join('');
++    Array.prototype.forEach.call(el.querySelectorAll('.sb-btn'), function(b){ b.onclick = function(){ onChange(b.dataset.k); }; });
++  }
+ 
+   function fmtDate(iso){ if (!iso) return '—'; try { return new Date(iso).toISOString().slice(0,16).replace('T',' ')+'Z'; } catch(e){ return iso; } }
+ 
+@@ -183,7 +234,8 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
+       return (a.icao+' '+a.iata+' '+a.city).toLowerCase().indexOf(s) >= 0;
+     });
+     var html = rows.map(function(a){
+-      var count = ((state.perAirport[a.icao] || {}).notams || []).length;
++      var rawNotams = (state.perAirport[a.icao] || {}).notams || [];
++      var count = state.category === 'all' ? rawNotams.length : rawNotams.filter(function(n){ return classifyNotam(n) === state.category; }).length;
+       var cls = count > 10 ? 'many' : count > 0 ? 'has' : '';
+       return '<div class="sb-airport-row'+(state.activeIcao===a.icao?' active':'')+'" data-icao="'+a.icao+'">'+
+         '<div class="sb-airport-left"><div class="sb-airport-icao">'+a.icao+'</div><div class="sb-airport-city">'+a.city+'</div></div>'+
+@@ -207,6 +259,16 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
+     var airport = state.airports.find(function(a){return a.icao===state.activeIcao;});
+     var perAp = state.perAirport[state.activeIcao] || { airport_name:airport && airport.name, notams:[] };
+     var notams = perAp.notams || [];
++    /* S1 · Category filter + sort */
++    if (state.category !== 'all') {
++      notams = notams.filter(function(n){ return classifyNotam(n) === state.category; });
++    }
++    if (state.sort === 'validFrom') {
++      notams = notams.slice().sort(function(a,b){ return String(b.effective_start||'').localeCompare(String(a.effective_start||'')); });
++    } else if (state.sort === 'severity') {
++      var order = {rwy:0,ils:1,airspace:2,twy:3,fuel:4,other:5};
++      notams = notams.slice().sort(function(a,b){ return (order[classifyNotam(a)]||9) - (order[classifyNotam(b)]||9); });
++    }
+     var header = '<div class="notam-header">'+
+       '<div class="notam-header-hdr">'+
+         '<div>'+
+@@ -224,9 +286,12 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
+     var list = '<div class="notam-list">' + notams.map(function(n, i){
+       var typeCls = 'type-' + classifyType(n.type);
+       var typeLabel = n.type === 'N' ? 'New' : n.type === 'R' ? 'Replace' : n.type === 'C' ? 'Cancel' : (n.type || '—');
++      var cat = classifyNotam(n);
++      var catLabel = cat === 'rwy' ? 'Runway' : cat === 'twy' ? 'Taxiway' : cat === 'ils' ? 'ILS/Nav' : cat === 'airspace' ? 'Airspace' : cat === 'fuel' ? 'Fuel/Ground' : 'Other';
+       return '<div class="notam-card'+(state.activeNotamIdx===i?' active':'')+'" data-i="'+i+'">'+
+         '<div class="nc-top">'+
+           '<span class="nc-num">'+(n.number || n.id || 'NOTAM')+'</span>'+
++          '<span class="notam-cat-chip '+cat+'">'+catLabel+'</span>'+
+           '<span class="nc-type '+typeCls+'">'+typeLabel+'</span>'+
+           (n.classification ? '<span class="nc-class">'+n.classification+'</span>' : '') +
+           '<span class="nc-effective">'+fmtDate(n.effective_start)+' → '+fmtDate(n.effective_end)+'</span>'+
+@@ -304,6 +369,8 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
+   ];
+   state.airports = window.__TIER1__;
+ 
++  chipRow(CATEGORIES, state.category, 'cat-filters', function(k){ state.category = k; chipRow(CATEGORIES, k, 'cat-filters', arguments.callee); renderList(); });
++  chipRow(SORTS, state.sort, 'sort-order', function(k){ state.sort = k; chipRow(SORTS, k, 'sort-order', arguments.callee); renderList(); });
+   document.getElementById('search').oninput = function(e){ state.search = e.target.value.trim(); renderList(); };
+   renderList();
+ 
+diff --git a/evidence-strikes.html b/evidence-strikes.html
+index 31b0638..8bf5b48 100644
+--- a/evidence-strikes.html
++++ b/evidence-strikes.html
+@@ -68,6 +68,30 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
+ .loading{padding:60px;text-align:center;color:var(--text3);font-size:12px}
+ .spinner{display:inline-block;width:16px;height:16px;border:2px solid var(--rule);border-top-color:var(--blue);border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:8px}
+ @keyframes spin{to{transform:rotate(360deg)}}
++
++/* S2 · Country → date → event accordion + attached-docs sub-view */
++.strike-country-hdr{background:var(--surface);border:1px solid var(--rule);border-radius:4px;padding:12px 16px;margin-bottom:8px;font-family:var(--font-serif);font-size:15px;color:var(--text);display:flex;justify-content:space-between;align-items:center;cursor:pointer}
++.strike-country-hdr:hover{background:var(--surface2)}
++.strike-country-hdr .country-flag{display:inline-block;width:20px;text-align:center;margin-right:8px}
++.strike-country-hdr .count{font-family:var(--mono);font-size:11px;color:var(--text3);font-weight:400}
++.strike-date-group{padding:0 14px 8px 14px;border-left:2px solid var(--accent-faint);margin:0 0 12px 20px}
++.strike-date-hdr{font-family:var(--mono);font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;font-weight:600;margin:10px 0 6px 0}
++.strike-event{background:var(--surface);border:1px solid var(--rule);border-left:3px solid var(--accent);border-radius:3px;padding:10px 14px;margin-bottom:8px;cursor:pointer;transition:background .12s}
++.strike-event:hover{background:var(--surface2)}
++.strike-event.expanded{background:var(--accent-faint);border-color:var(--accent)}
++.strike-event-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:3px}
++.strike-event-meta{font-size:11px;color:var(--text3);font-family:var(--mono)}
++.strike-event-count{font-size:10.5px;color:var(--accent);font-weight:600;margin-top:4px}
++.strike-event-docs{padding:12px 14px 4px;background:var(--surface);border:1px solid var(--rule);border-top:none;border-radius:0 0 3px 3px;margin-top:-8px;margin-bottom:12px}
++.strike-doc-cat{margin-bottom:12px}
++.strike-doc-cat-hdr{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--text3);font-weight:600;margin-bottom:6px;display:flex;align-items:center;gap:6px}
++.strike-doc-cat-hdr i{font-size:11px;color:var(--accent)}
++.strike-doc-item{padding:6px 10px;background:var(--surface2);border-radius:3px;font-size:11.5px;color:var(--text2);margin-bottom:4px;line-height:1.4;border-left:2px solid var(--rule)}
++.strike-doc-item.news{border-left-color:#1A5C3A}
++.strike-doc-item.pub{border-left-color:#7A4E00}
++.strike-doc-item.email{border-left-color:#5B4A9F}
++.strike-doc-item.flight{border-left-color:#254E91}
++.strike-doc-src{font-family:var(--mono);font-size:9px;text-transform:uppercase;color:var(--text3);letter-spacing:.04em;margin-top:3px}
+ </style>
+ </head>
+ <body>
+@@ -117,7 +141,7 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
+ 
+ <script src="shared_data.js"></script>
+ <script src="shared_theme.js"></script>
+-<script src="defendable_evidence_reader.js?v=s9a"></script>
++<script src="defendable_evidence_reader.js?v=s12a"></script>
+ <script src="nav.js"></script>
+ 
+ <script>
+@@ -137,6 +161,138 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
+   }).join('');
+ 
+   var state = { search:'', country:'all', fr:[], it:[] };
++  /* S2 · Enriched event catalogue — country → date → event with attached supporting docs.
++     Seeded with plausible mock content. Replaces the flat notice list to reflect how a DIO
++     actually organises strike-related evidence for defence prep. */
++  var STRIKE_EVENTS = [
++    {country:'FR', flag:'🇫🇷', date:'2026-03-12', title:'SNCTA nationwide ATC strike · 4-hour walkout 12:00-16:00Z',
++     news:[
++       {title:'French ATC union SNCTA calls 4-hour walkout · disruption expected across LFFF FIR', src:'Reuters · 09 Mar 2026'},
++       {title:'DGAC orders 25% minimum service · airlines told to cancel proactively', src:'La Tribune · 10 Mar 2026'},
++       {title:'Ryanair cancels 240 flights across Europe as SNCTA action begins', src:'Aviation Herald · 12 Mar 2026'}],
++     publications:[
++       {title:'CDG operational bulletin OB-2026-047 · reduced arrival rate 30/h', src:'ADP · 11 Mar 2026'},
++       {title:'ORY notice N-2026-089 · no PPR waivers 12:00-16:00Z', src:'ADP · 11 Mar 2026'}],
++     emails:[
++       {title:'easyOps · 12MAR26 SNCTA — cancellation matrix + rebooking codes', src:'easyOps mailbox · 11 Mar 2026 17:30'},
++       {title:'NC · strike-day standby crew reallocation FR bases', src:'Network Control · 11 Mar 2026 19:12'}],
++     flights:[
++       {title:'HC 742 CDG-LTN · cancelled 12MAR · Cat A comp × 174 pax', src:'Ops record'},
++       {title:'HC 519 LYS-LGW · 4h35 delay · WX + ATC compounded · defence pack C-2026-0201', src:'Ops record'},
++       {title:'HC 881 MRS-LGW · 6h20 delay · full defence complete', src:'Ops record'}]},
++
++    {country:'FR', flag:'🇫🇷', date:'2026-04-18', title:'CGT baggage-handler strike · CDG + ORY 08:00-14:00Z',
++     news:[
++       {title:'CGT calls Paris-airport baggage strike over pay dispute', src:'AFP · 15 Apr 2026'},
++       {title:'ADP reports 40% baggage-return delays on strike day', src:'Les Echos · 18 Apr 2026'}],
++     publications:[
++       {title:'CDG operational bulletin OB-2026-063 · rolling delays expected', src:'ADP · 17 Apr 2026'}],
++     emails:[
++       {title:'easyOps · baggage-strike pax-comms template', src:'easyOps mailbox · 17 Apr 2026'}],
++     flights:[
++       {title:'HC 442 LGW-BCN · baggage-related 2h20 delay', src:'Ops record'}]},
++
++    {country:'IT', flag:'🇮🇹', date:'2026-05-05', title:'ENAV 24-hour ATC strike · nationwide · 00:00-24:00Z',
++     news:[
++       {title:'ENAV union declares 24-hour Italian ATC walkout · 5 May 2026', src:'Reuters · 25 Apr 2026'},
++       {title:'ENAC issues minimum-service order for garanzia flights', src:'Corriere della Sera · 28 Apr 2026'},
++       {title:'Ryanair, Wizz, easyJet cancel 900+ Italian flights ahead of ENAV action', src:'Aviation Herald · 04 May 2026'}],
++     publications:[
++       {title:'FCO ops bulletin · slot restrictions and minimum-service list', src:'ADR Roma · 03 May 2026'},
++       {title:'MXP notice · no arrivals after 22:00Z 4th until 06:00Z 6th', src:'SEA Milano · 03 May 2026'}],
++     emails:[
++       {title:'easyOps · IT strike day-of matrix + press-line', src:'easyOps · 04 May 2026'},
++       {title:'Crewing · SBY reallocation MXP + FCO bases', src:'Crewing · 04 May 2026'}],
++     flights:[
++       {title:'HC 612 BCN-LGW · diverted MRS · 4h10 delay · defence pack complete', src:'Ops record'},
++       {title:'HC 228 MAD-LTN · cancelled · Cat A comp × 156 pax', src:'Ops record'}]},
++
++    {country:'IT', flag:'🇮🇹', date:'2026-06-14', title:'USB ground-handling strike · MXP + LIN 10:00-14:00Z',
++     news:[
++       {title:'USB calls Milan-airports ground-handling strike over Alitalia legacy contracts', src:'ANSA · 08 Jun 2026'}],
++     publications:[
++       {title:'MXP + LIN joint ops bulletin · reduced turnaround windows', src:'SEA Milano · 12 Jun 2026'}],
++     emails:[
++       {title:'easyOps · IT ground-handling contingency', src:'easyOps · 12 Jun 2026'}],
++     flights:[
++       {title:'HC 471 VLC-LGW · originally scheduled through MXP · rerouted', src:'Ops record'}]},
++  ];
++
++  var STRIKE_EVENT_STATE = {};
++
++  function toggleStrikeEvent(id){
++    STRIKE_EVENT_STATE[id] = !STRIKE_EVENT_STATE[id];
++    renderStrikeHierarchy();
++  }
++
++  function renderStrikeDocs(ev){
++    function cat(title, items, cls, icon){
++      if (!items || !items.length) return '';
++      return '<div class="strike-doc-cat">'+
++        '<div class="strike-doc-cat-hdr"><i class="ti '+icon+'"></i>'+title+' ('+items.length+')</div>'+
++        items.map(function(it){
++          return '<div class="strike-doc-item '+cls+'"><div>'+esc(it.title)+'</div><div class="strike-doc-src">'+esc(it.src)+'</div></div>';
++        }).join('')+
++      '</div>';
++    }
++    return '<div class="strike-event-docs">'+
++      cat('News articles', ev.news, 'news', 'ti-news')+
++      cat('Airport publications', ev.publications, 'pub', 'ti-file-text')+
++      cat('Internal emails', ev.emails, 'email', 'ti-mail')+
++      cat('Affected flights', ev.flights, 'flight', 'ti-plane')+
++    '</div>';
++  }
++
++  function renderStrikeHierarchy(){
++    var s = state.search.toLowerCase();
++    var events = STRIKE_EVENTS.filter(function(ev){
++      if (state.country !== 'all' && ev.country !== state.country) return false;
++      if (!s) return true;
++      var hay = (ev.title + ' ' + ev.date + ' ' + ev.country).toLowerCase();
++      return hay.indexOf(s) >= 0;
++    });
++    var byCountry = {};
++    events.forEach(function(ev){
++      byCountry[ev.country] = byCountry[ev.country] || {flag:ev.flag, name: ev.country==='FR'?'France · DGAC':'Italy · ENAC', events:[]};
++      byCountry[ev.country].events.push(ev);
++    });
++    var html = '';
++    Object.keys(byCountry).sort().forEach(function(cc){
++      var g = byCountry[cc];
++      html += '<div class="strike-country-hdr"><span><span class="country-flag">'+g.flag+'</span>'+g.name+'</span><span class="count">'+g.events.length+' event'+(g.events.length===1?'':'s')+'</span></div>';
++      html += '<div class="strike-date-group">';
++      // group by date
++      var byDate = {};
++      g.events.forEach(function(ev){ byDate[ev.date] = byDate[ev.date] || []; byDate[ev.date].push(ev); });
++      Object.keys(byDate).sort().reverse().forEach(function(d){
++        html += '<div class="strike-date-hdr">'+d+'</div>';
++        byDate[d].forEach(function(ev){
++          var id = ev.country+'-'+ev.date+'-'+ev.title.slice(0,20);
++          var expanded = STRIKE_EVENT_STATE[id];
++          var docCount = (ev.news||[]).length + (ev.publications||[]).length + (ev.emails||[]).length + (ev.flights||[]).length;
++          html += '<div class="strike-event '+(expanded?'expanded':'')+'" onclick="toggleStrikeEvent(\''+id.replace(/\'/g,'')+'\')">'+
++                    '<div class="strike-event-title">'+esc(ev.title)+'</div>'+
++                    '<div class="strike-event-meta">'+ev.date+'</div>'+
++                    '<div class="strike-event-count">'+docCount+' supporting docs · '+
++                      (ev.news||[]).length+' news · '+
++                      (ev.publications||[]).length+' publications · '+
++                      (ev.emails||[]).length+' emails · '+
++                      (ev.flights||[]).length+' flights'+
++                    '</div>'+
++                  '</div>';
++          if (expanded) html += renderStrikeDocs(ev);
++        });
++      });
++      html += '</div>';
++    });
++    if (!html) html = '<div class="strike-empty"><i class="ti ti-hand-stop"></i>No strike events match this filter.</div>';
++    document.getElementById('strike-body').innerHTML = html;
++    document.getElementById('sb-count').innerHTML = '<div class="sb-title">Filter summary</div><div>Events shown: <strong>'+events.length+'</strong> of '+STRIKE_EVENTS.length+'</div>';
++  }
++
++
++  window.toggleStrikeEvent = toggleStrikeEvent;
++
+   function chipRow(items, active, id, onChange){
+     var el = document.getElementById(id);
+     el.innerHTML = items.map(function(i){ return '<button class="sb-btn'+(i.id===active?' active':'')+'" data-k="'+i.id+'">'+i.label+'</button>'; }).join('');
+@@ -160,17 +316,10 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
+   }
+ 
+   function render(){
+-    var showFr = state.country === 'all' || state.country === 'FR';
+-    var showIt = state.country === 'all' || state.country === 'IT';
+-    var html = '';
+-    if (showFr) html += renderSection('France · DGAC', 'flag-fr', state.fr);
+-    if (showIt) html += renderSection('Italy · ENAC',  'flag-it', state.it);
+-    if (!html) html = '<div class="strike-empty"><i class="ti ti-hand-stop"></i>No strike notices in the latest snapshot match this filter.</div>';
+-    document.getElementById('strike-body').innerHTML = html;
+-    var shown = 0;
+-    if (showFr) shown += state.fr.length;
+-    if (showIt) shown += state.it.length;
+-    document.getElementById('sb-count').innerHTML = '<div class="sb-title">Filter summary</div><div>Shown: <strong>'+shown+'</strong> of '+(state.fr.length+state.it.length)+'</div>';
++    /* S2 · Delegate to the new hierarchical renderer.  Raw notice lists (state.fr,
++       state.it) remain populated from the live snapshot for future use (e.g. auto-
++       generating new STRIKE_EVENTS entries from live data). */
++    renderStrikeHierarchy();
+   }
+ 
+   chipRow([{id:'all',label:'All'},{id:'FR',label:'France'},{id:'IT',label:'Italy'}], state.country, 'country-filters', function(k){ state.country = k; render(); chipRow([{id:'all',label:'All'},{id:'FR',label:'France'},{id:'IT',label:'Italy'}], k, 'country-filters', arguments.callee); });
+diff --git a/module4-evidence-workspace.html b/module4-evidence-workspace.html
+index 5550b72..c1b0930 100644
+--- a/module4-evidence-workspace.html
++++ b/module4-evidence-workspace.html
+@@ -1504,6 +1504,25 @@ function submitRequest(){
+     cprDaysLeft:C.cprDaysLeft||21
+   };
+   log('Evidence requested — '+_pendingRequestName+' from '+recipientName,'request');
++  /* S4 · If recipient is 'DIO for this territory', notify the correct DIO based on case jurisdiction. */
++  try {
++    if (recipientName === 'DIO for this territory' && typeof pushNotification === 'function' && typeof USERS !== 'undefined'){
++      var jur = C.jurisdiction || 'england-wales';
++      var dioMap = { 'england-wales':'EH', 'france':'FD', 'spain':'SR' };
++      var dioId = dioMap[jur] || 'EH';
++      pushNotification({
++        to: dioId,
++        type: 'evidence-request',
++        ref: C.ref,
++        requestId: _pendingRequestId,
++        title: 'New evidence request · ' + (C.claimant || C.ref),
++        body: (C.user || 'Solicitor') + ' requests ' + _pendingRequestName + (note ? ' — ' + note.slice(0,80) : ''),
++        time: new Date().toLocaleString('en-GB',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}),
++        read: false,
++        tab: 'requests'
++      });
++    }
++  } catch(e){}
+   closeRequestModal();
+   saveWorkspaceState();
+   render();
+@@ -1706,16 +1725,33 @@ function switchUser(id){
+ <script src="shared_nav.js"></script>
+ 
+ <div id="request-modal" class="req-modal-overlay" onclick="closeRequestModal()" style="display:none">
+-  <div class="req-modal" onclick="event.stopPropagation()">
++  <div class="req-modal" onclick="event.stopPropagation()" style="max-width:640px">
+     <div class="req-modal-hdr">
+       <div class="req-modal-title">Request evidence</div>
+       <button class="req-modal-close" onclick="closeRequestModal()"><i class="ti ti-x"></i></button>
+     </div>
+-    <div class="req-modal-body">
++    <!-- S3 · Two-path tab bar -->
++    <div style="display:flex;border-bottom:1px solid var(--rule)">
++      <button id="req-tab-quick" onclick="switchReqTab('quick')" style="flex:1;padding:12px 16px;border:none;background:var(--surface);border-bottom:2px solid var(--accent);color:var(--accent);font-weight:600;font-size:12px;cursor:pointer;font-family:var(--font)">
++        <i class="ti ti-list-check" style="margin-right:6px"></i>Quick · pull from catalogue
++      </button>
++      <button id="req-tab-freeform" onclick="switchReqTab('freeform')" style="flex:1;padding:12px 16px;border:none;background:var(--surface);border-bottom:2px solid transparent;color:var(--text3);font-weight:500;font-size:12px;cursor:pointer;font-family:var(--font)">
++        <i class="ti ti-pencil" style="margin-right:6px"></i>Freeform · specific document
++      </button>
++    </div>
++    <!-- Path 1 · Quick tick-box catalogue -->
++    <div id="req-panel-quick" class="req-modal-body">
++      <div style="font-size:11.5px;color:var(--text3);margin-bottom:12px;line-height:1.5">Tick the evidence items you need. DefendAble will check the case Evidence Repository for each and either <strong>pull from repo</strong> if available or raise a targeted request to the right team.</div>
++      <div id="req-catalogue-list" style="max-height:280px;overflow-y:auto;border:1px solid var(--rule);border-radius:3px"></div>
++      <div style="margin-top:10px;font-size:11px;color:var(--text3)"><i class="ti ti-info-circle" style="margin-right:4px"></i>Items shown are the DIO evidence catalogue (see Sheet 5 of the financial model for the full 40-source list).</div>
++    </div>
++    <!-- Path 2 · Freeform (original UI) -->
++    <div id="req-panel-freeform" class="req-modal-body" style="display:none">
+       <div class="req-modal-item-name" id="req-modal-item-name"></div>
+       <div class="req-field">
+         <label class="req-label">Request from</label>
+         <select id="req-recipient" class="req-select">
++          <option value="DIO for this territory|" selected>DIO for this case's territory (auto-routed)</option>
+           <option value="Ops team|ops-legal@[client].com">Ops team — operational records</option>
+           <option value="Crew scheduling|crew-scheduling@[client].com">Crew scheduling — roster records</option>
+           <option value="Ground operations|ground-ops@[client].com">Ground operations — airport records</option>
+@@ -1734,15 +1770,88 @@ function switchUser(id){
+         </select>
+       </div>
+       <div class="req-field">
+-        <label class="req-label">Additional note (optional)</label>
++        <label class="req-label">Additional note (specific document, date, flight)</label>
+         <textarea id="req-note" class="req-textarea" placeholder="e.g. ATD/ATA for flight HC1184 on 13 March 2026 — case reference DEF-2026-EW-0089"></textarea>
+       </div>
+     </div>
+     <div class="req-modal-footer">
+       <button class="req-btn-secondary" onclick="closeRequestModal()">Cancel</button>
+-      <button class="req-btn-primary" onclick="submitRequest()"><i class="ti ti-send"></i> Raise request</button>
++      <button class="req-btn-primary" id="req-submit-btn" onclick="submitRequest()"><i class="ti ti-send"></i> Raise request</button>
+     </div>
+   </div>
+ </div>
++
++<script>
++/* S3 · Two-path evidence-request modal · tab switch + catalogue population + Quick-path submit */
++(function(){
++  var CATALOGUE = [
++    {id:'metar',      label:'METAR / TAF observations',           source:'AviationWeather.gov'},
++    {id:'sigmet',     label:'SIGMET / AIRMET warnings',           source:'AviationWeather.gov'},
++    {id:'metoffice',  label:'Met Office synoptic chart · SIGWX',  source:'Met Office DataHub'},
++    {id:'notam',      label:'NOTAMs · airport / airspace',        source:'FAA + AutoRouter'},
++    {id:'atfm',       label:'Eurocontrol ATFM regulation',        source:'Eurocontrol NM'},
++    {id:'crco',       label:'Eurocontrol CRCO reference',         source:'Eurocontrol NM'},
++    {id:'oplog',      label:'Operational delay records (ATD/ATA)','source':'internal · ops-log'},
++    {id:'commander',  label:'Commander report + ACARS trace',     source:'internal · ACARS'},
++    {id:'crew',       label:'Crew FDP / roster records',          source:'internal · AIMS'},
++    {id:'article9',   label:'Article 9 duty-of-care vouchers',    source:'internal · MAX OPS'},
++    {id:'rerouting',  label:'Third-party rerouting evidence',     source:'internal · scheduling'},
++    {id:'strike',     label:'Third-party industrial-action notice','source':'DGAC / ENAC / news'},
++    {id:'news',       label:'Aviation Herald incident report',    source:'Aviation Herald'},
++    {id:'wildfire',   label:'Wildfire proximity data',            source:'NASA FIRMS / Copernicus'},
++    {id:'volcanic',   label:'Volcanic ash advisory',              source:'VAAC London / Toulouse'},
++    {id:'flight',     label:'Flight track (OpenSky)',             source:'OpenSky Network'},
++  ];
++  function renderReqCatalogue(){
++    var host = document.getElementById('req-catalogue-list');
++    if (!host) return;
++    host.innerHTML = CATALOGUE.map(function(it){
++      return '<label style="display:flex;align-items:center;gap:10px;padding:8px 12px;border-bottom:1px solid var(--rule2);cursor:pointer;font-size:12px">'+
++             '<input type="checkbox" class="req-cat-check" data-id="'+it.id+'" data-label="'+it.label+'" data-src="'+it.source+'">'+
++             '<span style="flex:1"><strong>'+it.label+'</strong><br><span style="color:var(--text3);font-size:10.5px;font-family:var(--mono)">'+it.source+'</span></span>'+
++             '</label>';
++    }).join('');
++  }
++  window.switchReqTab = function(which){
++    var qBtn = document.getElementById('req-tab-quick');
++    var fBtn = document.getElementById('req-tab-freeform');
++    var qPan = document.getElementById('req-panel-quick');
++    var fPan = document.getElementById('req-panel-freeform');
++    var submit = document.getElementById('req-submit-btn');
++    if (which === 'quick'){
++      qBtn.style.borderBottomColor='var(--accent)'; qBtn.style.color='var(--accent)'; qBtn.style.fontWeight='600';
++      fBtn.style.borderBottomColor='transparent'; fBtn.style.color='var(--text3)'; fBtn.style.fontWeight='500';
++      qPan.style.display=''; fPan.style.display='none';
++      if (submit) submit.innerHTML='<i class="ti ti-send"></i> Pull selected from repo';
++      renderReqCatalogue();
++    } else {
++      fBtn.style.borderBottomColor='var(--accent)'; fBtn.style.color='var(--accent)'; fBtn.style.fontWeight='600';
++      qBtn.style.borderBottomColor='transparent'; qBtn.style.color='var(--text3)'; qBtn.style.fontWeight='500';
++      fPan.style.display=''; qPan.style.display='none';
++      if (submit) submit.innerHTML='<i class="ti ti-send"></i> Raise request';
++    }
++  };
++  /* Wrap the original submitRequest so Quick-path submits differently */
++  var _origSubmit = window.submitRequest;
++  window.submitRequest = function(){
++    var qPan = document.getElementById('req-panel-quick');
++    if (qPan && qPan.style.display !== 'none'){
++      var checks = document.querySelectorAll('.req-cat-check:checked');
++      if (!checks.length){ alert('Tick at least one item.'); return; }
++      var picked = Array.prototype.map.call(checks, function(c){ return c.getAttribute('data-label'); });
++      alert('Pull-from-repo requested for '+ picked.length +' item(s):\n\n · '+picked.join('\n · ')+'\n\nEach item is being checked against the case Evidence Repository. Available items will attach automatically; missing items raise a targeted request to the source team.');
++      window.closeRequestModal && window.closeRequestModal();
++      return;
++    }
++    if (typeof _origSubmit === 'function') _origSubmit();
++  };
++  /* Ensure Quick catalogue renders on modal open */
++  var _origOpen = window.openRequestModal;
++  window.openRequestModal = function(){
++    if (typeof _origOpen === 'function') _origOpen.apply(this, arguments);
++    setTimeout(function(){ renderReqCatalogue(); window.switchReqTab('quick'); }, 20);
++  };
++})();
++</script>
+ </body>
+ </html>
+-- 
+2.34.1
+

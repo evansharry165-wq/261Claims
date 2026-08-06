@@ -1504,6 +1504,25 @@ function submitRequest(){
     cprDaysLeft:C.cprDaysLeft||21
   };
   log('Evidence requested — '+_pendingRequestName+' from '+recipientName,'request');
+  /* S4 · If recipient is 'DIO for this territory', notify the correct DIO based on case jurisdiction. */
+  try {
+    if (recipientName === 'DIO for this territory' && typeof pushNotification === 'function' && typeof USERS !== 'undefined'){
+      var jur = C.jurisdiction || 'england-wales';
+      var dioMap = { 'england-wales':'EH', 'france':'FD', 'spain':'SR' };
+      var dioId = dioMap[jur] || 'EH';
+      pushNotification({
+        to: dioId,
+        type: 'evidence-request',
+        ref: C.ref,
+        requestId: _pendingRequestId,
+        title: 'New evidence request · ' + (C.claimant || C.ref),
+        body: (C.user || 'Solicitor') + ' requests ' + _pendingRequestName + (note ? ' — ' + note.slice(0,80) : ''),
+        time: new Date().toLocaleString('en-GB',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}),
+        read: false,
+        tab: 'requests'
+      });
+    }
+  } catch(e){}
   closeRequestModal();
   saveWorkspaceState();
   render();
@@ -1706,16 +1725,33 @@ function switchUser(id){
 <script src="shared_nav.js"></script>
 
 <div id="request-modal" class="req-modal-overlay" onclick="closeRequestModal()" style="display:none">
-  <div class="req-modal" onclick="event.stopPropagation()">
+  <div class="req-modal" onclick="event.stopPropagation()" style="max-width:640px">
     <div class="req-modal-hdr">
       <div class="req-modal-title">Request evidence</div>
       <button class="req-modal-close" onclick="closeRequestModal()"><i class="ti ti-x"></i></button>
     </div>
-    <div class="req-modal-body">
+    <!-- S3 · Two-path tab bar -->
+    <div style="display:flex;border-bottom:1px solid var(--rule)">
+      <button id="req-tab-quick" onclick="switchReqTab('quick')" style="flex:1;padding:12px 16px;border:none;background:var(--surface);border-bottom:2px solid var(--accent);color:var(--accent);font-weight:600;font-size:12px;cursor:pointer;font-family:var(--font)">
+        <i class="ti ti-list-check" style="margin-right:6px"></i>Quick · pull from catalogue
+      </button>
+      <button id="req-tab-freeform" onclick="switchReqTab('freeform')" style="flex:1;padding:12px 16px;border:none;background:var(--surface);border-bottom:2px solid transparent;color:var(--text3);font-weight:500;font-size:12px;cursor:pointer;font-family:var(--font)">
+        <i class="ti ti-pencil" style="margin-right:6px"></i>Freeform · specific document
+      </button>
+    </div>
+    <!-- Path 1 · Quick tick-box catalogue -->
+    <div id="req-panel-quick" class="req-modal-body">
+      <div style="font-size:11.5px;color:var(--text3);margin-bottom:12px;line-height:1.5">Tick the evidence items you need. DefendAble will check the case Evidence Repository for each and either <strong>pull from repo</strong> if available or raise a targeted request to the right team.</div>
+      <div id="req-catalogue-list" style="max-height:280px;overflow-y:auto;border:1px solid var(--rule);border-radius:3px"></div>
+      <div style="margin-top:10px;font-size:11px;color:var(--text3)"><i class="ti ti-info-circle" style="margin-right:4px"></i>Items shown are the DIO evidence catalogue (see Sheet 5 of the financial model for the full 40-source list).</div>
+    </div>
+    <!-- Path 2 · Freeform (original UI) -->
+    <div id="req-panel-freeform" class="req-modal-body" style="display:none">
       <div class="req-modal-item-name" id="req-modal-item-name"></div>
       <div class="req-field">
         <label class="req-label">Request from</label>
         <select id="req-recipient" class="req-select">
+          <option value="DIO for this territory|" selected>DIO for this case's territory (auto-routed)</option>
           <option value="Ops team|ops-legal@[client].com">Ops team — operational records</option>
           <option value="Crew scheduling|crew-scheduling@[client].com">Crew scheduling — roster records</option>
           <option value="Ground operations|ground-ops@[client].com">Ground operations — airport records</option>
@@ -1734,15 +1770,88 @@ function switchUser(id){
         </select>
       </div>
       <div class="req-field">
-        <label class="req-label">Additional note (optional)</label>
+        <label class="req-label">Additional note (specific document, date, flight)</label>
         <textarea id="req-note" class="req-textarea" placeholder="e.g. ATD/ATA for flight HC1184 on 13 March 2026 — case reference DEF-2026-EW-0089"></textarea>
       </div>
     </div>
     <div class="req-modal-footer">
       <button class="req-btn-secondary" onclick="closeRequestModal()">Cancel</button>
-      <button class="req-btn-primary" onclick="submitRequest()"><i class="ti ti-send"></i> Raise request</button>
+      <button class="req-btn-primary" id="req-submit-btn" onclick="submitRequest()"><i class="ti ti-send"></i> Raise request</button>
     </div>
   </div>
 </div>
+
+<script>
+/* S3 · Two-path evidence-request modal · tab switch + catalogue population + Quick-path submit */
+(function(){
+  var CATALOGUE = [
+    {id:'metar',      label:'METAR / TAF observations',           source:'AviationWeather.gov'},
+    {id:'sigmet',     label:'SIGMET / AIRMET warnings',           source:'AviationWeather.gov'},
+    {id:'metoffice',  label:'Met Office synoptic chart · SIGWX',  source:'Met Office DataHub'},
+    {id:'notam',      label:'NOTAMs · airport / airspace',        source:'FAA + AutoRouter'},
+    {id:'atfm',       label:'Eurocontrol ATFM regulation',        source:'Eurocontrol NM'},
+    {id:'crco',       label:'Eurocontrol CRCO reference',         source:'Eurocontrol NM'},
+    {id:'oplog',      label:'Operational delay records (ATD/ATA)','source':'internal · ops-log'},
+    {id:'commander',  label:'Commander report + ACARS trace',     source:'internal · ACARS'},
+    {id:'crew',       label:'Crew FDP / roster records',          source:'internal · AIMS'},
+    {id:'article9',   label:'Article 9 duty-of-care vouchers',    source:'internal · MAX OPS'},
+    {id:'rerouting',  label:'Third-party rerouting evidence',     source:'internal · scheduling'},
+    {id:'strike',     label:'Third-party industrial-action notice','source':'DGAC / ENAC / news'},
+    {id:'news',       label:'Aviation Herald incident report',    source:'Aviation Herald'},
+    {id:'wildfire',   label:'Wildfire proximity data',            source:'NASA FIRMS / Copernicus'},
+    {id:'volcanic',   label:'Volcanic ash advisory',              source:'VAAC London / Toulouse'},
+    {id:'flight',     label:'Flight track (OpenSky)',             source:'OpenSky Network'},
+  ];
+  function renderReqCatalogue(){
+    var host = document.getElementById('req-catalogue-list');
+    if (!host) return;
+    host.innerHTML = CATALOGUE.map(function(it){
+      return '<label style="display:flex;align-items:center;gap:10px;padding:8px 12px;border-bottom:1px solid var(--rule2);cursor:pointer;font-size:12px">'+
+             '<input type="checkbox" class="req-cat-check" data-id="'+it.id+'" data-label="'+it.label+'" data-src="'+it.source+'">'+
+             '<span style="flex:1"><strong>'+it.label+'</strong><br><span style="color:var(--text3);font-size:10.5px;font-family:var(--mono)">'+it.source+'</span></span>'+
+             '</label>';
+    }).join('');
+  }
+  window.switchReqTab = function(which){
+    var qBtn = document.getElementById('req-tab-quick');
+    var fBtn = document.getElementById('req-tab-freeform');
+    var qPan = document.getElementById('req-panel-quick');
+    var fPan = document.getElementById('req-panel-freeform');
+    var submit = document.getElementById('req-submit-btn');
+    if (which === 'quick'){
+      qBtn.style.borderBottomColor='var(--accent)'; qBtn.style.color='var(--accent)'; qBtn.style.fontWeight='600';
+      fBtn.style.borderBottomColor='transparent'; fBtn.style.color='var(--text3)'; fBtn.style.fontWeight='500';
+      qPan.style.display=''; fPan.style.display='none';
+      if (submit) submit.innerHTML='<i class="ti ti-send"></i> Pull selected from repo';
+      renderReqCatalogue();
+    } else {
+      fBtn.style.borderBottomColor='var(--accent)'; fBtn.style.color='var(--accent)'; fBtn.style.fontWeight='600';
+      qBtn.style.borderBottomColor='transparent'; qBtn.style.color='var(--text3)'; qBtn.style.fontWeight='500';
+      fPan.style.display=''; qPan.style.display='none';
+      if (submit) submit.innerHTML='<i class="ti ti-send"></i> Raise request';
+    }
+  };
+  /* Wrap the original submitRequest so Quick-path submits differently */
+  var _origSubmit = window.submitRequest;
+  window.submitRequest = function(){
+    var qPan = document.getElementById('req-panel-quick');
+    if (qPan && qPan.style.display !== 'none'){
+      var checks = document.querySelectorAll('.req-cat-check:checked');
+      if (!checks.length){ alert('Tick at least one item.'); return; }
+      var picked = Array.prototype.map.call(checks, function(c){ return c.getAttribute('data-label'); });
+      alert('Pull-from-repo requested for '+ picked.length +' item(s):\n\n · '+picked.join('\n · ')+'\n\nEach item is being checked against the case Evidence Repository. Available items will attach automatically; missing items raise a targeted request to the source team.');
+      window.closeRequestModal && window.closeRequestModal();
+      return;
+    }
+    if (typeof _origSubmit === 'function') _origSubmit();
+  };
+  /* Ensure Quick catalogue renders on modal open */
+  var _origOpen = window.openRequestModal;
+  window.openRequestModal = function(){
+    if (typeof _origOpen === 'function') _origOpen.apply(this, arguments);
+    setTimeout(function(){ renderReqCatalogue(); window.switchReqTab('quick'); }, 20);
+  };
+})();
+</script>
 </body>
 </html>

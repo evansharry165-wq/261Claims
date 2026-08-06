@@ -44,6 +44,17 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 
 .sidebar{background:var(--surface);border-right:1px solid var(--border);overflow-y:auto;padding:16px 0}
 .sb-section{padding:0 18px 12px}
+.sb-btn-group{display:flex;flex-wrap:wrap;gap:4px}
+.sb-btn{padding:4px 10px;font-size:11px;background:var(--surface);border:1px solid var(--rule);color:var(--text2);border-radius:12px;cursor:pointer;font-family:var(--font);font-weight:500}
+.sb-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.sb-btn:hover:not(.active){background:var(--surface2)}
+.notam-cat-chip{display:inline-block;font-family:var(--mono);font-size:9px;padding:2px 6px;border-radius:8px;text-transform:uppercase;letter-spacing:.04em;font-weight:600;margin-right:6px}
+.notam-cat-chip.rwy{background:#FBF0F0;color:#8B1A1A}
+.notam-cat-chip.twy{background:#FDF4E3;color:#7A4E00}
+.notam-cat-chip.ils{background:#EEF2F8;color:#1B3A6B}
+.notam-cat-chip.airspace{background:#F0EEFC;color:#5B4A9F}
+.notam-cat-chip.fuel{background:#E4EEF2;color:#1F5C68}
+.notam-cat-chip.other{background:var(--surface3);color:var(--text3)}
 .sb-title{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:8px}
 .sb-input{width:100%;font-family:var(--font);font-size:12px;padding:7px 10px;border:1px solid var(--border);border-radius:var(--r);background:var(--surface2);color:var(--text)}
 .sb-input:focus{outline:none;border-color:var(--blue);background:var(--surface)}
@@ -139,6 +150,14 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
       <div class="sb-title">Search airport</div>
       <input class="sb-input" id="search" placeholder="ICAO or city…">
     </div>
+    <div class="sb-section">
+      <div class="sb-title">NOTAM category</div>
+      <div class="sb-btn-group" id="cat-filters"></div>
+    </div>
+    <div class="sb-section">
+      <div class="sb-title">Sort by</div>
+      <div class="sb-btn-group" id="sort-order"></div>
+    </div>
     <div id="airport-list"></div>
   </aside>
 
@@ -153,7 +172,7 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 
 <script src="shared_data.js"></script>
 <script src="shared_theme.js"></script>
-<script src="defendable_evidence_reader.js?v=s9a"></script>
+<script src="defendable_evidence_reader.js?v=s12a"></script>
 <script src="nav.js"></script>
 
 <script>
@@ -172,7 +191,39 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
     return '<a href="'+c.page+'" class="ribbon-tab'+(c.id==='notams'?' active':'')+'"><i class="ti '+c.icon+'"></i>'+c.label+'</a>';
   }).join('');
 
-  var state = { search:'', activeIcao:null, activeNotamIdx:null, perAirport:{}, airports:[] };
+  var state = { search:'', category:'all', sort:'validFrom', activeIcao:null, activeNotamIdx:null, perAirport:{}, airports:[] };
+
+  var CATEGORIES = [
+    {id:'all',label:'All'},
+    {id:'rwy',label:'Runway'},
+    {id:'twy',label:'Taxiway'},
+    {id:'ils',label:'ILS/Nav'},
+    {id:'airspace',label:'Airspace'},
+    {id:'fuel',label:'Fuel/Ground'},
+    {id:'other',label:'Other'}
+  ];
+  var SORTS = [
+    {id:'validFrom',label:'Most recent'},
+    {id:'severity',label:'Severity'},
+    {id:'airport',label:'Airport'}
+  ];
+
+  function classifyNotam(n){
+    var t = String(n.text || n.notam || '').toUpperCase();
+    if (/\bRWY\b|\bRUNWAY\b/.test(t)) return 'rwy';
+    if (/\bTWY\b|\bTAXIWAY\b/.test(t)) return 'twy';
+    if (/\bILS\b|\bVOR\b|\bDME\b|\bNDB\b|NAVAID/.test(t)) return 'ils';
+    if (/AIRSPACE|CTR\b|TMA\b|FIR\b|R\d/.test(t)) return 'airspace';
+    if (/FUEL|APRON|STAND|GATE|GROUND/.test(t)) return 'fuel';
+    return 'other';
+  }
+
+  function chipRow(items, active, id, onChange){
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.innerHTML = items.map(function(i){ return '<button class="sb-btn'+(i.id===active?' active':'')+'" data-k="'+i.id+'">'+i.label+'</button>'; }).join('');
+    Array.prototype.forEach.call(el.querySelectorAll('.sb-btn'), function(b){ b.onclick = function(){ onChange(b.dataset.k); }; });
+  }
 
   function fmtDate(iso){ if (!iso) return '—'; try { return new Date(iso).toISOString().slice(0,16).replace('T',' ')+'Z'; } catch(e){ return iso; } }
 
@@ -183,7 +234,8 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
       return (a.icao+' '+a.iata+' '+a.city).toLowerCase().indexOf(s) >= 0;
     });
     var html = rows.map(function(a){
-      var count = ((state.perAirport[a.icao] || {}).notams || []).length;
+      var rawNotams = (state.perAirport[a.icao] || {}).notams || [];
+      var count = state.category === 'all' ? rawNotams.length : rawNotams.filter(function(n){ return classifyNotam(n) === state.category; }).length;
       var cls = count > 10 ? 'many' : count > 0 ? 'has' : '';
       return '<div class="sb-airport-row'+(state.activeIcao===a.icao?' active':'')+'" data-icao="'+a.icao+'">'+
         '<div class="sb-airport-left"><div class="sb-airport-icao">'+a.icao+'</div><div class="sb-airport-city">'+a.city+'</div></div>'+
@@ -207,6 +259,16 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
     var airport = state.airports.find(function(a){return a.icao===state.activeIcao;});
     var perAp = state.perAirport[state.activeIcao] || { airport_name:airport && airport.name, notams:[] };
     var notams = perAp.notams || [];
+    /* S1 · Category filter + sort */
+    if (state.category !== 'all') {
+      notams = notams.filter(function(n){ return classifyNotam(n) === state.category; });
+    }
+    if (state.sort === 'validFrom') {
+      notams = notams.slice().sort(function(a,b){ return String(b.effective_start||'').localeCompare(String(a.effective_start||'')); });
+    } else if (state.sort === 'severity') {
+      var order = {rwy:0,ils:1,airspace:2,twy:3,fuel:4,other:5};
+      notams = notams.slice().sort(function(a,b){ return (order[classifyNotam(a)]||9) - (order[classifyNotam(b)]||9); });
+    }
     var header = '<div class="notam-header">'+
       '<div class="notam-header-hdr">'+
         '<div>'+
@@ -224,9 +286,12 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
     var list = '<div class="notam-list">' + notams.map(function(n, i){
       var typeCls = 'type-' + classifyType(n.type);
       var typeLabel = n.type === 'N' ? 'New' : n.type === 'R' ? 'Replace' : n.type === 'C' ? 'Cancel' : (n.type || '—');
+      var cat = classifyNotam(n);
+      var catLabel = cat === 'rwy' ? 'Runway' : cat === 'twy' ? 'Taxiway' : cat === 'ils' ? 'ILS/Nav' : cat === 'airspace' ? 'Airspace' : cat === 'fuel' ? 'Fuel/Ground' : 'Other';
       return '<div class="notam-card'+(state.activeNotamIdx===i?' active':'')+'" data-i="'+i+'">'+
         '<div class="nc-top">'+
           '<span class="nc-num">'+(n.number || n.id || 'NOTAM')+'</span>'+
+          '<span class="notam-cat-chip '+cat+'">'+catLabel+'</span>'+
           '<span class="nc-type '+typeCls+'">'+typeLabel+'</span>'+
           (n.classification ? '<span class="nc-class">'+n.classification+'</span>' : '') +
           '<span class="nc-effective">'+fmtDate(n.effective_start)+' → '+fmtDate(n.effective_end)+'</span>'+
@@ -304,6 +369,8 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
   ];
   state.airports = window.__TIER1__;
 
+  chipRow(CATEGORIES, state.category, 'cat-filters', function(k){ state.category = k; chipRow(CATEGORIES, k, 'cat-filters', arguments.callee); renderList(); });
+  chipRow(SORTS, state.sort, 'sort-order', function(k){ state.sort = k; chipRow(SORTS, k, 'sort-order', arguments.callee); renderList(); });
   document.getElementById('search').oninput = function(e){ state.search = e.target.value.trim(); renderList(); };
   renderList();
 
