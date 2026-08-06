@@ -295,6 +295,7 @@ input[type=file].filing-file-input{display:none}
   <div class="tab-row">
     <button class="tab-btn" id="tab-cases" onclick="setTab('cases')"><i class="ti ti-briefcase"></i> Cases</button>
     <button class="tab-btn active" id="tab-evidence" onclick="setTab('evidence')"><i class="ti ti-database"></i> Evidence</button>
+    <button class="tab-btn" id="tab-live" onclick="setTab('live')"><i class="ti ti-radar-2"></i> Live evidence</button>
     <button class="tab-btn" id="tab-closed" onclick="setTab('closed')"><i class="ti ti-archive"></i> Closed outcomes</button>
   </div>
   <div class="repo-body" id="repo-body"></div>
@@ -338,8 +339,9 @@ function getUser(){ return localStorage.getItem('dfa_active_user') || (typeof wi
 
 function setTab(t){
   TAB = t;
-  ['cases','evidence','closed'].forEach(function(x){
-    document.getElementById('tab-'+x).classList.toggle('active', x===t);
+  ['cases','evidence','live','closed'].forEach(function(x){
+    var el = document.getElementById('tab-'+x);
+    if (el) el.classList.toggle('active', x===t);
   });
   render();
 }
@@ -828,7 +830,52 @@ function render(){
   document.querySelectorAll('.ud-item').forEach(function(el){ el.classList.toggle('current',el.id==='ud-'+uid); });
   if(TAB==='cases') renderCases();
   else if(TAB==='evidence') renderEvidence();
+  else if(TAB==='live') renderLiveEvidence();
   else renderClosed();
+}
+
+
+
+/* R2.D · Live Evidence — folded in from the retired evidence-hub.
+   Shows the 8 live public sources with their current status, per-source hit
+   counts, and quick jump-links.  This is the sitewide destination for
+   'what has the cron pulled recently that any case might attach'.  Also serves
+   as the orientation view previously provided by evidence.html. */
+function renderLiveEvidence(){
+  var LIVE_SOURCES = [
+    {id:'aviationweather-metar-taf', label:'Aviation Weather',   subtitle:'METAR + TAF observations', icon:'ti-cloud-storm',   page:'evidence-weather.html',  colour:'#254E91'},
+    {id:'faa-notams',                label:'NOTAMs',              subtitle:'FAA + AutoRouter (Europe)', icon:'ti-file-text',    page:'evidence-notams.html',   colour:'#7A4E00'},
+    {id:'eurocontrol-nm-public',     label:'Eurocontrol NM',      subtitle:'ATFM · CODA · public NOP',   icon:'ti-traffic-cone', page:'evidence-atfm.html',     colour:'#1F5C68'},
+    {id:'dgac-france-notices',       label:'Industrial action',   subtitle:'DGAC + ENAC + strike news', icon:'ti-hand-stop',    page:'evidence-strikes.html',  colour:'#5B4A9F'},
+    {id:'nasa-firms-wildfires',      label:'Natural disaster',    subtitle:'NASA FIRMS + Copernicus + GDACS', icon:'ti-flame',    page:'evidence-global.html',   colour:'#8B1A1A'},
+    {id:'aviation-herald-news',      label:'Aviation news',       subtitle:'Aviation Herald + Simple Flying', icon:'ti-news',    page:'evidence-news.html',     colour:'#1A5C3A'},
+    {id:'vaac-london-qva',           label:'Volcanic ash',        subtitle:'VAAC London QVA (pending)',  icon:'ti-mountain',    page:'evidence-ash.html',      colour:'#7A4E00'},
+    {id:'opensky-flight-tracks',     label:'Flight tracks',       subtitle:'OpenSky + AeroDataBox',       icon:'ti-plane',       page:'evidence-flights.html',  colour:'#4338CA'},
+  ];
+  var body = document.getElementById('repo-body');
+  body.innerHTML =
+    '<div style="padding:20px 24px">' +
+      '<div style="margin-bottom:18px">' +
+        '<h2 style="font-family:var(--font-serif);font-size:20px;font-weight:400;color:var(--text);margin-bottom:4px">Live evidence · today\'s snapshot</h2>' +
+        '<p style="font-size:12px;color:var(--text3);line-height:1.5">Everything DefendAble\'s daily cron has pulled across our eight live public sources. Click a source to browse detail, filter, and attach items to any open case.</p>' +
+      '</div>' +
+      '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px">' +
+        LIVE_SOURCES.map(function(s){
+          return '<a href="'+s.page+'" style="text-decoration:none;color:inherit;background:var(--surface);border:1px solid var(--rule);border-left:4px solid '+s.colour+';border-radius:4px;padding:14px 16px;display:block;transition:box-shadow .12s,transform .05s">' +
+            '<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">' +
+              '<i class="ti '+s.icon+'" style="font-size:20px;color:'+s.colour+'"></i>' +
+              '<div style="font-family:var(--font-serif);font-size:14px;font-weight:500;color:var(--text)">'+esc(s.label)+'</div>' +
+            '</div>' +
+            '<div style="font-size:11px;color:var(--text3);line-height:1.5;margin-bottom:8px">'+esc(s.subtitle)+'</div>' +
+            '<div style="font-family:var(--mono);font-size:10px;color:'+s.colour+';font-weight:600;text-transform:uppercase;letter-spacing:.04em">Open →</div>' +
+          '</a>';
+        }).join('') +
+      '</div>' +
+      '<div style="margin-top:22px;padding:14px 16px;background:var(--surface2);border:1px dashed var(--rule);border-radius:4px;font-size:11.5px;color:var(--text3);line-height:1.5">' +
+        '<i class="ti ti-info-circle" style="margin-right:6px;color:var(--accent)"></i>' +
+        'The daily cron pulls from these sources overnight (03:00 UTC).  Case-scoped filtering happens automatically when you open a case Repository tab — this page is the sitewide browse view.  Future upgrade: hourly cron cadence + territory-notification triggers (see handoff doc, Future ambitions).' +
+      '</div>' +
+    '</div>';
 }
 
 function initRepository(){
@@ -840,7 +887,13 @@ function initRepository(){
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',initRepository);
 else initRepository();
-window.addEventListener('load',initRepository);
+window.addEventListener('load',function(){
+  initRepository();
+  /* R2.D · honour URL hash so /repository.html#live-evidence lands on the Live tab */
+  if (window.location.hash === '#live-evidence' || window.location.search.indexOf('tab=live') >= 0){
+    setTimeout(function(){ setTab('live'); }, 60);
+  }
+});
 </script>
 </body>
 </html>

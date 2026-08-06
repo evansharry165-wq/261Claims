@@ -75,10 +75,10 @@ textarea{min-height:56px;resize:vertical}
 <script src="shared_data.js"></script>
 <script src="shared_theme.js"></script>
 <script src="case_helpers.js"></script>
-<script src="dio_core.js?v=s9a"></script>
-<script src="dio_territory.js?v=s9a"></script>
-<script src="dio_data.js?v=s9a"></script>
-<script src="dio_helpers.js?v=s9a"></script>
+<script src="dio_core.js?v=s13a"></script>
+<script src="dio_territory.js?v=s13a"></script>
+<script src="dio_data.js?v=s13a"></script>
+<script src="dio_helpers.js?v=s13a"></script>
 
 <header class="top-bar">
   <a href="dio.html" class="gn-mark"><i class="ti ti-archive"></i></a>
@@ -373,5 +373,172 @@ window.addEventListener('load',render);
 <div id="user-modal" class="user-modal" onclick="if(event.target===this)closeMenu()">
   <div class="user-dropdown"></div>
 </div>
+
+
+<!-- R2.E · DIO Raise-request modal (mirror of lawyer S3 flow) -->
+<style>
+.dio-req-fab{position:fixed;bottom:24px;right:24px;background:var(--accent,#1B3A6B);color:#fff;border:none;border-radius:24px;padding:12px 20px;font-size:13px;font-weight:600;font-family:var(--font,'Helvetica Neue',Arial,sans-serif);cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,0.25);display:inline-flex;align-items:center;gap:8px;z-index:400;transition:transform .1s,box-shadow .12s}
+.dio-req-fab:hover{transform:translateY(-1px);box-shadow:0 8px 22px rgba(0,0,0,0.3)}
+.dio-req-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:500;justify-content:center;align-items:flex-start;padding:60px 20px}
+.dio-req-overlay.open{display:flex}
+.dio-req-modal{background:#fff;border-radius:6px;width:100%;max-width:640px;overflow:hidden;box-shadow:0 12px 40px rgba(0,0,0,0.35);font-family:var(--font,'Helvetica Neue',Arial,sans-serif)}
+.dio-req-hdr{padding:14px 20px;border-bottom:1px solid #D8D8E0;display:flex;justify-content:space-between;align-items:center}
+.dio-req-title{font-family:'Georgia',serif;font-size:15px;font-weight:500;color:#1A1A2E}
+.dio-req-close{background:none;border:none;color:#6B6B80;cursor:pointer;font-size:16px}
+.dio-req-tabs{display:flex;border-bottom:1px solid #D8D8E0}
+.dio-req-tabs button{flex:1;padding:12px 16px;border:none;background:#fff;font-size:12px;color:#6B6B80;cursor:pointer;font-weight:500;font-family:inherit;border-bottom:2px solid transparent}
+.dio-req-tabs button.on{color:#1B3A6B;font-weight:600;border-bottom-color:#1B3A6B}
+.dio-req-body{padding:16px 20px}
+.dio-req-cat-list{max-height:280px;overflow-y:auto;border:1px solid #D8D8E0;border-radius:3px}
+.dio-req-cat-item{display:flex;align-items:center;gap:10px;padding:8px 12px;border-bottom:1px solid #EBEBF0;cursor:pointer;font-size:12px}
+.dio-req-cat-item:hover{background:#F7F7F9}
+.dio-req-cat-item:last-child{border-bottom:none}
+.dio-req-cat-item strong{color:#1A1A2E;display:block;margin-bottom:2px}
+.dio-req-cat-item span.src{color:#6B6B80;font-size:10.5px;font-family:'Courier New',monospace}
+.dio-req-note{font-size:11px;color:#6B6B80;margin-top:10px}
+.dio-req-freeform textarea{width:100%;min-height:100px;padding:10px 12px;border:1px solid #D8D8E0;border-radius:3px;font-family:inherit;font-size:12px;resize:vertical}
+.dio-req-freeform label{display:block;font-size:11px;color:#6B6B80;font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px}
+.dio-req-footer{padding:12px 20px;background:#F7F7F9;border-top:1px solid #D8D8E0;display:flex;justify-content:flex-end;gap:8px}
+.dio-req-btn{padding:8px 14px;border-radius:3px;font-size:12px;font-weight:500;font-family:inherit;cursor:pointer;border:1px solid transparent}
+.dio-req-btn.secondary{background:#fff;border-color:#D8D8E0;color:#2D2D44}
+.dio-req-btn.primary{background:#1B3A6B;color:#fff}
+</style>
+
+<button class="dio-req-fab" onclick="openDioReqModal()" title="Raise an evidence request (Quick tick-box or Freeform)">
+  <i class="ti ti-plus"></i> Raise request
+</button>
+
+<div id="dio-req-overlay" class="dio-req-overlay" onclick="if(event.target===this)closeDioReqModal()">
+  <div class="dio-req-modal">
+    <div class="dio-req-hdr">
+      <div class="dio-req-title">Raise evidence request · <span id="dio-req-case-ref" style="color:#6B6B80;font-weight:400"></span></div>
+      <button class="dio-req-close" onclick="closeDioReqModal()"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="dio-req-tabs">
+      <button id="dio-req-tab-quick" class="on" onclick="switchDioReqTab('quick')"><i class="ti ti-list-check"></i> Quick · pull from catalogue</button>
+      <button id="dio-req-tab-freeform" onclick="switchDioReqTab('freeform')"><i class="ti ti-pencil"></i> Freeform · specific document</button>
+    </div>
+    <div id="dio-req-panel-quick" class="dio-req-body">
+      <div class="dio-req-note" style="margin-bottom:10px">Tick items you need. Available items pull from the case Evidence Repository; missing items raise a targeted request. Ticked items land in the shared Requests forum for pickup.</div>
+      <div id="dio-req-cat-list" class="dio-req-cat-list"></div>
+    </div>
+    <div id="dio-req-panel-freeform" class="dio-req-body dio-req-freeform" style="display:none">
+      <label>Describe the document</label>
+      <textarea id="dio-req-freeform-text" placeholder="e.g. Cabin-crew statement forms + FRMS extract for HC 1184 crew, 14 March 2026"></textarea>
+      <div class="dio-req-note">Freeform requests fire straight into the Requests forum with an 'unassigned' status for another DIO or the current DIO to claim.</div>
+    </div>
+    <div class="dio-req-footer">
+      <button class="dio-req-btn secondary" onclick="closeDioReqModal()">Cancel</button>
+      <button class="dio-req-btn primary" id="dio-req-submit" onclick="submitDioReq()"><i class="ti ti-send"></i> Raise</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var CATALOGUE = [
+    {id:'metar',      label:'METAR / TAF observations',           source:'AviationWeather.gov'},
+    {id:'sigmet',     label:'SIGMET / AIRMET warnings',           source:'AviationWeather.gov'},
+    {id:'metoffice',  label:'Met Office synoptic chart · SIGWX',  source:'Met Office DataHub'},
+    {id:'notam',      label:'NOTAMs · airport / airspace',        source:'FAA + AutoRouter'},
+    {id:'atfm',       label:'Eurocontrol ATFM regulation',        source:'Eurocontrol NM'},
+    {id:'crco',       label:'Eurocontrol CRCO reference',         source:'Eurocontrol NM'},
+    {id:'oplog',      label:'Operational delay records (ATD/ATA)',source:'internal · ops-log'},
+    {id:'commander',  label:'Commander report + ACARS trace',     source:'internal · ACARS'},
+    {id:'crew',       label:'Crew FDP / roster records',          source:'internal · AIMS'},
+    {id:'article9',   label:'Article 9 duty-of-care vouchers',    source:'internal · MAX OPS'},
+    {id:'rerouting',  label:'Third-party rerouting evidence',     source:'internal · scheduling'},
+    {id:'strike',     label:'Third-party industrial-action notice',source:'DGAC / ENAC / news'},
+    {id:'news',       label:'Aviation Herald incident report',    source:'Aviation Herald'},
+    {id:'wildfire',   label:'Wildfire proximity data',            source:'NASA FIRMS / Copernicus'},
+    {id:'volcanic',   label:'Volcanic ash advisory',              source:'VAAC London / Toulouse'},
+    {id:'flight',     label:'Flight track (OpenSky)',             source:'OpenSky Network'},
+  ];
+  function renderCat(){
+    var host = document.getElementById('dio-req-cat-list');
+    if (!host) return;
+    host.innerHTML = CATALOGUE.map(function(it){
+      return '<label class="dio-req-cat-item">'+
+             '<input type="checkbox" class="dio-req-check" data-id="'+it.id+'" data-label="'+it.label+'" data-src="'+it.source+'">'+
+             '<span style="flex:1"><strong>'+it.label+'</strong><span class="src">'+it.source+'</span></span>'+
+             '</label>';
+    }).join('');
+  }
+  window.openDioReqModal = function(){
+    var ref = (typeof CASE_REF !== 'undefined') ? CASE_REF : '';
+    var refEl = document.getElementById('dio-req-case-ref');
+    if (refEl) refEl.textContent = ref;
+    document.getElementById('dio-req-overlay').classList.add('open');
+    renderCat();
+    switchDioReqTab('quick');
+  };
+  window.closeDioReqModal = function(){
+    document.getElementById('dio-req-overlay').classList.remove('open');
+  };
+  window.switchDioReqTab = function(which){
+    var q = document.getElementById('dio-req-tab-quick');
+    var f = document.getElementById('dio-req-tab-freeform');
+    var qp = document.getElementById('dio-req-panel-quick');
+    var fp = document.getElementById('dio-req-panel-freeform');
+    var sb = document.getElementById('dio-req-submit');
+    if (which === 'quick'){
+      q.classList.add('on'); f.classList.remove('on');
+      qp.style.display = ''; fp.style.display = 'none';
+      if (sb) sb.innerHTML = '<i class="ti ti-send"></i> Add to Requests forum';
+    } else {
+      f.classList.add('on'); q.classList.remove('on');
+      fp.style.display = ''; qp.style.display = 'none';
+      if (sb) sb.innerHTML = '<i class="ti ti-send"></i> Raise';
+    }
+  };
+  window.submitDioReq = function(){
+    var ref = (typeof CASE_REF !== 'undefined') ? CASE_REF : '';
+    if (!ref){ alert('No case reference — open a case first.'); return; }
+    var qp = document.getElementById('dio-req-panel-quick');
+    var quickMode = qp && qp.style.display !== 'none';
+    var items = [];
+    if (quickMode){
+      Array.prototype.forEach.call(document.querySelectorAll('.dio-req-check:checked'), function(c){
+        items.push({id:c.getAttribute('data-id'), label:c.getAttribute('data-label'), source:c.getAttribute('data-src')});
+      });
+      if (!items.length){ alert('Tick at least one item.'); return; }
+    } else {
+      var txt = document.getElementById('dio-req-freeform-text').value.trim();
+      if (!txt){ alert('Describe the document.'); return; }
+      items.push({id:'freeform-'+Date.now(), label:txt, source:'freeform'});
+    }
+    /* Write to the case's evidenceRequests store so the Requests forum picks them up */
+    try {
+      var uid = (typeof getActiveUser === 'function') ? getActiveUser() : 'EH';
+      var st = DIO.getEvidenceState(ref) || {};
+      st.evidenceRequests = st.evidenceRequests || {};
+      var now = Date.now();
+      items.forEach(function(it, i){
+        var reqId = it.id + '-' + now + '-' + i;
+        st.evidenceRequests[reqId] = {
+          id: reqId,
+          name: it.label,
+          status: 'pending',
+          caseRef: ref,
+          requestedBy: (typeof USERS !== 'undefined' && USERS[uid] ? USERS[uid].name : uid),
+          requestedAt: new Date().toLocaleString('en-GB'),
+          requestedAtMs: now,
+          slaDays: 3,
+          source: it.source,
+          origin: 'dio-raised'
+        };
+      });
+      DIO.saveEvidenceState(ref, st);
+      var label = quickMode ? (items.length + ' item' + (items.length===1?'':'s') + ' added to Requests forum') : 'Freeform request raised';
+      if (typeof showToast === 'function') showToast(label);
+      else alert(label);
+    } catch(e){
+      alert('Could not save request: '+e.message);
+    }
+    closeDioReqModal();
+    if (typeof render === 'function') render();
+  };
+})();
+</script>
 </body>
 </html>

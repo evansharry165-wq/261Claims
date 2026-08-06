@@ -384,10 +384,12 @@
         factsRow +
         '<div class="cer-sec-hdr"><h4>Attached to this case</h4><span class="hint">Permanent — stored in case_packet, survives raw-snapshot rotation.</span></div>'+
         renderAttached(attached, caseRef) +
-        '<div class="cer-sec-hdr"><h4>Available from evidence-collection</h4><span class="hint">Auto-filtered to this case. Green chip = hits.</span></div>'+
-        '<div class="cer-sources">' + sourceCards + '</div>' +
-        renderCatalogueSection() +
-        renderAuditTrailSection(caseRef) +
+        (_isDIOActor()
+          ? ('<div class="cer-sec-hdr"><h4>Available from evidence-collection</h4><span class="hint">Auto-filtered to this case. Green chip = hits.</span></div>' +
+             '<div class="cer-sources">' + sourceCards + '</div>' +
+             renderCatalogueSection() +
+             renderAuditTrailSection(caseRef))
+          : _renderStoredVsNeeded(caseRef)) +
         '<div class="cer-actions-strip">'+
           '<div style="font-size:11.5px;color:var(--text3,#6B6B80)">Bundle contents export for LOR pack / disclosure.</div>'+
           '<button class="cer-btn-primary" id="cer-export"><i class="ti ti-download"></i>Export bundle JSON</button>'+
@@ -423,6 +425,43 @@
     }
   }
 
+
+
+  /* R2.A · Actor role helper — lawyers see a simpler case-repo view. */
+  function _isDIOActor(){
+    try {
+      var uid = (global.getActiveUser && global.getActiveUser()) || 'SB';
+      var u = (typeof global.USERS !== 'undefined') ? global.USERS[uid] : null;
+      return !!(u && u.team === 'dio');
+    } catch(e){ return false; }
+  }
+
+  /* R2.A · Compute a stored-vs-needed summary from the case's evidence points. */
+  function _renderStoredVsNeeded(caseRef){
+    if (!global.CaseFiling || !global.CaseFiling.getCase) return '';
+    var c = global.CaseFiling.getCase(caseRef);
+    if (!c || !Array.isArray(c.points) || !c.points.length) return '';
+    var green = c.points.filter(function(p){ return (p.evidenceStatus||'red') === 'green'; }).length;
+    var amber = c.points.filter(function(p){ return p.evidenceStatus === 'amber'; }).length;
+    var red   = c.points.filter(function(p){ return (p.evidenceStatus||'red') === 'red'; }).length;
+    var total = c.points.length;
+    return '<div class="cer-sec-hdr"><h4>Case evidence · stored vs needed</h4>' +
+           '<span class="hint">' + green + ' of ' + total + ' evidence points fully held</span></div>' +
+           '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px">' +
+           '<div style="background:var(--confirm-faint,#EEF7F2);border:1px solid #BBF7D0;padding:12px 14px;border-radius:3px">' +
+             '<div style="font-family:var(--font-serif);font-size:22px;color:var(--confirm,#1A5C3A);font-weight:500">' + green + '</div>' +
+             '<div style="font-size:10px;color:var(--confirm,#1A5C3A);text-transform:uppercase;letter-spacing:.05em;font-weight:600">Held on file</div>' +
+           '</div>' +
+           '<div style="background:var(--caution-faint,#FDF4E3);border:1px solid #F0E1B1;padding:12px 14px;border-radius:3px">' +
+             '<div style="font-family:var(--font-serif);font-size:22px;color:var(--caution,#7A4E00);font-weight:500">' + amber + '</div>' +
+             '<div style="font-size:10px;color:var(--caution,#7A4E00);text-transform:uppercase;letter-spacing:.05em;font-weight:600">Partial / in flight</div>' +
+           '</div>' +
+           '<div style="background:var(--alert-faint,#FBF0F0);border:1px solid #F5B7B1;padding:12px 14px;border-radius:3px">' +
+             '<div style="font-family:var(--font-serif);font-size:22px;color:var(--alert,#8B1A1A);font-weight:500">' + red + '</div>' +
+             '<div style="font-size:10px;color:var(--alert,#8B1A1A);text-transform:uppercase;letter-spacing:.05em;font-weight:600">Outstanding</div>' +
+           '</div>' +
+           '</div>';
+  }
 
   /* B1.4 · Render the full 40-source catalogue as a coverage view.
      Every source appears with a status chip, so the reader shows the whole map

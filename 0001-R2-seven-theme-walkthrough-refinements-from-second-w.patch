@@ -1,0 +1,1191 @@
+From 77f4d2227d47e5a9bdfec48834ab81e61c7f54a0 Mon Sep 17 00:00:00 2001
+From: Harry Evans <harryevans15@icloud.com>
+Date: Thu, 6 Aug 2026 23:07:06 +0100
+Subject: [PATCH] =?UTF-8?q?R2=20=C2=B7=20seven-theme=20walkthrough=20refin?=
+ =?UTF-8?q?ements=20from=20second-walk=20feedback?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+R2.A · Lawyer case-Repository tab simplified
+  Non-DIO actors see only Attached items + a compact 'stored vs needed'
+  summary (green/amber/red counts from case evidence points).  The full
+  catalogue view, Available-from-evidence-collection source cards, and
+  audit trail remain visible for DIO actors — they need the orientation.
+  Actor detected via team === 'legal' check.
+
+R2.B1 · Portfolio matrix + Actionable pull queue widgets removed from
+  dio.html.  Both duplicated existing Cases and Requests surfaces.  The
+  Recent activity widget is promoted to full-width (w-12) in the freed
+  slot.  renderMatrix guarded to no-op if its DOM host is absent (kept
+  in-code for optional reintroduction later).
+
+R2.B2 · Requests forum with unassigned / working / worked states
+  Communal Requests widget rebuilt with proper status states + assign
+  controls.  Filter chips: All / Unassigned / Working / Worked / My area
+  only / Overdue.  Every request row shows a status pill + assignee name.
+  Row actions: 'Claim' (unassigned -> working, assigns to active DIO),
+  'Mark worked' (working -> worked, only for the assignee), 'Open' (for
+  anyone to review).  State persisted to sessionStorage['dfa_dio_req_status'].
+
+R2.BC · Territory-shaded disruption map rebuilt
+  Replaces the previous flat seeded map with a proper territory-first
+  view: coloured polygon overlay for the DIO's countries (UK+IE navy,
+  France indigo, Iberia red), airport pins for every airport in the
+  territory with workload-coloured badges (green quiet · amber active ·
+  red urgent) showing open-cases + live-disruption counts, hover-
+  expansion tooltips showing case list + linked disruptions per airport,
+  and the 8-kind disruption overlay with per-kind filter chips.
+  Structured for FR24 API plug-in later via EVENT_ADAPTERS.fr24 seam.
+  Airport coordinates and country polygons defined inline for the 30
+  airports across the three territories.
+
+R2.D · Evidence Hub folded into Repository as Live Evidence
+  New Live Evidence tab on repository.html.  Renders the 8-source
+  browse view previously provided by evidence.html.  evidence.html is
+  now a redirect stub to repository.html#live-evidence.  URL hash
+  handler on repository.html honours #live-evidence to open the tab on
+  landing.  DIO tools launcher tile updated to point at the new
+  Live Evidence view.
+
+R2.E · DIO Cases mirror of lawyer request flow
+  Floating 'Raise request' FAB added to dio-case.html.  Opens the same
+  two-path modal used by lawyers (Quick tick-box catalogue from the
+  16-item catalogue + Freeform textarea).  Submissions write to the
+  case's evidenceRequests store so both DIOs and solicitors see them in
+  the shared Requests forum.
+
+Cache-bust: s13a across the four touched HTMLs.
+---
+ case_evidence_repository_ui.js |  47 +++-
+ dio-case.html                  | 175 +++++++++++++-
+ dio.html                       | 403 ++++++++++++++++++++++-----------
+ evidence.html                  | 227 +------------------
+ repository.html                |  59 ++++-
+ 5 files changed, 548 insertions(+), 363 deletions(-)
+
+diff --git a/case_evidence_repository_ui.js b/case_evidence_repository_ui.js
+index cd84d92..fb8046b 100644
+--- a/case_evidence_repository_ui.js
++++ b/case_evidence_repository_ui.js
+@@ -384,10 +384,12 @@
+         factsRow +
+         '<div class="cer-sec-hdr"><h4>Attached to this case</h4><span class="hint">Permanent — stored in case_packet, survives raw-snapshot rotation.</span></div>'+
+         renderAttached(attached, caseRef) +
+-        '<div class="cer-sec-hdr"><h4>Available from evidence-collection</h4><span class="hint">Auto-filtered to this case. Green chip = hits.</span></div>'+
+-        '<div class="cer-sources">' + sourceCards + '</div>' +
+-        renderCatalogueSection() +
+-        renderAuditTrailSection(caseRef) +
++        (_isDIOActor()
++          ? ('<div class="cer-sec-hdr"><h4>Available from evidence-collection</h4><span class="hint">Auto-filtered to this case. Green chip = hits.</span></div>' +
++             '<div class="cer-sources">' + sourceCards + '</div>' +
++             renderCatalogueSection() +
++             renderAuditTrailSection(caseRef))
++          : _renderStoredVsNeeded(caseRef)) +
+         '<div class="cer-actions-strip">'+
+           '<div style="font-size:11.5px;color:var(--text3,#6B6B80)">Bundle contents export for LOR pack / disclosure.</div>'+
+           '<button class="cer-btn-primary" id="cer-export"><i class="ti ti-download"></i>Export bundle JSON</button>'+
+@@ -424,6 +426,43 @@
+   }
+ 
+ 
++
++  /* R2.A · Actor role helper — lawyers see a simpler case-repo view. */
++  function _isDIOActor(){
++    try {
++      var uid = (global.getActiveUser && global.getActiveUser()) || 'SB';
++      var u = (typeof global.USERS !== 'undefined') ? global.USERS[uid] : null;
++      return !!(u && u.team === 'dio');
++    } catch(e){ return false; }
++  }
++
++  /* R2.A · Compute a stored-vs-needed summary from the case's evidence points. */
++  function _renderStoredVsNeeded(caseRef){
++    if (!global.CaseFiling || !global.CaseFiling.getCase) return '';
++    var c = global.CaseFiling.getCase(caseRef);
++    if (!c || !Array.isArray(c.points) || !c.points.length) return '';
++    var green = c.points.filter(function(p){ return (p.evidenceStatus||'red') === 'green'; }).length;
++    var amber = c.points.filter(function(p){ return p.evidenceStatus === 'amber'; }).length;
++    var red   = c.points.filter(function(p){ return (p.evidenceStatus||'red') === 'red'; }).length;
++    var total = c.points.length;
++    return '<div class="cer-sec-hdr"><h4>Case evidence · stored vs needed</h4>' +
++           '<span class="hint">' + green + ' of ' + total + ' evidence points fully held</span></div>' +
++           '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px">' +
++           '<div style="background:var(--confirm-faint,#EEF7F2);border:1px solid #BBF7D0;padding:12px 14px;border-radius:3px">' +
++             '<div style="font-family:var(--font-serif);font-size:22px;color:var(--confirm,#1A5C3A);font-weight:500">' + green + '</div>' +
++             '<div style="font-size:10px;color:var(--confirm,#1A5C3A);text-transform:uppercase;letter-spacing:.05em;font-weight:600">Held on file</div>' +
++           '</div>' +
++           '<div style="background:var(--caution-faint,#FDF4E3);border:1px solid #F0E1B1;padding:12px 14px;border-radius:3px">' +
++             '<div style="font-family:var(--font-serif);font-size:22px;color:var(--caution,#7A4E00);font-weight:500">' + amber + '</div>' +
++             '<div style="font-size:10px;color:var(--caution,#7A4E00);text-transform:uppercase;letter-spacing:.05em;font-weight:600">Partial / in flight</div>' +
++           '</div>' +
++           '<div style="background:var(--alert-faint,#FBF0F0);border:1px solid #F5B7B1;padding:12px 14px;border-radius:3px">' +
++             '<div style="font-family:var(--font-serif);font-size:22px;color:var(--alert,#8B1A1A);font-weight:500">' + red + '</div>' +
++             '<div style="font-size:10px;color:var(--alert,#8B1A1A);text-transform:uppercase;letter-spacing:.05em;font-weight:600">Outstanding</div>' +
++           '</div>' +
++           '</div>';
++  }
++
+   /* B1.4 · Render the full 40-source catalogue as a coverage view.
+      Every source appears with a status chip, so the reader shows the whole map
+      — not just what's populated. This is the "show the gaps, don't hide them"
+diff --git a/dio-case.html b/dio-case.html
+index 033b563..9f2a53b 100644
+--- a/dio-case.html
++++ b/dio-case.html
+@@ -75,10 +75,10 @@ textarea{min-height:56px;resize:vertical}
+ <script src="shared_data.js"></script>
+ <script src="shared_theme.js"></script>
+ <script src="case_helpers.js"></script>
+-<script src="dio_core.js?v=s9a"></script>
+-<script src="dio_territory.js?v=s9a"></script>
+-<script src="dio_data.js?v=s9a"></script>
+-<script src="dio_helpers.js?v=s9a"></script>
++<script src="dio_core.js?v=s13a"></script>
++<script src="dio_territory.js?v=s13a"></script>
++<script src="dio_data.js?v=s13a"></script>
++<script src="dio_helpers.js?v=s13a"></script>
+ 
+ <header class="top-bar">
+   <a href="dio.html" class="gn-mark"><i class="ti ti-archive"></i></a>
+@@ -373,5 +373,172 @@ window.addEventListener('load',render);
+ <div id="user-modal" class="user-modal" onclick="if(event.target===this)closeMenu()">
+   <div class="user-dropdown"></div>
+ </div>
++
++
++<!-- R2.E · DIO Raise-request modal (mirror of lawyer S3 flow) -->
++<style>
++.dio-req-fab{position:fixed;bottom:24px;right:24px;background:var(--accent,#1B3A6B);color:#fff;border:none;border-radius:24px;padding:12px 20px;font-size:13px;font-weight:600;font-family:var(--font,'Helvetica Neue',Arial,sans-serif);cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,0.25);display:inline-flex;align-items:center;gap:8px;z-index:400;transition:transform .1s,box-shadow .12s}
++.dio-req-fab:hover{transform:translateY(-1px);box-shadow:0 8px 22px rgba(0,0,0,0.3)}
++.dio-req-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:500;justify-content:center;align-items:flex-start;padding:60px 20px}
++.dio-req-overlay.open{display:flex}
++.dio-req-modal{background:#fff;border-radius:6px;width:100%;max-width:640px;overflow:hidden;box-shadow:0 12px 40px rgba(0,0,0,0.35);font-family:var(--font,'Helvetica Neue',Arial,sans-serif)}
++.dio-req-hdr{padding:14px 20px;border-bottom:1px solid #D8D8E0;display:flex;justify-content:space-between;align-items:center}
++.dio-req-title{font-family:'Georgia',serif;font-size:15px;font-weight:500;color:#1A1A2E}
++.dio-req-close{background:none;border:none;color:#6B6B80;cursor:pointer;font-size:16px}
++.dio-req-tabs{display:flex;border-bottom:1px solid #D8D8E0}
++.dio-req-tabs button{flex:1;padding:12px 16px;border:none;background:#fff;font-size:12px;color:#6B6B80;cursor:pointer;font-weight:500;font-family:inherit;border-bottom:2px solid transparent}
++.dio-req-tabs button.on{color:#1B3A6B;font-weight:600;border-bottom-color:#1B3A6B}
++.dio-req-body{padding:16px 20px}
++.dio-req-cat-list{max-height:280px;overflow-y:auto;border:1px solid #D8D8E0;border-radius:3px}
++.dio-req-cat-item{display:flex;align-items:center;gap:10px;padding:8px 12px;border-bottom:1px solid #EBEBF0;cursor:pointer;font-size:12px}
++.dio-req-cat-item:hover{background:#F7F7F9}
++.dio-req-cat-item:last-child{border-bottom:none}
++.dio-req-cat-item strong{color:#1A1A2E;display:block;margin-bottom:2px}
++.dio-req-cat-item span.src{color:#6B6B80;font-size:10.5px;font-family:'Courier New',monospace}
++.dio-req-note{font-size:11px;color:#6B6B80;margin-top:10px}
++.dio-req-freeform textarea{width:100%;min-height:100px;padding:10px 12px;border:1px solid #D8D8E0;border-radius:3px;font-family:inherit;font-size:12px;resize:vertical}
++.dio-req-freeform label{display:block;font-size:11px;color:#6B6B80;font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px}
++.dio-req-footer{padding:12px 20px;background:#F7F7F9;border-top:1px solid #D8D8E0;display:flex;justify-content:flex-end;gap:8px}
++.dio-req-btn{padding:8px 14px;border-radius:3px;font-size:12px;font-weight:500;font-family:inherit;cursor:pointer;border:1px solid transparent}
++.dio-req-btn.secondary{background:#fff;border-color:#D8D8E0;color:#2D2D44}
++.dio-req-btn.primary{background:#1B3A6B;color:#fff}
++</style>
++
++<button class="dio-req-fab" onclick="openDioReqModal()" title="Raise an evidence request (Quick tick-box or Freeform)">
++  <i class="ti ti-plus"></i> Raise request
++</button>
++
++<div id="dio-req-overlay" class="dio-req-overlay" onclick="if(event.target===this)closeDioReqModal()">
++  <div class="dio-req-modal">
++    <div class="dio-req-hdr">
++      <div class="dio-req-title">Raise evidence request · <span id="dio-req-case-ref" style="color:#6B6B80;font-weight:400"></span></div>
++      <button class="dio-req-close" onclick="closeDioReqModal()"><i class="ti ti-x"></i></button>
++    </div>
++    <div class="dio-req-tabs">
++      <button id="dio-req-tab-quick" class="on" onclick="switchDioReqTab('quick')"><i class="ti ti-list-check"></i> Quick · pull from catalogue</button>
++      <button id="dio-req-tab-freeform" onclick="switchDioReqTab('freeform')"><i class="ti ti-pencil"></i> Freeform · specific document</button>
++    </div>
++    <div id="dio-req-panel-quick" class="dio-req-body">
++      <div class="dio-req-note" style="margin-bottom:10px">Tick items you need. Available items pull from the case Evidence Repository; missing items raise a targeted request. Ticked items land in the shared Requests forum for pickup.</div>
++      <div id="dio-req-cat-list" class="dio-req-cat-list"></div>
++    </div>
++    <div id="dio-req-panel-freeform" class="dio-req-body dio-req-freeform" style="display:none">
++      <label>Describe the document</label>
++      <textarea id="dio-req-freeform-text" placeholder="e.g. Cabin-crew statement forms + FRMS extract for HC 1184 crew, 14 March 2026"></textarea>
++      <div class="dio-req-note">Freeform requests fire straight into the Requests forum with an 'unassigned' status for another DIO or the current DIO to claim.</div>
++    </div>
++    <div class="dio-req-footer">
++      <button class="dio-req-btn secondary" onclick="closeDioReqModal()">Cancel</button>
++      <button class="dio-req-btn primary" id="dio-req-submit" onclick="submitDioReq()"><i class="ti ti-send"></i> Raise</button>
++    </div>
++  </div>
++</div>
++
++<script>
++(function(){
++  var CATALOGUE = [
++    {id:'metar',      label:'METAR / TAF observations',           source:'AviationWeather.gov'},
++    {id:'sigmet',     label:'SIGMET / AIRMET warnings',           source:'AviationWeather.gov'},
++    {id:'metoffice',  label:'Met Office synoptic chart · SIGWX',  source:'Met Office DataHub'},
++    {id:'notam',      label:'NOTAMs · airport / airspace',        source:'FAA + AutoRouter'},
++    {id:'atfm',       label:'Eurocontrol ATFM regulation',        source:'Eurocontrol NM'},
++    {id:'crco',       label:'Eurocontrol CRCO reference',         source:'Eurocontrol NM'},
++    {id:'oplog',      label:'Operational delay records (ATD/ATA)',source:'internal · ops-log'},
++    {id:'commander',  label:'Commander report + ACARS trace',     source:'internal · ACARS'},
++    {id:'crew',       label:'Crew FDP / roster records',          source:'internal · AIMS'},
++    {id:'article9',   label:'Article 9 duty-of-care vouchers',    source:'internal · MAX OPS'},
++    {id:'rerouting',  label:'Third-party rerouting evidence',     source:'internal · scheduling'},
++    {id:'strike',     label:'Third-party industrial-action notice',source:'DGAC / ENAC / news'},
++    {id:'news',       label:'Aviation Herald incident report',    source:'Aviation Herald'},
++    {id:'wildfire',   label:'Wildfire proximity data',            source:'NASA FIRMS / Copernicus'},
++    {id:'volcanic',   label:'Volcanic ash advisory',              source:'VAAC London / Toulouse'},
++    {id:'flight',     label:'Flight track (OpenSky)',             source:'OpenSky Network'},
++  ];
++  function renderCat(){
++    var host = document.getElementById('dio-req-cat-list');
++    if (!host) return;
++    host.innerHTML = CATALOGUE.map(function(it){
++      return '<label class="dio-req-cat-item">'+
++             '<input type="checkbox" class="dio-req-check" data-id="'+it.id+'" data-label="'+it.label+'" data-src="'+it.source+'">'+
++             '<span style="flex:1"><strong>'+it.label+'</strong><span class="src">'+it.source+'</span></span>'+
++             '</label>';
++    }).join('');
++  }
++  window.openDioReqModal = function(){
++    var ref = (typeof CASE_REF !== 'undefined') ? CASE_REF : '';
++    var refEl = document.getElementById('dio-req-case-ref');
++    if (refEl) refEl.textContent = ref;
++    document.getElementById('dio-req-overlay').classList.add('open');
++    renderCat();
++    switchDioReqTab('quick');
++  };
++  window.closeDioReqModal = function(){
++    document.getElementById('dio-req-overlay').classList.remove('open');
++  };
++  window.switchDioReqTab = function(which){
++    var q = document.getElementById('dio-req-tab-quick');
++    var f = document.getElementById('dio-req-tab-freeform');
++    var qp = document.getElementById('dio-req-panel-quick');
++    var fp = document.getElementById('dio-req-panel-freeform');
++    var sb = document.getElementById('dio-req-submit');
++    if (which === 'quick'){
++      q.classList.add('on'); f.classList.remove('on');
++      qp.style.display = ''; fp.style.display = 'none';
++      if (sb) sb.innerHTML = '<i class="ti ti-send"></i> Add to Requests forum';
++    } else {
++      f.classList.add('on'); q.classList.remove('on');
++      fp.style.display = ''; qp.style.display = 'none';
++      if (sb) sb.innerHTML = '<i class="ti ti-send"></i> Raise';
++    }
++  };
++  window.submitDioReq = function(){
++    var ref = (typeof CASE_REF !== 'undefined') ? CASE_REF : '';
++    if (!ref){ alert('No case reference — open a case first.'); return; }
++    var qp = document.getElementById('dio-req-panel-quick');
++    var quickMode = qp && qp.style.display !== 'none';
++    var items = [];
++    if (quickMode){
++      Array.prototype.forEach.call(document.querySelectorAll('.dio-req-check:checked'), function(c){
++        items.push({id:c.getAttribute('data-id'), label:c.getAttribute('data-label'), source:c.getAttribute('data-src')});
++      });
++      if (!items.length){ alert('Tick at least one item.'); return; }
++    } else {
++      var txt = document.getElementById('dio-req-freeform-text').value.trim();
++      if (!txt){ alert('Describe the document.'); return; }
++      items.push({id:'freeform-'+Date.now(), label:txt, source:'freeform'});
++    }
++    /* Write to the case's evidenceRequests store so the Requests forum picks them up */
++    try {
++      var uid = (typeof getActiveUser === 'function') ? getActiveUser() : 'EH';
++      var st = DIO.getEvidenceState(ref) || {};
++      st.evidenceRequests = st.evidenceRequests || {};
++      var now = Date.now();
++      items.forEach(function(it, i){
++        var reqId = it.id + '-' + now + '-' + i;
++        st.evidenceRequests[reqId] = {
++          id: reqId,
++          name: it.label,
++          status: 'pending',
++          caseRef: ref,
++          requestedBy: (typeof USERS !== 'undefined' && USERS[uid] ? USERS[uid].name : uid),
++          requestedAt: new Date().toLocaleString('en-GB'),
++          requestedAtMs: now,
++          slaDays: 3,
++          source: it.source,
++          origin: 'dio-raised'
++        };
++      });
++      DIO.saveEvidenceState(ref, st);
++      var label = quickMode ? (items.length + ' item' + (items.length===1?'':'s') + ' added to Requests forum') : 'Freeform request raised';
++      if (typeof showToast === 'function') showToast(label);
++      else alert(label);
++    } catch(e){
++      alert('Could not save request: '+e.message);
++    }
++    closeDioReqModal();
++    if (typeof render === 'function') render();
++  };
++})();
++</script>
+ </body>
+ </html>
+diff --git a/dio.html b/dio.html
+index 9e08057..74ba136 100644
+--- a/dio.html
++++ b/dio.html
+@@ -301,6 +301,29 @@ html,body{min-height:100%;font-family:var(--font);background:var(--surface2);col
+ .ud-role{font-size:10px;color:var(--text3)}
+ .ud-tick{margin-left:auto;color:var(--confirm);display:none}
+ .ud-item.current .ud-tick{display:block}
++.filter-chip{cursor:pointer}
++.req-status-pill{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:10px;font-size:10.5px;font-weight:600;font-family:var(--mono);text-transform:uppercase;letter-spacing:.04em}
++.req-status-dot{display:inline-block;width:8px;height:8px;border-radius:50%}
++.req-status-pill.req-status-unassigned{background:var(--surface3);color:var(--text3)}
++.req-status-dot.req-status-unassigned{background:var(--text4,#9B9BAA)}
++.req-status-pill.req-status-working{background:var(--caution-faint,#FDF4E3);color:var(--caution,#7A4E00)}
++.req-status-dot.req-status-working{background:var(--caution,#7A4E00)}
++.req-status-pill.req-status-worked{background:var(--confirm-faint,#EEF7F2);color:var(--confirm,#1A5C3A)}
++.req-status-dot.req-status-worked{background:var(--confirm,#1A5C3A)}
++
++/* R2.BC · Airport pin + tooltip */
++.airport-pin{background:transparent;border:none}
++.airport-pin-inner{position:relative;padding:3px 8px 3px 6px;border-radius:12px;font-family:var(--mono);font-size:10px;font-weight:600;color:#fff;box-shadow:0 1px 3px rgba(0,0,0,0.3);white-space:nowrap;display:inline-flex;align-items:center;gap:4px;border:1.5px solid #fff}
++.airport-pin-iata{letter-spacing:.02em}
++.airport-pin-badge{background:rgba(0,0,0,0.35);border-radius:8px;padding:1px 5px;font-size:9px;margin-left:2px}
++.airport-tt{background:rgba(26,26,46,0.96)!important;color:#fff!important;border:none!important;border-radius:4px!important;box-shadow:0 4px 14px rgba(0,0,0,0.35)!important;padding:8px 10px!important;font-family:var(--font)!important;max-width:240px}
++.airport-tt::before{border-top-color:rgba(26,26,46,0.96)!important}
++.airport-tt-name{font-family:var(--mono);font-size:11px;font-weight:700;color:#fff;margin-bottom:6px;letter-spacing:.04em;padding-bottom:4px;border-bottom:1px solid rgba(255,255,255,0.15)}
++.airport-tt-section{margin-top:6px;font-size:11px}
++.airport-tt-section strong{color:#EEF2F8;font-weight:600;font-size:10.5px;display:block;margin-bottom:3px}
++.airport-tt-item{font-size:10.5px;color:rgba(255,255,255,0.85);line-height:1.4;margin-left:2px}
++.airport-tt-more{font-size:10px;color:rgba(255,255,255,0.55);margin-top:2px;font-style:italic}
++.airport-tt-quiet{font-size:10.5px;color:rgba(255,255,255,0.55);font-style:italic}
+ </style>
+ </head>
+ <body>
+@@ -309,14 +332,14 @@ html,body{min-height:100%;font-family:var(--font);background:var(--surface2);col
+ <script src="case_helpers.js"></script>
+ <script src="case_filing.js"></script>
+ <script src="work_dashboard.js"></script>
+-<script src="defendable_evidence_reader.js?v=s9a"></script>
+-<script src="case_audit_trail.js?v=s9a"></script>
+-<script src="case_evidence_repository.js?v=s9a"></script>
+-<script src="case_evidence_fetch_trigger.js?v=s9a"></script>
+-<script src="dio_core.js?v=s11a"></script>
+-<script src="dio_territory.js?v=s11a"></script>
+-<script src="dio_data.js?v=s11a"></script>
+-<script src="dio_helpers.js?v=s11a"></script>
++<script src="defendable_evidence_reader.js?v=s13a"></script>
++<script src="case_audit_trail.js?v=s13a"></script>
++<script src="case_evidence_repository.js?v=s13a"></script>
++<script src="case_evidence_fetch_trigger.js?v=s13a"></script>
++<script src="dio_core.js?v=s13a"></script>
++<script src="dio_territory.js?v=s13a"></script>
++<script src="dio_data.js?v=s13a"></script>
++<script src="dio_helpers.js?v=s13a"></script>
+ <script src="flight_data.js"></script>
+ 
+ <nav class="global-nav">
+@@ -339,30 +362,72 @@ function closeUserMenu(e){if(e.target.id==='user-modal')document.getElementById(
+ function scrollToZone(id){var el=document.getElementById(id);if(el)el.scrollIntoView({behavior:'smooth',block:'start'});}
+ 
+ /* ═══════════════════════════════════════════════════════════════════════
+-   B1 · Live disruption map — seeded with realistic Europe-wide events.
+-   Filter chips toggle per-kind layers.  Territory-zoomed to active DIO.
+-   Live-feed integration is a follow-up (B3 daily folders + B4 hourly cron).
++   R2.BC · Territory-shaded disruption map for the DIO homepage
++   ───────────────────────────────────────────────────────────────────────
++   Base: Leaflet + OpenStreetMap tiles
++   Territory: coloured polygon overlay for the DIO's countries (UK+IE / FR / ES+PT)
++   Airport pins: every airport in the DIO's territory, colour by workload,
++     count badge showing (open cases + live disruptions) touching that airport
++   Event overlay: 8 disruption types on top, per-type filter chips at header
++   Hover expansion: airport tooltip shows case list + linked disruptions
++   Structured for FR24 API plug-in: EVENT_ADAPTERS.fr24() is the seam
+    ═══════════════════════════════════════════════════════════════════════ */
++
++/* Approximate country polygons (simplified bounding hulls — good enough for
++   territory-shading visual; real GeoJSON would replace at build time). */
++var COUNTRY_POLYGONS = {
++  GB: [[[49.9,-6.5],[49.9,2.0],[55.9,1.9],[58.7,-2.4],[58.9,-6.5],[54.9,-8.9],[52.0,-5.6]]],
++  IE: [[[51.4,-10.6],[55.4,-8.2],[55.3,-6.0],[51.4,-6.0],[51.4,-10.6]]],
++  FR: [[[42.3,-1.8],[42.6,3.5],[43.5,7.9],[46.7,7.3],[49.0,8.2],[51.1,2.1],[48.9,-1.3],[46.2,-1.9],[43.4,-1.8]]],
++  ES: [[[36.0,-6.4],[36.7,-2.2],[38.9,-0.7],[40.9,3.2],[42.4,3.3],[43.5,-1.8],[43.8,-9.3],[41.9,-9.4],[37.2,-7.4]]],
++  PT: [[[37.0,-8.9],[41.9,-8.9],[41.8,-6.2],[37.2,-7.4]]],
++};
++
++/* Airport coordinates for every ICAO in TERRITORY_MAP */
++var AIRPORT_COORDS = {
++  /* UK+IE */
++  EGLL:[51.470,-0.454], EGKK:[51.148,-0.190], EGSS:[51.885,0.235], EGGW:[51.874,-0.368],
++  EGLC:[51.505,0.055], EGCC:[53.354,-2.275], EGPH:[55.950,-3.362], EGPF:[55.872,-4.433],
++  EGGD:[51.383,-2.719], EGBB:[52.454,-1.748], EGAA:[54.657,-6.216], EGNX:[52.831,-1.328], EIDW:[53.421,-6.270],
++  /* France */
++  LFPG:[49.010,2.548], LFPO:[48.723,2.379], LFMN:[43.665,7.215], LFML:[43.436,5.215],
++  LFLL:[45.726,5.091], LFBO:[43.629,1.364], LFBD:[44.828,-0.716],
++  /* Spain + Portugal */
++  LEMD:[40.494,-3.567], LEBL:[41.297,2.078], LEPA:[39.552,2.738], LEAL:[38.282,-0.558],
++  LEIB:[38.873,1.373], LEMG:[36.675,-4.499], GCLP:[27.932,-15.386], GCTS:[28.045,-16.573],
++  LPPT:[38.774,-9.134], LPPR:[41.248,-8.681]
++};
++
++/* Seed data — DEFERRED to FR24 API once wired.  Same shape both directions. */
+ var DISRUPTION_SEED = [
+-  {kind:'weather',  lat:51.47, lon:-0.46, title:'CB thunderstorm activity · LGW', meta:'METAR 251400Z TSRA · Aviation Weather', when:'today 14:00Z'},
+-  {kind:'weather',  lat:39.55, lon:-0.47, title:'Embedded TSRA over LEVC', meta:'SIGMET UK EGTT · cell tops FL340', when:'today 13:40Z'},
+-  {kind:'weather',  lat:53.35, lon:-2.28, title:'Low visibility procedures · MAN', meta:'METAR EGCC 0400 FG · Aviation Weather', when:'today 07:00Z'},
+-  {kind:'weather',  lat:50.03, lon:8.56,  title:'Windshear reports · FRA', meta:'AIRMET · Aviation Weather', when:'today 11:00Z'},
+-  {kind:'notam',    lat:41.30, lon:2.08,  title:'Runway 07L closed · BCN', meta:'NOTAM A1245/26 · valid 08:00-14:00Z', when:'today'},
+-  {kind:'notam',    lat:52.31, lon:4.76,  title:'Taxiway B closed for works · AMS', meta:'NOTAM A0876/26 · until 05 Aug', when:'today'},
+-  {kind:'notam',    lat:53.42, lon:-6.27, title:'ILS 10R out of service · DUB', meta:'NOTAM A0432/26', when:'today'},
+-  {kind:'atfm',     lat:41.80, lon:12.25, title:'ATFM regulation · Rome FIR', meta:'Reference LIRR30A · weather cause', when:'today 12:00-18:00Z'},
+-  {kind:'atfm',     lat:48.72, lon:2.38,  title:'Slot restrictions · Paris TMA', meta:'Reference LFPR20A · staffing cause', when:'today 15:00-19:00Z'},
+-  {kind:'strike',   lat:41.29, lon:2.08,  title:'Vueling cabin-crew strike day 1', meta:'SEPLA/USO · DGAC min-services pending', when:'01-05 Aug 2026'},
+-  {kind:'strike',   lat:45.63, lon:8.72,  title:'Italian ATC 4-hour strike', meta:'ENAC bulletin · 12:00-16:00Z', when:'today'},
+-  {kind:'wildfire', lat:37.63, lon:14.02, title:'Etna region wildfire', meta:'NASA FIRMS · confidence high · 8km cluster', when:'today'},
++  {kind:'weather',  lat:51.47, lon:-0.46, title:'CB thunderstorm activity · LGW', meta:'METAR TSRA · Aviation Weather', when:'today 14:00Z', icao:'EGKK'},
++  {kind:'weather',  lat:53.35, lon:-2.28, title:'Low visibility procedures · MAN', meta:'METAR EGCC 0400 FG', when:'today 07:00Z', icao:'EGCC'},
++  {kind:'weather',  lat:50.03, lon:8.56,  title:'Windshear reports · FRA', meta:'AIRMET', when:'today 11:00Z'},
++  {kind:'notam',    lat:41.30, lon:2.08,  title:'Runway 07L closed · BCN', meta:'NOTAM A1245/26 · 08-14:00Z', when:'today', icao:'LEBL'},
++  {kind:'notam',    lat:53.42, lon:-6.27, title:'ILS 10R out of service · DUB', meta:'NOTAM A0432/26', when:'today', icao:'EIDW'},
++  {kind:'atfm',     lat:41.80, lon:12.25, title:'ATFM regulation · Rome FIR', meta:'LIRR30A · weather', when:'today 12:00-18:00Z'},
++  {kind:'atfm',     lat:48.72, lon:2.38,  title:'Slot restrictions · Paris TMA', meta:'LFPR20A · staffing', when:'today 15:00-19:00Z', icao:'LFPO'},
++  {kind:'strike',   lat:41.29, lon:2.08,  title:'Vueling cabin-crew strike day 1', meta:'SEPLA/USO', when:'01-05 Aug', icao:'LEBL'},
++  {kind:'strike',   lat:45.63, lon:8.72,  title:'Italian ATC 4-hour strike', meta:'ENAC 12:00-16:00Z', when:'today'},
++  {kind:'wildfire', lat:37.63, lon:14.02, title:'Etna region wildfire', meta:'NASA FIRMS · high confidence', when:'today'},
+   {kind:'wildfire', lat:40.65, lon:22.94, title:'Wildfire near LGTS', meta:'Copernicus EFFIS · active', when:'today'},
+-  {kind:'disaster', lat:38.72, lon:-9.14, title:'Flash floods · Lisbon region', meta:'GDACS · orange alert', when:'today'},
++  {kind:'disaster', lat:38.72, lon:-9.14, title:'Flash floods · Lisbon region', meta:'GDACS · orange alert', when:'today', icao:'LPPT'},
+   {kind:'volcanic', lat:37.75, lon:15.00, title:'Etna VAAC advisory', meta:'Toulouse VAAC · ash to FL180', when:'today'},
+-  {kind:'volcanic', lat:63.63, lon:-19.05, title:'Katla precursor activity', meta:'London VAAC · advisory monitoring', when:'today'},
+-  {kind:'news',     lat:51.15, lon:-0.19, title:'Aviation Herald · LGW ground stop', meta:'avherald.com · 45 min hold', when:'today 09:30Z'},
++  {kind:'volcanic', lat:63.63, lon:-19.05, title:'Katla precursor activity', meta:'London VAAC monitoring', when:'today'},
++  {kind:'news',     lat:51.15, lon:-0.19, title:'Aviation Herald · LGW ground stop', meta:'avherald.com · 45 min hold', when:'today 09:30Z', icao:'EGKK'},
+ ];
+ 
++/* Structured seam for FR24 API integration (future).  Return the same
++   {kind,lat,lon,title,meta,when,icao} shape so the map render code
++   doesn't care about the data provenance. */
++var EVENT_ADAPTERS = {
++  seed: function(){ return Promise.resolve(DISRUPTION_SEED); },
++  fr24: function(){
++    /* TODO · when FR24 API creds are wired, fetch flights + disruptions and map to shape above */
++    return Promise.resolve([]);
++  }
++};
++
+ var DISRUPTION_KINDS = [
+   {id:'weather',  label:'Weather',     colour:'#254E91'},
+   {id:'notam',    label:'NOTAMs',      colour:'#7A4E00'},
+@@ -374,7 +439,7 @@ var DISRUPTION_KINDS = [
+   {id:'news',     label:'Incidents',   colour:'#1A5C3A'},
+ ];
+ 
+-var mapState = { map:null, layersByKind:{}, activeKinds:{} };
++var mapState = { map:null, layersByKind:{}, activeKinds:{}, airportMarkers:{}, territoryPolygon:null };
+ 
+ function initDisruptionMap(){
+   if (mapState.map) return;
+@@ -386,67 +451,120 @@ function initDisruptionMap(){
+              : territory.short_label === 'FR'      ? [46.5, 2.5]
+              : territory.short_label === 'ES'      ? [40.0,-3.5]
+              : [48, 5];
+-  var zoom = 5;
+-
+-  mapState.map = L.map('disruption-map', {zoomControl:true, worldCopyJump:true, minZoom:3, maxZoom:10}).setView(centre, zoom);
+-  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+-    attribution:'&copy; OpenStreetMap',
+-    maxZoom:19
+-  }).addTo(mapState.map);
+-
+-  // Group items by kind, count, and create a layer per kind
+-  var byKind = {};
+-  DISRUPTION_KINDS.forEach(function(k){ byKind[k.id] = []; mapState.activeKinds[k.id] = true; });
+-  DISRUPTION_SEED.forEach(function(e){
+-    if (byKind[e.kind]) byKind[e.kind].push(e);
+-  });
+ 
+-  DISRUPTION_KINDS.forEach(function(k){
+-    var lg = L.layerGroup();
+-    byKind[k.id].forEach(function(e){
+-      var marker = L.circleMarker([e.lat, e.lon], {
+-        radius: 8,
+-        color: '#fff',
+-        weight: 2,
+-        fillColor: k.colour,
+-        fillOpacity: 0.85
++  mapState.map = L.map('disruption-map', {zoomControl:true, worldCopyJump:true, minZoom:3, maxZoom:10}).setView(centre, 5);
++  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {attribution:'&copy; OpenStreetMap', maxZoom:19}).addTo(mapState.map);
++
++  /* 1 · Territory polygon overlay — shade the DIO's countries */
++  var territoryColour = territory.short_label === 'UK + IE' ? '#1B3A6B'
++                     : territory.short_label === 'FR'      ? '#4338CA'
++                     : territory.short_label === 'ES'      ? '#8B1A1A'
++                     : '#6B6B80';
++  var polyLayers = [];
++  territory.countries_iso.forEach(function(iso){
++    var polys = COUNTRY_POLYGONS[iso];
++    if (!polys) return;
++    polys.forEach(function(coords){
++      var poly = L.polygon(coords, {
++        color: territoryColour, weight: 2, fillColor: territoryColour,
++        fillOpacity: 0.10, opacity: 0.35, interactive: false
+       });
+-      marker.bindPopup(
+-        '<div class="lp-kind">'+escapeHtml(k.label)+'</div>'+
+-        '<div class="lp-title">'+escapeHtml(e.title)+'</div>'+
+-        '<div>'+escapeHtml(e.meta)+'</div>'+
+-        '<div class="lp-meta">'+escapeHtml(e.when)+'</div>'
+-      );
+-      lg.addLayer(marker);
++      poly.addTo(mapState.map);
++      polyLayers.push(poly);
+     });
+-    lg.addTo(mapState.map);
+-    mapState.layersByKind[k.id] = lg;
+   });
++  mapState.territoryPolygon = polyLayers;
++
++  /* 2 · Load events (via EVENT_ADAPTERS.seed for now — swap for .fr24 later) */
++  EVENT_ADAPTERS.seed().then(function(events){
++    /* Group events by kind + by nearest airport */
++    var byKind = {}; DISRUPTION_KINDS.forEach(function(k){ byKind[k.id] = []; mapState.activeKinds[k.id] = true; });
++    events.forEach(function(e){ if (byKind[e.kind]) byKind[e.kind].push(e); });
++
++    DISRUPTION_KINDS.forEach(function(k){
++      var lg = L.layerGroup();
++      byKind[k.id].forEach(function(e){
++        var marker = L.circleMarker([e.lat, e.lon], {
++          radius: 8, color: '#fff', weight: 2, fillColor: k.colour, fillOpacity: 0.85
++        });
++        marker.bindPopup(
++          '<div class="lp-kind">'+escapeHtml(k.label)+'</div>'+
++          '<div class="lp-title">'+escapeHtml(e.title)+'</div>'+
++          '<div>'+escapeHtml(e.meta)+'</div>'+
++          '<div class="lp-meta">'+escapeHtml(e.when)+'</div>'
++        );
++        lg.addLayer(marker);
++      });
++      lg.addTo(mapState.map);
++      mapState.layersByKind[k.id] = lg;
++    });
+ 
+-  // Render filter chips with counts
+-  var bar = document.getElementById('map-filter-bar');
+-  if (bar){
+-    bar.innerHTML = DISRUPTION_KINDS.map(function(k){
+-      var count = byKind[k.id].length;
+-      return '<button class="map-chip on '+k.id+'" data-kind="'+k.id+'" onclick="toggleMapKind(\''+k.id+'\')">'+
+-             '<span class="dot"></span>'+
+-             '<span>'+k.label+'</span>'+
+-             '<span class="map-chip-count">'+count+'</span>'+
+-             '</button>';
+-    }).join('');
+-  }
++    /* 3 · Airport pins — count open cases + related disruptions per airport */
++    var casesByAirport = {};
++    try {
++      var allCases = DIOTerritory.casesInTerritory(profile.uid);
++      allCases.forEach(function(c){
++        [c.dep, c.arr].forEach(function(iata){
++          if (!iata) return;
++          /* Map IATA back to ICAO via territory */
++          var idx = territory.airports_iata.indexOf(iata);
++          if (idx < 0) return;
++          var icao = territory.airports_icao[idx];
++          casesByAirport[icao] = casesByAirport[icao] || [];
++          casesByAirport[icao].push(c);
++        });
++      });
++    } catch(e){}
++
++    territory.airports_icao.forEach(function(icao, i){
++      var iata = territory.airports_iata[i];
++      var coord = AIRPORT_COORDS[icao];
++      if (!coord) return;
++      var caseCount = (casesByAirport[icao] || []).length;
++      var eventCount = events.filter(function(e){ return e.icao === icao; }).length;
++      var workload = caseCount + eventCount;
++      var loadColour = workload === 0 ? '#9B9BAA' : workload <= 2 ? '#1A5C3A' : workload <= 5 ? '#7A4E00' : '#8B1A1A';
++      var badgeHtml = '<div class="airport-pin-inner" style="background:'+loadColour+'"><span class="airport-pin-iata">'+iata+'</span>' +
++                      (workload > 0 ? '<span class="airport-pin-badge">'+workload+'</span>' : '') + '</div>';
++      var icon = L.divIcon({
++        className: 'airport-pin', html: badgeHtml,
++        iconSize: [48, 24], iconAnchor: [24, 12]
++      });
++      var m = L.marker(coord, {icon: icon, zIndexOffset: 100}).addTo(mapState.map);
++      /* Hover-expansion tooltip · shows case list + linked disruptions */
++      var relatedEvents = events.filter(function(e){ return e.icao === icao; });
++      var relCases = casesByAirport[icao] || [];
++      var tooltipHtml = '<div class="airport-tt-name">' + iata + ' · ' + icao + '</div>' +
++        (relCases.length ? '<div class="airport-tt-section"><strong>' + relCases.length + ' open case' + (relCases.length===1?'':'s') + '</strong>' +
++          relCases.slice(0,3).map(function(c){return '<div class="airport-tt-item">· '+escapeHtml((c.claimant||c.ref) + ' — ' + (c.flightNum||''))+'</div>';}).join('') +
++          (relCases.length > 3 ? '<div class="airport-tt-more">+ '+(relCases.length-3)+' more</div>' : '') + '</div>' : '') +
++        (relatedEvents.length ? '<div class="airport-tt-section"><strong>' + relatedEvents.length + ' live disruption' + (relatedEvents.length===1?'':'s') + '</strong>' +
++          relatedEvents.slice(0,3).map(function(e){return '<div class="airport-tt-item">· '+escapeHtml(e.title)+'</div>';}).join('') + '</div>' : '') +
++        (relCases.length === 0 && relatedEvents.length === 0 ? '<div class="airport-tt-quiet">Quiet — no open cases or live disruptions</div>' : '');
++      m.bindTooltip(tooltipHtml, {direction:'top', className:'airport-tt', permanent:false, sticky:true});
++      mapState.airportMarkers[icao] = m;
++    });
++
++    /* 4 · Render filter chip bar with count badges */
++    var bar = document.getElementById('map-filter-bar');
++    if (bar){
++      bar.innerHTML = DISRUPTION_KINDS.map(function(k){
++        var count = byKind[k.id].length;
++        return '<button class="map-chip on '+k.id+'" data-kind="'+k.id+'" onclick="toggleMapKind(\''+k.id+'\')">'+
++               '<span class="dot"></span><span>'+k.label+'</span>'+
++               '<span class="map-chip-count">'+count+'</span></button>';
++      }).join('');
++    }
++  });
+ }
+ 
+ function toggleMapKind(kindId){
+   if (!mapState.map || !mapState.layersByKind[kindId]) return;
+   mapState.activeKinds[kindId] = !mapState.activeKinds[kindId];
+-  if (mapState.activeKinds[kindId]) {
+-    mapState.layersByKind[kindId].addTo(mapState.map);
+-  } else {
+-    mapState.map.removeLayer(mapState.layersByKind[kindId]);
+-  }
++  if (mapState.activeKinds[kindId]) mapState.layersByKind[kindId].addTo(mapState.map);
++  else mapState.map.removeLayer(mapState.layersByKind[kindId]);
+   var chip = document.querySelector('.map-chip[data-kind="'+kindId+'"]');
+-  if (chip) {
++  if (chip){
+     chip.classList.toggle('on', mapState.activeKinds[kindId]);
+     chip.classList.toggle('off', !mapState.activeKinds[kindId]);
+   }
+@@ -624,32 +742,77 @@ function renderFeed(items, feedEl){
+   });
+ }
+ 
+-/* ─── Communal requests ─── */
++/* ─── Requests forum · R2.B2 · unassigned / working / worked + assign controls ─── */
+ var reqFilter = 'all';
++var REQ_STATUS_KEY = 'dfa_dio_req_status';   // { requestId: {status, assignee} }
++
++function _loadReqStates(){
++  try { return JSON.parse(sessionStorage.getItem(REQ_STATUS_KEY) || '{}'); } catch(e){ return {}; }
++}
++function _saveReqStates(s){
++  try { sessionStorage.setItem(REQ_STATUS_KEY, JSON.stringify(s)); } catch(e){}
++}
++function _reqStatus(id){ return (_loadReqStates()[id] || {status:'unassigned', assignee:null}); }
++
++window.assignRequestTo = function(id, dioId){
++  var s = _loadReqStates();
++  s[id] = { status: dioId ? 'working' : 'unassigned', assignee: dioId };
++  _saveReqStates(s);
++  renderCommunalRequests(DIO.collectCommunalRequests(), document.getElementById('req-tbody'));
++};
++window.markRequestWorked = function(id){
++  var s = _loadReqStates();
++  s[id] = { status:'worked', assignee: (s[id]&&s[id].assignee) || (getActiveUser && getActiveUser()) };
++  _saveReqStates(s);
++  renderCommunalRequests(DIO.collectCommunalRequests(), document.getElementById('req-tbody'));
++};
++
++function _statusChip(status){
++  var label = status === 'working' ? 'Working' : status === 'worked' ? 'Worked' : 'Unassigned';
++  return '<span class="req-status-pill req-status-' + status + '"><span class="req-status-dot req-status-' + status + '"></span>' + label + '</span>';
++}
++function _assigneeName(uid){
++  if (!uid) return '—';
++  var u = (typeof USERS !== 'undefined') ? USERS[uid] : null;
++  return u ? (u.name || uid) : uid;
++}
++
+ function renderCommunalRequests(reqs, tbodyEl){
++  if (!tbodyEl) return;
++  var mine = DIO.getDIOProfile ? DIO.getDIOProfile().jurisdiction : null;
+   var filtered = reqs;
+-  if (reqFilter === 'mine') filtered = reqs.filter(function(r){return r.jurisdiction === DIO.getDIOProfile().jurisdiction;});
++  if (reqFilter === 'mine')       filtered = reqs.filter(function(r){return r.jurisdiction === mine;});
+   else if (reqFilter === 'overdue') filtered = reqs.filter(function(r){return r.overdue;});
+-  else if (reqFilter === 'uk') filtered = reqs.filter(function(r){return r.jurisdiction === 'england-wales';});
+-  else if (reqFilter === 'fr') filtered = reqs.filter(function(r){return r.jurisdiction === 'france';});
+-  else if (reqFilter === 'es') filtered = reqs.filter(function(r){return r.jurisdiction === 'spain';});
++  else if (reqFilter === 'unassigned' || reqFilter === 'working' || reqFilter === 'worked'){
++    filtered = reqs.filter(function(r){ return _reqStatus(r.id).status === reqFilter; });
++  }
+ 
+   if (!filtered.length){
+-    tbodyEl.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--text3)"><i class="ti ti-circle-check"></i> No requests match this filter.</td></tr>';
++    tbodyEl.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--text3)"><i class="ti ti-circle-check"></i> No requests match this filter.</td></tr>';
+     return;
+   }
++  var activeUid = (typeof getActiveUser === 'function') ? getActiveUser() : 'EH';
+   tbodyEl.innerHTML = filtered.map(function(r){
++    var st = _reqStatus(r.id);
+     var rowCls = r.overdue?'overdue':r.daysAgo>=2?'warn':'';
+-    var ageCls = r.overdue?'overdue':r.daysAgo>=2?'warn':'';
+     var ageTxt = r.daysAgo+'d'+(r.overdue?' — overdue':' ago');
+     var cprCls = r.cprDaysLeft<=3?'tight':r.cprDaysLeft<=7?'warn':'';
++    var actionBtn;
++    if (st.status === 'unassigned'){
++      actionBtn = '<button class="req-cta" onclick="event.stopPropagation();assignRequestTo(\''+escapeHtml(r.id)+'\',\''+activeUid+'\')"><i class="ti ti-hand-grab"></i> Claim</button>';
++    } else if (st.status === 'working' && st.assignee === activeUid){
++      actionBtn = '<button class="req-cta" onclick="event.stopPropagation();markRequestWorked(\''+escapeHtml(r.id)+'\')"><i class="ti ti-circle-check"></i> Mark worked</button>';
++    } else {
++      actionBtn = '<a class="req-cta" href="evidence-workspace.html?case='+encodeURIComponent(r.caseRef)+'" onclick="event.stopPropagation()"><i class="ti ti-arrows-maximize"></i> Open</a>';
++    }
+     return '<tr class="'+rowCls+'" onclick="location.href=\''+DIO.dioCaseUrl(r.caseRef)+'\'">'+
+       '<td><div class="req-name">'+escapeHtml(r.name)+'</div><div class="req-caseref">'+escapeHtml(r.caseRef)+' · '+escapeHtml(r.claimantName||'')+'</div></td>'+
+       '<td>'+jurChip(r.jurisdiction)+'</td>'+
++      '<td>'+_statusChip(st.status)+'</td>'+
++      '<td style="font-size:11px;color:var(--text2)">'+escapeHtml(_assigneeName(st.assignee))+'</td>'+
+       '<td class="req-cpr '+cprCls+'">CPR '+r.cprDaysLeft+'d</td>'+
+-      '<td class="req-age '+ageCls+'">'+ageTxt+'</td>'+
+-      '<td style="color:var(--text3);font-size:10.5px">'+escapeHtml(r.requestedBy)+'</td>'+
+-      '<td><a class="req-cta" href="evidence-workspace.html?case='+encodeURIComponent(r.caseRef)+'" onclick="event.stopPropagation()" title="Open evidence workspace"><i class="ti ti-arrows-maximize"></i> Workspace</a></td>'+
++      '<td class="req-age '+(r.overdue?'overdue':r.daysAgo>=2?'warn':'')+'">'+ageTxt+'</td>'+
++      '<td>'+actionBtn+'</td>'+
+     '</tr>';
+   }).join('');
+ }
+@@ -665,11 +828,13 @@ function setReqFilter(f){
+ /* ─── Portfolio matrix ─── */
+ var matrixSort = 'gap';
+ function renderMatrix(){
++  /* R2.B1 · Guard — Portfolio matrix + Pull queue widgets removed, so bail if their DOM isn't present. */
++  var body = document.getElementById('matrix-tbody');
++  if (!body) return;
+   var rows = DIO.collectPortfolioMatrix(getActiveUser());
+   if (matrixSort === 'cpr') rows.sort(function(a,b){return (a.cprDaysLeft||99) - (b.cprDaysLeft||99);});
+   else if (matrixSort === 'evidence') rows.sort(function(a,b){return (a.evidencePct||0) - (b.evidencePct||0);});
+   else if (matrixSort === 'ref') rows.sort(function(a,b){return a.ref.localeCompare(b.ref);});
+-  var body = document.getElementById('matrix-tbody');
+   if (!rows.length){
+     body.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:24px;color:var(--text3)"><i class="ti ti-circle-check"></i> No open cases in your territory.</td></tr>';
+     document.getElementById('pull-tbody').innerHTML = '<tr><td colspan="4" style="text-align:center;padding:24px;color:var(--text3)"><i class="ti ti-circle-check"></i> Nothing awaiting fetch.</td></tr>';
+@@ -772,7 +937,7 @@ function render(){
+     +   '</div>'
+     +   '<div class="stat-bar">'
+     +     '<button class="stat-chip teal" onclick="scrollToZone(\'w-territory\')"><i class="ti ti-planet"></i> '+territory.airports_icao.length+' airports</button>'
+-    +     '<button class="stat-chip active" onclick="scrollToZone(\'w-portfolio\')"><i class="ti ti-briefcase"></i> '+totalCases+' cases</button>'
++    +     '<button class="stat-chip active" onclick="location.href=\'cases.html\'"><i class="ti ti-briefcase"></i> '+totalCases+' cases</button>'
+     +     (mineOverdue>0
+         ? '<button class="stat-chip urgent" onclick="setReqFilter(\'overdue\');scrollToZone(\'w-requests\')"><i class="ti ti-clock-exclamation"></i> '+mineOverdue+' overdue</button>'
+         : mineCount>0
+@@ -799,7 +964,7 @@ function render(){
+         +     '<div style="display:flex;gap:10px"><div style="width:28px;height:28px;background:var(--accent);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0">1</div><div><div style="font-size:12px;font-weight:600;margin-bottom:2px">Priority alerts + Engine intake</div><div style="font-size:11px;color:var(--text3);line-height:1.45">Top-left widgets tell you what needs action today.</div></div></div>'
+         +     '<div style="display:flex;gap:10px"><div style="width:28px;height:28px;background:var(--accent);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0">2</div><div><div style="font-size:12px;font-weight:600;margin-bottom:2px">DIO tools launcher</div><div style="font-size:11px;color:var(--text3);line-height:1.45">Right side — jump to Repository, Evidence workspaces, Knowledge.</div></div></div>'
+         +     '<div style="display:flex;gap:10px"><div style="width:28px;height:28px;background:var(--accent);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0">3</div><div><div style="font-size:12px;font-weight:600;margin-bottom:2px">Communal request queue</div><div style="font-size:11px;color:var(--text3);line-height:1.45">Pool of asks from every solicitor — grab what fits your territory.</div></div></div>'
+-        +     '<div style="display:flex;gap:10px"><div style="width:28px;height:28px;background:var(--accent);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0">4</div><div><div style="font-size:12px;font-weight:600;margin-bottom:2px">Portfolio matrix</div><div style="font-size:11px;color:var(--text3);line-height:1.45">Every active case at a glance — evidence pct, gaps, CPR days left.</div></div></div>'
++        
+         +   '</div>'
+         + '</div>'
+         + '</section>')
+@@ -861,7 +1026,7 @@ function render(){
+     +         '<a class="tool-tile" href="cases.html"><i class="ti ti-briefcase"></i><div class="lbl">My cases</div></a>'
+     +         '<a class="tool-tile" href="requests.html"><i class="ti ti-inbox"></i><div class="lbl">Requests</div></a>'
+     +         '<a class="tool-tile" href="repository.html"><i class="ti ti-database"></i><div class="lbl">Repository</div></a>'
+-    +         '<a class="tool-tile" href="evidence.html"><i class="ti ti-file-search"></i><div class="lbl">Evidence hub</div></a>'
++    +         '<a class="tool-tile" href="repository.html#live-evidence"><i class="ti ti-radar-2"></i><div class="lbl">Live evidence</div></a>'
+     +         '<a class="tool-tile" href="evidence-weather.html"><i class="ti ti-cloud-storm"></i><div class="lbl">Weather</div></a>'
+     +         '<a class="tool-tile" href="evidence-notams.html"><i class="ti ti-file-text"></i><div class="lbl">NOTAMs</div></a>'
+     +         '<a class="tool-tile" href="evidence-flights.html"><i class="ti ti-plane"></i><div class="lbl">Flights</div></a>'
+@@ -898,60 +1063,30 @@ function render(){
+     +     '</div>'
+     +   '</section>'
+ 
+-    /* Row 4 — Communal requests (w-12) */
++    /* Row 4 — Requests forum · unassigned / working / worked · assign controls · R2.B2 */
+     +   '<section class="widget w-12" id="w-requests">'
+     +     '<div class="widget-hdr">'
+-    +       '<div class="widget-title"><i class="ti ti-inbox"></i>Evidence requests · communal queue</div>'
++    +       '<div class="widget-title"><i class="ti ti-inbox"></i>Evidence requests · forum · shared across all DIOs</div>'
+     +       '<a class="widget-link" href="requests.html">Full requests page →</a>'
+     +     '</div>'
+     +     '<div class="widget-body p0">'
+     +       '<div class="filter-bar" id="req-filter-bar">'
+-    +         '<span style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;font-weight:600;margin-right:4px">Filter:</span>'
+-    +         '<button class="filter-chip active" data-filter="all" onclick="setReqFilter(\'all\')">All ('+communalRequests.length+')</button>'
+-    +         '<button class="filter-chip" data-filter="mine" onclick="setReqFilter(\'mine\')">My area ('+mineCount+')</button>'
+-    +         '<button class="filter-chip" data-filter="overdue" onclick="setReqFilter(\'overdue\')">Overdue ('+communalRequests.filter(function(r){return r.overdue;}).length+')</button>'
+-    +         '<button class="filter-chip" data-filter="uk" onclick="setReqFilter(\'uk\')">UK</button>'
+-    +         '<button class="filter-chip" data-filter="fr" onclick="setReqFilter(\'fr\')">FR</button>'
+-    +         '<button class="filter-chip" data-filter="es" onclick="setReqFilter(\'es\')">ES</button>'
++    +         '<span style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;font-weight:600;margin-right:4px">Status:</span>'
++    +         '<button class="filter-chip active" data-filter="all" onclick="setReqFilter(\'all\')">All</button>'
++    +         '<button class="filter-chip" data-filter="unassigned" onclick="setReqFilter(\'unassigned\')"><span class="req-status-dot req-status-unassigned"></span>Unassigned</button>'
++    +         '<button class="filter-chip" data-filter="working" onclick="setReqFilter(\'working\')"><span class="req-status-dot req-status-working"></span>Working</button>'
++    +         '<button class="filter-chip" data-filter="worked" onclick="setReqFilter(\'worked\')"><span class="req-status-dot req-status-worked"></span>Worked</button>'
++    +         '<button class="filter-chip" data-filter="mine" onclick="setReqFilter(\'mine\')" style="margin-left:12px">My area only</button>'
++    +         '<button class="filter-chip" data-filter="overdue" onclick="setReqFilter(\'overdue\')">Overdue</button>'
+     +       '</div>'
+-    +       '<table class="req-table"><thead><tr><th>Request</th><th>Area</th><th>CPR</th><th>Age</th><th>Requested by</th><th></th></tr></thead>'
++    +       '<table class="req-table"><thead><tr><th>Request</th><th>Area</th><th>Status</th><th>Assigned</th><th>CPR</th><th>Age</th><th></th></tr></thead>'
+     +       '<tbody id="req-tbody"></tbody></table>'
+     +     '</div>'
+     +   '</section>'
+ 
+-    /* Row 5 — Portfolio matrix (w-12) */
+-    +   '<section class="widget w-12" id="w-portfolio">'
+-    +     '<div class="widget-hdr">'
+-    +       '<div class="widget-title"><i class="ti ti-chart-dots"></i>Portfolio evidence health · your territory</div>'
+-    +       '<span style="font-size:11px;color:var(--text3)">Click row → case · icon → evidence workspace · per-source chips populate live</span>'
+-    +     '</div>'
+-    +     '<div class="widget-body p0">'
+-    +       '<div class="matrix-scroll">'
+-    +         '<table class="matrix-table"><thead id="matrix-thead"><tr>'
+-    +           '<th class="sort" data-sort="ref" onclick="setMatrixSort(\'ref\')">Ref</th>'
+-    +           '<th>Claimant</th><th>Route</th><th>Stage</th>'
+-    +           '<th class="sort" data-sort="cpr" onclick="setMatrixSort(\'cpr\')">CPR</th>'
+-    +           '<th class="sort" data-sort="evidence" onclick="setMatrixSort(\'evidence\')">Evidence%</th>'
+-    +           '<th>Source hits</th>'
+-    +           '<th class="sort sorted" data-sort="gap" onclick="setMatrixSort(\'gap\')">Gap ↓</th>'
+-    +         '</tr></thead><tbody id="matrix-tbody"></tbody></table>'
+-    +       '</div>'
+-    +     '</div>'
+-    +   '</section>'
+-
+-    /* Row 6 — Pull queue (w-6) + Recent activity (w-6) */
+-    +   '<section class="widget w-6">'
+-    +     '<div class="widget-hdr">'
+-    +       '<div class="widget-title"><i class="ti ti-cloud-download"></i>Actionable pull queue</div>'
+-    +       '<span style="font-size:11px;color:var(--text3)">Cases with evidence gaps</span>'
+-    +     '</div>'
+-    +     '<div class="widget-body p0">'
+-    +       '<table class="req-table"><thead><tr><th>Ref</th><th>Case</th><th>CPR</th><th></th></tr></thead>'
+-    +       '<tbody id="pull-tbody"><tr><td colspan="4" style="text-align:center;padding:20px;color:var(--text3)"><span class="spin" style="display:inline-block;width:12px;height:12px;border:2px solid var(--rule);border-top-color:var(--accent);border-radius:50%;animation:dio-spin 0.7s linear infinite"></span> Loading…</td></tr></tbody></table>'
+-    +     '</div>'
+-    +   '</section>'
+-
+-    +   '<section class="widget w-6">'
++    /* R2.B1 · Portfolio matrix + Actionable pull queue removed — duplicated with Requests and Cases. */
++    /* Recent activity kept, promoted to w-12 for the full-width slot. */
++    +   '<section class="widget w-12">'
+     +     '<div class="widget-hdr">'
+     +       '<div class="widget-title"><i class="ti ti-activity"></i>Recent activity · your territory</div>'
+     +       '<a class="widget-link" href="cases.html">All cases →</a>'
+diff --git a/evidence.html b/evidence.html
+index 2baa426..3f3ea62 100644
+--- a/evidence.html
++++ b/evidence.html
+@@ -2,224 +2,15 @@
+ <html lang="en">
+ <head>
+ <meta charset="UTF-8">
+-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+-<title>DefendAble — Evidence</title>
+-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+-<style>
+-*{box-sizing:border-box;margin:0;padding:0}
+-:root{--ink:#1A1A2E;--ink2:#2D2D44;--ink3:#6B6B80;--ink4:#9B9BAA;--rule:#D8D8E0;--rule2:#EBEBF0;--surface:#FFFFFF;--surface2:#F7F7F9;--surface3:#EFEFF2;--accent:#1B3A6B;--accent2:#254E91;--accent-faint:#EEF2F8;--confirm:#1A5C3A;--confirm-faint:#EEF7F2;--caution:#7A4E00;--caution-faint:#FDF4E3;--alert:#8B1A1A;--alert-faint:#FBF0F0;--navy:var(--ink);--blue:var(--accent2);--blue-faint:var(--accent-faint);--green:var(--confirm);--green-faint:var(--confirm-faint);--amber:var(--caution);--amber-faint:var(--caution-faint);--red:var(--alert);--red-faint:var(--alert-faint);--border:var(--rule);--text:var(--ink);--text2:var(--ink2);--text3:var(--ink3);--font:'Helvetica Neue','Arial',sans-serif;--font-serif:'Georgia','Times New Roman',serif;--mono:'Courier New','Courier',monospace;--r:3px}
+-html,body{height:100%;font-family:var(--font);background:var(--surface2);color:var(--text);font-size:14px}
+-.global-nav{background:var(--navy);height:48px;display:flex;align-items:center;padding:0 20px}
+-.gn-logo{display:flex;align-items:center;gap:8px;text-decoration:none;margin-right:20px}
+-.gn-mark{width:28px;height:28px;background:var(--blue);border-radius:4px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px}
+-.gn-name{font-size:14px;font-weight:500;color:#fff}
+-.gn-links{display:flex;align-items:center;gap:2px;flex:1;min-width:0;overflow:hidden}
+-.gn-link{display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r);font-size:12px;font-weight:500;color:rgba(255,255,255,0.5);text-decoration:none;transition:all 0.15s;white-space:nowrap}
+-.gn-link:hover{background:rgba(255,255,255,0.08);color:#fff}
+-.gn-link.active{background:rgba(42,111,219,0.35);color:#fff}
+-.gn-right{display:flex;align-items:center;gap:8px;margin-left:8px}
+-.gn-user-btn{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:20px;padding:3px 10px 3px 4px;cursor:pointer}
+-.gn-av{width:24px;height:24px;border-radius:50%;background:#1C2E44;color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500}
+-.gn-user{font-size:11px;font-weight:500;color:rgba(255,255,255,0.85)}
+-
+-.page-hdr{background:var(--surface);border-bottom:1px solid var(--border);padding:18px 32px}
+-.page-title{font-family:var(--font-serif);font-size:26px;font-weight:400;color:var(--text);letter-spacing:-0.01em}
+-.page-sub{font-size:13px;color:var(--text3);margin-top:4px}
+-
+-.hero-band{background:linear-gradient(180deg,var(--surface) 0%,var(--surface2) 100%);padding:24px 32px 8px;border-bottom:1px solid var(--rule2)}
+-.hero-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;max-width:1400px}
+-.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px 18px;position:relative}
+-.stat-card::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:var(--blue);border-radius:var(--r) 0 0 var(--r)}
+-.stat-card.ok::before{background:var(--green)}
+-.stat-card.warn::before{background:var(--amber)}
+-.stat-card.bad::before{background:var(--red)}
+-.stat-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text3)}
+-.stat-value{font-family:var(--font-serif);font-size:32px;font-weight:400;color:var(--text);margin-top:6px;line-height:1}
+-.stat-sub{font-size:11px;color:var(--text3);margin-top:6px}
+-
+-.content{padding:24px 32px 48px;max-width:1400px}
+-.section-hdr{display:flex;align-items:baseline;justify-content:space-between;margin:8px 0 14px}
+-.section-hdr h2{font-family:var(--font-serif);font-size:18px;font-weight:400;color:var(--text)}
+-.section-hdr .hint{font-size:11px;color:var(--text3)}
+-
+-.cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px}
+-.cat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:0;overflow:hidden;text-decoration:none;color:inherit;display:flex;flex-direction:column;transition:transform .12s,box-shadow .12s;cursor:pointer}
+-.cat-card:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(26,26,46,0.08)}
+-.cat-card-hdr{padding:16px 18px 12px;border-bottom:1px solid var(--rule2);display:flex;align-items:flex-start;gap:12px}
+-.cat-icon{width:38px;height:38px;border-radius:var(--r);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+-.cat-icon.weather{background:#EEF2F8;color:#254E91}
+-.cat-icon.notams{background:#FDF4E3;color:#7A4E00}
+-.cat-icon.news{background:#EEF7F2;color:#1A5C3A}
+-.cat-icon.flights{background:#F3F0FA;color:#4338CA}
+-.cat-icon.global{background:#FBF0F0;color:#8B1A1A}
+-.cat-icon.strikes{background:#F0EEFC;color:#5B4A9F}
+-.cat-icon.ash{background:#EDEAE3;color:#5C4A2E}
+-.cat-icon.atfm{background:#E4EEF2;color:#1F5C68}
+-.cat-name{font-family:var(--font-serif);font-size:16px;font-weight:400;color:var(--text);letter-spacing:-0.005em}
+-.cat-desc{font-size:11px;color:var(--text3);margin-top:3px;line-height:1.4}
+-.cat-card-body{padding:12px 18px 14px;flex:1}
+-.cat-source-line{display:flex;justify-content:space-between;align-items:center;padding:5px 0;font-size:11px;border-top:1px dashed var(--rule2)}
+-.cat-source-line:first-child{border-top:0}
+-.cat-source-name{font-family:var(--mono);font-size:10px;color:var(--text2)}
+-.cat-source-chip{display:inline-block;padding:1px 7px;border-radius:8px;font-family:var(--mono);font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+-.chip-live{background:var(--green-faint);color:var(--green)}
+-.chip-planned{background:var(--amber-faint);color:var(--amber)}
+-.chip-failed{background:var(--red-faint);color:var(--red)}
+-.chip-no{background:var(--surface3);color:var(--text3)}
+-.cat-card-ftr{padding:8px 18px 12px;background:var(--surface2);border-top:1px solid var(--rule2);display:flex;justify-content:space-between;align-items:center}
+-.cat-open{font-size:11px;font-weight:500;color:var(--blue);display:flex;align-items:center;gap:4px}
+-.cat-open i{font-size:12px}
+-.cat-count{font-size:10px;color:var(--text3);font-family:var(--mono)}
+-
+-.pipeline-strip{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px 18px;margin-bottom:24px}
+-.pipeline-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+-.pipeline-hdr h3{font-family:var(--font-serif);font-size:14px;font-weight:400}
+-.pipeline-hdr a{font-size:11px;color:var(--blue);text-decoration:none}
+-.pipeline-row{display:grid;grid-template-columns:1fr 100px 90px 140px 60px;gap:12px;padding:6px 0;border-top:1px solid var(--rule2);align-items:center}
+-.pipeline-row:first-of-type{border-top:0}
+-.pipeline-source{font-family:var(--mono);font-size:10.5px;color:var(--text)}
+-.pipeline-provider{font-size:10.5px;color:var(--text3)}
+-.pipeline-time{font-family:var(--mono);font-size:10px;color:var(--text3)}
+-.pipeline-rows{font-family:var(--mono);font-size:10px;color:var(--text3);text-align:right}
+-.pipeline-view{font-size:10.5px;color:var(--blue);text-decoration:none;text-align:right}
+-
+-.empty-hint{color:var(--text3);font-size:12px;padding:12px 18px;background:var(--surface2);border-radius:var(--r);border:1px dashed var(--rule)}
+-</style>
++<title>DefendAble — Redirecting</title>
++<meta http-equiv="refresh" content="0; url=repository.html#live-evidence">
++<script>window.location.replace('repository.html#live-evidence');</script>
+ </head>
+ <body>
+-
+-<nav class="global-nav">
+-  <a href="index.html" class="gn-logo"><div class="gn-mark"><i class="ti ti-lock"></i></div><span class="gn-name">DefendAble</span></a>
+-  <div class="gn-links" id="gn-links"></div>
+-  <div class="gn-right">
+-    <div class="gn-user-btn" id="gn-user-btn"><div class="gn-av" id="gn-av">SB</div><span class="gn-user" id="gn-username">S. Booth</span></div>
+-    <div id="user-dropdown" class="user-dropdown"></div>
+-  </div>
+-</nav>
+-
+-<div class="page-hdr">
+-  <div class="page-title">Evidence collection</div>
+-  <div class="page-sub">Nightly-refreshed feeds from every free aviation-defence data source we can reach. Browse per category or drill into individual sources.</div>
+-</div>
+-
+-<div class="hero-band">
+-  <div class="hero-stats" id="hero-stats">
+-    <div class="stat-card"><div class="stat-label">Sources total</div><div class="stat-value">—</div><div class="stat-sub">Loading…</div></div>
+-    <div class="stat-card ok"><div class="stat-label">Live now</div><div class="stat-value">—</div><div class="stat-sub"></div></div>
+-    <div class="stat-card warn"><div class="stat-label">Planned / pending</div><div class="stat-value">—</div><div class="stat-sub"></div></div>
+-    <div class="stat-card bad"><div class="stat-label">Failed last run</div><div class="stat-value">—</div><div class="stat-sub"></div></div>
+-  </div>
+-</div>
+-
+-<div class="content">
+-  <div class="section-hdr"><h2>Categories</h2><span class="hint">Click a category to browse its sources in detail.</span></div>
+-  <div class="cat-grid" id="cat-grid"></div>
+-
+-  <div class="section-hdr" style="margin-top:32px"><h2>Pipeline status by source</h2><span class="hint">Live status pulled from the nightly runner's audit log.</span></div>
+-  <div class="pipeline-strip" id="pipeline-strip"></div>
+-</div>
+-
+-<script src="shared_data.js"></script>
+-<script src="shared_theme.js"></script>
+-<script src="defendable_evidence_reader.js?v=s9a"></script>
+-<script src="nav.js"></script>
+-
+-<script>
+-(function(){
+-  var CATEGORIES = [
+-    { id:'Weather',           icon:'ti-cloud-storm',  iconCls:'weather', page:'evidence-weather.html', desc:'METAR observations and TAF forecasts for the DefendAble airport list. Direct evidence for weather-defence cases.' },
+-    { id:'NOTAMs',            icon:'ti-file-text',    iconCls:'notams',  page:'evidence-notams.html', desc:'Notices to Airmen — runway closures, airspace restrictions, navaid outages. Coming soon: full NOTAM browser.' },
+-    { id:'News',              icon:'ti-news',         iconCls:'news',    page:'evidence-news.html', desc:'Aviation Herald incident feed + Simple Flying broader news, auto-tagged by category.' },
+-    { id:'Flight tracks',     icon:'ti-plane',        iconCls:'flights', page:'evidence-flights.html', desc:'OpenSky Network anonymous state-vector snapshots for European airspace.' },
+-    { id:'Natural disaster',  icon:'ti-flame',        iconCls:'global',  page:'evidence-global.html', desc:'Wildfires (NASA FIRMS + Copernicus EFFIS), volcanic activity, global emergency activations.' },
+-    { id:'Industrial action', icon:'ti-hand-stop',    iconCls:'strikes', page:'evidence-strikes.html', desc:'French DGAC + Italian ENAC strike notices. Third-party industrial-action evidence.' },
+-    { id:'ATFM',              icon:'ti-traffic-cone', iconCls:'atfm',    page:'evidence-atfm.html', desc:'Eurocontrol Network Manager operational status. Full B2B feed once cert lands.' },
+-    { id:'Volcanic ash',      icon:'ti-mountain',     iconCls:'ash',     page:'evidence-ash.html', desc:'Met Office VAAC London QVA — pending onboarding email to QVA@metoffice.gov.uk.' },
+-  ];
+-
+-  function chip(status){
+-    var cls = status === 'live' ? 'chip-live' : status === 'failed' ? 'chip-failed' : status === 'planned' ? 'chip-planned' : 'chip-no';
+-    return '<span class="cat-source-chip '+cls+'">'+(status || 'no-data')+'</span>';
+-  }
+-
+-  function fmtTime(iso){
+-    if (!iso) return '—';
+-    try { return new Date(iso).toISOString().slice(0,16).replace('T',' ') + 'Z'; }
+-    catch(e){ return iso; }
+-  }
+-
+-  function renderHero(statuses){
+-    var live = statuses.filter(function(r){return r.status==='live';}).length;
+-    var planned = statuses.filter(function(r){return r.status==='planned';}).length;
+-    var failed = statuses.filter(function(r){return r.status==='failed';}).length;
+-    var total = window.EvidenceCollection.SOURCES.length;
+-    var mostRecent = statuses.reduce(function(acc,r){
+-      if (!r.pulled_at) return acc;
+-      return (!acc || r.pulled_at > acc) ? r.pulled_at : acc;
+-    }, null);
+-    var el = document.getElementById('hero-stats');
+-    el.innerHTML =
+-      '<div class="stat-card"><div class="stat-label">Sources total</div><div class="stat-value">'+total+'</div><div class="stat-sub">Across '+(new Set(window.EvidenceCollection.SOURCES.map(function(s){return s.category;}))).size+' evidence categories</div></div>'+
+-      '<div class="stat-card ok"><div class="stat-label">Live now</div><div class="stat-value">'+live+'</div><div class="stat-sub">'+(mostRecent ? 'Freshest pull '+fmtTime(mostRecent) : 'No completed runs yet')+'</div></div>'+
+-      '<div class="stat-card warn"><div class="stat-label">Planned / pending</div><div class="stat-value">'+planned+'</div><div class="stat-sub">Awaiting first successful pull</div></div>'+
+-      '<div class="stat-card bad"><div class="stat-label">Failed last run</div><div class="stat-value">'+failed+'</div><div class="stat-sub">'+(failed ? 'Check manifest notes' : 'All implemented sources healthy')+'</div></div>';
+-  }
+-
+-  function renderCategoryGrid(statuses){
+-    var statusById = {}; statuses.forEach(function(r){ statusById[r.source_id] = r; });
+-    var byCategory = {};
+-    window.EvidenceCollection.SOURCES.forEach(function(s){
+-      byCategory[s.category] = byCategory[s.category] || [];
+-      byCategory[s.category].push(s);
+-    });
+-    var html = CATEGORIES.map(function(cat){
+-      var sources = byCategory[cat.id] || [];
+-      var lineItems = sources.slice(0,4).map(function(s){
+-        var st = statusById[s.id] || { status:'no-data' };
+-        return '<div class="cat-source-line"><span class="cat-source-name">'+s.id+'</span>'+chip(st.status)+'</div>';
+-      }).join('');
+-      if (!lineItems) lineItems = '<div class="cat-source-line"><span class="cat-source-name" style="color:var(--text3);font-style:italic">no sources yet in this category</span></div>';
+-      var liveCount = sources.filter(function(s){ var st = statusById[s.id]; return st && st.status==='live'; }).length;
+-      return ''+
+-        '<a class="cat-card" href="'+cat.page+'">'+
+-          '<div class="cat-card-hdr">'+
+-            '<div class="cat-icon '+cat.iconCls+'"><i class="ti '+cat.icon+'"></i></div>'+
+-            '<div><div class="cat-name">'+cat.id+'</div><div class="cat-desc">'+cat.desc+'</div></div>'+
+-          '</div>'+
+-          '<div class="cat-card-body">'+lineItems+'</div>'+
+-          '<div class="cat-card-ftr">'+
+-            '<span class="cat-count">'+liveCount+' / '+sources.length+' live</span>'+
+-            '<span class="cat-open">Open '+cat.id.toLowerCase()+' <i class="ti ti-arrow-right"></i></span>'+
+-          '</div>'+
+-        '</a>';
+-    }).join('');
+-    document.getElementById('cat-grid').innerHTML = html;
+-  }
+-
+-  function renderPipelineStrip(statuses){
+-    var statusById = {}; statuses.forEach(function(r){ statusById[r.source_id] = r; });
+-    var rows = window.EvidenceCollection.SOURCES.map(function(s){
+-      var st = statusById[s.id] || { status:'no-data', pulled_at:'', rows:0, live_url: window.EvidenceCollection.BASE_URL + s.id + '.json' };
+-      return '<div class="pipeline-row">'+
+-        '<div><div class="pipeline-source">'+s.id+'</div><div class="pipeline-provider">'+s.provider+' · '+s.category+'</div></div>'+
+-        '<div>'+chip(st.status)+'</div>'+
+-        '<div class="pipeline-time">'+fmtTime(st.pulled_at)+'</div>'+
+-        '<div class="pipeline-rows">'+(st.rows||0)+' rows</div>'+
+-        '<a class="pipeline-view" href="'+st.live_url+'" target="_blank" rel="noopener">view →</a>'+
+-      '</div>';
+-    }).join('');
+-    document.getElementById('pipeline-strip').innerHTML =
+-      '<div class="pipeline-hdr"><h3>All sources</h3><a href="https://github.com/evansharry165-wq/evidence-collection" target="_blank" rel="noopener">Repository ↗</a></div>'+
+-      rows;
+-  }
+-
+-  window.EvidenceCollection.status().then(function(statuses){
+-    renderHero(statuses);
+-    renderCategoryGrid(statuses);
+-    renderPipelineStrip(statuses);
+-  });
+-})();
+-</script>
+-
++<p style="font-family:sans-serif;padding:40px;text-align:center;color:#6B6B80">
++  The Evidence hub has moved. Redirecting to the Repository · Live Evidence tab…
++  <br><br>
++  <a href="repository.html#live-evidence">Click here if not redirected automatically</a>
++</p>
+ </body>
+-</html>
++</html>
+\ No newline at end of file
+diff --git a/repository.html b/repository.html
+index 58dda77..6ebb87b 100644
+--- a/repository.html
++++ b/repository.html
+@@ -295,6 +295,7 @@ input[type=file].filing-file-input{display:none}
+   <div class="tab-row">
+     <button class="tab-btn" id="tab-cases" onclick="setTab('cases')"><i class="ti ti-briefcase"></i> Cases</button>
+     <button class="tab-btn active" id="tab-evidence" onclick="setTab('evidence')"><i class="ti ti-database"></i> Evidence</button>
++    <button class="tab-btn" id="tab-live" onclick="setTab('live')"><i class="ti ti-radar-2"></i> Live evidence</button>
+     <button class="tab-btn" id="tab-closed" onclick="setTab('closed')"><i class="ti ti-archive"></i> Closed outcomes</button>
+   </div>
+   <div class="repo-body" id="repo-body"></div>
+@@ -338,8 +339,9 @@ function getUser(){ return localStorage.getItem('dfa_active_user') || (typeof wi
+ 
+ function setTab(t){
+   TAB = t;
+-  ['cases','evidence','closed'].forEach(function(x){
+-    document.getElementById('tab-'+x).classList.toggle('active', x===t);
++  ['cases','evidence','live','closed'].forEach(function(x){
++    var el = document.getElementById('tab-'+x);
++    if (el) el.classList.toggle('active', x===t);
+   });
+   render();
+ }
+@@ -828,9 +830,54 @@ function render(){
+   document.querySelectorAll('.ud-item').forEach(function(el){ el.classList.toggle('current',el.id==='ud-'+uid); });
+   if(TAB==='cases') renderCases();
+   else if(TAB==='evidence') renderEvidence();
++  else if(TAB==='live') renderLiveEvidence();
+   else renderClosed();
+ }
+ 
++
++
++/* R2.D · Live Evidence — folded in from the retired evidence-hub.
++   Shows the 8 live public sources with their current status, per-source hit
++   counts, and quick jump-links.  This is the sitewide destination for
++   'what has the cron pulled recently that any case might attach'.  Also serves
++   as the orientation view previously provided by evidence.html. */
++function renderLiveEvidence(){
++  var LIVE_SOURCES = [
++    {id:'aviationweather-metar-taf', label:'Aviation Weather',   subtitle:'METAR + TAF observations', icon:'ti-cloud-storm',   page:'evidence-weather.html',  colour:'#254E91'},
++    {id:'faa-notams',                label:'NOTAMs',              subtitle:'FAA + AutoRouter (Europe)', icon:'ti-file-text',    page:'evidence-notams.html',   colour:'#7A4E00'},
++    {id:'eurocontrol-nm-public',     label:'Eurocontrol NM',      subtitle:'ATFM · CODA · public NOP',   icon:'ti-traffic-cone', page:'evidence-atfm.html',     colour:'#1F5C68'},
++    {id:'dgac-france-notices',       label:'Industrial action',   subtitle:'DGAC + ENAC + strike news', icon:'ti-hand-stop',    page:'evidence-strikes.html',  colour:'#5B4A9F'},
++    {id:'nasa-firms-wildfires',      label:'Natural disaster',    subtitle:'NASA FIRMS + Copernicus + GDACS', icon:'ti-flame',    page:'evidence-global.html',   colour:'#8B1A1A'},
++    {id:'aviation-herald-news',      label:'Aviation news',       subtitle:'Aviation Herald + Simple Flying', icon:'ti-news',    page:'evidence-news.html',     colour:'#1A5C3A'},
++    {id:'vaac-london-qva',           label:'Volcanic ash',        subtitle:'VAAC London QVA (pending)',  icon:'ti-mountain',    page:'evidence-ash.html',      colour:'#7A4E00'},
++    {id:'opensky-flight-tracks',     label:'Flight tracks',       subtitle:'OpenSky + AeroDataBox',       icon:'ti-plane',       page:'evidence-flights.html',  colour:'#4338CA'},
++  ];
++  var body = document.getElementById('repo-body');
++  body.innerHTML =
++    '<div style="padding:20px 24px">' +
++      '<div style="margin-bottom:18px">' +
++        '<h2 style="font-family:var(--font-serif);font-size:20px;font-weight:400;color:var(--text);margin-bottom:4px">Live evidence · today\'s snapshot</h2>' +
++        '<p style="font-size:12px;color:var(--text3);line-height:1.5">Everything DefendAble\'s daily cron has pulled across our eight live public sources. Click a source to browse detail, filter, and attach items to any open case.</p>' +
++      '</div>' +
++      '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px">' +
++        LIVE_SOURCES.map(function(s){
++          return '<a href="'+s.page+'" style="text-decoration:none;color:inherit;background:var(--surface);border:1px solid var(--rule);border-left:4px solid '+s.colour+';border-radius:4px;padding:14px 16px;display:block;transition:box-shadow .12s,transform .05s">' +
++            '<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">' +
++              '<i class="ti '+s.icon+'" style="font-size:20px;color:'+s.colour+'"></i>' +
++              '<div style="font-family:var(--font-serif);font-size:14px;font-weight:500;color:var(--text)">'+esc(s.label)+'</div>' +
++            '</div>' +
++            '<div style="font-size:11px;color:var(--text3);line-height:1.5;margin-bottom:8px">'+esc(s.subtitle)+'</div>' +
++            '<div style="font-family:var(--mono);font-size:10px;color:'+s.colour+';font-weight:600;text-transform:uppercase;letter-spacing:.04em">Open →</div>' +
++          '</a>';
++        }).join('') +
++      '</div>' +
++      '<div style="margin-top:22px;padding:14px 16px;background:var(--surface2);border:1px dashed var(--rule);border-radius:4px;font-size:11.5px;color:var(--text3);line-height:1.5">' +
++        '<i class="ti ti-info-circle" style="margin-right:6px;color:var(--accent)"></i>' +
++        'The daily cron pulls from these sources overnight (03:00 UTC).  Case-scoped filtering happens automatically when you open a case Repository tab — this page is the sitewide browse view.  Future upgrade: hourly cron cadence + territory-notification triggers (see handoff doc, Future ambitions).' +
++      '</div>' +
++    '</div>';
++}
++
+ function initRepository(){
+   if(typeof EvidenceFiling==='undefined'){
+     setTimeout(initRepository,50);
+@@ -840,7 +887,13 @@ function initRepository(){
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',initRepository);
+ else initRepository();
+-window.addEventListener('load',initRepository);
++window.addEventListener('load',function(){
++  initRepository();
++  /* R2.D · honour URL hash so /repository.html#live-evidence lands on the Live tab */
++  if (window.location.hash === '#live-evidence' || window.location.search.indexOf('tab=live') >= 0){
++    setTimeout(function(){ setTab('live'); }, 60);
++  }
++});
+ </script>
+ </body>
+ </html>
+-- 
+2.34.1
+
