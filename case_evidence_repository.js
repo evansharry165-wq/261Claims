@@ -48,7 +48,14 @@
       flightNum:  facts.flightNum || (cf.meta||{}).flightNum || (cf.meta||{}).flight,
       reg:        facts.aircraftReg || (cf.meta||{}).registration,
       carrier:    facts.carrier || (cf.meta||{}).carrier,
-      rotation:   (packet && packet.rotation) || [],
+      /* Phase 3 closeout 1 · case_packet is the richer, engine-produced source
+         when present; cf.meta.rotation is the fallback for cases seeded
+         directly (no case_packet doc) — same rotation[] shape
+         FlightQueryResolver already produces ({fno,from,to,fromIcao,toIcao,
+         date}), so filterSnapshot's icaos-widening fix fires identically
+         regardless of which path supplied it. Cases with neither (Hartley
+         et al.) get rotation: [] exactly as before — no behaviour change. */
+      rotation:   (packet && packet.rotation) || (cf.meta || {}).rotation || [],
       _packet:    packet,
     };
   }
@@ -61,7 +68,7 @@
     FRA:'EDDF',MUC:'EDDM',DUS:'EDDL',BER:'EDDB',HAM:'EDDH',CGN:'EDDK',
     ZRH:'LSZH',GVA:'LSGG',BSL:'LFSB',VIE:'LOWW',
     MAD:'LEMD',BCN:'LEBL',PMI:'LEPA',ALC:'LEAL',IBZ:'LEIB',AGP:'LEMG',LPA:'GCLP',TFS:'GCTS',LIS:'LPPT',OPO:'LPPR',
-    FCO:'LIRF',MXP:'LIMC',LIN:'LIML',VCE:'LIPZ',NAP:'LIRN',BGY:'LIME',
+    FCO:'LIRF',MXP:'LIMC',LIN:'LIML',VCE:'LIPZ',NAP:'LIRN',BGY:'LIME',CTA:'LICC',PMO:'LICJ',
     PRG:'LKPR',WAW:'EPWA',KRK:'EPKK',GDN:'EPGD',BUD:'LHBP',OTP:'LROP',SOF:'LBSF',
     ARN:'ESSA',OSL:'ENGM',CPH:'EKCH',
     ATH:'LGAV',HER:'LGIR',RHO:'LGRP',LCA:'LCLK',MLA:'LMML',
@@ -98,7 +105,18 @@
   function filterSnapshot(sourceId, snapshot, facts){
     if (!snapshot || !snapshot.data) return [];
     var data = snapshot.data;
-    var icaos = [facts.originIcao, facts.destIcao].filter(Boolean);
+    /* Phase 3 fix · icaos previously covered only this flight's own two
+       endpoints — a rotation-leg airport (prior sector, same aircraft) was
+       filtered out here before EvidenceCascadeMatch ever got a chance to tier
+       it 'cascade'. Widening to the whole rotation makes the cascade tier
+       actually reachable for METAR/TAF, NOTAM, and wildfire/GDACS distance
+       refs below — EvidenceCascadeMatch still does the direct-vs-cascade
+       split itself (via its own, narrower ownAirports check), so this only
+       changes what's let through for tiering, not how it's tiered. */
+    var icaos = [facts.originIcao, facts.destIcao]
+      .concat((facts.rotation || []).map(function (r) { return r.fromIcao; }))
+      .concat((facts.rotation || []).map(function (r) { return r.toIcao; }))
+      .filter(Boolean);
     var caseDate = parseCaseDate(facts.date);
 
     if (sourceId === 'aviationweather-metar-taf'){
@@ -221,6 +239,25 @@
     return global.EvidenceCollection.getCaseFetch(caseRef, targetedSid).then(function(x){ return !!x; });
   }
 
+  /* B-EvB.1 · Case-less variant of the daily-snapshot half of fetchRelevantSlice,
+     for flight queries that don't have a case yet (the front-door query bar).
+     Deliberately does NOT attempt the targeted on-demand case-fetch below —
+     that endpoint is inherently per-case (case-fetches/<caseRef>/<sourceId>.json)
+     and has no case-less equivalent. Takes a facts object in the same shape
+     getCaseFacts(caseRef) returns, so callers that already have facts (or a
+     case ref) can use either entry point interchangeably. */
+  function fetchRelevantSliceForFacts(facts, sourceId){
+    if (!facts) return Promise.resolve([]);
+    if (!global.EvidenceCollection) return Promise.resolve([]);
+    return global.EvidenceCollection.get(sourceId).then(function(snap){
+      if (!snap) return [];
+      _snapshotCache[sourceId] = snap;
+      var items = filterSnapshot(sourceId, snap, facts);
+      items.forEach(function(it){ it._fetchKind = 'snapshot'; it._pulled_at = snap.pulled_at; });
+      return items;
+    }).catch(function(){ return []; });
+  }
+
   function fetchRelevantSlice(caseRef, sourceId){
     var facts = getCaseFacts(caseRef);
     if (!facts) return Promise.resolve([]);
@@ -235,14 +272,8 @@
         items.forEach(function(it){ it._fetchKind = 'targeted'; it._pulled_at = targeted.pulled_at; });
         return items;
       }
-      // Fall back to daily snapshot
-      return global.EvidenceCollection.get(sourceId).then(function(snap){
-        if (!snap) return [];
-        _snapshotCache[sourceId] = snap;
-        var items = filterSnapshot(sourceId, snap, facts);
-        items.forEach(function(it){ it._fetchKind = 'snapshot'; it._pulled_at = snap.pulled_at; });
-        return items;
-      });
+      // Fall back to daily snapshot — shared with the case-less path
+      return fetchRelevantSliceForFacts(facts, sourceId);
     }).catch(function(){ return []; });
   }
 
@@ -460,6 +491,7 @@
   global.CaseEvidenceRepository = {
     getCaseFacts:       getCaseFacts,
     fetchRelevantSlice: fetchRelevantSlice,
+    fetchRelevantSliceForFacts: fetchRelevantSliceForFacts,
     hasTargetedFetch:   hasTargetedFetch,
     targetedSourceId:   targetedSourceId,
     listAttached:       listAttached,

@@ -320,6 +320,90 @@
         snapshot: { station:'EGKK', obsTime:'2026-07-25T14:00Z', text:'EGKK 251400Z 22015G28KT 6000 TSRA FEW015CB BKN025 20/17 Q1012 RETSRA' } },
     ]);
 
+    /* Evidence Bus Phase 1 · DEF-DEMO-ETNA-CASCADE — the cascade differentiator
+       demo case. EZY4412 GVA-LGW, 3 Aug 2026, aircraft G-EZAB, one sector removed
+       from the Etna ash-closure root cause (see flight_resolver.js's SEED_FLIGHTS
+       for the full rotation). Phase 1 left this deliberately empty to prove the
+       live attachItem/CaseAuditTrail.append pipeline for real (see Phase 1
+       verification). Phase 3 now also pre-seeds it — same instant-open pattern as
+       Hartley/Taylor/engine-shell below — so the case Repository tab has real
+       content the moment a lawyer opens it, not just whatever gets attached live
+       during a demo session. Both are true at once: the seeded items below were
+       genuinely attached once (Phase 1), and are also hand-baked here exactly like
+       Hartley's, so the case reads as complete on first load. */
+    if (!cases['DEF-DEMO-ETNA-CASCADE']) {
+      cases['DEF-DEMO-ETNA-CASCADE'] = {
+        ref: 'DEF-DEMO-ETNA-CASCADE',
+        claimant: 'Demo — Etna cascade (Evidence Bus)',
+        solicitor: '',
+        flightNum: 'EZY4412',
+        route: 'GVA–LGW',
+        jurisdiction: 'england-wales',
+        stage: 'evidence',
+        disruptionType: 'Natural Disaster',
+        value: '£400',
+        assignedTo: 'SB',
+        evidencePct: 0,
+        createdAt: '2026-08-03T09:00:00Z',
+        updatedAt: new Date().toISOString(),
+        documents: [],
+        activity: [{ text: 'Demo case seeded — Etna cascade scenario for Evidence Bus Phase 1/3', time: '03 Aug 2026 09:00', type: 'create', by: 'System' }],
+        meta: {
+          originIata: 'GVA',
+          destIata: 'LGW',
+          flightDate: '2026-08-03',
+          flightNum: 'EZY4412',
+          registration: 'G-EZAB',
+          carrier: 'EZY',
+          /* Phase 3 closeout 1 · same rotation[] flight_resolver.js's
+             SEED_FLIGHTS carries for EZY4412 — kept identical so the
+             case-based path (getCaseFacts, this) and the case-less path
+             (FlightQueryResolver, the front-door query bar) agree on the
+             same rotation regardless of which one a caller hits. */
+          rotation: [
+            { fno: 'EZY7822', from: 'LGW', to: 'CTA', fromIcao: 'EGKK', toIcao: 'LICC', date: '2026-07-31' },
+            { fno: 'EZY7823', from: 'CTA', to: 'LGW', fromIcao: 'LICC', toIcao: 'EGKK', date: '2026-08-01' },
+            { fno: 'EZY-FERRY', from: 'CTA', to: 'GVA', fromIcao: 'LICC', toIcao: 'LSGG', date: '2026-08-03' },
+            { fno: 'EZY4412', from: 'GVA', to: 'LGW', fromIcao: 'LSGG', toIcao: 'EGKK', date: '2026-08-03' }
+          ]
+        }
+      };
+    }
+
+    /* Phase 3 · Etna evidence pack — five items across the real sourceIds this
+       system actually has: the ash advisory that grounded the aircraft at CTA,
+       the airport NOTAM, the ATFM regulation, and METAR bookends (ash at LICC on
+       1 Aug; clear conditions confirming the 3 Aug cascade flight itself had no
+       local weather cause). NOTAM sourceId corrected to 'faa-notams' — that's
+       what filterSnapshot/EVIDENCE_CATALOGUE actually use for NOTAMs;
+       'eurocontrol-nm-public' is ATFM regulations, not NOTAMs (see Hartley's own
+       ATFM item below for that source's real use). kind:'volcano' reused for the
+       ash advisory rather than inventing a new 'vaac' kind — already has full
+       icon support in case_evidence_repository_ui.js and evidence-workspace.html. */
+    seedEvidenceAttachments('DEF-DEMO-ETNA-CASCADE', [
+      { itemKey: 'seed-vaac-etna-310726', sourceId: 'vaac-london-qva', sourceProvider: 'Met Office VAAC London',
+        kind: 'volcano', attachedAt: '2026-08-03T09:12:00Z', attachedBy: 'SB',
+        summary: 'VAAC London ash advisory VA20260731/01 — Mt Etna eruption, ash to FL350, Catania (LICC) airspace closed',
+        snapshot: { volcano: 'Etna', advisoryId: 'VA20260731/01', affectedIcao: 'LICC', issued: '2026-07-31T18:00Z', ashTop: 'FL350' } },
+      { itemKey: 'seed-notam-cta-310726', sourceId: 'faa-notams', sourceProvider: 'FAA / AutoRouter NOTAMs',
+        kind: 'notam', attachedAt: '2026-08-03T09:18:00Z', attachedBy: 'SB',
+        summary: 'NOTAM LICC A1234/26 — Catania Fontanarossa airport closed, volcanic ash, effective 31 Jul 2026 18:00Z',
+        snapshot: { station: 'LICC', number: 'A1234/26', text: 'AERODROME CLOSED DUE VOLCANIC ASH', effectiveFrom: '2026-07-31T18:00Z' } },
+      { itemKey: 'seed-atfm-cta-010826', sourceId: 'eurocontrol-nm-public', sourceProvider: 'Eurocontrol NM',
+        kind: 'atfm', attachedAt: '2026-08-03T09:24:00Z', attachedBy: 'SB',
+        summary: 'ATFM regulation LIRC01A — Catania airspace, volcanic ash (Etna), 31 Jul 1800Z-1 Aug 1600Z',
+        snapshot: { regulationId: 'LIRC01A', reason: 'Volcanic ash - Etna eruption', fromTime: '2026-07-31T18:00Z', toTime: '2026-08-01T16:00Z' } },
+      { itemKey: 'seed-metar-licc-010826', sourceId: 'aviationweather-metar-taf', sourceProvider: 'NOAA AviationWeather.gov',
+        kind: 'metar', attachedAt: '2026-08-03T09:30:00Z', attachedBy: 'SB',
+        summary: 'METAR LICC 010800Z VA PLUME OBSC SKY — volcanic ash observed, visibility reduced',
+        snapshot: { station: 'LICC', obsTime: '2026-08-01T08:00Z', text: 'LICC 010800Z 09008KT 2000 VA FEW020 SCT100 22/14 Q1015 VA PLUME OBSC SKY' } },
+      { itemKey: 'seed-metar-egkk-030826', sourceId: 'aviationweather-metar-taf', sourceProvider: 'NOAA AviationWeather.gov',
+        kind: 'metar', attachedAt: '2026-08-03T09:36:00Z', attachedBy: 'SB',
+        summary: 'METAR EGKK 030800Z — clear conditions at LGW; cascade traced to prior sector at LICC, not local weather',
+        note: 'No independent weather cause at destination — confirms the delay traces through the aircraft rotation to the CTA ash closure, not a separate LGW event.',
+        snapshot: { station: 'EGKK', obsTime: '2026-08-03T08:00Z', text: 'EGKK 030800Z 21012KT 9999 FEW025 19/12 Q1018 NOSIG' } },
+    ]);
+
 
 
 
@@ -347,6 +431,20 @@
 
     seedAuditChain('DEF-ENG-2026-EW-0201', [
       {"seq":1,"ts":"2026-07-26T09:15:00Z","actor":"EH","action":"attach","itemKey":"seed-metar-EGKK-250726","itemId":"SEED-DEF-ENG-2026-EW-0201-1","sourceId":"aviationweather-metar-taf","summary":"METAR EGKK 251400-251800Z sequence — CB thunderstorm activity confirmed","note":"Proactive pull — engine flagged CB activity from operational feed; sequence collected before LOC arrives.","prevHash":"0000000000000000000000000000000000000000000000000000000000000000","hash":"cf6b831ec339701c09398f0ff2af0542a53d7768f4f2b7a0e1c6b66df15877f8"}
+    ]);
+
+    /* Phase 3 · Pre-computed hash chain for the Etna evidence pack above — same
+       build-time computation as Hartley's, payload shape matches
+       case_audit_trail.js's _doAppend exactly (seq/ts/actor/action/itemKey/
+       itemId/sourceId/summary/note/prevHash, in that key order), so "Verify
+       chain" passes on first open with no runtime rehashing. Verified against the
+       live CaseAuditTrail.verify() in the browser, not just computed offline. */
+    seedAuditChain('DEF-DEMO-ETNA-CASCADE', [
+      {"seq":1,"ts":"2026-08-03T09:12:00Z","actor":"SB","action":"attach","itemKey":"seed-vaac-etna-310726","itemId":"SEED-DEF-DEMO-ETNA-CASCADE-1","sourceId":"vaac-london-qva","summary":"VAAC London ash advisory VA20260731/01 — Mt Etna eruption, ash to FL350, Catania (LICC) airspace closed","note":null,"prevHash":"0000000000000000000000000000000000000000000000000000000000000000","hash":"a1771312095fe304b3d801989c6a1d3d7d50f5c11ec73580bef0bfe0a3b723ca"},
+      {"seq":2,"ts":"2026-08-03T09:18:00Z","actor":"SB","action":"attach","itemKey":"seed-notam-cta-310726","itemId":"SEED-DEF-DEMO-ETNA-CASCADE-2","sourceId":"faa-notams","summary":"NOTAM LICC A1234/26 — Catania Fontanarossa airport closed, volcanic ash, effective 31 Jul 2026 18:00Z","note":null,"prevHash":"a1771312095fe304b3d801989c6a1d3d7d50f5c11ec73580bef0bfe0a3b723ca","hash":"02172695e640797d5342d62b8db20095d05f1714dbc45a96e8b468631b797be1"},
+      {"seq":3,"ts":"2026-08-03T09:24:00Z","actor":"SB","action":"attach","itemKey":"seed-atfm-cta-010826","itemId":"SEED-DEF-DEMO-ETNA-CASCADE-3","sourceId":"eurocontrol-nm-public","summary":"ATFM regulation LIRC01A — Catania airspace, volcanic ash (Etna), 31 Jul 1800Z-1 Aug 1600Z","note":null,"prevHash":"02172695e640797d5342d62b8db20095d05f1714dbc45a96e8b468631b797be1","hash":"1a1cc5db219cced70c77c3692187adbf31310335ec697221527af598f6068179"},
+      {"seq":4,"ts":"2026-08-03T09:30:00Z","actor":"SB","action":"attach","itemKey":"seed-metar-licc-010826","itemId":"SEED-DEF-DEMO-ETNA-CASCADE-4","sourceId":"aviationweather-metar-taf","summary":"METAR LICC 010800Z VA PLUME OBSC SKY — volcanic ash observed, visibility reduced","note":null,"prevHash":"1a1cc5db219cced70c77c3692187adbf31310335ec697221527af598f6068179","hash":"5969d8bf52443b37f4ee6a98d24293cf70ff99b7b9f53f6cbf9d167d9e0783b3"},
+      {"seq":5,"ts":"2026-08-03T09:36:00Z","actor":"SB","action":"attach","itemKey":"seed-metar-egkk-030826","itemId":"SEED-DEF-DEMO-ETNA-CASCADE-5","sourceId":"aviationweather-metar-taf","summary":"METAR EGKK 030800Z — clear conditions at LGW; cascade traced to prior sector at LICC, not local weather","note":null,"prevHash":"5969d8bf52443b37f4ee6a98d24293cf70ff99b7b9f53f6cbf9d167d9e0783b3","hash":"b455e5c20a161955f8984a405847d44b1bfa5ed80b6ed946e6d608b8e5a9228d"}
     ]);
 
     migrateCaseAliases(cases);

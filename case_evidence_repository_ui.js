@@ -387,9 +387,16 @@
         (_isDIOActor()
           ? ('<div class="cer-sec-hdr"><h4>Available from evidence-collection</h4><span class="hint">Auto-filtered to this case. Green chip = hits.</span></div>' +
              '<div class="cer-sources">' + sourceCards + '</div>' +
-             renderCatalogueSection() +
-             renderAuditTrailSection(caseRef))
+             renderCatalogueSection())
           : _renderStoredVsNeeded(caseRef)) +
+        /* Closeout · the audit trail is what a solicitor needs to verify
+           tamper-evidence of DIO-gathered evidence — it was previously gated
+           behind _isDIOActor(), but DIO users are unconditionally redirected
+           away from case.html to dio-case.html (see dio_core.js) before this
+           code ever runs, so the section — and its "Verify chain" button —
+           was unreachable for anyone. Source cards and the catalogue stay
+           DIO-only; only this block opens up. */
+        renderAuditTrailSection(caseRef) +
         '<div class="cer-actions-strip">'+
           '<div style="font-size:11.5px;color:var(--text3,#6B6B80)">Bundle contents export for LOR pack / disclosure.</div>'+
           '<button class="cer-btn-primary" id="cer-export"><i class="ti ti-download"></i>Export bundle JSON</button>'+

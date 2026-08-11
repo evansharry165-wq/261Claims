@@ -275,6 +275,13 @@ input[type=file].filing-file-input{display:none}
 <script src="case_helpers.js"></script>
 <script src="case_filing.js"></script>
 <script src="evidence_filing.js"></script>
+<script src="defendable_evidence_reader.js?v=peb2"></script>
+<script src="case_audit_trail.js?v=peb2"></script>
+<script src="case_evidence_repository.js?v=peb4"></script>
+<script src="demo_fixture.js?v=peb3"></script>
+<script src="flight_resolver.js?v=peb2"></script>
+<script src="evidence_cascade_match.js?v=peb2"></script>
+<script src="evidence_query_bar.js?v=peb2"></script>
 
 <nav class="global-nav">
   <a href="index.html" class="gn-logo"><div class="gn-mark"><i class="ti ti-archive"></i></div><span class="gn-name">DefendAble</span></a>
@@ -859,6 +866,11 @@ function renderLiveEvidence(){
         '<h2 style="font-family:var(--font-serif);font-size:20px;font-weight:400;color:var(--text);margin-bottom:4px">Live evidence · today\'s snapshot</h2>' +
         '<p style="font-size:12px;color:var(--text3);line-height:1.5">Everything DefendAble\'s daily cron has pulled across our eight live public sources. Click a source to browse detail, filter, and attach items to any open case.</p>' +
       '</div>' +
+      '<div style="margin-bottom:22px;padding:16px 18px;background:var(--surface);border:1px solid var(--rule);border-radius:5px">' +
+        '<div style="font-family:var(--font-serif);font-size:15px;font-weight:500;color:var(--text);margin-bottom:2px">Check a flight before a case exists</div>' +
+        '<div style="font-size:11.5px;color:var(--text3);margin-bottom:12px;line-height:1.5">Search by flight number and date — results are ranked direct / cascade (same aircraft, prior sector) / route / event context, same as an open case\'s Repository tab.</div>' +
+        '<div id="eqb-mount"></div>' +
+      '</div>' +
       '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px">' +
         LIVE_SOURCES.map(function(s){
           return '<a href="'+s.page+'" style="text-decoration:none;color:inherit;background:var(--surface);border:1px solid var(--rule);border-left:4px solid '+s.colour+';border-radius:4px;padding:14px 16px;display:block;transition:box-shadow .12s,transform .05s">' +
@@ -876,6 +888,14 @@ function renderLiveEvidence(){
         'The daily cron pulls from these sources overnight (03:00 UTC).  Case-scoped filtering happens automatically when you open a case Repository tab — this page is the sitewide browse view.  Future upgrade: hourly cron cadence + territory-notification triggers (see handoff doc, Future ambitions).' +
       '</div>' +
     '</div>';
+
+  /* R2.D · Evidence Bus front-door: case-less flight query, confidence-ranked
+     cross-source results (direct/cascade/route/event-supporting). See
+     evidence_query_bar.js and outputs/REPLAN_evidence_bus_integration.md. */
+  var eqbMount = document.getElementById('eqb-mount');
+  if (eqbMount && typeof EvidenceQueryBar !== 'undefined') {
+    EvidenceQueryBar.render(eqbMount, { caseRef: null });
+  }
 }
 
 function initRepository(){

@@ -156,7 +156,11 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 <script src="case_filing.js"></script>
 <script src="defendable_evidence_reader.js?v=s9a"></script>
 <script src="case_audit_trail.js?v=s9a"></script>
-<script src="case_evidence_repository.js?v=s9a"></script>
+<script src="case_evidence_repository.js?v=peb4"></script>
+<script src="demo_fixture.js?v=peb3"></script>
+<script src="flight_resolver.js?v=peb2"></script>
+<script src="evidence_cascade_match.js?v=peb2"></script>
+<script src="evidence_query_bar.js?v=peb2"></script>
 <script src="case_evidence_fetch_trigger.js?v=s9a"></script>
 <script src="dio_core.js?v=s9a"></script>
 <script src="dio_territory.js?v=s9a"></script>
@@ -286,8 +290,17 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
       +   '<div style="font-size:24px;font-family:var(--font-serif);color:var(--text)"><span id="c-attached">'+state.attached.length+'</span></div>'
       +   '<div style="font-size:11px;color:var(--text3);margin-top:3px;line-height:1.4">Items pinned into this case\'s Repository. Survive daily snapshot rotation.</div>'
       + '</div>'
+      + '<div class="sb-section"><div class="sb-title">Check another flight</div>'
+      +   '<div style="font-size:10.5px;color:var(--text3);margin-bottom:8px;line-height:1.4">Suspect a cascade neighbour — a prior sector, same aircraft? Search it directly into this case.</div>'
+      +   '<div id="eqb-mount-ws"></div>'
+      + '</div>'
       + '</aside>';
     return html;
+  }
+
+  function mountQueryBar(){
+    var el = document.getElementById('eqb-mount-ws');
+    if (el && window.EvidenceQueryBar) EvidenceQueryBar.render(el, { caseRef: urlCaseRef });
   }
 
   /* ─── Main stream ─── */
@@ -518,6 +531,7 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
       '<div class="workspace">' + renderSidebar() + renderMain() + renderAttached() + '</div>';
     updateSourceCounts();
     bindAttachButtons();
+    mountQueryBar();
   }
 
   refreshAttached();
