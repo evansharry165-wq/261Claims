@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DefendAble — DIO Case</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--ink:#1A1A2E;--ink2:#2D2D44;--ink3:#6B6B80;--ink4:#9B9BAA;--rule:#D8D8E0;--rule2:#EBEBF0;--surface:#FFFFFF;--surface2:#F7F7F9;--accent:#1B3A6B;--accent-faint:#EEF2F8;--confirm:#1A5C3A;--confirm-faint:#EEF7F2;--caution:#7A4E00;--caution-faint:#FDF4E3;--alert:#8B1A1A;--alert-faint:#FBF0F0;--navy:var(--ink);--blue:var(--accent);--border:var(--rule);--text:var(--ink);--font:'Helvetica Neue','Arial',sans-serif;--font-serif:'Georgia','Times New Roman',serif;--mono:'Courier New',monospace;--r:3px;--r3:5px}
+html,body{min-height:100%;font-family:var(--font);background:var(--surface2);color:var(--text);font-size:14px}
+.top-bar{background:var(--navy);height:48px;display:flex;align-items:center;padding:0 20px;gap:16px}
+.top-bar a{color:rgba(255,255,255,0.85);text-decoration:none;font-size:12px;display:inline-flex;align-items:center;gap:5px}
+.top-bar a:hover{color:#fff}
+.top-bar .gn-user-btn{margin-left:auto;display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:20px;padding:3px 10px 3px 4px;cursor:pointer}
+.top-bar .gn-av{width:24px;height:24px;border-radius:50%;background:#164E63;color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px}
+.top-bar .gn-user{font-size:11px;color:rgba(255,255,255,0.85)}
+.user-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.3);z-index:500;justify-content:flex-end;padding:52px 20px 0}
+.user-modal.open{display:flex}
+.user-dropdown{background:var(--surface);border:1px solid var(--rule);border-radius:var(--r3);width:240px;overflow:hidden}
+.ud-header{padding:10px 14px;border-bottom:1px solid var(--rule);font-size:10px;text-transform:uppercase;color:var(--ink3)}
+.ud-item{display:flex;align-items:center;gap:10px;padding:9px 14px;cursor:pointer}
+.ud-item:hover,.ud-item.current{background:var(--accent-faint)}
+.ud-av{width:28px;height:28px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px}
+.ud-name{font-size:12px;font-weight:500}
+.ud-role{font-size:10px;color:var(--ink3)}
+.ud-tick{margin-left:auto;color:var(--confirm);display:none}
+.ud-item.current .ud-tick{display:block}
+.gn-mark{width:28px;height:28px;background:var(--blue);border-radius:4px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;text-decoration:none}
+.wrap{max-width:1360px;margin:0 auto;padding:20px 24px 40px}
+.back-link{font-size:12px;color:var(--accent);text-decoration:none;display:inline-flex;align-items:center;gap:4px;margin-bottom:14px}
+.back-link:hover{text-decoration:underline}
+.facts{background:var(--surface);border:1px solid var(--rule);border-radius:var(--r3);padding:12px 14px;margin-bottom:20px;font-size:12px}
+.facts-row{display:flex;flex-wrap:wrap;gap:8px 16px;margin-bottom:8px}
+.facts-row span{color:var(--ink3)}
+.facts-row strong{color:var(--ink);font-weight:500}
+.facts-meta{display:flex;gap:16px;font-size:11px;color:var(--ink3);padding-top:8px;border-top:1px solid var(--rule2)}
+.facts-meta strong{color:var(--ink)}
+.section-rule{display:flex;align-items:center;padding-bottom:8px;margin-bottom:12px;border-bottom:1px solid var(--rule)}
+.section-title{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.09em;color:var(--ink3)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px}
+@media(max-width:760px){.grid{grid-template-columns:1fr}}
+.panel{background:var(--surface);border:1px solid var(--rule);border-radius:var(--r3);overflow:hidden}
+.panel-hdr{padding:10px 14px;border-bottom:1px solid var(--rule2);font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.06em;color:var(--ink3)}
+.ev-item{padding:12px 14px;border-bottom:1px solid var(--rule2);font-size:12px}
+.ev-item:last-child{border-bottom:none}
+.ev-head{display:flex;align-items:flex-start;gap:8px;margin-bottom:6px}
+.dot{width:8px;height:8px;border-radius:50%;margin-top:5px;flex-shrink:0}
+.dot-red{background:var(--alert)}
+.dot-amber{background:var(--caution)}
+.dot-green{background:var(--confirm)}
+.ev-claim{font-weight:500;line-height:1.35}
+.ev-doc{font-size:11px;color:var(--ink3);line-height:1.45;margin-bottom:6px}
+.ev-hint{font-size:10px;color:var(--ink4);font-style:italic;margin-bottom:8px}
+.ev-req{font-size:10px;color:var(--caution);margin-bottom:8px;padding:6px 8px;background:var(--caution-faint);border-radius:var(--r)}
+.btn{font-size:11px;font-weight:500;padding:7px 12px;border-radius:var(--r);border:1px solid var(--accent);background:var(--accent-faint);color:var(--accent);cursor:pointer;font-family:var(--font);display:inline-flex;align-items:center;gap:5px}
+.btn:hover{opacity:.9}
+.btn-upload{border-color:var(--accent);background:var(--accent);color:#fff;width:100%;justify-content:center}
+.confirm{font-size:11px;color:var(--confirm);margin-top:6px;display:flex;align-items:center;gap:4px}
+.empty{padding:16px;font-size:12px;color:var(--ink4);text-align:center}
+.dropzone{border:2px dashed var(--rule);border-radius:var(--r3);padding:28px 16px;text-align:center;background:var(--surface);cursor:pointer;transition:border-color .15s,background .15s;margin-bottom:14px}
+.dropzone:hover,.dropzone.drag{border-color:var(--accent);background:var(--accent-faint)}
+.dropzone p{font-size:12px;color:var(--ink3);margin-top:6px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+@media(max-width:600px){.form-row{grid-template-columns:1fr}}
+label{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink4);display:block;margin-bottom:4px}
+input,select,textarea{width:100%;font-family:var(--font);font-size:12px;padding:8px 10px;border:1px solid var(--rule);border-radius:var(--r);background:var(--surface)}
+textarea{min-height:56px;resize:vertical}
+.btn-primary{background:var(--accent);color:#fff;border-color:var(--accent);padding:9px 16px;font-size:12px}
+.toast{position:fixed;bottom:20px;right:20px;background:var(--confirm);color:#fff;padding:10px 16px;border-radius:var(--r3);font-size:12px;display:none;z-index:200;box-shadow:0 4px 12px rgba(0,0,0,.15)}
+.toast.show{display:block}
+</style>
+</head>
+<body>
+<script src="shared_data.js"></script>
+<script src="shared_theme.js"></script>
+<script src="case_helpers.js"></script>
+<script src="case_filing.js?v=sessB1"></script>
+<script src="dio_core.js?v=s13a"></script>
+<script src="dio_territory.js?v=s13a"></script>
+<script src="dio_data.js?v=s13a"></script>
+<script src="dio_helpers.js?v=s13a"></script>
+
+<header class="top-bar">
+  <a href="dio.html" class="gn-mark"><i class="ti ti-archive"></i></a>
+  <a href="dio.html"><i class="ti ti-arrow-left"></i> Return to dashboard</a>
+  <div class="gn-user-btn" onclick="toggleUserMenu()"><div class="gn-av" id="nav-av">EH</div><span class="gn-user" id="nav-user">E. Hughes</span></div>
+</header>
+
+<div class="wrap" id="app"></div>
+<input type="file" id="point-file" style="display:none" accept="*/*">
+<input type="file" id="bulk-file" style="display:none" accept="*/*">
+<div class="toast" id="toast"></div>
+
+<script>
+var CASE_REF='', CASE_DATA=null, pendingPointId=null, FOCUSED_REQUEST='';
+
+function escapeHtml(v){return String(v==null?'':v).replace(/[&<>"']/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch];});}
+
+function showToast(msg){
+  var t=document.getElementById('toast');
+  t.textContent=msg;
+  t.classList.add('show');
+  setTimeout(function(){t.classList.remove('show');},3200);
+}
+
+function pointStatus(p){
+  var st=DIO.getEvidenceState(CASE_REF);
+  var ov=(st.pointOverrides||{})[String(p.n)];
+  if(ov)return ov;
+  return p.evidenceStatus;
+}
+
+function getUploadName(reqId){
+  var st=DIO.getEvidenceState(CASE_REF);
+  return st.uploads&&st.uploads[reqId]?st.uploads[reqId]:null;
+}
+
+function saveState(st){
+  DIO.saveEvidenceState(CASE_REF,st);
+}
+
+function loadState(){
+  var st=DIO.getEvidenceState(CASE_REF);
+  if(!st.evidenceRequests)st.evidenceRequests={};
+  if(!st.uploads)st.uploads={};
+  if(!st.audit)st.audit=[];
+  if(!st.pointOverrides)st.pointOverrides={};
+  return st;
+}
+
+function logAudit(text){
+  var st=loadState();
+  st.audit.unshift({t:text,time:new Date().toLocaleString('en-GB')});
+  st.audit=st.audit.slice(0,30);
+  saveState(st);
+}
+
+function requestIdForPoint(p){
+  var req=DIO.findRequestForPoint(CASE_REF,p);
+  if(req)return req.id;
+  return 'point-'+p.n;
+}
+
+function triggerUpload(pointN,reqId,label){
+  pendingPointId={pointN:pointN,reqId:reqId,label:label};
+  document.getElementById('point-file').click();
+}
+
+function handlePointUpload(e){
+  var f=e.target.files[0];
+  e.target.value='';
+  if(!f||!pendingPointId)return;
+  var st=loadState();
+  var id=pendingPointId.reqId;
+  if(!st.evidenceRequests[id]){
+    st.evidenceRequests[id]={
+      id:id,
+      name:pendingPointId.label,
+      status:'received',
+      requestedBy:'DIO filing',
+      requestedAt:new Date().toLocaleString('en-GB'),
+      requestedAtMs:Date.now(),
+      caseRef:CASE_REF
+    };
+  }else{
+    st.evidenceRequests[id].status='received';
+  }
+  st.uploads[id]=f.name;
+  st.pointOverrides[String(pendingPointId.pointN)]='green';
+  logAudit('Evidence filed: '+f.name+' — '+pendingPointId.label);
+  saveState(st);
+  if(typeof DIO!=='undefined'&&DIO.notifyEvidenceFilingComplete){
+    DIO.notifyEvidenceFilingComplete(CASE_REF,{
+      pointN:pendingPointId.pointN,
+      requestId:id,
+      label:pendingPointId.label,
+      fileName:f.name,
+      status:'green',
+      aliasRef:CASE_DATA&&CASE_DATA.ref
+    });
+  }
+  // Close the loop — mark request as received in case workspace
+  try{
+    var caseKey='dfa_evidence_'+CASE_REF;
+    var wsSt=JSON.parse(sessionStorage.getItem(caseKey)||'{}');
+    if(!wsSt.evidenceRequests)wsSt.evidenceRequests={};
+    Object.keys(wsSt.evidenceRequests).forEach(function(reqId){
+      if(wsSt.evidenceRequests[reqId].status==='pending'){
+        wsSt.evidenceRequests[reqId].status='received';
+        wsSt.evidenceRequests[reqId].receivedAt=new Date().toISOString();
+        wsSt.evidenceRequests[reqId].receivedBy='E. Hughes';
+      }
+    });
+    if(!wsSt.pullState)wsSt.pullState={};
+    if(!wsSt.uploads)wsSt.uploads={};
+    wsSt.pullState['montreal_conv']='done';
+    wsSt.uploads['montreal_conv']=f.name;
+    if(!wsSt.pointOverrides)wsSt.pointOverrides={};
+    if(pendingPointId)wsSt.pointOverrides[String(pendingPointId.pointN)]='green';
+    sessionStorage.setItem(caseKey,JSON.stringify(wsSt));
+  }catch(e){}
+  pendingPointId=null;
+  showToast('Filed — solicitor notified. Evidence pack updated.');
+  render();
+}
+
+function fileToCase(){
+  var docType=document.getElementById('doc-type').value;
+  var notes=document.getElementById('file-notes').value.trim();
+  var st=loadState();
+  var fname=st.pendingBulkFile||'evidence-upload.pdf';
+  var entryId='bulk-'+Date.now();
+  st.evidenceRequests[entryId]={
+    id:entryId,
+    name:docType+(notes?' — '+notes:''),
+    status:'received',
+    requestedBy:'DIO bulk filing',
+    requestedAt:new Date().toLocaleString('en-GB'),
+    requestedAtMs:Date.now(),
+    caseRef:CASE_REF
+  };
+  st.uploads[entryId]=fname;
+  logAudit('Bulk file to case: '+fname+' ('+docType+')');
+  delete st.pendingBulkFile;
+  saveState(st);
+  if(typeof DIO!=='undefined'&&DIO.notifyEvidenceFilingComplete){
+    DIO.notifyEvidenceFilingComplete(CASE_REF,{
+      requestId:entryId,
+      label:docType,
+      fileName:fname,
+      aliasRef:CASE_DATA&&CASE_DATA.ref
+    });
+  }
+  showToast('✓ Filed to case — '+fname);
+  document.getElementById('file-notes').value='';
+  render();
+}
+
+function setupDropzone(){
+  var dz=document.getElementById('dropzone');
+  var bulkInput=document.getElementById('bulk-file');
+  if(!dz)return;
+  dz.onclick=function(){bulkInput.click();};
+  dz.ondragover=function(ev){ev.preventDefault();dz.classList.add('drag');};
+  dz.ondragleave=function(){dz.classList.remove('drag');};
+  dz.ondrop=function(ev){
+    ev.preventDefault();
+    dz.classList.remove('drag');
+    if(ev.dataTransfer.files[0]){
+      var st=loadState();
+      st.pendingBulkFile=ev.dataTransfer.files[0].name;
+      saveState(st);
+      document.getElementById('bulk-filename').textContent=ev.dataTransfer.files[0].name;
+    }
+  };
+  bulkInput.onchange=function(ev){
+    var f=ev.target.files[0];
+    ev.target.value='';
+    if(!f)return;
+    var st=loadState();
+    st.pendingBulkFile=f.name;
+    saveState(st);
+    document.getElementById('bulk-filename').textContent=f.name;
+  };
+}
+
+function render(){
+  if(!DIO.ensureDIOAccess())return;
+  DIO.ensureDemoEvidenceRequests();
+  CASE_REF=new URLSearchParams(window.location.search).get('ref')||'';
+  CASE_REF=typeof normaliseCaseRef==='function'?normaliseCaseRef(CASE_REF):CASE_REF;
+  FOCUSED_REQUEST=new URLSearchParams(window.location.search).get('request')||'';
+  CASE_DATA=typeof getCase==='function'?getCase(CASE_REF):null;
+  /* Session A fix 1 · ALL_CASES (shared_data.js) doesn't carry every seeded
+     case — DEF-DEMO-ETNA-CASCADE, for one, was only ever seeded into
+     CaseFiling's store. Fall back to it so a case that exists there but not
+     in ALL_CASES still opens, same two-store pattern already used in
+     case_evidence_repository.js's getCaseFacts(). */
+  if(!CASE_DATA && typeof CaseFiling!=='undefined' && CaseFiling.getCase){
+    CASE_DATA=CaseFiling.getCase(CASE_REF);
+  }
+  if(!CASE_DATA){
+    document.getElementById('app').innerHTML='<p style="padding:24px;color:var(--ink3)">Case not found.</p>';
+    return;
+  }
+  var profile=DIO.getDIOProfile();
+  var isShellEngineCase = (CASE_DATA.source==='engine' || CASE_DATA.origin==='legal_engine') && CASE_DATA.locReady===false;
+  var caseJurisdiction = CASE_DATA.jurisdiction || 'england-wales';
+  if(caseJurisdiction!==profile.jurisdiction && !isShellEngineCase){
+    document.getElementById('app').innerHTML='<p style="padding:24px;color:var(--alert)">This case is outside your jurisdiction.</p>';
+    return;
+  }
+
+  var required=(CASE_DATA.points||[]).filter(function(p){
+    var s=pointStatus(p);
+    return s==='red'||s==='amber';
+  });
+  var onFile=(CASE_DATA.points||[]).filter(function(p){
+    return pointStatus(p)==='green';
+  });
+
+  var reqHtml=required.length?required.map(function(p){
+    var s=pointStatus(p);
+    var reqId=requestIdForPoint(p);
+    var st=DIO.getEvidenceState(CASE_REF);
+    var req=(st.evidenceRequests||{})[reqId]||DIO.findRequestForPoint(CASE_REF,p);
+    var uploaded=getUploadName(reqId)||(req&&getUploadName(req.id));
+    var reqNote=req&&(req.status==='pending'||req.status==='received')
+      ?'<div class="ev-req">Requested by '+escapeHtml(req.requestedBy||'Legal')+' · '+escapeHtml(req.requestedAt||'')+'</div>':'';
+    var confirm=uploaded?'<div class="confirm"><i class="ti ti-check"></i> '+escapeHtml(uploaded)+' on file</div>':'';
+    return '<div class="ev-item"><div class="ev-head"><span class="dot '+(s==='red'?'dot-red':'dot-amber')+'"></span>'
+      +'<div class="ev-claim">'+escapeHtml((DIO.dioFriendlyPointLabel?DIO.dioFriendlyPointLabel(p):p).claim || p.claim)+'</div></div>'
+      +'<div class="ev-doc">'+escapeHtml((DIO.dioFriendlyPointLabel?DIO.dioFriendlyPointLabel(p):p).evidenceDoc || p.evidenceDoc || '')+'</div>'
+      +reqNote
+      +'<button class="btn btn-upload" onclick="triggerUpload('+p.n+',\''+escapeHtml(reqId)+'\',\''+escapeHtml(p.claim).replace(/'/g,"\\'")+'\')"><i class="ti ti-upload"></i> Upload for: '+escapeHtml((p.evidenceDoc||p.claim).slice(0,40))+'</button>'
+      +confirm+'</div>';
+  }).join(''):'<div class="empty">All required evidence on file</div>';
+
+  var fileHtml=onFile.length?onFile.map(function(p){
+    var reqId=requestIdForPoint(p);
+    var doc=getUploadName(reqId)||(p.evidenceDoc||'').slice(0,50);
+    return '<div class="ev-item"><div class="ev-head"><span class="dot dot-green"></span>'
+      +'<div><div class="ev-claim">'+escapeHtml(p.claim)+'</div>'
+      +'<div class="ev-doc">'+escapeHtml(doc)+'</div></div></div></div>';
+  }).join(''):'<div class="empty">Nothing filed yet</div>';
+
+  var st=loadState();
+  var bulkName=st.pendingBulkFile||'';
+
+  document.getElementById('app').innerHTML=
+    (isShellEngineCase ? '<div style="background:linear-gradient(135deg,#F0EEFC 0%,#EEF2F8 100%);border:1px solid #D6CDF4;border-left:4px solid var(--purple,#5B4A9F);padding:14px 18px;margin-bottom:14px;border-radius:var(--r)"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><i class="ti ti-cpu" style="color:var(--purple,#5B4A9F);font-size:16px"></i><span style="font-size:10px;font-weight:700;color:var(--purple,#5B4A9F);text-transform:uppercase;letter-spacing:.08em">Engine shell case · no LOC yet</span></div><div style="font-size:13px;color:var(--text);line-height:1.55;margin-bottom:8px">The engine detected this disruption from operational data <strong>before</strong> any Letter of Claim arrived. Use this window to <strong>proactively build the evidence pack</strong> so the airline can respond within hours of the claim landing rather than days.</div><div style="font-size:11.5px;color:var(--text2);line-height:1.55"><strong>Engine assessment:</strong> '+escapeHtml(CASE_DATA.verdictTitle||CASE_DATA.classification||'Position pending')+(CASE_DATA.verdictSub?'<br><strong>Reasoning:</strong> '+escapeHtml(CASE_DATA.verdictSub):'')+'</div></div>' : '')
+    +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:12px;flex-wrap:wrap"><a href="dio.html" class="back-link"><i class="ti ti-arrow-left"></i> Return to dashboard</a><a href="evidence-workspace.html?case='+encodeURIComponent(CASE_REF)+'" class="back-link" style="background:var(--accent);color:#fff;padding:6px 12px;border-radius:var(--r);text-decoration:none;font-size:11px;font-weight:500"><i class="ti ti-arrows-maximize"></i> Open evidence workspace</a></div>'
+    + (FOCUSED_REQUEST ? (function(){
+        var st=DIO.getEvidenceState(CASE_REF);
+        var req=(st.evidenceRequests||{})[FOCUSED_REQUEST];
+        if(!req)return '';
+        return '<div style="background:#FFF9E7;border:1px solid #F5E6A8;border-left:4px solid var(--caution);padding:12px 16px;margin-bottom:12px;border-radius:var(--r)"><div style="font-size:9.5px;font-weight:700;color:var(--caution);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">Focused request from Legal</div><div style="font-size:13.5px;font-weight:500;color:var(--text);margin-bottom:4px">'+escapeHtml(req.name||'Evidence request')+'</div><div style="font-size:11px;color:var(--text2)">Requested by <strong>'+escapeHtml(req.requestedBy||'Legal')+'</strong> · '+escapeHtml(req.requestedAt||'')+' · this is the item to prioritise first</div></div>';
+      })() : '')
+    + '<div style="background:var(--accent-faint);border:1px solid var(--rule);border-radius:var(--r);padding:14px 18px;margin-bottom:14px;display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center"><div><div style="font-size:9.5px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px">Two ways to add evidence to this case</div><div style="font-size:12px;color:var(--text2);line-height:1.55"><strong>1. Upload a file</strong> you already have via the drop-zone below (traditional).<br><strong>2. Grab from the platform</strong> — open the evidence workspace to pull directly from weather, NOTAMs, news, tracks, disasters, ATFM etc. into this case. Every attached item lands in the case Repository <em>and</em> the case Documents tab automatically.</div></div><a href="evidence-workspace.html?case='+encodeURIComponent(CASE_REF)+(FOCUSED_REQUEST?'&request='+encodeURIComponent(FOCUSED_REQUEST):'')+'" style="background:var(--accent);color:#fff;padding:12px 20px;border-radius:var(--r);text-decoration:none;font-size:12.5px;font-weight:500;display:inline-flex;align-items:center;gap:6px;white-space:nowrap"><i class="ti ti-arrows-maximize"></i>Open evidence workspace</a></div>'
+    +'<div class="case-summary-strip" style="background:var(--surface2);border:1px solid var(--rule2);border-left:3px solid var(--accent);border-radius:var(--r);padding:12px 16px;margin-bottom:12px;font-size:12.5px;color:var(--text2);line-height:1.55">'
+      +'<div style="font-size:9.5px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-bottom:4px">Case summary</div>'
+      +escapeHtml(DIO.ensureCaseSummary ? DIO.ensureCaseSummary(CASE_DATA) : (CASE_DATA.caseSummary||CASE_DATA.triageNote||''))
+    +'</div>'
+    +'<div class="facts"><div class="facts-row">'
+    +'<span>Ref</span><strong>'+escapeHtml(CASE_DATA.ref)+'</strong>'
+    +'<span>Claimant</span><strong>'+escapeHtml(CASE_DATA.claimant)+'</strong>'
+    +'<span>Flight</span><strong>'+escapeHtml(CASE_DATA.flight||CASE_DATA.flightNum||'')+'</strong>'
+    +'<span>Route</span><strong>'+escapeHtml((CASE_DATA.dep||'')+' → '+(CASE_DATA.arr||''))+'</strong>'
+    +'<span>Date</span><strong>'+escapeHtml(CASE_DATA.flightDate||'')+'</strong>'
+    +'<span>Disruption</span><strong>'+escapeHtml(CASE_DATA.disruptionType||'')+'</strong>'
+    +'</div><div class="facts-meta">'
+    +'<span>Evidence readiness: <strong>'+(CASE_DATA.evidencePct||0)+'%</strong></span>'
+    +'<span>CPR deadline: <strong>'+(CASE_DATA.cprDaysLeft||'—')+' days</strong></span>'
+    +'</div></div>'
+
+    +'<div class="grid">'
+    +'<div class="panel"><div class="panel-hdr">Evidence required</div>'+reqHtml+'</div>'
+    +'<div class="panel"><div class="panel-hdr">Already on file</div>'+fileHtml+'</div>'
+    +'</div>'
+
+    +'<div class="panel" style="padding:14px">'
+    +'<div class="dropzone" id="dropzone"><i class="ti ti-cloud-upload" style="font-size:28px;color:var(--accent)"></i>'
+    +'<p>Drop evidence file here or click to browse</p>'
+    +'<p id="bulk-filename" style="color:var(--confirm);font-weight:500">'+(bulkName?escapeHtml(bulkName):'')+'</p></div>'
+    +'<div class="form-row"><div><input id="case-ref-field" value="'+escapeHtml(CASE_REF)+'" readonly></div>'
+    +'<div><select id="doc-type">'
+    +'<option>METAR</option><option>ATFM data</option><option>ADS-B track</option><option>Operational delay records system record</option>'
+    +'<option>NOTAM</option><option>Crew roster</option><option>Other</option></select></div></div>'
+    +'<div style="margin-bottom:12px"><label>Notes</label><textarea id="file-notes" placeholder="Optional context for this filing"></textarea></div>'
+    +'<button class="btn btn-primary" onclick="fileToCase()"><i class="ti ti-file-check"></i> File to case</button>'
+    +'</div>';
+
+  setupDropzone();
+}
+
+document.getElementById('point-file').addEventListener('change',handlePointUpload);
+window.addEventListener('load',render);
+</script>
+<script src="shared_user_switch.js"></script>
+
+<div id="user-modal" class="user-modal" onclick="if(event.target===this)closeMenu()">
+  <div class="user-dropdown"></div>
+</div>
+
+
+<!-- R2.E · DIO Raise-request modal (mirror of lawyer S3 flow) -->
+<style>
+.dio-req-fab{position:fixed;bottom:24px;right:24px;background:var(--accent,#1B3A6B);color:#fff;border:none;border-radius:24px;padding:12px 20px;font-size:13px;font-weight:600;font-family:var(--font,'Helvetica Neue',Arial,sans-serif);cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,0.25);display:inline-flex;align-items:center;gap:8px;z-index:400;transition:transform .1s,box-shadow .12s}
+.dio-req-fab:hover{transform:translateY(-1px);box-shadow:0 8px 22px rgba(0,0,0,0.3)}
+.dio-req-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:500;justify-content:center;align-items:flex-start;padding:60px 20px}
+.dio-req-overlay.open{display:flex}
+.dio-req-modal{background:#fff;border-radius:6px;width:100%;max-width:640px;overflow:hidden;box-shadow:0 12px 40px rgba(0,0,0,0.35);font-family:var(--font,'Helvetica Neue',Arial,sans-serif)}
+.dio-req-hdr{padding:14px 20px;border-bottom:1px solid #D8D8E0;display:flex;justify-content:space-between;align-items:center}
+.dio-req-title{font-family:'Georgia',serif;font-size:15px;font-weight:500;color:#1A1A2E}
+.dio-req-close{background:none;border:none;color:#6B6B80;cursor:pointer;font-size:16px}
+.dio-req-tabs{display:flex;border-bottom:1px solid #D8D8E0}
+.dio-req-tabs button{flex:1;padding:12px 16px;border:none;background:#fff;font-size:12px;color:#6B6B80;cursor:pointer;font-weight:500;font-family:inherit;border-bottom:2px solid transparent}
+.dio-req-tabs button.on{color:#1B3A6B;font-weight:600;border-bottom-color:#1B3A6B}
+.dio-req-body{padding:16px 20px}
+.dio-req-cat-list{max-height:280px;overflow-y:auto;border:1px solid #D8D8E0;border-radius:3px}
+.dio-req-cat-item{display:flex;align-items:center;gap:10px;padding:8px 12px;border-bottom:1px solid #EBEBF0;cursor:pointer;font-size:12px}
+.dio-req-cat-item:hover{background:#F7F7F9}
+.dio-req-cat-item:last-child{border-bottom:none}
+.dio-req-cat-item strong{color:#1A1A2E;display:block;margin-bottom:2px}
+.dio-req-cat-item span.src{color:#6B6B80;font-size:10.5px;font-family:'Courier New',monospace}
+.dio-req-note{font-size:11px;color:#6B6B80;margin-top:10px}
+.dio-req-freeform textarea{width:100%;min-height:100px;padding:10px 12px;border:1px solid #D8D8E0;border-radius:3px;font-family:inherit;font-size:12px;resize:vertical}
+.dio-req-freeform label{display:block;font-size:11px;color:#6B6B80;font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px}
+.dio-req-footer{padding:12px 20px;background:#F7F7F9;border-top:1px solid #D8D8E0;display:flex;justify-content:flex-end;gap:8px}
+.dio-req-btn{padding:8px 14px;border-radius:3px;font-size:12px;font-weight:500;font-family:inherit;cursor:pointer;border:1px solid transparent}
+.dio-req-btn.secondary{background:#fff;border-color:#D8D8E0;color:#2D2D44}
+.dio-req-btn.primary{background:#1B3A6B;color:#fff}
+</style>
+
+<button class="dio-req-fab" onclick="openDioReqModal()" title="Raise an evidence request (Quick tick-box or Freeform)">
+  <i class="ti ti-plus"></i> Raise request
+</button>
+
+<div id="dio-req-overlay" class="dio-req-overlay" onclick="if(event.target===this)closeDioReqModal()">
+  <div class="dio-req-modal">
+    <div class="dio-req-hdr">
+      <div class="dio-req-title">Raise evidence request · <span id="dio-req-case-ref" style="color:#6B6B80;font-weight:400"></span></div>
+      <button class="dio-req-close" onclick="closeDioReqModal()"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="dio-req-tabs">
+      <button id="dio-req-tab-quick" class="on" onclick="switchDioReqTab('quick')"><i class="ti ti-list-check"></i> Quick · pull from catalogue</button>
+      <button id="dio-req-tab-freeform" onclick="switchDioReqTab('freeform')"><i class="ti ti-pencil"></i> Freeform · specific document</button>
+    </div>
+    <div id="dio-req-panel-quick" class="dio-req-body">
+      <div class="dio-req-note" style="margin-bottom:10px">Tick items you need. Available items pull from the case Evidence Repository; missing items raise a targeted request. Ticked items land in the shared Requests forum for pickup.</div>
+      <div id="dio-req-cat-list" class="dio-req-cat-list"></div>
+    </div>
+    <div id="dio-req-panel-freeform" class="dio-req-body dio-req-freeform" style="display:none">
+      <label>Describe the document</label>
+      <textarea id="dio-req-freeform-text" placeholder="e.g. Cabin-crew statement forms + FRMS extract for HC 1184 crew, 14 March 2026"></textarea>
+      <div class="dio-req-note">Freeform requests fire straight into the Requests forum with an 'unassigned' status for another DIO or the current DIO to claim.</div>
+    </div>
+    <div class="dio-req-footer">
+      <button class="dio-req-btn secondary" onclick="closeDioReqModal()">Cancel</button>
+      <button class="dio-req-btn primary" id="dio-req-submit" onclick="submitDioReq()"><i class="ti ti-send"></i> Raise</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var CATALOGUE = [
+    {id:'metar',      label:'METAR / TAF observations',           source:'AviationWeather.gov'},
+    {id:'sigmet',     label:'SIGMET / AIRMET warnings',           source:'AviationWeather.gov'},
+    {id:'metoffice',  label:'Met Office synoptic chart · SIGWX',  source:'Met Office DataHub'},
+    {id:'notam',      label:'NOTAMs · airport / airspace',        source:'FAA + AutoRouter'},
+    {id:'atfm',       label:'Eurocontrol ATFM regulation',        source:'Eurocontrol NM'},
+    {id:'crco',       label:'Eurocontrol CRCO reference',         source:'Eurocontrol NM'},
+    {id:'oplog',      label:'Operational delay records (ATD/ATA)',source:'internal · ops-log'},
+    {id:'commander',  label:'Commander report + ACARS trace',     source:'internal · ACARS'},
+    {id:'crew',       label:'Crew FDP / roster records',          source:'internal · AIMS'},
+    {id:'article9',   label:'Article 9 duty-of-care vouchers',    source:'internal · MAX OPS'},
+    {id:'rerouting',  label:'Third-party rerouting evidence',     source:'internal · scheduling'},
+    {id:'strike',     label:'Third-party industrial-action notice',source:'DGAC / ENAC / news'},
+    {id:'news',       label:'Aviation Herald incident report',    source:'Aviation Herald'},
+    {id:'wildfire',   label:'Wildfire proximity data',            source:'NASA FIRMS / Copernicus'},
+    {id:'volcanic',   label:'Volcanic ash advisory',              source:'VAAC London / Toulouse'},
+    {id:'flight',     label:'Flight track (OpenSky)',             source:'OpenSky Network'},
+  ];
+  function renderCat(){
+    var host = document.getElementById('dio-req-cat-list');
+    if (!host) return;
+    host.innerHTML = CATALOGUE.map(function(it){
+      return '<label class="dio-req-cat-item">'+
+             '<input type="checkbox" class="dio-req-check" data-id="'+it.id+'" data-label="'+it.label+'" data-src="'+it.source+'">'+
+             '<span style="flex:1"><strong>'+it.label+'</strong><span class="src">'+it.source+'</span></span>'+
+             '</label>';
+    }).join('');
+  }
+  window.openDioReqModal = function(){
+    var ref = (typeof CASE_REF !== 'undefined') ? CASE_REF : '';
+    var refEl = document.getElementById('dio-req-case-ref');
+    if (refEl) refEl.textContent = ref;
+    document.getElementById('dio-req-overlay').classList.add('open');
+    renderCat();
+    switchDioReqTab('quick');
+  };
+  window.closeDioReqModal = function(){
+    document.getElementById('dio-req-overlay').classList.remove('open');
+  };
+  window.switchDioReqTab = function(which){
+    var q = document.getElementById('dio-req-tab-quick');
+    var f = document.getElementById('dio-req-tab-freeform');
+    var qp = document.getElementById('dio-req-panel-quick');
+    var fp = document.getElementById('dio-req-panel-freeform');
+    var sb = document.getElementById('dio-req-submit');
+    if (which === 'quick'){
+      q.classList.add('on'); f.classList.remove('on');
+      qp.style.display = ''; fp.style.display = 'none';
+      if (sb) sb.innerHTML = '<i class="ti ti-send"></i> Add to Requests forum';
+    } else {
+      f.classList.add('on'); q.classList.remove('on');
+      fp.style.display = ''; qp.style.display = 'none';
+      if (sb) sb.innerHTML = '<i class="ti ti-send"></i> Raise';
+    }
+  };
+  window.submitDioReq = function(){
+    var ref = (typeof CASE_REF !== 'undefined') ? CASE_REF : '';
+    if (!ref){ alert('No case reference — open a case first.'); return; }
+    var qp = document.getElementById('dio-req-panel-quick');
+    var quickMode = qp && qp.style.display !== 'none';
+    var items = [];
+    if (quickMode){
+      Array.prototype.forEach.call(document.querySelectorAll('.dio-req-check:checked'), function(c){
+        items.push({id:c.getAttribute('data-id'), label:c.getAttribute('data-label'), source:c.getAttribute('data-src')});
+      });
+      if (!items.length){ alert('Tick at least one item.'); return; }
+    } else {
+      var txt = document.getElementById('dio-req-freeform-text').value.trim();
+      if (!txt){ alert('Describe the document.'); return; }
+      items.push({id:'freeform-'+Date.now(), label:txt, source:'freeform'});
+    }
+    /* Write to the case's evidenceRequests store so the Requests forum picks them up */
+    try {
+      var uid = (typeof getActiveUser === 'function') ? getActiveUser() : 'EH';
+      var st = DIO.getEvidenceState(ref) || {};
+      st.evidenceRequests = st.evidenceRequests || {};
+      var now = Date.now();
+      items.forEach(function(it, i){
+        var reqId = it.id + '-' + now + '-' + i;
+        st.evidenceRequests[reqId] = {
+          id: reqId,
+          name: it.label,
+          status: 'pending',
+          caseRef: ref,
+          requestedBy: (typeof USERS !== 'undefined' && USERS[uid] ? USERS[uid].name : uid),
+          requestedAt: new Date().toLocaleString('en-GB'),
+          requestedAtMs: now,
+          slaDays: 3,
+          source: it.source,
+          origin: 'dio-raised'
+        };
+      });
+      DIO.saveEvidenceState(ref, st);
+      var label = quickMode ? (items.length + ' item' + (items.length===1?'':'s') + ' added to Requests forum') : 'Freeform request raised';
+      if (typeof showToast === 'function') showToast(label);
+      else alert(label);
+    } catch(e){
+      alert('Could not save request: '+e.message);
+    }
+    closeDioReqModal();
+    if (typeof render === 'function') render();
+  };
+})();
+</script>
+</body>
+</html>
