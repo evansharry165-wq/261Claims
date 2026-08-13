@@ -185,7 +185,7 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
 <script src="shared_data.js"></script>
 <script src="shared_theme.js"></script>
 <script src="defendable_evidence_reader.js?v=s9a"></script>
-<script src="nav.js"></script>
+<script src="nav.js?v=sessA4"></script>
 
 <script>
 (function(){
@@ -257,7 +257,15 @@ html,body{height:100%;font-family:var(--font);background:var(--surface2);color:v
   }
 
   function extractMetric(metar, key){
-    if (!metar) return null;
+    /* Session A fix 2 · this early-return was the only path in this function
+       that returned the bare value null instead of the '—' string every
+       other branch uses for "nothing to show" — when a tile's ICAO has no
+       matching METAR in the snapshot (common: this page defaults to 63
+       airports, the live feed rarely covers all of them), null got
+       string-concatenated straight into the DOM as the literal text "null".
+       Not a parsing bug — the parsing below already falls back to '—'
+       correctly when a METAR exists but a field doesn't match. */
+    if (!metar) return '—';
     var raw = (metar.rawOb || metar.raw || metar.rawText || metar.rawMETAR || '').toUpperCase();
     if (key === 'wind'){
       var m = raw.match(/\b(\d{3}|VRB)(\d{2,3})(?:G(\d{2,3}))?KT\b/);

@@ -1017,7 +1017,11 @@ function render(){
     +     '</div>'
     +   '</section>'
 
-    +   '<section class="widget w-4">'
+    /* Session A fix 5 · id added — the DIO "Cases" nav link redirects here
+       (dio.html#w-portfolio via cases.html's own DIO redirect), but nothing
+       on this page had that id, so the anchor silently did nothing. This
+       widget is the natural target: it's where "My cases" actually lives. */
+    +   '<section class="widget w-4" id="w-portfolio">'
     +     '<div class="widget-hdr">'
     +       '<div class="widget-title"><i class="ti ti-apps"></i>DIO tools</div>'
     +     '</div>'
@@ -1133,7 +1137,7 @@ function reloadFeed(){
   });
 }
 
-window.addEventListener('load', function(){
+function initDioPage(){
   render();
   /* B1 · Init disruption map after DOM has render()-ed the widget shell */
   setTimeout(function(){ try { initDisruptionMap(); } catch(e){ if(console) console.warn('map init failed:',e); } }, 60);
@@ -1145,7 +1149,21 @@ window.addEventListener('load', function(){
       if (el) el.scrollIntoView({behavior:'smooth',block:'start'});
     }, 120);
   }
-});
+}
+/* Session A fix 5 · this was solely window.addEventListener('load', ...) —
+   if the load event has already fired by the time this script executes
+   (readyState 'complete'), a listener registered after the fact never runs,
+   silently dropping both render() and the hash-scroll below with it. Content
+   still rendering elsewhere confirms 'load' does normally fire before this
+   point most of the time, but the hash-scroll specifically was found not
+   firing on repeated direct-navigation tests, consistent with this race.
+   Belt-and-braces: run immediately if the document is already loaded,
+   otherwise wait for 'load' as before. */
+if (document.readyState === 'complete') {
+  initDioPage();
+} else {
+  window.addEventListener('load', initDioPage);
+}
 </script>
 
 </body>

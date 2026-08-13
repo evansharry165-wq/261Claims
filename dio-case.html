@@ -75,6 +75,7 @@ textarea{min-height:56px;resize:vertical}
 <script src="shared_data.js"></script>
 <script src="shared_theme.js"></script>
 <script src="case_helpers.js"></script>
+<script src="case_filing.js?v=sessA1"></script>
 <script src="dio_core.js?v=s13a"></script>
 <script src="dio_territory.js?v=s13a"></script>
 <script src="dio_data.js?v=s13a"></script>
@@ -271,6 +272,14 @@ function render(){
   CASE_REF=typeof normaliseCaseRef==='function'?normaliseCaseRef(CASE_REF):CASE_REF;
   FOCUSED_REQUEST=new URLSearchParams(window.location.search).get('request')||'';
   CASE_DATA=typeof getCase==='function'?getCase(CASE_REF):null;
+  /* Session A fix 1 · ALL_CASES (shared_data.js) doesn't carry every seeded
+     case — DEF-DEMO-ETNA-CASCADE, for one, was only ever seeded into
+     CaseFiling's store. Fall back to it so a case that exists there but not
+     in ALL_CASES still opens, same two-store pattern already used in
+     case_evidence_repository.js's getCaseFacts(). */
+  if(!CASE_DATA && typeof CaseFiling!=='undefined' && CaseFiling.getCase){
+    CASE_DATA=CaseFiling.getCase(CASE_REF);
+  }
   if(!CASE_DATA){
     document.getElementById('app').innerHTML='<p style="padding:24px;color:var(--ink3)">Case not found.</p>';
     return;

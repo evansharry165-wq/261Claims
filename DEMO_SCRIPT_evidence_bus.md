@@ -21,13 +21,20 @@ sure which case a flight belongs to, you can just ask about the flight."*
 **2. Type `EZY4412` and `03/08/2026` into the query bar. Click Search.**
 Say: *"This is EasyJet's Geneva–Gatwick service on the 3rd of August."*
 
-**3. Two results appear.** Point at the top one first — **EVENT CONTEXT**,
-an Eurocontrol ATFM regulation for Catania airspace. Say: *"That's already
-useful — a live regulation citing volcanic ash. But watch the second one."*
+**3. Two results appear.** Point at the top one first — the **CASCADE MATCH**
+badge. Say: *"This is a METAR — a weather observation — for Catania. Catania
+isn't on this flight's route at all. GVA to LGW never goes near Sicily."*
 
-**4. Point at the CASCADE MATCH badge.**
-Say: *"This is a METAR — a weather observation — for Catania. Catania isn't
-on this flight's route at all. GVA to LGW never goes near Sicily."*
+**4. Point at the second result — EVENT CONTEXT**, a Eurocontrol ATFM
+regulation for Catania airspace. Say: *"That's supporting evidence too — a
+live regulation citing volcanic ash. But the cascade match above is the one
+that matters."*
+
+<!-- Session A fix 3: reworded to match the actual render order (confirmed
+live on repository.html — CASCADE MATCH always ranks above EVENT CONTEXT,
+correctly, since cascade outranks event-context in EvidenceCascadeMatch's
+tiering). The original text had this backwards, pointing "top" at EVENT
+CONTEXT — a presenter following it literally would point at the wrong card. -->
 
 Read the reason string aloud: *"Cascade match: aircraft G-EZAB — metar at
 LICC relates to a prior sector (EZY7822, 2026-07-31), same aircraft. Next

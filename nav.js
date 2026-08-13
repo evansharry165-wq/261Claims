@@ -93,7 +93,45 @@
     if(dd) dd.classList.toggle('open');
   }
 
+  /* Session A fix 4 · this component had two gaps that combined into
+     "stuck open on load": (1) no CSS anywhere defined a default-hidden /
+     .open-visible state for #user-dropdown, so it rendered visible the
+     moment renderNav() populated it, on every page load, class or no class;
+     (2) toggleUserDropdown() above was never wired to a click on
+     #gn-user-btn, so there was no functioning way to open it either. The
+     outside-click close handler further down already worked correctly at
+     the JS level (toggling the class off) — it just had no CSS to react to.
+     dio.html doesn't have this bug because it uses a different component
+     (#user-modal wrapping .user-dropdown, styled in that page's own inline
+     <style>) — this fix brings the evidence-*.html family's bare
+     #user-dropdown pattern up to the same working standard, in the one
+     shared file responsible for it, rather than patching 8 HTML files. */
+  function injectDropdownCss(){
+    if (document.getElementById('nav-dropdown-css')) return;
+    var s = document.createElement('style');
+    s.id = 'nav-dropdown-css';
+    s.textContent =
+      '.gn-right{position:relative}'+
+      '.user-dropdown{display:none;position:absolute;top:36px;right:0;background:var(--surface,#fff);border:1px solid var(--border,#D8D8E0);border-radius:6px;width:230px;box-shadow:0 4px 20px rgba(0,0,0,0.15);overflow:hidden;max-height:calc(100vh - 70px);overflow-y:auto;z-index:1000}'+
+      '.user-dropdown.open{display:block}'+
+      '.ud-section{padding:8px 14px 4px;font-size:9.5px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text3,#6B6B80)}'+
+      '.ud-item{display:flex;align-items:center;gap:10px;padding:9px 14px;cursor:pointer}'+
+      '.ud-item:hover,.ud-item.active{background:var(--accent-faint,#EEF2F8)}'+
+      '.ud-name{font-size:12px;font-weight:500;color:var(--text,#1A1A2E)}'+
+      '.ud-role{font-size:10px;color:var(--text3,#6B6B80)}'+
+      '.ud-tick{margin-left:auto;color:var(--confirm,#1A5C3A);font-size:14px}'+
+      '.ud-lang{padding:10px 14px;border-top:1px solid var(--border,#D8D8E0)}'+
+      '.ud-lang-label{font-size:9.5px;color:var(--text3,#6B6B80);margin-bottom:6px}'+
+      '.ud-lang-btns{display:flex;gap:6px}'+
+      '.ud-lang-btn{font-size:11px;padding:4px 8px;border:1px solid var(--border,#D8D8E0);border-radius:4px;background:var(--surface,#fff);cursor:pointer}'+
+      '.ud-lang-btn.active{background:var(--ink,#1A1A2E);color:#fff;border-color:var(--ink,#1A1A2E)}';
+    document.head.appendChild(s);
+  }
+  injectDropdownCss();
+
   document.addEventListener('click', function(e){
+    var toggleBtn = e.target.closest('#gn-user-btn');
+    if(toggleBtn){ toggleUserDropdown(); return; }
     var langBtn = e.target.closest('.ud-lang');
     if(langBtn && langBtn.dataset.lang){
       window.setLang(langBtn.dataset.lang);
