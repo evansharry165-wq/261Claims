@@ -1,0 +1,1170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DefendAble — DIO hub</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#1A1A2E;--ink2:#2D2D44;--ink3:#6B6B80;--ink4:#9B9BAA;
+  --rule:#D8D8E0;--rule2:#EBEBF0;
+  --surface:#FFFFFF;--surface2:#F7F7F9;--surface3:#F0F0F4;
+  --accent:#1B3A6B;--accent2:#254E91;--accent-faint:#EEF2F8;
+  --confirm:#1A5C3A;--confirm-faint:#EEF7F2;
+  --caution:#7A4E00;--caution-faint:#FDF4E3;
+  --alert:#8B1A1A;--alert-faint:#FBF0F0;
+  --teal:#0D6B5E;--teal-faint:#F0FAF8;
+  --purple:#5B4A9F;--purple-faint:#F0EEFC;
+  --navy:var(--ink);--blue:var(--accent2);
+  --red:var(--alert);--red-faint:var(--alert-faint);
+  --amber:var(--caution);--amber-faint:var(--caution-faint);
+  --green:var(--confirm);--green-faint:var(--confirm-faint);
+  --blue-text:var(--accent);--blue-faint:var(--accent-faint);
+  --border:var(--rule);--text:var(--ink);--text2:var(--ink2);--text3:var(--ink3);
+  --font:'Helvetica Neue','Arial',sans-serif;
+  --font-serif:'Georgia','Times New Roman',serif;
+  --mono:'Courier New',monospace;
+  --r:3px;--r2:4px;--r3:5px
+}
+html,body{min-height:100%;font-family:var(--font);background:var(--surface2);color:var(--text);font-size:14px}
+
+.global-nav{background:var(--navy);height:48px;display:flex;align-items:center;padding:0 20px;position:sticky;top:0;z-index:200}
+.gn-logo{display:flex;align-items:center;gap:8px;text-decoration:none;margin-right:20px}
+.gn-mark{width:28px;height:28px;background:var(--blue);border-radius:4px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px}
+.gn-name{font-size:14px;font-weight:500;color:#fff}
+.gn-links{display:flex;gap:2px;flex:1}
+.gn-link{display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r);font-size:12px;font-weight:500;color:rgba(255,255,255,0.5);text-decoration:none}
+.gn-link:hover{background:rgba(255,255,255,0.08);color:#fff}
+.gn-link.active{background:rgba(42,111,219,0.35);color:#fff}
+.gn-right{margin-left:8px}
+.gn-user-btn{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:20px;padding:3px 10px 3px 4px;cursor:pointer}
+.gn-av{width:24px;height:24px;border-radius:50%;background:#164E63;color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500}
+.gn-user{font-size:11px;color:rgba(255,255,255,0.85)}
+
+.page{max-width:1360px;margin:0 auto;padding:20px 24px 40px}
+
+/* ── Header ── */
+.page-header{background:linear-gradient(135deg,#F7F7F9 0%,#EEF2F8 100%);border:1px solid var(--border);border-radius:var(--r3);padding:20px 24px;margin-bottom:20px;display:grid;grid-template-columns:1fr auto;gap:20px;align-items:center}
+.greeting{font-size:24px;font-weight:400;color:var(--text);letter-spacing:-0.02em;margin-bottom:3px;font-family:var(--font-serif)}
+.greeting-sub{font-size:12px;color:var(--text3);line-height:1.55;margin-bottom:8px}
+.territory-badge{display:inline-flex;align-items:center;gap:6px;background:var(--teal-faint);color:var(--teal);padding:5px 11px;border-radius:20px;font-size:11px;font-weight:500}
+.stat-bar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;justify-content:flex-end}
+.stat-chip{font-size:11px;font-weight:500;padding:5px 11px;border-radius:3px;border:1px solid var(--rule);background:var(--surface);color:var(--text2);display:inline-flex;align-items:center;gap:5px;cursor:pointer;transition:background .12s,transform .05s,box-shadow .12s;text-decoration:none;font-family:var(--font)}
+.stat-chip:hover{background:var(--surface2);box-shadow:0 2px 4px rgba(0,0,0,0.05)}
+.stat-chip:active{transform:scale(0.98)}
+.stat-chip.urgent{background:var(--red-faint);border-color:#FECACA;color:var(--red)}
+.stat-chip.warn{background:var(--amber-faint);border-color:#FDE68A;color:var(--amber)}
+.stat-chip.new{background:var(--blue-faint);border-color:#BFDBFE;color:var(--blue-text)}
+.stat-chip.active{background:var(--green-faint);border-color:#BBF7D0;color:var(--green)}
+.stat-chip.teal{background:var(--teal-faint);border-color:#B7E4D8;color:var(--teal)}
+
+/* ── Widget grid ── */
+.widget-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}
+/* B1 · Disruption map · filter bar + chips + marker colours */
+.map-filter-bar{display:flex;flex-wrap:wrap;gap:6px;padding:10px 14px 12px;border-bottom:1px solid var(--rule2)}
+.map-chip{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:14px;border:1px solid var(--rule);background:var(--surface);color:var(--text2);font-size:11px;cursor:pointer;font-family:var(--font);font-weight:500;user-select:none;transition:opacity .12s,background .12s}
+.map-chip .map-chip-count{font-family:var(--mono);font-size:10px;font-weight:600;padding:1px 5px;border-radius:10px;background:var(--surface2);color:var(--text3)}
+.map-chip.on{background:var(--accent-faint);border-color:var(--accent);color:var(--accent)}
+.map-chip.on .map-chip-count{background:var(--accent);color:#fff}
+.map-chip.off{opacity:0.45}
+.map-chip .dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+.map-chip.weather .dot{background:#254E91}
+.map-chip.notam .dot{background:#7A4E00}
+.map-chip.atfm .dot{background:#1F5C68}
+.map-chip.strike .dot{background:#5B4A9F}
+.map-chip.wildfire .dot{background:#8B1A1A}
+.map-chip.disaster .dot{background:#4338CA}
+.map-chip.volcanic .dot{background:#7A4E00}
+.map-chip.news .dot{background:#1A5C3A}
+.leaflet-popup-content{font-family:var(--font);font-size:12px;line-height:1.45}
+.leaflet-popup-content .lp-kind{font-family:var(--mono);font-size:9.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--text3);margin-bottom:3px}
+.leaflet-popup-content .lp-title{font-weight:600;color:var(--text);margin-bottom:3px}
+.leaflet-popup-content .lp-meta{font-size:10.5px;color:var(--text3);font-family:var(--mono)}
+.widget{grid-column:span 12;background:var(--surface);border:1px solid var(--border);border-radius:var(--r3);overflow:hidden;display:flex;flex-direction:column;scroll-margin-top:70px}
+.widget.w-4{grid-column:span 12}
+.widget.w-6{grid-column:span 12}
+.widget.w-8{grid-column:span 12}
+@media(min-width:768px){
+  .widget.w-4{grid-column:span 6}
+  .widget.w-6{grid-column:span 6}
+  .widget.w-8{grid-column:span 8}
+}
+@media(min-width:1100px){
+  .widget.w-4{grid-column:span 4}
+  .widget.w-6{grid-column:span 6}
+  .widget.w-8{grid-column:span 8}
+}
+.widget-hdr{padding:12px 16px;border-bottom:1px solid var(--rule2);display:flex;justify-content:space-between;align-items:center;gap:8px;background:linear-gradient(180deg,var(--surface) 0%,var(--surface2) 100%)}
+.widget-title{font-family:var(--font-serif);font-size:15px;font-weight:400;color:var(--text);display:flex;align-items:center;gap:8px}
+.widget-title i{color:var(--accent);font-size:16px}
+.widget-title .badge{font-size:10px;font-weight:600;padding:2px 8px;border-radius:10px;background:var(--accent);color:#fff;font-family:var(--mono)}
+.widget-title .badge.urgent{background:var(--red)}
+.widget-title .badge.warn{background:var(--amber)}
+.widget-title .badge.zero{background:var(--rule2);color:var(--text3)}
+.widget-link{font-size:11px;color:var(--accent);text-decoration:none;display:inline-flex;align-items:center;gap:4px;cursor:pointer;background:none;border:none;font-family:var(--font);padding:4px 8px;border-radius:var(--r)}
+.widget-link:hover{background:var(--accent-faint)}
+.widget-link .spin{display:inline-block;width:11px;height:11px;border:1.5px solid var(--accent-faint);border-top-color:var(--accent);border-radius:50%;animation:dio-spin 0.7s linear infinite;vertical-align:middle}
+@keyframes dio-spin{to{transform:rotate(360deg)}}
+.widget-body{padding:14px 16px;flex:1}
+.widget-body.p0{padding:0}
+
+/* ── Priority alerts widget ── */
+.pri-alert{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--rule2);text-decoration:none;color:inherit}
+.pri-alert:last-child{border-bottom:none}
+.pri-alert:hover{background:var(--surface2)}
+.pri-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:6px}
+.pri-dot.red{background:var(--red)}.pri-dot.amber{background:var(--amber)}.pri-dot.blue{background:var(--accent)}
+.pri-body{flex:1;min-width:0}
+.pri-body .l{font-size:11.5px;color:var(--text);font-weight:500;line-height:1.4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pri-body .m{font-size:10.5px;color:var(--text3);margin-top:2px;font-family:var(--mono)}
+.pri-badge{font-size:9.5px;color:var(--text3);font-family:var(--mono);white-space:nowrap;flex-shrink:0;padding-top:2px}
+
+/* ── Engine intake widget ── */
+.eng-row{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid var(--rule2);cursor:pointer;text-decoration:none;color:inherit}
+.eng-row:last-child{border-bottom:none}
+.eng-row:hover{background:var(--surface2)}
+.eng-icon{width:26px;height:26px;border-radius:var(--r);background:var(--purple-faint);color:var(--purple);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}
+.eng-body{flex:1;min-width:0}
+.eng-title{font-size:11.5px;color:var(--text);font-weight:500;line-height:1.35;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.eng-meta{font-size:10px;color:var(--text3);font-family:var(--mono);margin-top:2px}
+.eng-cta{font-size:10px;color:var(--accent);white-space:nowrap;flex-shrink:0;padding-top:4px}
+
+/* ── Territory pulse widget ── */
+.pulse-metric{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:4px 0}
+.pm-cell{text-align:center;padding:12px 8px;background:var(--surface2);border-radius:var(--r);border:1px solid var(--rule2)}
+.pm-n{font-family:var(--font-serif);font-size:28px;font-weight:400;color:var(--text);line-height:1}
+.pm-l{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-top:6px}
+.pm-cell.hot{background:var(--red-faint);border-color:#FECACA}
+.pm-cell.hot .pm-n{color:var(--red)}
+.pm-cell.warm{background:var(--amber-faint);border-color:#FDE68A}
+.pm-cell.warm .pm-n{color:var(--amber)}
+.pm-cell.cool{background:var(--green-faint);border-color:#BBF7D0}
+.pm-cell.cool .pm-n{color:var(--green)}
+
+/* ── Territory panel (airports grid) ── */
+.territory-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;padding:14px 16px}
+.airport-chip{background:var(--surface2);border:1px solid var(--rule);border-radius:var(--r);padding:10px 12px;display:flex;flex-direction:column;gap:2px;cursor:pointer;transition:background .12s,border-color .12s;position:relative}
+.airport-chip:hover{background:var(--accent-faint);border-color:var(--accent)}
+.airport-chip .icao{font-family:var(--mono);font-size:13px;font-weight:600;color:var(--text)}
+.airport-chip .name{font-size:10.5px;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.airport-chip .case-badge{position:absolute;top:8px;right:8px;background:var(--accent);color:#fff;font-size:9px;font-weight:600;padding:1px 6px;border-radius:8px;font-family:var(--mono)}
+.airport-chip .case-badge.zero{background:var(--rule2);color:var(--text3)}
+.airport-chip.hot{border-color:var(--red);background:#FDF4F4}
+.airport-chip.hot .case-badge{background:var(--red)}
+.airport-chip.warm{border-color:var(--amber)}
+.airport-chip.warm .case-badge{background:var(--amber)}
+
+/* ── Live feed ── */
+.feed-list{max-height:480px;overflow-y:auto}
+.feed-item{padding:12px 16px;border-bottom:1px solid var(--rule2);border-left:3px solid var(--border);display:grid;grid-template-columns:1fr auto;gap:12px;align-items:flex-start;transition:background .1s}
+.feed-item:last-child{border-bottom:none}
+.feed-item:hover{background:var(--surface2)}
+.feed-item.severity-accident{border-left-color:var(--red)}
+.feed-item.severity-incident{border-left-color:var(--amber)}
+.feed-item.severity-event,.feed-item.severity-alert{border-left-color:var(--accent)}
+.feed-title{font-family:var(--font-serif);font-size:13.5px;font-weight:400;color:var(--text);line-height:1.35}
+.feed-title a{color:inherit;text-decoration:none}
+.feed-title a:hover{color:var(--accent)}
+.feed-meta{font-size:10.5px;color:var(--text3);margin-top:4px;display:flex;flex-wrap:wrap;gap:10px}
+.feed-src-chip{display:inline-block;padding:1px 7px;border-radius:8px;font-family:var(--mono);font-size:9.5px;font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.feed-src-herald{background:#F7EFDD;color:#7A4E00}
+.feed-src-simple{background:#EDEEF8;color:#4A4F87}
+.feed-src-gdacs{background:var(--red-faint);color:var(--red)}
+.feed-src-copernicus{background:var(--amber-faint);color:var(--amber)}
+.feed-desc{font-size:11px;color:var(--text2);margin-top:5px;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.feed-actions{display:flex;flex-direction:column;gap:5px;align-items:flex-end;flex-shrink:0}
+.feed-match-count{font-size:10px;color:var(--accent);font-weight:600;background:var(--accent-faint);padding:2px 7px;border-radius:8px;white-space:nowrap;font-family:var(--mono);cursor:pointer;border:none}
+.feed-match-count:hover{background:var(--accent);color:#fff}
+.feed-match-count.match-hit{background:var(--red-faint);color:var(--red)}
+.feed-match-count.match-hit:hover{background:var(--red);color:#fff}
+.feed-fetch-btn{font-size:10.5px;padding:5px 10px;background:var(--surface);border:1px solid var(--accent);color:var(--accent);border-radius:var(--r);cursor:pointer;font-family:var(--font);font-weight:500;white-space:nowrap;display:inline-flex;align-items:center;gap:4px}
+.feed-fetch-btn:hover{background:var(--accent);color:#fff}
+
+/* ── DIO tools launcher ── */
+.tools-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:14px 16px}
+.tool-tile{background:var(--surface2);border:1px solid var(--rule2);border-radius:var(--r);padding:12px 8px;text-decoration:none;color:var(--text2);text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px;transition:background .12s,border-color .12s,transform .05s}
+.tool-tile:hover{background:var(--accent-faint);border-color:var(--accent);color:var(--accent)}
+.tool-tile:active{transform:scale(0.97)}
+.tool-tile i{font-size:20px}
+.tool-tile .lbl{font-size:10.5px;font-weight:500;line-height:1.25}
+
+/* ── Communal request queue ── */
+.filter-bar{display:flex;gap:6px;padding:10px 14px;border-bottom:1px solid var(--rule2);background:var(--surface2);flex-wrap:wrap;align-items:center}
+.filter-chip{font-size:11px;padding:5px 11px;border-radius:20px;border:1px solid var(--border);background:var(--surface);cursor:pointer;font-family:var(--font);color:var(--text2)}
+.filter-chip.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+.filter-chip:hover:not(.active){background:var(--surface3)}
+.req-table{width:100%;border-collapse:collapse;font-size:11.5px}
+.req-table thead th{background:var(--surface2);text-align:left;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);padding:9px 14px;border-bottom:1px solid var(--rule)}
+.req-table tbody td{padding:11px 14px;border-bottom:1px solid var(--rule2);vertical-align:middle}
+.req-table tbody tr{cursor:pointer;transition:background .1s}
+.req-table tbody tr:hover{background:var(--surface2)}
+.req-table tbody tr.overdue td:first-child{border-left:3px solid var(--red)}
+.req-table tbody tr.warn td:first-child{border-left:3px solid var(--amber)}
+.req-name{font-weight:500;color:var(--text)}
+.req-caseref{font-family:var(--mono);font-size:10px;color:var(--text3);margin-top:2px}
+.req-jur-chip{font-size:9.5px;font-weight:600;padding:2px 7px;border-radius:8px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.04em;display:inline-block}
+.req-jur-uk{background:#E4EEF2;color:#1F5C68}
+.req-jur-fr{background:#F0EEFC;color:#5B4A9F}
+.req-jur-es{background:#FDF4E3;color:#7A4E00}
+.req-age{font-family:var(--mono);font-size:10.5px;color:var(--text3);text-align:right;white-space:nowrap}
+.req-age.warn{color:var(--amber);font-weight:600}
+.req-age.overdue{color:var(--red);font-weight:600}
+.req-cpr{font-family:var(--mono);font-size:10.5px}
+.req-cpr.tight{color:var(--red);font-weight:600}
+.req-cpr.warn{color:var(--amber);font-weight:600}
+.req-cta{font-size:10.5px;padding:5px 12px;border-radius:var(--r);border:1px solid var(--accent);background:var(--surface);color:var(--accent);cursor:pointer;font-family:var(--font);font-weight:500;text-decoration:none;display:inline-flex;align-items:center;gap:4px}
+.req-cta:hover{background:var(--accent);color:#fff}
+
+/* ── Portfolio matrix ── */
+.matrix-scroll{overflow-x:auto;max-height:520px}
+.matrix-table{width:100%;border-collapse:collapse;font-size:11px}
+.matrix-table thead th{background:var(--surface2);text-align:left;font-size:9.5px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--text3);padding:8px 10px;border-bottom:1px solid var(--rule);white-space:nowrap;position:sticky;top:0;z-index:1}
+.matrix-table thead th.sort{cursor:pointer;user-select:none}
+.matrix-table thead th.sort:hover{color:var(--accent)}
+.matrix-table thead th.sort.sorted{color:var(--accent)}
+.matrix-table tbody td{padding:8px 10px;border-bottom:1px solid var(--rule2);vertical-align:middle;font-size:11px}
+.matrix-table tbody tr{cursor:pointer;transition:background .1s}
+.matrix-table tbody tr:hover{background:var(--accent-faint)}
+.matrix-table td.mono{font-family:var(--mono);font-size:10.5px;color:var(--text3)}
+.matrix-table .route{font-family:var(--mono);font-size:10.5px;color:var(--text2)}
+.pct-bar{width:60px;height:6px;background:var(--rule2);border-radius:3px;overflow:hidden;display:inline-block;vertical-align:middle}
+.pct-bar .fill{height:100%;background:var(--green);transition:width .3s}
+.pct-bar .fill.warn{background:var(--amber)}
+.pct-bar .fill.red{background:var(--red)}
+.matrix-src-chip{display:inline-block;padding:1px 5px;border-radius:8px;font-family:var(--mono);font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.03em;margin:1px 2px}
+.matrix-src-chip.hit{background:var(--green-faint);color:var(--green)}
+.matrix-src-chip.miss{background:var(--surface3);color:var(--text3)}
+.matrix-src-chip.loading{background:var(--accent-faint);color:var(--accent)}
+.matrix-stage-chip{font-size:9px;font-weight:600;padding:2px 6px;border-radius:2px;font-family:var(--mono);text-transform:uppercase}
+.stg-inbox{background:var(--surface3);color:var(--text3)}
+.stg-triage{background:#EDEEF8;color:#4A4F87}
+.stg-cpr{background:var(--caution-faint);color:var(--caution)}
+.stg-evidence{background:var(--accent-faint);color:var(--accent)}
+.stg-drafting{background:#F0EEFC;color:#5B4A9F}
+.stg-defence{background:#FDF4E3;color:#7A4E00}
+.gap-badge{display:inline-block;padding:2px 8px;border-radius:10px;font-family:var(--mono);font-size:10px;font-weight:600}
+.gap-badge.low{background:var(--green-faint);color:var(--green)}
+.gap-badge.medium{background:var(--amber-faint);color:var(--amber)}
+.gap-badge.high{background:var(--red-faint);color:var(--red)}
+.src-mini-link{color:var(--accent);text-decoration:none;font-size:10px;margin-left:6px}
+.src-mini-link:hover{text-decoration:underline}
+
+/* ── Recent activity ── */
+.act-item{padding:9px 0;border-bottom:1px solid var(--rule2);display:grid;grid-template-columns:6px 1fr auto;gap:10px;align-items:flex-start;font-size:11px}
+.act-item:last-child{border-bottom:none}
+.act-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);margin-top:6px}
+.act-dot.evidence{background:var(--green)}
+.act-dot.stage{background:var(--amber)}
+.act-dot.create{background:var(--accent)}
+.act-dot.ai{background:var(--purple)}
+.act-body{min-width:0}
+.act-text{color:var(--text);line-height:1.4}
+.act-meta{font-size:10px;color:var(--text3);margin-top:2px;font-family:var(--mono)}
+.act-time{font-size:10px;color:var(--text3);font-family:var(--mono);white-space:nowrap;padding-top:2px}
+
+.empty-panel{padding:26px 18px;text-align:center;color:var(--text3);font-size:11.5px}
+.empty-panel i{display:block;font-size:22px;color:var(--rule);margin-bottom:8px}
+
+/* ── Modal ── */
+.dio-modal-back{position:fixed;inset:0;background:rgba(26,26,46,0.45);z-index:900;display:flex;align-items:center;justify-content:center;padding:20px}
+.dio-modal{background:var(--surface);border:1px solid var(--border);border-radius:4px;max-width:720px;width:100%;max-height:88vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 12px 40px rgba(0,0,0,0.24)}
+.dio-modal-hdr{padding:16px 22px;border-bottom:1px solid var(--rule2);background:linear-gradient(180deg,var(--surface) 0%,var(--surface2) 100%)}
+.dio-modal-hdr h3{font-family:var(--font-serif);font-size:18px;font-weight:400;margin:0 0 4px}
+.dio-modal-hdr p{margin:0;font-size:12px;color:var(--text3)}
+.dio-modal-body{padding:0;overflow-y:auto;flex:1}
+.dio-modal-ftr{padding:12px 22px;border-top:1px solid var(--rule2);display:flex;justify-content:space-between;gap:10px;align-items:center;background:var(--surface2)}
+.dio-btn{font-size:12px;padding:8px 16px;background:var(--accent);color:#fff;border:none;border-radius:3px;cursor:pointer;font-weight:500;font-family:var(--font);display:inline-flex;align-items:center;gap:6px}
+.dio-btn:hover{background:var(--ink)}
+.dio-btn.secondary{background:var(--surface);color:var(--text2);border:1px solid var(--border)}
+.dio-btn.secondary:hover{background:var(--surface3)}
+.airport-modal-case{padding:12px 22px;border-bottom:1px solid var(--rule2);display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;cursor:pointer;transition:background .1s}
+.airport-modal-case:hover{background:var(--surface2)}
+.amc-ref{font-family:var(--mono);font-size:10.5px;color:var(--text3)}
+.amc-name{font-size:12.5px;color:var(--text);font-weight:500;margin-top:2px}
+.amc-meta{font-size:10.5px;color:var(--text3);margin-top:3px;display:flex;gap:10px;flex-wrap:wrap}
+
+.toast{position:fixed;bottom:20px;right:20px;background:var(--ink);color:#fff;padding:12px 18px;border-radius:4px;box-shadow:0 8px 24px rgba(0,0,0,0.3);z-index:1000;font-size:12px;max-width:420px;line-height:1.5;transition:opacity .4s}
+.toast.ok{background:var(--confirm)}
+.toast.err{background:var(--alert)}
+
+/* User modal */
+.user-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.3);z-index:500;justify-content:flex-end;padding:52px 20px 0}
+.user-modal.open{display:flex}
+.user-dropdown{background:var(--surface);border:1px solid var(--rule);border-radius:var(--r3);width:240px;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,0.1)}
+.ud-header{padding:10px 14px;border-bottom:1px solid var(--rule);font-size:10px;text-transform:uppercase;color:var(--text3)}
+.ud-item{display:flex;align-items:center;gap:10px;padding:9px 14px;cursor:pointer}
+.ud-item:hover,.ud-item.current{background:var(--accent-faint)}
+.ud-av{width:28px;height:28px;border-radius:50%;background:#164E63;color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px}
+.ud-name{font-size:12px;font-weight:500}
+.ud-role{font-size:10px;color:var(--text3)}
+.ud-tick{margin-left:auto;color:var(--confirm);display:none}
+.ud-item.current .ud-tick{display:block}
+.filter-chip{cursor:pointer}
+.req-status-pill{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:10px;font-size:10.5px;font-weight:600;font-family:var(--mono);text-transform:uppercase;letter-spacing:.04em}
+.req-status-dot{display:inline-block;width:8px;height:8px;border-radius:50%}
+.req-status-pill.req-status-unassigned{background:var(--surface3);color:var(--text3)}
+.req-status-dot.req-status-unassigned{background:var(--text4,#9B9BAA)}
+.req-status-pill.req-status-working{background:var(--caution-faint,#FDF4E3);color:var(--caution,#7A4E00)}
+.req-status-dot.req-status-working{background:var(--caution,#7A4E00)}
+.req-status-pill.req-status-worked{background:var(--confirm-faint,#EEF7F2);color:var(--confirm,#1A5C3A)}
+.req-status-dot.req-status-worked{background:var(--confirm,#1A5C3A)}
+
+/* R2.BC · Airport pin + tooltip */
+.airport-pin{background:transparent;border:none}
+.airport-pin-inner{position:relative;padding:3px 8px 3px 6px;border-radius:12px;font-family:var(--mono);font-size:10px;font-weight:600;color:#fff;box-shadow:0 1px 3px rgba(0,0,0,0.3);white-space:nowrap;display:inline-flex;align-items:center;gap:4px;border:1.5px solid #fff}
+.airport-pin-iata{letter-spacing:.02em}
+.airport-pin-badge{background:rgba(0,0,0,0.35);border-radius:8px;padding:1px 5px;font-size:9px;margin-left:2px}
+.airport-tt{background:rgba(26,26,46,0.96)!important;color:#fff!important;border:none!important;border-radius:4px!important;box-shadow:0 4px 14px rgba(0,0,0,0.35)!important;padding:8px 10px!important;font-family:var(--font)!important;max-width:240px}
+.airport-tt::before{border-top-color:rgba(26,26,46,0.96)!important}
+.airport-tt-name{font-family:var(--mono);font-size:11px;font-weight:700;color:#fff;margin-bottom:6px;letter-spacing:.04em;padding-bottom:4px;border-bottom:1px solid rgba(255,255,255,0.15)}
+.airport-tt-section{margin-top:6px;font-size:11px}
+.airport-tt-section strong{color:#EEF2F8;font-weight:600;font-size:10.5px;display:block;margin-bottom:3px}
+.airport-tt-item{font-size:10.5px;color:rgba(255,255,255,0.85);line-height:1.4;margin-left:2px}
+.airport-tt-more{font-size:10px;color:rgba(255,255,255,0.55);margin-top:2px;font-style:italic}
+.airport-tt-quiet{font-size:10.5px;color:rgba(255,255,255,0.55);font-style:italic}
+</style>
+</head>
+<body>
+<script src="shared_data.js"></script>
+<script src="shared_theme.js"></script>
+<script src="case_helpers.js"></script>
+<script src="case_filing.js"></script>
+<script src="work_dashboard.js"></script>
+<script src="defendable_evidence_reader.js?v=s13a"></script>
+<script src="case_audit_trail.js?v=s13a"></script>
+<script src="case_evidence_repository.js?v=s13a"></script>
+<script src="case_evidence_fetch_trigger.js?v=s13a"></script>
+<script src="dio_core.js?v=s13a"></script>
+<script src="dio_territory.js?v=s13a"></script>
+<script src="dio_data.js?v=s13a"></script>
+<script src="dio_helpers.js?v=s13a"></script>
+<script src="flight_data.js"></script>
+
+<nav class="global-nav">
+  <a href="dio.html" class="gn-logo"><div class="gn-mark"><i class="ti ti-archive"></i></div><span class="gn-name">DefendAble DIO</span></a>
+  <div class="gn-links" id="gn-links"></div>
+  <div class="gn-right"><div class="gn-user-btn" id="gn-user-btn"><div class="gn-av" id="gn-av">EH</div><span class="gn-user" id="gn-username">E. Hughes</span></div></div>
+</nav>
+
+<div class="page" id="page"></div>
+
+<div class="user-modal" id="user-modal" onclick="closeUserMenu(event)"><div class="user-dropdown" id="user-dropdown" onclick="event.stopPropagation()"></div></div>
+
+<script src="shared_nav.js"></script>
+<script src="shared_user_switch.js"></script>
+
+<script>
+function escapeHtml(v){return String(v==null?'':v).replace(/[&<>"']/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch];});}
+function toggleUserMenu(){var m=document.getElementById('user-modal');if(m)m.classList.toggle('open');}
+function closeUserMenu(e){if(e.target.id==='user-modal')document.getElementById('user-modal').classList.remove('open');}
+function scrollToZone(id){var el=document.getElementById(id);if(el)el.scrollIntoView({behavior:'smooth',block:'start'});}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   R2.BC · Territory-shaded disruption map for the DIO homepage
+   ───────────────────────────────────────────────────────────────────────
+   Base: Leaflet + OpenStreetMap tiles
+   Territory: coloured polygon overlay for the DIO's countries (UK+IE / FR / ES+PT)
+   Airport pins: every airport in the DIO's territory, colour by workload,
+     count badge showing (open cases + live disruptions) touching that airport
+   Event overlay: 8 disruption types on top, per-type filter chips at header
+   Hover expansion: airport tooltip shows case list + linked disruptions
+   Structured for FR24 API plug-in: EVENT_ADAPTERS.fr24() is the seam
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* Approximate country polygons (simplified bounding hulls — good enough for
+   territory-shading visual; real GeoJSON would replace at build time). */
+var COUNTRY_POLYGONS = {
+  GB: [[[49.9,-6.5],[49.9,2.0],[55.9,1.9],[58.7,-2.4],[58.9,-6.5],[54.9,-8.9],[52.0,-5.6]]],
+  IE: [[[51.4,-10.6],[55.4,-8.2],[55.3,-6.0],[51.4,-6.0],[51.4,-10.6]]],
+  FR: [[[42.3,-1.8],[42.6,3.5],[43.5,7.9],[46.7,7.3],[49.0,8.2],[51.1,2.1],[48.9,-1.3],[46.2,-1.9],[43.4,-1.8]]],
+  ES: [[[36.0,-6.4],[36.7,-2.2],[38.9,-0.7],[40.9,3.2],[42.4,3.3],[43.5,-1.8],[43.8,-9.3],[41.9,-9.4],[37.2,-7.4]]],
+  PT: [[[37.0,-8.9],[41.9,-8.9],[41.8,-6.2],[37.2,-7.4]]],
+};
+
+/* Airport coordinates for every ICAO in TERRITORY_MAP */
+var AIRPORT_COORDS = {
+  /* UK+IE */
+  EGLL:[51.470,-0.454], EGKK:[51.148,-0.190], EGSS:[51.885,0.235], EGGW:[51.874,-0.368],
+  EGLC:[51.505,0.055], EGCC:[53.354,-2.275], EGPH:[55.950,-3.362], EGPF:[55.872,-4.433],
+  EGGD:[51.383,-2.719], EGBB:[52.454,-1.748], EGAA:[54.657,-6.216], EGNX:[52.831,-1.328], EIDW:[53.421,-6.270],
+  /* France */
+  LFPG:[49.010,2.548], LFPO:[48.723,2.379], LFMN:[43.665,7.215], LFML:[43.436,5.215],
+  LFLL:[45.726,5.091], LFBO:[43.629,1.364], LFBD:[44.828,-0.716],
+  /* Spain + Portugal */
+  LEMD:[40.494,-3.567], LEBL:[41.297,2.078], LEPA:[39.552,2.738], LEAL:[38.282,-0.558],
+  LEIB:[38.873,1.373], LEMG:[36.675,-4.499], GCLP:[27.932,-15.386], GCTS:[28.045,-16.573],
+  LPPT:[38.774,-9.134], LPPR:[41.248,-8.681]
+};
+
+/* Seed data — DEFERRED to FR24 API once wired.  Same shape both directions. */
+var DISRUPTION_SEED = [
+  {kind:'weather',  lat:51.47, lon:-0.46, title:'CB thunderstorm activity · LGW', meta:'METAR TSRA · Aviation Weather', when:'today 14:00Z', icao:'EGKK'},
+  {kind:'weather',  lat:53.35, lon:-2.28, title:'Low visibility procedures · MAN', meta:'METAR EGCC 0400 FG', when:'today 07:00Z', icao:'EGCC'},
+  {kind:'weather',  lat:50.03, lon:8.56,  title:'Windshear reports · FRA', meta:'AIRMET', when:'today 11:00Z'},
+  {kind:'notam',    lat:41.30, lon:2.08,  title:'Runway 07L closed · BCN', meta:'NOTAM A1245/26 · 08-14:00Z', when:'today', icao:'LEBL'},
+  {kind:'notam',    lat:53.42, lon:-6.27, title:'ILS 10R out of service · DUB', meta:'NOTAM A0432/26', when:'today', icao:'EIDW'},
+  {kind:'atfm',     lat:41.80, lon:12.25, title:'ATFM regulation · Rome FIR', meta:'LIRR30A · weather', when:'today 12:00-18:00Z'},
+  {kind:'atfm',     lat:48.72, lon:2.38,  title:'Slot restrictions · Paris TMA', meta:'LFPR20A · staffing', when:'today 15:00-19:00Z', icao:'LFPO'},
+  {kind:'strike',   lat:41.29, lon:2.08,  title:'Vueling cabin-crew strike day 1', meta:'SEPLA/USO', when:'01-05 Aug', icao:'LEBL'},
+  {kind:'strike',   lat:45.63, lon:8.72,  title:'Italian ATC 4-hour strike', meta:'ENAC 12:00-16:00Z', when:'today'},
+  {kind:'wildfire', lat:37.63, lon:14.02, title:'Etna region wildfire', meta:'NASA FIRMS · high confidence', when:'today'},
+  {kind:'wildfire', lat:40.65, lon:22.94, title:'Wildfire near LGTS', meta:'Copernicus EFFIS · active', when:'today'},
+  {kind:'disaster', lat:38.72, lon:-9.14, title:'Flash floods · Lisbon region', meta:'GDACS · orange alert', when:'today', icao:'LPPT'},
+  {kind:'volcanic', lat:37.75, lon:15.00, title:'Etna VAAC advisory', meta:'Toulouse VAAC · ash to FL180', when:'today'},
+  {kind:'volcanic', lat:63.63, lon:-19.05, title:'Katla precursor activity', meta:'London VAAC monitoring', when:'today'},
+  {kind:'news',     lat:51.15, lon:-0.19, title:'Aviation Herald · LGW ground stop', meta:'avherald.com · 45 min hold', when:'today 09:30Z', icao:'EGKK'},
+];
+
+/* Structured seam for FR24 API integration (future).  Return the same
+   {kind,lat,lon,title,meta,when,icao} shape so the map render code
+   doesn't care about the data provenance. */
+var EVENT_ADAPTERS = {
+  seed: function(){ return Promise.resolve(DISRUPTION_SEED); },
+  fr24: function(){
+    /* TODO · when FR24 API creds are wired, fetch flights + disruptions and map to shape above */
+    return Promise.resolve([]);
+  }
+};
+
+var DISRUPTION_KINDS = [
+  {id:'weather',  label:'Weather',     colour:'#254E91'},
+  {id:'notam',    label:'NOTAMs',      colour:'#7A4E00'},
+  {id:'atfm',     label:'ATFM',        colour:'#1F5C68'},
+  {id:'strike',   label:'Strikes',     colour:'#5B4A9F'},
+  {id:'wildfire', label:'Wildfires',   colour:'#8B1A1A'},
+  {id:'disaster', label:'Disasters',   colour:'#4338CA'},
+  {id:'volcanic', label:'Volcanic',    colour:'#7A4E00'},
+  {id:'news',     label:'Incidents',   colour:'#1A5C3A'},
+];
+
+var mapState = { map:null, layersByKind:{}, activeKinds:{}, airportMarkers:{}, territoryPolygon:null };
+
+function initDisruptionMap(){
+  if (mapState.map) return;
+  if (typeof L === 'undefined') return;
+
+  var profile = DIOCore.getDIOProfile();
+  var territory = DIOTerritory.getTerritory(profile.uid);
+  var centre = territory.short_label === 'UK + IE' ? [54.5,-3.5]
+             : territory.short_label === 'FR'      ? [46.5, 2.5]
+             : territory.short_label === 'ES'      ? [40.0,-3.5]
+             : [48, 5];
+
+  mapState.map = L.map('disruption-map', {zoomControl:true, worldCopyJump:true, minZoom:3, maxZoom:10}).setView(centre, 5);
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {attribution:'&copy; OpenStreetMap', maxZoom:19}).addTo(mapState.map);
+
+  /* 1 · Territory polygon overlay — shade the DIO's countries */
+  var territoryColour = territory.short_label === 'UK + IE' ? '#1B3A6B'
+                     : territory.short_label === 'FR'      ? '#4338CA'
+                     : territory.short_label === 'ES'      ? '#8B1A1A'
+                     : '#6B6B80';
+  var polyLayers = [];
+  territory.countries_iso.forEach(function(iso){
+    var polys = COUNTRY_POLYGONS[iso];
+    if (!polys) return;
+    polys.forEach(function(coords){
+      var poly = L.polygon(coords, {
+        color: territoryColour, weight: 2, fillColor: territoryColour,
+        fillOpacity: 0.10, opacity: 0.35, interactive: false
+      });
+      poly.addTo(mapState.map);
+      polyLayers.push(poly);
+    });
+  });
+  mapState.territoryPolygon = polyLayers;
+
+  /* 2 · Load events (via EVENT_ADAPTERS.seed for now — swap for .fr24 later) */
+  EVENT_ADAPTERS.seed().then(function(events){
+    /* Group events by kind + by nearest airport */
+    var byKind = {}; DISRUPTION_KINDS.forEach(function(k){ byKind[k.id] = []; mapState.activeKinds[k.id] = true; });
+    events.forEach(function(e){ if (byKind[e.kind]) byKind[e.kind].push(e); });
+
+    DISRUPTION_KINDS.forEach(function(k){
+      var lg = L.layerGroup();
+      byKind[k.id].forEach(function(e){
+        var marker = L.circleMarker([e.lat, e.lon], {
+          radius: 8, color: '#fff', weight: 2, fillColor: k.colour, fillOpacity: 0.85
+        });
+        marker.bindPopup(
+          '<div class="lp-kind">'+escapeHtml(k.label)+'</div>'+
+          '<div class="lp-title">'+escapeHtml(e.title)+'</div>'+
+          '<div>'+escapeHtml(e.meta)+'</div>'+
+          '<div class="lp-meta">'+escapeHtml(e.when)+'</div>'
+        );
+        lg.addLayer(marker);
+      });
+      lg.addTo(mapState.map);
+      mapState.layersByKind[k.id] = lg;
+    });
+
+    /* 3 · Airport pins — count open cases + related disruptions per airport */
+    var casesByAirport = {};
+    try {
+      var allCases = DIOTerritory.casesInTerritory(profile.uid);
+      allCases.forEach(function(c){
+        [c.dep, c.arr].forEach(function(iata){
+          if (!iata) return;
+          /* Map IATA back to ICAO via territory */
+          var idx = territory.airports_iata.indexOf(iata);
+          if (idx < 0) return;
+          var icao = territory.airports_icao[idx];
+          casesByAirport[icao] = casesByAirport[icao] || [];
+          casesByAirport[icao].push(c);
+        });
+      });
+    } catch(e){}
+
+    territory.airports_icao.forEach(function(icao, i){
+      var iata = territory.airports_iata[i];
+      var coord = AIRPORT_COORDS[icao];
+      if (!coord) return;
+      var caseCount = (casesByAirport[icao] || []).length;
+      var eventCount = events.filter(function(e){ return e.icao === icao; }).length;
+      var workload = caseCount + eventCount;
+      var loadColour = workload === 0 ? '#9B9BAA' : workload <= 2 ? '#1A5C3A' : workload <= 5 ? '#7A4E00' : '#8B1A1A';
+      var badgeHtml = '<div class="airport-pin-inner" style="background:'+loadColour+'"><span class="airport-pin-iata">'+iata+'</span>' +
+                      (workload > 0 ? '<span class="airport-pin-badge">'+workload+'</span>' : '') + '</div>';
+      var icon = L.divIcon({
+        className: 'airport-pin', html: badgeHtml,
+        iconSize: [48, 24], iconAnchor: [24, 12]
+      });
+      var m = L.marker(coord, {icon: icon, zIndexOffset: 100}).addTo(mapState.map);
+      /* Hover-expansion tooltip · shows case list + linked disruptions */
+      var relatedEvents = events.filter(function(e){ return e.icao === icao; });
+      var relCases = casesByAirport[icao] || [];
+      var tooltipHtml = '<div class="airport-tt-name">' + iata + ' · ' + icao + '</div>' +
+        (relCases.length ? '<div class="airport-tt-section"><strong>' + relCases.length + ' open case' + (relCases.length===1?'':'s') + '</strong>' +
+          relCases.slice(0,3).map(function(c){return '<div class="airport-tt-item">· '+escapeHtml((c.claimant||c.ref) + ' — ' + (c.flightNum||''))+'</div>';}).join('') +
+          (relCases.length > 3 ? '<div class="airport-tt-more">+ '+(relCases.length-3)+' more</div>' : '') + '</div>' : '') +
+        (relatedEvents.length ? '<div class="airport-tt-section"><strong>' + relatedEvents.length + ' live disruption' + (relatedEvents.length===1?'':'s') + '</strong>' +
+          relatedEvents.slice(0,3).map(function(e){return '<div class="airport-tt-item">· '+escapeHtml(e.title)+'</div>';}).join('') + '</div>' : '') +
+        (relCases.length === 0 && relatedEvents.length === 0 ? '<div class="airport-tt-quiet">Quiet — no open cases or live disruptions</div>' : '');
+      m.bindTooltip(tooltipHtml, {direction:'top', className:'airport-tt', permanent:false, sticky:true});
+      mapState.airportMarkers[icao] = m;
+    });
+
+    /* 4 · Render filter chip bar with count badges */
+    var bar = document.getElementById('map-filter-bar');
+    if (bar){
+      bar.innerHTML = DISRUPTION_KINDS.map(function(k){
+        var count = byKind[k.id].length;
+        return '<button class="map-chip on '+k.id+'" data-kind="'+k.id+'" onclick="toggleMapKind(\''+k.id+'\')">'+
+               '<span class="dot"></span><span>'+k.label+'</span>'+
+               '<span class="map-chip-count">'+count+'</span></button>';
+      }).join('');
+    }
+  });
+}
+
+function toggleMapKind(kindId){
+  if (!mapState.map || !mapState.layersByKind[kindId]) return;
+  mapState.activeKinds[kindId] = !mapState.activeKinds[kindId];
+  if (mapState.activeKinds[kindId]) mapState.layersByKind[kindId].addTo(mapState.map);
+  else mapState.map.removeLayer(mapState.layersByKind[kindId]);
+  var chip = document.querySelector('.map-chip[data-kind="'+kindId+'"]');
+  if (chip){
+    chip.classList.toggle('on', mapState.activeKinds[kindId]);
+    chip.classList.toggle('off', !mapState.activeKinds[kindId]);
+  }
+}
+function dismissOnboarding(){try{sessionStorage.setItem('dfa_dio_onboarded','1');}catch(e){}var el=document.getElementById('w-onboarding');if(el)el.remove();}
+
+function toast(msg, kind){
+  var el = document.createElement('div');
+  el.className = 'toast' + (kind ? ' '+kind : '');
+  el.textContent = msg;
+  document.body.appendChild(el);
+  setTimeout(function(){el.style.opacity='0';}, 4000);
+  setTimeout(function(){el.remove();}, 4600);
+}
+
+function fmtDate(iso){
+  if(!iso) return '—';
+  try{
+    var d = new Date(iso);
+    var diffH = Math.floor((Date.now() - d.getTime()) / 3600000);
+    if(diffH < 24) return diffH + 'h ago';
+    if(diffH < 72) return Math.floor(diffH / 24) + 'd ago';
+    return d.toISOString().slice(0, 10);
+  }catch(e){return iso;}
+}
+
+function jurChip(jur){
+  var map={'england-wales':['req-jur-uk','UK'],'france':['req-jur-fr','FR'],'spain':['req-jur-es','ES']};
+  var p=map[jur]||['req-jur-uk',jur||'?']; return '<span class="req-jur-chip '+p[0]+'">'+p[1]+'</span>';
+}
+
+/* ─── Modals ─── */
+function closeModal(){var m=document.querySelector('.dio-modal-back');if(m)m.remove();}
+function openAirportModal(icao){
+  var territory = DIO.getTerritory();
+  var cases = DIO.casesByAirport(icao, territory);
+  var idx = territory.airports_icao.indexOf(icao);
+  var iata = idx >= 0 ? territory.airports_iata[idx] : icao;
+  var rows = cases.length ? cases.map(function(c){
+    return '<div class="airport-modal-case" onclick="location.href=\''+DIO.dioCaseUrl(c.ref)+'\'">'+
+      '<div><div class="amc-ref">'+escapeHtml(c.ref)+'</div>'+
+      '<div class="amc-name">'+escapeHtml(c.claimant||'—')+'</div>'+
+      '<div class="amc-meta"><span>'+escapeHtml(c.flightNum||'')+' · '+escapeHtml((c.dep||'')+' → '+(c.arr||''))+'</span><span>'+escapeHtml(c.flightDate||'')+'</span><span>Evidence '+(c.evidencePct||0)+'%</span><span>CPR '+(c.cprDaysLeft||'?')+'d</span></div></div>'+
+      '<div style="display:flex;gap:6px"><a class="req-cta" href="evidence-workspace.html?case='+encodeURIComponent(c.ref)+'" onclick="event.stopPropagation()" title="Full-screen evidence workspace"><i class="ti ti-arrows-maximize"></i> Workspace</a><a class="req-cta" href="'+DIO.dioCaseUrl(c.ref)+'" onclick="event.stopPropagation()"><i class="ti ti-arrow-right"></i> Case</a></div>'+
+    '</div>';
+  }).join('') : '<div class="empty-panel"><i class="ti ti-inbox"></i>No open cases for '+iata+' right now.</div>';
+  document.body.insertAdjacentHTML('beforeend',
+    '<div class="dio-modal-back" onclick="if(event.target===this)closeModal()">'+
+    '<div class="dio-modal">'+
+      '<div class="dio-modal-hdr"><h3>'+icao+' · '+iata+'</h3><p>'+cases.length+' open case'+(cases.length===1?'':'s')+' in your territory involve this airport (as dep or arr)</p></div>'+
+      '<div class="dio-modal-body">'+rows+'</div>'+
+      '<div class="dio-modal-ftr">'+
+        '<button class="dio-btn secondary" onclick="closeModal()">Close</button>'+
+        (cases.length ? '<button class="dio-btn" onclick="bulkFetchAirport(\''+icao+'\')"><i class="ti ti-cloud-download"></i>Fetch fresh evidence for all '+cases.length+'</button>' : '')+
+      '</div>'+
+    '</div></div>');
+}
+
+function bulkFetchAirport(icao){
+  var territory = DIO.getTerritory();
+  var cases = DIO.casesByAirport(icao, territory);
+  if (!cases.length) { toast('No cases to fetch for '+icao); return; }
+  if (!window.CaseEvidenceFetch || !CaseEvidenceFetch.hasToken()) {
+    toast('Bulk fetch requires an evidence-collection PAT — set one via Repository tab first.', 'err');
+    return;
+  }
+  closeModal();
+  toast('Bulk-dispatching '+cases.length+' fetch workflows for '+icao+'…');
+  var completed = 0, failed = 0;
+  cases.forEach(function(c, idx){
+    setTimeout(function(){
+      CaseEvidenceFetch.dispatch(c.ref, {}).then(function(){
+        completed++;
+        if (completed + failed === cases.length) toast('Bulk fetch done — '+completed+' dispatched, '+failed+' failed.', failed ? 'err' : 'ok');
+      }).catch(function(){
+        failed++;
+        if (completed + failed === cases.length) toast('Bulk fetch done — '+completed+' dispatched, '+failed+' failed.', 'err');
+      });
+    }, idx * 400);
+  });
+}
+
+function bulkFetchIncident(item){
+  var cases = DIO.casesInTerritory(getActiveUser());
+  var hay = ((item.title||'') + ' ' + (item.description||'')).toUpperCase();
+  var matching = cases.filter(function(c){
+    var dep = (c.dep||'').toUpperCase(); var arr = (c.arr||'').toUpperCase();
+    return (dep && hay.indexOf(dep) >= 0) || (arr && hay.indexOf(arr) >= 0);
+  });
+  if (!matching.length) { toast('No open cases in your territory match this incident.'); return; }
+  if (!window.CaseEvidenceFetch || !CaseEvidenceFetch.hasToken()) {
+    toast('Bulk fetch requires an evidence-collection PAT.', 'err'); return;
+  }
+  toast('Dispatching '+matching.length+' fetch workflows…');
+  var completed = 0, failed = 0;
+  matching.forEach(function(c, idx){
+    setTimeout(function(){
+      CaseEvidenceFetch.dispatch(c.ref, {}).then(function(){completed++;if(completed+failed===matching.length)toast('Done — '+completed+' fetched.','ok');}).catch(function(){failed++;if(completed+failed===matching.length)toast('Done — '+completed+' fetched, '+failed+' failed.','err');});
+    }, idx * 400);
+  });
+}
+
+function bulkFetchCase(ref){
+  if (!window.CaseEvidenceFetch || !CaseEvidenceFetch.hasToken()) {
+    toast('Fetch requires an evidence-collection PAT.', 'err'); return;
+  }
+  toast('Dispatching fetch for '+ref+'…');
+  CaseEvidenceFetch.dispatch(ref, {}).then(function(res){toast('Fetch dispatched · run '+res.runId,'ok');}).catch(function(err){toast('Fetch failed: '+(err.message||err),'err');});
+}
+
+/* ─── Live feed loader ─── */
+function loadTerritoryFeed(territory){
+  var srcs = ['aviation-herald-news', 'simple-flying-news', 'gdacs-global-disasters', 'copernicus-effis'];
+  var promises = srcs.map(function(sid){
+    if (!window.EvidenceCollection || !window.EvidenceCollection.get) return Promise.resolve({sid:sid, snap:null});
+    return window.EvidenceCollection.get(sid).then(function(snap){return {sid:sid, snap:snap};}).catch(function(){return {sid:sid, snap:null};});
+  });
+  return Promise.all(promises).then(function(results){
+    var items = [];
+    results.forEach(function(r){
+      if (!r.snap || !r.snap.data) return;
+      var srcKey = r.sid === 'aviation-herald-news' ? 'herald' : r.sid === 'simple-flying-news' ? 'simple' : r.sid === 'gdacs-global-disasters' ? 'gdacs' : 'copernicus';
+      if (r.sid === 'aviation-herald-news' || r.sid === 'simple-flying-news'){
+        (r.snap.data.items||[]).forEach(function(it){ items.push({source:srcKey, title:it.title, description:it.description, link:it.link, pub_date:it.pub_date, severity:it.severity, raw:it}); });
+      } else if (r.sid === 'gdacs-global-disasters'){
+        (r.snap.data.events||[]).forEach(function(e){ items.push({source:'gdacs', title:e.name||e.type_name||'GDACS event', description:(e.type_name||'')+(e.country?' — '+e.country:''), link:e.url, pub_date:e.from_date, severity:e.alert_level==='Red'?'accident':e.alert_level==='Orange'?'incident':'event', country:e.country, iso3:e.iso3, raw:e}); });
+      } else if (r.sid === 'copernicus-effis'){
+        (r.snap.data.fire_activations||[]).forEach(function(a){ items.push({source:'copernicus', title:a.title, description:a.description, link:a.link, pub_date:a.pub_date, severity:'event', raw:a}); });
+      }
+    });
+    if (window.DIO && window.DIO.matchIncidentToTerritory){
+      items = items.filter(function(it){return window.DIO.matchIncidentToTerritory(it, territory);});
+    }
+    items.sort(function(a,b){return new Date(b.pub_date||0)-new Date(a.pub_date||0);});
+    return items.slice(0, 25);
+  });
+}
+
+function countIncidentMatches(item, cases){
+  var hay = ((item.title||'') + ' ' + (item.description||'')).toUpperCase();
+  return cases.filter(function(c){
+    var dep = (c.dep||'').toUpperCase(); var arr = (c.arr||'').toUpperCase();
+    return (dep && hay.indexOf(dep) >= 0) || (arr && hay.indexOf(arr) >= 0);
+  }).length;
+}
+
+function renderFeed(items, feedEl){
+  if (!items.length){
+    feedEl.innerHTML = '<div class="empty-panel"><i class="ti ti-radar"></i>No live incidents in your territory. Daily cron next fires 03:00 UTC.</div>';
+    return;
+  }
+  var cases = DIO.casesInTerritory(getActiveUser());
+  feedEl.innerHTML = items.map(function(it, idx){
+    var srcCls = 'feed-src-'+it.source;
+    var srcLbl = it.source==='herald'?'Aviation Herald':it.source==='simple'?'Simple Flying':it.source==='gdacs'?'GDACS':'Copernicus';
+    var sevCls = 'severity-'+(it.severity||'event');
+    var matchCount = countIncidentMatches(it, cases);
+    var matchLbl = matchCount ? matchCount+' match'+(matchCount===1?'':'es') : 'no matches';
+    var matchCls = matchCount ? ' match-hit' : '';
+    return '<div class="feed-item '+sevCls+'">'+
+      '<div>'+
+        '<div class="feed-title">'+(it.link?'<a href="'+escapeHtml(it.link)+'" target="_blank" rel="noopener">'+escapeHtml(it.title)+'</a>':escapeHtml(it.title))+'</div>'+
+        '<div class="feed-meta"><span class="feed-src-chip '+srcCls+'">'+srcLbl+'</span><span>'+fmtDate(it.pub_date)+'</span></div>'+
+        (it.description?'<div class="feed-desc">'+escapeHtml(it.description)+'</div>':'')+
+      '</div>'+
+      '<div class="feed-actions">'+
+        '<span class="feed-match-count'+matchCls+'" title="Matches against open cases in your territory">'+matchLbl+'</span>'+
+        (matchCount ? '<button class="feed-fetch-btn" data-feed-fetch="'+idx+'"><i class="ti ti-cloud-download"></i>Fetch '+matchCount+'</button>' : '')+
+      '</div>'+
+    '</div>';
+  }).join('');
+  window.__lastFeed = items;
+  Array.prototype.forEach.call(feedEl.querySelectorAll('[data-feed-fetch]'), function(b){
+    b.onclick = function(){ var i = parseInt(b.getAttribute('data-feed-fetch'),10); bulkFetchIncident(window.__lastFeed[i]); };
+  });
+}
+
+/* ─── Requests forum · R2.B2 · unassigned / working / worked + assign controls ─── */
+var reqFilter = 'all';
+var REQ_STATUS_KEY = 'dfa_dio_req_status';   // { requestId: {status, assignee} }
+
+function _loadReqStates(){
+  try { return JSON.parse(sessionStorage.getItem(REQ_STATUS_KEY) || '{}'); } catch(e){ return {}; }
+}
+function _saveReqStates(s){
+  try { sessionStorage.setItem(REQ_STATUS_KEY, JSON.stringify(s)); } catch(e){}
+}
+function _reqStatus(id){ return (_loadReqStates()[id] || {status:'unassigned', assignee:null}); }
+
+window.assignRequestTo = function(id, dioId){
+  var s = _loadReqStates();
+  s[id] = { status: dioId ? 'working' : 'unassigned', assignee: dioId };
+  _saveReqStates(s);
+  renderCommunalRequests(DIO.collectCommunalRequests(), document.getElementById('req-tbody'));
+};
+window.markRequestWorked = function(id){
+  var s = _loadReqStates();
+  s[id] = { status:'worked', assignee: (s[id]&&s[id].assignee) || (getActiveUser && getActiveUser()) };
+  _saveReqStates(s);
+  renderCommunalRequests(DIO.collectCommunalRequests(), document.getElementById('req-tbody'));
+};
+
+function _statusChip(status){
+  var label = status === 'working' ? 'Working' : status === 'worked' ? 'Worked' : 'Unassigned';
+  return '<span class="req-status-pill req-status-' + status + '"><span class="req-status-dot req-status-' + status + '"></span>' + label + '</span>';
+}
+function _assigneeName(uid){
+  if (!uid) return '—';
+  var u = (typeof USERS !== 'undefined') ? USERS[uid] : null;
+  return u ? (u.name || uid) : uid;
+}
+
+function renderCommunalRequests(reqs, tbodyEl){
+  if (!tbodyEl) return;
+  var mine = DIO.getDIOProfile ? DIO.getDIOProfile().jurisdiction : null;
+  var filtered = reqs;
+  if (reqFilter === 'mine')       filtered = reqs.filter(function(r){return r.jurisdiction === mine;});
+  else if (reqFilter === 'overdue') filtered = reqs.filter(function(r){return r.overdue;});
+  else if (reqFilter === 'unassigned' || reqFilter === 'working' || reqFilter === 'worked'){
+    filtered = reqs.filter(function(r){ return _reqStatus(r.id).status === reqFilter; });
+  }
+
+  if (!filtered.length){
+    tbodyEl.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--text3)"><i class="ti ti-circle-check"></i> No requests match this filter.</td></tr>';
+    return;
+  }
+  var activeUid = (typeof getActiveUser === 'function') ? getActiveUser() : 'EH';
+  tbodyEl.innerHTML = filtered.map(function(r){
+    var st = _reqStatus(r.id);
+    var rowCls = r.overdue?'overdue':r.daysAgo>=2?'warn':'';
+    var ageTxt = r.daysAgo+'d'+(r.overdue?' — overdue':' ago');
+    var cprCls = r.cprDaysLeft<=3?'tight':r.cprDaysLeft<=7?'warn':'';
+    var actionBtn;
+    if (st.status === 'unassigned'){
+      actionBtn = '<button class="req-cta" onclick="event.stopPropagation();assignRequestTo(\''+escapeHtml(r.id)+'\',\''+activeUid+'\')"><i class="ti ti-hand-grab"></i> Claim</button>';
+    } else if (st.status === 'working' && st.assignee === activeUid){
+      actionBtn = '<button class="req-cta" onclick="event.stopPropagation();markRequestWorked(\''+escapeHtml(r.id)+'\')"><i class="ti ti-circle-check"></i> Mark worked</button>';
+    } else {
+      actionBtn = '<a class="req-cta" href="evidence-workspace.html?case='+encodeURIComponent(r.caseRef)+'" onclick="event.stopPropagation()"><i class="ti ti-arrows-maximize"></i> Open</a>';
+    }
+    return '<tr class="'+rowCls+'" onclick="location.href=\''+DIO.dioCaseUrl(r.caseRef)+'\'">'+
+      '<td><div class="req-name">'+escapeHtml(r.name)+'</div><div class="req-caseref">'+escapeHtml(r.caseRef)+' · '+escapeHtml(r.claimantName||'')+'</div></td>'+
+      '<td>'+jurChip(r.jurisdiction)+'</td>'+
+      '<td>'+_statusChip(st.status)+'</td>'+
+      '<td style="font-size:11px;color:var(--text2)">'+escapeHtml(_assigneeName(st.assignee))+'</td>'+
+      '<td class="req-cpr '+cprCls+'">CPR '+r.cprDaysLeft+'d</td>'+
+      '<td class="req-age '+(r.overdue?'overdue':r.daysAgo>=2?'warn':'')+'">'+ageTxt+'</td>'+
+      '<td>'+actionBtn+'</td>'+
+    '</tr>';
+  }).join('');
+}
+
+function setReqFilter(f){
+  reqFilter = f;
+  Array.prototype.forEach.call(document.querySelectorAll('#req-filter-bar .filter-chip'), function(c){
+    c.classList.toggle('active', c.getAttribute('data-filter')===f);
+  });
+  renderCommunalRequests(DIO.collectCommunalRequests(), document.getElementById('req-tbody'));
+}
+
+/* ─── Portfolio matrix ─── */
+var matrixSort = 'gap';
+function renderMatrix(){
+  /* R2.B1 · Guard — Portfolio matrix + Pull queue widgets removed, so bail if their DOM isn't present. */
+  var body = document.getElementById('matrix-tbody');
+  if (!body) return;
+  var rows = DIO.collectPortfolioMatrix(getActiveUser());
+  if (matrixSort === 'cpr') rows.sort(function(a,b){return (a.cprDaysLeft||99) - (b.cprDaysLeft||99);});
+  else if (matrixSort === 'evidence') rows.sort(function(a,b){return (a.evidencePct||0) - (b.evidencePct||0);});
+  else if (matrixSort === 'ref') rows.sort(function(a,b){return a.ref.localeCompare(b.ref);});
+  if (!rows.length){
+    body.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:24px;color:var(--text3)"><i class="ti ti-circle-check"></i> No open cases in your territory.</td></tr>';
+    document.getElementById('pull-tbody').innerHTML = '<tr><td colspan="4" style="text-align:center;padding:24px;color:var(--text3)"><i class="ti ti-circle-check"></i> Nothing awaiting fetch.</td></tr>';
+    return;
+  }
+  body.innerHTML = rows.map(function(r){
+    var pctCls = r.evidencePct >= 80 ? '' : r.evidencePct >= 40 ? 'warn' : 'red';
+    var gapCls = r.gapScore <= 3 ? 'low' : r.gapScore <= 8 ? 'medium' : 'high';
+    var stageCls = 'stg-'+r.stage;
+    var route = (r.dep||'?')+' → '+(r.arr||'?');
+    return '<tr onclick="location.href=\''+DIO.dioCaseUrl(r.ref)+'\'">'+
+      '<td class="mono">'+escapeHtml(r.ref)+' <a href="evidence-workspace.html?case='+encodeURIComponent(r.ref)+'" class="src-mini-link" onclick="event.stopPropagation()" title="Open evidence workspace"><i class="ti ti-arrows-maximize"></i></a></td>'+
+      '<td>'+escapeHtml(r.claimant||'—')+'</td>'+
+      '<td class="route">'+escapeHtml(route)+'</td>'+
+      '<td><span class="matrix-stage-chip '+stageCls+'">'+escapeHtml(r.stage)+'</span></td>'+
+      '<td>CPR '+r.cprDaysLeft+'d</td>'+
+      '<td><span class="pct-bar"><span class="fill '+pctCls+'" style="width:'+r.evidencePct+'%"></span></span> '+r.evidencePct+'%</td>'+
+      '<td data-src-chips="'+escapeHtml(r.ref)+'"><span class="matrix-src-chip loading">…</span></td>'+
+      '<td><span class="gap-badge '+gapCls+'">'+r.gapScore+'</span></td>'+
+    '</tr>';
+  }).join('');
+  rows.forEach(function(r){
+    if (!window.CaseEvidenceRepository || !window.CaseEvidenceRepository.fetchRelevantSlice) return;
+    var cell = document.querySelector('[data-src-chips="'+r.ref+'"]');
+    if (!cell) return;
+    var srcs = ['aviationweather-metar-taf','faa-notams','aviation-herald-news','opensky-flight-tracks','gdacs-global-disasters'];
+    Promise.all(srcs.map(function(sid){
+      return CaseEvidenceRepository.fetchRelevantSlice(r.ref, sid).then(function(items){return {sid:sid, n:items.length};}).catch(function(){return {sid:sid, n:0};});
+    })).then(function(results){
+      var short = {'aviationweather-metar-taf':'wx','faa-notams':'nx','aviation-herald-news':'nw','opensky-flight-tracks':'tk','gdacs-global-disasters':'gd'};
+      cell.innerHTML = results.map(function(x){
+        return '<span class="matrix-src-chip '+(x.n?'hit':'miss')+'" title="'+x.sid+': '+x.n+' hits">'+short[x.sid]+' '+x.n+'</span>';
+      }).join('');
+    });
+  });
+  var pullQueue = rows.filter(function(r){return r.gapScore > 0 || r.attachCount === 0;}).slice(0, 10);
+  var pullBody = document.getElementById('pull-tbody');
+  if (!pullQueue.length){
+    pullBody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:20px;color:var(--text3)"><i class="ti ti-circle-check"></i> All cases have baseline evidence attached.</td></tr>';
+  } else {
+    pullBody.innerHTML = pullQueue.map(function(r){
+      var urgency = r.cprDaysLeft <= 3 ? 'high' : r.cprDaysLeft <= 7 ? 'medium' : 'low';
+      return '<tr onclick="location.href=\''+DIO.dioCaseUrl(r.ref)+'\'">'+
+        '<td class="mono">'+escapeHtml(r.ref)+'</td>'+
+        '<td><div class="req-name">'+escapeHtml(r.claimant||'—')+'</div><div class="req-caseref">'+escapeHtml((r.dep||'?')+' → '+(r.arr||'?'))+'</div></td>'+
+        '<td><span class="gap-badge '+urgency+'">CPR '+r.cprDaysLeft+'d</span></td>'+
+        '<td><button class="req-cta" onclick="event.stopPropagation();bulkFetchCase(\''+escapeHtml(r.ref)+'\')"><i class="ti ti-cloud-download"></i></button></td>'+
+      '</tr>';
+    }).join('');
+  }
+}
+
+function setMatrixSort(s){
+  matrixSort = s;
+  Array.prototype.forEach.call(document.querySelectorAll('#matrix-thead th.sort'), function(th){
+    th.classList.toggle('sorted', th.getAttribute('data-sort')===s);
+  });
+  renderMatrix();
+}
+
+/* ─── Main render ─── */
+function render(){
+  if (!DIO.ensureDIOAccess()) return;
+  var uid = getActiveUser();
+  var profile = DIO.getDIOProfile();
+  var territory = DIO.getTerritory(uid);
+  var communalRequests = DIO.collectCommunalRequests();
+  var airportCounts = DIO.caseCountByAirport(territory);
+  var territoryCases = DIO.casesInTerritory(uid);
+  var engineIntake = DIO.collectEngineIntake ? DIO.collectEngineIntake() : [];
+  var recentActivity = DIO.collectRecentActivity ? DIO.collectRecentActivity(uid, 6) : [];
+
+  var mineCount = communalRequests.filter(function(r){return r.jurisdiction===profile.jurisdiction;}).length;
+  var mineOverdue = communalRequests.filter(function(r){return r.jurisdiction===profile.jurisdiction && r.overdue;}).length;
+  var totalCases = territoryCases.length;
+  var greetingWord = new Date().getHours()<12?'morning':new Date().getHours()<18?'afternoon':'evening';
+  var hotAirports = Object.keys(airportCounts).filter(function(a){return airportCounts[a]>=3;}).length;
+
+  /* Priority alerts — top 5 across overdue requests, hot airports, urgent CPR cases */
+  var priAlerts = [];
+  communalRequests.filter(function(r){return r.overdue;}).slice(0,3).forEach(function(r){
+    priAlerts.push({dot:'red',l:'Overdue request — '+r.name,m:r.caseRef+' · '+r.claimantName,badge:r.daysAgo+'d late',href:DIO.dioCaseUrl(r.caseRef)});
+  });
+  territoryCases.filter(function(c){return (c.cprDaysLeft||99)<=3;}).slice(0,2).forEach(function(c){
+    priAlerts.push({dot:'red',l:'CPR deadline in '+c.cprDaysLeft+'d — '+(c.claimant||''),m:c.ref+' · '+(c.dep||'?')+' → '+(c.arr||'?'),badge:'CPR '+c.cprDaysLeft+'d',href:DIO.dioCaseUrl(c.ref)});
+  });
+  territoryCases.filter(function(c){return (c.cprDaysLeft||99)>3 && (c.cprDaysLeft||99)<=7;}).slice(0,2).forEach(function(c){
+    priAlerts.push({dot:'amber',l:'CPR in '+c.cprDaysLeft+'d — '+(c.claimant||''),m:c.ref+' · '+(c.dep||'?')+' → '+(c.arr||'?'),badge:'CPR '+c.cprDaysLeft+'d',href:DIO.dioCaseUrl(c.ref)});
+  });
+  priAlerts = priAlerts.slice(0,5);
+
+  var page = document.getElementById('page');
+  page.innerHTML =
+    /* Header */
+    '<div class="page-header">'
+    +   '<div>'
+    +     '<div class="greeting">Good '+greetingWord+', '+escapeHtml(profile.user.full.split(' ')[0])+'</div>'
+    +     '<div class="greeting-sub">Documentary Intelligence Officer · evidence intelligence hub</div>'
+    +     '<div class="territory-badge"><i class="ti ti-map-pin"></i> Territory: '+escapeHtml(territory.label)+'</div>'
+    +   '</div>'
+    +   '<div class="stat-bar">'
+    +     '<button class="stat-chip teal" onclick="scrollToZone(\'w-territory\')"><i class="ti ti-planet"></i> '+territory.airports_icao.length+' airports</button>'
+    +     '<button class="stat-chip active" onclick="location.href=\'cases.html\'"><i class="ti ti-briefcase"></i> '+totalCases+' cases</button>'
+    +     (mineOverdue>0
+        ? '<button class="stat-chip urgent" onclick="setReqFilter(\'overdue\');scrollToZone(\'w-requests\')"><i class="ti ti-clock-exclamation"></i> '+mineOverdue+' overdue</button>'
+        : mineCount>0
+        ? '<button class="stat-chip warn" onclick="setReqFilter(\'mine\');scrollToZone(\'w-requests\')"><i class="ti ti-inbox"></i> '+mineCount+' open</button>'
+        : '<span class="stat-chip active"><i class="ti ti-circle-check"></i> Clear</span>')
+    +     '<button class="stat-chip new" onclick="setReqFilter(\'all\');scrollToZone(\'w-requests\')"><i class="ti ti-users"></i> '+communalRequests.length+' team</button>'
+    +     (engineIntake.length ? '<button class="stat-chip" style="background:var(--purple-faint);border-color:#D6CDF4;color:var(--purple)" onclick="scrollToZone(\'w-engine\')"><i class="ti ti-cpu"></i> '+engineIntake.length+' from engine</button>' : '')
+    +   '</div>'
+    + '</div>'
+
+    /* Widget grid */
+    + '<div class="widget-grid">'
+
+    /* Onboarding widget — shown once per session, dismissible */
+    + (sessionStorage.getItem('dfa_dio_onboarded') ? '' :
+        '<section class="widget w-12" id="w-onboarding" style="background:linear-gradient(135deg,var(--accent-faint) 0%,#F8FAFC 100%);border:1px solid #C7D8EC">'
+        + '<div class="widget-hdr" style="border-bottom:none;padding-bottom:6px">'
+        +   '<div class="widget-title"><i class="ti ti-compass"></i>Welcome to your DIO command centre, '+escapeHtml((profile.user&&(profile.user.first||profile.user.name.split(" ")[0]))||"there")+'</div>'
+        +   '<button class="btn-mini" onclick="dismissOnboarding()" style="border:none;background:transparent;color:var(--text3);cursor:pointer"><i class="ti ti-x"></i> Dismiss</button>'
+        + '</div>'
+        + '<div class="widget-body" style="padding:4px 20px 18px">'
+        +   '<div style="font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:14px">Everything you own for <strong>'+escapeHtml(territory.label)+'</strong> lives on one page. Four things to know:</div>'
+        +   '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px">'
+        +     '<div style="display:flex;gap:10px"><div style="width:28px;height:28px;background:var(--accent);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0">1</div><div><div style="font-size:12px;font-weight:600;margin-bottom:2px">Priority alerts + Engine intake</div><div style="font-size:11px;color:var(--text3);line-height:1.45">Top-left widgets tell you what needs action today.</div></div></div>'
+        +     '<div style="display:flex;gap:10px"><div style="width:28px;height:28px;background:var(--accent);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0">2</div><div><div style="font-size:12px;font-weight:600;margin-bottom:2px">DIO tools launcher</div><div style="font-size:11px;color:var(--text3);line-height:1.45">Right side — jump to Repository, Evidence workspaces, Knowledge.</div></div></div>'
+        +     '<div style="display:flex;gap:10px"><div style="width:28px;height:28px;background:var(--accent);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0">3</div><div><div style="font-size:12px;font-weight:600;margin-bottom:2px">Communal request queue</div><div style="font-size:11px;color:var(--text3);line-height:1.45">Pool of asks from every solicitor — grab what fits your territory.</div></div></div>'
+        
+        +   '</div>'
+        + '</div>'
+        + '</section>')
+
+    /* Row 1 — three widgets: Priority · Engine · Territory pulse */
+    +   '<section class="widget w-4" id="w-priority">'
+    +     '<div class="widget-hdr">'
+    +       '<div class="widget-title"><i class="ti ti-flag-3"></i>Priority alerts <span class="badge '+(priAlerts.length ? (priAlerts.some(function(a){return a.dot==="red";})?"urgent":"warn") : "zero")+'">'+priAlerts.length+'</span></div>'
+    +     '</div>'
+    +     '<div class="widget-body">'
+    +       (priAlerts.length ? priAlerts.map(function(a){return '<a href="'+a.href+'" class="pri-alert"><div class="pri-dot '+a.dot+'"></div><div class="pri-body"><div class="l">'+escapeHtml(a.l)+'</div><div class="m">'+escapeHtml(a.m)+'</div></div><div class="pri-badge">'+escapeHtml(a.badge)+'</div></a>';}).join('') : '<div class="empty-panel"><i class="ti ti-circle-check"></i>No urgent alerts. Your territory is calm.</div>')
+    +     '</div>'
+    +   '</section>'
+
+    +   '<section class="widget w-4" id="w-engine">'
+    +     '<div class="widget-hdr">'
+    +       '<div class="widget-title"><i class="ti ti-cpu"></i>From the engine <span class="badge '+(engineIntake.length?"":"zero")+'">'+engineIntake.length+'</span></div>'
+    +       '<a class="widget-link" href="cases.html?source=engine">View all →</a>'
+    +     '</div>'
+    +     '<div class="widget-body">'
+    +       (engineIntake.length ? engineIntake.slice(0,5).map(function(c){
+              var summary = DIO.ensureCaseSummary ? DIO.ensureCaseSummary(c) : (c.triageNote || '');
+              return '<a href="'+DIO.dioCaseUrl(c.ref)+'" class="eng-row"><div class="eng-icon"><i class="ti ti-cpu"></i></div><div class="eng-body"><div class="eng-title">'+escapeHtml(c.claimant||c.ref)+'</div><div class="eng-meta">'+escapeHtml(c.ref+' · '+(c.dep||'?')+' → '+(c.arr||'?')+' · CPR '+c.cprDaysLeft+'d')+'</div></div><div class="eng-cta">Review →</div></a>';
+            }).join('') : '<div class="empty-panel"><i class="ti ti-check"></i>No engine cases pending DIO review.<br>Every engine intake is triaged.</div>')
+    +     '</div>'
+    +   '</section>'
+
+    +   '<section class="widget w-4">'
+    +     '<div class="widget-hdr">'
+    +       '<div class="widget-title"><i class="ti ti-pulse"></i>Territory pulse</div>'
+    +     '</div>'
+    +     '<div class="widget-body">'
+    +       '<div class="pulse-metric">'
+    +         '<div class="pm-cell '+(hotAirports?"hot":"cool")+'"><div class="pm-n">'+hotAirports+'</div><div class="pm-l">Hot airports</div></div>'
+    +         '<div class="pm-cell '+(mineOverdue?"hot":(mineCount?"warm":"cool"))+'"><div class="pm-n">'+(mineOverdue||mineCount)+'</div><div class="pm-l">'+(mineOverdue?"Overdue":"Open req")+'</div></div>'
+    +         '<div class="pm-cell"><div class="pm-n">'+totalCases+'</div><div class="pm-l">Territory cases</div></div>'
+    +         '<div class="pm-cell '+(engineIntake.length?"warm":"cool")+'"><div class="pm-n">'+engineIntake.length+'</div><div class="pm-l">Engine intake</div></div>'
+    +       '</div>'
+    +     '</div>'
+    +   '</section>'
+
+    /* Row 2 — live feed (w-8) + DIO tools (w-4) */
+    +   '<section class="widget w-8" id="w-feed">'
+    +     '<div class="widget-hdr">'
+    +       '<div class="widget-title"><i class="ti ti-radar"></i>Live incident feed · your territory</div>'
+    +       '<button class="widget-link" id="refresh-feed-btn" onclick="reloadFeed()"><i class="ti ti-refresh"></i> Refresh</button>'
+    +     '</div>'
+    +     '<div class="widget-body p0">'
+    +       '<div class="feed-list" id="feed-list"><div class="empty-panel"><span class="spin" style="display:inline-block;width:12px;height:12px;border:2px solid var(--rule);border-top-color:var(--accent);border-radius:50%;animation:dio-spin 0.7s linear infinite"></span> Loading…</div></div>'
+    +     '</div>'
+    +   '</section>'
+
+    /* Session A fix 5 · id added — the DIO "Cases" nav link redirects here
+       (dio.html#w-portfolio via cases.html's own DIO redirect), but nothing
+       on this page had that id, so the anchor silently did nothing. This
+       widget is the natural target: it's where "My cases" actually lives. */
+    +   '<section class="widget w-4" id="w-portfolio">'
+    +     '<div class="widget-hdr">'
+    +       '<div class="widget-title"><i class="ti ti-apps"></i>DIO tools</div>'
+    +     '</div>'
+    +     '<div class="widget-body p0">'
+    +       '<div class="tools-grid">'
+    +         '<a class="tool-tile" href="cases.html"><i class="ti ti-briefcase"></i><div class="lbl">My cases</div></a>'
+    +         '<a class="tool-tile" href="requests.html"><i class="ti ti-inbox"></i><div class="lbl">Requests</div></a>'
+    +         '<a class="tool-tile" href="repository.html"><i class="ti ti-database"></i><div class="lbl">Repository</div></a>'
+    +         '<a class="tool-tile" href="repository.html#live-evidence"><i class="ti ti-radar-2"></i><div class="lbl">Live evidence</div></a>'
+    +         '<a class="tool-tile" href="evidence-weather.html"><i class="ti ti-cloud-storm"></i><div class="lbl">Weather</div></a>'
+    +         '<a class="tool-tile" href="evidence-notams.html"><i class="ti ti-file-text"></i><div class="lbl">NOTAMs</div></a>'
+    +         '<a class="tool-tile" href="evidence-flights.html"><i class="ti ti-plane"></i><div class="lbl">Flights</div></a>'
+    +         '<a class="tool-tile" href="evidence-news.html"><i class="ti ti-news"></i><div class="lbl">News</div></a>'
+    +         '<a class="tool-tile" href="evidence-global.html"><i class="ti ti-flame"></i><div class="lbl">Disasters</div></a>'
+    +         '<a class="tool-tile" href="evidence-strikes.html"><i class="ti ti-hand-stop"></i><div class="lbl">Strikes</div></a>'
+    +         '<a class="tool-tile" href="evidence-atfm.html"><i class="ti ti-traffic-cone"></i><div class="lbl">ATFM</div></a>'
+    +         '<a class="tool-tile" href="dio-knowledge.html"><i class="ti ti-book-2"></i><div class="lbl">Knowledge</div></a>'
+    +         '<a class="tool-tile" href="dio-metrics.html"><i class="ti ti-chart-histogram"></i><div class="lbl">Metrics</div></a>'
+    +       '</div>'
+    +     '</div>'
+    +   '</section>'
+
+    /* Row 3 — Territory airports (w-12) */
+    /* B1 · Live disruption map — territory-zoomed with per-type filter chips */
+    +   '<section class="widget w-12" id="w-map">'
+    +     '<div class="widget-hdr">'
+    +       '<div class="widget-title"><i class="ti ti-map-pin"></i>Live disruption map · '+escapeHtml(territory.short_label)+'</div>'
+    +       '<span style="font-size:11px;color:var(--text3)">Click a chip to toggle a layer · marker for on-map detail</span>'
+    +     '</div>'
+    +     '<div class="widget-body p0">'
+    +       '<div class="map-filter-bar" id="map-filter-bar"></div>'
+    +       '<div id="disruption-map" style="height:420px;width:100%;position:relative;z-index:0"></div>'
+    +     '</div>'
+    +   '</section>'
+
+    +   '<section class="widget w-12" id="w-territory">'
+    +     '<div class="widget-hdr">'
+    +       '<div class="widget-title"><i class="ti ti-map-2"></i>Your territory · '+escapeHtml(territory.short_label)+' · '+territory.airports_icao.length+' airports</div>'
+    +       '<span style="font-size:11px;color:var(--text3)">Click any airport for its case list + bulk-fetch</span>'
+    +     '</div>'
+    +     '<div class="widget-body p0">'
+    +       '<div class="territory-grid" id="territory-grid"></div>'
+    +     '</div>'
+    +   '</section>'
+
+    /* Row 4 — Requests forum · unassigned / working / worked · assign controls · R2.B2 */
+    +   '<section class="widget w-12" id="w-requests">'
+    +     '<div class="widget-hdr">'
+    +       '<div class="widget-title"><i class="ti ti-inbox"></i>Evidence requests · forum · shared across all DIOs</div>'
+    +       '<a class="widget-link" href="requests.html">Full requests page →</a>'
+    +     '</div>'
+    +     '<div class="widget-body p0">'
+    +       '<div class="filter-bar" id="req-filter-bar">'
+    +         '<span style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;font-weight:600;margin-right:4px">Status:</span>'
+    +         '<button class="filter-chip active" data-filter="all" onclick="setReqFilter(\'all\')">All</button>'
+    +         '<button class="filter-chip" data-filter="unassigned" onclick="setReqFilter(\'unassigned\')"><span class="req-status-dot req-status-unassigned"></span>Unassigned</button>'
+    +         '<button class="filter-chip" data-filter="working" onclick="setReqFilter(\'working\')"><span class="req-status-dot req-status-working"></span>Working</button>'
+    +         '<button class="filter-chip" data-filter="worked" onclick="setReqFilter(\'worked\')"><span class="req-status-dot req-status-worked"></span>Worked</button>'
+    +         '<button class="filter-chip" data-filter="mine" onclick="setReqFilter(\'mine\')" style="margin-left:12px">My area only</button>'
+    +         '<button class="filter-chip" data-filter="overdue" onclick="setReqFilter(\'overdue\')">Overdue</button>'
+    +       '</div>'
+    +       '<table class="req-table"><thead><tr><th>Request</th><th>Area</th><th>Status</th><th>Assigned</th><th>CPR</th><th>Age</th><th></th></tr></thead>'
+    +       '<tbody id="req-tbody"></tbody></table>'
+    +     '</div>'
+    +   '</section>'
+
+    /* R2.B1 · Portfolio matrix + Actionable pull queue removed — duplicated with Requests and Cases. */
+    /* Recent activity kept, promoted to w-12 for the full-width slot. */
+    +   '<section class="widget w-12">'
+    +     '<div class="widget-hdr">'
+    +       '<div class="widget-title"><i class="ti ti-activity"></i>Recent activity · your territory</div>'
+    +       '<a class="widget-link" href="cases.html">All cases →</a>'
+    +     '</div>'
+    +     '<div class="widget-body">'
+    +       (recentActivity.length ? recentActivity.map(function(a){
+             var typeCls = a.type || 'evidence';
+             return '<div class="act-item"><div class="act-dot '+escapeHtml(typeCls)+'"></div><div class="act-body"><div class="act-text">'+escapeHtml(a.text)+'</div><div class="act-meta">'+escapeHtml(a.ref+' · '+(a.claimant||''))+(a.by?' · '+escapeHtml(a.by):'')+'</div></div><div class="act-time">'+escapeHtml(a.time||'')+'</div></div>';
+           }).join('') : '<div class="empty-panel"><i class="ti ti-history-off"></i>No recent activity in your territory.</div>')
+    +     '</div>'
+    +   '</section>'
+
+    + '</div>';
+
+  /* Territory airport chips */
+  var grid = document.getElementById('territory-grid');
+  grid.innerHTML = territory.airports_icao.map(function(icao, i){
+    var iata = territory.airports_iata[i];
+    var count = airportCounts[icao] || 0;
+    var cls = count >= 3 ? ' hot' : count >= 1 ? ' warm' : '';
+    var badgeCls = count === 0 ? ' zero' : '';
+    return '<div class="airport-chip'+cls+'" onclick="openAirportModal(\''+icao+'\')" title="'+iata+' — '+count+' open case'+(count===1?'':'s')+'">'+
+      '<div class="icao">'+icao+'</div>'+
+      '<div class="name">'+iata+' · '+count+' case'+(count===1?'':'s')+'</div>'+
+      '<span class="case-badge'+badgeCls+'">'+count+'</span>'+
+    '</div>';
+  }).join('');
+
+  renderCommunalRequests(communalRequests, document.getElementById('req-tbody'));
+  reloadFeed();
+  renderMatrix();
+  if (typeof renderGlobalNav === 'function') renderGlobalNav();
+}
+
+function reloadFeed(){
+  var btn = document.getElementById('refresh-feed-btn');
+  if (btn) btn.innerHTML = '<span class="spin"></span> Refreshing…';
+  loadTerritoryFeed(DIO.getTerritory(getActiveUser())).then(function(items){
+    renderFeed(items, document.getElementById('feed-list'));
+    if (btn) btn.innerHTML = '<i class="ti ti-refresh"></i> Refresh';
+  }).catch(function(){
+    if (btn) btn.innerHTML = '<i class="ti ti-refresh"></i> Refresh';
+    document.getElementById('feed-list').innerHTML = '<div class="empty-panel"><i class="ti ti-cloud-off"></i>Could not reach evidence-collection.</div>';
+  });
+}
+
+function initDioPage(){
+  render();
+  /* B1 · Init disruption map after DOM has render()-ed the widget shell */
+  setTimeout(function(){ try { initDisruptionMap(); } catch(e){ if(console) console.warn('map init failed:',e); } }, 60);
+  /* Q3 · If we arrived via a hash (e.g. cases/requests redirect), scroll to it after render. */
+  if (window.location.hash) {
+    setTimeout(function(){
+      var id = window.location.hash.slice(1);
+      var el = document.getElementById(id);
+      if (el) el.scrollIntoView({behavior:'smooth',block:'start'});
+    }, 120);
+  }
+}
+/* Session A fix 5 · this was solely window.addEventListener('load', ...) —
+   if the load event has already fired by the time this script executes
+   (readyState 'complete'), a listener registered after the fact never runs,
+   silently dropping both render() and the hash-scroll below with it. Content
+   still rendering elsewhere confirms 'load' does normally fire before this
+   point most of the time, but the hash-scroll specifically was found not
+   firing on repeated direct-navigation tests, consistent with this race.
+   Belt-and-braces: run immediately if the document is already loaded,
+   otherwise wait for 'load' as before. */
+if (document.readyState === 'complete') {
+  initDioPage();
+} else {
+  window.addEventListener('load', initDioPage);
+}
+</script>
+
+</body>
+</html>

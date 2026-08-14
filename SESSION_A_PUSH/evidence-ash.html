@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>DefendAble — Evidence · Volcanic ash</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--ink:#1A1A2E;--ink2:#2D2D44;--ink3:#6B6B80;--rule:#D8D8E0;--rule2:#EBEBF0;--surface:#FFFFFF;--surface2:#F7F7F9;--surface3:#EFEFF2;--accent:#1B3A6B;--accent2:#254E91;--accent-faint:#EEF2F8;--confirm:#1A5C3A;--confirm-faint:#EEF7F2;--caution:#7A4E00;--caution-faint:#FDF4E3;--alert:#8B1A1A;--alert-faint:#FBF0F0;--navy:var(--ink);--blue:var(--accent2);--blue-faint:var(--accent-faint);--green:var(--confirm);--amber:var(--caution);--red:var(--alert);--border:var(--rule);--text:var(--ink);--text2:var(--ink2);--text3:var(--ink3);--font:'Helvetica Neue','Arial',sans-serif;--font-serif:'Georgia','Times New Roman',serif;--mono:'Courier New','Courier',monospace;--r:3px}
+html,body{height:100%;font-family:var(--font);background:var(--surface2);color:var(--text);font-size:14px;overflow:hidden}
+.global-nav{background:var(--navy);height:48px;display:flex;align-items:center;padding:0 20px;flex-shrink:0}
+.gn-logo{display:flex;align-items:center;gap:8px;text-decoration:none;margin-right:20px}
+.gn-mark{width:28px;height:28px;background:var(--blue);border-radius:4px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px}
+.gn-name{font-size:14px;font-weight:500;color:#fff}
+.gn-links{display:flex;align-items:center;gap:2px;flex:1;min-width:0;overflow:hidden}
+.gn-link{display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r);font-size:12px;font-weight:500;color:rgba(255,255,255,0.5);text-decoration:none;transition:all 0.15s;white-space:nowrap}
+.gn-link:hover{background:rgba(255,255,255,0.08);color:#fff}
+.gn-link.active{background:rgba(42,111,219,0.35);color:#fff}
+.gn-right{display:flex;align-items:center;gap:8px;margin-left:8px}
+.gn-user-btn{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:20px;padding:3px 10px 3px 4px;cursor:pointer}
+.gn-av{width:24px;height:24px;border-radius:50%;background:#1C2E44;color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500}
+.gn-user{font-size:11px;font-weight:500;color:rgba(255,255,255,0.85)}
+.page-hdr{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 24px;flex-shrink:0}
+.crumb{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text3);margin-bottom:6px}
+.crumb a{color:var(--text3);text-decoration:none}
+.crumb a:hover{color:var(--blue)}
+.crumb i{font-size:12px}
+.page-title{font-family:var(--font-serif);font-size:24px;font-weight:400;color:var(--text);letter-spacing:-0.01em}
+.page-sub{font-size:12px;color:var(--text3);margin-top:3px}
+.category-ribbon{background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;gap:2px;overflow-x:auto;flex-shrink:0}
+.ribbon-tab{display:flex;align-items:center;gap:6px;padding:11px 14px;font-size:12px;font-weight:500;color:var(--text3);text-decoration:none;border-bottom:2px solid transparent;transition:all .15s;white-space:nowrap}
+.ribbon-tab:hover{color:var(--text2);background:var(--surface2)}
+.ribbon-tab.active{color:var(--text);border-bottom-color:var(--blue);background:var(--surface2)}
+.ribbon-tab i{font-size:14px;color:var(--text3)}
+.ribbon-tab.active i{color:var(--blue)}
+.content{padding:32px;overflow-y:auto;height:calc(100vh - 48px - 60px - 41px);background:var(--surface2)}
+.two-col{display:grid;grid-template-columns:1.2fr 1fr;gap:22px;max-width:1300px;align-items:start}
+.onboarding{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:26px}
+.onboarding h2{font-family:var(--font-serif);font-size:22px;font-weight:400;margin:0 0 12px}
+.onboarding p{font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:14px}
+.status-strip{background:var(--caution-faint);border-left:3px solid var(--caution);padding:12px 16px;border-radius:var(--r);margin-bottom:20px;font-size:12.5px;color:var(--text2)}
+.status-strip strong{color:var(--caution);text-transform:uppercase;font-family:var(--mono);font-size:11px;letter-spacing:.05em;font-weight:700}
+.email-template{background:var(--surface2);border:1px solid var(--rule2);border-radius:var(--r);padding:16px 20px;margin:16px 0;font-family:var(--mono);font-size:12px;color:var(--text);white-space:pre-wrap;line-height:1.6}
+.step-list{padding-left:0;list-style:none;counter-reset:step;margin:16px 0}
+.step-list li{counter-increment:step;position:relative;padding:6px 0 6px 34px;font-size:12.5px;color:var(--text2);line-height:1.55}
+.step-list li::before{content:counter(step);position:absolute;left:0;top:6px;width:22px;height:22px;background:var(--ink);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;font-family:var(--font)}
+.step-list li strong{color:var(--text)}
+.side{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
+.side-hdr{padding:14px 18px;border-bottom:1px solid var(--rule2);background:linear-gradient(180deg,var(--surface) 0%,var(--surface2) 100%)}
+.side-hdr h3{font-family:var(--font-serif);font-size:15px;font-weight:400;margin:0}
+.side-hdr p{font-size:11px;color:var(--text3);margin:3px 0 0}
+.side-body{padding:8px 0;max-height:calc(100vh - 220px);overflow-y:auto}
+.volc-item{padding:11px 18px;border-bottom:1px solid var(--rule2)}
+.volc-item:last-child{border-bottom:none}
+.volc-name{font-size:13px;color:var(--text);font-weight:500}
+.volc-desc{font-size:11px;color:var(--text3);margin-top:3px;line-height:1.45;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.volc-empty{padding:36px 18px;text-align:center;color:var(--text3);font-size:11.5px}
+.loading{padding:40px;text-align:center;color:var(--text3);font-size:12px}
+.spinner{display:inline-block;width:16px;height:16px;border:2px solid var(--rule);border-top-color:var(--blue);border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:8px}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+
+<nav class="global-nav">
+  <a href="index.html" class="gn-logo"><div class="gn-mark"><i class="ti ti-lock"></i></div><span class="gn-name">DefendAble</span></a>
+  <div class="gn-links" id="gn-links"></div>
+  <div class="gn-right">
+    <div class="gn-user-btn" id="gn-user-btn"><div class="gn-av" id="gn-av">SB</div><span class="gn-user" id="gn-username">S. Booth</span></div>
+    <div id="user-dropdown" class="user-dropdown"></div>
+  </div>
+</nav>
+
+<div class="page-hdr">
+  <div class="crumb"><a href="evidence.html">Evidence</a><i class="ti ti-chevron-right"></i><span>Volcanic ash</span></div>
+  <div>
+    <div class="page-title">Volcanic ash</div>
+    <div class="page-sub">Met Office VAAC London QVA — gold-standard McDonagh-pattern evidence. Onboarding email required.</div>
+  </div>
+</div>
+
+<div class="category-ribbon" id="category-ribbon"></div>
+
+<div class="content">
+  <div class="two-col">
+    <div class="onboarding">
+      <div class="status-strip"><strong>Status · pending onboarding</strong> — VAAC London QVA is free but access-gated. One email unlocks it.</div>
+      <h2>Enable the VAAC London QVA feed</h2>
+      <p>The Quantitative Volcanic Ash (QVA) feed from Met Office VAAC London became operational 27 November 2025. It is the gold-standard evidence for any ash-cloud defence — McDonagh C-12/11 pattern — and did not exist as a machine-readable feed before that date. London and Toulouse VAACs are the first two centres offering it. Free, no fee, but access is human-gated via written request.</p>
+
+      <ol class="step-list">
+        <li><strong>Send the subscription email</strong> to <span style="font-family:var(--mono);color:var(--accent)">QVA@metoffice.gov.uk</span> from <span style="font-family:var(--mono);color:var(--accent)">harryevans15@icloud.com</span>. Template below.</li>
+        <li><strong>Wait for VAAC London reply</strong> with API endpoint + credentials (typically 5–10 working days).</li>
+        <li><strong>Add credentials as GitHub Actions secret</strong> <span style="font-family:var(--mono);color:var(--accent)">VAAC_QVA_KEY</span> in the evidence-collection repository settings.</li>
+        <li><strong>Replace the stub pull()</strong> in <span style="font-family:var(--mono);color:var(--accent)">sources/vaac_london_qva.py</span> with the real authenticated fetch (docstring in that file has the template).</li>
+        <li><strong>Trigger a manual run</strong> from the Actions tab — the source lights up on the Evidence hub and this page starts showing live QVA advisories.</li>
+      </ol>
+
+      <div class="email-template">To:   QVA@metoffice.gov.uk
+Subj: QVA subscription request — DefendAble Ltd (EC261/UK261 defence tool)
+
+Please add DefendAble Ltd to the QVA distribution list. We use volcanic-ash
+evidence in EC261/UK261 airline-defence cases (McDonagh C-12/11 pattern).
+We will consume the feed via authenticated pull. Delivery preference:
+HTTPS endpoint with API key.
+
+Contact: Harry Evans, harryevans15@icloud.com
+Organisation website: (add when available)</div>
+    </div>
+
+    <div class="side">
+      <div class="side-hdr"><h3>Related · Smithsonian volcanic activity</h3><p>Upstream intelligence — an eruption before it becomes a VAAC advisory.</p></div>
+      <div style="padding:10px 14px;border-bottom:1px solid var(--rule2)"><input id="volc-search" placeholder="Search volcano name, region…" style="width:100%;padding:6px 10px;font-size:12px;border:1px solid var(--rule);border-radius:3px;font-family:var(--font)"></div>
+      <div class="side-body" id="volc-body"><div class="loading"><span class="spinner"></span>Loading Smithsonian feed…</div></div>
+    </div>
+  </div>
+</div>
+
+<script src="shared_data.js"></script>
+<script src="shared_theme.js"></script>
+<script src="defendable_evidence_reader.js?v=s12a"></script>
+<script src="nav.js?v=sessA4"></script>
+
+<script>
+(function(){
+  var CATEGORIES = [
+    { id:'weather',  label:'Weather',           icon:'ti-cloud-storm',  page:'evidence-weather.html' },
+    { id:'notams',   label:'NOTAMs',            icon:'ti-file-text',    page:'evidence-notams.html' },
+    { id:'news',     label:'News',              icon:'ti-news',         page:'evidence-news.html' },
+    { id:'flights',  label:'Flight tracks',     icon:'ti-plane',        page:'evidence-flights.html' },
+    { id:'global',   label:'Natural disaster',  icon:'ti-flame',        page:'evidence-global.html' },
+    { id:'strikes',  label:'Industrial action', icon:'ti-hand-stop',    page:'evidence-strikes.html' },
+    { id:'atfm',     label:'ATFM',              icon:'ti-traffic-cone', page:'evidence-atfm.html' },
+    { id:'ash',      label:'Volcanic ash',      icon:'ti-mountain',     page:'evidence-ash.html' },
+  ];
+  document.getElementById('category-ribbon').innerHTML = CATEGORIES.map(function(c){
+    return '<a href="'+c.page+'" class="ribbon-tab'+(c.id==='ash'?' active':'')+'"><i class="ti '+c.icon+'"></i>'+c.label+'</a>';
+  }).join('');
+
+  function esc(s){ return String(s||'').replace(/[<>]/g,''); }
+
+  window.EvidenceCollection.get('smithsonian-volcanoes').then(function(payload){
+    var el = document.getElementById('volc-body');
+    var items = (payload && payload.data && payload.data.volcanoes) || [];
+    if (!items.length){ el.innerHTML = '<div class="volc-empty">No Smithsonian feed items in latest snapshot.</div>'; return; }
+    el.innerHTML = items.map(function(v){
+      return '<div class="volc-item"><div class="volc-name">'+esc(v.volcano || v.title)+'</div><div class="volc-desc">'+esc(v.description)+'</div></div>';
+    }).join('');
+  });
+})();
+</script>
+<script>
+/* Q5 · Sync corner user chip to active user (was hardcoded SB). */
+(function(){
+  function sync(){
+    try {
+      var uid = typeof getActiveUser === 'function' ? getActiveUser() : 'SB';
+      var u = (typeof USERS !== 'undefined') ? USERS[uid] : null;
+      if (!u) return;
+      var av = document.getElementById('gn-av'); if (av) av.textContent = u.initials;
+      var un = document.getElementById('gn-username'); if (un) un.textContent = u.name;
+    } catch(e){}
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', sync);
+  else sync();
+})();
+</script>
+</body>
+</html>

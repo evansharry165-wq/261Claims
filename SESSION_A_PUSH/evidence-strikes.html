@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>DefendAble — Evidence · Industrial action</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--ink:#1A1A2E;--ink2:#2D2D44;--ink3:#6B6B80;--rule:#D8D8E0;--rule2:#EBEBF0;--surface:#FFFFFF;--surface2:#F7F7F9;--surface3:#EFEFF2;--accent:#1B3A6B;--accent2:#254E91;--accent-faint:#EEF2F8;--confirm:#1A5C3A;--confirm-faint:#EEF7F2;--caution:#7A4E00;--caution-faint:#FDF4E3;--alert:#8B1A1A;--alert-faint:#FBF0F0;--navy:var(--ink);--blue:var(--accent2);--blue-faint:var(--accent-faint);--green:var(--confirm);--amber:var(--caution);--red:var(--alert);--border:var(--rule);--text:var(--ink);--text2:var(--ink2);--text3:var(--ink3);--font:'Helvetica Neue','Arial',sans-serif;--font-serif:'Georgia','Times New Roman',serif;--mono:'Courier New','Courier',monospace;--r:3px}
+html,body{height:100%;font-family:var(--font);background:var(--surface2);color:var(--text);font-size:14px;overflow:hidden}
+.global-nav{background:var(--navy);height:48px;display:flex;align-items:center;padding:0 20px;flex-shrink:0}
+.gn-logo{display:flex;align-items:center;gap:8px;text-decoration:none;margin-right:20px}
+.gn-mark{width:28px;height:28px;background:var(--blue);border-radius:4px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px}
+.gn-name{font-size:14px;font-weight:500;color:#fff}
+.gn-links{display:flex;align-items:center;gap:2px;flex:1;min-width:0;overflow:hidden}
+.gn-link{display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r);font-size:12px;font-weight:500;color:rgba(255,255,255,0.5);text-decoration:none;transition:all 0.15s;white-space:nowrap}
+.gn-link:hover{background:rgba(255,255,255,0.08);color:#fff}
+.gn-link.active{background:rgba(42,111,219,0.35);color:#fff}
+.gn-right{display:flex;align-items:center;gap:8px;margin-left:8px}
+.gn-user-btn{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:20px;padding:3px 10px 3px 4px;cursor:pointer}
+.gn-av{width:24px;height:24px;border-radius:50%;background:#1C2E44;color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500}
+.gn-user{font-size:11px;font-weight:500;color:rgba(255,255,255,0.85)}
+.page-hdr{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 24px;flex-shrink:0}
+.crumb{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text3);margin-bottom:6px}
+.crumb a{color:var(--text3);text-decoration:none}
+.crumb a:hover{color:var(--blue)}
+.crumb i{font-size:12px}
+.hdr-flex{display:flex;justify-content:space-between;align-items:flex-end;gap:20px}
+.page-title{font-family:var(--font-serif);font-size:24px;font-weight:400;color:var(--text);letter-spacing:-0.01em}
+.page-sub{font-size:12px;color:var(--text3);margin-top:3px}
+.hdr-meta{display:flex;gap:16px;font-size:11px;color:var(--text3)}
+.hdr-meta strong{color:var(--text);font-family:var(--mono);font-weight:600}
+.category-ribbon{background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;gap:2px;overflow-x:auto;flex-shrink:0}
+.ribbon-tab{display:flex;align-items:center;gap:6px;padding:11px 14px;font-size:12px;font-weight:500;color:var(--text3);text-decoration:none;border-bottom:2px solid transparent;transition:all .15s;white-space:nowrap}
+.ribbon-tab:hover{color:var(--text2);background:var(--surface2)}
+.ribbon-tab.active{color:var(--text);border-bottom-color:var(--blue);background:var(--surface2)}
+.ribbon-tab i{font-size:14px;color:var(--text3)}
+.ribbon-tab.active i{color:var(--blue)}
+.workspace{display:grid;grid-template-columns:250px 1fr;height:calc(100vh - 48px - 60px - 41px);min-height:0}
+.sidebar{background:var(--surface);border-right:1px solid var(--border);overflow-y:auto;padding:16px 0}
+.sb-section{padding:0 18px 14px}
+.sb-title{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:8px}
+.sb-input{width:100%;font-family:var(--font);font-size:12px;padding:7px 10px;border:1px solid var(--border);border-radius:var(--r);background:var(--surface2);color:var(--text)}
+.sb-input:focus{outline:none;border-color:var(--blue);background:var(--surface)}
+.sb-btn-group{display:flex;flex-wrap:wrap;gap:4px}
+.sb-btn{font-size:11px;padding:4px 9px;border:1px solid var(--border);background:var(--surface);color:var(--text2);border-radius:var(--r);cursor:pointer;font-family:var(--font)}
+.sb-btn:hover{background:var(--surface2)}
+.sb-btn.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+.sb-count{padding:10px 18px 6px;background:var(--surface2);border-top:1px solid var(--rule2);font-size:11px;color:var(--text3)}
+.sb-count strong{color:var(--text);font-family:var(--mono);font-weight:600}
+.main{overflow-y:auto;padding:22px 26px;background:var(--surface2)}
+.strike-column{max-width:820px}
+.strike-source-hdr{display:flex;align-items:center;gap:10px;margin:20px 0 10px}
+.strike-source-hdr:first-child{margin-top:0}
+.strike-flag{width:28px;height:20px;border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:#fff;flex-shrink:0}
+.flag-fr{background:linear-gradient(to right, #0055A4 33%, #fff 33%, #fff 66%, #EF4135 66%)}
+.flag-it{background:linear-gradient(to right, #009246 33%, #fff 33%, #fff 66%, #CE2B37 66%)}
+.strike-source-name{font-family:var(--font-serif);font-size:16px;font-weight:400;color:var(--text)}
+.strike-source-meta{font-size:11px;color:var(--text3);margin-left:auto;font-family:var(--mono)}
+.strike-list{display:flex;flex-direction:column;gap:8px}
+.strike-item{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--amber);border-radius:var(--r);padding:12px 16px;display:grid;grid-template-columns:140px 1fr;gap:12px;align-items:flex-start}
+.strike-date{font-family:var(--mono);font-size:11px;color:var(--amber);font-weight:600;padding-top:2px}
+.strike-body{min-width:0}
+.strike-snippet{font-size:12px;color:var(--text2);line-height:1.5;word-break:break-word}
+.strike-empty{padding:60px;text-align:center;color:var(--text3);font-size:12px}
+.strike-empty i{display:block;font-size:30px;color:var(--rule);margin-bottom:12px}
+.loading{padding:60px;text-align:center;color:var(--text3);font-size:12px}
+.spinner{display:inline-block;width:16px;height:16px;border:2px solid var(--rule);border-top-color:var(--blue);border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:8px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* S2 · Country → date → event accordion + attached-docs sub-view */
+.strike-country-hdr{background:var(--surface);border:1px solid var(--rule);border-radius:4px;padding:12px 16px;margin-bottom:8px;font-family:var(--font-serif);font-size:15px;color:var(--text);display:flex;justify-content:space-between;align-items:center;cursor:pointer}
+.strike-country-hdr:hover{background:var(--surface2)}
+.strike-country-hdr .country-flag{display:inline-block;width:20px;text-align:center;margin-right:8px}
+.strike-country-hdr .count{font-family:var(--mono);font-size:11px;color:var(--text3);font-weight:400}
+.strike-date-group{padding:0 14px 8px 14px;border-left:2px solid var(--accent-faint);margin:0 0 12px 20px}
+.strike-date-hdr{font-family:var(--mono);font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;font-weight:600;margin:10px 0 6px 0}
+.strike-event{background:var(--surface);border:1px solid var(--rule);border-left:3px solid var(--accent);border-radius:3px;padding:10px 14px;margin-bottom:8px;cursor:pointer;transition:background .12s}
+.strike-event:hover{background:var(--surface2)}
+.strike-event.expanded{background:var(--accent-faint);border-color:var(--accent)}
+.strike-event-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:3px}
+.strike-event-meta{font-size:11px;color:var(--text3);font-family:var(--mono)}
+.strike-event-count{font-size:10.5px;color:var(--accent);font-weight:600;margin-top:4px}
+.strike-event-docs{padding:12px 14px 4px;background:var(--surface);border:1px solid var(--rule);border-top:none;border-radius:0 0 3px 3px;margin-top:-8px;margin-bottom:12px}
+.strike-doc-cat{margin-bottom:12px}
+.strike-doc-cat-hdr{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--text3);font-weight:600;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.strike-doc-cat-hdr i{font-size:11px;color:var(--accent)}
+.strike-doc-item{padding:6px 10px;background:var(--surface2);border-radius:3px;font-size:11.5px;color:var(--text2);margin-bottom:4px;line-height:1.4;border-left:2px solid var(--rule)}
+.strike-doc-item.news{border-left-color:#1A5C3A}
+.strike-doc-item.pub{border-left-color:#7A4E00}
+.strike-doc-item.email{border-left-color:#5B4A9F}
+.strike-doc-item.flight{border-left-color:#254E91}
+.strike-doc-src{font-family:var(--mono);font-size:9px;text-transform:uppercase;color:var(--text3);letter-spacing:.04em;margin-top:3px}
+</style>
+</head>
+<body>
+
+<nav class="global-nav">
+  <a href="index.html" class="gn-logo"><div class="gn-mark"><i class="ti ti-lock"></i></div><span class="gn-name">DefendAble</span></a>
+  <div class="gn-links" id="gn-links"></div>
+  <div class="gn-right">
+    <div class="gn-user-btn" id="gn-user-btn"><div class="gn-av" id="gn-av">SB</div><span class="gn-user" id="gn-username">S. Booth</span></div>
+    <div id="user-dropdown" class="user-dropdown"></div>
+  </div>
+</nav>
+
+<div class="page-hdr">
+  <div class="crumb"><a href="evidence.html">Evidence</a><i class="ti ti-chevron-right"></i><span>Industrial action</span></div>
+  <div class="hdr-flex">
+    <div>
+      <div class="page-title">Industrial action</div>
+      <div class="page-sub">French DGAC + Italian ENAC strike notices — third-party industrial-action evidence for extraordinary-circumstances defence.</div>
+    </div>
+    <div class="hdr-meta" id="hdr-meta">
+      <div><strong id="m-france">—</strong> France notices</div>
+      <div><strong id="m-italy">—</strong> Italy notices</div>
+      <div>Pulled <strong id="m-pulled">—</strong></div>
+    </div>
+  </div>
+</div>
+
+<div class="category-ribbon" id="category-ribbon"></div>
+
+<div class="workspace">
+  <aside class="sidebar">
+    <div class="sb-section">
+      <div class="sb-title">Search</div>
+      <input class="sb-input" id="search" placeholder="Date, keyword…">
+    </div>
+    <div class="sb-section">
+      <div class="sb-title">Country</div>
+      <div class="sb-btn-group" id="country-filters"></div>
+    </div>
+    <div class="sb-count" id="sb-count"></div>
+  </aside>
+  <main class="main">
+    <div id="strike-body" class="strike-column"><div class="loading"><span class="spinner"></span>Loading strike notices from evidence-collection…</div></div>
+  </main>
+</div>
+
+<script src="shared_data.js"></script>
+<script src="shared_theme.js"></script>
+<script src="defendable_evidence_reader.js?v=s12a"></script>
+<script src="nav.js?v=sessA4"></script>
+
+<script>
+(function(){
+  var CATEGORIES = [
+    { id:'weather',  label:'Weather',           icon:'ti-cloud-storm',  page:'evidence-weather.html' },
+    { id:'notams',   label:'NOTAMs',            icon:'ti-file-text',    page:'evidence-notams.html' },
+    { id:'news',     label:'News',              icon:'ti-news',         page:'evidence-news.html' },
+    { id:'flights',  label:'Flight tracks',     icon:'ti-plane',        page:'evidence-flights.html' },
+    { id:'global',   label:'Natural disaster',  icon:'ti-flame',        page:'evidence-global.html' },
+    { id:'strikes',  label:'Industrial action', icon:'ti-hand-stop',    page:'evidence-strikes.html' },
+    { id:'atfm',     label:'ATFM',              icon:'ti-traffic-cone', page:'evidence-atfm.html' },
+    { id:'ash',      label:'Volcanic ash',      icon:'ti-mountain',     page:'evidence-ash.html' },
+  ];
+  document.getElementById('category-ribbon').innerHTML = CATEGORIES.map(function(c){
+    return '<a href="'+c.page+'" class="ribbon-tab'+(c.id==='strikes'?' active':'')+'"><i class="ti '+c.icon+'"></i>'+c.label+'</a>';
+  }).join('');
+
+  var state = { search:'', country:'all', fr:[], it:[] };
+  /* S2 · Enriched event catalogue — country → date → event with attached supporting docs.
+     Seeded with plausible mock content. Replaces the flat notice list to reflect how a DIO
+     actually organises strike-related evidence for defence prep. */
+  var STRIKE_EVENTS = [
+    {country:'FR', flag:'🇫🇷', date:'2026-03-12', title:'SNCTA nationwide ATC strike · 4-hour walkout 12:00-16:00Z',
+     news:[
+       {title:'French ATC union SNCTA calls 4-hour walkout · disruption expected across LFFF FIR', src:'Reuters · 09 Mar 2026'},
+       {title:'DGAC orders 25% minimum service · airlines told to cancel proactively', src:'La Tribune · 10 Mar 2026'},
+       {title:'Ryanair cancels 240 flights across Europe as SNCTA action begins', src:'Aviation Herald · 12 Mar 2026'}],
+     publications:[
+       {title:'CDG operational bulletin OB-2026-047 · reduced arrival rate 30/h', src:'ADP · 11 Mar 2026'},
+       {title:'ORY notice N-2026-089 · no PPR waivers 12:00-16:00Z', src:'ADP · 11 Mar 2026'}],
+     emails:[
+       {title:'easyOps · 12MAR26 SNCTA — cancellation matrix + rebooking codes', src:'easyOps mailbox · 11 Mar 2026 17:30'},
+       {title:'NC · strike-day standby crew reallocation FR bases', src:'Network Control · 11 Mar 2026 19:12'}],
+     flights:[
+       {title:'HC 742 CDG-LTN · cancelled 12MAR · Cat A comp × 174 pax', src:'Ops record'},
+       {title:'HC 519 LYS-LGW · 4h35 delay · WX + ATC compounded · defence pack C-2026-0201', src:'Ops record'},
+       {title:'HC 881 MRS-LGW · 6h20 delay · full defence complete', src:'Ops record'}]},
+
+    {country:'FR', flag:'🇫🇷', date:'2026-04-18', title:'CGT baggage-handler strike · CDG + ORY 08:00-14:00Z',
+     news:[
+       {title:'CGT calls Paris-airport baggage strike over pay dispute', src:'AFP · 15 Apr 2026'},
+       {title:'ADP reports 40% baggage-return delays on strike day', src:'Les Echos · 18 Apr 2026'}],
+     publications:[
+       {title:'CDG operational bulletin OB-2026-063 · rolling delays expected', src:'ADP · 17 Apr 2026'}],
+     emails:[
+       {title:'easyOps · baggage-strike pax-comms template', src:'easyOps mailbox · 17 Apr 2026'}],
+     flights:[
+       {title:'HC 442 LGW-BCN · baggage-related 2h20 delay', src:'Ops record'}]},
+
+    {country:'IT', flag:'🇮🇹', date:'2026-05-05', title:'ENAV 24-hour ATC strike · nationwide · 00:00-24:00Z',
+     news:[
+       {title:'ENAV union declares 24-hour Italian ATC walkout · 5 May 2026', src:'Reuters · 25 Apr 2026'},
+       {title:'ENAC issues minimum-service order for garanzia flights', src:'Corriere della Sera · 28 Apr 2026'},
+       {title:'Ryanair, Wizz, easyJet cancel 900+ Italian flights ahead of ENAV action', src:'Aviation Herald · 04 May 2026'}],
+     publications:[
+       {title:'FCO ops bulletin · slot restrictions and minimum-service list', src:'ADR Roma · 03 May 2026'},
+       {title:'MXP notice · no arrivals after 22:00Z 4th until 06:00Z 6th', src:'SEA Milano · 03 May 2026'}],
+     emails:[
+       {title:'easyOps · IT strike day-of matrix + press-line', src:'easyOps · 04 May 2026'},
+       {title:'Crewing · SBY reallocation MXP + FCO bases', src:'Crewing · 04 May 2026'}],
+     flights:[
+       {title:'HC 612 BCN-LGW · diverted MRS · 4h10 delay · defence pack complete', src:'Ops record'},
+       {title:'HC 228 MAD-LTN · cancelled · Cat A comp × 156 pax', src:'Ops record'}]},
+
+    {country:'IT', flag:'🇮🇹', date:'2026-06-14', title:'USB ground-handling strike · MXP + LIN 10:00-14:00Z',
+     news:[
+       {title:'USB calls Milan-airports ground-handling strike over Alitalia legacy contracts', src:'ANSA · 08 Jun 2026'}],
+     publications:[
+       {title:'MXP + LIN joint ops bulletin · reduced turnaround windows', src:'SEA Milano · 12 Jun 2026'}],
+     emails:[
+       {title:'easyOps · IT ground-handling contingency', src:'easyOps · 12 Jun 2026'}],
+     flights:[
+       {title:'HC 471 VLC-LGW · originally scheduled through MXP · rerouted', src:'Ops record'}]},
+  ];
+
+  var STRIKE_EVENT_STATE = {};
+
+  function toggleStrikeEvent(id){
+    STRIKE_EVENT_STATE[id] = !STRIKE_EVENT_STATE[id];
+    renderStrikeHierarchy();
+  }
+
+  function renderStrikeDocs(ev){
+    function cat(title, items, cls, icon){
+      if (!items || !items.length) return '';
+      return '<div class="strike-doc-cat">'+
+        '<div class="strike-doc-cat-hdr"><i class="ti '+icon+'"></i>'+title+' ('+items.length+')</div>'+
+        items.map(function(it){
+          return '<div class="strike-doc-item '+cls+'"><div>'+esc(it.title)+'</div><div class="strike-doc-src">'+esc(it.src)+'</div></div>';
+        }).join('')+
+      '</div>';
+    }
+    return '<div class="strike-event-docs">'+
+      cat('News articles', ev.news, 'news', 'ti-news')+
+      cat('Airport publications', ev.publications, 'pub', 'ti-file-text')+
+      cat('Internal emails', ev.emails, 'email', 'ti-mail')+
+      cat('Affected flights', ev.flights, 'flight', 'ti-plane')+
+    '</div>';
+  }
+
+  function renderStrikeHierarchy(){
+    var s = state.search.toLowerCase();
+    var events = STRIKE_EVENTS.filter(function(ev){
+      if (state.country !== 'all' && ev.country !== state.country) return false;
+      if (!s) return true;
+      var hay = (ev.title + ' ' + ev.date + ' ' + ev.country).toLowerCase();
+      return hay.indexOf(s) >= 0;
+    });
+    var byCountry = {};
+    events.forEach(function(ev){
+      byCountry[ev.country] = byCountry[ev.country] || {flag:ev.flag, name: ev.country==='FR'?'France · DGAC':'Italy · ENAC', events:[]};
+      byCountry[ev.country].events.push(ev);
+    });
+    var html = '';
+    Object.keys(byCountry).sort().forEach(function(cc){
+      var g = byCountry[cc];
+      html += '<div class="strike-country-hdr"><span><span class="country-flag">'+g.flag+'</span>'+g.name+'</span><span class="count">'+g.events.length+' event'+(g.events.length===1?'':'s')+'</span></div>';
+      html += '<div class="strike-date-group">';
+      // group by date
+      var byDate = {};
+      g.events.forEach(function(ev){ byDate[ev.date] = byDate[ev.date] || []; byDate[ev.date].push(ev); });
+      Object.keys(byDate).sort().reverse().forEach(function(d){
+        html += '<div class="strike-date-hdr">'+d+'</div>';
+        byDate[d].forEach(function(ev){
+          var id = ev.country+'-'+ev.date+'-'+ev.title.slice(0,20);
+          var expanded = STRIKE_EVENT_STATE[id];
+          var docCount = (ev.news||[]).length + (ev.publications||[]).length + (ev.emails||[]).length + (ev.flights||[]).length;
+          html += '<div class="strike-event '+(expanded?'expanded':'')+'" onclick="toggleStrikeEvent(\''+id.replace(/\'/g,'')+'\')">'+
+                    '<div class="strike-event-title">'+esc(ev.title)+'</div>'+
+                    '<div class="strike-event-meta">'+ev.date+'</div>'+
+                    '<div class="strike-event-count">'+docCount+' supporting docs · '+
+                      (ev.news||[]).length+' news · '+
+                      (ev.publications||[]).length+' publications · '+
+                      (ev.emails||[]).length+' emails · '+
+                      (ev.flights||[]).length+' flights'+
+                    '</div>'+
+                  '</div>';
+          if (expanded) html += renderStrikeDocs(ev);
+        });
+      });
+      html += '</div>';
+    });
+    if (!html) html = '<div class="strike-empty"><i class="ti ti-hand-stop"></i>No strike events match this filter.</div>';
+    document.getElementById('strike-body').innerHTML = html;
+    document.getElementById('sb-count').innerHTML = '<div class="sb-title">Filter summary</div><div>Events shown: <strong>'+events.length+'</strong> of '+STRIKE_EVENTS.length+'</div>';
+  }
+
+
+  window.toggleStrikeEvent = toggleStrikeEvent;
+
+  function chipRow(items, active, id, onChange){
+    var el = document.getElementById(id);
+    el.innerHTML = items.map(function(i){ return '<button class="sb-btn'+(i.id===active?' active':'')+'" data-k="'+i.id+'">'+i.label+'</button>'; }).join('');
+    Array.prototype.forEach.call(el.querySelectorAll('.sb-btn'), function(b){ b.onclick = function(){ onChange(b.dataset.k); }; });
+  }
+
+  function esc(s){ return String(s||'').replace(/[<>]/g,''); }
+
+  function renderSection(label, cls, notices){
+    var s = state.search.toLowerCase();
+    var list = notices.filter(function(n){ if (!s) return true; return ((n.date_match||'') + ' ' + (n.snippet||'')).toLowerCase().indexOf(s) >= 0; });
+    if (!list.length) return '';
+    var items = list.map(function(n){
+      return '<div class="strike-item">'+
+        '<div class="strike-date">'+esc(n.date_match || '—')+'</div>'+
+        '<div class="strike-body"><div class="strike-snippet">'+esc(n.snippet)+'</div></div>'+
+      '</div>';
+    }).join('');
+    return '<div class="strike-source-hdr"><div class="strike-flag '+cls+'"></div><div class="strike-source-name">'+label+'</div><div class="strike-source-meta">'+list.length+' notices</div></div>'+
+      '<div class="strike-list">'+items+'</div>';
+  }
+
+  function render(){
+    /* S2 · Delegate to the new hierarchical renderer.  Raw notice lists (state.fr,
+       state.it) remain populated from the live snapshot for future use (e.g. auto-
+       generating new STRIKE_EVENTS entries from live data). */
+    renderStrikeHierarchy();
+  }
+
+  chipRow([{id:'all',label:'All'},{id:'FR',label:'France'},{id:'IT',label:'Italy'}], state.country, 'country-filters', function(k){ state.country = k; render(); chipRow([{id:'all',label:'All'},{id:'FR',label:'France'},{id:'IT',label:'Italy'}], k, 'country-filters', arguments.callee); });
+  document.getElementById('search').oninput = function(e){ state.search = e.target.value.trim(); render(); };
+
+  Promise.all([
+    window.EvidenceCollection.get('dgac-france-notices'),
+    window.EvidenceCollection.get('enac-italy-notices'),
+  ]).then(function(r){
+    var fr = r[0], it = r[1];
+    state.fr = (fr && fr.data && fr.data.notices) || [];
+    state.it = (it && it.data && it.data.notices) || [];
+    document.getElementById('m-france').textContent = state.fr.length;
+    document.getElementById('m-italy').textContent = state.it.length;
+    var fresh = (fr && fr.pulled_at) || (it && it.pulled_at);
+    document.getElementById('m-pulled').textContent = fresh ? new Date(fresh).toISOString().slice(0,16).replace('T',' ')+'Z' : '—';
+    render();
+  }).catch(function(){
+    document.getElementById('strike-body').innerHTML = '<div class="strike-empty"><i class="ti ti-cloud-off"></i>Could not reach the evidence-collection repository.</div>';
+  });
+})();
+</script>
+<script>
+/* Q5 · Sync corner user chip to active user (was hardcoded SB). */
+(function(){
+  function sync(){
+    try {
+      var uid = typeof getActiveUser === 'function' ? getActiveUser() : 'SB';
+      var u = (typeof USERS !== 'undefined') ? USERS[uid] : null;
+      if (!u) return;
+      var av = document.getElementById('gn-av'); if (av) av.textContent = u.initials;
+      var un = document.getElementById('gn-username'); if (un) un.textContent = u.name;
+    } catch(e){}
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', sync);
+  else sync();
+})();
+</script>
+</body>
+</html>

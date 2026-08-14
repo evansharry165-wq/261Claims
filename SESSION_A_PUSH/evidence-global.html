@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>DefendAble — Evidence · Natural disaster</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--ink:#1A1A2E;--ink2:#2D2D44;--ink3:#6B6B80;--ink4:#9B9BAA;--rule:#D8D8E0;--rule2:#EBEBF0;--surface:#FFFFFF;--surface2:#F7F7F9;--surface3:#EFEFF2;--accent:#1B3A6B;--accent2:#254E91;--accent-faint:#EEF2F8;--confirm:#1A5C3A;--confirm-faint:#EEF7F2;--caution:#7A4E00;--caution-faint:#FDF4E3;--alert:#8B1A1A;--alert-faint:#FBF0F0;--navy:var(--ink);--blue:var(--accent2);--blue-faint:var(--accent-faint);--green:var(--confirm);--green-faint:var(--confirm-faint);--amber:var(--caution);--amber-faint:var(--caution-faint);--red:var(--alert);--red-faint:var(--alert-faint);--border:var(--rule);--text:var(--ink);--text2:var(--ink2);--text3:var(--ink3);--font:'Helvetica Neue','Arial',sans-serif;--font-serif:'Georgia','Times New Roman',serif;--mono:'Courier New','Courier',monospace;--r:3px}
+html,body{height:100%;font-family:var(--font);background:var(--surface2);color:var(--text);font-size:14px;overflow:hidden}
+.global-nav{background:var(--navy);height:48px;display:flex;align-items:center;padding:0 20px;flex-shrink:0}
+.gn-logo{display:flex;align-items:center;gap:8px;text-decoration:none;margin-right:20px}
+.gn-mark{width:28px;height:28px;background:var(--blue);border-radius:4px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px}
+.gn-name{font-size:14px;font-weight:500;color:#fff}
+.gn-links{display:flex;align-items:center;gap:2px;flex:1;min-width:0;overflow:hidden}
+.gn-link{display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r);font-size:12px;font-weight:500;color:rgba(255,255,255,0.5);text-decoration:none;transition:all 0.15s;white-space:nowrap}
+.gn-link:hover{background:rgba(255,255,255,0.08);color:#fff}
+.gn-link.active{background:rgba(42,111,219,0.35);color:#fff}
+.gn-right{display:flex;align-items:center;gap:8px;margin-left:8px}
+.gn-user-btn{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:20px;padding:3px 10px 3px 4px;cursor:pointer}
+.gn-av{width:24px;height:24px;border-radius:50%;background:#1C2E44;color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500}
+.gn-user{font-size:11px;font-weight:500;color:rgba(255,255,255,0.85)}
+
+.page-hdr{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 24px;flex-shrink:0}
+.crumb{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text3);margin-bottom:6px}
+.crumb a{color:var(--text3);text-decoration:none}
+.crumb a:hover{color:var(--blue)}
+.crumb i{font-size:12px}
+.hdr-flex{display:flex;justify-content:space-between;align-items:flex-end;gap:20px}
+.page-title{font-family:var(--font-serif);font-size:24px;font-weight:400;color:var(--text);letter-spacing:-0.01em}
+.page-sub{font-size:12px;color:var(--text3);margin-top:3px}
+.hdr-meta{display:flex;gap:16px;font-size:11px;color:var(--text3)}
+.hdr-meta strong{color:var(--text);font-family:var(--mono);font-weight:600}
+
+.category-ribbon{background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;gap:2px;overflow-x:auto;flex-shrink:0}
+.ribbon-tab{display:flex;align-items:center;gap:6px;padding:11px 14px;font-size:12px;font-weight:500;color:var(--text3);text-decoration:none;border-bottom:2px solid transparent;transition:all .15s;white-space:nowrap}
+.ribbon-tab:hover{color:var(--text2);background:var(--surface2)}
+.ribbon-tab.active{color:var(--text);border-bottom-color:var(--blue);background:var(--surface2)}
+.ribbon-tab i{font-size:14px;color:var(--text3)}
+.ribbon-tab.active i{color:var(--blue)}
+
+.workspace{display:grid;grid-template-columns:280px 1fr 360px;height:calc(100vh - 48px - 60px - 41px);min-height:0}
+
+.sidebar{background:var(--surface);border-right:1px solid var(--border);overflow-y:auto;padding:16px 0}
+.sb-section{padding:0 18px 14px}
+.sb-title{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:8px}
+.sb-btn-group{display:flex;flex-wrap:wrap;gap:4px}
+.sb-btn{font-size:11px;padding:4px 9px;border:1px solid var(--border);background:var(--surface);color:var(--text2);border-radius:var(--r);cursor:pointer;font-family:var(--font)}
+.sb-btn:hover{background:var(--surface2)}
+.sb-btn.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+.sb-input{width:100%;font-family:var(--font);font-size:12px;padding:7px 10px;border:1px solid var(--border);border-radius:var(--r);background:var(--surface2);color:var(--text)}
+.sb-input:focus{outline:none;border-color:var(--blue);background:var(--surface)}
+
+.sb-event-row{padding:9px 18px;display:flex;align-items:flex-start;gap:8px;cursor:pointer;border-bottom:1px solid var(--rule2);transition:background .1s}
+.sb-event-row:hover{background:var(--surface2)}
+.sb-event-row.active{background:var(--blue-faint);border-left:3px solid var(--blue);padding-left:15px}
+.sb-event-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:5px}
+.dot-red{background:var(--red)}.dot-orange{background:var(--amber)}.dot-green{background:var(--green)}.dot-grey{background:var(--rule)}
+.sb-event-info{flex:1;min-width:0}
+.sb-event-title{font-size:11.5px;font-weight:600;color:var(--text);line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sb-event-meta{font-size:10.5px;color:var(--text3);margin-top:2px}
+
+.main{position:relative;background:var(--surface2)}
+#map{position:absolute;inset:0}
+.map-legend{position:absolute;top:14px;right:14px;background:rgba(255,255,255,0.96);border:1px solid var(--border);border-radius:var(--r);padding:10px 14px;font-size:11px;z-index:400;box-shadow:0 3px 12px rgba(0,0,0,0.08)}
+.map-legend-hdr{font-size:9.5px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px}
+.map-legend-row{display:flex;align-items:center;gap:6px;padding:2px 0}
+.map-legend-dot{width:10px;height:10px;border-radius:50%}
+.map-legend-lbl{color:var(--text2);font-size:11px}
+
+.detail{background:var(--surface);border-left:1px solid var(--border);overflow-y:auto;padding:0}
+.det-empty{padding:60px 24px;text-align:center;color:var(--text3);font-size:12px}
+.det-empty i{display:block;font-size:28px;color:var(--rule);margin-bottom:10px}
+.det-hdr{padding:18px 22px 14px;border-bottom:1px solid var(--border);background:linear-gradient(180deg,var(--surface) 0%,var(--surface2) 100%)}
+.det-title{font-family:var(--font-serif);font-size:18px;font-weight:400;color:var(--text);letter-spacing:-0.01em}
+.det-country{font-size:12px;color:var(--text3);margin-top:3px}
+.det-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}
+.det-tag{font-family:var(--mono);font-size:9.5px;font-weight:600;padding:2px 7px;border-radius:2px;background:var(--surface3);color:var(--text2)}
+.det-tag.red{background:var(--red-faint);color:var(--red)}
+.det-tag.orange{background:var(--amber-faint);color:var(--amber)}
+.det-tag.green{background:var(--green-faint);color:var(--green)}
+.det-body{padding:14px 22px 24px}
+.det-section{margin-top:16px}
+.det-section:first-child{margin-top:0}
+.det-section-hdr{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);padding-bottom:6px;border-bottom:1px solid var(--rule2);margin-bottom:8px}
+.det-kv{display:grid;grid-template-columns:110px 1fr;gap:5px 12px;font-size:11.5px}
+.det-kv .k{color:var(--text3);text-transform:uppercase;letter-spacing:.05em;font-size:10px;font-weight:600;padding-top:2px}
+.det-kv .v{color:var(--text);font-family:var(--mono);font-size:11.5px;word-break:break-word}
+.det-desc{font-size:12px;color:var(--text2);line-height:1.5;padding:8px 0}
+.det-link{margin-top:8px;font-size:11.5px;color:var(--blue);text-decoration:none;display:inline-flex;align-items:center;gap:4px}
+.det-link:hover{text-decoration:underline}
+
+.overlay-loading{position:absolute;inset:0;background:rgba(247,247,249,0.85);display:flex;align-items:center;justify-content:center;z-index:500;font-size:12px;color:var(--text3)}
+.spinner{display:inline-block;width:16px;height:16px;border:2px solid var(--rule);border-top-color:var(--blue);border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:8px}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+
+<nav class="global-nav">
+  <a href="index.html" class="gn-logo"><div class="gn-mark"><i class="ti ti-lock"></i></div><span class="gn-name">DefendAble</span></a>
+  <div class="gn-links" id="gn-links"></div>
+  <div class="gn-right">
+    <div class="gn-user-btn" id="gn-user-btn"><div class="gn-av" id="gn-av">SB</div><span class="gn-user" id="gn-username">S. Booth</span></div>
+    <div id="user-dropdown" class="user-dropdown"></div>
+  </div>
+</nav>
+
+<div class="page-hdr">
+  <div class="crumb"><a href="evidence.html">Evidence</a><i class="ti ti-chevron-right"></i><span>Natural disaster</span></div>
+  <div class="hdr-flex">
+    <div>
+      <div class="page-title">Natural disaster</div>
+      <div class="page-sub">GDACS global events + Copernicus EMS + NASA FIRMS wildfires + Smithsonian volcanoes — mapped and severity-colour-coded.</div>
+    </div>
+    <div class="hdr-meta" id="hdr-meta">
+      <div><strong id="m-total">—</strong> events</div>
+      <div><strong id="m-fires">—</strong> fires</div>
+      <div><strong id="m-volcanoes">—</strong> volcanoes</div>
+      <div>Pulled <strong id="m-pulled">—</strong></div>
+    </div>
+  </div>
+</div>
+
+<div class="category-ribbon" id="category-ribbon"></div>
+
+<div class="workspace">
+  <aside class="sidebar">
+    <div class="sb-section">
+      <div class="sb-title">Search</div>
+      <input class="sb-input" id="search" placeholder="Country, event name…">
+    </div>
+    <div class="sb-section">
+      <div class="sb-title">Type</div>
+      <div class="sb-btn-group" id="type-filters"></div>
+    </div>
+    <div class="sb-section">
+      <div class="sb-title">Alert level</div>
+      <div class="sb-btn-group" id="alert-filters"></div>
+    </div>
+    <div class="sb-section">
+      <div class="sb-title">Source</div>
+      <div class="sb-btn-group" id="source-filters"></div>
+    </div>
+    <div id="event-list"></div>
+  </aside>
+
+  <main class="main">
+    <div id="map"></div>
+    <div class="map-legend">
+      <div class="map-legend-hdr">Alert level</div>
+      <div class="map-legend-row"><div class="map-legend-dot" style="background:#8B1A1A"></div><div class="map-legend-lbl">Red — high impact</div></div>
+      <div class="map-legend-row"><div class="map-legend-dot" style="background:#7A4E00"></div><div class="map-legend-lbl">Orange — moderate</div></div>
+      <div class="map-legend-row"><div class="map-legend-dot" style="background:#1A5C3A"></div><div class="map-legend-lbl">Green — low</div></div>
+      <div class="map-legend-row"><div class="map-legend-dot" style="background:#D8D8E0"></div><div class="map-legend-lbl">Unclassified</div></div>
+    </div>
+    <div id="overlay-loading" class="overlay-loading"><span class="spinner"></span>Loading disaster snapshot from evidence-collection…</div>
+  </main>
+
+  <aside class="detail" id="detail">
+    <div class="det-empty"><i class="ti ti-map-pin"></i>Select an event on the map or in the list to see full details.</div>
+  </aside>
+</div>
+
+<script src="shared_data.js"></script>
+<script src="shared_theme.js"></script>
+<script src="defendable_evidence_reader.js?v=s9a"></script>
+<script src="nav.js?v=sessA4"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+(function(){
+  var CATEGORIES = [
+    { id:'weather',  label:'Weather',           icon:'ti-cloud-storm',  page:'evidence-weather.html' },
+    { id:'notams',   label:'NOTAMs',            icon:'ti-file-text',    page:'evidence-notams.html' },
+    { id:'news',     label:'News',              icon:'ti-news',         page:'evidence-news.html' },
+    { id:'flights',  label:'Flight tracks',     icon:'ti-plane',        page:'evidence-flights.html' },
+    { id:'global',   label:'Natural disaster',  icon:'ti-flame',        page:'evidence-global.html' },
+    { id:'strikes',  label:'Industrial action', icon:'ti-hand-stop',    page:'evidence-strikes.html' },
+    { id:'atfm',     label:'ATFM',              icon:'ti-traffic-cone', page:'evidence-atfm.html' },
+    { id:'ash',      label:'Volcanic ash',      icon:'ti-mountain',     page:'evidence-ash.html' },
+  ];
+  document.getElementById('category-ribbon').innerHTML = CATEGORIES.map(function(c){
+    return '<a href="'+c.page+'" class="ribbon-tab'+(c.id==='global'?' active':'')+'"><i class="ti '+c.icon+'"></i>'+c.label+'</a>';
+  }).join('');
+
+  var TYPES = [
+    {id:'all',label:'All'},
+    {id:'EQ',label:'Earthquake'},
+    {id:'TC',label:'Tropical'},
+    {id:'FL',label:'Flood'},
+    {id:'VO',label:'Volcano'},
+    {id:'WF',label:'Wildfire'},
+    {id:'DR',label:'Drought'},
+  ];
+  var ALERTS = [ {id:'all',label:'All'}, {id:'Red',label:'Red'}, {id:'Orange',label:'Orange'}, {id:'Green',label:'Green'} ];
+  var SOURCES = [ {id:'all',label:'All'}, {id:'gdacs',label:'GDACS'}, {id:'firms',label:'FIRMS wildfires'}, {id:'copernicus',label:'Copernicus'}, {id:'smithsonian',label:'Smithsonian'} ];
+
+  var state = { search:'', type:'all', alert:'all', source:'all', active:null, events:[], map:null, markerLayer:null };
+
+  function chipRow(items, active, id, onChange){
+    var el = document.getElementById(id);
+    el.innerHTML = items.map(function(i){ return '<button class="sb-btn'+(i.id===active?' active':'')+'" data-k="'+i.id+'">'+i.label+'</button>'; }).join('');
+    Array.prototype.forEach.call(el.querySelectorAll('.sb-btn'), function(b){ b.onclick = function(){ onChange(b.dataset.k); }; });
+  }
+
+  function alertColor(al){ return al === 'Red' ? '#8B1A1A' : al === 'Orange' ? '#7A4E00' : al === 'Green' ? '#1A5C3A' : '#8A8A9A'; }
+  function alertDotClass(al){ return al === 'Red' ? 'dot-red' : al === 'Orange' ? 'dot-orange' : al === 'Green' ? 'dot-green' : 'dot-grey'; }
+  function alertTagClass(al){ return al === 'Red' ? 'red' : al === 'Orange' ? 'orange' : al === 'Green' ? 'green' : ''; }
+  function typeLabel(t){ return ({EQ:'Earthquake',TC:'Tropical cyclone',FL:'Flood',VO:'Volcano',WF:'Wildfire',DR:'Drought'})[t] || t || 'Event'; }
+
+  function filtered(){
+    var out = state.events.slice();
+    if (state.type !== 'all') out = out.filter(function(e){ return e.type === state.type; });
+    if (state.alert !== 'all') out = out.filter(function(e){ return e.alert_level === state.alert; });
+    if (state.source !== 'all') out = out.filter(function(e){ return e.source === state.source; });
+    if (state.search){
+      var s = state.search.toLowerCase();
+      out = out.filter(function(e){ return ((e.name||'')+' '+(e.country||'')).toLowerCase().indexOf(s) >= 0; });
+    }
+    return out;
+  }
+
+  function renderList(){
+    var list = filtered();
+    var html = list.slice(0,300).map(function(e, i){
+      return '<div class="sb-event-row'+(state.active === e ? ' active' : '')+'" data-i="'+i+'">'+
+        '<div class="sb-event-dot '+alertDotClass(e.alert_level)+'"></div>'+
+        '<div class="sb-event-info"><div class="sb-event-title">'+(e.name || typeLabel(e.type))+'</div>'+
+        '<div class="sb-event-meta">'+typeLabel(e.type)+(e.country ? ' · '+e.country : '')+'</div></div>'+
+      '</div>';
+    }).join('');
+    document.getElementById('event-list').innerHTML = html || '<div style="padding:24px;text-align:center;color:var(--text3);font-size:11px">No events match this filter.</div>';
+    Array.prototype.forEach.call(document.getElementById('event-list').querySelectorAll('.sb-event-row'), function(r){
+      r.onclick = function(){ var idx = parseInt(r.dataset.i,10); state.active = list[idx]; renderList(); renderDetail(); if (state.active && state.active.lat && state.map){ state.map.setView([state.active.lat, state.active.lon], 6); } };
+    });
+  }
+
+  function renderDetail(){
+    var el = document.getElementById('detail');
+    if (!state.active){ el.innerHTML = '<div class="det-empty"><i class="ti ti-map-pin"></i>Select an event on the map or in the list to see full details.</div>'; return; }
+    var e = state.active;
+    var tags = [];
+    tags.push('<span class="det-tag">'+typeLabel(e.type)+'</span>');
+    if (e.alert_level) tags.push('<span class="det-tag '+alertTagClass(e.alert_level)+'">'+e.alert_level+' alert</span>');
+    if (e.source) tags.push('<span class="det-tag">'+e.source+'</span>');
+    el.innerHTML =
+      '<div class="det-hdr">'+
+        '<div class="det-title">'+(e.name || typeLabel(e.type))+'</div>'+
+        '<div class="det-country">'+(e.country || '—')+'</div>'+
+        '<div class="det-tags">'+tags.join('')+'</div>'+
+      '</div>'+
+      '<div class="det-body">'+
+        '<div class="det-section">'+
+          '<div class="det-section-hdr">Metadata</div>'+
+          '<div class="det-kv">'+
+            (e.from_date ? '<div class="k">From</div><div class="v">'+e.from_date+'</div>' : '') +
+            (e.to_date ? '<div class="k">To</div><div class="v">'+e.to_date+'</div>' : '') +
+            (e.severity ? '<div class="k">Severity</div><div class="v">'+e.severity+'</div>' : '') +
+            (e.alert_score != null ? '<div class="k">Alert score</div><div class="v">'+e.alert_score+'</div>' : '') +
+            (e.population != null ? '<div class="k">Affected pop.</div><div class="v">'+e.population.toLocaleString()+'</div>' : '') +
+            (e.lat != null ? '<div class="k">Coords</div><div class="v">'+e.lat.toFixed(3)+', '+e.lon.toFixed(3)+'</div>' : '') +
+            (e.id ? '<div class="k">ID</div><div class="v">'+e.id+'</div>' : '') +
+          '</div>'+
+        '</div>'+
+        (e.description ? '<div class="det-section"><div class="det-section-hdr">Description</div><div class="det-desc">'+e.description+'</div></div>' : '') +
+        (e.url ? '<div class="det-section"><a class="det-link" href="'+e.url+'" target="_blank" rel="noopener">Full report <i class="ti ti-external-link"></i></a></div>' : '')+
+      '</div>';
+  }
+
+  function renderMap(){
+    if (!state.map){
+      state.map = L.map('map', {zoomControl:true, worldCopyJump:true, minZoom:2, maxZoom:12}).setView([45,10], 4);
+      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution:'© OpenStreetMap contributors',
+        detectRetina:true,
+      }).addTo(state.map);
+    }
+    if (state.markerLayer){ state.map.removeLayer(state.markerLayer); }
+    var list = filtered().filter(function(e){ return e.lat != null && e.lon != null; });
+    var markers = list.map(function(e){
+      var m = L.circleMarker([e.lat, e.lon], {
+        radius: 6, color: '#fff', weight: 1.5,
+        fillColor: alertColor(e.alert_level), fillOpacity: 0.85,
+      });
+      m.bindTooltip((e.name || typeLabel(e.type)) + (e.country ? ' — '+e.country : ''), {direction:'top', offset:[0,-6]});
+      m.on('click', function(){ state.active = e; renderList(); renderDetail(); });
+      return m;
+    });
+    state.markerLayer = L.layerGroup(markers).addTo(state.map);
+  }
+
+  chipRow(TYPES,   state.type,   'type-filters',   function(k){ state.type = k;   chipRow(TYPES, k, 'type-filters', arguments.callee); renderList(); renderMap(); });
+  chipRow(ALERTS,  state.alert,  'alert-filters',  function(k){ state.alert = k;  chipRow(ALERTS, k, 'alert-filters', arguments.callee); renderList(); renderMap(); });
+  chipRow(SOURCES, state.source, 'source-filters', function(k){ state.source = k; chipRow(SOURCES, k, 'source-filters', arguments.callee); renderList(); renderMap(); });
+  document.getElementById('search').oninput = function(e){ state.search = e.target.value.trim(); renderList(); renderMap(); };
+
+  Promise.all([
+    window.EvidenceCollection.get('gdacs-global-disasters'),
+    window.EvidenceCollection.get('nasa-firms-wildfires'),
+    window.EvidenceCollection.get('copernicus-effis'),
+    window.EvidenceCollection.get('smithsonian-volcanoes'),
+  ]).then(function(results){
+    var events = [];
+    var g = results[0], f = results[1], c = results[2], s = results[3];
+    if (g && g.data && Array.isArray(g.data.events)){
+      g.data.events.forEach(function(e){ events.push(Object.assign({}, e, {source:'gdacs'})); });
+    }
+    if (f && f.data && Array.isArray(f.data.hotspots)){
+      f.data.hotspots.forEach(function(h, idx){ events.push({
+        source:'firms', type:'WF', name: 'Wildfire hotspot ' + (idx+1),
+        country: null, alert_level: h.brightness_k > 350 ? 'Red' : h.brightness_k > 320 ? 'Orange' : 'Green',
+        severity: 'brightness ' + h.brightness_k + 'K, FRP ' + h.frp_mw + ' MW',
+        from_date: h.acq_date, to_date: null, lat: h.lat, lon: h.lon,
+        description: 'VIIRS satellite hotspot detected ' + h.acq_date + ' at ' + h.acq_time + 'Z. Confidence ' + h.confidence + '. Fire radiative power ' + h.frp_mw + ' MW.',
+      }); });
+    }
+    if (c && c.data && Array.isArray(c.data.fire_activations)){
+      c.data.fire_activations.forEach(function(a){ events.push({
+        source:'copernicus', type:'WF', name: a.title, country: null, alert_level: 'Orange',
+        description: a.description, from_date: a.pub_date, url: a.link, lat: null, lon: null,
+      }); });
+    }
+    if (s && s.data && Array.isArray(s.data.volcanoes)){
+      s.data.volcanoes.forEach(function(v){ events.push({
+        source:'smithsonian', type:'VO', name: v.volcano, country: v.country_hint || null,
+        alert_level: 'Orange', description: v.description, from_date: v.pub_date, url: v.link, lat: null, lon: null,
+      }); });
+    }
+    state.events = events;
+    document.getElementById('m-total').textContent = events.length;
+    document.getElementById('m-fires').textContent = events.filter(function(e){return e.type==='WF';}).length;
+    document.getElementById('m-volcanoes').textContent = events.filter(function(e){return e.type==='VO';}).length;
+    var fresh = (g && g.pulled_at) || (f && f.pulled_at) || (c && c.pulled_at) || (s && s.pulled_at);
+    document.getElementById('m-pulled').textContent = fresh ? new Date(fresh).toISOString().slice(0,16).replace('T',' ')+'Z' : '—';
+    document.getElementById('overlay-loading').style.display = 'none';
+    renderList(); renderMap();
+  }).catch(function(){
+    document.getElementById('overlay-loading').innerHTML = 'Could not reach the evidence-collection repository.';
+  });
+})();
+</script>
+
+<script>
+/* Q5 · Sync corner user chip to active user (was hardcoded SB). */
+(function(){
+  function sync(){
+    try {
+      var uid = typeof getActiveUser === 'function' ? getActiveUser() : 'SB';
+      var u = (typeof USERS !== 'undefined') ? USERS[uid] : null;
+      if (!u) return;
+      var av = document.getElementById('gn-av'); if (av) av.textContent = u.initials;
+      var un = document.getElementById('gn-username'); if (un) un.textContent = u.name;
+    } catch(e){}
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', sync);
+  else sync();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>DefendAble — Evidence · ATFM</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--ink:#1A1A2E;--ink2:#2D2D44;--ink3:#6B6B80;--rule:#D8D8E0;--rule2:#EBEBF0;--surface:#FFFFFF;--surface2:#F7F7F9;--surface3:#EFEFF2;--accent:#1B3A6B;--accent2:#254E91;--accent-faint:#EEF2F8;--confirm:#1A5C3A;--confirm-faint:#EEF7F2;--caution:#7A4E00;--caution-faint:#FDF4E3;--alert:#8B1A1A;--alert-faint:#FBF0F0;--navy:var(--ink);--blue:var(--accent2);--blue-faint:var(--accent-faint);--green:var(--confirm);--amber:var(--caution);--red:var(--alert);--border:var(--rule);--text:var(--ink);--text2:var(--ink2);--text3:var(--ink3);--font:'Helvetica Neue','Arial',sans-serif;--font-serif:'Georgia','Times New Roman',serif;--mono:'Courier New','Courier',monospace;--r:3px}
+html,body{height:100%;font-family:var(--font);background:var(--surface2);color:var(--text);font-size:14px;overflow:hidden}
+.global-nav{background:var(--navy);height:48px;display:flex;align-items:center;padding:0 20px;flex-shrink:0}
+.gn-logo{display:flex;align-items:center;gap:8px;text-decoration:none;margin-right:20px}
+.gn-mark{width:28px;height:28px;background:var(--blue);border-radius:4px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px}
+.gn-name{font-size:14px;font-weight:500;color:#fff}
+.gn-links{display:flex;align-items:center;gap:2px;flex:1;min-width:0;overflow:hidden}
+.gn-link{display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r);font-size:12px;font-weight:500;color:rgba(255,255,255,0.5);text-decoration:none;transition:all 0.15s;white-space:nowrap}
+.gn-link:hover{background:rgba(255,255,255,0.08);color:#fff}
+.gn-link.active{background:rgba(42,111,219,0.35);color:#fff}
+.gn-right{display:flex;align-items:center;gap:8px;margin-left:8px}
+.gn-user-btn{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:20px;padding:3px 10px 3px 4px;cursor:pointer}
+.gn-av{width:24px;height:24px;border-radius:50%;background:#1C2E44;color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500}
+.gn-user{font-size:11px;font-weight:500;color:rgba(255,255,255,0.85)}
+.page-hdr{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 24px;flex-shrink:0}
+.crumb{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text3);margin-bottom:6px}
+.crumb a{color:var(--text3);text-decoration:none}
+.crumb a:hover{color:var(--blue)}
+.crumb i{font-size:12px}
+.page-title{font-family:var(--font-serif);font-size:24px;font-weight:400;color:var(--text);letter-spacing:-0.01em}
+.page-sub{font-size:12px;color:var(--text3);margin-top:3px}
+.category-ribbon{background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;gap:2px;overflow-x:auto;flex-shrink:0}
+.ribbon-tab{display:flex;align-items:center;gap:6px;padding:11px 14px;font-size:12px;font-weight:500;color:var(--text3);text-decoration:none;border-bottom:2px solid transparent;transition:all .15s;white-space:nowrap}
+.ribbon-tab:hover{color:var(--text2);background:var(--surface2)}
+.ribbon-tab.active{color:var(--text);border-bottom-color:var(--blue);background:var(--surface2)}
+.ribbon-tab i{font-size:14px;color:var(--text3)}
+.ribbon-tab.active i{color:var(--blue)}
+.content{padding:22px 26px 40px;overflow-y:auto;height:calc(100vh - 48px - 60px - 41px);background:var(--surface2)}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:22px;max-width:1300px}
+.col{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
+.col-hdr{padding:14px 18px;border-bottom:1px solid var(--rule2);display:flex;justify-content:space-between;align-items:center;background:linear-gradient(180deg,var(--surface) 0%,var(--surface2) 100%)}
+.col-hdr-left h3{font-family:var(--font-serif);font-size:16px;font-weight:400;margin:0}
+.col-hdr-left p{font-size:11px;color:var(--text3);margin:3px 0 0}
+.col-hdr-count{font-family:var(--font-serif);font-size:26px;font-weight:400;color:var(--text)}
+.col-body{padding:8px 0;max-height:calc(100vh - 250px);overflow-y:auto}
+.pub-item{padding:11px 18px;border-bottom:1px solid var(--rule2);display:flex;align-items:flex-start;gap:12px;text-decoration:none;color:inherit;transition:background .12s}
+.pub-item:last-child{border-bottom:none}
+.pub-item:hover{background:var(--surface2)}
+.pub-icon{width:32px;height:32px;border-radius:3px;background:var(--accent-faint);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.pub-info{flex:1;min-width:0}
+.pub-title{font-size:12.5px;color:var(--text);line-height:1.4}
+.pub-url{font-family:var(--mono);font-size:10px;color:var(--text3);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pub-arrow{color:var(--text3);font-size:14px;flex-shrink:0;padding-top:2px}
+.empty{padding:60px;text-align:center;color:var(--text3);font-size:12px}
+.empty i{display:block;font-size:30px;color:var(--rule);margin-bottom:12px}
+.note-card{background:#FEF9E7;border:1px solid #F5E6A8;border-radius:var(--r);padding:14px 18px;margin-bottom:22px;font-size:12px;color:var(--text2);line-height:1.55}
+.note-card strong{color:var(--text)}
+.loading{padding:50px;text-align:center;color:var(--text3);font-size:12px}
+.spinner{display:inline-block;width:16px;height:16px;border:2px solid var(--rule);border-top-color:var(--blue);border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:8px}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+
+<nav class="global-nav">
+  <a href="index.html" class="gn-logo"><div class="gn-mark"><i class="ti ti-lock"></i></div><span class="gn-name">DefendAble</span></a>
+  <div class="gn-links" id="gn-links"></div>
+  <div class="gn-right">
+    <div class="gn-user-btn" id="gn-user-btn"><div class="gn-av" id="gn-av">SB</div><span class="gn-user" id="gn-username">S. Booth</span></div>
+    <div id="user-dropdown" class="user-dropdown"></div>
+  </div>
+</nav>
+
+<div class="page-hdr">
+  <div class="crumb"><a href="evidence.html">Evidence</a><i class="ti ti-chevron-right"></i><span>ATFM</span></div>
+  <div>
+    <div class="page-title">ATFM — Air Traffic Flow Management</div>
+    <div class="page-sub">Storage destination for everything DefendAble has pulled from Eurocontrol NM public NOP + CODA retrospective. Original live source is <a href="https://www.public.nm.eurocontrol.int/PUBPORTAL/gateway/spec/index.html" target="_blank" rel="noopener" style="color:var(--accent);font-weight:600;text-decoration:none">eurocontrol.int public portal &rarr;</a></div>
+  </div>
+</div>
+
+<div class="category-ribbon" id="category-ribbon"></div>
+
+<div class="content">
+  <div class="note-card"><strong>Layer 1 interim.</strong> The authoritative live ATFM feed is Eurocontrol NM B2B (first two certificates per organisation are free). Once the cert lands, these two panels are replaced with the full SOAP feed — same UI surface, materially richer payload. Until then this page shows the public-portal index links.</div>
+  <div style="background:linear-gradient(90deg,#EEF2F8 0%,#F7F7F9 100%);border:1px solid #C7D8EC;border-radius:4px;padding:14px 18px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap">
+    <div style="flex:1;min-width:280px">
+      <div style="font-family:var(--font-serif);font-size:14px;font-weight:500;color:var(--text);margin-bottom:2px">Eurocontrol NM public portal</div>
+      <div style="font-size:11.5px;color:var(--text3);line-height:1.5">Two panels below are DefendAble's own storage of the details we've pulled from Eurocontrol. For the live authoritative view (with real-time regulation feed, network briefings, operational alerts), open the portal directly on eurocontrol.int.</div>
+    </div>
+    <a href="https://www.public.nm.eurocontrol.int/PUBPORTAL/gateway/spec/index.html" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;padding:9px 16px;background:var(--accent);color:#fff;border-radius:4px;text-decoration:none;font-size:12px;font-weight:600;white-space:nowrap"><i class="ti ti-external-link"></i>Open live portal</a>
+  </div>
+  <div class="two-col">
+    <div class="col" id="col-nm">
+      <div class="col-hdr">
+        <div class="col-hdr-left"><h3>NM · live operations (our snapshot)</h3><p>Latest details we've pulled from Eurocontrol NM. For the authoritative live view, use the portal button above.</p></div>
+        <div class="col-hdr-count" id="c-nm">—</div>
+      </div>
+      <div class="col-body" id="body-nm"><div class="loading"><span class="spinner"></span>Loading…</div></div>
+    </div>
+    <div class="col" id="col-coda">
+      <div class="col-hdr">
+        <div class="col-hdr-left"><h3>CODA · retrospective (our archive)</h3><p>Delay analysis publications, monthly digests, punctuality briefs — cached by DefendAble's daily cron.</p></div>
+        <div class="col-hdr-count" id="c-coda">—</div>
+      </div>
+      <div class="col-body" id="body-coda"><div class="loading"><span class="spinner"></span>Loading…</div></div>
+    </div>
+  </div>
+</div>
+
+<script src="shared_data.js"></script>
+<script src="shared_theme.js"></script>
+<script src="defendable_evidence_reader.js?v=s9a"></script>
+<script src="nav.js?v=sessA4"></script>
+
+<script>
+(function(){
+  var CATEGORIES = [
+    { id:'weather',  label:'Weather',           icon:'ti-cloud-storm',  page:'evidence-weather.html' },
+    { id:'notams',   label:'NOTAMs',            icon:'ti-file-text',    page:'evidence-notams.html' },
+    { id:'news',     label:'News',              icon:'ti-news',         page:'evidence-news.html' },
+    { id:'flights',  label:'Flight tracks',     icon:'ti-plane',        page:'evidence-flights.html' },
+    { id:'global',   label:'Natural disaster',  icon:'ti-flame',        page:'evidence-global.html' },
+    { id:'strikes',  label:'Industrial action', icon:'ti-hand-stop',    page:'evidence-strikes.html' },
+    { id:'atfm',     label:'ATFM',              icon:'ti-traffic-cone', page:'evidence-atfm.html' },
+    { id:'ash',      label:'Volcanic ash',      icon:'ti-mountain',     page:'evidence-ash.html' },
+  ];
+  document.getElementById('category-ribbon').innerHTML = CATEGORIES.map(function(c){
+    return '<a href="'+c.page+'" class="ribbon-tab'+(c.id==='atfm'?' active':'')+'"><i class="ti '+c.icon+'"></i>'+c.label+'</a>';
+  }).join('');
+
+  function esc(s){ return String(s||'').replace(/[<>]/g,''); }
+
+  function renderList(target, items, kind){
+    var el = document.getElementById(target);
+    if (!items || !items.length){ el.innerHTML = '<div class="empty"><i class="ti ti-file-off"></i>Nothing in the latest snapshot yet.</div>'; return; }
+    el.innerHTML = items.map(function(it){
+      var title = it.title || it.text || '';
+      var url = it.url || '#';
+      return '<a class="pub-item" href="'+url+'" target="_blank" rel="noopener">'+
+        '<div class="pub-icon"><i class="ti ti-file-text"></i></div>'+
+        '<div class="pub-info"><div class="pub-title">'+esc(title)+'</div><div class="pub-url">'+esc(url)+'</div></div>'+
+        '<i class="ti ti-external-link pub-arrow"></i>'+
+      '</a>';
+    }).join('');
+  }
+
+  Promise.all([
+    window.EvidenceCollection.get('eurocontrol-nm-public'),
+    window.EvidenceCollection.get('eurocontrol-coda'),
+  ]).then(function(r){
+    var nm = r[0], coda = r[1];
+    var nmLinks = (nm && nm.data && nm.data.operational_links) || [];
+    var codaPubs = (coda && coda.data && coda.data.publications) || [];
+    document.getElementById('c-nm').textContent = nmLinks.length;
+    document.getElementById('c-coda').textContent = codaPubs.length;
+    renderList('body-nm', nmLinks, 'nm');
+    renderList('body-coda', codaPubs, 'coda');
+  }).catch(function(){
+    document.getElementById('body-nm').innerHTML = '<div class="empty"><i class="ti ti-cloud-off"></i>Could not reach evidence-collection.</div>';
+    document.getElementById('body-coda').innerHTML = '<div class="empty"><i class="ti ti-cloud-off"></i>Could not reach evidence-collection.</div>';
+  });
+})();
+</script>
+<script>
+/* Q5 · Sync corner user chip to active user (was hardcoded SB). */
+(function(){
+  function sync(){
+    try {
+      var uid = typeof getActiveUser === 'function' ? getActiveUser() : 'SB';
+      var u = (typeof USERS !== 'undefined') ? USERS[uid] : null;
+      if (!u) return;
+      var av = document.getElementById('gn-av'); if (av) av.textContent = u.initials;
+      var un = document.getElementById('gn-username'); if (un) un.textContent = u.name;
+    } catch(e){}
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', sync);
+  else sync();
+})();
+</script>
+</body>
+</html>

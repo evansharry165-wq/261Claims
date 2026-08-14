@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>DefendAble — Evidence · Flight tracks</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--ink:#1A1A2E;--ink2:#2D2D44;--ink3:#6B6B80;--rule:#D8D8E0;--rule2:#EBEBF0;--surface:#FFFFFF;--surface2:#F7F7F9;--surface3:#EFEFF2;--accent:#1B3A6B;--accent2:#254E91;--accent-faint:#EEF2F8;--confirm:#1A5C3A;--confirm-faint:#EEF7F2;--caution:#7A4E00;--caution-faint:#FDF4E3;--alert:#8B1A1A;--alert-faint:#FBF0F0;--navy:var(--ink);--blue:var(--accent2);--blue-faint:var(--accent-faint);--green:var(--confirm);--amber:var(--caution);--red:var(--alert);--border:var(--rule);--text:var(--ink);--text2:var(--ink2);--text3:var(--ink3);--font:'Helvetica Neue','Arial',sans-serif;--font-serif:'Georgia','Times New Roman',serif;--mono:'Courier New','Courier',monospace;--r:3px}
+html,body{height:100%;font-family:var(--font);background:var(--surface2);color:var(--text);font-size:14px;overflow:hidden}
+.global-nav{background:var(--navy);height:48px;display:flex;align-items:center;padding:0 20px;flex-shrink:0}
+.gn-logo{display:flex;align-items:center;gap:8px;text-decoration:none;margin-right:20px}
+.gn-mark{width:28px;height:28px;background:var(--blue);border-radius:4px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px}
+.gn-name{font-size:14px;font-weight:500;color:#fff}
+.gn-links{display:flex;align-items:center;gap:2px;flex:1;min-width:0;overflow:hidden}
+.gn-link{display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r);font-size:12px;font-weight:500;color:rgba(255,255,255,0.5);text-decoration:none;transition:all 0.15s;white-space:nowrap}
+.gn-link:hover{background:rgba(255,255,255,0.08);color:#fff}
+.gn-link.active{background:rgba(42,111,219,0.35);color:#fff}
+.gn-right{display:flex;align-items:center;gap:8px;margin-left:8px}
+.gn-user-btn{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:20px;padding:3px 10px 3px 4px;cursor:pointer}
+.gn-av{width:24px;height:24px;border-radius:50%;background:#1C2E44;color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500}
+.gn-user{font-size:11px;font-weight:500;color:rgba(255,255,255,0.85)}
+.page-hdr{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 24px;flex-shrink:0}
+.crumb{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text3);margin-bottom:6px}
+.crumb a{color:var(--text3);text-decoration:none}
+.crumb a:hover{color:var(--blue)}
+.hdr-flex{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap}
+.page-title{font-family:var(--font-serif);font-size:24px;font-weight:400;color:var(--text);letter-spacing:-0.01em}
+.page-sub{font-size:12px;color:var(--text3);margin-top:3px}
+.hdr-meta{display:flex;gap:16px;font-size:11px;color:var(--text3);flex-wrap:wrap}
+.hdr-meta strong{color:var(--text);font-family:var(--mono);font-weight:600}
+
+.case-context-banner{background:var(--accent-faint);border-left:4px solid var(--accent);padding:12px 20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;font-size:12px}
+.ccb-info{display:flex;flex-direction:column;gap:2px}
+.ccb-label{font-size:9.5px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.06em}
+.ccb-detail{color:var(--text2)}
+.ccb-detail strong{color:var(--text);font-family:var(--mono)}
+.ccb-clear{font-size:11px;color:var(--accent);text-decoration:none;padding:4px 10px;border:1px solid var(--accent);border-radius:var(--r);background:var(--surface);cursor:pointer}
+.ccb-clear:hover{background:var(--accent);color:#fff}
+
+.category-ribbon{background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;gap:2px;overflow-x:auto;flex-shrink:0}
+.ribbon-tab{display:flex;align-items:center;gap:6px;padding:11px 14px;font-size:12px;font-weight:500;color:var(--text3);text-decoration:none;border-bottom:2px solid transparent;transition:all .15s;white-space:nowrap}
+.ribbon-tab:hover{color:var(--text2);background:var(--surface2)}
+.ribbon-tab.active{color:var(--text);border-bottom-color:var(--blue);background:var(--surface2)}
+.ribbon-tab i{font-size:14px;color:var(--text3)}
+.ribbon-tab.active i{color:var(--blue)}
+
+.upgrade-strip{background:#FEF9E7;border-left:4px solid var(--caution);padding:12px 20px;font-size:11.5px;color:var(--text2);display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.upgrade-strip strong{color:var(--caution);text-transform:uppercase;font-family:var(--mono);font-size:10.5px;letter-spacing:.05em}
+.upgrade-strip .actions{margin-left:auto;display:flex;gap:8px}
+.upgrade-strip button{font-size:10.5px;padding:5px 11px;border:1px solid var(--caution);background:var(--surface);color:var(--caution);border-radius:var(--r);cursor:pointer;font-family:var(--font);font-weight:500}
+.upgrade-strip button:hover{background:var(--caution);color:#fff}
+
+.workspace{display:grid;grid-template-columns:290px 1fr 360px;height:calc(100vh - 48px - 60px - 41px - 46px);min-height:0}
+.workspace.no-context{height:calc(100vh - 48px - 60px - 41px - 46px)}
+.sidebar{background:var(--surface);border-right:1px solid var(--border);overflow-y:auto;padding:14px 0}
+.sb-section{padding:0 18px 12px}
+.sb-title{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
+.sb-title-count{font-family:var(--mono);color:var(--text3);font-weight:400;font-size:10px}
+.sb-input{width:100%;font-family:var(--font);font-size:12px;padding:7px 10px;border:1px solid var(--border);border-radius:var(--r);background:var(--surface2);color:var(--text)}
+.sb-input:focus{outline:none;border-color:var(--blue);background:var(--surface)}
+.sb-btn-group{display:flex;flex-wrap:wrap;gap:4px}
+.sb-btn{font-size:11px;padding:4px 9px;border:1px solid var(--border);background:var(--surface);color:var(--text2);border-radius:var(--r);cursor:pointer;font-family:var(--font)}
+.sb-btn:hover{background:var(--surface2)}
+.sb-btn.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+
+.flight-row{padding:8px 18px;display:grid;grid-template-columns:1fr auto auto;gap:8px;cursor:pointer;border-bottom:1px solid var(--rule2);transition:background .1s;font-family:var(--mono);align-items:center}
+.flight-row:hover{background:var(--surface2)}
+.flight-row.active{background:var(--blue-faint);border-left:3px solid var(--blue);padding-left:15px}
+.flight-row.matches-case{border-left:3px solid var(--green);padding-left:15px;background:var(--green-faint)}
+.flight-callsign{font-size:11.5px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.flight-country{font-size:9.5px;color:var(--text3);white-space:nowrap;font-family:var(--font)}
+.flight-alt{font-size:10.5px;color:var(--text3);text-align:right}
+
+.main{position:relative;background:var(--surface2)}
+#map{position:absolute;inset:0}
+.map-legend{position:absolute;top:14px;right:14px;background:rgba(255,255,255,0.96);border:1px solid var(--border);border-radius:var(--r);padding:10px 14px;font-size:11px;z-index:400;box-shadow:0 3px 12px rgba(0,0,0,0.08);max-width:240px}
+.map-legend-hdr{font-size:9.5px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px}
+.map-legend-row{display:flex;align-items:center;gap:6px;padding:2px 0}
+.map-legend-dot{width:10px;height:10px;border-radius:50%}
+.map-legend-lbl{color:var(--text2);font-size:10.5px}
+.map-legend p{font-size:10.5px;color:var(--text2);line-height:1.45;margin:6px 0 0}
+
+.detail{background:var(--surface);border-left:1px solid var(--border);overflow-y:auto;padding:0}
+.det-empty{padding:60px 24px;text-align:center;color:var(--text3);font-size:12px}
+.det-empty i{display:block;font-size:28px;color:var(--rule);margin-bottom:10px}
+.det-hdr{padding:18px 22px 14px;border-bottom:1px solid var(--border);background:linear-gradient(180deg,var(--surface) 0%,var(--surface2) 100%)}
+.det-callsign{font-family:var(--mono);font-size:20px;font-weight:600;color:var(--text)}
+.det-icao24{font-family:var(--mono);font-size:11px;color:var(--text3);margin-top:2px}
+.det-country{font-size:12px;color:var(--text3);margin-top:4px}
+.det-case-match{margin-top:10px;padding:6px 10px;background:var(--green-faint);border-radius:var(--r);color:var(--green);font-size:11px;font-weight:600;display:inline-flex;align-items:center;gap:6px}
+.det-body{padding:14px 22px 24px}
+.det-section{margin-top:16px}
+.det-section:first-child{margin-top:0}
+.det-section-hdr{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);padding-bottom:6px;border-bottom:1px solid var(--rule2);margin-bottom:8px}
+.det-kv{display:grid;grid-template-columns:110px 1fr;gap:5px 12px;font-size:11.5px}
+.det-kv .k{color:var(--text3);text-transform:uppercase;letter-spacing:.05em;font-size:10px;font-weight:600;padding-top:2px}
+.det-kv .v{color:var(--text);font-family:var(--mono);font-size:11.5px}
+.det-actions{margin-top:16px;display:flex;flex-direction:column;gap:8px}
+.det-btn{font-size:12px;padding:9px 14px;background:var(--surface);border:1px solid var(--accent);color:var(--accent);border-radius:var(--r);cursor:pointer;font-family:var(--font);font-weight:500;display:inline-flex;align-items:center;gap:6px;justify-content:center;text-decoration:none}
+.det-btn:hover{background:var(--accent);color:#fff}
+.det-btn.primary{background:var(--accent);color:#fff}
+.det-btn.primary:hover{background:var(--ink)}
+
+.overlay-loading{position:absolute;inset:0;background:rgba(247,247,249,0.85);display:flex;align-items:center;justify-content:center;z-index:500;font-size:12px;color:var(--text3)}
+.spinner{display:inline-block;width:16px;height:16px;border:2px solid var(--rule);border-top-color:var(--blue);border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:8px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.toast{position:fixed;bottom:20px;right:20px;background:var(--ink);color:#fff;padding:12px 18px;border-radius:4px;box-shadow:0 8px 24px rgba(0,0,0,0.3);z-index:1000;font-size:12px;max-width:400px;line-height:1.5;transition:opacity .4s}
+.toast.ok{background:var(--green)}
+.toast.err{background:var(--red)}
+</style>
+</head>
+<body>
+
+<nav class="global-nav">
+  <a href="index.html" class="gn-logo"><div class="gn-mark"><i class="ti ti-lock"></i></div><span class="gn-name">DefendAble</span></a>
+  <div class="gn-links" id="gn-links"></div>
+  <div class="gn-right">
+    <div class="gn-user-btn" id="gn-user-btn"><div class="gn-av" id="gn-av">SB</div><span class="gn-user" id="gn-username">S. Booth</span></div>
+    <div id="user-dropdown" class="user-dropdown"></div>
+  </div>
+</nav>
+
+<div class="page-hdr">
+  <div class="crumb"><a href="evidence.html">Evidence</a> · <a href="dio.html">DIO hub</a> › <span>Flight tracks</span></div>
+  <div class="hdr-flex">
+    <div>
+      <div class="page-title">Flight tracks</div>
+      <div class="page-sub" id="page-sub">OpenSky Network anonymous snapshot across European airspace · live-only, historical requires paid upgrade</div>
+    </div>
+    <div class="hdr-meta" id="hdr-meta">
+      <div><strong id="m-airborne">—</strong> airborne</div>
+      <div><strong id="m-territory">—</strong> in territory</div>
+      <div><strong id="m-countries">—</strong> countries</div>
+      <div>Snapshot <strong id="m-snapshot">—</strong></div>
+    </div>
+  </div>
+</div>
+
+<div id="case-context-slot"></div>
+
+<div class="category-ribbon" id="category-ribbon"></div>
+
+<div class="upgrade-strip">
+  <strong>Live only</strong>
+  <span>Historical per-flight replay + track playback require paid tier. Recommended for evidence-grade cases: FlightRadar24 Business (~$449/mo) or AeroDataBox pay-per-query ($0.005/call, ~free at demo volumes).</span>
+  <div class="actions">
+    <button onclick="showUpgradeInfo()">Upgrade paths</button>
+  </div>
+</div>
+
+<div class="workspace" id="workspace">
+  <aside class="sidebar">
+    <div class="sb-section">
+      <div class="sb-title">Search callsign / ICAO24 <span class="sb-title-count" id="c-search"></span></div>
+      <input class="sb-input" id="search" placeholder="EZY123, BAW, 40..." >
+    </div>
+    <div class="sb-section">
+      <div class="sb-title">Territory scope</div>
+      <div class="sb-btn-group" id="territory-filters"></div>
+    </div>
+    <div class="sb-section">
+      <div class="sb-title">Status</div>
+      <div class="sb-btn-group" id="status-filters"></div>
+    </div>
+    <div class="sb-section" id="country-filter-section">
+      <div class="sb-title">Country <span class="sb-title-count">top 20</span></div>
+      <div class="sb-btn-group" id="country-filters" style="max-height:150px;overflow-y:auto"></div>
+    </div>
+    <div id="flight-list"></div>
+  </aside>
+  <main class="main">
+    <div id="map"></div>
+    <div class="map-legend">
+      <div class="map-legend-hdr">Aircraft state</div>
+      <div class="map-legend-row"><div class="map-legend-dot" style="background:#254E91"></div><div class="map-legend-lbl">Cruise (&gt;6,000m)</div></div>
+      <div class="map-legend-row"><div class="map-legend-dot" style="background:#1A5C3A"></div><div class="map-legend-lbl">Low-level airborne</div></div>
+      <div class="map-legend-row"><div class="map-legend-dot" style="background:#8A8A9A"></div><div class="map-legend-lbl">On ground</div></div>
+      <div class="map-legend-row" id="legend-case-match" style="display:none"><div class="map-legend-dot" style="background:#8B1A1A"></div><div class="map-legend-lbl">Matches case</div></div>
+      <p id="legend-context">Anonymous OpenSky snapshot — click aircraft for state vector + attach to case action.</p>
+    </div>
+    <div id="overlay-loading" class="overlay-loading"><span class="spinner"></span>Loading snapshot from evidence-collection…</div>
+  </main>
+  <aside class="detail" id="detail">
+    <div class="det-empty"><i class="ti ti-plane"></i>Select an aircraft to see its full state vector<br>and attach as evidence.</div>
+  </aside>
+</div>
+
+<script src="shared_data.js"></script>
+<script src="shared_theme.js"></script>
+<script src="case_helpers.js"></script>
+<script src="case_filing.js"></script>
+<script src="defendable_evidence_reader.js?v=s9a"></script>
+<script src="case_audit_trail.js?v=s9a"></script>
+<script src="case_evidence_repository.js?v=s9a"></script>
+<script src="dio_core.js?v=s9a"></script>
+<script src="dio_territory.js?v=s9a"></script>
+<script src="dio_data.js?v=s9a"></script>
+<script src="dio_helpers.js?v=s9a"></script>
+<script src="nav.js?v=sessA4"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+(function(){
+  var CATEGORIES = [
+    { id:'weather',  label:'Weather',           icon:'ti-cloud-storm',  page:'evidence-weather.html' },
+    { id:'notams',   label:'NOTAMs',            icon:'ti-file-text',    page:'evidence-notams.html' },
+    { id:'news',     label:'News',              icon:'ti-news',         page:'evidence-news.html' },
+    { id:'flights',  label:'Flight tracks',     icon:'ti-plane',        page:'evidence-flights.html' },
+    { id:'global',   label:'Natural disaster',  icon:'ti-flame',        page:'evidence-global.html' },
+    { id:'strikes',  label:'Industrial action', icon:'ti-hand-stop',    page:'evidence-strikes.html' },
+    { id:'atfm',     label:'ATFM',              icon:'ti-traffic-cone', page:'evidence-atfm.html' },
+    { id:'ash',      label:'Volcanic ash',      icon:'ti-mountain',     page:'evidence-ash.html' },
+  ];
+
+  /* ─── Case context via ?case=REF ─── */
+  var urlCaseRef = new URLSearchParams(location.search).get('case');
+  var caseCtx = null;
+  if (urlCaseRef && window.CaseEvidenceRepository) {
+    caseCtx = CaseEvidenceRepository.getCaseFacts(urlCaseRef);
+  }
+
+  /* Preserve case context when navigating between category pages */
+  var ribbonQuery = urlCaseRef ? ('?case=' + encodeURIComponent(urlCaseRef)) : '';
+  document.getElementById('category-ribbon').innerHTML = CATEGORIES.map(function(c){
+    return '<a href="' + c.page + ribbonQuery + '" class="ribbon-tab' + (c.id==='flights'?' active':'') + '"><i class="ti '+c.icon+'"></i>'+c.label+'</a>';
+  }).join('');
+
+  /* Case-context banner */
+  if (caseCtx) {
+    var slot = document.getElementById('case-context-slot');
+    slot.innerHTML =
+      '<div class="case-context-banner">'
+      + '<div class="ccb-info">'
+      +   '<span class="ccb-label">Case-work mode</span>'
+      +   '<span class="ccb-detail">Filtering to <strong>' + escapeHtml(caseCtx.flightNum || 'flight ?') + '</strong>'
+      +     (caseCtx.date ? ' on <strong>' + escapeHtml(caseCtx.date) + '</strong>' : '')
+      +     ((caseCtx.originIcao || caseCtx.destIcao) ? ' · route <strong>' + escapeHtml((caseCtx.originIcao||'?') + ' → ' + (caseCtx.destIcao||'?')) + '</strong>' : '')
+      +     ' · case <strong>' + escapeHtml(caseCtx.ref) + '</strong></span>'
+      + '</div>'
+      + '<button class="ccb-clear" onclick="location.href=\'evidence-flights.html\'">Clear case filter</button>'
+      + '</div>';
+    document.getElementById('page-sub').textContent = 'Live tracks filtered to case ' + caseCtx.ref + ' · attach-to-case actions active';
+    document.getElementById('legend-context').textContent = 'Green highlights: aircraft matching case ' + (caseCtx.flightNum || caseCtx.ref);
+    document.getElementById('legend-case-match').style.display = 'flex';
+  }
+
+  function escapeHtml(v){return String(v==null?'':v).replace(/[&<>"']/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch];});}
+
+  /* ─── Territory scope helper (works with DIO territory + case airports) ─── */
+  function getTerritoryICAOs() {
+    // Priority 1: URL ?case → use case airports
+    if (caseCtx && (caseCtx.originIcao || caseCtx.destIcao)) {
+      return [caseCtx.originIcao, caseCtx.destIcao].filter(Boolean);
+    }
+    // Priority 2: DIO territory
+    if (window.DIO && DIO.isDIOUser && DIO.isDIOUser()) {
+      var t = DIO.getTerritory();
+      return t && t.airports_icao ? t.airports_icao : [];
+    }
+    return [];
+  }
+  function getTerritoryIATAs() {
+    if (caseCtx && (caseCtx.originIata || caseCtx.destIata)) {
+      return [caseCtx.originIata, caseCtx.destIata].filter(Boolean);
+    }
+    if (window.DIO && DIO.isDIOUser && DIO.isDIOUser()) {
+      var t = DIO.getTerritory();
+      return t && t.airports_iata ? t.airports_iata : [];
+    }
+    return [];
+  }
+
+  /* Callsign matching for case context. FlightRadar24 or a paid tier would let us look up historical
+     tracks by exact callsign+date. Here (anon OpenSky) we match live callsigns to case flight numbers. */
+  function callsignMatchesCase(callsign) {
+    if (!caseCtx || !caseCtx.flightNum || !callsign) return false;
+    var cs = String(callsign).replace(/\s+/g,'').toUpperCase();
+    var fn = String(caseCtx.flightNum).replace(/\s+/g,'').toUpperCase();
+    return cs.indexOf(fn) >= 0 || fn.indexOf(cs) >= 0;
+  }
+
+  /* ─── State ─── */
+  var state = {
+    search: '', status:'all', country:'all',
+    territoryScope: (caseCtx ? 'case' : (window.DIO && DIO.isDIOUser && DIO.isDIOUser()) ? 'territory' : 'all'),
+    active:null, states:[], map:null, markers:null
+  };
+
+  function chipRow(items, active, id, onChange){
+    var el = document.getElementById(id);
+    el.innerHTML = items.map(function(i){
+      return '<button class="sb-btn'+(i.id===active?' active':'')+'" data-k="'+i.id+'">'+i.label+'</button>';
+    }).join('');
+    Array.prototype.forEach.call(el.querySelectorAll('.sb-btn'), function(b){
+      b.onclick = function(){ onChange(b.dataset.k); };
+    });
+  }
+
+  function filtered(){
+    var s = state.search.toLowerCase();
+    var territoryIatas = state.territoryScope !== 'all' ? getTerritoryIATAs().map(function(x){return x.toUpperCase();}) : null;
+    return state.states.filter(function(x){
+      if (state.status==='airborne' && x.on_ground) return false;
+      if (state.status==='ground' && !x.on_ground) return false;
+      if (state.country!=='all' && x.country !== state.country) return false;
+      if (s){
+        var hay = ((x.callsign||'') + ' ' + (x.icao24||'')).toLowerCase();
+        if (hay.indexOf(s) < 0) return false;
+      }
+      // NOTE: territory filter on live snapshot is approximate — we don't know the aircraft's origin/dest.
+      // Territory scope is used mainly to filter the map view geographically (in renderMap).
+      return true;
+    });
+  }
+
+  function renderList(){
+    var list = filtered();
+    // If we have case context and callsign matches, float them to top
+    if (caseCtx) {
+      list.sort(function(a,b){
+        var am = callsignMatchesCase(a.callsign) ? 0 : 1;
+        var bm = callsignMatchesCase(b.callsign) ? 0 : 1;
+        return am - bm;
+      });
+    }
+    var html = list.slice(0, 250).map(function(f){
+      var alt = f.baro_alt_m != null ? Math.round(f.baro_alt_m * 3.281 / 100) * 100 + 'ft' : '—';
+      var caseMatch = callsignMatchesCase(f.callsign);
+      var cls = state.active===f ? ' active' : caseMatch ? ' matches-case' : '';
+      return '<div class="flight-row'+cls+'" data-icao="'+f.icao24+'">'+
+        '<div class="flight-callsign">'+escapeHtml(f.callsign||'—')+'</div>'+
+        '<div class="flight-alt">'+alt+'</div>'+
+        '<div class="flight-country">'+escapeHtml(f.country||'')+'</div>'+
+      '</div>';
+    }).join('');
+    var listEl = document.getElementById('flight-list');
+    listEl.innerHTML = html || '<div style="padding:24px;text-align:center;color:var(--text3);font-size:11px">No aircraft match this filter.</div>';
+    Array.prototype.forEach.call(listEl.querySelectorAll('.flight-row'), function(r){
+      r.onclick = function(){
+        var f = list.find(function(x){return x.icao24===r.dataset.icao;});
+        state.active = f;
+        renderList(); renderDetail();
+        if (f && f.lat && state.map) state.map.setView([f.lat, f.lon], 8);
+      };
+    });
+    document.getElementById('c-search').textContent = filtered().length + ' shown';
+    document.getElementById('m-territory').textContent = state.territoryScope === 'all' ? '—' : filtered().length;
+  }
+
+  function renderDetail(){
+    var el = document.getElementById('detail');
+    if (!state.active){
+      el.innerHTML = '<div class="det-empty"><i class="ti ti-plane"></i>Select an aircraft to see its full state vector<br>and attach as evidence.</div>';
+      return;
+    }
+    var f = state.active;
+    var isMatch = callsignMatchesCase(f.callsign);
+    var caseMatchHtml = isMatch
+      ? '<div class="det-case-match"><i class="ti ti-check"></i>Callsign matches case ' + escapeHtml(caseCtx.ref) + '</div>'
+      : '';
+    var attachAction = caseCtx
+      ? '<button class="det-btn primary" onclick="attachCurrentStateToCase()"><i class="ti ti-paperclip"></i>Attach current state to case</button>'
+      : '<button class="det-btn primary" onclick="openAttachToCasePicker()"><i class="ti ti-paperclip"></i>Attach to a case…</button>';
+
+    el.innerHTML =
+      '<div class="det-hdr">'+
+        '<div class="det-callsign">'+escapeHtml(f.callsign||'—')+'</div>'+
+        '<div class="det-icao24">ICAO24 '+escapeHtml(f.icao24||'—')+'</div>'+
+        '<div class="det-country">'+escapeHtml(f.country||'—')+'</div>'+
+        caseMatchHtml +
+      '</div>'+
+      '<div class="det-body">'+
+        '<div class="det-section"><div class="det-section-hdr">Current state vector</div>'+
+        '<div class="det-kv">'+
+          '<div class="k">Position</div><div class="v">'+(f.lat!=null?f.lat.toFixed(4):'—')+', '+(f.lon!=null?f.lon.toFixed(4):'—')+'</div>'+
+          '<div class="k">Altitude</div><div class="v">'+(f.baro_alt_m!=null?Math.round(f.baro_alt_m*3.281)+' ft':'—')+'</div>'+
+          '<div class="k">Ground speed</div><div class="v">'+(f.vel_ms!=null?Math.round(f.vel_ms*1.944)+' kt':'—')+'</div>'+
+          '<div class="k">Track</div><div class="v">'+(f.track_deg!=null?Math.round(f.track_deg)+'°':'—')+'</div>'+
+          '<div class="k">Vertical</div><div class="v">'+(f.vr_ms!=null?Math.round(f.vr_ms*196.85)+' ft/min':'—')+'</div>'+
+          '<div class="k">On ground</div><div class="v">'+(f.on_ground?'Yes':'No')+'</div>'+
+        '</div></div>' +
+        '<div class="det-section"><div class="det-section-hdr">Actions</div>'+
+        '<div class="det-actions">'+
+          attachAction +
+          '<button class="det-btn" onclick="requestHistoricalTrack()"><i class="ti ti-clock-history"></i>Request historical replay (paid)</button>'+
+          (caseCtx ? '<a class="det-btn" href="' + DIO.dioCaseUrl(caseCtx.ref) + '"><i class="ti ti-arrow-right"></i>Return to case ' + escapeHtml(caseCtx.ref) + '</a>' : '')+
+        '</div></div>'+
+      '</div>';
+  }
+
+  window.attachCurrentStateToCase = function() {
+    if (!caseCtx || !state.active) { toast('No case in context.', 'err'); return; }
+    if (!window.CaseEvidenceRepository) { toast('CaseEvidenceRepository not loaded.', 'err'); return; }
+    var f = state.active;
+    var item = {
+      _kind: 'track',
+      _key: 'track-live-' + f.icao24 + '-' + Date.now(),
+      state: f,
+      capturedAt: new Date().toISOString(),
+      note: 'Live state vector captured from OpenSky anonymous snapshot on ' + new Date().toLocaleString('en-GB'),
+    };
+    var attach = CaseEvidenceRepository.attachItem(caseCtx.ref, 'opensky-flight-tracks', item, 'Live state captured from Flight tracks page — historical replay not yet fetched (paid tier)');
+    if (attach) toast('Attached to case ' + caseCtx.ref + ' Repository.', 'ok');
+    else toast('Attach failed — check case Repository state.', 'err');
+  };
+
+  window.requestHistoricalTrack = function() {
+    if (!state.active) return;
+    var msg = 'Historical per-flight replay requires a paid tier:\\n\\n' +
+      '• FlightRadar24 Business (~$449-1,499/mo) — court-recognised gold standard\\n' +
+      '• AeroDataBox pay-per-query (~$0.005/call, 30-day historical) — cheapest bridge\\n' +
+      '• OpenSky Network paid tier ($399/yr) — 30-day historical\\n\\n' +
+      'Deferred by budget. When approved, historical replay lands via the on-demand-fetch workflow (see spec).';
+    alert(msg);
+  };
+
+  window.openAttachToCasePicker = function() {
+    if (!window.CaseFiling) { toast('CaseFiling not loaded.', 'err'); return; }
+    var cases = CaseFiling.listCases({}).filter(function(c){return c.stage !== 'resolve';});
+    if (!cases.length) { toast('No open cases to attach to.', 'err'); return; }
+    var opts = cases.map(function(c){return c.ref + ' — ' + c.claimant + ' — ' + (c.dep||'?') + '→' + (c.arr||'?');}).join('\\n');
+    var pick = prompt('Type case ref to attach to:\\n\\n' + opts);
+    if (!pick) return;
+    var found = cases.find(function(c){return c.ref === pick.trim();});
+    if (!found) { toast('Ref not found.', 'err'); return; }
+    caseCtx = CaseEvidenceRepository.getCaseFacts(found.ref);
+    attachCurrentStateToCase();
+  };
+
+  window.showUpgradeInfo = function() {
+    alert('Paid-tier upgrade paths for historical flight tracks:\\n\\n' +
+      '1. FlightRadar24 Business API (~$449-1,499/mo)\\n' +
+      '   → historical replay · per-flight lookup · court-recognised · ADS-B+MLAT+satellite\\n\\n' +
+      '2. AeroDataBox (RapidAPI, ~$0.005/query)\\n' +
+      '   → pay-per-call · 30-day historical · good cost hybrid\\n\\n' +
+      '3. FlightAware AeroAPI (usage-billed)\\n' +
+      '   → mid-tier pricing · good coverage · alternative to FR24\\n\\n' +
+      '4. OpenSky Network paid tier ($399/yr fixed)\\n' +
+      '   → cheapest upfront · 30-day historical · weakest coverage\\n\\n' +
+      'DefendAble is currently on OpenSky anonymous (free, live-only). Upgrade decision deferred by budget.');
+  };
+
+  function toast(msg, kind){
+    var el = document.createElement('div');
+    el.className = 'toast' + (kind ? ' '+kind : '');
+    el.textContent = msg;
+    document.body.appendChild(el);
+    setTimeout(function(){el.style.opacity='0';}, 4000);
+    setTimeout(function(){el.remove();}, 4600);
+  }
+
+  function renderMap(){
+    if (!state.map){
+      state.map = L.map('map', {zoomControl:true, minZoom:2, maxZoom:12}).setView([48,10], 4);
+      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {attribution:'© OpenStreetMap'}).addTo(state.map);
+    }
+    if (state.markers){ state.map.removeLayer(state.markers); }
+
+    // Highlight territory-scope airports as circle overlays
+    var territoryIatas = getTerritoryIATAs();
+    // Build a hard-coded IATA→lat/lon lookup for the airports we know
+    var AIRPORT_COORDS = {
+      LHR:[51.47,-0.45], LGW:[51.15,-0.19], STN:[51.88,0.23], LTN:[51.87,-0.37], LCY:[51.51,0.05],
+      MAN:[53.36,-2.27], EDI:[55.95,-3.36], GLA:[55.87,-4.43], BRS:[51.38,-2.72], BHX:[52.45,-1.75],
+      BFS:[54.66,-6.22], EMA:[52.83,-1.33], DUB:[53.42,-6.27],
+      CDG:[49.01,2.55], ORY:[48.72,2.36], NCE:[43.66,7.22], MRS:[43.44,5.22],
+      AMS:[52.31,4.76], BRU:[50.90,4.48], FRA:[50.03,8.56], MUC:[48.35,11.79], BER:[52.36,13.51],
+      ZRH:[47.46,8.55], GVA:[46.24,6.11], VIE:[48.11,16.57],
+      MAD:[40.47,-3.56], BCN:[41.30,2.08], PMI:[39.55,2.74], LIS:[38.78,-9.13],
+      FCO:[41.80,12.24], MXP:[45.63,8.72],
+      WAW:[52.17,20.97], PRG:[50.10,14.26],
+    };
+
+    var list = filtered().filter(function(f){return f.lat!=null && f.lon!=null;}).slice(0, 800);
+    var markers = list.map(function(f){
+      var caseMatch = callsignMatchesCase(f.callsign);
+      var color = caseMatch ? '#8B1A1A' : f.on_ground ? '#8A8A9A' : (f.baro_alt_m > 6000 ? '#254E91' : '#1A5C3A');
+      var r = caseMatch ? 6 : 4;
+      var m = L.circleMarker([f.lat, f.lon], { radius:r, color:'#fff', weight:1, fillColor:color, fillOpacity:0.9 });
+      m.bindTooltip((f.callsign||f.icao24), {direction:'top', offset:[0,-4]});
+      m.on('click', function(){ state.active = f; renderList(); renderDetail(); });
+      return m;
+    });
+
+    // Add territory airport overlays
+    territoryIatas.forEach(function(iata){
+      var coord = AIRPORT_COORDS[iata];
+      if (!coord) return;
+      var c = L.circleMarker(coord, { radius:9, color:'#0D6B5E', weight:2, fillColor:'#0D6B5E', fillOpacity:0.15 });
+      c.bindTooltip(iata, {direction:'top', offset:[0,-6], permanent:false});
+      markers.push(c);
+    });
+
+    state.markers = L.layerGroup(markers).addTo(state.map);
+
+    // If case context, zoom to case airports on load
+    if (caseCtx && territoryIatas.length && !state._zoomedToCase) {
+      var pts = territoryIatas.map(function(i){return AIRPORT_COORDS[i];}).filter(Boolean);
+      if (pts.length === 2) state.map.fitBounds(pts, {padding:[80,80]});
+      else if (pts.length === 1) state.map.setView(pts[0], 7);
+      state._zoomedToCase = true;
+    }
+  }
+
+  chipRow([{id:'all',label:'All Europe'},{id:'territory',label:caseCtx?'Case airports':'My territory'},{id:'case',label:'Case route',disabled:!caseCtx}], state.territoryScope, 'territory-filters', function(k){
+    state.territoryScope = k; renderList(); renderMap();
+    chipRow([{id:'all',label:'All Europe'},{id:'territory',label:caseCtx?'Case airports':'My territory'},{id:'case',label:'Case route',disabled:!caseCtx}], k, 'territory-filters', arguments.callee);
+  });
+  chipRow([{id:'all',label:'All'},{id:'airborne',label:'Airborne'},{id:'ground',label:'On ground'}], state.status, 'status-filters', function(k){
+    state.status = k; renderList(); renderMap();
+    chipRow([{id:'all',label:'All'},{id:'airborne',label:'Airborne'},{id:'ground',label:'On ground'}], k, 'status-filters', arguments.callee);
+  });
+  document.getElementById('search').oninput = function(e){ state.search = e.target.value.trim(); renderList(); renderMap(); };
+
+  window.EvidenceCollection.get('opensky-flight-tracks').then(function(payload){
+    if (!payload || !payload.data || !payload.data.states){
+      document.getElementById('overlay-loading').innerHTML = 'No flight-track snapshot yet — nightly cron has not fetched successfully.';
+      return;
+    }
+    state.states = payload.data.states;
+    var countries = Array.from(new Set(state.states.map(function(s){return s.country;}))).filter(Boolean).sort();
+    var countryOpts = [{id:'all',label:'All'}].concat(countries.slice(0,20).map(function(c){return {id:c,label:c};}));
+    chipRow(countryOpts, state.country, 'country-filters', function(k){ state.country = k; renderList(); renderMap(); chipRow(countryOpts, k, 'country-filters', arguments.callee); });
+    document.getElementById('m-airborne').textContent = state.states.filter(function(s){return !s.on_ground;}).length;
+    document.getElementById('m-countries').textContent = countries.length;
+    document.getElementById('m-snapshot').textContent = payload.pulled_at ? new Date(payload.pulled_at).toISOString().slice(0,16).replace('T',' ')+'Z' : '—';
+    document.getElementById('overlay-loading').style.display = 'none';
+    renderList(); renderMap();
+    // If case-context and any callsign matches, auto-select first match
+    if (caseCtx) {
+      var firstMatch = state.states.find(function(s){return callsignMatchesCase(s.callsign);});
+      if (firstMatch) { state.active = firstMatch; renderList(); renderDetail(); }
+    }
+  }).catch(function(){
+    document.getElementById('overlay-loading').innerHTML = 'Could not reach the evidence-collection repository.';
+  });
+})();
+</script>
+<script>
+/* Q5 · Sync corner user chip to active user (was hardcoded SB). */
+(function(){
+  function sync(){
+    try {
+      var uid = typeof getActiveUser === 'function' ? getActiveUser() : 'SB';
+      var u = (typeof USERS !== 'undefined') ? USERS[uid] : null;
+      if (!u) return;
+      var av = document.getElementById('gn-av'); if (av) av.textContent = u.initials;
+      var un = document.getElementById('gn-username'); if (un) un.textContent = u.name;
+    } catch(e){}
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', sync);
+  else sync();
+})();
+</script>
+</body>
+</html>

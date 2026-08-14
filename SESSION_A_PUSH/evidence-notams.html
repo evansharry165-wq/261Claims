@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>DefendAble — Evidence · NOTAMs</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--ink:#1A1A2E;--ink2:#2D2D44;--ink3:#6B6B80;--ink4:#9B9BAA;--rule:#D8D8E0;--rule2:#EBEBF0;--surface:#FFFFFF;--surface2:#F7F7F9;--surface3:#EFEFF2;--accent:#1B3A6B;--accent2:#254E91;--accent-faint:#EEF2F8;--confirm:#1A5C3A;--confirm-faint:#EEF7F2;--caution:#7A4E00;--caution-faint:#FDF4E3;--alert:#8B1A1A;--alert-faint:#FBF0F0;--navy:var(--ink);--blue:var(--accent2);--blue-faint:var(--accent-faint);--green:var(--confirm);--green-faint:var(--confirm-faint);--amber:var(--caution);--amber-faint:var(--caution-faint);--red:var(--alert);--red-faint:var(--alert-faint);--border:var(--rule);--text:var(--ink);--text2:var(--ink2);--text3:var(--ink3);--font:'Helvetica Neue','Arial',sans-serif;--font-serif:'Georgia','Times New Roman',serif;--mono:'Courier New','Courier',monospace;--r:3px}
+html,body{height:100%;font-family:var(--font);background:var(--surface2);color:var(--text);font-size:14px;overflow:hidden}
+.global-nav{background:var(--navy);height:48px;display:flex;align-items:center;padding:0 20px;flex-shrink:0}
+.gn-logo{display:flex;align-items:center;gap:8px;text-decoration:none;margin-right:20px}
+.gn-mark{width:28px;height:28px;background:var(--blue);border-radius:4px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px}
+.gn-name{font-size:14px;font-weight:500;color:#fff}
+.gn-links{display:flex;align-items:center;gap:2px;flex:1;min-width:0;overflow:hidden}
+.gn-link{display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r);font-size:12px;font-weight:500;color:rgba(255,255,255,0.5);text-decoration:none;transition:all 0.15s;white-space:nowrap}
+.gn-link:hover{background:rgba(255,255,255,0.08);color:#fff}
+.gn-link.active{background:rgba(42,111,219,0.35);color:#fff}
+.gn-right{display:flex;align-items:center;gap:8px;margin-left:8px}
+.gn-user-btn{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:20px;padding:3px 10px 3px 4px;cursor:pointer}
+.gn-av{width:24px;height:24px;border-radius:50%;background:#1C2E44;color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500}
+.gn-user{font-size:11px;font-weight:500;color:rgba(255,255,255,0.85)}
+
+.page-hdr{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 24px;flex-shrink:0}
+.crumb{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text3);margin-bottom:6px}
+.crumb a{color:var(--text3);text-decoration:none}
+.crumb a:hover{color:var(--blue)}
+.crumb i{font-size:12px}
+.hdr-flex{display:flex;justify-content:space-between;align-items:flex-end;gap:20px}
+.page-title{font-family:var(--font-serif);font-size:24px;font-weight:400;color:var(--text);letter-spacing:-0.01em}
+.page-sub{font-size:12px;color:var(--text3);margin-top:3px}
+.hdr-meta{display:flex;gap:16px;font-size:11px;color:var(--text3)}
+.hdr-meta strong{color:var(--text);font-family:var(--mono);font-weight:600}
+
+.category-ribbon{background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;gap:2px;overflow-x:auto;flex-shrink:0}
+.ribbon-tab{display:flex;align-items:center;gap:6px;padding:11px 14px;font-size:12px;font-weight:500;color:var(--text3);text-decoration:none;border-bottom:2px solid transparent;transition:all .15s;white-space:nowrap}
+.ribbon-tab:hover{color:var(--text2);background:var(--surface2)}
+.ribbon-tab.active{color:var(--text);border-bottom-color:var(--blue);background:var(--surface2)}
+.ribbon-tab i{font-size:14px;color:var(--text3)}
+.ribbon-tab.active i{color:var(--blue)}
+
+.workspace{display:grid;grid-template-columns:230px 1fr 400px;height:calc(100vh - 48px - 60px - 41px);min-height:0}
+
+.sidebar{background:var(--surface);border-right:1px solid var(--border);overflow-y:auto;padding:16px 0}
+.sb-section{padding:0 18px 12px}
+.sb-btn-group{display:flex;flex-wrap:wrap;gap:4px}
+.sb-btn{padding:4px 10px;font-size:11px;background:var(--surface);border:1px solid var(--rule);color:var(--text2);border-radius:12px;cursor:pointer;font-family:var(--font);font-weight:500}
+.sb-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.sb-btn:hover:not(.active){background:var(--surface2)}
+.notam-cat-chip{display:inline-block;font-family:var(--mono);font-size:9px;padding:2px 6px;border-radius:8px;text-transform:uppercase;letter-spacing:.04em;font-weight:600;margin-right:6px}
+.notam-cat-chip.rwy{background:#FBF0F0;color:#8B1A1A}
+.notam-cat-chip.twy{background:#FDF4E3;color:#7A4E00}
+.notam-cat-chip.ils{background:#EEF2F8;color:#1B3A6B}
+.notam-cat-chip.airspace{background:#F0EEFC;color:#5B4A9F}
+.notam-cat-chip.fuel{background:#E4EEF2;color:#1F5C68}
+.notam-cat-chip.other{background:var(--surface3);color:var(--text3)}
+.sb-title{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:8px}
+.sb-input{width:100%;font-family:var(--font);font-size:12px;padding:7px 10px;border:1px solid var(--border);border-radius:var(--r);background:var(--surface2);color:var(--text)}
+.sb-input:focus{outline:none;border-color:var(--blue);background:var(--surface)}
+.sb-airport-row{padding:9px 18px;display:flex;align-items:center;justify-content:space-between;gap:8px;cursor:pointer;border-bottom:1px solid var(--rule2);transition:background .1s}
+.sb-airport-row:hover{background:var(--surface2)}
+.sb-airport-row.active{background:var(--blue-faint);border-left:3px solid var(--blue);padding-left:15px}
+.sb-airport-left{display:flex;align-items:center;gap:8px;min-width:0}
+.sb-airport-icao{font-family:var(--mono);font-size:11.5px;font-weight:600;color:var(--text);width:36px}
+.sb-airport-city{font-size:11px;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sb-notam-count{font-family:var(--mono);font-size:10px;font-weight:600;padding:1px 7px;border-radius:8px;background:var(--surface3);color:var(--text3)}
+.sb-notam-count.has{background:var(--amber-faint);color:var(--amber)}
+.sb-notam-count.many{background:var(--red-faint);color:var(--red)}
+
+.main{overflow-y:auto;padding:20px 22px;background:var(--surface2)}
+.notam-header{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px 20px;margin-bottom:14px}
+.notam-header-hdr{display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
+.nh-icao{font-family:var(--mono);font-size:22px;font-weight:600;color:var(--text)}
+.nh-name{font-family:var(--font-serif);font-size:15px;font-weight:400;color:var(--text2);margin-top:2px}
+.nh-city{font-size:11.5px;color:var(--text3);margin-top:2px}
+.nh-count{text-align:right}
+.nh-count-num{font-family:var(--font-serif);font-size:32px;font-weight:400;color:var(--text);line-height:1}
+.nh-count-lbl{font-size:10.5px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-top:4px}
+.notam-list{display:flex;flex-direction:column;gap:8px}
+.notam-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:12px 16px;cursor:pointer;transition:border-color .12s,box-shadow .12s;font-family:var(--mono);font-size:11.5px;line-height:1.45}
+.notam-card:hover{border-color:var(--blue);box-shadow:0 3px 10px rgba(26,26,46,0.05)}
+.notam-card.active{border-color:var(--blue);box-shadow:0 0 0 2px var(--blue-faint)}
+.nc-top{display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap}
+.nc-num{font-weight:600;color:var(--text);font-size:12px}
+.nc-type{padding:1px 6px;border-radius:2px;font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+.type-n{background:var(--amber-faint);color:var(--amber)}
+.type-r{background:var(--blue-faint);color:var(--blue)}
+.type-c{background:var(--green-faint);color:var(--green)}
+.type-unknown{background:var(--surface3);color:var(--text3)}
+.nc-class{padding:1px 6px;border-radius:2px;font-size:9.5px;font-weight:600;background:var(--surface3);color:var(--text2);text-transform:uppercase;letter-spacing:.04em}
+.nc-effective{font-size:10.5px;color:var(--text3);margin-left:auto}
+.nc-text{color:var(--text2);font-size:11.5px;font-family:var(--mono);line-height:1.5;word-break:break-word;overflow:hidden;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical}
+
+.detail{background:var(--surface);border-left:1px solid var(--border);overflow-y:auto;padding:0}
+.det-empty{padding:60px 24px;text-align:center;color:var(--text3);font-size:12px}
+.det-empty i{display:block;font-size:28px;color:var(--rule);margin-bottom:10px}
+.det-hdr{padding:18px 22px 14px;border-bottom:1px solid var(--border);background:linear-gradient(180deg,var(--surface) 0%,var(--surface2) 100%)}
+.det-num{font-family:var(--mono);font-size:18px;font-weight:600;color:var(--text)}
+.det-loc{font-family:var(--mono);font-size:12px;color:var(--text3);margin-top:2px}
+.det-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}
+.det-tag{font-family:var(--mono);font-size:9.5px;font-weight:600;padding:2px 7px;border-radius:2px;background:var(--surface3);color:var(--text2)}
+.det-body{padding:16px 22px 24px}
+.det-section{margin-top:16px}
+.det-section:first-child{margin-top:0}
+.det-section-hdr{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);padding-bottom:6px;border-bottom:1px solid var(--rule2);margin-bottom:8px}
+.det-raw{font-family:var(--mono);font-size:11.5px;background:var(--surface2);border:1px solid var(--rule2);border-radius:var(--r);padding:11px 13px;color:var(--text);white-space:pre-wrap;word-break:break-word;line-height:1.5}
+.det-kv{display:grid;grid-template-columns:110px 1fr;gap:5px 12px;font-size:11.5px}
+.det-kv .k{color:var(--text3);text-transform:uppercase;letter-spacing:.05em;font-size:10px;font-weight:600;padding-top:2px}
+.det-kv .v{color:var(--text);font-family:var(--mono);font-size:11.5px}
+
+.empty-main{padding:60px 40px;text-align:center;color:var(--text3);font-size:12px}
+.empty-main i{display:block;font-size:32px;color:var(--rule);margin-bottom:12px}
+.loading{padding:50px;text-align:center;color:var(--text3);font-size:12px}
+.spinner{display:inline-block;width:16px;height:16px;border:2px solid var(--rule);border-top-color:var(--blue);border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:8px}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+
+<nav class="global-nav">
+  <a href="index.html" class="gn-logo"><div class="gn-mark"><i class="ti ti-lock"></i></div><span class="gn-name">DefendAble</span></a>
+  <div class="gn-links" id="gn-links"></div>
+  <div class="gn-right">
+    <div class="gn-user-btn" id="gn-user-btn"><div class="gn-av" id="gn-av">SB</div><span class="gn-user" id="gn-username">S. Booth</span></div>
+    <div id="user-dropdown" class="user-dropdown"></div>
+  </div>
+</nav>
+
+<div class="page-hdr">
+  <div class="crumb"><a href="evidence.html">Evidence</a><i class="ti ti-chevron-right"></i><span>NOTAMs</span></div>
+  <div class="hdr-flex">
+    <div>
+      <div class="page-title">NOTAMs</div>
+      <div class="page-sub">Notices to Airmen from FAA External NOTAM API · tier-1 hubs (23 airports) pulled nightly; tier-2 on-demand.</div>
+    </div>
+    <div class="hdr-meta" id="hdr-meta">
+      <div><strong id="m-airports">—</strong> airports</div>
+      <div><strong id="m-total">—</strong> total NOTAMs</div>
+      <div>Pulled <strong id="m-pulled">—</strong></div>
+    </div>
+  </div>
+</div>
+
+<div class="category-ribbon" id="category-ribbon"></div>
+
+<div class="workspace">
+  <aside class="sidebar">
+    <div class="sb-section">
+      <div class="sb-title">Search airport</div>
+      <input class="sb-input" id="search" placeholder="ICAO or city…">
+    </div>
+    <div class="sb-section">
+      <div class="sb-title">NOTAM category</div>
+      <div class="sb-btn-group" id="cat-filters"></div>
+    </div>
+    <div class="sb-section">
+      <div class="sb-title">Sort by</div>
+      <div class="sb-btn-group" id="sort-order"></div>
+    </div>
+    <div id="airport-list"></div>
+  </aside>
+
+  <main class="main">
+    <div id="notam-body"><div class="loading"><span class="spinner"></span>Loading NOTAMs snapshot from evidence-collection…</div></div>
+  </main>
+
+  <aside class="detail" id="detail">
+    <div class="det-empty"><i class="ti ti-file-info"></i>Select a NOTAM to see the full text and metadata.</div>
+  </aside>
+</div>
+
+<script src="shared_data.js"></script>
+<script src="shared_theme.js"></script>
+<script src="defendable_evidence_reader.js?v=s12a"></script>
+<script src="nav.js?v=sessA4"></script>
+
+<script>
+(function(){
+  var CATEGORIES = [
+    { id:'weather',  label:'Weather',           icon:'ti-cloud-storm',  page:'evidence-weather.html' },
+    { id:'notams',   label:'NOTAMs',            icon:'ti-file-text',    page:'evidence-notams.html' },
+    { id:'news',     label:'News',              icon:'ti-news',         page:'evidence-news.html' },
+    { id:'flights',  label:'Flight tracks',     icon:'ti-plane',        page:'evidence-flights.html' },
+    { id:'global',   label:'Natural disaster',  icon:'ti-flame',        page:'evidence-global.html' },
+    { id:'strikes',  label:'Industrial action', icon:'ti-hand-stop',    page:'evidence-strikes.html' },
+    { id:'atfm',     label:'ATFM',              icon:'ti-traffic-cone', page:'evidence-atfm.html' },
+    { id:'ash',      label:'Volcanic ash',      icon:'ti-mountain',     page:'evidence-ash.html' },
+  ];
+  document.getElementById('category-ribbon').innerHTML = CATEGORIES.map(function(c){
+    return '<a href="'+c.page+'" class="ribbon-tab'+(c.id==='notams'?' active':'')+'"><i class="ti '+c.icon+'"></i>'+c.label+'</a>';
+  }).join('');
+
+  var state = { search:'', category:'all', sort:'validFrom', activeIcao:null, activeNotamIdx:null, perAirport:{}, airports:[] };
+
+  var CATEGORIES = [
+    {id:'all',label:'All'},
+    {id:'rwy',label:'Runway'},
+    {id:'twy',label:'Taxiway'},
+    {id:'ils',label:'ILS/Nav'},
+    {id:'airspace',label:'Airspace'},
+    {id:'fuel',label:'Fuel/Ground'},
+    {id:'other',label:'Other'}
+  ];
+  var SORTS = [
+    {id:'validFrom',label:'Most recent'},
+    {id:'severity',label:'Severity'},
+    {id:'airport',label:'Airport'}
+  ];
+
+  function classifyNotam(n){
+    var t = String(n.text || n.notam || '').toUpperCase();
+    if (/\bRWY\b|\bRUNWAY\b/.test(t)) return 'rwy';
+    if (/\bTWY\b|\bTAXIWAY\b/.test(t)) return 'twy';
+    if (/\bILS\b|\bVOR\b|\bDME\b|\bNDB\b|NAVAID/.test(t)) return 'ils';
+    if (/AIRSPACE|CTR\b|TMA\b|FIR\b|R\d/.test(t)) return 'airspace';
+    if (/FUEL|APRON|STAND|GATE|GROUND/.test(t)) return 'fuel';
+    return 'other';
+  }
+
+  function chipRow(items, active, id, onChange){
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.innerHTML = items.map(function(i){ return '<button class="sb-btn'+(i.id===active?' active':'')+'" data-k="'+i.id+'">'+i.label+'</button>'; }).join('');
+    Array.prototype.forEach.call(el.querySelectorAll('.sb-btn'), function(b){ b.onclick = function(){ onChange(b.dataset.k); }; });
+  }
+
+  function fmtDate(iso){ if (!iso) return '—'; try { return new Date(iso).toISOString().slice(0,16).replace('T',' ')+'Z'; } catch(e){ return iso; } }
+
+  function renderList(){
+    var s = state.search.toLowerCase();
+    var rows = state.airports.filter(function(a){
+      if (!s) return true;
+      return (a.icao+' '+a.iata+' '+a.city).toLowerCase().indexOf(s) >= 0;
+    });
+    var html = rows.map(function(a){
+      var rawNotams = (state.perAirport[a.icao] || {}).notams || [];
+      var count = state.category === 'all' ? rawNotams.length : rawNotams.filter(function(n){ return classifyNotam(n) === state.category; }).length;
+      var cls = count > 10 ? 'many' : count > 0 ? 'has' : '';
+      return '<div class="sb-airport-row'+(state.activeIcao===a.icao?' active':'')+'" data-icao="'+a.icao+'">'+
+        '<div class="sb-airport-left"><div class="sb-airport-icao">'+a.icao+'</div><div class="sb-airport-city">'+a.city+'</div></div>'+
+        '<div class="sb-notam-count '+cls+'">'+count+'</div>'+
+      '</div>';
+    }).join('');
+    document.getElementById('airport-list').innerHTML = html || '<div style="padding:20px;text-align:center;color:var(--text3);font-size:11px">No airport matches.</div>';
+    Array.prototype.forEach.call(document.getElementById('airport-list').querySelectorAll('.sb-airport-row'), function(r){
+      r.onclick = function(){ state.activeIcao = r.dataset.icao; state.activeNotamIdx = null; renderList(); renderMain(); renderDetail(); };
+    });
+  }
+
+  function classifyType(t){ return t === 'N' ? 'n' : t === 'R' ? 'r' : t === 'C' ? 'c' : 'unknown'; }
+
+  function renderMain(){
+    var el = document.getElementById('notam-body');
+    if (!state.activeIcao){
+      el.innerHTML = '<div class="empty-main"><i class="ti ti-hand-click"></i>Pick an airport on the left to browse its current NOTAMs.</div>';
+      return;
+    }
+    var airport = state.airports.find(function(a){return a.icao===state.activeIcao;});
+    var perAp = state.perAirport[state.activeIcao] || { airport_name:airport && airport.name, notams:[] };
+    var notams = perAp.notams || [];
+    /* S1 · Category filter + sort */
+    if (state.category !== 'all') {
+      notams = notams.filter(function(n){ return classifyNotam(n) === state.category; });
+    }
+    if (state.sort === 'validFrom') {
+      notams = notams.slice().sort(function(a,b){ return String(b.effective_start||'').localeCompare(String(a.effective_start||'')); });
+    } else if (state.sort === 'severity') {
+      var order = {rwy:0,ils:1,airspace:2,twy:3,fuel:4,other:5};
+      notams = notams.slice().sort(function(a,b){ return (order[classifyNotam(a)]||9) - (order[classifyNotam(b)]||9); });
+    }
+    var header = '<div class="notam-header">'+
+      '<div class="notam-header-hdr">'+
+        '<div>'+
+          '<div class="nh-icao">'+state.activeIcao+' · '+(airport ? airport.iata : '')+'</div>'+
+          '<div class="nh-name">'+(perAp.airport_name || (airport && airport.name) || '')+'</div>'+
+          '<div class="nh-city">'+(airport ? airport.city + ', ' + airport.country : '')+'</div>'+
+        '</div>'+
+        '<div class="nh-count"><div class="nh-count-num">'+notams.length+'</div><div class="nh-count-lbl">Active NOTAMs</div></div>'+
+      '</div>'+
+    '</div>';
+    if (!notams.length){
+      el.innerHTML = header + '<div class="empty-main"><i class="ti ti-file-check"></i>No active NOTAMs for '+state.activeIcao+' at the last pull. Either the airport is quiet or the source is not yet live — check the manifest.</div>';
+      return;
+    }
+    var list = '<div class="notam-list">' + notams.map(function(n, i){
+      var typeCls = 'type-' + classifyType(n.type);
+      var typeLabel = n.type === 'N' ? 'New' : n.type === 'R' ? 'Replace' : n.type === 'C' ? 'Cancel' : (n.type || '—');
+      var cat = classifyNotam(n);
+      var catLabel = cat === 'rwy' ? 'Runway' : cat === 'twy' ? 'Taxiway' : cat === 'ils' ? 'ILS/Nav' : cat === 'airspace' ? 'Airspace' : cat === 'fuel' ? 'Fuel/Ground' : 'Other';
+      return '<div class="notam-card'+(state.activeNotamIdx===i?' active':'')+'" data-i="'+i+'">'+
+        '<div class="nc-top">'+
+          '<span class="nc-num">'+(n.number || n.id || 'NOTAM')+'</span>'+
+          '<span class="notam-cat-chip '+cat+'">'+catLabel+'</span>'+
+          '<span class="nc-type '+typeCls+'">'+typeLabel+'</span>'+
+          (n.classification ? '<span class="nc-class">'+n.classification+'</span>' : '') +
+          '<span class="nc-effective">'+fmtDate(n.effective_start)+' → '+fmtDate(n.effective_end)+'</span>'+
+        '</div>'+
+        '<div class="nc-text">'+(n.text || '').replace(/[<>]/g,'')+'</div>'+
+      '</div>';
+    }).join('') + '</div>';
+    el.innerHTML = header + list;
+    Array.prototype.forEach.call(el.querySelectorAll('.notam-card'), function(c){
+      c.onclick = function(){ state.activeNotamIdx = parseInt(c.dataset.i,10); renderMain(); renderDetail(); };
+    });
+  }
+
+  function renderDetail(){
+    var el = document.getElementById('detail');
+    if (state.activeNotamIdx == null || !state.activeIcao){
+      el.innerHTML = '<div class="det-empty"><i class="ti ti-file-info"></i>Select a NOTAM to see the full text and metadata.</div>';
+      return;
+    }
+    var notams = (state.perAirport[state.activeIcao] || {}).notams || [];
+    var n = notams[state.activeNotamIdx];
+    if (!n){ el.innerHTML = ''; return; }
+    var tags = [];
+    if (n.type) tags.push('<span class="det-tag">Type '+n.type+'</span>');
+    if (n.classification) tags.push('<span class="det-tag">'+n.classification+'</span>');
+    if (n.series) tags.push('<span class="det-tag">Series '+n.series+'</span>');
+    el.innerHTML =
+      '<div class="det-hdr">'+
+        '<div class="det-num">'+(n.number || n.id || 'NOTAM')+'</div>'+
+        '<div class="det-loc">'+state.activeIcao+' · '+(n.location || '—')+'</div>'+
+        '<div class="det-tags">'+tags.join('')+'</div>'+
+      '</div>'+
+      '<div class="det-body">'+
+        '<div class="det-section">'+
+          '<div class="det-section-hdr">Metadata</div>'+
+          '<div class="det-kv">'+
+            '<div class="k">Effective</div><div class="v">'+fmtDate(n.effective_start)+'</div>'+
+            '<div class="k">Until</div><div class="v">'+fmtDate(n.effective_end)+'</div>'+
+            (n.id ? '<div class="k">Internal ID</div><div class="v">'+n.id+'</div>' : '') +
+            (n.classification ? '<div class="k">Classification</div><div class="v">'+n.classification+'</div>' : '') +
+          '</div>'+
+        '</div>'+
+        '<div class="det-section">'+
+          '<div class="det-section-hdr">Full NOTAM text</div>'+
+          '<div class="det-raw">'+(n.text || '(no text)').replace(/[<>]/g,'')+'</div>'+
+        '</div>'+
+      '</div>';
+  }
+
+  // Tier-1 airports only — matches FAA NOTAM source coverage
+  window.__TIER1__ = [
+    {icao:'EGLL',iata:'LHR',name:'Heathrow',city:'London',country:'UK'},
+    {icao:'EGKK',iata:'LGW',name:'Gatwick',city:'London',country:'UK'},
+    {icao:'EGSS',iata:'STN',name:'Stansted',city:'London',country:'UK'},
+    {icao:'EGGW',iata:'LTN',name:'Luton',city:'London',country:'UK'},
+    {icao:'EGCC',iata:'MAN',name:'Manchester',city:'Manchester',country:'UK'},
+    {icao:'EGPH',iata:'EDI',name:'Edinburgh',city:'Edinburgh',country:'UK'},
+    {icao:'EIDW',iata:'DUB',name:'Dublin',city:'Dublin',country:'Ireland'},
+    {icao:'LFPG',iata:'CDG',name:'Charles de Gaulle',city:'Paris',country:'France'},
+    {icao:'LFPO',iata:'ORY',name:'Orly',city:'Paris',country:'France'},
+    {icao:'LFMN',iata:'NCE',name:"Côte d'Azur",city:'Nice',country:'France'},
+    {icao:'EHAM',iata:'AMS',name:'Schiphol',city:'Amsterdam',country:'Netherlands'},
+    {icao:'EDDF',iata:'FRA',name:'Frankfurt',city:'Frankfurt',country:'Germany'},
+    {icao:'EDDM',iata:'MUC',name:'Munich',city:'Munich',country:'Germany'},
+    {icao:'EDDB',iata:'BER',name:'Berlin Brandenburg',city:'Berlin',country:'Germany'},
+    {icao:'LSZH',iata:'ZRH',name:'Zürich',city:'Zürich',country:'Switzerland'},
+    {icao:'LSGG',iata:'GVA',name:'Genève',city:'Geneva',country:'Switzerland'},
+    {icao:'LOWW',iata:'VIE',name:'Schwechat',city:'Vienna',country:'Austria'},
+    {icao:'LEMD',iata:'MAD',name:'Barajas',city:'Madrid',country:'Spain'},
+    {icao:'LEBL',iata:'BCN',name:'El Prat',city:'Barcelona',country:'Spain'},
+    {icao:'LEPA',iata:'PMI',name:'Son Sant Joan',city:'Palma',country:'Spain'},
+    {icao:'LIRF',iata:'FCO',name:'Fiumicino',city:'Rome',country:'Italy'},
+    {icao:'LIMC',iata:'MXP',name:'Malpensa',city:'Milan',country:'Italy'},
+    {icao:'EPWA',iata:'WAW',name:'Chopin',city:'Warsaw',country:'Poland'},
+  ];
+  state.airports = window.__TIER1__;
+
+  chipRow(CATEGORIES, state.category, 'cat-filters', function(k){ state.category = k; chipRow(CATEGORIES, k, 'cat-filters', arguments.callee); renderList(); });
+  chipRow(SORTS, state.sort, 'sort-order', function(k){ state.sort = k; chipRow(SORTS, k, 'sort-order', arguments.callee); renderList(); });
+  document.getElementById('search').oninput = function(e){ state.search = e.target.value.trim(); renderList(); };
+  renderList();
+
+  window.EvidenceCollection.get('faa-notams').then(function(payload){
+    if (!payload || !payload.data){
+      document.getElementById('notam-body').innerHTML = '<div class="empty-main"><i class="ti ti-file-off"></i>No NOTAM snapshot yet — source is either awaiting FAA_CLIENT_ID/SECRET secrets or the nightly cron has not yet succeeded. Check pipeline status on the Evidence hub.</div>';
+      return;
+    }
+    state.perAirport = payload.data.per_airport || {};
+    var totalNotams = 0;
+    Object.keys(state.perAirport).forEach(function(k){ totalNotams += (state.perAirport[k].notams || []).length; });
+    document.getElementById('m-airports').textContent = state.airports.length;
+    document.getElementById('m-total').textContent = totalNotams;
+    document.getElementById('m-pulled').textContent = payload.pulled_at ? new Date(payload.pulled_at).toISOString().slice(0,16).replace('T',' ')+'Z' : '—';
+    renderList();
+    // Auto-select the first airport with NOTAMs so page isn't empty
+    var firstWith = state.airports.find(function(a){ return (state.perAirport[a.icao] || {}).notams && state.perAirport[a.icao].notams.length; });
+    if (firstWith){ state.activeIcao = firstWith.icao; renderList(); renderMain(); }
+  }).catch(function(){
+    document.getElementById('notam-body').innerHTML = '<div class="empty-main"><i class="ti ti-cloud-off"></i>Could not reach the evidence-collection repository.</div>';
+  });
+})();
+</script>
+
+<script>
+/* Q5 · Sync corner user chip to active user (was hardcoded SB). */
+(function(){
+  function sync(){
+    try {
+      var uid = typeof getActiveUser === 'function' ? getActiveUser() : 'SB';
+      var u = (typeof USERS !== 'undefined') ? USERS[uid] : null;
+      if (!u) return;
+      var av = document.getElementById('gn-av'); if (av) av.textContent = u.initials;
+      var un = document.getElementById('gn-username'); if (un) un.textContent = u.name;
+    } catch(e){}
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', sync);
+  else sync();
+})();
+</script>
+</body>
+</html>

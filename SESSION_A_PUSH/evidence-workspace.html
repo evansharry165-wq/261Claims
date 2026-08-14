@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>DefendAble — Evidence workspace</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--ink:#1A1A2E;--ink2:#2D2D44;--ink3:#6B6B80;--rule:#D8D8E0;--rule2:#EBEBF0;--surface:#FFFFFF;--surface2:#F7F7F9;--surface3:#EFEFF2;--accent:#1B3A6B;--accent2:#254E91;--accent-faint:#EEF2F8;--confirm:#1A5C3A;--confirm-faint:#EEF7F2;--caution:#7A4E00;--caution-faint:#FDF4E3;--alert:#8B1A1A;--alert-faint:#FBF0F0;--navy:var(--ink);--blue:var(--accent2);--blue-faint:var(--accent-faint);--green:var(--confirm);--amber:var(--caution);--red:var(--alert);--border:var(--rule);--text:var(--ink);--text2:var(--ink2);--text3:var(--ink3);--font:'Helvetica Neue','Arial',sans-serif;--font-serif:'Georgia','Times New Roman',serif;--mono:'Courier New','Courier',monospace;--r:3px}
+html,body{height:100%;font-family:var(--font);background:var(--surface2);color:var(--text);font-size:14px;overflow:hidden}
+.global-nav{background:var(--navy);height:48px;display:flex;align-items:center;padding:0 20px;flex-shrink:0}
+.gn-logo{display:flex;align-items:center;gap:8px;text-decoration:none;margin-right:20px}
+.gn-mark{width:28px;height:28px;background:var(--blue);border-radius:4px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px}
+.gn-name{font-size:14px;font-weight:500;color:#fff}
+.gn-links{display:flex;gap:2px;flex:1;overflow:hidden}
+.gn-link{display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r);font-size:12px;font-weight:500;color:rgba(255,255,255,0.5);text-decoration:none;white-space:nowrap}
+.gn-link:hover{background:rgba(255,255,255,0.08);color:#fff}
+.gn-link.active{background:rgba(42,111,219,0.35);color:#fff}
+.gn-right{margin-left:8px}
+.gn-user-btn{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:20px;padding:3px 10px 3px 4px;cursor:pointer}
+.gn-av{width:24px;height:24px;border-radius:50%;background:#1C2E44;color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px}
+.gn-user{font-size:11px;color:rgba(255,255,255,0.85)}
+
+/* Case-context header — always visible */
+.case-hdr{background:var(--surface);border-bottom:1px solid var(--border);padding:12px 24px;flex-shrink:0}
+.case-hdr-top{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.case-facts{flex:1;min-width:0}
+.crumb{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text3);margin-bottom:4px}
+.crumb a{color:var(--text3);text-decoration:none}
+.crumb a:hover{color:var(--accent)}
+.case-title{font-family:var(--font-serif);font-size:20px;font-weight:400;letter-spacing:-0.01em;color:var(--text)}
+.case-ref{font-family:var(--mono);font-size:11px;color:var(--text3);margin-top:2px}
+.case-strip{display:flex;flex-wrap:wrap;gap:14px 20px;margin-top:8px;font-size:11px;color:var(--text3)}
+.case-strip .k{font-weight:600;text-transform:uppercase;letter-spacing:.05em;font-size:9.5px;margin-right:5px}
+.case-strip .v{color:var(--text2);font-family:var(--mono);font-weight:600}
+.case-actions{display:flex;flex-direction:column;gap:6px;align-items:flex-end;flex-shrink:0}
+.hdr-action{font-size:11px;padding:6px 12px;border-radius:var(--r);cursor:pointer;font-family:var(--font);font-weight:500;text-decoration:none;display:inline-flex;align-items:center;gap:5px;white-space:nowrap;border:1px solid var(--border);background:var(--surface);color:var(--text2)}
+.hdr-action:hover{background:var(--surface2)}
+.hdr-action.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+.hdr-action.primary:hover{background:var(--ink)}
+.hdr-action.warn{background:var(--surface);border-color:var(--caution);color:var(--caution)}
+.hdr-action.warn:hover{background:var(--caution);color:#fff}
+
+/* Workspace grid */
+.workspace{display:grid;grid-template-columns:260px 1fr 340px;height:calc(100vh - 48px - 130px);min-height:0}
+
+/* Sidebar — source list */
+.sidebar{background:var(--surface);border-right:1px solid var(--border);overflow-y:auto}
+.sb-section{padding:14px 16px 12px;border-bottom:1px solid var(--rule2)}
+.sb-title{font-size:9.5px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:10px;display:flex;justify-content:space-between}
+.sb-src-list{display:flex;flex-direction:column;gap:2px}
+.sb-src{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:var(--r);cursor:pointer;transition:background .1s;font-size:11.5px}
+.sb-src:hover{background:var(--surface2)}
+.sb-src.active{background:var(--accent-faint);color:var(--accent);font-weight:500}
+.sb-src.active .sb-src-count{background:var(--accent);color:#fff}
+.sb-src.no-hits{opacity:.5}
+.sb-src-icon{width:22px;height:22px;border-radius:var(--r);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}
+.sb-src-icon.weather{background:#EEF2F8;color:#254E91}
+.sb-src-icon.notams{background:#FDF4E3;color:#7A4E00}
+.sb-src-icon.news{background:#EEF7F2;color:#1A5C3A}
+.sb-src-icon.flights{background:#F3F0FA;color:#4338CA}
+.sb-src-icon.global{background:#FBF0F0;color:#8B1A1A}
+.sb-src-icon.strikes{background:#F0EEFC;color:#5B4A9F}
+.sb-src-icon.atfm{background:#E4EEF2;color:#1F5C68}
+.sb-src-icon.ash{background:#EDEAE3;color:#5C4A2E}
+.sb-src-label{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sb-src-count{font-family:var(--mono);font-size:9.5px;font-weight:600;padding:1px 7px;border-radius:8px;background:var(--rule2);color:var(--text3);min-width:22px;text-align:center}
+.sb-src-count.hit{background:var(--green-faint);color:var(--green)}
+.sb-src-count.loading{background:var(--accent-faint);color:var(--accent)}
+
+/* Main — evidence stream */
+.main{overflow-y:auto;padding:0;background:var(--surface2)}
+.stream-hdr{background:var(--surface);border-bottom:1px solid var(--rule2);padding:14px 22px;position:sticky;top:0;z-index:5}
+.stream-hdr h2{font-family:var(--font-serif);font-size:16px;font-weight:400;margin-bottom:4px}
+.stream-hdr .sub{font-size:11.5px;color:var(--text3)}
+.stream-controls{display:flex;gap:6px;margin-top:10px;align-items:center;flex-wrap:wrap}
+.sc-chip{font-size:11px;padding:4px 10px;border-radius:20px;border:1px solid var(--border);background:var(--surface);cursor:pointer;font-family:var(--font);color:var(--text2)}
+.sc-chip.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+.sc-chip:hover:not(.active){background:var(--surface2)}
+.stream-list{display:flex;flex-direction:column;gap:8px;padding:14px 22px 40px}
+.item-card{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:var(--r);padding:12px 16px;display:grid;grid-template-columns:1fr auto;gap:12px;align-items:flex-start;transition:box-shadow .1s,border-color .1s}
+.item-card:hover{box-shadow:0 3px 10px rgba(26,26,46,0.05)}
+.item-card.attached{border-left-color:var(--green);background:linear-gradient(90deg,var(--confirm-faint) 0%,var(--surface) 12%)}
+.item-kind{font-size:9.5px;font-weight:600;padding:1px 7px;border-radius:8px;font-family:var(--mono);text-transform:uppercase;display:inline-block;letter-spacing:.04em;margin-right:6px}
+.kind-metar,.kind-taf{background:#EEF2F8;color:#254E91}
+.kind-notam{background:#FDF4E3;color:#7A4E00}
+.kind-news{background:#EEF7F2;color:#1A5C3A}
+.kind-track{background:#F3F0FA;color:#4338CA}
+.kind-gdacs,.kind-wildfire,.kind-copernicus,.kind-volcano{background:#FBF0F0;color:#8B1A1A}
+.kind-strike{background:#F0EEFC;color:#5B4A9F}
+.kind-atfm{background:#E4EEF2;color:#1F5C68}
+.kind-chart{background:#EEF2F8;color:#254E91}
+.item-source{font-size:9.5px;color:var(--text3);font-family:var(--mono);text-transform:uppercase;letter-spacing:.04em}
+.item-summary{font-size:12.5px;color:var(--text);margin-top:6px;line-height:1.5;word-break:break-word}
+.item-raw{font-family:var(--mono);font-size:10.5px;background:var(--surface2);border:1px solid var(--rule2);border-radius:var(--r);padding:8px 10px;margin-top:6px;color:var(--text2);white-space:pre-wrap;word-break:break-word;max-height:60px;overflow:hidden;line-height:1.4;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical}
+.item-actions{display:flex;flex-direction:column;gap:5px;align-items:flex-end;flex-shrink:0}
+.item-btn{font-size:10.5px;padding:5px 11px;border:1px solid var(--accent);background:var(--surface);color:var(--accent);border-radius:var(--r);cursor:pointer;font-family:var(--font);font-weight:500;white-space:nowrap;display:inline-flex;align-items:center;gap:4px}
+.item-btn:hover{background:var(--accent);color:#fff}
+.item-btn.attached{background:var(--green);color:#fff;border-color:var(--green);cursor:default}
+.item-btn:disabled{opacity:.5;cursor:not-allowed}
+.item-viewfull{font-size:10px;color:var(--accent);text-decoration:none;background:none;border:none;cursor:pointer;padding:0;font-family:var(--font)}
+.item-viewfull:hover{text-decoration:underline}
+.empty-stream{padding:60px 24px;text-align:center;color:var(--text3);font-size:12px}
+.empty-stream i{display:block;font-size:32px;color:var(--rule);margin-bottom:12px}
+.loading-stream{padding:60px 24px;text-align:center;color:var(--text3);font-size:12px}
+
+/* Attached panel */
+.attached-panel{background:var(--surface);border-left:1px solid var(--border);overflow-y:auto}
+.att-hdr{padding:14px 18px;border-bottom:1px solid var(--rule2);background:var(--surface2);position:sticky;top:0;z-index:5}
+.att-hdr h3{font-family:var(--font-serif);font-size:14px;font-weight:400;margin-bottom:3px}
+.att-hdr .sub{font-size:10.5px;color:var(--text3)}
+.att-list{padding:8px 0}
+.att-item{padding:10px 18px;border-bottom:1px solid var(--rule2);display:grid;grid-template-columns:22px 1fr auto;gap:10px;align-items:flex-start;font-size:11px}
+.att-item:hover{background:var(--surface2)}
+.att-icon{width:22px;height:22px;border-radius:var(--r);display:flex;align-items:center;justify-content:center;font-size:11px}
+.att-body{min-width:0}
+.att-summary{color:var(--text);font-weight:500;line-height:1.4;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.att-meta{font-size:9.5px;color:var(--text3);font-family:var(--mono);margin-top:3px}
+.att-remove{background:none;border:none;color:var(--text3);cursor:pointer;font-size:14px;padding:0}
+.att-remove:hover{color:var(--red)}
+.att-empty{padding:36px 18px;text-align:center;color:var(--text3);font-size:11px;line-height:1.5}
+.att-empty i{display:block;font-size:24px;color:var(--rule);margin-bottom:8px}
+
+/* Spinner */
+.spin{display:inline-block;width:12px;height:12px;border:2px solid var(--rule);border-top-color:var(--accent);border-radius:50%;animation:ws-spin 0.7s linear infinite;vertical-align:middle}
+@keyframes ws-spin{to{transform:rotate(360deg)}}
+
+/* Toast */
+.toast{position:fixed;bottom:20px;right:20px;background:var(--ink);color:#fff;padding:12px 18px;border-radius:4px;box-shadow:0 8px 24px rgba(0,0,0,0.3);z-index:1000;font-size:12px;max-width:400px;line-height:1.5;transition:opacity .4s}
+.toast.ok{background:var(--green)}
+.toast.err{background:var(--red)}
+
+/* No-case fallback */
+.no-case{padding:60px;text-align:center;color:var(--text3);max-width:600px;margin:0 auto}
+.no-case i{display:block;font-size:48px;color:var(--rule);margin-bottom:20px}
+.no-case h2{font-family:var(--font-serif);font-size:22px;font-weight:400;color:var(--text2);margin-bottom:10px}
+.no-case p{font-size:13px;line-height:1.6;margin-bottom:16px}
+.no-case a{color:var(--accent);text-decoration:none}
+.no-case a:hover{text-decoration:underline}
+</style>
+</head>
+<body>
+
+<nav class="global-nav">
+  <a href="index.html" class="gn-logo"><div class="gn-mark"><i class="ti ti-lock"></i></div><span class="gn-name">DefendAble</span></a>
+  <div class="gn-links" id="gn-links"></div>
+  <div class="gn-right"><div class="gn-user-btn"><div class="gn-av" id="gn-av">SB</div><span class="gn-user" id="gn-username">S. Booth</span></div></div>
+</nav>
+
+<div id="root"></div>
+
+<script src="shared_data.js"></script>
+<script src="shared_theme.js"></script>
+<script src="case_helpers.js"></script>
+<script src="case_filing.js"></script>
+<script src="defendable_evidence_reader.js?v=s9a"></script>
+<script src="case_audit_trail.js?v=s9a"></script>
+<script src="case_evidence_repository.js?v=peb4"></script>
+<script src="demo_fixture.js?v=peb3"></script>
+<script src="flight_resolver.js?v=peb2"></script>
+<script src="evidence_cascade_match.js?v=peb2"></script>
+<script src="evidence_query_bar.js?v=peb2"></script>
+<script src="case_evidence_fetch_trigger.js?v=s9a"></script>
+<script src="dio_core.js?v=s9a"></script>
+<script src="dio_territory.js?v=s9a"></script>
+<script src="dio_data.js?v=s9a"></script>
+<script src="dio_helpers.js?v=s9a"></script>
+<script src="nav.js?v=sessA4"></script>
+
+<script>
+(function(){
+  function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch];});}
+  function toast(msg, kind){
+    var el = document.createElement('div');
+    el.className = 'toast' + (kind ? ' '+kind : '');
+    el.textContent = msg;
+    document.body.appendChild(el);
+    setTimeout(function(){el.style.opacity='0';},4000);
+    setTimeout(function(){el.remove();},4600);
+  }
+
+  var urlCaseRef = new URLSearchParams(location.search).get('case');
+  var isDIO = window.DIO && DIO.isDIOUser && DIO.isDIOUser();
+
+  /* ─── No-case fallback — the workspace is per-case, so we need one ─── */
+  if (!urlCaseRef) {
+    document.getElementById('root').innerHTML =
+      '<div class="no-case">'
+      + '<i class="ti ti-briefcase-off"></i>'
+      + '<h2>Evidence workspace</h2>'
+      + '<p>This surface is per-case — open a specific case to see every source pre-filtered to its facts.</p>'
+      + '<p>From a case page, click <strong>Repository → Open workspace</strong>.<br>Or from the <a href="'+(isDIO?'dio.html':'cases.html')+'">'+(isDIO?'DIO hub':'Cases list')+'</a> click a case row.</p>'
+      + '</div>';
+    return;
+  }
+
+  /* ─── Load case ─── */
+  var caseData = window.CaseFiling && CaseFiling.getCase(urlCaseRef);
+  var caseFacts = window.CaseEvidenceRepository && CaseEvidenceRepository.getCaseFacts(urlCaseRef);
+  if (!caseData) {
+    document.getElementById('root').innerHTML =
+      '<div class="no-case"><i class="ti ti-alert-circle"></i><h2>Case not found</h2><p>No case with ref <strong>'+esc(urlCaseRef)+'</strong> in the live case file store. <a href="cases.html">Return to Cases list</a>.</p></div>';
+    return;
+  }
+
+  /* ─── Category / source definitions (used by sidebar + kind classification) ─── */
+  var CATEGORIES = [
+    { id:'weather',  label:'Weather',           icon:'ti-cloud-storm', sources:['aviationweather-metar-taf','met-office-charts'] },
+    { id:'notams',   label:'NOTAMs',            icon:'ti-file-text',   sources:['faa-notams','autorouter-notams'] },
+    { id:'news',     label:'News',              icon:'ti-news',        sources:['aviation-herald-news','simple-flying-news'] },
+    { id:'flights',  label:'Flight tracks',     icon:'ti-plane',       sources:['opensky-flight-tracks'] },
+    { id:'global',   label:'Natural disaster',  icon:'ti-flame',       sources:['nasa-firms-wildfires','copernicus-effis','gdacs-global-disasters','smithsonian-volcanoes'] },
+    { id:'strikes',  label:'Industrial action', icon:'ti-hand-stop',   sources:['dgac-france-notices','enac-italy-notices'] },
+    { id:'atfm',     label:'ATFM',              icon:'ti-traffic-cone',sources:['eurocontrol-nm-public','eurocontrol-coda'] },
+    { id:'ash',      label:'Volcanic ash',      icon:'ti-mountain',    sources:['vaac-london-qva'] },
+  ];
+
+  /* ─── State ─── */
+  var state = {
+    activeCategory:'all', // 'all' or category id
+    filterUnattached:false,
+    sourceItems:{},     // sid → items[]
+    attached:[],        // from CaseEvidenceRepository.listAttached
+    sourceLoading:{},   // sid → true while pending
+  };
+
+  function refreshAttached(){
+    state.attached = window.CaseEvidenceRepository ? CaseEvidenceRepository.listAttached(urlCaseRef) : [];
+  }
+
+  /* ─── Header render ─── */
+  function renderHeader(){
+    var facts = caseFacts || {};
+    var evPct = caseData.evidencePct || 0;
+    var pointsRed = ((caseData.points||[]).filter(function(p){return p.evidenceStatus==='red';}).length);
+    var pointsAmber = ((caseData.points||[]).filter(function(p){return p.evidenceStatus==='amber';}).length);
+    var returnUrl = isDIO ? ('dio-case.html?ref='+encodeURIComponent(urlCaseRef)) : ('case.html?ref='+encodeURIComponent(urlCaseRef)+'&tab=repo');
+    var returnLabel = isDIO ? 'DIO case view' : 'Case Repository tab';
+    return '<div class="case-hdr">'
+      + '<div class="case-hdr-top">'
+      +   '<div class="case-facts">'
+      +     '<div class="crumb"><a href="evidence.html">Evidence</a> › <a href="'+returnUrl+'">'+esc(returnLabel)+'</a> › <span>Workspace</span></div>'
+      +     '<div class="case-title">'+esc(caseData.claimant||'Unknown claimant')+'</div>'
+      +     '<div class="case-ref">'+esc(caseData.ref)+' · '+esc(caseData.classification||'—')+' · Stage <strong>'+esc(caseData.stage)+'</strong></div>'
+      +     '<div class="case-strip">'
+      +       (facts.flightNum ? '<div><span class="k">Flight</span><span class="v">'+esc(facts.flightNum)+'</span></div>' : '')
+      +       (facts.date ? '<div><span class="k">Date</span><span class="v">'+esc(facts.date)+'</span></div>' : '')
+      +       ((facts.originIcao||facts.destIcao) ? '<div><span class="k">Route</span><span class="v">'+esc((facts.originIcao||facts.originIata||'?')+' → '+(facts.destIcao||facts.destIata||'?'))+'</span></div>' : '')
+      +       (facts.reg ? '<div><span class="k">Reg</span><span class="v">'+esc(facts.reg)+'</span></div>' : '')
+      +       (caseData.disruptionType ? '<div><span class="k">Disruption</span><span class="v">'+esc(caseData.disruptionType)+'</span></div>' : '')
+      +       '<div><span class="k">Evidence</span><span class="v">'+evPct+'%</span></div>'
+      +       (pointsRed+pointsAmber ? '<div><span class="k">Gaps</span><span class="v" style="color:'+(pointsRed?'var(--red)':'var(--amber)')+'">'+(pointsRed?pointsRed+'R ':'')+(pointsAmber?pointsAmber+'A':'')+'</span></div>' : '')
+      +       '<div><span class="k">CPR</span><span class="v" style="color:'+((caseData.cprDaysLeft||21)<=3?'var(--red)':(caseData.cprDaysLeft||21)<=7?'var(--amber)':'var(--text2)')+'">'+(caseData.cprDaysLeft||'?')+'d</span></div>'
+      +     '</div>'
+      +   '</div>'
+      +   '<div class="case-actions">'
+      +     '<button class="hdr-action primary" onclick="fetchFresh()"><i class="ti ti-cloud-download"></i>Fetch fresh evidence</button>'
+      +     '<button class="hdr-action warn" onclick="bulkAttachMatching()"><i class="ti ti-paperclip"></i>Attach all visible items</button>'
+      +     '<a class="hdr-action" href="'+returnUrl+'"><i class="ti ti-arrow-back-up"></i>Return to '+esc(returnLabel)+'</a>'
+      +   '</div>'
+      + '</div>'
+      + '</div>';
+  }
+
+  /* ─── Sidebar (source list) ─── */
+  function renderSidebar(){
+    var srcMap = {};
+    (window.EvidenceCollection && EvidenceCollection.SOURCES || []).forEach(function(s){srcMap[s.id] = s;});
+
+    var html = '<aside class="sidebar">'
+      + '<div class="sb-section"><div class="sb-title">Categories</div>'
+      +   '<div class="sb-src-list">'
+      +   '<div class="sb-src'+(state.activeCategory==='all'?' active':'')+'" data-cat="all">'
+      +     '<div class="sb-src-icon" style="background:var(--surface3);color:var(--text2)"><i class="ti ti-apps"></i></div>'
+      +     '<div class="sb-src-label">All sources</div>'
+      +     '<div class="sb-src-count"><span id="c-all">…</span></div>'
+      +   '</div>'
+      +   CATEGORIES.map(function(cat){
+        var cats = cat.sources.map(function(sid){return srcMap[sid];}).filter(Boolean);
+        return '<div class="sb-src'+(state.activeCategory===cat.id?' active':'')+'" data-cat="'+cat.id+'">'
+          + '<div class="sb-src-icon '+cat.id+'"><i class="ti '+cat.icon+'"></i></div>'
+          + '<div class="sb-src-label">'+cat.label+'</div>'
+          + '<div class="sb-src-count" data-cat-count="'+cat.id+'"><span class="spin"></span></div>'
+          + '</div>';
+      }).join('')
+      +   '</div>'
+      + '</div>'
+      + '<div class="sb-section"><div class="sb-title">Attached to case</div>'
+      +   '<div style="font-size:24px;font-family:var(--font-serif);color:var(--text)"><span id="c-attached">'+state.attached.length+'</span></div>'
+      +   '<div style="font-size:11px;color:var(--text3);margin-top:3px;line-height:1.4">Items pinned into this case\'s Repository. Survive daily snapshot rotation.</div>'
+      + '</div>'
+      + '<div class="sb-section"><div class="sb-title">Check another flight</div>'
+      +   '<div style="font-size:10.5px;color:var(--text3);margin-bottom:8px;line-height:1.4">Suspect a cascade neighbour — a prior sector, same aircraft? Search it directly into this case.</div>'
+      +   '<div id="eqb-mount-ws"></div>'
+      + '</div>'
+      + '</aside>';
+    return html;
+  }
+
+  function mountQueryBar(){
+    var el = document.getElementById('eqb-mount-ws');
+    if (el && window.EvidenceQueryBar) EvidenceQueryBar.render(el, { caseRef: urlCaseRef });
+  }
+
+  /* ─── Main stream ─── */
+  function renderMain(){
+    var activeSources = state.activeCategory === 'all'
+      ? Object.keys(state.sourceItems)
+      : (CATEGORIES.find(function(c){return c.id===state.activeCategory;}) || {sources:[]}).sources;
+    var items = [];
+    activeSources.forEach(function(sid){
+      (state.sourceItems[sid] || []).forEach(function(it){
+        items.push(Object.assign({}, it, {_sid:sid}));
+      });
+    });
+    var attachedKeys = state.attached.map(function(a){return a.itemKey;});
+    if (state.filterUnattached) items = items.filter(function(i){return attachedKeys.indexOf(i._key) < 0;});
+    return '<main class="main">'
+      + '<div class="stream-hdr">'
+      +   '<h2>'+(state.activeCategory==='all'?'All sources · pre-filtered to this case':(CATEGORIES.find(function(c){return c.id===state.activeCategory;})||{}).label)+'</h2>'
+      +   '<div class="sub">Every result matches this case\'s facts — attach any item with one click.</div>'
+      +   '<div class="stream-controls">'
+      +     '<button class="sc-chip'+(state.filterUnattached?'':' active')+'" onclick="setFilter(false)">Show all</button>'
+      +     '<button class="sc-chip'+(state.filterUnattached?' active':'')+'" onclick="setFilter(true)">Hide already-attached</button>'
+      +     '<span style="font-size:10.5px;color:var(--text3);margin-left:12px">'+items.length+' items · '+state.attached.length+' attached</span>'
+      +   '</div>'
+      + '</div>'
+      + '<div class="stream-list" id="stream-list">'+renderItems(items, attachedKeys)+'</div>'
+      + '</main>';
+  }
+
+  function renderItems(items, attachedKeys){
+    if (!items.length){
+      var loadingCount = Object.keys(state.sourceLoading).filter(function(k){return state.sourceLoading[k];}).length;
+      if (loadingCount > 0) return '<div class="loading-stream"><span class="spin"></span> Loading '+loadingCount+' source'+(loadingCount===1?'':'s')+' — pre-filtering to this case…</div>';
+      return '<div class="empty-stream"><i class="ti ti-search-off"></i>No case-relevant items in this view. Try widening the category filter or triggering a fresh fetch above.</div>';
+    }
+    return items.slice(0, 60).map(function(it){
+      var attached = attachedKeys.indexOf(it._key) >= 0;
+      var summary = CaseEvidenceRepository.summarise(it);
+      var kindCls = 'kind-'+(it._kind||'').replace(/_/g,'-');
+      var rawText = extractRaw(it);
+      return '<div class="item-card'+(attached?' attached':'')+'">'
+        + '<div>'
+        +   '<div><span class="item-kind '+kindCls+'">'+(it._kind||'item')+'</span>'
+        +     '<span class="item-source">'+esc(it._sid)+' · '+esc(it._fetchKind||'snapshot')+'</span></div>'
+        +   '<div class="item-summary">'+esc(summary)+'</div>'
+        +   (rawText ? '<div class="item-raw">'+esc(rawText.slice(0, 320))+(rawText.length>320?'…':'')+'</div>' : '')
+        + '</div>'
+        + '<div class="item-actions">'
+        +   (attached
+             ? '<button class="item-btn attached" disabled><i class="ti ti-check"></i>Attached</button>'
+             : '<button class="item-btn" data-attach="'+esc(it._sid)+'" data-key="'+esc(it._key)+'"><i class="ti ti-paperclip"></i>Attach</button>')
+        + '</div>'
+        + '</div>';
+    }).join('') + (items.length > 60 ? '<div class="empty-stream" style="padding:20px"><i class="ti ti-list"></i>+' + (items.length - 60) + ' more items — narrow the category filter to see them.</div>' : '');
+  }
+
+  function extractRaw(it){
+    if (!it) return '';
+    if (it.raw) return typeof it.raw === 'string' ? it.raw : JSON.stringify(it.raw).slice(0,320);
+    if (it.notam && it.notam.text) return it.notam.text;
+    if (it.item && it.item.description) return it.item.description;
+    if (it.event && it.event.description) return it.event.description;
+    if (it.activation && it.activation.description) return it.activation.description;
+    if (it.volcano && it.volcano.description) return it.volcano.description;
+    if (it.notice && it.notice.snippet) return it.notice.snippet;
+    if (it.publication && it.publication.title) return it.publication.title;
+    if (it.hotspot) return 'FRP ' + it.hotspot.frp_mw + ' MW · brightness ' + it.hotspot.brightness_k + 'K · ' + it.hotspot.acq_date;
+    if (it.state) return 'Callsign ' + it.state.callsign + ' · alt ' + it.state.baro_alt_m + 'm · ' + it.state.icao24;
+    return '';
+  }
+
+  /* ─── Attached panel ─── */
+  function renderAttached(){
+    var iconMap = {metar:'ti-cloud',taf:'ti-cloud',notam:'ti-file-text',news:'ti-news',wildfire:'ti-flame',gdacs:'ti-alert-triangle',copernicus:'ti-flame',volcano:'ti-mountain',strike:'ti-hand-stop',atfm:'ti-traffic-cone',track:'ti-plane',chart:'ti-photo'};
+    var bgMap = {metar:'#EEF2F8',taf:'#EEF2F8',notam:'#FDF4E3',news:'#EEF7F2',wildfire:'#FBF0F0',gdacs:'#FBF0F0',copernicus:'#FBF0F0',volcano:'#FBF0F0',strike:'#F0EEFC',atfm:'#E4EEF2',track:'#F3F0FA',chart:'#EEF2F8'};
+    var fgMap = {metar:'#254E91',taf:'#254E91',notam:'#7A4E00',news:'#1A5C3A',wildfire:'#8B1A1A',gdacs:'#8B1A1A',copernicus:'#8B1A1A',volcano:'#8B1A1A',strike:'#5B4A9F',atfm:'#1F5C68',track:'#4338CA',chart:'#254E91'};
+    return '<aside class="attached-panel">'
+      + '<div class="att-hdr"><h3>Attached to case</h3><div class="sub">Permanent — survives daily snapshot rotation</div></div>'
+      + (state.attached.length ? '<div class="att-list">' + state.attached.map(function(a){
+          var bg = bgMap[a.kind]||'#EFEFF2', fg = fgMap[a.kind]||'#6B6B80', ic = iconMap[a.kind]||'ti-file';
+          return '<div class="att-item">'
+            + '<div class="att-icon" style="background:'+bg+';color:'+fg+'"><i class="ti '+ic+'"></i></div>'
+            + '<div class="att-body">'
+            +   '<div class="att-summary">'+esc(a.summary)+'</div>'
+            +   '<div class="att-meta">'+esc(a.attachedAt.slice(0,10))+' by '+esc(a.attachedBy)+' · '+esc(a.sourceProvider)+'</div>'
+            + '</div>'
+            + '<button class="att-remove" title="Remove from case" data-remove="'+esc(a.id)+'"><i class="ti ti-x"></i></button>'
+          + '</div>';
+        }).join('') + '</div>'
+        : '<div class="att-empty"><i class="ti ti-paperclip"></i>Nothing attached yet.<br>Click <strong>Attach</strong> on any item in the stream to pin it here permanently.</div>')
+      + '</aside>';
+  }
+
+  /* ─── Actions ─── */
+  window.setActiveCategory = function(cat){
+    state.activeCategory = cat;
+    renderPage();
+  };
+  window.setFilter = function(hideAttached){
+    state.filterUnattached = hideAttached;
+    renderPage();
+  };
+  window.fetchFresh = function(){
+    if (!window.CaseEvidenceFetchUI || !CaseEvidenceFetchUI.openFetchModal){
+      toast('Fetch UI not loaded — use the case Repository tab to trigger fresh fetch.', 'err');
+      return;
+    }
+    if (!CaseEvidenceFetch.hasToken()){
+      CaseEvidenceFetchUI.openTokenModal(urlCaseRef, function(){ loadAllSources(); });
+      return;
+    }
+    CaseEvidenceFetchUI.openFetchModal(urlCaseRef, function(){ loadAllSources(); });
+  };
+  window.bulkAttachMatching = function(){
+    var attachedKeys = state.attached.map(function(a){return a.itemKey;});
+    var activeSources = state.activeCategory === 'all' ? Object.keys(state.sourceItems)
+      : (CATEGORIES.find(function(c){return c.id===state.activeCategory;})||{sources:[]}).sources;
+    var candidates = [];
+    activeSources.forEach(function(sid){
+      (state.sourceItems[sid]||[]).forEach(function(it){
+        if (attachedKeys.indexOf(it._key) < 0) candidates.push({sid:sid, item:it});
+      });
+    });
+    if (!candidates.length) { toast('No unattached items to attach in this view.', 'err'); return; }
+    if (!confirm('Attach ' + candidates.length + ' item(s) to case ' + urlCaseRef + '?')) return;
+    var count = 0;
+    candidates.forEach(function(c){
+      CaseEvidenceRepository.attachItem(urlCaseRef, c.sid, c.item, 'Bulk-attached via evidence workspace');
+      count++;
+    });
+    toast('Attached ' + count + ' items to case Repository.', 'ok');
+    refreshAttached();
+    renderPage();
+  };
+
+  function attachOne(sid, key){
+    var items = state.sourceItems[sid] || [];
+    var it = items.find(function(x){return x._key===key;});
+    if (!it) { toast('Item not found.', 'err'); return; }
+    CaseEvidenceRepository.attachItem(urlCaseRef, sid, it, 'Attached via evidence workspace');
+    toast('Attached — see right panel.', 'ok');
+    refreshAttached();
+    renderPage();
+  }
+
+  function removeOne(id){
+    if (!confirm('Remove this evidence from the case?')) return;
+    CaseEvidenceRepository.removeAttached(urlCaseRef, id);
+    toast('Removed.', 'ok');
+    refreshAttached();
+    renderPage();
+  }
+
+  /* ─── Source loading ─── */
+  function loadAllSources(){
+    var srcs = (window.EvidenceCollection && EvidenceCollection.SOURCES || []).map(function(s){return s.id;});
+    state.sourceLoading = {};
+    srcs.forEach(function(sid){ state.sourceLoading[sid] = true; });
+    renderPage(); // Initial render with loading state
+    srcs.forEach(function(sid){
+      CaseEvidenceRepository.fetchRelevantSlice(urlCaseRef, sid).then(function(items){
+        state.sourceItems[sid] = items;
+        state.sourceLoading[sid] = false;
+        updateSourceCounts();
+        if (state.activeCategory === 'all' ||
+            (CATEGORIES.find(function(c){return c.id===state.activeCategory;})||{sources:[]}).sources.indexOf(sid) >= 0){
+          document.getElementById('stream-list').innerHTML = renderItems(collectItemsForActive(), state.attached.map(function(a){return a.itemKey;}));
+          bindAttachButtons();
+        }
+      }).catch(function(){
+        state.sourceItems[sid] = [];
+        state.sourceLoading[sid] = false;
+        updateSourceCounts();
+      });
+    });
+  }
+
+  function collectItemsForActive(){
+    var activeSources = state.activeCategory === 'all'
+      ? Object.keys(state.sourceItems)
+      : (CATEGORIES.find(function(c){return c.id===state.activeCategory;})||{sources:[]}).sources;
+    var items = [];
+    activeSources.forEach(function(sid){
+      (state.sourceItems[sid]||[]).forEach(function(it){ items.push(Object.assign({}, it, {_sid:sid})); });
+    });
+    if (state.filterUnattached) {
+      var attachedKeys = state.attached.map(function(a){return a.itemKey;});
+      items = items.filter(function(i){return attachedKeys.indexOf(i._key) < 0;});
+    }
+    return items;
+  }
+
+  function updateSourceCounts(){
+    var allCount = 0;
+    CATEGORIES.forEach(function(cat){
+      var c = 0;
+      cat.sources.forEach(function(sid){ c += (state.sourceItems[sid]||[]).length; });
+      allCount += c;
+      var el = document.querySelector('[data-cat-count="'+cat.id+'"]');
+      if (el) {
+        var loading = cat.sources.some(function(sid){return state.sourceLoading[sid];});
+        if (loading) { el.innerHTML = '<span class="spin"></span>'; }
+        else { el.innerHTML = c; el.className = 'sb-src-count' + (c ? ' hit' : ''); }
+      }
+    });
+    var allEl = document.getElementById('c-all');
+    if (allEl) allEl.textContent = allCount;
+    var attEl = document.getElementById('c-attached');
+    if (attEl) attEl.textContent = state.attached.length;
+  }
+
+  function bindAttachButtons(){
+    Array.prototype.forEach.call(document.querySelectorAll('[data-attach]'), function(btn){
+      btn.onclick = function(){ attachOne(btn.getAttribute('data-attach'), btn.getAttribute('data-key')); };
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('[data-remove]'), function(btn){
+      btn.onclick = function(){ removeOne(btn.getAttribute('data-remove')); };
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('.sb-src[data-cat]'), function(el){
+      el.onclick = function(){ setActiveCategory(el.getAttribute('data-cat')); };
+    });
+  }
+
+  function renderPage(){
+    refreshAttached();
+    document.getElementById('root').innerHTML =
+      renderHeader() +
+      '<div class="workspace">' + renderSidebar() + renderMain() + renderAttached() + '</div>';
+    updateSourceCounts();
+    bindAttachButtons();
+    mountQueryBar();
+  }
+
+  refreshAttached();
+  renderPage();
+  loadAllSources();
+
+  // Lazy-load CaseEvidenceFetchUI (has the modal styling) — optional
+  if (!window.CaseEvidenceFetchUI) {
+    var s = document.createElement('script');
+    s.src = 'case_evidence_fetch_ui.js?v=s9a';
+    document.head.appendChild(s);
+  }
+})();
+</script>
+
+</body>
+</html>
