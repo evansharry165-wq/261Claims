@@ -195,6 +195,18 @@
       '.cer-audit-hash-broken{color:var(--alert,#8B1A1A)}',
       '.cer-audit-genesis{color:var(--text4,#9B9BAA);font-size:9px;padding:4px 12px 0}',
       '.cer-audit-info{padding:8px 14px;background:var(--surface2,#F7F7F9);border-top:1px solid var(--rule2,#EBEBF0);font-family:var(--font,Helvetica Neue,Arial,sans-serif);font-size:10.5px;color:var(--text3,#6B6B80);line-height:1.5}',
+      /* Session B · B.2 — provenance summary line + read-only activity modal */
+      '.cer-prov-summary{margin-top:10px;font-size:11px;color:var(--text3,#6B6B80)}',
+      '.cer-prov-summary a{color:var(--accent2,#254E91);text-decoration:none}',
+      '.cer-prov-summary a:hover{text-decoration:underline}',
+      '.cer-modal-backdrop{position:fixed;inset:0;background:rgba(26,26,46,0.45);z-index:900;display:flex;align-items:center;justify-content:center;padding:20px}',
+      '.cer-modal{background:var(--surface,#fff);border:1px solid var(--border,#D8D8E0);border-radius:4px;max-width:640px;width:100%;max-height:80vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 12px 40px rgba(0,0,0,0.24)}',
+      '.cer-modal-hdr{padding:16px 20px;border-bottom:1px solid var(--rule2,#EBEBF0);display:flex;justify-content:space-between;align-items:center;gap:12px}',
+      '.cer-modal-hdr h3{font-family:var(--font-serif,Georgia,serif);font-size:15px;font-weight:400;margin:0;color:var(--text,#1A1A2E)}',
+      '.cer-modal-close{background:none;border:none;color:var(--text3,#6B6B80);cursor:pointer;font-size:16px;line-height:1;padding:2px}',
+      '.cer-modal-close:hover{color:var(--text,#1A1A2E)}',
+      '.cer-modal-body{padding:16px 20px;overflow-y:auto}',
+      '.cer-modal-item{border-left-color:var(--border,#D8D8E0)}',
     ].join('');
     document.head.appendChild(s);
   }
@@ -242,6 +254,30 @@
     return !!(a && a.snapshot && a.snapshot._isSeed);
   }
 
+  /* Session B · resolve an item's capturedBy uid to a DIO user record, or
+     null if absent / not actually a DIO (e.g. attachedBy carries a solicitor
+     uid on most cases — capturedBy is the only field B.1/B.2 read). */
+  function _dioUserFor(uid){
+    if (!uid) return null;
+    /* Note: USERS is declared `const` at top level in shared_data.js, so it
+       never attaches to window — must read the bare identifier, not
+       global.USERS (that's always undefined; see the same, pre-existing
+       pattern in _isDIOActor() below, which this deliberately doesn't touch —
+       out of scope, and its only caller path is unreachable in practice
+       since DIO users never reach case.html to begin with). */
+    var u = (typeof USERS !== 'undefined') ? USERS[uid] : null;
+    return (u && u.team === 'dio') ? u : null;
+  }
+
+  /* Session B · B.1 — quiet, text-only "captured by" line. Absent entirely
+     (not "captured by unknown") when the item carries no DIO capturedBy. */
+  function _renderCapturedBy(a){
+    var u = _dioUserFor(a.capturedBy);
+    if (!u) return '';
+    var tip = (u.role || '') + (a.attachedAt ? ' · captured ' + fmtTs(a.attachedAt) : '');
+    return '<div class="cer-att-meta" style="margin-top:4px" title="' + esc(tip) + '">· attached by ' + esc(u.full || u.name) + '</div>';
+  }
+
   function renderAttached(items, caseRef){
     if (!items.length) return '<div class="cer-empty">No evidence attached to this case yet. Below, each source with a green "hit" chip has case-relevant material you can attach.</div>';
     return '<div class="cer-attached">' + items.map(function(a){
@@ -271,6 +307,7 @@
         '<div class="cer-att-icon" style="background:'+ic.bg+';color:'+ic.fg+'"><i class="'+ic.icon+'"></i></div>'+
         '<div class="cer-att-body"><div class="cer-att-summary">'+esc(a.summary)+'</div>'+
         '<div class="cer-prov-strip">' + chips.join('') + '</div>' +
+        _renderCapturedBy(a) +
         (a.note ? '<div class="cer-att-meta" style="margin-top:4px"><em>Note: '+esc(a.note)+'</em></div>' : '') +
         '</div>'+
         '<div class="cer-att-actions">'+
@@ -279,6 +316,70 @@
         '</div>'+
       '</div>';
     }).join('') + '</div>';
+  }
+
+  var CAPTURE_METHOD_LABEL = { 'api-pull': 'API pull', 'pdf': 'PDF upload', 'pending-connection': 'Pending connection' };
+
+  /* Session B · B.2 — one-line provenance summary + link into a read-only
+     modal of the DIO's contributed items. Renders nothing when no attached
+     item carries a resolvable DIO capturedBy (e.g. Hartley's case). */
+  function renderProvenanceSummary(attached){
+    var byDio = {}, order = [];
+    attached.forEach(function(a){
+      var u = _dioUserFor(a.capturedBy);
+      if (!u) return;
+      if (!byDio[u.id]){ byDio[u.id] = { user: u, items: [] }; order.push(u.id); }
+      byDio[u.id].items.push(a);
+    });
+    if (!order.length) return '';
+    // Today a case only ever has one DIO's items in it — render that one.
+    var entry = byDio[order[0]];
+    var u = entry.user;
+    var territory = (typeof global.DIOTerritory !== 'undefined' && global.DIOTerritory.getTerritory) ? global.DIOTerritory.getTerritory(u.id) : null;
+    var roleLine = 'Documentary Intelligence Officer' + (territory ? ', ' + territory.short_label : '');
+    var firstName = (u.full || u.name || '').split(' ')[0];
+    var n = entry.items.length;
+    return '<div class="cer-prov-summary">' + n + ' item' + (n === 1 ? '' : 's') + ' contributed to this case by ' +
+      esc(u.full || u.name) + ' · ' + esc(roleLine) +
+      ' — <a href="#" data-dio-activity="' + esc(u.id) + '">view ' + esc(firstName) + '&#39;s activity on this case</a></div>';
+  }
+
+  /* Session B · B.2 modal — read-only list of one DIO's contributed items.
+     Shell copied from case_evidence_fetch_ui.js's .cef-modal-backdrop/.cef-modal
+     (same panel family, already co-resident on this tab); close-button treatment
+     copied from dio-case.html's .dio-req-close (the only existing X-in-header
+     pattern in the codebase). No slide-in animation in either source pattern. */
+  function _closeDioActivityModal(){
+    var m = document.querySelector('.cer-modal-backdrop');
+    if (m) m.remove();
+  }
+
+  function _openDioActivityModal(uid, attached){
+    var u = _dioUserFor(uid);
+    if (!u) return;
+    var items = attached.filter(function(a){ return a.capturedBy === uid; });
+    var rows = items.map(function(a){
+      var ic = iconFor(a.kind);
+      var methodLbl = CAPTURE_METHOD_LABEL[a.captureMethod] || a.captureMethod || '—';
+      return '<div class="cer-att cer-modal-item">' +
+        '<div class="cer-att-icon" style="background:'+ic.bg+';color:'+ic.fg+'"><i class="'+ic.icon+'"></i></div>' +
+        '<div class="cer-att-body"><div class="cer-att-summary">'+esc(a.summary)+'</div>' +
+        '<div class="cer-att-meta" style="margin-top:4px">'+esc(fmtTs(a.attachedAt))+' · '+esc(methodLbl)+'</div>' +
+        '</div></div>';
+    }).join('');
+    var html =
+      '<div class="cer-modal-backdrop" data-dio-modal-backdrop>' +
+        '<div class="cer-modal">' +
+          '<div class="cer-modal-hdr"><h3>Evidence captured by ' + esc(u.full || u.name) + ' for this case</h3>' +
+            '<button class="cer-modal-close" data-dio-modal-close><i class="ti ti-x"></i></button></div>' +
+          '<div class="cer-modal-body"><div class="cer-attached">' + (rows || '<div class="cer-empty">No items on file.</div>') + '</div></div>' +
+        '</div>' +
+      '</div>';
+    document.body.insertAdjacentHTML('beforeend', html);
+    document.querySelector('[data-dio-modal-close]').onclick = _closeDioActivityModal;
+    document.querySelector('[data-dio-modal-backdrop]').onclick = function(e){
+      if (e.target === e.currentTarget) _closeDioActivityModal();
+    };
   }
 
   function renderSourcePanel(source, itemsPromise, alreadyAttachedKeys, caseRef){
@@ -384,6 +485,7 @@
         factsRow +
         '<div class="cer-sec-hdr"><h4>Attached to this case</h4><span class="hint">Permanent — stored in case_packet, survives raw-snapshot rotation.</span></div>'+
         renderAttached(attached, caseRef) +
+        renderProvenanceSummary(attached) +
         (_isDIOActor()
           ? ('<div class="cer-sec-hdr"><h4>Available from evidence-collection</h4><span class="hint">Auto-filtered to this case. Green chip = hits.</span></div>' +
              '<div class="cer-sources">' + sourceCards + '</div>' +
@@ -403,6 +505,14 @@
         '</div>'+
       '</div>';
 
+    // Session B · B.2 — wire the provenance-summary link to the read-only modal
+    var dioActivityLink = el.querySelector('[data-dio-activity]');
+    if (dioActivityLink){
+      dioActivityLink.onclick = function(e){
+        e.preventDefault();
+        _openDioActivityModal(dioActivityLink.getAttribute('data-dio-activity'), attached);
+      };
+    }
     // Wire attached-item action buttons
     Array.prototype.forEach.call(el.querySelectorAll('[data-remove]'), function(btn){
       btn.onclick = function(){

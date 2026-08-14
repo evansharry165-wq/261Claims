@@ -267,6 +267,16 @@
           kind:            it.kind || 'metar',
           attachedAt:      it.attachedAt || now,
           attachedBy:      it.attachedBy || 'SB',
+          /* Session B · capturedBy — who at the DIO originally captured this
+             into the evidence pool, distinct from attachedBy (who filed it to
+             THIS case). Absent on every seed call except Etna's — that's what
+             gives B.1's "no attribution for Hartley's older items" its real,
+             unforced fallback case rather than a hardcoded exception. */
+          capturedBy:      it.capturedBy || null,
+          /* Session B · how the DIO originally captured this item —
+             'api-pull' | 'pdf' | 'pending-connection'. Only meaningful
+             alongside capturedBy; absent everywhere else. */
+          captureMethod:   it.captureMethod || null,
           note:            it.note || null,
           snapshot:        Object.assign({ _isSeed: true, _key: it.itemKey || ('seed-'+ref+'-'+(i+1)), _kind: it.kind || 'metar' }, it.snapshot || {}),
           summary:         it.summary,
@@ -343,6 +353,12 @@
         disruptionType: 'Natural Disaster',
         value: '£400',
         assignedTo: 'SB',
+        /* Session B · dep/arr — DIOTerritory.casesInTerritory()/caseCountByAirport()
+           and dio-case.html's own facts row all read c.dep/c.arr, not route.
+           Without these the case (and its territory-pulse contribution) is
+           invisible on Emma's dashboard even though route already says GVA–LGW. */
+        dep: 'GVA',
+        arr: 'LGW',
         evidencePct: 0,
         createdAt: '2026-08-03T09:00:00Z',
         updatedAt: new Date().toISOString(),
@@ -380,25 +396,31 @@
        ATFM item below for that source's real use). kind:'volcano' reused for the
        ash advisory rather than inventing a new 'vaac' kind — already has full
        icon support in case_evidence_repository_ui.js and evidence-workspace.html. */
+    /* Session B · capturedBy — distinct from attachedBy. attachedBy is who
+       pulled the item into THIS case (Sarah, correct — she filed it here).
+       capturedBy is who at the DIO originally captured the item into the
+       evidence pool (Emma). The audit chain below records the attach event
+       and stays keyed to 'SB' — untouched — since that's the true actor of
+       record for the attach action itself. */
     seedEvidenceAttachments('DEF-DEMO-ETNA-CASCADE', [
       { itemKey: 'seed-vaac-etna-310726', sourceId: 'vaac-london-qva', sourceProvider: 'Met Office VAAC London',
-        kind: 'volcano', attachedAt: '2026-08-03T09:12:00Z', attachedBy: 'SB',
+        kind: 'volcano', attachedAt: '2026-08-03T09:12:00Z', attachedBy: 'SB', capturedBy: 'EH', captureMethod: 'api-pull',
         summary: 'VAAC London ash advisory VA20260731/01 — Mt Etna eruption, ash to FL350, Catania (LICC) airspace closed',
         snapshot: { volcano: 'Etna', advisoryId: 'VA20260731/01', affectedIcao: 'LICC', issued: '2026-07-31T18:00Z', ashTop: 'FL350' } },
       { itemKey: 'seed-notam-cta-310726', sourceId: 'faa-notams', sourceProvider: 'FAA / AutoRouter NOTAMs',
-        kind: 'notam', attachedAt: '2026-08-03T09:18:00Z', attachedBy: 'SB',
+        kind: 'notam', attachedAt: '2026-08-03T09:18:00Z', attachedBy: 'SB', capturedBy: 'EH', captureMethod: 'api-pull',
         summary: 'NOTAM LICC A1234/26 — Catania Fontanarossa airport closed, volcanic ash, effective 31 Jul 2026 18:00Z',
         snapshot: { station: 'LICC', number: 'A1234/26', text: 'AERODROME CLOSED DUE VOLCANIC ASH', effectiveFrom: '2026-07-31T18:00Z' } },
       { itemKey: 'seed-atfm-cta-010826', sourceId: 'eurocontrol-nm-public', sourceProvider: 'Eurocontrol NM',
-        kind: 'atfm', attachedAt: '2026-08-03T09:24:00Z', attachedBy: 'SB',
+        kind: 'atfm', attachedAt: '2026-08-03T09:24:00Z', attachedBy: 'SB', capturedBy: 'EH', captureMethod: 'api-pull',
         summary: 'ATFM regulation LIRC01A — Catania airspace, volcanic ash (Etna), 31 Jul 1800Z-1 Aug 1600Z',
         snapshot: { regulationId: 'LIRC01A', reason: 'Volcanic ash - Etna eruption', fromTime: '2026-07-31T18:00Z', toTime: '2026-08-01T16:00Z' } },
       { itemKey: 'seed-metar-licc-010826', sourceId: 'aviationweather-metar-taf', sourceProvider: 'NOAA AviationWeather.gov',
-        kind: 'metar', attachedAt: '2026-08-03T09:30:00Z', attachedBy: 'SB',
+        kind: 'metar', attachedAt: '2026-08-03T09:30:00Z', attachedBy: 'SB', capturedBy: 'EH', captureMethod: 'api-pull',
         summary: 'METAR LICC 010800Z VA PLUME OBSC SKY — volcanic ash observed, visibility reduced',
         snapshot: { station: 'LICC', obsTime: '2026-08-01T08:00Z', text: 'LICC 010800Z 09008KT 2000 VA FEW020 SCT100 22/14 Q1015 VA PLUME OBSC SKY' } },
       { itemKey: 'seed-metar-egkk-030826', sourceId: 'aviationweather-metar-taf', sourceProvider: 'NOAA AviationWeather.gov',
-        kind: 'metar', attachedAt: '2026-08-03T09:36:00Z', attachedBy: 'SB',
+        kind: 'metar', attachedAt: '2026-08-03T09:36:00Z', attachedBy: 'SB', capturedBy: 'EH', captureMethod: 'api-pull',
         summary: 'METAR EGKK 030800Z — clear conditions at LGW; cascade traced to prior sector at LICC, not local weather',
         note: 'No independent weather cause at destination — confirms the delay traces through the aircraft rotation to the CTA ash closure, not a separate LGW event.',
         snapshot: { station: 'EGKK', obsTime: '2026-08-03T08:00Z', text: 'EGKK 030800Z 21012KT 9999 FEW025 19/12 Q1018 NOSIG' } },

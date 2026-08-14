@@ -173,6 +173,7 @@ html,body{min-height:100%;font-family:var(--font);background:var(--surface2);col
 .feed-src-simple{background:#EDEEF8;color:#4A4F87}
 .feed-src-gdacs{background:var(--red-faint);color:var(--red)}
 .feed-src-copernicus{background:var(--amber-faint);color:var(--amber)}
+.feed-src-dio{background:var(--surface3,#EFEFF2);color:var(--text3,#6B6B80)}
 .feed-desc{font-size:11px;color:var(--text2);margin-top:5px;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .feed-actions{display:flex;flex-direction:column;gap:5px;align-items:flex-end;flex-shrink:0}
 .feed-match-count{font-size:10px;color:var(--accent);font-weight:600;background:var(--accent-faint);padding:2px 7px;border-radius:8px;white-space:nowrap;font-family:var(--mono);cursor:pointer;border:none}
@@ -330,7 +331,7 @@ html,body{min-height:100%;font-family:var(--font);background:var(--surface2);col
 <script src="shared_data.js"></script>
 <script src="shared_theme.js"></script>
 <script src="case_helpers.js"></script>
-<script src="case_filing.js"></script>
+<script src="case_filing.js?v=sessB1"></script>
 <script src="work_dashboard.js"></script>
 <script src="defendable_evidence_reader.js?v=s13a"></script>
 <script src="case_audit_trail.js?v=s13a"></script>
@@ -698,6 +699,21 @@ function loadTerritoryFeed(territory){
     if (window.DIO && window.DIO.matchIncidentToTerritory){
       items = items.filter(function(it){return window.DIO.matchIncidentToTerritory(it, territory);});
     }
+    /* Session B · B.3 — Etna capture entry. Not a syndicated feed item, so it
+       doesn't carry airport/country text for the generic territory filter
+       above to key off — scoped directly to territories that actually cover
+       LGW (the case's real destination) instead, added after that filter
+       rather than fighting it with keyword padding. */
+    if (territory && territory.airports_iata && territory.airports_iata.indexOf('LGW') >= 0){
+      items.unshift({
+        source: 'dio',
+        title: 'Mount Etna eruption — 5 evidence artefacts captured (VAAC, NOTAM, ATFM, METAR ×2). Fed to case DEF-DEMO-ETNA-CASCADE.',
+        description: null,
+        link: null,
+        pub_date: '2026-08-01T09:36:00Z',
+        severity: 'event'
+      });
+    }
     items.sort(function(a,b){return new Date(b.pub_date||0)-new Date(a.pub_date||0);});
     return items.slice(0, 25);
   });
@@ -719,7 +735,7 @@ function renderFeed(items, feedEl){
   var cases = DIO.casesInTerritory(getActiveUser());
   feedEl.innerHTML = items.map(function(it, idx){
     var srcCls = 'feed-src-'+it.source;
-    var srcLbl = it.source==='herald'?'Aviation Herald':it.source==='simple'?'Simple Flying':it.source==='gdacs'?'GDACS':'Copernicus';
+    var srcLbl = it.source==='herald'?'Aviation Herald':it.source==='simple'?'Simple Flying':it.source==='gdacs'?'GDACS':it.source==='dio'?'DIO capture':'Copernicus';
     var sevCls = 'severity-'+(it.severity||'event');
     var matchCount = countIncidentMatches(it, cases);
     var matchLbl = matchCount ? matchCount+' match'+(matchCount===1?'':'es') : 'no matches';
