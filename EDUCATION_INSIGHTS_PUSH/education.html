@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DefendAble — Knowledge Hub</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--ink:#1A1A2E;--ink2:#2D2D44;--ink3:#6B6B80;--ink4:#9B9BAA;--rule:#D8D8E0;--rule2:#EBEBF0;--surface:#FFFFFF;--surface2:#F7F7F9;--surface3:#EFEFF2;--accent:#1B3A6B;--accent2:#254E91;--accent-faint:#EEF2F8;--confirm:#1A5C3A;--confirm-faint:#EEF7F2;--caution:#7A4E00;--caution-faint:#FDF4E3;--alert:#8B1A1A;--alert-faint:#FBF0F0;--navy:var(--ink);--navy2:var(--ink2);--navy3:var(--ink2);--blue:var(--accent2);--blue-faint:var(--accent-faint);--blue-text:var(--accent);--green:var(--confirm);--green-l:#2A7A4F;--green-faint:var(--confirm-faint);--amber:var(--caution);--amber-faint:var(--caution-faint);--red:var(--alert);--red-faint:var(--alert-faint);--border:var(--rule);--border2:var(--rule2);--text:var(--ink);--text2:var(--ink2);--text3:var(--ink3);--font:'Helvetica Neue','Arial',sans-serif;--font-serif:'Georgia','Times New Roman',serif;--font-doc:'Georgia','Times New Roman',serif;--mono:'Courier New','Courier',monospace;--purple:#4338CA;--purple-faint:var(--accent-faint);--r:3px;--r2:4px;--r3:5px}
+html,body{height:100%;font-family:var(--font);background:var(--surface2);color:var(--text);font-size:14px}
+
+/* nav */
+.global-nav{background:var(--navy);height:48px;display:flex;align-items:center;padding:0 20px;gap:0;flex-shrink:0;border-bottom:1px solid rgba(255,255,255,0.07)}
+.gn-logo{display:flex;align-items:center;gap:8px;text-decoration:none;margin-right:20px}
+.gn-mark{width:28px;height:28px;background:var(--blue);border-radius:4px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px}
+.gn-name{font-size:14px;font-weight:500;color:#fff;letter-spacing:-0.01em}
+.gn-links{display:flex;align-items:center;gap:2px;flex:1}
+.gn-link{display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r);font-size:12px;font-weight:500;color:rgba(255,255,255,0.5);text-decoration:none;transition:all 0.15s;white-space:nowrap}
+.gn-link:hover{background:rgba(255,255,255,0.08);color:#fff}
+.gn-link.active{background:rgba(42,111,219,0.35);color:#fff}
+.gn-link i{font-size:13px}
+.gn-right{display:flex;align-items:center;gap:8px;margin-left:8px}
+.gn-av{width:24px;height:24px;border-radius:50%;background:#1C2E44;color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500}
+.gn-user{font-size:11px;font-weight:500;color:rgba(255,255,255,0.85)}
+
+/* layout */
+.page{height:calc(100vh - 48px);display:flex;overflow:hidden;min-height:0}
+.sidebar{width:260px;min-width:260px;border-right:1px solid var(--border);background:var(--surface);overflow-y:auto;padding:0;min-height:0}
+.main{flex:1;overflow-y:auto;padding:24px 28px;min-height:0}
+
+/* sidebar nav */
+.sb-header{padding:18px 16px 14px;border-bottom:1px solid var(--border);margin-bottom:4px}
+.sb-header-title{font-size:15px;font-weight:500;color:var(--text);letter-spacing:-0.01em}
+.sb-header-sub{font-size:11px;color:var(--text3);line-height:1.45;margin-top:4px}
+.sb-section{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.07em;color:var(--text3);padding:14px 16px 6px}
+.sb-item{display:flex;align-items:center;gap:9px;padding:8px 16px;cursor:pointer;font-size:12px;font-weight:500;color:var(--text2);transition:all 0.15s;border-left:3px solid transparent}
+.sb-item:hover{background:var(--surface2);color:var(--text)}
+.sb-item.active{background:transparent;color:var(--text);border-left-color:transparent;text-decoration:underline;font-weight:500}
+.sb-item i{font-size:14px;flex-shrink:0}
+.sb-count{margin-left:auto;font-size:10px;background:var(--surface3);color:var(--text3);padding:1px 6px;border-radius:20px}
+
+/* page header */
+.pg-hdr{margin-bottom:22px}
+.pg-title{font-size:20px;font-weight:500;color:var(--text);letter-spacing:-0.02em;margin-bottom:4px;font-family:var(--font-serif)}
+.pg-sub{font-size:12px;color:var(--text2);line-height:1.5;max-width:720px}
+
+/* search */
+.search-wrap{margin-bottom:20px}
+.search-input{width:100%;font-size:13px;padding:9px 14px 9px 38px;border:1px solid var(--border);border-radius:var(--r2);background:var(--surface);color:var(--text);font-family:var(--font);position:relative}
+.search-input:focus{outline:none;border-color:var(--blue)}
+.search-wrap{position:relative}
+.search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:15px;color:var(--text3);pointer-events:none}
+
+/* article cards */
+.article-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-bottom:20px;align-items:stretch}
+@media(max-width:900px){.article-grid{grid-template-columns:1fr}}
+.article-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:16px;cursor:pointer;transition:all 0.15s;text-decoration:none;display:flex;flex-direction:column;min-height:190px;height:100%}
+.article-card:hover{border-color:var(--border2);box-shadow:0 2px 8px rgba(0,0,0,0.05);transform:translateY(-1px)}
+.ac-tag{font-size:10px;font-weight:500;padding:2px 8px;border-radius:20px;margin-bottom:8px;display:inline-flex;align-items:center;gap:4px;align-self:flex-start}
+.tag-law{background:var(--blue-faint);color:var(--blue-text)}
+.tag-ops{background:var(--amber-faint);color:var(--amber)}
+.tag-reg{background:var(--purple-faint);color:var(--purple)}
+.tag-proc{background:var(--green-faint);color:var(--green)}
+.tag-case{background:var(--red-faint);color:var(--red)}
+.ac-title{font-size:13px;font-weight:500;color:var(--text);margin-bottom:6px;line-height:1.4}
+.ac-summary{font-size:11px;color:var(--text2);line-height:1.55;margin-bottom:12px;flex:1}
+.ac-footer{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:10px;color:var(--text3);margin-top:auto;padding-top:8px;border-top:1px solid var(--border)}
+.ac-footer i{font-size:11px}
+.ac-read{font-size:10px;font-weight:500;color:var(--blue-text);margin-left:auto;display:inline-flex;align-items:center;gap:3px;white-space:nowrap}
+
+/* case law cards */
+.case-card{background:var(--surface);border:none;border-bottom:1px solid var(--rule);border-radius:0;padding:14px 0;margin-bottom:0}
+.cc-cite{font-size:11px;font-family:var(--mono);color:var(--text3);margin-bottom:5px}
+.cc-title{font-size:13px;font-weight:400;font-family:var(--font-serif);font-style:italic;color:var(--text);margin-bottom:6px;line-height:1.4}
+.cc-principle{font-size:12px;font-family:var(--font-serif);color:var(--text2);line-height:1.6;margin-bottom:8px}
+.cc-tags{display:flex;gap:5px;flex-wrap:wrap}
+.cc-tag{font-size:10px;padding:1px 7px;border-radius:20px;background:var(--surface3);color:var(--text2)}
+.cc-impact{font-size:11px;font-weight:500;margin-top:8px;padding:6px 10px;border-radius:var(--r);background:var(--blue-faint);color:var(--blue-text)}
+
+/* quick ref */
+.qr-table{width:100%;border-collapse:collapse;font-size:12px}
+.qr-table th{text-align:left;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.06em;color:var(--text3);padding:0 12px 10px 0;border-bottom:2px solid var(--border)}
+.qr-table td{padding:10px 12px 10px 0;border-bottom:1px solid var(--border);vertical-align:top}
+.qr-table tr:last-child td{border-bottom:none}
+.qr-art{font-weight:500;color:var(--text);font-family:var(--mono);white-space:nowrap}
+.qr-desc{color:var(--text2)}
+.qr-note{font-size:11px;color:var(--text3);margin-top:2px}
+
+/* section panel */
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--r3);overflow:hidden;margin-bottom:16px}
+.panel-hdr{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.panel-title{font-size:13px;font-weight:500;color:var(--text)}
+.panel-sub{font-size:11px;color:var(--text3);margin-top:1px}
+.panel-body{padding:16px}
+
+.user-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.3);z-index:500}
+.user-modal.open{display:flex;justify-content:flex-end;padding:52px 20px 0}
+.user-dropdown{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);width:230px;box-shadow:0 4px 20px rgba(0,0,0,0.15);overflow:hidden;max-height:calc(100vh - 70px);overflow-y:auto}
+.ud-header{padding:10px 14px;border-bottom:1px solid var(--border);font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:var(--text3)}
+.ud-item{display:flex;align-items:center;gap:10px;padding:9px 14px;cursor:pointer;transition:background .15s}
+.ud-item:hover{background:var(--surface2)}
+.ud-item.current{background:var(--blue-faint)}
+.ud-av{width:28px;height:28px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;flex-shrink:0}
+.ud-name{font-size:12px;font-weight:500;color:var(--text)}
+.ud-role{font-size:10px;color:var(--text3)}
+.ud-tick{margin-left:auto;color:var(--green);font-size:14px;display:none}
+.ud-item.current .ud-tick{display:block}
+
+html.embed-mode .global-nav,html.embed-mode #user-modal{display:none!important}
+html.embed-mode .page{height:100%!important}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+
+.intel-filter{font-size:11px;padding:3px 10px;border:1px solid var(--rule);
+  background:var(--surface);cursor:pointer;font-family:var(--font);color:var(--ink2);border-radius:var(--r)}
+.intel-filter.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+.intel-filter:hover:not(.active){background:var(--surface2)}
+.section-rule{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.section-label{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.08em;color:var(--ink3);white-space:nowrap}
+.section-line{flex:1;height:1px;background:var(--rule)}
+.req-label{display:block;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.06em;color:var(--ink3);margin-bottom:4px}
+.live-bulletin{display:flex;gap:14px;padding:14px 16px;border:1px solid var(--border);border-radius:var(--r2);margin-bottom:10px;background:var(--surface)}
+.live-bulletin.impact-high{border-left:3px solid var(--alert)}
+.live-bulletin.impact-medium{border-left:3px solid var(--caution)}
+.live-bulletin.impact-low{border-left:3px solid var(--confirm)}
+.live-date{font-size:10px;font-family:var(--mono);color:var(--text3);white-space:nowrap;min-width:72px}
+.live-title{font-size:13px;font-weight:500;color:var(--text);margin-bottom:4px;line-height:1.35}
+.live-summary{font-size:12px;color:var(--text2);line-height:1.6}
+
+</style>
+</head>
+<body>
+<script src="shared_data.js"></script>
+<script src="shared_theme.js"></script>
+<script src="case_helpers.js"></script>
+<script src="education_content.js?v=sessD1"></script>
+
+<nav class="global-nav">
+  <a href="index.html" class="gn-logo">
+    <div class="gn-mark"><i class="ti ti-lock"></i></div>
+    <span class="gn-name">DefendAble</span>
+  </a>
+  <div class="gn-links" id="gn-links"></div>
+  <div class="gn-right">
+    <div class="gn-user-btn" onclick="toggleUserMenu()">
+      <div class="gn-av" id="nav-av">SB</div>
+      <span class="gn-user" id="nav-user">S. Booth</span>
+      <i class="ti ti-chevron-down" style="font-size:10px;color:rgba(255,255,255,0.4);margin-left:2px"></i>
+    </div>
+  </div>
+</nav>
+
+<div class="page">
+  <div class="sidebar">
+    <div class="sb-header">
+      <div class="sb-header-title">Knowledge Hub</div>
+      <div class="sb-header-sub">Guidance, case law, and operational training for the legal team</div>
+    </div>
+    <div class="sb-section">Knowledge base</div>
+    <div class="sb-item active" onclick="showSection('regulation', event)"><i class="ti ti-file-certificate"></i> EC 261/2004 regulation <span class="sb-count">12</span></div>
+    <div class="sb-item" onclick="showSection('caselaw', event)"><i class="ti ti-gavel"></i> Key case law <span class="sb-count">8</span></div>
+    <div class="sb-item" onclick="showSection('defence', event)"><i class="ti ti-shield-check"></i> Defence strategies <span class="sb-count">6</span></div>
+    <div class="sb-item" onclick="showSection('evidence_guides', event)"><i class="ti ti-folder-open"></i> Evidence guides <span class="sb-count">5</span></div>
+    <div class="sb-item" onclick="showSection('disruption', event)"><i class="ti ti-bolt"></i> Disruption types <span class="sb-count">15</span></div>
+    <div class="sb-item" onclick="showSection('france-spain', event)"><i class="ti ti-world"></i> Jurisdictions <span style="font-size:9px;color:var(--text3)">→ Intelligence</span></div>
+    <div class="sb-item" onclick="showSection('quickref', event)"><i class="ti ti-table"></i> Quick reference</div>
+    <div class="sb-item" onclick="showSection('cpr_guide', event)"><i class="ti ti-calendar-due"></i> CPR obligations</div>
+    <div class="sb-item" onclick="showSection('templates', event)"><i class="ti ti-file-text"></i> Document templates</div>
+
+    <div class="sb-section">Intelligence</div>
+    <div class="sb-item" id="sb-intelligence" onclick="showSection('intelligence', event)">
+      <i class="ti ti-radar"></i> Live &amp; published updates
+      <span id="intelligence-badge" style="display:none;font-size:9px;padding:1px 6px;border-radius:8px;background:var(--alert-faint);color:var(--alert);margin-left:4px;font-weight:500">NEW</span>
+      <span style="font-size:9px;background:#EAF3DE;color:#3B6D11;padding:1px 5px;border-radius:8px;margin-left:4px">LIVE</span>
+    </div>
+    <div class="sb-item" onclick="showSection('contribute', event)"><i class="ti ti-pencil-plus"></i> Contribute update</div>
+  </div>
+
+  <div class="main" id="main"></div>
+</div>
+
+<script>
+var CASE_LAW_INDEX = [
+  {id:'wallentin', title:'Wallentin-Hermann v Alitalia', jurisdiction:['all'], disruptionType:['all'], anchor:'#case-law'},
+  {id:'sturgeon', title:'Sturgeon v Condor', jurisdiction:['all'], disruptionType:['all'], anchor:'#case-law'},
+  {id:'peskova', title:'Pešková v Travel Service', jurisdiction:['all'], disruptionType:['Birdstrike','Technical Issues'], anchor:'#case-law'},
+  {id:'lipton', title:'Lipton v BA Cityflyer [2024] UKSC 24', jurisdiction:['england-wales'], disruptionType:['all'], anchor:'#case-law'},
+  {id:'huzar', title:'Huzar v Jet2 [2014]', jurisdiction:['england-wales'], disruptionType:['Technical Issues'], anchor:'#case-law'}
+];
+window.CASE_LAW_INDEX = CASE_LAW_INDEX;
+
+var activeSection = 'regulation';
+
+function showSection(s, ev){
+  if(s==='france-spain'){
+    activeSection='intelligence';
+    document.querySelectorAll('.sb-item').forEach(function(el){ el.classList.remove('active'); });
+    var intelEl=document.querySelector('.sb-item[onclick*="intelligence"]');
+    if(intelEl)intelEl.classList.add('active');
+    try{history.replaceState({},'','education.html?section=intelligence&filter=France');}catch(e){}
+    render();
+    setTimeout(function(){initIntelligenceHub();if(typeof filterIntel==='function')filterIntel(null,'France');},50);
+    return;
+  }
+  if(!SECTIONS[s]) return;
+  activeSection = s;
+  document.querySelectorAll('.sb-item').forEach(function(el){ el.classList.remove('active'); });
+  if(ev&&ev.currentTarget)ev.currentTarget.classList.add('active');
+  else{
+    document.querySelectorAll('.sb-item').forEach(function(el){
+      if(el.getAttribute('onclick')&&el.getAttribute('onclick').indexOf("'"+s+"'")>=0)el.classList.add('active');
+    });
+  }
+  try{history.replaceState({},'','education.html?section='+encodeURIComponent(s));}catch(e){}
+  render();
+  if(s==='live-updates'){setTimeout(initLiveUpdates,50);}
+  if(s==='intelligence'){setTimeout(initIntelligenceHub,50);}
+}
+
+var SECTIONS = {
+
+regulation: {
+  title: 'EC Regulation 261/2004',
+  sub: 'The core regulation governing passenger rights — compensation, care, and extraordinary circumstances',
+  content: function(){
+    return '<div class="article-grid">'
+      + articleCard('ti-coin','tag-law','Regulation','Article 7 — Right to compensation','The compensation schedule under Art 7 is distance-based and applies on arrival delay of 3+ hours (Sturgeon). Amounts are fixed: €250 for flights ≤1,500km, €400 for intra-Community flights >1,500km and all other flights 1,500–3,500km, €600 for all other flights >3,500km.','Key reading · 5 min')
+      + articleCard('ti-shield','tag-law','Regulation','Article 5(3) — Extraordinary circumstances defence','The carrier is not obliged to pay compensation if the cancellation or delay is caused by extraordinary circumstances which could not have been avoided even if all reasonable measures had been taken. Two-limb test from Wallentin-Hermann: (1) not inherent in normal activity, (2) beyond actual control.','Key reading · 8 min')
+      + articleCard('ti-heart-handshake','tag-law','Regulation','Article 9 — Right to care','During any delay of 2+ hours the carrier must provide meals and refreshments, hotel accommodation where overnight stay is required, and transport between airport and hotel. Failure creates a separate head of claim independent of the compensation defence.','Essential · 6 min')
+      + articleCard('ti-plane-departure','tag-law','Regulation','Article 8 — Right to reimbursement or re-routing','Where a flight is cancelled, passengers are entitled to a choice: full refund within 7 days, re-routing to final destination at earliest opportunity, or re-routing at a later date convenient to the passenger. Must be offered in writing.','Important · 5 min')
+      + articleCard('ti-clock','tag-law','Regulation','Article 5 — Cancellation — notification rules','Compensation is not payable if passengers are informed of cancellation 14+ days before departure, 7–13 days before with re-routing arriving within 4 hours of original, or less than 7 days with re-routing arriving within 2 hours.','Key reading · 4 min')
+      + articleCard('ti-scale','tag-law','Regulation','Article 12 — Further compensation','Art 12 preserves the passenger\'s right to claim further compensation under national law or the Montreal Convention. EC 261 compensation may be deducted from any further award. Does not extend to commercial contract losses.','Advanced · 7 min')
+      + '</div>';
+  }
+},
+
+caselaw: {
+  title: 'Key case law',
+  sub: 'Essential CJEU and UK court decisions every EC261 practitioner must know',
+  content: function(){
+    return [
+      {cite:'C-549/07',title:'Wallentin-Hermann v Alitalia (2008)',
+       principle:'Established the two-limb extraordinary circumstances test. A technical defect is not automatically extraordinary. The circumstance must (1) not be inherent in the normal exercise of the carrier\'s activity and (2) be beyond the carrier\'s actual control. Hidden defects unknown to the manufacturer do not automatically qualify.',
+       tags:['Extraordinary circumstances','Technical defects','Carrier liability'],
+       impact:'Defence baseline: all extraordinary circumstances arguments must satisfy both limbs of this test.'},
+      {cite:'C-402/07 & C-432/07',title:'Sturgeon v Condor; Böck v Air France (2009)',
+       principle:'Delays of 3 or more hours engage the same compensation rights as cancellations under Article 7. Time of arrival is measured at the moment the aircraft doors open and passengers can disembark. Departure delay alone is insufficient.',
+       tags:['Delay compensation','3-hour threshold','Arrival time'],
+       impact:'Critical: all delay claims must calculate the arrival delay, not the departure delay.'},
+      {cite:'C-257/14',title:'van der Lans v KLM (2015)',
+       principle:'A technical defect attributable to normal maintenance and operation of an aircraft does not constitute an extraordinary circumstance. Only defects caused by events outside the carrier\'s activity — sabotage, manufacturing defects hidden to the carrier — may qualify.',
+       tags:['Technical defects','Maintenance','Extraordinary circumstances'],
+       impact:'Technical defences are high risk without exceptional circumstances such as hidden manufacturer defects.'},
+      {cite:'C-315/15',title:'Pešková and Peška v Travel Service (2017)',
+       principle:'Bird strike is an extraordinary circumstance. A collision with a bird in flight is outside the carrier\'s control and not inherent in the normal exercise of airline operations. However, the carrier must still demonstrate all reasonable measures were taken to avoid the resulting delay.',
+       tags:['Birdstrike','Extraordinary circumstances','Reasonable measures'],
+       impact:'Birdstrike defences require evidence of both the strike event and the measures taken to minimise delay.'},
+      {cite:'C-74/19',title:'LE v TAP Air Portugal (2020)',
+       principle:'A technical defect caused by the premature failure of certain components may constitute an extraordinary circumstance if the defect is not inherent in the normal exercise of the carrier\'s activity. The carrier bears the burden of proof on this point.',
+       tags:['Technical defects','Burden of proof','Component failure'],
+       impact:'Carrier carries the burden of proof on every element of the extraordinary circumstances defence.'},
+    ].map(function(k){
+      return '<div class="case-card">'
+        +'<div class="cc-cite">'+k.cite+'</div>'
+        +'<div class="cc-title">'+k.title+'</div>'
+        +'<div class="cc-principle">'+k.principle+'</div>'
+        +'<div class="cc-tags">'+k.tags.map(function(t){return '<span class="cc-tag">'+t+'</span>';}).join('')+'</div>'
+        +'<div class="cc-impact"><i class="ti ti-arrow-right" style="font-size:11px;margin-right:4px"></i>'+k.impact+'</div>'
+        +'</div>';
+    }).join('');
+  }
+},
+
+defence: {
+  title: 'Defence strategies',
+  sub: 'Practical guidance on building and deploying extraordinary circumstances defences',
+  content: function(){
+    return '<div class="article-grid">'
+      + articleCard('ti-cloud-storm','tag-ops','Strategy','Weather — building the defence','Weather defences require a multi-layered evidence pack. METAR and TAF records confirm conditions at the relevant aerodrome. SIGMET shows wider airspace weather. NOTAMs confirm any operational restrictions. Met Office hazard forecasts establish the broader context. The crew decision to divert or delay must be shown to follow directly from these conditions.','Essential · 10 min')
+      + articleCard('ti-tower','tag-ops','Strategy','ATC restrictions — the clean defence','ATC ATFM slot restrictions represent the strongest extraordinary circumstances defence. Eurocontrol regulation data is objective, timestamped, and independent of the carrier. The slot restriction must be active at the relevant time and the delay must be caused directly by it. Obtain Eurocontrol oplog and regulation data for every ATC claim.','Essential · 8 min')
+      + articleCard('ti-users-group','tag-ops','Strategy','Industrial action — carrier vs third-party strike','A strike by the carrier\'s own staff is not extraordinary. A strike by ATC, airport handling staff, or other third parties is. Document the scope of the industrial action, its external origin, and the absence of any reasonable measure that could have avoided the resulting disruption.','Important · 9 min')
+      + articleCard('ti-feather','tag-ops','Strategy','Birdstrike — proving the event and measures','Birdstrike is established as extraordinary (Pešková). Two evidential requirements: (1) prove the event occurred and caused the technical issue — Maintenance records system event records, crew reports, engineering inspection; (2) prove all reasonable measures were taken to minimise delay once the aircraft was grounded.','Key reading · 7 min')
+      + articleCard('ti-moon','tag-ops','Strategy','Crew hours and overnight delay','FDP breach as a cause of delay is complex. If the original disruption was extraordinary, consequential FDP breach may inherit that classification. If the FDP breach is the primary cause, the defence is harder — crew rostering and planning must be shown to have been adequate. Crew scheduling system data is critical.','Advanced · 12 min')
+      + articleCard('ti-scale','tag-ops','Strategy','Consequential loss claims — limiting exposure','Consequential losses are governed by the Montreal Convention, not EC261. Art 12 allows further compensation but this does not extend to commercial contract losses without clear causation. Challenge: (1) the fact of the loss, (2) causation, (3) mitigation, and (4) quantum. Seek independent verification of any claimed contract.','Advanced · 11 min')
+      + '</div>';
+  }
+},
+
+quickref: {
+  title: 'Quick reference',
+  sub: 'Compensation amounts, time limits, and key thresholds at a glance',
+  content: function(){
+    return '<div class="panel"><div class="panel-hdr"><div class="panel-band-left"><div class="panel-band-icon blue"><i class="ti ti-coin"></i></div><div class="panel-title">Compensation amounts — Article 7</div></div></div>'
+      +'<div class="panel-body"><table class="qr-table">'
+      +'<thead><tr><th>Article</th><th>Flight distance</th><th>Route type</th><th>Amount</th></tr></thead>'
+      +'<tbody>'
+      +'<tr><td class="qr-art">Art 7(1)(a)</td><td><div class="qr-desc">1,500 km or less</div></td><td><div class="qr-desc">All routes</div></td><td><div class="qr-desc" style="font-weight:500;color:var(--text)">€250</div></td></tr>'
+      +'<tr><td class="qr-art">Art 7(1)(b)</td><td><div class="qr-desc">1,500–3,500 km</div></td><td><div class="qr-desc">Intra-Community flights</div></td><td><div class="qr-desc" style="font-weight:500;color:var(--text)">€400</div></td></tr>'
+      +'<tr><td class="qr-art">Art 7(1)(b)</td><td><div class="qr-desc">1,500–3,500 km</div></td><td><div class="qr-desc">All other flights</div></td><td><div class="qr-desc" style="font-weight:500;color:var(--text)">€400</div></td></tr>'
+      +'<tr><td class="qr-art">Art 7(1)(c)</td><td><div class="qr-desc">Over 3,500 km</div></td><td><div class="qr-desc">Non-intra-Community</div></td><td><div class="qr-desc" style="font-weight:500;color:var(--text)">€600</div></td></tr>'
+      +'<tr style="background:var(--surface2)"><td class="qr-art">Art 7(2)</td><td colspan="2"><div class="qr-desc">50% reduction available if re-routing offered and passenger arrives within 2h / 3h / 4h of scheduled arrival</div></td><td><div class="qr-desc" style="font-weight:500">50% reduction</div></td></tr>'
+      +'</tbody></table></div></div>'
+
+      +'<div class="panel"><div class="panel-hdr"><div class="panel-band-left"><div class="panel-band-icon blue"><i class="ti ti-clock"></i></div><div class="panel-title">Key time limits</div></div></div>'
+      +'<div class="panel-body"><table class="qr-table">'
+      +'<thead><tr><th>Obligation</th><th>Time limit</th><th>Source</th></tr></thead>'
+      +'<tbody>'
+      +'<tr><td><div class="qr-desc" style="font-weight:500">Compensation trigger — delay</div><div class="qr-note">Measured at arrival — doors open</div></td><td><div class="qr-desc">3 hours or more</div></td><td><div class="qr-note">Sturgeon C-402/07</div></td></tr>'
+      +'<tr><td><div class="qr-desc" style="font-weight:500">Art 9 care — meals & refreshments</div></td><td><div class="qr-desc">From 2 hours delay</div></td><td><div class="qr-note">Art 9(1)(a)</div></td></tr>'
+      +'<tr><td><div class="qr-desc" style="font-weight:500">Pre-action response</div></td><td><div class="qr-desc">21 days from LOC</div></td><td><div class="qr-note">CPR Pre-Action Protocol</div></td></tr>'
+      +'<tr><td><div class="qr-desc" style="font-weight:500">Full letter of response</div></td><td><div class="qr-desc">3 months from acknowledgement</div></td><td><div class="qr-note">CPR PAP para 3.7</div></td></tr>'
+      +'<tr><td><div class="qr-desc" style="font-weight:500">Limitation period — England & Wales</div></td><td><div class="qr-desc">6 years from date of flight</div></td><td><div class="qr-note">Limitation Act 1980 s.9</div></td></tr>'
+      +'<tr><td><div class="qr-desc" style="font-weight:500">Cancellation notice — no compensation</div></td><td><div class="qr-desc">14+ days before departure</div></td><td><div class="qr-note">Art 5(1)(c)(i)</div></td></tr>'
+      +'</tbody></table></div></div>';
+  }
+},
+
+evidence_guides: {
+  title: 'Evidence guides',
+  sub: 'How to build a complete evidence pack for each disruption type',
+  content: function(){
+    return '<div class="article-grid">'
+      + articleCard('ti-cloud-storm','tag-proc','Evidence','Weather evidence pack — complete guide','Key evidence: METAR (current conditions), TAF (forecast), SIGMET (airspace warnings), NOTAM (aerodrome notices). Sources: Ogimet for METAR/TAF, Met Office for hazard forecasts, NOTAM Search. The METAR timestamp must align with the disruption decision time. A weather pack without SIGMET is incomplete for diversion claims.','Essential · 10 min')
+      + articleCard('ti-tower','tag-proc','Evidence','ATC restriction evidence pack','Key evidence: Eurocontrol ATFM regulation showing the slot restriction was active. The oplog entry for the affected flight. Network Outlook Brief showing anticipated restrictions. The regulation data is the single most important document — it is independent, timestamped, and objective.','Essential · 8 min')
+      + articleCard('ti-feather','tag-proc','Evidence','Birdstrike evidence pack','Maintenance records system event printout showing the strike was reported. Engineering inspection record confirming airframe damage. Crew incident report from the captain. Airport birdstrike log where available. NOTAMs for the relevant aerodrome. Safety reporting system report. The engineering record is the most important document — it proves the strike caused a technical issue.','Important · 9 min')
+      + articleCard('ti-moon','tag-proc','Evidence','Crew hours — FDP evidence','Crew scheduling system crew route and FDP tables showing planned and actual duty. Max FDP calculation based on report time and sector count. Crew base and last landing records. The FDP buffer at the start of the duty. Any crew change records. Where FDP breach caused the delay, the margin between planned and maximum FDP is critical.','Advanced · 11 min')
+      + articleCard('ti-users-group','tag-proc','Evidence','Industrial action evidence pack','Evidence of the industrial action announcement and scope. Whether the action involved the carrier\'s own employees or third parties. Eurocontrol ATFM data if ATC strike. NOTAM restrictions at the affected aerodrome. Airport authority communications. Press coverage and union notices to establish the external nature of the action.','Important · 8 min')
+      + '</div>';
+  }
+},
+
+cpr_guide: {
+  title: 'CPR obligations',
+  sub: 'Pre-action protocol requirements and court procedure for EC261 claims',
+  content: function(){
+    return '<div class="panel"><div class="panel-hdr"><div class="panel-band-left"><div class="panel-band-icon blue"><i class="ti ti-calendar-due"></i></div><div class="panel-title">Pre-action protocol timeline</div><div class="panel-sub">EC261 claims in England & Wales follow the general pre-action protocols</div></div></div>'
+      +'<div class="panel-body">'
+      +'<table class="qr-table">'
+      +'<thead><tr><th>Step</th><th>Obligation</th><th>Deadline</th><th>Consequence of failure</th></tr></thead>'
+      +'<tbody>'
+      +'<tr><td style="font-weight:500;color:var(--text)">1</td><td><div class="qr-desc">Acknowledge receipt of LOC</div></td><td><div class="qr-desc" style="font-weight:500;color:var(--red)">21 days</div></td><td><div class="qr-note">Adverse costs order risk; claimant may issue without further notice</div></td></tr>'
+      +'<tr><td style="font-weight:500;color:var(--text)">2</td><td><div class="qr-desc">Provide substantive Letter of Response</div></td><td><div class="qr-desc" style="font-weight:500;color:var(--amber)">3 months from acknowledgement</div></td><td><div class="qr-note">Claimant may issue proceedings; adverse costs consequences</div></td></tr>'
+      +'<tr><td style="font-weight:500;color:var(--text)">3</td><td><div class="qr-desc">Consider ADR</div></td><td><div class="qr-desc">Before issuing proceedings</div></td><td><div class="qr-note">Failure to consider ADR may result in costs sanctions</div></td></tr>'
+      +'<tr><td style="font-weight:500;color:var(--text)">4</td><td><div class="qr-desc">File Defence if claim issued</div></td><td><div class="qr-desc">14 days from service (or 28 days if acknowledgement of service filed)</div></td><td><div class="qr-note">Default judgment may be entered against the carrier</div></td></tr>'
+      +'<tr><td style="font-weight:500;color:var(--text)">5</td><td><div class="qr-desc">File Directions Questionnaire</div></td><td><div class="qr-desc">As directed by the Court</div></td><td><div class="qr-note">Case may be struck out; unless order compliance required</div></td></tr>'
+      +'</tbody></table></div></div>';
+  }
+},
+
+disruption: {
+  title: 'Disruption types',
+  sub: 'Evidence requirements and defence classification for all 15 disruption categories',
+  content: function(){
+    /* Aligned to defendable_trees.js as of 2026-08-24. Full sweep across all
+       disruption types pending — see Prompt 3 legal sweep. Individual entries
+       other than medical / volcanic-ash added or updated below reflect their
+       pre-alignment state. */
+    var types = [
+      {name:'ATC Restrictions',icon:'ti-tower',cls:'tag-ops',defend:'Strong',note:'Eurocontrol ATFM data is decisive. Clean extraordinary circumstances defence.'},
+      {name:'Weather',icon:'ti-cloud-storm',cls:'tag-ops',defend:'Strong',note:'METAR, SIGMET, NOTAM required. Conditions must be exceptional, not routine.'},
+      {name:'Industrial Action',icon:'ti-users-group',cls:'tag-ops',defend:'Medium',note:'Strong if third-party strike. Carrier\'s own staff strike is not extraordinary.'},
+      {name:'Airport/Runway Closure',icon:'ti-road-off',cls:'tag-ops',defend:'Strong',note:'NOTAMs and airport authority records. External cause required.'},
+      {name:'Airport System Failure',icon:'ti-server-off',cls:'tag-ops',defend:'Medium',note:'Airport authority confirmation essential. Carrier must show no control.'},
+      {name:'Natural Disaster',icon:'ti-urgent',cls:'tag-ops',defend:'Strong',note:'VAAC advisory, NOTAM, Eurocontrol ATFM, METAR (VA). Applies to cascade downstream flights via DT-13 rotation link.'},
+      {name:'Security Alert',icon:'ti-shield-exclamation',cls:'tag-ops',defend:'Strong',note:'Authority-issued security notices. External, unforeseeable.'},
+      {name:'Political Unrest',icon:'ti-flag',cls:'tag-ops',defend:'Strong',note:'Foreign Office travel advisories and airport authority notices.'},
+      {name:'Birdstrike',icon:'ti-feather',cls:'tag-case',defend:'Medium',note:'Maintenance records system event record + crew report required. Pešková confirms extraordinary status.'},
+      {name:'Lightning Strike',icon:'ti-bolt',cls:'tag-case',defend:'Medium',note:'Lightning Maps data + Met Office + Maintenance records system engineering record.'},
+      {name:'Ground Damage',icon:'ti-forklift',cls:'tag-case',defend:'Difficult',note:'Depends on cause. Third-party ground handling damage may qualify.'},
+      {name:'Technical Issues',icon:'ti-tool',cls:'tag-case',defend:'Difficult',note:'Wallentin-Hermann: routine maintenance issues are not extraordinary.'},
+      {name:'Medical Emergency',icon:'ti-ambulance',cls:'tag-case',defend:'Strong',note:'LE v TAP (C-74/19) analogy — external event, mandatory commander diversion. Commander\'s report + MedLink log. Concedes only if flagged at boarding.'},
+      {name:'Disruptive Passenger',icon:'ti-mood-angry',cls:'tag-case',defend:'Strong',note:'Crew incident report + police records where available.'},
+      {name:'Passenger Welfare',icon:'ti-heart-handshake',cls:'tag-case',defend:'Medium',note:'Context-dependent. Requires clear documentation of welfare events.'},
+    ];
+    return '<div class="panel"><div class="panel-hdr"><div class="panel-band-left"><div class="panel-band-icon blue"><i class="ti ti-list-check"></i></div><div class="panel-title">Defence strength by disruption type</div></div></div>'
+      +'<div class="panel-body" style="padding:0">'
+      +'<table class="qr-table" style="margin:0">'
+      +'<thead><tr><th style="padding-left:16px">Disruption type</th><th>Defence strength</th><th>Key evidence</th></tr></thead>'
+      +'<tbody>'
+      +types.map(function(t){
+        var col = t.defend==='Strong'?'var(--green)':t.defend==='Medium'?'var(--amber)':'var(--red)';
+        var bg = t.defend==='Strong'?'var(--green-faint)':t.defend==='Medium'?'var(--amber-faint)':'var(--red-faint)';
+        return '<tr>'
+          +'<td style="padding-left:16px"><div style="display:flex;align-items:center;gap:8px"><i class="ti '+t.icon+'" style="font-size:14px;color:var(--text3)"></i><span style="font-weight:500;color:var(--text)">'+t.name+'</span></div></td>'
+          +'<td><span style="font-size:11px;font-weight:500;padding:2px 8px;border-radius:20px;background:'+bg+';color:'+col+'">'+t.defend+'</span></td>'
+          +'<td style="color:var(--text2);font-size:11px">'+t.note+'</td>'
+          +'</tr>';
+      }).join('')
+      +'</tbody></table>'
+      +'<div style="background:var(--accent-faint);border:1px solid #C2D0E8;padding:7px 10px;font-size:11px;color:var(--accent);margin:12px 16px 14px">'
+        +'<strong>Cascade / rotation-linked disruption: </strong>'
+        +'When an aircraft\'s earlier sector was affected by an extraordinary event (weather, natural disaster, security, third-party industrial action), downstream flights on the same rotation inherit the defence position via causal-chain analysis under DT-13. The chain must stay intact — a voluntary carrier decision unrelated to the root event can break it (NI, HZ v European Air Charter, T-656/24, 2026). Evidence: full rotation record, root-event evidence, timeline showing continuity to the affected downstream flight.'
+      +'</div>'
+      +'</div></div>';
+  }
+},
+
+templates: {
+  title: 'Document templates',
+  sub: 'Standard templates for all EC261 documents',
+  content: function(){
+    var docs = [
+      {icon:'ti-mail',name:'Letter of Acknowledgement',desc:'Pre-action acknowledgement confirming receipt of LOC and investigation period. CPR compliant.',module:'module3-cpr-workspace.html'},
+      {icon:'ti-file-text',name:'Letter of Response',desc:'Substantive response to LOC addressing all heads of claim in numbered paragraphs. Core defence document.',module:'module5-drafting-workspace.html'},
+      {icon:'ti-shield',name:'Defence (CPR Part 16)',desc:'Formal court document responding to each paragraph of the Particulars of Claim. Includes Statement of Truth.',module:'module5-drafting-workspace.html'},
+      {icon:'ti-user',name:'Witness Statement (CPR Part 32)',desc:'Crew or operations witness statement in numbered paragraphs with exhibits and Statement of Truth.',module:'module5-drafting-workspace.html'},
+      {icon:'ti-scale',name:'Part 36 Offer',desc:'Formal offer under CPR Part 36 creating costs protection. To be considered once defence position is clear.',module:'module5-drafting-workspace.html'},
+      {icon:'ti-file-check',name:'Settlement Agreement',desc:'Full and final release in consideration of agreed payment. No admission of liability.',module:'module5-drafting-workspace.html'},
+      {icon:'ti-forms',name:'Directions Questionnaire N181',desc:'Court-required allocation questionnaire pre-populated from case data.',module:'module5-drafting-workspace.html'},
+    ];
+    return '<div class="article-grid">'
+      +docs.map(function(d){
+        var href=d.module+activeCaseQuery();
+        return '<a href="'+href+'" class="article-card">'
+          +'<div class="ac-tag tag-proc"><i class="ti '+d.icon+'" style="font-size:11px"></i>Template</div>'
+          +'<div class="ac-title">'+d.name+'</div>'
+          +'<div class="ac-summary">'+d.desc+'</div>'
+          +'<div class="ac-footer"><i class="ti ti-clock"></i><span>Template</span><span class="ac-read">Open workspace <i class="ti ti-arrow-right" style="font-size:10px"></i></span></div>'
+          +'</a>';
+      }).join('')
+      +'</div>';
+  }
+},
+
+  'france-spain': {
+    title: 'France & Spain — Jurisdiction guide',
+    sub: 'Procedural differences for French and Spanish EC261 claims',
+    content: function(){
+      // Redirect to Intelligence tab filtered by jurisdiction
+      setTimeout(function(){
+        showSection('intelligence');
+        // After intelligence loads, set filter to FR/ES
+        setTimeout(function(){
+          var btn = Array.from(document.querySelectorAll('.intel-filter'))
+            .find(function(b){ return b.textContent.includes('France') || b.textContent.includes('Spain'); });
+          // Show both FR and ES entries in intelligence
+          window._intelJurFilter = ['france','spain'];
+        }, 200);
+      }, 50);
+      return '<div style="padding:32px 20px;text-align:center;color:var(--ink3)">'
+        + '<i class="ti ti-world" style="font-size:32px;display:block;margin-bottom:12px;color:var(--accent)"></i>'
+        + '<div style="font-family:var(--font-serif);font-size:16px;color:var(--ink);margin-bottom:8px">France &amp; Spain intelligence</div>'
+        + '<div style="font-size:13px;line-height:1.7;max-width:400px;margin:0 auto">Redirecting to the live intelligence feed filtered to French and Spanish jurisdiction updates...</div>'
+        + '</div>';
+    }
+  },
+
+  'intelligence': {
+  title: 'Legal intelligence — live and published',
+  sub: 'Automated feeds and team-published updates — filtered, searchable, with apply-to links',
+  content: function(){ return renderIntelligenceHub(); }
+},
+
+'contribute': {
+  title: 'Contribute a knowledge update',
+  sub: 'Publish a legal update, judgment summary or guidance note to your jurisdiction team',
+  content: function(){ return renderContributeForm(); }
+}
+
+};
+
+
+/* ── Intelligence Hub — combined live + published updates ── */
+var PUBLISHED_UPDATES = [];
+
+function loadPublishedUpdates(){
+  try{
+    var stored = JSON.parse(sessionStorage.getItem('dfa_published_updates')||'[]');
+    PUBLISHED_UPDATES = stored;
+  }catch(e){ PUBLISHED_UPDATES = []; }
+}
+
+function savePublishedUpdates(){
+  try{ sessionStorage.setItem('dfa_published_updates', JSON.stringify(PUBLISHED_UPDATES)); }catch(e){}
+}
+
+function renderIntelligenceHub(){
+  loadPublishedUpdates();
+  return '<div id="intel-hub">'
+    + '<div style="text-align:center;padding:32px;color:var(--ink4)">'
+      + '<i class="ti ti-loader-2" style="font-size:20px;animation:spin 1s linear infinite;display:block;margin-bottom:8px"></i>'
+      + '<div style="font-size:12px">Loading intelligence feed...</div>'
+    + '</div>'
+  + '</div>';
+}
+
+function initIntelligenceHub(){
+  var el = document.getElementById('intel-hub');
+  if(!el) return;
+  
+  fetch('knowledge_store.json?t='+Date.now())
+    .then(function(r){ return r.json(); })
+    .then(function(store){
+      var liveEntries = (store.entries||[]).slice().sort(function(a,b){
+        if(a.actionRequired&&!b.actionRequired) return -1;
+        if(!a.actionRequired&&b.actionRequired) return 1;
+        return new Date(b.date)-new Date(a.date);
+      });
+      
+      var allEntries = PUBLISHED_UPDATES.concat(liveEntries);
+      
+      // Filter bar
+      var filterHtml = '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;align-items:center">'
+        + '<span style="font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink4);margin-right:4px">Filter</span>'
+        + ['All','England & Wales','France','Spain','High impact','Action required'].map(function(f){
+            return '<button onclick="filterIntel(this,\''+String(f).replace(/'/g,"\\'")+'\')" class="intel-filter'+(f==='All'?' active':'')+'">' + f + '</button>';
+          }).join('')
+        + '<button onclick="showSection(\'contribute\')" style="margin-left:auto;font-size:11px;padding:4px 12px;border:1px solid var(--accent);color:var(--accent);background:var(--accent-faint);cursor:pointer;font-family:var(--font)">'
+          + '<i class="ti ti-pencil-plus"></i> Contribute update'
+        + '</button>'
+      + '</div>';
+      
+      var entriesHtml = '<div id="intel-entries">' + renderIntelEntries(allEntries, 'All') + '</div>';
+      
+      el.innerHTML = filterHtml + entriesHtml;
+      
+      // Clear new badge after viewing
+      var badge = document.getElementById('intelligence-badge');
+      if(badge) badge.style.display = 'none';
+      sessionStorage.setItem('dfa_intel_last_seen', Date.now());
+    })
+    .catch(function(){
+      if(el) el.innerHTML = '<div style="font-size:12px;color:var(--ink4);padding:20px">Intelligence feed unavailable. Check connection.</div>';
+    });
+}
+
+function renderIntelEntries(entries, filter){
+  var filtered = entries.filter(function(e){
+    if(filter==='All') return true;
+    if(filter==='High impact') return e.impact==='high';
+    if(filter==='Action required') return e.actionRequired;
+    if(filter==='England & Wales') return (e.jurisdiction||[]).indexOf('england-wales')>=0||(e.jurisdiction||[]).indexOf('all')>=0;
+    if(filter==='France') return (e.jurisdiction||[]).indexOf('france')>=0||(e.jurisdiction||[]).indexOf('all')>=0;
+    if(filter==='Spain') return (e.jurisdiction||[]).indexOf('spain')>=0||(e.jurisdiction||[]).indexOf('all')>=0;
+    return true;
+  });
+  
+  if(!filtered.length) return '<div style="padding:24px;font-size:12px;color:var(--ink4);text-align:center">No updates match this filter</div>';
+  
+  var impactCols = {high:['var(--alert)','var(--alert-faint)','#E8BABA'], medium:['var(--caution)','var(--caution-faint)','#EFD9A3'], low:['var(--confirm)','var(--confirm-faint)','#BBD9C8']};
+  var jurFlags = {'england-wales':'🇬🇧','france':'🇫🇷','spain':'🇪🇸','all':'🌍'};
+  var typeIcons = {judgment:'ti-gavel',regulatory:'ti-building-government',procedural:'ti-file-description',guidance:'ti-book-2'};
+  
+  return filtered.map(function(e){
+    var imp = impactCols[e.impact]||impactCols.medium;
+    var isPublished = !!e.publishedBy;
+    var sourceLabel = isPublished
+      ? '<span style="font-size:10px;padding:1px 6px;background:var(--accent-faint);color:var(--accent);border:1px solid #C2D0E8">Team update</span>'
+      : '<span style="font-size:10px;padding:1px 6px;background:#EAF3DE;color:#3B6D11;border:1px solid #C0DD97">Live</span>';
+    
+    // Apply-this links — surgical routing based on content type
+    var applyLinks = [];
+    if(e.disruptionTypes&&e.disruptionTypes.length){
+      e.disruptionTypes.forEach(function(dt){
+        if(dt!=='all') applyLinks.push(
+          '<a href="module4-evidence-workspace.html'+(activeCaseQuery()?activeCaseQuery():'')+'" '
+          +'style="font-size:10px;color:var(--accent);text-decoration:none;margin-right:8px">'
+          +'Apply to '+dt+' evidence ↗</a>'
+        );
+      });
+    }
+    if(e.jurisdiction&&e.jurisdiction.length&&e.jurisdiction[0]!=='all'){
+      e.jurisdiction.forEach(function(j){
+        applyLinks.push(
+          '<a href="cases.html?jur='+j+'" '
+          +'style="font-size:10px;color:var(--accent);text-decoration:none;margin-right:8px">'
+          +(jurFlags[j]||'')+' View '+j.replace('-',' ')+' cases ↗</a>'
+        );
+      });
+    }
+    
+    return '<div style="background:var(--surface);border:1px solid var(--rule);'
+      +'border-left:3px solid '+imp[0]+';padding:14px 16px;margin-bottom:10px">'
+      
+      // Header
+      +'<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:8px">'
+        +'<div style="display:flex;align-items:center;gap:8px">'
+          +'<i class="ti '+(typeIcons[e.type]||'ti-file-description')+'" style="color:'+imp[0]+';font-size:15px"></i>'
+          +'<div>'
+            +'<div style="font-family:var(--font-serif);font-size:13px;color:var(--ink);font-weight:400;line-height:1.3">'
+              +e.title
+            +'</div>'
+            +'<div style="font-size:10px;color:var(--ink4);margin-top:2px;font-family:var(--mono)">'
+              +e.source+' · '+(e.date?new Date(e.date).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}):'')+
+              (isPublished?' · Published by '+e.publishedBy:'')
+            +'</div>'
+          +'</div>'
+        +'</div>'
+        +'<div style="display:flex;gap:4px;flex-shrink:0">'
+          +sourceLabel
+          +'<span style="font-size:10px;font-weight:500;padding:1px 6px;border:1px solid '+imp[2]+';color:'+imp[0]+';background:'+imp[1]+'">'
+            +(e.impact||'medium').toUpperCase()
+          +'</span>'
+        +'</div>'
+      +'</div>'
+      
+      // Jurisdiction tags
+      +'<div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px">'
+        +(e.jurisdiction||[]).map(function(j){
+          return '<span style="font-size:10px;padding:1px 6px;background:var(--surface2);border:1px solid var(--rule);color:var(--ink3)">'
+            +(jurFlags[j]||'')+(j==='all'?' All jurisdictions':(' '+j.charAt(0).toUpperCase()+j.slice(1).replace('-',' ')))
+          +'</span>';
+        }).join('')
+        +(e.disruptionTypes||[]).filter(function(d){return d!=='all';}).map(function(d){
+          return '<span style="font-size:10px;padding:1px 6px;background:var(--surface2);border:1px solid var(--rule);color:var(--ink3)">'+d+'</span>';
+        }).join('')
+      +'</div>'
+      
+      // Summary
+      +'<div style="font-size:12px;color:var(--ink2);line-height:1.7;margin-bottom:8px">'
+        +(e.summary||'')
+      +'</div>'
+      
+      // Action note
+      +(e.actionRequired&&e.actionNote
+        ?'<div style="background:var(--caution-faint);border:1px solid #EFD9A3;padding:7px 10px;font-size:11px;color:var(--caution);margin-bottom:8px">'
+          +'<strong>Action required: </strong>'+e.actionNote
+        +'</div>'
+        :''
+      )
+      
+      // Risk note (from team-published entries)
+      +(e.riskNote
+        ?'<div style="background:var(--accent-faint);border:1px solid #C2D0E8;padding:7px 10px;font-size:11px;color:var(--accent);margin-bottom:8px">'
+          +'<strong>Application note: </strong>'+e.riskNote
+        +'</div>'
+        :''
+      )
+      
+      // Apply-this links
+      +(applyLinks.length
+        ?'<div style="margin-top:6px;padding-top:6px;border-top:1px solid var(--rule2)">'
+          +'<span style="font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--ink4);margin-right:8px">Apply to</span>'
+          +applyLinks.join('')
+        +'</div>'
+        :''
+      )
+      
+    +'</div>';
+  }).join('');
+}
+
+function filterIntel(btn, filter){
+  document.querySelectorAll('.intel-filter').forEach(function(b){ b.classList.remove('active'); });
+  btn.classList.add('active');
+  var el = document.getElementById('intel-entries');
+  if(!el) return;
+  
+  // Rebuild from current data
+  fetch('knowledge_store.json?t='+Date.now())
+    .then(function(r){ return r.json(); })
+    .then(function(store){
+      var liveEntries = store.entries||[];
+      var allEntries = PUBLISHED_UPDATES.concat(liveEntries);
+      el.innerHTML = renderIntelEntries(allEntries, filter);
+    });
+}
+
+/* ── Contribute form ── */
+function renderContributeForm(){
+  return '<div style="max-width:600px">'
+    + '<div style="background:var(--surface);border:1px solid var(--rule);padding:20px">'
+    
+    + '<div class="section-rule" style="margin-bottom:16px">'
+      + '<span class="section-label">Publish a knowledge update</span>'
+      + '<div class="section-line"></div>'
+    + '</div>'
+    
+    + formField('Title', 'contrib-title', 'text', 'e.g. Lipton v BA Cityflyer — pilot illness not extraordinary circumstance')
+    
+    + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">'
+      + formSelect('Source', 'contrib-source', ['Bailii','EUR-Lex','CAA','AviationADR','DGAC (France)','AESA (Spain)','Other'])
+      + formSelect('Impact', 'contrib-impact', ['High','Medium','Low'])
+    + '</div>'
+    
+    + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">'
+      + formSelect('Type', 'contrib-type', ['Judgment','Regulatory','Procedural','Guidance'])
+      + formField('Date', 'contrib-date', 'date', '')
+    + '</div>'
+    
+    + '<div style="margin-bottom:12px">'
+      + '<label class="req-label">Jurisdiction</label>'
+      + '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:5px">'
+        + ['England & Wales','France','Spain','All jurisdictions'].map(function(j){
+            var val = j==='England & Wales'?'england-wales':j==='All jurisdictions'?'all':j.toLowerCase();
+            return '<label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer">'
+              + '<input type="checkbox" id="jur-'+val+'" value="'+val+'"> '+j+'</label>';
+          }).join('')
+      + '</div>'
+    + '</div>'
+    
+    + '<div style="margin-bottom:12px">'
+      + '<label class="req-label">Disruption types affected</label>'
+      + '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:5px">'
+        + ['Weather','ATC Restrictions','Technical Issues','Denied Boarding','Cancellation','All'].map(function(dt){
+            return '<label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer">'
+              + '<input type="checkbox" id="dt-'+dt.replace(/ /g,'-')+'" value="'+dt+'"> '+dt+'</label>';
+          }).join('')
+      + '</div>'
+    + '</div>'
+    
+    + formTextarea('Summary', 'contrib-summary', 'Summarise the key finding, ruling or regulatory change (minimum 80 characters)...')
+    + formTextarea('Application note', 'contrib-risk', 'How does this affect current cases? What should solicitors do? Any risks or limitations?')
+    
+    + '<div style="margin-bottom:16px">'
+      + '<label style="display:flex;align-items:center;gap:8px;font-size:12px;cursor:pointer">'
+        + '<input type="checkbox" id="contrib-action"> '
+        + '<span>Action required — solicitors must act on this update</span>'
+      + '</label>'
+      + '<div id="contrib-action-note-wrap" style="display:none;margin-top:8px">'
+        + formField('Action instruction', 'contrib-action-note', 'text', 'e.g. Review all open crew illness cases — liability position weakened')
+      + '</div>'
+    + '</div>'
+    
+    + '<button onclick="submitContribution()" '
+      + 'style="font-size:12px;padding:8px 18px;background:var(--accent);color:#fff;'
+      + 'border:1px solid var(--accent);cursor:pointer;font-family:var(--font);'
+      + 'display:flex;align-items:center;gap:6px">'
+      + '<i class="ti ti-send"></i> Publish update'
+    + '</button>'
+    
+    + '<div id="contrib-success" style="display:none;margin-top:12px;padding:10px 12px;'
+      + 'background:var(--confirm-faint);border:1px solid #BBD9C8;font-size:12px;color:var(--confirm)">'
+    + '</div>'
+    
+    + '</div>'
+  + '</div>';
+}
+
+function formField(label, id, type, placeholder){
+  return '<div style="margin-bottom:12px">'
+    +'<label class="req-label">'+label+'</label>'
+    +'<input type="'+type+'" id="'+id+'" placeholder="'+placeholder+'" '
+    +'style="width:100%;padding:7px 10px;border:1px solid var(--rule);font-family:var(--font);'
+    +'font-size:12px;color:var(--ink);background:var(--surface)">'
+  +'</div>';
+}
+
+function formSelect(label, id, options){
+  return '<div style="margin-bottom:12px">'
+    +'<label class="req-label">'+label+'</label>'
+    +'<select id="'+id+'" style="width:100%;padding:7px 10px;border:1px solid var(--rule);'
+    +'font-family:var(--font);font-size:12px;color:var(--ink);background:var(--surface)">'
+    +options.map(function(o){return '<option>'+o+'</option>';}).join('')
+    +'</select>'
+  +'</div>';
+}
+
+function formTextarea(label, id, placeholder){
+  return '<div style="margin-bottom:12px">'
+    +'<label class="req-label">'+label+'</label>'
+    +'<textarea id="'+id+'" placeholder="'+placeholder+'" '
+    +'style="width:100%;padding:7px 10px;border:1px solid var(--rule);font-family:var(--font);'
+    +'font-size:12px;color:var(--ink);min-height:80px;resize:vertical"></textarea>'
+  +'</div>';
+}
+
+function submitContribution(){
+  var title = document.getElementById('contrib-title').value.trim();
+  var source = document.getElementById('contrib-source').value;
+  var impact = document.getElementById('contrib-impact').value.toLowerCase();
+  var type = document.getElementById('contrib-type').value.toLowerCase();
+  var summary = document.getElementById('contrib-summary').value.trim();
+  var riskNote = document.getElementById('contrib-risk').value.trim();
+  var dateVal = document.getElementById('contrib-date').value || new Date().toISOString().slice(0,10);
+  var actionReq = document.getElementById('contrib-action').checked;
+  var actionNote = actionReq ? document.getElementById('contrib-action-note').value.trim() : '';
+  
+  if(!title){ alert('Title is required'); return; }
+  if(summary.length < 40){ alert('Please provide a fuller summary (minimum 40 characters)'); return; }
+  
+  var jurChecked = ['england-wales','france','spain','all'].filter(function(j){
+    var el = document.getElementById('jur-'+j);
+    return el && el.checked;
+  });
+  if(!jurChecked.length) jurChecked = ['all'];
+  
+  var dtChecked = ['Weather','ATC Restrictions','Technical Issues','Denied Boarding','Cancellation','All'].filter(function(dt){
+    var el = document.getElementById('dt-'+dt.replace(/ /g,'-'));
+    return el && el.checked;
+  });
+  if(!dtChecked.length) dtChecked = ['all'];
+  
+  var uid = typeof getActiveUser === 'function' ? getActiveUser() : 'SB';
+  var uName = (typeof USERS !== 'undefined' && USERS[uid]) ? USERS[uid].full : uid;
+  
+  var entry = {
+    id: 'PUB-'+Date.now(),
+    type: type,
+    source: source,
+    title: title,
+    date: dateVal,
+    summary: summary,
+    riskNote: riskNote,
+    jurisdiction: jurChecked,
+    disruptionTypes: dtChecked,
+    impact: impact,
+    actionRequired: actionReq,
+    actionNote: actionNote,
+    publishedBy: uName,
+    publishedAt: new Date().toISOString()
+  };
+  
+  loadPublishedUpdates();
+  PUBLISHED_UPDATES.unshift(entry);
+  savePublishedUpdates();
+  
+  // Set notification flag for other users
+  var notifications = JSON.parse(sessionStorage.getItem('dfa_knowledge_notifications')||'[]');
+  notifications.push({
+    id: entry.id,
+    title: title,
+    impact: impact,
+    jurisdiction: jurChecked,
+    publishedBy: uName,
+    publishedAt: entry.publishedAt,
+    expiresAt: new Date(Date.now() + 7*86400000).toISOString()
+  });
+  sessionStorage.setItem('dfa_knowledge_notifications', JSON.stringify(notifications));
+  
+  var jurLabels = jurChecked.map(function(j){
+    return j==='all'?'all jurisdictions':j.replace('-',' ');
+  }).join(', ');
+  
+  var success = document.getElementById('contrib-success');
+  if(success){
+    success.textContent = 'Published. Solicitors covering '+jurLabels+' will see this update on their next login. The entry has been added to the intelligence feed.';
+    success.style.display = 'block';
+  }
+  
+  // Clear form
+  ['contrib-title','contrib-summary','contrib-risk','contrib-action-note'].forEach(function(id){
+    var el = document.getElementById(id);
+    if(el) el.value = '';
+  });
+  document.getElementById('contrib-action').checked = false;
+}
+
+/* ── Check for new notifications badge ── */
+function checkIntelligenceBadge(){
+  var lastSeen = parseInt(sessionStorage.getItem('dfa_intel_last_seen')||'0');
+  var notifications = JSON.parse(sessionStorage.getItem('dfa_knowledge_notifications')||'[]');
+  var now = Date.now();
+  var fresh = notifications.filter(function(n){
+    return new Date(n.publishedAt).getTime() > lastSeen
+      && new Date(n.expiresAt).getTime() > now;
+  });
+  var badge = document.getElementById('intelligence-badge');
+  if(badge && fresh.length > 0){
+    badge.style.display = 'inline';
+    badge.textContent = fresh.length > 1 ? fresh.length+' NEW' : 'NEW';
+  }
+}
+
+
+// Toggle action note field
+document.addEventListener('change', function(e){
+  if(e.target && e.target.id === 'contrib-action'){
+    var wrap = document.getElementById('contrib-action-note-wrap');
+    if(wrap) wrap.style.display = e.target.checked ? 'block' : 'none';
+  }
+});
+
+
+function activeCaseQuery(){
+  try{
+    var c=JSON.parse(sessionStorage.getItem('dfa_case')||'null');
+    return c&&c.ref?'?ref='+encodeURIComponent(c.ref):'';
+  }catch(e){return '';}
+}
+
+function articleCard(icon, tagCls, tagLabel, title, summary, footer){
+  return '<div class="article-card">'
+    +'<div class="ac-tag '+tagCls+'"><i class="ti '+icon+'" style="font-size:11px"></i>'+tagLabel+'</div>'
+    +'<div class="ac-title">'+title+'</div>'
+    +'<div class="ac-summary">'+summary+'</div>'
+    +'<div class="ac-footer"><i class="ti ti-clock" style="font-size:11px"></i><span>'+footer+'</span><span class="ac-read">Read <i class="ti ti-arrow-right" style="font-size:10px"></i></span></div>'
+    +'</div>';
+}
+
+function renderLiveUpdates(){
+  return '<div id="live-updates-container"><div style="text-align:center;padding:40px;color:var(--text3)"><i class="ti ti-loader-2" style="font-size:24px;animation:spin 1s linear infinite"></i><div style="margin-top:8px;font-size:12px">Loading live intelligence...</div></div></div>';
+}
+
+function initLiveUpdates(){
+  fetch('knowledge_store.json?t=' + Date.now())
+    .then(function(r){ return r.json(); })
+    .then(function(store){ renderKnowledgeStore(store); })
+    .catch(function(){
+      var el = document.getElementById('live-updates-container');
+      if(el) el.innerHTML = '<div style="padding:20px;font-size:12px;color:var(--text3)">Live intelligence temporarily unavailable. Refresh to retry.</div>';
+    });
+}
+
+function renderKnowledgeStore(store){
+  var el = document.getElementById('live-updates-container');
+  if(!el) return;
+
+  var html = '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px">';
+  html += '<div style="font-size:11px;color:var(--text3);font-family:var(--mono)"><i class="ti ti-refresh"></i> ' + new Date(store.lastUpdated).toLocaleDateString('en-GB', {day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}) + '</div>';
+  html += '<div style="display:flex;gap:6px;flex-wrap:wrap">';
+  store.sources.forEach(function(s){
+    html += '<span style="font-size:10px;padding:2px 7px;border:1px solid var(--rule);border-radius:2px;color:var(--text2)">' + s + '</span>';
+  });
+  html += '</div></div>';
+
+  var entries = store.entries.slice().sort(function(a,b){
+    if(a.actionRequired && !b.actionRequired) return -1;
+    if(!a.actionRequired && b.actionRequired) return 1;
+    return new Date(b.date) - new Date(a.date);
+  });
+
+  entries.forEach(function(entry){
+    var impactCls = entry.impact==='high'?'impact-high':entry.impact==='medium'?'impact-medium':'impact-low';
+    var dateStr = new Date(entry.date).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
+
+    html += '<div class="live-bulletin '+impactCls+'">';
+    html += '<div class="live-date">' + dateStr + '</div>';
+    html += '<div style="flex:1">';
+    html += '<div class="live-title">' + entry.title + '</div>';
+    html += '<div style="font-size:10px;color:var(--text3);margin-bottom:6px">' + entry.source + '</div>';
+    html += '<div class="live-summary">' + entry.summary + '</div>';
+    if(entry.actionRequired){
+      html += '<div style="margin-top:8px;font-size:11px;color:var(--caution);font-family:var(--font-serif);line-height:1.5"><strong>Action required:</strong> ' + entry.actionNote + '</div>';
+    }
+    html += '</div></div>';
+  });
+
+  el.innerHTML = html;
+}
+
+function render(){
+  var s = SECTIONS[activeSection];
+  if(!s) return;
+  document.getElementById('main').innerHTML =
+    '<div class="pg-hdr"><div class="pg-title">'+s.title+'</div><div class="pg-sub">'+s.sub+'</div></div>'
+    + s.content();
+  if(typeof renderGlobalNav==='function')renderGlobalNav();
+  checkIntelligenceBadge();
+}
+
+
+
+(function initEducation(){
+  var params=new URLSearchParams(window.location.search);
+  var section=params.get('section');
+  if(window.location.hash==='#case-law')activeSection='caselaw';
+  else if(section&&SECTIONS[section])activeSection=section;
+  render();
+  if(activeSection==='live-updates'){setTimeout(initLiveUpdates,50);}
+  if(activeSection==='intelligence'){setTimeout(initIntelligenceHub,50);}
+  if(section&&SECTIONS[section]){
+    document.querySelectorAll('.sb-item').forEach(function(el){el.classList.remove('active');});
+    document.querySelectorAll('.sb-item').forEach(function(el){
+      if(el.getAttribute('onclick')&&el.getAttribute('onclick').indexOf("'"+section+"'")>=0)el.classList.add('active');
+    });
+  }
+  if(typeof renderGlobalNav==='function')renderGlobalNav();
+})();
+</script>
+<div id="user-modal" class="user-modal" onclick="if(event.target===this)closeMenu()">
+  <div class="user-dropdown">
+    <div class="ud-header">Switch user — demo</div>
+    <div style="padding:4px 14px 2px;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.06em;color:var(--text3)">UK Litigation</div>
+    <div class="ud-item" id="ud-SB" onclick="switchUser('SB')"><div class="ud-av">SB</div><div><div class="ud-name">Sarah Booth</div><div class="ud-role">Head of Legal Ops</div></div><i class="ti ti-check ud-tick"></i></div>
+    <div class="ud-item" id="ud-JP" onclick="switchUser('JP')"><div class="ud-av">JP</div><div><div class="ud-name">James Patel</div><div class="ud-role">Senior Solicitor</div></div><i class="ti ti-check ud-tick"></i></div>
+    <div class="ud-item" id="ud-KR" onclick="switchUser('KR')"><div class="ud-av">KR</div><div><div class="ud-name">Kiran Rahman</div><div class="ud-role">Solicitor</div></div><i class="ti ti-check ud-tick"></i></div>
+    <div style="height:1px;background:var(--border);margin:4px 0"></div>
+    <div style="padding:4px 14px 2px;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.06em;color:var(--text3)">🇫🇷 Équipe France</div>
+    <div class="ud-item" id="ud-MD" onclick="switchUser('MD')"><div class="ud-av" style="background:#1a3a6b">MD</div><div><div class="ud-name">Marie Dupont</div><div class="ud-role">Juriste senior</div></div><i class="ti ti-check ud-tick"></i></div>
+    <div class="ud-item" id="ud-PL" onclick="switchUser('PL')"><div class="ud-av" style="background:#1a3a6b">PL</div><div><div class="ud-name">Pierre Laurent</div><div class="ud-role">Juriste</div></div><i class="ti ti-check ud-tick"></i></div>
+    <div style="height:1px;background:var(--border);margin:4px 0"></div>
+    <div style="padding:4px 14px 2px;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.06em;color:var(--text3)">🇪🇸 Equipo España</div>
+    <div class="ud-item" id="ud-CG" onclick="switchUser('CG')"><div class="ud-av" style="background:#6b1a1a">CG</div><div><div class="ud-name">Carlos García</div><div class="ud-role">Abogado senior</div></div><i class="ti ti-check ud-tick"></i></div>
+    <div class="ud-item" id="ud-IM" onclick="switchUser('IM')"><div class="ud-av" style="background:#6b1a1a">IM</div><div><div class="ud-name">Isabel Martín</div><div class="ud-role">Abogada</div></div><i class="ti ti-check ud-tick"></i></div>
+    <div style="height:1px;background:var(--border);margin:4px 0"></div>
+    <div style="padding:4px 14px 2px;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.06em;color:var(--text3)">Documentary Intelligence</div>
+    <div class="ud-item" id="ud-EH" onclick="switchUser('EH')"><div class="ud-av" style="background:#164E63">EH</div><div><div class="ud-name">Emma Hughes</div><div class="ud-role">DIO — England & Wales</div></div><i class="ti ti-check ud-tick"></i></div>
+    <div class="ud-item" id="ud-FD" onclick="switchUser('FD')"><div class="ud-av" style="background:#4A3728">FD</div><div><div class="ud-name">Françoise Durand</div><div class="ud-role">DIO — France</div></div><i class="ti ti-check ud-tick"></i></div>
+    <div class="ud-item" id="ud-SR" onclick="switchUser('SR')"><div class="ud-av" style="background:#2D4A3E">SR</div><div><div class="ud-name">Sofia Ramos</div><div class="ud-role">DIO — España</div></div><i class="ti ti-check ud-tick"></i></div>
+  </div>
+</div>
+<script>
+
+function toggleUserMenu(){var m=document.getElementById('user-modal');if(m)m.classList.toggle('open');}
+function closeMenu(){var m=document.getElementById('user-modal');if(m)m.classList.remove('open');}
+function switchUser(id){
+  if(typeof setActiveUser==='function')setActiveUser(id);
+  sessionStorage.removeItem('dfa_lang');
+  closeMenu();
+  var u=typeof USERS!=='undefined'?USERS[id]:null;
+  if(u){
+    var av=document.getElementById('nav-av'); if(av)av.textContent=u.initials;
+    var un=document.getElementById('nav-user'); if(un)un.textContent=u.name;
+  }
+  ['SB','JP','KR','MD','PL','CG','IM','EH'].forEach(function(uid){
+    var el=document.getElementById('ud-'+uid);
+    if(el)el.classList.toggle('current',uid===id);
+  });
+  if(typeof renderGlobalNav==='function')renderGlobalNav();
+}
+(function initNav(){
+  try{
+    var uid=typeof getActiveUser==='function'?getActiveUser():'SB';
+    var u=typeof USERS!=='undefined'?USERS[uid]:null;
+    if(!u)return;
+    var av=document.getElementById('nav-av'); if(av)av.textContent=u.initials;
+    var un=document.getElementById('nav-user'); if(un)un.textContent=u.name;
+    ['SB','JP','KR','MD','PL','CG','IM','EH'].forEach(function(id){
+      var el=document.getElementById('ud-'+id);
+      if(el)el.classList.toggle('current',id===uid);
+    });
+  }catch(e){}
+})();
+
+</script>
+<script src="shared_nav.js"></script>
+</body>
+</html>

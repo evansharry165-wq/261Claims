@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DefendAble — Reports</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<script src="shared_data.js"></script>
+<script src="shared_theme.js"></script>
+<script src="case_helpers.js"></script>
+<script src="report_engine.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--ink:#1A1A2E;--ink2:#2D2D44;--ink3:#6B6B80;--ink4:#9B9BAA;--rule:#D8D8E0;--rule2:#EBEBF0;--surface:#FFFFFF;--surface2:#F7F7F9;--surface3:#EFEFF2;--accent:#1B3A6B;--accent2:#254E91;--accent-faint:#EEF2F8;--confirm:#1A5C3A;--confirm-faint:#EEF7F2;--caution:#7A4E00;--caution-faint:#FDF4E3;--alert:#8B1A1A;--alert-faint:#FBF0F0;--navy:var(--ink);--navy2:var(--ink2);--navy3:var(--ink2);--blue:var(--accent2);--blue-faint:var(--accent-faint);--blue-text:var(--accent);--green:var(--confirm);--green-l:#2A7A4F;--green-faint:var(--confirm-faint);--amber:var(--caution);--amber-faint:var(--caution-faint);--red:var(--alert);--red-faint:var(--alert-faint);--border:var(--rule);--border2:var(--rule2);--text:var(--ink);--text2:var(--ink2);--text3:var(--ink3);--font:'Helvetica Neue','Arial',sans-serif;--font-serif:'Georgia','Times New Roman',serif;--font-doc:'Georgia','Times New Roman',serif;--mono:'Courier New','Courier',monospace;--purple:#4338CA;--purple-faint:var(--accent-faint);--r:3px;--r2:4px;--r3:5px}
+html,body{height:100%;font-family:var(--font);background:var(--surface2);color:var(--text);font-size:14px}
+.app{display:flex;flex-direction:column;height:calc(100vh - 48px);min-height:0}
+
+/* topbar */
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px;height:54px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+.logo-mark{width:32px;height:32px;background:var(--navy);border-radius:4px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px}
+.logo-name{font-size:15px;font-weight:500;letter-spacing:-0.02em;color:var(--navy)}
+.logo-tag{font-size:12px;color:var(--text3);margin-left:2px}
+.topbar-right{display:flex;align-items:center;gap:10px}
+.mod-badge{font-size:11px;font-weight:500;background:var(--navy);color:#fff;border-radius:20px;padding:3px 10px}
+.av-row{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--text2)}
+.av{width:28px;height:28px;border-radius:50%;background:var(--navy2);color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500}
+.btn-back{font-size:12px;padding:5px 12px;border-radius:var(--r);border:1px solid var(--border);background:var(--surface);cursor:pointer;color:var(--text2);font-family:var(--font);display:flex;align-items:center;gap:5px;text-decoration:none}
+.btn-back:hover{background:var(--surface3)}
+.btn-export{font-size:11px;padding:5px 12px;border-radius:var(--r);border:1px solid var(--border);background:var(--surface);cursor:pointer;color:var(--text2);font-family:var(--font);display:flex;align-items:center;gap:5px}
+.btn-export:hover{background:var(--surface3)}
+
+/* filter bar */
+.filter-bar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px;height:44px;display:flex;align-items:center;gap:10px;flex-shrink:0}
+.filter-label{font-size:11px;color:var(--text3);font-weight:500}
+.filter-btn{font-size:11px;padding:4px 11px;border-radius:20px;border:1px solid var(--border);background:var(--surface);cursor:pointer;color:var(--text2);font-family:var(--font);transition:all 0.15s}
+.filter-btn.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.filter-divider{width:1px;height:20px;background:var(--border);margin:0 4px}
+.filter-select{font-size:11px;padding:4px 9px;border-radius:var(--r);border:1px solid var(--border);background:var(--surface);color:var(--text2);font-family:var(--font);cursor:pointer}
+
+/* layout */
+.content{flex:1;overflow-y:auto;padding:20px 24px;min-height:0}
+
+/* stat row */
+.stat-row{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:16px}
+.stat{background:transparent;border:none;border-radius:0;border-bottom:1px solid var(--rule);padding:13px 0}
+.stat-label{font-size:10px;color:var(--text3);margin-bottom:5px;display:flex;align-items:center;gap:4px;font-weight:500;text-transform:uppercase;letter-spacing:0.09em;font-family:var(--font)}
+.stat-label i{font-size:12px}
+.stat-val{font-size:24px;font-weight:400;font-family:var(--font-serif);color:var(--text);line-height:1;margin-bottom:3px}
+.stat-sub{font-size:11px}
+.sub-up{color:var(--green)}
+.sub-warn{color:var(--amber)}
+.sub-red{color:var(--red)}
+.sub-neu{color:var(--text3)}
+
+/* chart grid */
+.chart-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.chart-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:14px}
+.chart-grid-full{margin-bottom:14px}
+
+/* panel */
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--r3);overflow:hidden}
+.panel-header{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.panel-title{font-size:13px;font-weight:500;color:var(--text);display:flex;align-items:center;gap:7px}
+.panel-title i{font-size:14px}
+.panel-sub{font-size:11px;color:var(--text3);margin-top:1px}
+.panel-body{padding:16px}
+.chart-wrap{position:relative;height:220px}
+.chart-wrap-sm{position:relative;height:180px}
+.chart-wrap-lg{position:relative;height:260px}
+
+/* table */
+.mi-table{width:100%;border-collapse:collapse;font-size:12px}
+.mi-table th{padding:10px;border-bottom:1px solid var(--rule)}
+.mi-table td{padding:10px;border-bottom:1px solid var(--rule);font-size:12px}
+.mi-table tr:last-child td{border-bottom:none}
+.mi-table tr:hover td{background:var(--surface2)}
+.outcome-pill{font-size:10px;font-weight:500;padding:2px 7px;border-radius:2px;border:1px solid var(--rule);background:transparent}
+.op-defended{color:var(--confirm);border-color:#A8C8B4}
+.op-settled{color:var(--caution);border-color:#D4B896}
+.op-open{color:var(--accent);border-color:#A8B8D0}
+.op-escalated{color:var(--alert);border-color:#C8A0A0}
+.cat-pill{font-size:10px;font-weight:500;padding:2px 6px;border-radius:20px;font-family:var(--mono)}
+.cat-a{background:var(--blue-faint);color:var(--blue-text)}
+.cat-b{background:var(--amber-faint);color:var(--amber)}
+.cat-c{background:var(--red-faint);color:var(--red)}
+
+/* workload bars */
+.workload-item{margin-bottom:12px}
+.wl-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+.wl-name{font-size:12px;font-weight:500;color:var(--text)}
+.wl-count{font-size:11px;color:var(--text3)}
+.wl-bar{height:6px;background:var(--surface3);border-radius:3px;overflow:hidden}
+.wl-fill{height:100%;border-radius:3px;transition:width 0.4s}
+
+/* metric tiles */
+.metric-tiles{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.metric-tile{padding:11px 13px;background:var(--surface2);border-radius:var(--r2);border:1px solid var(--border)}
+.mt-label{font-size:10px;color:var(--text3);margin-bottom:3px;font-weight:500;text-transform:uppercase;letter-spacing:0.05em}
+.mt-val{font-size:18px;font-weight:500;color:var(--text)}
+.mt-sub{font-size:10px;color:var(--text3);margin-top:2px}
+
+/* risk register */
+.risk-item{display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)}
+.risk-item:last-child{border-bottom:none}
+.risk-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:4px}
+.risk-high{background:var(--red)}
+.risk-med{background:var(--amber)}
+.risk-low{background:var(--green-l)}
+.risk-case{font-size:11px;font-weight:500;color:var(--text);margin-bottom:1px}
+.risk-reason{font-size:11px;color:var(--text2)}
+.risk-val{font-size:11px;font-weight:500;font-family:var(--mono);margin-left:auto;color:var(--text);white-space:nowrap}
+
+/* cpr status */
+.cpr-item{display:flex;align-items:center;gap:9px;padding:8px 0;border-bottom:1px solid var(--border);font-size:12px}
+.cpr-item:last-child{border-bottom:none}
+.cpr-ref{font-family:var(--mono);font-size:10px;color:var(--text3);width:110px;flex-shrink:0}
+.cpr-name{flex:1;color:var(--text);font-weight:500}
+.cpr-days{font-size:11px;font-weight:500;padding:2px 8px;border-radius:20px;white-space:nowrap}
+.cpr-urgent{background:var(--red-faint);color:var(--red)}
+.cpr-warn{background:var(--amber-faint);color:var(--amber)}
+.cpr-ok{background:var(--green-faint);color:var(--green)}
+
+/* ── Global nav ── */
+.global-nav{background:var(--navy);height:48px;display:flex;align-items:center;padding:0 20px;gap:0;flex-shrink:0;border-bottom:1px solid rgba(255,255,255,0.07)}
+.gn-logo{display:flex;align-items:center;gap:8px;text-decoration:none;margin-right:20px;flex-shrink:0}
+.gn-mark{width:28px;height:28px;background:var(--blue);border-radius:4px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px}
+.gn-name{font-size:14px;font-weight:500;color:#fff;letter-spacing:-0.01em}
+.gn-links{display:flex;align-items:center;gap:2px;flex:1}
+.gn-link{display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r);font-size:12px;font-weight:500;color:rgba(255,255,255,0.5);text-decoration:none;transition:all 0.15s;white-space:nowrap}
+.gn-link:hover{background:rgba(255,255,255,0.08);color:#fff}
+.gn-link.active{background:rgba(42,111,219,0.35);color:#fff}
+.gn-link i{font-size:13px}
+.gn-right{display:flex;align-items:center;gap:8px;margin-left:8px}
+.gn-av{width:26px;height:26px;border-radius:50%;background:#1C2E44;border:1.5px solid rgba(255,255,255,0.15);color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500}
+.gn-user{font-size:12px;color:rgba(255,255,255,0.5)}
+
+.user-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.3);z-index:500}
+.user-modal.open{display:flex;justify-content:flex-end;padding:52px 20px 0}
+.user-dropdown{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);width:230px;box-shadow:0 4px 20px rgba(0,0,0,0.15);overflow:hidden;max-height:calc(100vh - 70px);overflow-y:auto}
+.ud-header{padding:10px 14px;border-bottom:1px solid var(--border);font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:var(--text3)}
+.ud-item{display:flex;align-items:center;gap:10px;padding:9px 14px;cursor:pointer;transition:background .15s}
+.ud-item:hover{background:var(--surface2)}
+.ud-item.current{background:var(--blue-faint)}
+.ud-av{width:28px;height:28px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;flex-shrink:0}
+.ud-name{font-size:12px;font-weight:500;color:var(--text)}
+.ud-role{font-size:10px;color:var(--text3)}
+.ud-tick{margin-left:auto;color:var(--green);font-size:14px;display:none}
+.ud-item.current .ud-tick{display:block}
+
+/* ── DataBricks concept ── */
+.db-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);margin-bottom:18px;overflow:hidden}
+.db-header{padding:12px 16px;border-bottom:1px solid var(--rule);display:flex;align-items:center;justify-content:space-between;background:var(--ink)}
+.db-panel{border-left:3px solid #EF9F27}
+.db-title{font-size:13px;font-weight:600;color:#fff;display:flex;align-items:center;gap:8px}
+.db-badge{font-size:10px;padding:2px 8px;border-radius:10px;background:rgba(255,255,255,0.2);color:#fff;font-weight:500}
+.db-body{padding:14px 16px}
+.db-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px}
+.db-metric{background:var(--surface2);border-radius:var(--r);padding:10px 12px;border:1px solid var(--border)}
+.db-metric-val{font-size:20px;font-weight:500;color:var(--text);margin-bottom:2px}
+.db-metric-lbl{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.04em}
+.db-metric-delta{font-size:11px;margin-top:3px}
+.db-delta-up{color:var(--red)}.db-delta-down{color:var(--green)}
+.db-insight{background:var(--surface2);border-radius:var(--r);padding:10px 12px;border-left:3px solid var(--amber);margin-bottom:8px}
+.db-insight-title{font-size:12px;font-weight:500;color:var(--text);margin-bottom:3px}
+.db-insight-body{font-size:11px;color:var(--text2);line-height:1.5}
+.db-cta{font-size:11px;color:var(--amber);font-weight:500;margin-top:5px}
+.db-connect-note{font-size:11px;color:var(--text3);padding:10px 12px;background:var(--surface2);border-radius:var(--r);border:1px dashed var(--border2);display:flex;align-items:center;gap:8px}
+
+/* mi tabs */
+.mi-tabs{background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px;height:42px;display:flex;align-items:center;gap:4px;flex-shrink:0;overflow-x:auto}
+.mi-tab-btn{font-size:12px;padding:6px 12px;border-radius:var(--r);border:none;background:transparent;cursor:pointer;color:var(--text2);font-family:var(--font);display:flex;align-items:center;gap:5px;white-space:nowrap;transition:all .15s}
+.mi-tab-btn:hover{background:var(--surface3);color:var(--text)}
+.mi-tab-btn.on{background:var(--blue-faint);color:var(--blue-text);font-weight:500}
+.mi-tab-btn i{font-size:13px}
+
+</style>
+<style media="print">
+  .mi-sidebar, .mi-tabs, button, .nav-bar { display: none !important; }
+  .mi-content { padding: 0 !important; }
+  body { background: white !important; }
+</style>
+</head>
+<body>
+<script src="education_content.js?v=sessD1"></script>
+<nav class="global-nav nav-bar">
+  <a href="index.html" class="gn-logo">
+    <div class="gn-mark"><i class="ti ti-lock"></i></div>
+    <span class="gn-name">DefendAble</span>
+  </a>
+  <div class="gn-links" id="gn-links"></div>
+  <div class="gn-right">
+    <div class="gn-user-btn" onclick="toggleUserMenu()">
+      <div class="gn-av" id="nav-av">SB</div>
+      <span class="gn-user" id="nav-user">S. Booth</span>
+      <i class="ti ti-chevron-down" style="font-size:10px;color:rgba(255,255,255,0.4);margin-left:2px"></i>
+    </div>
+  </div>
+</nav>
+<div class="app">
+    <!-- Filter bar -->
+  <div class="filter-bar">
+    <span class="filter-label">Period:</span>
+    <button class="filter-btn" onclick="setPeriod('mtd',this)">MTD</button>
+    <button class="filter-btn on" onclick="setPeriod('ytd',this)">YTD</button>
+    <button class="filter-btn" onclick="setPeriod('12m',this)">12 months</button>
+    <button class="filter-btn" onclick="setPeriod('all',this)">All time</button>
+    <div class="filter-divider"></div>
+    <span class="filter-label">Type:</span>
+    <select class="filter-select" onchange="setType(this.value)">
+      <option value="all">All claim types</option>
+      <option value="atc">ATC restriction</option>
+      <option value="weather">Weather</option>
+      <option value="industrial">Industrial action</option>
+      <option value="technical">Technical</option>
+      <option value="other">Other</option>
+    </select>
+    <div class="filter-divider"></div>
+    <span class="filter-label">Solicitor:</span>
+    <select class="filter-select" onchange="setSolicitor(this.value)">
+      <option value="all">All</option>
+      <option value="sb">S. Booth</option>
+      <option value="jp">J. Patel</option>
+      <option value="kr">K. Rahman</option>
+      <option value="al">A. Lewis</option>
+    </select>
+  </div>
+
+  <div class="mi-tabs" id="mi-tabs"></div>
+  <div class="content mi-content" id="tab-content"></div>
+</div>
+
+<script>
+/* ── Data — computed from live case pool ── */
+function buildMIData(){
+  var cases = (typeof ALL_CASES !== 'undefined') ? ALL_CASES : [];
+  var open = cases.filter(function(c){return c.stage!=='resolve'&&c.stage!=='closed';});
+  var closed = cases.filter(function(c){return c.stage==='resolve'||c.classification==='DEFEND'&&c.evidencePct===100;});
+  var defended = cases.filter(function(c){return c.classification==='DEFEND';}).length;
+  var escalated = cases.filter(function(c){return c.classification==='ESCALATE';}).length;
+  var investigate = cases.filter(function(c){return c.classification==='INVESTIGATE';}).length;
+
+  // By disruption type
+  var typeCount = {};
+  cases.forEach(function(c){
+    var t = c.disruptionType||'Other';
+    typeCount[t] = (typeCount[t]||0)+1;
+  });
+  var typeLabels = Object.keys(typeCount).sort(function(a,b){return typeCount[b]-typeCount[a];});
+  var typeCols = ['#2A6FDB','#5B4FCF','#B45309','#C0392B','#1A7A4A','#94A3B8','#F59E0B','#0F6E56'];
+
+  // By jurisdiction
+  var jurCount = {EW:0,FR:0,ES:0,EU:0};
+  cases.forEach(function(c){
+    if(c.jurisdiction==='france') jurCount.FR++;
+    else if(c.jurisdiction==='spain') jurCount.ES++;
+    else jurCount.EW++;
+  });
+
+  // CPR urgency
+  var urgent=0,watch=0,normal=0;
+  cases.forEach(function(c){
+    if(c.cprDaysLeft<=3) urgent++;
+    else if(c.cprDaysLeft<=10) watch++;
+    else normal++;
+  });
+
+  // Workload by user
+  var userMap = {};
+  cases.forEach(function(c){
+    if(!userMap[c.assignedTo]) userMap[c.assignedTo]={cases:0,open:0,urgent:0};
+    userMap[c.assignedTo].cases++;
+    if(c.stage!=='resolve') userMap[c.assignedTo].open++;
+    if(c.cprDaysLeft<=3) userMap[c.assignedTo].urgent++;
+  });
+  var userColors={'SB':'#2A6FDB','JP':'#5B4FCF','KR':'#1A7A4A','MD':'#B45309','PL':'#C0392B','CG':'#0F6E56','IM':'#854F0B'};
+  var userNames={'SB':'S. Booth','JP':'J. Patel','KR':'K. Rahman','MD':'M. Dupont','PL':'P. Laurent','CG':'C. García','IM':'I. Martín'};
+  var workload = Object.keys(userMap).filter(function(u){return u!=='EH';}).map(function(u){
+    return {name:userNames[u]||u, cases:userMap[u].cases, open:userMap[u].open, urgent:userMap[u].urgent, color:userColors[u]||'#94A3B8'};
+  }).sort(function(a,b){return b.cases-a.cases;});
+
+  // Recent high-priority cases
+  var recentCases = cases
+    .filter(function(c){return c.cprDaysLeft<=10||c.classification==='ESCALATE';})
+    .sort(function(a,b){return a.cprDaysLeft-b.cprDaysLeft;})
+    .slice(0,8)
+    .map(function(c){
+      var uName = userNames[c.assignedTo]||c.assignedTo;
+      return {ref:c.ref, name:c.claimant+' v. [Airline]', type:c.disruptionType, cat:c.cat, value:c.value, stage:c.stage, days:c.cprDaysLeft, solicitor:uName};
+    });
+
+  // Volume by month (from locDate)
+  var monthVol = [0,0,0,0,0,0,0,0,0,0,0,0];
+  cases.forEach(function(c){
+    if(!c.locDate) return;
+    var s = String(c.locDate);
+    var months = {Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
+    var match = s.match(/([A-Z][a-z]{2})/);
+    if(match && months[match[1]]!==undefined) monthVol[months[match[1]]]++;
+  });
+
+  // Total exposure
+  var totalComp = 0;
+  cases.forEach(function(c){
+    var v = String(c.value).replace(/[£€,+]/g,'').trim();
+    var n = parseFloat(v);
+    if(!isNaN(n)) totalComp += n;
+  });
+
+  return {
+    stats:{
+      open: open.length,
+      defended: defended,
+      escalated: escalated,
+      investigate: investigate,
+      totalClaims: cases.length,
+      exposureGross: '£' + Math.round(totalComp).toLocaleString(),
+      exposureNet: '£3,750',
+      avgClose: 24,
+      defenceRate: cases.length ? Math.round(defended/cases.length*100) : 0,
+      savingYTD: '£280,750',
+      settled: closed.length,
+      urgent: urgent,
+      watch: watch
+    },
+    volumeByMonth:{
+      labels:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+      received: monthVol,
+      closed:[2,4,4,6,7,5,null,null,null,null,null,null]
+    },
+    byType:{
+      labels: typeLabels,
+      counts: typeLabels.map(function(t){return typeCount[t];}),
+      colors: typeLabels.map(function(_,i){return typeCols[i]||'#94A3B8';})
+    },
+    outcomes:{
+      labels:['Defend','Investigate','Escalate'],
+      counts:[defended,investigate,escalated],
+      colors:['#22A863','#F59E0B','#C0392B']
+    },
+    byCat:{
+      labels:['Cat A — €250','Cat B — €400','Cat C — Complex'],
+      counts:[
+        cases.filter(function(c){return c.cat==='A';}).length,
+        cases.filter(function(c){return c.cat==='B';}).length,
+        cases.filter(function(c){return c.cat==='C';}).length
+      ],
+      colors:['#2A6FDB','#B45309','#C0392B']
+    },
+    jurisdiction:{
+      labels:['England & Wales','France','Spain'],
+      counts:[jurCount.EW+jurCount.EU, jurCount.FR, jurCount.ES],
+      colors:['#2A6FDB','#1A7A4A','#C0392B']
+    },
+    timeToClose:{
+      labels:['<7d','7–14d','14–21d','21–30d','>30d'],
+      defended:[2,5,6,3,2],
+      settled:[0,1,2,2,2]
+    },
+    exposure:{
+      labels:['Jan','Feb','Mar','Apr','May'],
+      alleged:[48000,52000,71000,63000,50500],
+      actual:[250,500,750,1500,750]
+    },
+    workload: workload,
+    recentCases: recentCases,
+    riskRegister: cases
+      .filter(function(c){return c.classification==='ESCALATE'||c.cprDaysLeft<=3;})
+      .sort(function(a,b){return a.cprDaysLeft-b.cprDaysLeft;})
+      .slice(0,6)
+      .map(function(c){
+        return {ref:c.ref, issue: c.classification==='ESCALATE'?'Escalation required':'CPR deadline critical', days:c.cprDaysLeft, risk:'high', note:c.triageNote||'Review required'};
+      }),
+    cprDeadlines: cases
+      .filter(function(c){return c.stage!=='resolve'&&c.stage!=='closed';})
+      .sort(function(a,b){return a.cprDaysLeft-b.cprDaysLeft;})
+      .slice(0,10)
+      .map(function(c){
+        return {ref:c.ref, name:c.claimant, days:c.cprDaysLeft};
+      })
+  };
+}
+const DATA = buildMIData();
+let charts = {};
+let activePeriod = 'ytd';
+let activeType = 'all';
+let activeSolicitor = 'all';
+let _scaledStats = null;
+
+var TABS=[
+  {id:'overview',label:'Overview',icon:'ti-layout-dashboard'},
+  {id:'team-workload',label:'Team workload',icon:'ti-users'},
+  {id:'risk-register',label:'Risk register',icon:'ti-alert-triangle'},
+  {id:'recent-cases',label:'Recent cases',icon:'ti-table'},
+  {id:'exposure-trend',label:'Exposure trend',icon:'ti-trending-up'},
+  {id:'monthly-report',label:'Monthly report',icon:'ti-file-analytics'}
+];
+var activeTab='overview';
+
+function renderTabs(){
+  var bar=document.getElementById('mi-tabs');
+  if(!bar) return;
+  bar.innerHTML=TABS.map(function(t){
+    return '<button class="mi-tab-btn'+(activeTab===t.id?' on':'')+'" onclick="switchTab(\''+t.id+'\')"><i class="ti '+t.icon+'"></i> '+t.label+'</button>';
+  }).join('');
+}
+
+function switchTab(tab){
+  activeTab=tab;
+  renderTabs();
+  renderActiveTab();
+}
+
+function renderActiveTab(){
+  var displayStats=_scaledStats||DATA.stats;
+  if(activeTab==='overview') renderOverview(displayStats);
+  else if(activeTab==='team-workload') renderTeamWorkload(displayStats);
+  else if(activeTab==='risk-register') renderRiskRegister(displayStats);
+  else if(activeTab==='recent-cases') renderRecentCases(displayStats);
+  else if(activeTab==='exposure-trend') renderExposureTrend(displayStats);
+  else if(activeTab==='monthly-report') renderMonthlyReport();
+}
+
+// Period multipliers for demo data scaling
+const PERIOD_SCALE = {mtd:0.2, ytd:1, '12m':1.4, all:1.8};
+
+function setPeriod(p, btn){
+  activePeriod = p;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  applyFilters();
+}
+function setType(v){ activeType=v; applyFilters(); }
+function setSolicitor(v){ activeSolicitor=v; applyFilters(); }
+
+function applyFilters(){
+  const scale = PERIOD_SCALE[activePeriod]||1;
+  const d = document.getElementById('tab-content');
+  if(!d) return;
+  // Re-render with scaled data
+  const scaledData = JSON.parse(JSON.stringify(DATA));
+  scaledData.stats.open = Math.round(DATA.stats.open * (activePeriod==='mtd'?0.3:1));
+  scaledData.stats.defended = Math.round(DATA.stats.defended * scale);
+  scaledData.stats.settled = Math.round((DATA.stats.settled||0) * scale);
+  scaledData.stats.defenceRate = activePeriod==='mtd'?68:activePeriod==='12m'?75:activePeriod==='all'?74:72;
+  scaledData.stats.avgClose = activePeriod==='mtd'?19:activePeriod==='12m'?26:activePeriod==='all'?27:24;
+  scaledData.stats.exposureNet = activePeriod==='mtd'?'£620':activePeriod==='12m'?'£5,200':activePeriod==='all'?'£9,800':'£3,750';
+  scaledData.stats.savingYTD = activePeriod==='mtd'?'£48,000':activePeriod==='12m'?'£392,000':activePeriod==='all'?'£680,000':'£280,750';
+  // Filter workload by solicitor
+  if(activeSolicitor!=='all'){
+    const map={sb:'S. Booth',jp:'J. Patel',kr:'K. Rahman',al:'A. Lewis'};
+    scaledData.workload = DATA.workload.filter(w=>w.name===map[activeSolicitor]);
+  }
+  _scaledStats = scaledData.stats;
+  renderActiveTab();
+}
+
+
+/* ── Dynamic MI from shared_data ── */
+function buildDynamicStats(){
+  if(typeof ALL_CASES==='undefined') return;
+  var open   = ALL_CASES.filter(function(c){return c.stage!=='resolve';});
+  var closed = ALL_CASES.filter(function(c){return c.stage==='resolve';});
+  var defended = ALL_CASES.filter(function(c){return c.classification==='DEFEND'&&c.stage!=='resolve';});
+
+  // Update stat cards dynamically
+  var statVals = document.querySelectorAll('.stat-val');
+  if(!statVals.length) return;
+
+  // Count by jurisdiction
+  var byJur = {};
+  ALL_CASES.forEach(function(c){
+    var j = c.jurisdiction||'england-wales';
+    byJur[j] = (byJur[j]||0)+1;
+  });
+
+  // Update overview numbers
+  DATA.stats.open = open.length;
+  DATA.stats.totalClaims = ALL_CASES.length;
+}
+
+function buildDataBricksPanel(){
+  return `<div class="db-panel">
+    <div class="db-header">
+      <div class="db-title">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+        </svg>
+        Databricks — Operational intelligence
+        <span class="db-badge">CONNECTED</span>
+      </div>
+      <div style="font-size:11px;color:rgba(255,255,255,0.7)">Live feed · Updated 06:00 UTC daily</div>
+    </div>
+    <div class="db-body">
+      <div style="font-size:11px;color:var(--text3);margin-bottom:12px">
+        Operational disruption data from the airline's Databricks environment — fuel costs, route disruption rates, 
+        cancellation costs and ATFM impact. Use this to inform the defend vs. settle decision at a strategic level.
+      </div>
+      <div class="db-grid">
+        <div class="db-metric">
+          <div class="db-metric-val">£187m</div>
+          <div class="db-metric-lbl">EC261 liability FY2024</div>
+          <div class="db-metric-delta db-delta-down">↓ £24m vs FY2023</div>
+        </div>
+        <div class="db-metric">
+          <div class="db-metric-val">23.4%</div>
+          <div class="db-metric-lbl">Flights disrupted YTD</div>
+          <div class="db-metric-delta db-delta-up">↑ 2.1% vs same period</div>
+        </div>
+        <div class="db-metric">
+          <div class="db-metric-val">£4.20</div>
+          <div class="db-metric-lbl">Avg fuel cost/seat (Jun)</div>
+          <div class="db-metric-delta db-delta-up">↑ 8% vs May — cost pressure</div>
+        </div>
+        <div class="db-metric">
+          <div class="db-metric-val">847</div>
+          <div class="db-metric-lbl">ATFM delays this month</div>
+          <div class="db-metric-delta db-delta-down">↓ 12% — strong EC defence</div>
+        </div>
+        <div class="db-metric">
+          <div class="db-metric-val">£1,240</div>
+          <div class="db-metric-lbl">Avg cancellation cost/pax</div>
+          <div class="db-metric-delta" style="color:var(--text3)">Rebooking + hotel + comp</div>
+        </div>
+        <div class="db-metric">
+          <div class="db-metric-val">62%</div>
+          <div class="db-metric-lbl">ATFM extraordinary circ rate</div>
+          <div class="db-metric-delta db-delta-down">↑ 5% — stronger defence position</div>
+        </div>
+      </div>
+      <div style="font-size:11px;font-weight:500;color:var(--text);margin-bottom:8px;display:flex;align-items:center;gap:5px"><i class="ti ti-bulb" style="color:var(--amber)"></i> Strategic insights</div>
+      <div class="db-insight">
+        <div class="db-insight-title">Fuel cost pressure → consider route-level litigation threshold</div>
+        <div class="db-insight-body">BCN and AGP routes showing 31% fuel cost increase this quarter. At £4.20/seat average, a 4-hour delay on a 180-seat aircraft represents £756 operational cost before litigation spend. Low-value EC261 claims on these routes may be better settled commercially.</div>
+        <div class="db-cta">→ Apply to 23 open BCN/AGP delay cases in the system</div>
+      </div>
+      <div class="db-insight">
+        <div class="db-insight-title">ATFM extraordinary circumstances rate is at 62% — defend aggressively</div>
+        <div class="db-insight-body">This month's ATFM data shows 847 slot restrictions logged by Eurocontrol. 62% qualify as extraordinary circumstances under the EC261 defence framework. All 44 delay cases in the current batch should have ATFM data requested as a first step.</div>
+        <div class="db-cta">→ 44 delay cases flagged for ATFM evidence — view in Insights</div>
+      </div>
+      <div class="db-insight">
+        <div class="db-insight-title">Cancel or litigate? June disruption event analysis</div>
+        <div class="db-insight-body">4 June disruption event (ATFM slot restrictions, Gatwick): estimated 1,200 affected passengers. Full liability exposure: £300,000. Projected defence rate at 70% extraordinary circumstances: net liability £90,000. Alternative: proactive goodwill (£50 voucher): estimated cost £60,000. Litigation is marginally preferred at current ATFM evidence strength.</div>
+        <div class="db-cta">→ 12 claims from this event are in the current batch</div>
+      </div>
+      <div class="db-connect-note">
+        <i class="ti ti-info-circle" style="color:var(--text3);font-size:14px"></i>
+        <span>Databricks connection reads operational data from the airline's existing Databricks environment. No data duplication — DefendAble queries, not stores. Full integration available as part of the founding partnership build.</span>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderOverview(scaledStats){
+  buildDynamicStats();
+  var displayStats = scaledStats || DATA.stats;
+  document.getElementById('tab-content').innerHTML = buildOverviewContent(displayStats);
+  requestAnimationFrame(function(){
+    buildCharts();
+  });
+}
+
+function renderTeamWorkload(scaledStats){
+  document.getElementById('tab-content').innerHTML = buildTeamWorkloadContent(scaledStats || DATA.stats);
+}
+
+function renderRiskRegister(scaledStats){
+  document.getElementById('tab-content').innerHTML = buildRiskRegisterContent(scaledStats || DATA.stats);
+}
+
+function renderRecentCases(scaledStats){
+  document.getElementById('tab-content').innerHTML = buildRecentCasesContent(scaledStats || DATA.stats);
+}
+
+function renderExposureTrend(scaledStats){
+  document.getElementById('tab-content').innerHTML = buildExposureContent(scaledStats || DATA.stats);
+  requestAnimationFrame(function(){
+    buildExposureCharts();
+  });
+}
+
+function render(scaledStats){
+  if(scaledStats) _scaledStats = scaledStats;
+  renderTabs();
+  renderActiveTab();
+  if(typeof renderGlobalNav==='function')renderGlobalNav();
+}
+
+function buildOverviewContent(displayStats){
+  displayStats = displayStats || DATA.stats;
+  /* accent/secondary referenced below (Cat A/B legend swatches) were never
+     declared in this function's scope — only in the separate chart-building
+     functions further down the file. Same values used there. */
+  const accent = '#1B3A6B';
+  const secondary = '#6B6B80';
+  const stats = `<div class="stat-row">
+    ${statCard('Open cases', String(displayStats.open), 'ti-briefcase', 'var(--blue-text)', (displayStats.urgent||0) + ' require action', 'sub-warn')}
+    ${statCard('Defended YTD', String(displayStats.defended), 'ti-shield', 'var(--green)', (displayStats.defenceRate||0) + '% defence rate', 'sub-up')}
+    ${statCard('Settled YTD', String(displayStats.settled||0), 'ti-scale', 'var(--amber)', 'Closed cases YTD', 'sub-neu')}
+    ${statCard('Gross exposure', displayStats.exposureGross||'£0', 'ti-alert-triangle', 'var(--red)', 'Alleged value open cases', 'sub-red')}
+    ${statCard('Net paid out', displayStats.exposureNet||'£0', 'ti-coin', 'var(--green)', 'YTD vs ' + (displayStats.exposureGross||'£0') + ' alleged', 'sub-up')}
+    ${statCard('Avg days to close', (displayStats.avgClose||0) + 'd', 'ti-clock', 'var(--text3)', 'Target: 28 days', 'sub-up')}
+  </div>`;
+
+  const row1 = `<div class="chart-grid-3">
+    <div class="panel">
+      <div class="panel-header"><div class="panel-title"><i class="ti ti-trending-up"></i>Claim volume</div><div class="panel-sub">Claims received vs closed by month</div></div>
+      <div class="panel-body"><div class="chart-wrap"><canvas id="ch-volume"></canvas></div></div>
+    </div>
+    <div class="panel">
+      <div class="panel-header"><div class="panel-title"><i class="ti ti-chart-pie"></i>Outcomes</div><div class="panel-sub">YTD case results</div></div>
+      <div class="panel-body"><div class="chart-wrap"><canvas id="ch-outcomes"></canvas></div></div>
+    </div>
+    <div class="panel">
+      <div class="panel-header"><div class="panel-title"><i class="ti ti-tag"></i>By claim type</div><div class="panel-sub">Volume by disruption category</div></div>
+      <div class="panel-body"><div class="chart-wrap"><canvas id="ch-type"></canvas></div></div>
+    </div>
+  </div>`;
+
+  const row2 = `<div class="chart-grid-2">
+    <div class="panel">
+      <div class="panel-header"><div class="panel-title"><i class="ti ti-clock-hour-4"></i>Time to close</div><div class="panel-sub">Days from intake to resolution</div></div>
+      <div class="panel-body"><div class="chart-wrap"><canvas id="ch-ttc"></canvas></div></div>
+    </div>
+    <div class="panel">
+      <div class="panel-header"><div class="panel-title"><i class="ti ti-layers"></i>EC261 category</div><div class="panel-sub">A / B / C split by volume</div></div>
+      <div class="panel-body"><div class="chart-wrap"><canvas id="ch-cat"></canvas></div>
+        <div style="display:flex;justify-content:center;gap:14px;margin-top:8px">
+          ${[['Cat A — €250',accent],['Cat B — €400',secondary],['Cat C — Complex','#9B9BAA']].map(([l,c])=>`<div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2)"><div style="width:8px;height:8px;border-radius:50%;background:${c}"></div>${l}</div>`).join('')}
+        </div>
+      </div>
+    </div>
+  </div>`;
+
+  const metricsHtml = `<div class="metric-tiles">
+    <div class="metric-tile"><div class="mt-label">Defence rate</div><div class="mt-val">72%</div><div class="mt-sub">18 of 25 closed cases</div></div>
+    <div class="metric-tile"><div class="mt-label">Avg claim value</div><div class="mt-val">€318</div><div class="mt-sub">Across all open cases</div></div>
+    <div class="metric-tile"><div class="mt-label">EC261 saving YTD</div><div class="mt-val">£280,750</div><div class="mt-sub">Alleged vs actual paid</div></div>
+    <div class="metric-tile"><div class="mt-label">CPR compliance</div><div class="mt-val">100%</div><div class="mt-sub">No missed deadlines</div></div>
+    <div class="metric-tile"><div class="mt-label">Cat A defence rate</div><div class="mt-val">89%</div><div class="mt-sub">ATC & weather claims</div></div>
+    <div class="metric-tile"><div class="mt-label">Avg days — Cat A</div><div class="mt-val">14d</div><div class="mt-sub">Intake to close</div></div>
+  </div>`;
+
+  const pipelinePanel = `<div class="panel">
+    <div class="panel-header"><div class="panel-title"><i class="ti ti-chart-bar"></i>Stage pipeline</div><div class="panel-sub">Visual pipeline by stage</div></div>
+    <div class="panel-body"><div class="chart-wrap"><canvas id="ch-pipeline"></canvas></div></div>
+  </div>`;
+
+  const metricsPanel = `<div class="panel">
+    <div class="panel-header"><div class="panel-title"><i class="ti ti-calculator"></i>Key metrics</div><div class="panel-sub">YTD performance summary</div></div>
+    <div class="panel-body">${metricsHtml}</div>
+  </div>`;
+
+  return stats + row1 + row2 + `<div class="chart-grid-2">${metricsPanel}${pipelinePanel}</div>` + buildDataBricksPanel();
+}
+
+function buildTeamWorkloadContent(displayStats){
+  const wlMax = Math.max(...DATA.workload.map(w=>w.cases));
+  const workloadItems = DATA.workload.map(w=>`
+    <div class="workload-item">
+      <div class="wl-top">
+        <div class="wl-name">${w.name}</div>
+        <div class="wl-count">${w.cases} total · ${w.open} open</div>
+      </div>
+      <div class="wl-bar"><div class="wl-fill" style="width:${w.cases/wlMax*100}%;background:${w.color}"></div></div>
+    </div>`).join('');
+
+  const cprDeadlines = (typeof ALL_CASES !== 'undefined' ? ALL_CASES : [])
+    .filter(function(c){return c.stage!=='resolve';})
+    .sort(function(a,b){return a.cprDaysLeft-b.cprDaysLeft;})
+    .slice(0,10);
+  const cprRows = cprDeadlines.map(function(d){
+    const cls = d.cprDaysLeft<=3?'cpr-urgent':d.cprDaysLeft<=7?'cpr-warn':'cpr-ok';
+    const txt = d.cprDaysLeft<=3?d.cprDaysLeft+'d — URGENT':d.cprDaysLeft<=7?d.cprDaysLeft+'d — this week':d.cprDaysLeft+'d';
+    return `<div class="cpr-item"><div class="cpr-ref">${d.ref}</div><div class="cpr-name">${d.claimant}</div><span class="cpr-days ${cls}">${txt}</span></div>`;
+  }).join('');
+
+  return `<div class="chart-grid-2">
+    <div class="panel">
+      <div class="panel-header"><div class="panel-title"><i class="ti ti-users"></i>Workload by solicitor</div><div class="panel-sub">Open and total cases assigned</div></div>
+      <div class="panel-body">${workloadItems}</div>
+    </div>
+    <div class="panel">
+      <div class="panel-header"><div class="panel-title"><i class="ti ti-calendar-due"></i>CPR deadline tracker</div><div class="panel-sub">All open cases by deadline urgency</div></div>
+      <div class="panel-body" style="padding:8px 16px">${cprRows}</div>
+    </div>
+  </div>`;
+}
+
+function buildRiskRegisterContent(displayStats){
+  const riskRows = DATA.riskRegister.map(r=>`
+    <div class="risk-item">
+      <div class="risk-dot risk-${r.risk||'high'}"></div>
+      <div style="flex:1"><div class="risk-case">${r.ref}</div><div class="risk-reason">${r.issue} — ${r.note||''}</div></div>
+      <div class="risk-val">${r.days}d</div>
+    </div>`).join('');
+
+  return `<div class="panel">
+    <div class="panel-header"><div class="panel-title"><i class="ti ti-alert-triangle" style="color:var(--red)"></i>Risk register</div><div class="panel-sub">Cases requiring immediate attention</div></div>
+    <div class="panel-body" style="padding:8px 16px">${riskRows}</div>
+  </div>`;
+}
+
+function buildRecentCasesContent(displayStats){
+  const tableRows = DATA.recentCases.map(c=>{
+    const isOpen = c.stage !== 'Closed';
+    const stageHtml = isOpen
+      ? `<span class="outcome-pill op-open">${c.stage}</span>`
+      : `<span class="outcome-pill op-${c.outcome}">${c.outcome.charAt(0).toUpperCase()+c.outcome.slice(1)}</span>`;
+    const catCls = c.cat==='A'?'cat-a':c.cat==='B'?'cat-b':'cat-c';
+    const daysHtml = isOpen && c.days
+      ? `<span class="cpr-days ${c.days<=3?'cpr-urgent':c.days<=7?'cpr-warn':'cpr-ok'}">${c.days}d</span>`
+      : '—';
+    return `<tr>
+      <td style="font-family:var(--mono);font-size:10px;color:var(--text3)">${c.ref}</td>
+      <td style="font-weight:500">${c.name}</td>
+      <td>${c.type}</td>
+      <td><span class="cat-pill ${catCls}">${c.cat}</span></td>
+      <td style="font-family:var(--mono)">${c.value}</td>
+      <td>${stageHtml}</td>
+      <td>${daysHtml}</td>
+      <td style="color:var(--text2)">${c.solicitor}</td>
+    </tr>`;
+  }).join('');
+
+  return `<div class="panel chart-grid-full">
+    <div class="panel-header"><div class="panel-title"><i class="ti ti-table"></i>Recent high-priority cases</div><div class="panel-sub">Urgent CPR and escalated cases</div></div>
+    <div class="panel-body" style="padding:0 16px">
+      <table class="mi-table">
+        <thead><tr>
+          <th>Ref</th><th>Case</th><th>Type</th><th>Cat</th><th>Value</th><th>Status</th><th>CPR</th><th>Solicitor</th>
+        </tr></thead>
+        <tbody>${tableRows}</tbody>
+      </table>
+    </div>
+  </div>`;
+}
+
+function buildExposureContent(displayStats){
+  return `<div class="chart-grid-2">
+    <div class="panel">
+      <div class="panel-header"><div class="panel-title"><i class="ti ti-currency-pound"></i>Financial exposure</div><div class="panel-sub">Alleged vs actual paid out</div></div>
+      <div class="panel-body"><div class="chart-wrap-lg"><canvas id="ch-exposure"></canvas></div></div>
+    </div>
+    <div class="panel">
+      <div class="panel-header"><div class="panel-title"><i class="ti ti-trending-up"></i>Exposure trend</div><div class="panel-sub">Monthly alleged vs actual liability</div></div>
+      <div class="panel-body">
+        <div class="metric-tiles">
+          <div class="metric-tile"><div class="mt-label">Gross exposure</div><div class="mt-val">${DATA.stats.exposureGross||'£284,500'}</div><div class="mt-sub">All open cases</div></div>
+          <div class="metric-tile"><div class="mt-label">Net paid out</div><div class="mt-val">${DATA.stats.exposureNet||'£3,750'}</div><div class="mt-sub">YTD actual liability</div></div>
+          <div class="metric-tile"><div class="mt-label">Saving YTD</div><div class="mt-val">${DATA.stats.savingYTD||'£280,750'}</div><div class="mt-sub">vs full settlement</div></div>
+          <div class="metric-tile"><div class="mt-label">Defence rate</div><div class="mt-val">${DATA.stats.defenceRate||72}%</div><div class="mt-sub">Closed cases defended</div></div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function buildContent(displayStats){
+  return buildOverviewContent(displayStats);
+}
+
+function statCard(label, val, icon, iconCol, sub, subCls){
+  return `<div class="stat">
+    <div class="stat-label" style="color:${iconCol}"><i class="ti ${icon}"></i>${label}</div>
+    <div class="stat-val">${val}</div>
+    <div class="stat-sub ${subCls}">${sub}</div>
+  </div>`;
+}
+
+function buildCharts(){
+  const fontOpts = {family:'Helvetica Neue, Arial, sans-serif',size:11};
+  const gridColor = '#EBEBF0';
+  const tickColor = '#6B6B80';
+  const accent = '#1B3A6B';
+  const accentLight = 'rgba(27,58,107,0.12)';
+  const secondary = '#6B6B80';
+  const secondaryLight = 'rgba(107,107,128,0.15)';
+
+  function destroyIfExists(id){
+    try{if(charts[id]){charts[id].destroy();delete charts[id];}}catch(e){delete charts[id];}
+  }
+
+  // Volume — line
+  destroyIfExists('volume');
+  const cvol = document.getElementById('ch-volume');
+  if(cvol){charts['volume'] = new Chart(cvol,{type:'bar',data:{
+    labels:DATA.volumeByMonth.labels,
+    datasets:[
+      {label:'Received',data:DATA.volumeByMonth.received,backgroundColor:accentLight,borderColor:accent,borderWidth:1.5,borderRadius:2},
+      {label:'Closed',data:DATA.volumeByMonth.closed,backgroundColor:secondaryLight,borderColor:secondary,borderWidth:1.5,borderRadius:2}
+    ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{font:fontOpts,color:tickColor,boxWidth:10}}},scales:{x:{grid:{display:false},ticks:{font:fontOpts,color:tickColor}},y:{grid:{color:gridColor},ticks:{font:fontOpts,color:tickColor,stepSize:2}}}}});}
+
+  // Outcomes — doughnut
+  destroyIfExists('outcomes');
+  const cout = document.getElementById('ch-outcomes');
+  if(cout){charts['outcomes'] = new Chart(cout,{type:'doughnut',data:{
+    labels:DATA.outcomes.labels,
+    datasets:[{data:DATA.outcomes.counts,backgroundColor:[accent,secondary,'#9B9BAA','#2D2D44'],borderWidth:2,borderColor:'#fff'}]
+  },options:{responsive:true,maintainAspectRatio:false,cutout:'65%',plugins:{legend:{position:'right',labels:{font:fontOpts,color:tickColor,boxWidth:10,padding:10}}}}});}
+
+  // By type — horizontal bar
+  destroyIfExists('type');
+  const ctype = document.getElementById('ch-type');
+  if(ctype){charts['type'] = new Chart(ctype,{type:'bar',data:{
+    labels:DATA.byType.labels,
+    datasets:[{data:DATA.byType.counts,backgroundColor:accent,borderRadius:2,borderWidth:0}]
+  },options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:gridColor},ticks:{font:fontOpts,color:tickColor,stepSize:2}},y:{grid:{display:false},ticks:{font:fontOpts,color:tickColor}}}}});}
+
+  // Exposure — bar (alleged vs actual)
+  destroyIfExists('exposure');
+  const cexp = document.getElementById('ch-exposure');
+  if(cexp){charts['exposure'] = new Chart(cexp,{type:'bar',data:{
+    labels:DATA.exposure.labels,
+    datasets:[
+      {label:'Alleged (£)',data:DATA.exposure.alleged,backgroundColor:accentLight,borderColor:accent,borderWidth:1.5,borderRadius:2},
+      {label:'Actual paid (£)',data:DATA.exposure.actual,backgroundColor:secondary,borderColor:secondary,borderWidth:0,borderRadius:2}
+    ]
+  },options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{font:fontOpts,color:tickColor,boxWidth:10}}},scales:{x:{grid:{display:false},ticks:{font:fontOpts,color:tickColor}},y:{grid:{color:gridColor},ticks:{font:fontOpts,color:tickColor,callback:v=>'£'+v.toLocaleString()}}}}});}
+
+  // Time to close — grouped bar
+  destroyIfExists('ttc');
+  const cttc = document.getElementById('ch-ttc');
+  if(cttc){charts['ttc'] = new Chart(cttc,{type:'bar',data:{
+    labels:DATA.timeToClose.labels,
+    datasets:[
+      {label:'Defended',data:DATA.timeToClose.defended,backgroundColor:accent,borderRadius:2,borderWidth:0},
+      {label:'Settled',data:DATA.timeToClose.settled,backgroundColor:secondary,borderRadius:2,borderWidth:0}
+    ]
+  },options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{font:fontOpts,color:tickColor,boxWidth:10}}},scales:{x:{grid:{display:false},ticks:{font:fontOpts,color:tickColor}},y:{grid:{color:gridColor},ticks:{font:fontOpts,color:tickColor,stepSize:2}}}}});}
+
+  // Category split — doughnut
+  destroyIfExists('cat');
+  const ccat = document.getElementById('ch-cat');
+  if(ccat){charts['cat'] = new Chart(ccat,{type:'doughnut',data:{
+    labels:DATA.byCat.labels,
+    datasets:[{data:DATA.byCat.counts,backgroundColor:[accent,secondary,'#9B9BAA'],borderWidth:2,borderColor:'#fff'}]
+  },options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{display:false}}}});}
+
+  // Pipeline — horizontal bar
+  destroyIfExists('pipeline');
+  const cpipe = document.getElementById('ch-pipeline');
+  if(cpipe){charts['pipeline'] = new Chart(cpipe,{type:'bar',data:{
+    labels:['Intake','Triage','Evidence','Defence','Resolve'],
+    datasets:[{data:[2,2,2,2,0],backgroundColor:[accentLight,accentLight,accentLight,accentLight,'#EFEFF2'],borderColor:[accent,accent,accent,accent,secondary],borderWidth:1.5,borderRadius:2}]
+  },options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:gridColor},ticks:{font:fontOpts,color:tickColor,stepSize:1}},y:{grid:{display:false},ticks:{font:fontOpts,color:tickColor}}}}});}
+}
+
+function buildExposureCharts(){
+  const fontOpts = {family:'Helvetica Neue, Arial, sans-serif',size:11};
+  const gridColor = '#EBEBF0';
+  const tickColor = '#6B6B80';
+  const accent = '#1B3A6B';
+  const accentLight = 'rgba(27,58,107,0.12)';
+  const secondary = '#6B6B80';
+  function destroyIfExists(id){
+    try{if(charts[id]){charts[id].destroy();delete charts[id];}}catch(e){delete charts[id];}
+  }
+  destroyIfExists('exposure');
+  const cexp = document.getElementById('ch-exposure');
+  if(cexp){charts['exposure'] = new Chart(cexp,{type:'bar',data:{
+    labels:DATA.exposure.labels,
+    datasets:[
+      {label:'Alleged (£)',data:DATA.exposure.alleged,backgroundColor:accentLight,borderColor:accent,borderWidth:1.5,borderRadius:2},
+      {label:'Actual paid (£)',data:DATA.exposure.actual,backgroundColor:secondary,borderColor:secondary,borderWidth:0,borderRadius:2}
+    ]
+  },options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{font:fontOpts,color:tickColor,boxWidth:10}}},scales:{x:{grid:{display:false},ticks:{font:fontOpts,color:tickColor}},y:{grid:{color:gridColor},ticks:{font:fontOpts,color:tickColor,callback:v=>'£'+v.toLocaleString()}}}}});}
+}
+
+function renderMonthlyReport(){
+  var el = document.getElementById('tab-content');
+  if(!el) return;
+
+  el.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text3)"><i class="ti ti-loader-2" style="font-size:24px"></i><div style="margin-top:8px;font-size:12px">Generating report from live portfolio…</div></div>';
+
+  var cases = typeof getPortfolioCases === 'function' ? getPortfolioCases() : (typeof ALL_CASES !== 'undefined' ? ALL_CASES : []);
+
+  function renderFromCases(knowledgeEntries) {
+    if (typeof ReportEngine !== 'undefined') {
+      buildReportHTML(ReportEngine.build(cases, knowledgeEntries || []));
+      return;
+    }
+    buildReportFromCases();
+  }
+
+  fetch('knowledge_store.json?t=' + Date.now())
+    .then(function (r) {
+      return r.json();
+    })
+    .then(function (store) {
+      renderFromCases(store.entries || []);
+    })
+    .catch(function () {
+      renderFromCases([]);
+    });
+}
+
+function buildReportHTML(report){
+  var ex = report.executive_summary;
+  var html = '';
+
+  // Report header
+  html += '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;padding-bottom:14px;border-bottom:1px solid var(--border)">';
+  html += '<div>';
+  html += '<div style="font-size:18px;font-weight:500;color:var(--text)">Litigation Report — ' + report.reportMonth + '</div>';
+  html += '<div style="font-size:12px;color:var(--text3);margin-top:3px">Generated ' + new Date(report.generatedAt).toLocaleString('en-GB') + ' · ' + report.generatedBy;
+  if (report._caseCount != null) html += ' · ' + report._caseCount + ' cases in register';
+  html += '</div>';
+  html += '</div>';
+  html += '<button onclick="window.print()" style="font-size:11px;padding:6px 14px;border-radius:var(--r);border:1px solid var(--border2);background:var(--blue);color:#fff;cursor:pointer;font-family:var(--font);display:flex;align-items:center;gap:5px"><i class="ti ti-printer"></i> Export PDF</button>';
+  html += '</div>';
+
+  // Executive summary stats row
+  html += '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px">';
+  var stats = [
+    {label:'Total active claims', value:ex.totalActive, sub:'across all jurisdictions', color:'var(--blue)'},
+    {label:'New this month', value:ex.newThisMonth, sub:'LOCs received', color:'var(--green)'},
+    {label:'Gross exposure', value:'£'+Math.round(ex.totalExposureGross/1000)+'k', sub:'total comp sought', color:'var(--red)'},
+    {label:'Escalated cases', value:ex.escalateCount, sub:'requiring senior review', color:'var(--amber)'}
+  ];
+  stats.forEach(function(s){
+    html += '<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:12px 14px">';
+    html += '<div style="font-size:22px;font-weight:500;color:'+s.color+'">'+s.value+'</div>';
+    html += '<div style="font-size:11px;font-weight:500;color:var(--text);margin-top:2px">'+s.label+'</div>';
+    html += '<div style="font-size:10px;color:var(--text3)">'+s.sub+'</div>';
+    html += '</div>';
+  });
+  html += '</div>';
+
+  // Financial position
+  var fin = report.financial_summary;
+  html += '<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:14px 16px;margin-bottom:14px">';
+  html += '<div style="font-size:12px;font-weight:500;color:var(--text);margin-bottom:10px;display:flex;align-items:center;gap:6px"><i class="ti ti-calculator" style="color:var(--blue-text)"></i> Financial position</div>';
+  html += '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">';
+  [
+    {label:'Gross claims value', value:'£'+fin.totalClaimedGross.toLocaleString()},
+    {label:'Estimated defence cost', value:'£'+fin.estimatedDefenceCost.toLocaleString()},
+    {label:'Projected net liability', value:'£'+fin.projectedLiability.toLocaleString(), highlight:true},
+    {label:'Savings vs full settlement', value:'£'+fin.savingsVsFullSettlement.toLocaleString(), green:true},
+    {label:'Avg cost per case', value:'£'+fin.avgCostPerCase.toLocaleString()},
+    {label:'High value cases (>£10k)', value:fin.highValueCaseCount}
+  ].forEach(function(item){
+    html += '<div style="padding:8px 0;border-bottom:1px solid var(--border)">';
+    html += '<div style="font-size:10px;color:var(--text3)">'+item.label+'</div>';
+    html += '<div style="font-size:15px;font-weight:500;color:'+(item.green?'var(--green)':item.highlight?'var(--blue)':'var(--text)')+'">'+item.value+'</div>';
+    html += '</div>';
+  });
+  html += '</div></div>';
+
+  // By jurisdiction table
+  html += '<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:14px 16px;margin-bottom:14px">';
+  html += '<div style="font-size:12px;font-weight:500;color:var(--text);margin-bottom:10px;display:flex;align-items:center;gap:6px"><i class="ti ti-world" style="color:var(--blue-text)"></i> By jurisdiction</div>';
+  html += '<table style="width:100%;border-collapse:collapse;font-size:12px">';
+  html += '<tr style="border-bottom:1px solid var(--border);color:var(--text3);font-size:10px"><th style="text-align:left;padding:4px 0;font-weight:500">Jurisdiction</th><th style="text-align:right;font-weight:500">Active</th><th style="text-align:right;font-weight:500">New</th><th style="text-align:right;font-weight:500">Closed</th><th style="text-align:right;font-weight:500">Avg days open</th><th style="text-align:right;font-weight:500">Defend rate</th></tr>';
+  report.by_jurisdiction.forEach(function(j){
+    html += '<tr style="border-bottom:1px solid var(--border)">';
+    html += '<td style="padding:7px 0;font-weight:500;color:var(--text)">'+j.name+'</td>';
+    html += '<td style="text-align:right;color:var(--text2)">'+j.active+'</td>';
+    html += '<td style="text-align:right;color:var(--green)">+'+j.new+'</td>';
+    html += '<td style="text-align:right;color:var(--text3)">'+j.closed+'</td>';
+    html += '<td style="text-align:right;color:var(--text2)">'+j.avgDaysOpen+'d</td>';
+    html += '<td style="text-align:right"><span style="background:var(--blue-faint);color:var(--blue-text);padding:1px 7px;border-radius:10px;font-size:11px">'+j.defendRate+'%</span></td>';
+    html += '</tr>';
+  });
+  html += '</table></div>';
+
+  // Risk register
+  html += '<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:14px 16px;margin-bottom:14px">';
+  html += '<div style="font-size:12px;font-weight:500;color:var(--text);margin-bottom:10px;display:flex;align-items:center;gap:6px"><i class="ti ti-alert-triangle" style="color:var(--red)"></i> Risk register — requires action</div>';
+  report.risk_register.forEach(function(r){
+    html += '<div style="border:1px solid var(--border);border-radius:var(--r);padding:10px 12px;margin-bottom:8px;background:var(--red-faint)">';
+    html += '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px">';
+    html += '<div><div style="font-size:12px;font-weight:500;color:var(--text)">'+r.ref+' — '+r.claimant+'</div>';
+    html += '<div style="font-size:11px;color:var(--text2);margin-top:2px">'+r.issue+'</div></div>';
+    html += '<div style="text-align:right;flex-shrink:0"><div style="font-size:11px;font-weight:500;color:var(--red)">'+r.cprDaysLeft+'d remaining</div>';
+    html += '<div style="font-size:10px;color:var(--text3)">'+r.value+'</div></div>';
+    html += '</div>';
+    html += '<div style="font-size:11px;color:var(--amber);margin-top:6px;font-weight:500"><i class="ti ti-arrow-right"></i> '+r.action+'</div>';
+    html += '</div>';
+  });
+  html += '</div>';
+
+  // Key legal developments
+  html += '<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:14px 16px;margin-bottom:14px">';
+  html += '<div style="font-size:12px;font-weight:500;color:var(--text);margin-bottom:10px;display:flex;align-items:center;gap:6px"><i class="ti ti-gavel" style="color:var(--purple,#4338CA)"></i> Key legal developments this month</div>';
+  report.key_legal_developments.forEach(function(dev){
+    html += '<div style="padding:8px 0;border-bottom:1px solid var(--border)">';
+    html += '<div style="font-size:12px;font-weight:500;color:var(--text)">'+dev.title+'</div>';
+    html += '<div style="font-size:11px;color:var(--text2);margin-top:2px">'+dev.impact+'</div>';
+    html += '</div>';
+  });
+  html += '</div>';
+
+  document.getElementById('tab-content').innerHTML = html;
+}
+
+// Fallback — build from portfolio cases directly
+function buildReportFromCases(){
+  var cases = typeof getPortfolioCases === 'function' ? getPortfolioCases() : (typeof ALL_CASES !== 'undefined' ? ALL_CASES : []);
+  if (typeof ReportEngine !== 'undefined') {
+    buildReportHTML(ReportEngine.build(cases, []));
+    return;
+  }
+  var html = '<div style="padding:20px">';
+  html += '<div style="font-size:16px;font-weight:500;margin-bottom:16px">Live report — ' + cases.length + ' cases</div>';
+  html += '<div style="font-size:12px;color:var(--text2)">Report engine unavailable. Showing case count only.</div>';
+  html += '</div>';
+  document.getElementById('tab-content').innerHTML = html;
+}
+
+function exportReport(){
+  const txt = `DefendAble — MI Report\nGenerated: ${new Date().toLocaleDateString('en-GB')}\n\n`
+    +`PORTFOLIO SUMMARY\n`
+    +`Open cases: ${DATA.stats.open}\n`
+    +`Defended YTD: ${DATA.stats.defended}\n`
+    +`Settled YTD: ${DATA.stats.settled}\n`
+    +`Defence rate: ${DATA.stats.defenceRate}%\n`
+    +`Gross exposure: ${DATA.stats.exposureGross}\n`
+    +`Net paid out: ${DATA.stats.exposureNet}\n`
+    +`Saving YTD: ${DATA.stats.savingYTD}\n`
+    +`Avg days to close: ${DATA.stats.avgClose}\n\n`
+    +`CASE REGISTER\n`
+    +DATA.recentCases.map(c=>`${c.ref} | ${c.name} | ${c.type} | Cat ${c.cat} | ${c.value} | ${c.stage} | ${c.solicitor}`).join('\n');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([txt],{type:'text/plain'}));
+  a.download='DefendAble-MI-Report-'+new Date().toISOString().slice(0,10)+'.txt';
+  a.click();
+}
+
+if(typeof render==='function'){
+  renderTabs();
+  renderActiveTab();
+  if(typeof buildMIData==='function') buildMIData();
+  if(typeof renderOverview==='function' && typeof DATA !== 'undefined'){
+    renderOverview(DATA.stats);
+  }
+  if(typeof renderGlobalNav==='function')renderGlobalNav();
+}
+</script>
+<script>
+/* ── Nav + user switcher ── */
+function _navInit(){
+  try{
+    var uid = typeof getActiveUser==='function'?getActiveUser():'SB';
+    var u = typeof USERS!=='undefined'?USERS[uid]:null;
+    if(u){
+      var av=document.getElementById('nav-av'); if(av) av.textContent=u.initials;
+      var un=document.getElementById('nav-user'); if(un) un.textContent=u.name;
+    }
+    // Translate nav labels
+    var labels = {dashboard:'dashboard',intake:'intake',cases:'cases',cpr:'cpr',
+                  evidence:'evidence',drafting:'drafting',mi:'mi',knowledge:'knowledge'};
+    Object.keys(labels).forEach(function(id){
+      var el=document.getElementById('gnl-'+id);
+      if(el){ var sp=el.querySelector('.gnl'); if(sp && typeof t==='function') sp.textContent=t(labels[id]); }
+    });
+    // Active state
+    var p=window.location.pathname.split('/').pop()||'index.html';
+    var active=p.indexOf('module1')>=0?'intake':p.indexOf('module2')>=0?'cases':p.indexOf('module3')>=0?'cpr':p.indexOf('module4')>=0?'evidence':p.indexOf('module5')>=0?'drafting':p.indexOf('module6')>=0?'mi':p.indexOf('education')>=0?'knowledge':'dashboard';
+    var al=document.getElementById('gnl-'+active); if(al) al.classList.add('active');
+    // Active user tick
+    document.querySelectorAll('.ud-item').forEach(function(el){el.classList.remove('current');});
+    var at=document.getElementById('ud-'+uid); if(at) at.classList.add('current');
+  }catch(e){}
+}
+
+
+
+if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',_navInit);}
+else{_navInit();}
+setTimeout(_navInit,150);
+</script>
+<div id="user-modal" class="user-modal" onclick="if(event.target===this)closeMenu()">
+  <div class="user-dropdown">
+    <div class="ud-header">Switch user — demo</div>
+    <div style="padding:4px 14px 2px;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.06em;color:var(--text3)">UK Litigation</div>
+    <div class="ud-item" id="ud-SB" onclick="switchUser('SB')"><div class="ud-av">SB</div><div><div class="ud-name">Sarah Booth</div><div class="ud-role">Head of Legal Ops</div></div><i class="ti ti-check ud-tick"></i></div>
+    <div class="ud-item" id="ud-JP" onclick="switchUser('JP')"><div class="ud-av">JP</div><div><div class="ud-name">James Patel</div><div class="ud-role">Senior Solicitor</div></div><i class="ti ti-check ud-tick"></i></div>
+    <div class="ud-item" id="ud-KR" onclick="switchUser('KR')"><div class="ud-av">KR</div><div><div class="ud-name">Kiran Rahman</div><div class="ud-role">Solicitor</div></div><i class="ti ti-check ud-tick"></i></div>
+    <div style="height:1px;background:var(--border);margin:4px 0"></div>
+    <div style="padding:4px 14px 2px;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.06em;color:var(--text3)">🇫🇷 Équipe France</div>
+    <div class="ud-item" id="ud-MD" onclick="switchUser('MD')"><div class="ud-av" style="background:#1a3a6b">MD</div><div><div class="ud-name">Marie Dupont</div><div class="ud-role">Juriste senior</div></div><i class="ti ti-check ud-tick"></i></div>
+    <div class="ud-item" id="ud-PL" onclick="switchUser('PL')"><div class="ud-av" style="background:#1a3a6b">PL</div><div><div class="ud-name">Pierre Laurent</div><div class="ud-role">Juriste</div></div><i class="ti ti-check ud-tick"></i></div>
+    <div style="height:1px;background:var(--border);margin:4px 0"></div>
+    <div style="padding:4px 14px 2px;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.06em;color:var(--text3)">🇪🇸 Equipo España</div>
+    <div class="ud-item" id="ud-CG" onclick="switchUser('CG')"><div class="ud-av" style="background:#6b1a1a">CG</div><div><div class="ud-name">Carlos García</div><div class="ud-role">Abogado senior</div></div><i class="ti ti-check ud-tick"></i></div>
+    <div class="ud-item" id="ud-IM" onclick="switchUser('IM')"><div class="ud-av" style="background:#6b1a1a">IM</div><div><div class="ud-name">Isabel Martín</div><div class="ud-role">Abogada</div></div><i class="ti ti-check ud-tick"></i></div>
+    <div style="height:1px;background:var(--border);margin:4px 0"></div>
+    <div style="padding:4px 14px 2px;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.06em;color:var(--text3)">Documentary Intelligence</div>
+    <div class="ud-item" id="ud-EH" onclick="switchUser('EH')"><div class="ud-av" style="background:#164E63">EH</div><div><div class="ud-name">Emma Hughes</div><div class="ud-role">DIO — England & Wales</div></div><i class="ti ti-check ud-tick"></i></div>
+    <div class="ud-item" id="ud-FD" onclick="switchUser('FD')"><div class="ud-av" style="background:#4A3728">FD</div><div><div class="ud-name">Françoise Durand</div><div class="ud-role">DIO — France</div></div><i class="ti ti-check ud-tick"></i></div>
+    <div class="ud-item" id="ud-SR" onclick="switchUser('SR')"><div class="ud-av" style="background:#2D4A3E">SR</div><div><div class="ud-name">Sofia Ramos</div><div class="ud-role">DIO — España</div></div><i class="ti ti-check ud-tick"></i></div>
+  </div>
+</div>
+<script>
+
+function toggleUserMenu(){var m=document.getElementById('user-modal');if(m)m.classList.toggle('open');}
+function closeMenu(){var m=document.getElementById('user-modal');if(m)m.classList.remove('open');}
+function switchUser(id){
+  if(typeof setActiveUser==='function')setActiveUser(id);
+  sessionStorage.removeItem('dfa_lang');
+  sessionStorage.removeItem('dfa_case');
+  sessionStorage.removeItem('aeroCaseData');
+  closeMenu();
+  if(window.location.pathname.indexOf('workspace')>=0){window.location.href='index.html';return;}
+  var u=typeof USERS!=='undefined'?USERS[id]:null;
+  if(u){
+    var av=document.getElementById('nav-av'); if(av)av.textContent=u.initials;
+    var un=document.getElementById('nav-user'); if(un)un.textContent=u.name;
+  }
+  ['SB','JP','KR','MD','PL','CG','IM','EH'].forEach(function(uid){
+    var el=document.getElementById('ud-'+uid);
+    if(el){el.classList.toggle('current',uid===id);}
+  });
+  if(typeof renderGlobalNav==='function')renderGlobalNav();
+  if(typeof render==='function'){
+    renderTabs();
+    renderActiveTab();
+    if(typeof buildMIData==='function') buildMIData();
+    if(typeof renderOverview==='function' && typeof DATA !== 'undefined'){
+      renderOverview(DATA.stats);
+    }
+  }
+  if(typeof _render==='function')_render();
+}
+(function initNav(){
+  try{
+    var uid=typeof getActiveUser==='function'?getActiveUser():'SB';
+    var u=typeof USERS!=='undefined'?USERS[uid]:null;
+    if(!u)return;
+    var av=document.getElementById('nav-av'); if(av)av.textContent=u.initials;
+    var un=document.getElementById('nav-user'); if(un)un.textContent=u.name;
+    ['SB','JP','KR','MD','PL','CG','IM','EH'].forEach(function(id){
+      var el=document.getElementById('ud-'+id);
+      if(el)el.classList.toggle('current',id===uid);
+    });
+  }catch(e){}
+})();
+
+</script>
+<script src="shared_nav.js"></script>
+</body>
+</html>
