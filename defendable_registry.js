@@ -95,8 +95,7 @@ var DefendAbleRegistry = (function () {
     },
     'DT-05': {
       conclusions: [
-        { id: 'DT5_VAN_DER_LANS_ORDINARY', question: 'Ordinary technical fault (van der Lans)?' },
-        { id: 'DT14_HIDDEN_DEFECT_LIMB1', question: 'Hidden defect Limb 1 — unknown failure mode?' }
+        { id: 'DT5_VAN_DER_LANS_ORDINARY', question: 'Technical fault — concede EC (van der Lans)?' }
       ]
     },
     'DT-06': {
@@ -117,8 +116,8 @@ var DefendAbleRegistry = (function () {
     },
     'DT-09': {
       conclusions: [
-        { id: 'DT9_MEDICAL_ORDINARY_CONCEDE', question: 'Ordinary passenger illness — concede EC (DDJ Linwood 2020)?' },
-        { id: 'DT9_MEDICAL_SAFETY_JUDGMENT', question: 'Genuine flight-safety/security dimension beyond ordinary welfare?' }
+        { id: 'DT9_MEDICAL_EC', question: 'Sudden in-flight medical emergency requiring mandatory commander diversion — EC established (LE v TAP C-74/19 analogy)?' },
+        { id: 'DT9_MEDICAL_FORESEEABLE_CONCEDE', question: 'Foreseeable/pre-boarding medical condition, boarded despite obvious signs — concede EC?' }
       ]
     },
     'DT-10': {
@@ -149,7 +148,7 @@ var DefendAbleRegistry = (function () {
     },
     'DT-15': {
       conclusions: [
-        { id: 'DT15_NO_EC_DEFENCE', question: 'Denied boarding — EC defence unavailable?' }
+        { id: 'DT15_NO_EC_DEFENCE', question: 'Denied boarding — Article 4 pathway, not an EC defence scenario?' }
       ]
     },
     'DT-16': {
