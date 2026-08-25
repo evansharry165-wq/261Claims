@@ -3,7 +3,7 @@ var DefendAbleTreeDT01 = (function () {
 
   var TREE_ID = 'DT-01';
   var DISRUPTION_TYPE = 'ATC Restrictions';
-  var AUTHORITY = 'Pešková C-315/15; Wallentin-Hermann C-549/07; Moens C-159/18';
+  var AUTHORITY = 'Pešková C-315/15; Wallentin-Hermann C-549/07';
 
   var GATES = [
     {
