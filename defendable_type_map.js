@@ -14,7 +14,12 @@ var DefendAbleTypeMap = (function () {
     medical: 'DT-09',
     'disruptive-pax': 'DT-10',
     'natural-disaster': 'DT-11',
-    'political-unrest': 'DT-11',
+    /* Session: legal sweep — was 'DT-11', but DT-11's matches() only
+       recognises volcanic/earthquake/flood/hurricane language, never
+       political-unrest text. DT-17 is the tree that actually handles
+       travel bans / airspace closure / government restriction / war zone —
+       the two-layer disagreement this session exists to catch. */
+    'political-unrest': 'DT-17',
     'ground-damage': 'DT-05'
   };
 
@@ -29,7 +34,8 @@ var DefendAbleTypeMap = (function () {
     'DT-08': 'security',
     'DT-09': 'medical',
     'DT-10': 'disruptive-pax',
-    'DT-11': 'natural-disaster'
+    'DT-11': 'natural-disaster',
+    'DT-17': 'political-unrest'
   };
 
   function rmToTreeId(rmId) {
