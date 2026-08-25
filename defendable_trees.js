@@ -33,10 +33,10 @@ var DefendAbleTrees = (function () {
   }
 
   var DEFINITIONS = [
-    wrapCustom('DT-01', 'ATC Restrictions', 'Pešková C-315/15; Wallentin-Hermann C-549/07; Moens C-159/18', 50,
+    wrapCustom('DT-01', 'ATC Restrictions', 'Pešková C-315/15; Wallentin-Hermann C-549/07', 50,
       function (t, c) { return typeof DefendAbleTreeDT01 !== 'undefined' && DefendAbleTreeDT01.matches(t, c); },
       function (ctx, force) { return DefendAbleTreeDT01.runTree(ctx, { force: !!force }); }),
-    wrapCustom('DT-02', 'Weather', 'Pešková; Wallentin-Hermann; Blanche v EasyJet', 40,
+    wrapCustom('DT-02', 'Weather', 'Pešková; Wallentin-Hermann; Blanche v EasyJet Airline Company Ltd [2019] EWCA Civ 69', 40,
       function (t, c) { return typeof DefendAbleTreeDT02 !== 'undefined' && DefendAbleTreeDT02.matches(t, c); },
       function (ctx, force) {
         if (typeof DefendAbleTreeDT02.runTree.length >= 1) {
@@ -134,55 +134,28 @@ var DefendAbleTrees = (function () {
     {
       treeId: 'DT-05',
       disruptionType: 'Technical Issues',
-      authority: 'van der Lans C-257/14; Jet2 v Huzar; Wallentin-Hermann — ordinary technical fault NOT EC; lightning C-399/24 may be external EC',
+      authority: 'Ordinary technical faults are not extraordinary circumstances (van der Lans C-257/14; Huzar). Simplified engine position: any technical fault routes to concede. External-caused events (lightning, ground damage) are handled by weather (DT-02) or natural disaster (DT-11) trees; birdstrike by DT-04; hidden manufacturing defects by DT-14.',
       priority: 12,
-      ecGateId: 'DT5-G2',
       matches: function (t) {
         if (/\bpositioning\b/i.test(t || '')) return false;
         if (/\bhidden defect|\bmanufacturing defect|\bno prior ad\b/i.test(t || '')) return false;
-        return /\bhydraulic|\btechnical fault|\baog\b|\bdefect\b|\bmel\b|\bcategory a\b|\blightning\b/i.test(t || '');
+        return /\bhydraulic|\btechnical fault|\baog\b|\bdefect\b|\bmel\b|\bcategory a\b/i.test(t || '');
       },
       gates: [
         {
           id: 'DT5-G1', name: 'Technical fault identified', type: 'entry',
           question: 'Was an aircraft technical fault the stated cause of disruption?',
-          iccPattern: /\bhydraulic|\btechnical|\baog\b|\bdefect\b|\bmel\b|\blightning\b/i,
+          iccPattern: /\bhydraulic|\btechnical|\baog\b|\bdefect\b|\bmel\b/i,
           requiredLibKeys: ['amos', 'tops'],
           onYes: 'DT5-G2', onNo: 'ROUTE_AWAY'
         },
         {
-          id: 'DT5-G2', name: 'Ordinary technical (van der Lans)', type: 'concede',
-          question: 'Is this an ordinary / premature component fault (not external event, not OEM/AD hidden design defect)?',
-          authority: 'van der Lans / Huzar — routine and even undetectable ordinary faults NOT EC',
-          conditional: function (ctx) {
-            var t = ctx.iccText || '';
-            // Skip concede when lightning / ground damage / birdstrike / hidden OEM defect indicated
-            if (/\blightning\b|\bground damage\b|\bbirdstrike\b|\bhidden (design |manufacturing )?defect\b|\beasa\b.*\bad\b|\boem\b/i.test(t)) {
-              return false;
-            }
-            return /\bhydraulic|\btechnical|\baog\b|\bdefect\b|\bmel\b|\bcategory a\b|\bcomponent failure\b/i.test(t);
-          },
-          conclusion: 'Ordinary technical fault — concede EC on technical point (Wallentin / van der Lans / Huzar).',
-          conditions: ['Concede EC if ordinary technical fault — assess quantum and passenger rights.', 'Art 9 care remains owed (McDonagh).'],
-          onSkip: 'DT5-G2b', onNA: 'DT5-G2b'
-        },
-        {
-          id: 'DT5-G2b', name: 'Technical fault scope', type: 'confirm',
-          question: 'Is an aircraft technical fault or lightning/external technical event the stated cause?',
-          iccPattern: /\bhydraulic|\btechnical|\baog\b|\bdefect\b|\blightning\b/i,
-          requiredLibKeys: ['amos', 'tops'],
-          onYes: 'DT5-G3', onNo: 'ROUTE_AWAY'
-        },
-        {
-          id: 'DT5-G3', name: 'External technical cause', type: 'confirm',
-          question: 'Was fault caused by external event (lightning, ground damage, birdstrike) or confirmed OEM/AD hidden defect?',
-          authority: 'C-399/24 lightning; Pešková birdstrike; Matkustaja/Finnair hidden defect',
-          iccPattern: /\blightning|\bground damage|\bbirdstrike|\bhidden (design |manufacturing )?defect\b|\beasa\b|\boem\b/i,
-          conclusionIds: ['U7_EC_ESTABLISHED'],
-          yesMeans: 'External/hidden-defect technical path — EC candidate; RM still required.',
-          onYes: 'DT5-G4', onNo: 'EXIT'
-        },
-        stdMeasures('DT5-G4', 'DT5')
+          id: 'DT5-G2', name: 'Technical fault — concede', type: 'concede',
+          question: 'Technical fault — concede EC?',
+          authority: 'van der Lans / Huzar / Wallentin-Hermann — technical faults NOT EC',
+          conclusion: 'Technical fault — concede EC (van der Lans / Huzar / Wallentin-Hermann). Assess quantum, Article 8 rerouting, Article 9 care.',
+          conditions: ['Concede EC on technical fault.', 'Art 9 care remains owed (McDonagh).']
+        }
       ]
     },
 
@@ -210,7 +183,12 @@ var DefendAbleTrees = (function () {
           id: 'DT6-G1', name: 'Crew illness (Lipton)', type: 'concede',
           question: 'Is crew illness/sickness the root cause?',
           authority: 'Lipton v BA Cityflyer [2024] UKSC 24',
-          conditional: function (ctx) { return /\bcrew illness|\bpilot sick|\bcaptain\s+(?:went\s+)?sick|\bcrew sick|\bwent sick\b/i.test(ctx.iccText || ''); },
+          /* Broadened to also catch "Captain reported sick" phrasing — the
+             narrower captain(went)?sick form was missing this common
+             wording, causing this gate to skip and fall through to G2's
+             FTL-only pattern (which also doesn't cover FDP), producing a
+             false ROUTE_AWAY/INVESTIGATE instead of the correct concede. */
+          conditional: function (ctx) { return /\bcrew illness|\bpilot sick|\bcaptain\s+(?:went\s+|reported\s+)?sick|\bcrew sick|\bwent sick|\breported sick\b/i.test(ctx.iccText || ''); },
           conclusion: 'Crew illness is NOT extraordinary circumstances — concede.',
           conditions: ['Concede EC on crew illness — assess quantum and Art 8/9 only.']
         },
@@ -218,7 +196,7 @@ var DefendAbleTrees = (function () {
           id: 'DT6-G2', name: 'FTL root cause', type: 'entry',
           question: 'What is the root cause of FTL exhaustion (not FTL itself)?',
           authority: 'FTL alone is never EC — identify upstream event',
-          iccPattern: /\bftl\b|\bout of hours\b|\bcrew.*limit\b/i,
+          iccPattern: /\bftl\b|\bfdp\b|\bout of hours\b|\bcrew.*limit\b/i,
           requiredLibKeys: ['aims', 'tops'],
           conclusionIds: ['DT6_FTL_ROOT_CAUSE_ANALYSIS'],
           onYes: 'DT6-G3', onNo: 'ROUTE_AWAY', allowTopsFallback: true
@@ -311,39 +289,55 @@ var DefendAbleTrees = (function () {
     {
       treeId: 'DT-09',
       disruptionType: 'Medical Emergency',
-      authority: 'Passenger illness/medical diversion is NOT EC (persuasive: DDJ Linwood, England, 2020) — narrow judgment-node exception only for a genuine flight-safety/security dimension',
+      authority: 'LE v TAP Air Portugal C-74/19 — sudden external event beyond the carrier\'s control requiring mandatory commander diversion is EC by analogy; Wallentin-Hermann C-549/07 — not inherent to the normal exercise of activity, beyond actual control; Air Navigation Order / ICAO Annex 6 — mandatory commander duty to divert for urgent medical care',
       priority: 8,
+      ecGateId: 'DT9-G4',
       matches: function (t) {
-        return /\bmedical|\bcardiac|\bwelfare incident|\bpassenger welfare|\bmedical emergency\b/i.test(t || '');
+        var s = t || '';
+        /* Word-boundary fix — the unbounded \bmedical (no trailing \b) was
+           matching "medically" inside crew-illness narrative ("reported
+           medically unfit for duty"), silently pulling DT-06 crew-sick
+           scenarios onto this tree once it stopped defaulting to CONCEDE. */
+        return /\bmedical\b|\bcardiac\b|\bwelfare incident\b|\bpassenger welfare\b|\bmedical emergency\b/i.test(s);
       },
       gates: [
         {
           id: 'DT9-G1', name: 'Medical/welfare event identified', type: 'entry',
-          question: 'Did a passenger medical or welfare event occur requiring carrier response?',
-          iccPattern: /\bmedical|\bcardiac|\bwelfare\b/i,
+          question: 'Did a passenger medical or welfare event occur requiring carrier response (commander diversion)?',
+          iccPattern: /\bmedical\b|\bcardiac\b|\bwelfare\b/i,
           requiredLibKeys: ['safetynet', 'tops'],
           onYes: 'DT9-G2', onNo: 'ROUTE_AWAY'
         },
         {
-          id: 'DT9-G2', name: 'Beyond ordinary passenger welfare', type: 'confirm',
-          question: 'Does the event go beyond ordinary passenger illness into a genuine flight-safety or security dimension (risk to aircraft/crew, contagion risk, security-flagged incident)?',
-          iccPattern: /\bsecurity risk|\bcontagious|\binfectious|\bbiohazard|\bcrew safety|\baircraft safety|\bpublic health\b/i,
+          id: 'DT9-G2', name: 'Foreseeability check', type: 'confirm',
+          question: 'Was the passenger\'s medical condition apparent or flagged at boarding, and the passenger was allowed to board anyway?',
+          iccPattern: /\bvisibly unwell at gate|\bmedical flagged at check.?in|\bboarded despite|\bpre-existing condition disclosed\b/i,
           onYes: 'DT9-G3', onNo: 'DT9-G4'
         },
         {
-          id: 'DT9-G3', name: 'Flight-safety/security judgment', type: 'judgment',
-          question: 'Does the flight-safety/security dimension of this medical event support an EC defence, distinct from ordinary passenger illness?',
-          authority: 'No settled authority extends ordinary-passenger-illness reasoning to a genuinely distinct safety/security-driven response — requires case-specific judgment.',
-          reason: 'Facts go beyond ordinary passenger welfare — resolve before asserting EC.',
-          conditions: ['Confirm the precise safety/security trigger and whether it is genuinely distinct from ordinary passenger illness before running this as an EC defence.']
+          id: 'DT9-G3', name: 'Foreseeable medical event known before boarding — concede', type: 'concede',
+          authority: 'Analogous to LE v TAP C-74/19\'s known-before-boarding carve-out for disruptive passenger conduct.',
+          reason: 'Medical condition was apparent or flagged at boarding and the carrier allowed boarding anyway.',
+          conclusion: 'Foreseeable medical event known before boarding — concede EC; carrier had the opportunity to prevent this.',
+          conditions: ['Concede EC — assess quantum, Art 8 rerouting, and Art 9 care only.']
         },
         {
-          id: 'DT9-G4', name: 'Ordinary passenger illness — concede', type: 'concede',
-          authority: 'Persuasive: DDJ Linwood, England, 2020 (first-instance, unreported) — passenger illness is inherent in carrying passengers, same reasoning as Lipton v BA Cityflyer [2024] UKSC 24 for crew illness',
-          reason: 'Ordinary passenger illness/medical diversion is not extraordinary circumstances.',
-          conclusion: 'Passenger medical emergency/diversion is NOT extraordinary circumstances — concede EC; passenger illness is inherent in carrying passengers.',
-          conditions: ['Concede EC on passenger medical emergency — assess quantum, Art 8 rerouting, and Art 9 care only.']
-        }
+          id: 'DT9-G4', name: 'Sudden in-flight medical event', type: 'confirm',
+          question: 'Was this a sudden in-flight medical event requiring mandatory commander diversion, not apparent or foreseeable at boarding?',
+          authority: 'LE v TAP C-74/19 by analogy — sudden external event beyond airline control, mandatory commander diversion.',
+          iccPattern: /\bmedical\b|\bcardiac\b|\bwelfare\b/i,
+          conclusionIds: ['DT9_MEDICAL_EC', 'U7_EC_ESTABLISHED'],
+          yesMeans: 'Sudden in-flight medical emergency requiring diversion — EC established.',
+          onYes: 'DT9-G5', onNo: 'ROUTE_AWAY'
+        },
+        {
+          id: 'DT9-G5', name: 'Commander diversion + medical documentation', type: 'confirm',
+          question: 'Are commander\'s report, MedLink/ground-medical advice log, and cabin crew incident report documented?',
+          requiredLibKeys: ['safetynet', 'tops'],
+          iccPattern: /\bcommander report|\bmedlink|\bcabin crew report|\bdiversion decision\b/i,
+          onYes: 'DT9-G6', onNo: 'DT9-G6'
+        },
+        stdMeasures('DT9-G6', 'DT9')
       ]
     },
 
@@ -548,16 +542,23 @@ var DefendAbleTrees = (function () {
     {
       treeId: 'DT-15',
       disruptionType: null,
-      authority: 'EC261 Art 4 — no EC defence for denied boarding',
+      authority: 'EC261 Article 4 — denied boarding is a distinct statutory pathway from Article 5/7 delay/cancellation compensation. No EC defence applies because there is no delay/cancellation to defend — the passenger did not fly.',
       priority: 1,
-      matches: function (t) { return /\bdenied boarding|\boverbook|\binvoluntary offload\b/i.test(t || ''); },
+      /* Tightened from a bare keyword match — "denied boarding" mentioned as
+         context inside a broader delay/cancellation ICC (e.g. "passenger was
+         later denied boarding on the rebooked flight after the ATC delay")
+         must not hijack the tree; only fires when denied boarding reads as
+         the primary/whole claim. */
+      matches: function (t) {
+        return /\binvoluntarily denied boarding|\bbumped from (the )?flight|\boversold flight|\brefused boarding due to overbooking|\bdenied boarding due to overbooking\b/i.test(t || '');
+      },
       gates: [
         {
-          id: 'DT15-G1', name: 'Denied boarding', type: 'concede',
-          question: 'Involuntary denied boarding?',
-          authority: 'Art 4 — carrier always liable',
-          conclusion: 'No EC defence for denied boarding — concede.',
-          conditions: ['Concede — Art 7, Art 8, Art 9 apply; do not run EC defence.']
+          id: 'DT15-G1', name: 'Denied boarding — Article 4 pathway', type: 'concede',
+          question: 'Is this an Article 4 denied-boarding claim (not a delay/cancellation EC scenario)?',
+          authority: 'EC261 Article 4 — denied boarding is a distinct statutory pathway from Article 5/7 delay/cancellation compensation. No EC defence applies because there is no delay/cancellation to defend — the passenger did not fly.',
+          conclusion: 'Denied boarding falls under Article 4, not Article 5/7. Passenger did not fly — this is not an EC defence scenario. Offer repatriation and Article 4 compensation.',
+          conditions: ['Article 4 pathway — not a defence tree.', 'Offer Article 8 rerouting and Article 4 compensation per the statutory scheme.', 'This is not an EC 5(3) matter.']
         }
       ]
     },
